@@ -26,7 +26,7 @@
 using namespace std;
 using namespace boost;
 
-static const int MAX_OUTBOUND_CONNECTIONS = 12;
+static const int MAX_OUTBOUND_CONNECTIONS = 17;
 
 void ThreadMessageHandler2(void* parg);
 void ThreadSocketHandler2(void* parg);
