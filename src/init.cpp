@@ -123,7 +123,7 @@ bool AppInit(int argc, char* argv[])
         //
         // Parameters
         //
-        // If Qt is used, parameters/litecoin.conf are parsed in qt/bitcoin.cpp's main()
+        // If Qt is used, parameters/anoncoin.conf are parsed in qt/bitcoin.cpp's main()
         ParseParameters(argc, argv);
         if (!boost::filesystem::is_directory(GetDataDir(false)))
         {
@@ -134,7 +134,7 @@ bool AppInit(int argc, char* argv[])
 
         if (mapArgs.count("-?") || mapArgs.count("--help"))
         {
-            // First part of help message is specific to litecoind / RPC client
+            // First part of help message is specific to anoncoind / RPC client
             std::string strUsage = _("Anoncoin version") + " " + FormatFullVersion() + "\n\n" +
                 _("Usage:") + "\n" +
                   "  anoncoind [options]                     " + "\n" +
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 {
     bool fRet = false;
 
-    // Connect litecoind signal handlers
+    // Connect anoncoind signal handlers
     noui_connect();
 
     fRet = AppInit(argc, argv);
@@ -271,7 +271,7 @@ std::string HelpMessage()
 #endif
         "  -rpcuser=<user>        " + _("Username for JSON-RPC connections") + "\n" +
         "  -rpcpassword=<pw>      " + _("Password for JSON-RPC connections") + "\n" +
-        "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 9332)") + "\n" +
+        "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 7332)") + "\n" +
         "  -rpcallowip=<ip>       " + _("Allow JSON-RPC connections from specified IP address") + "\n" +
         "  -rpcconnect=<ip>       " + _("Send commands to node running on <ip> (default: 127.0.0.1)") + "\n" +
         "  -blocknotify=<cmd>     " + _("Execute command when the best block changes (%s in cmd is replaced by block hash)") + "\n" +
@@ -331,7 +331,7 @@ bool AppInit2()
     // ********************************************************* Step 2: parameter interactions
 
     fTestNet = GetBoolArg("-testnet");
-    // Litecoin: Keep irc seeding on by default for now.
+    // Anoncoin: Keep irc seeding on by default for now.
 //    if (fTestNet)
 //    {
         SoftSetBoolArg("-irc", true);
@@ -426,7 +426,7 @@ bool AppInit2()
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
-    // Make sure only a single Litecoin process is using the data directory.
+    // Make sure only a single Anoncoin process is using the data directory.
     boost::filesystem::path pathLockFile = GetDataDir() / ".lock";
     FILE* file = fopen(pathLockFile.string().c_str(), "a"); // empty lock file; created if it doesn't exist.
     if (file) fclose(file);
@@ -587,7 +587,7 @@ bool AppInit2()
         strErrors << _("Error loading blkindex.dat") << "\n";
 
     // as LoadBlockIndex can take several minutes, it's possible the user
-    // requested to kill litecoin-qt during the last operation. If so, exit.
+    // requested to kill anoncoin-qt during the last operation. If so, exit.
     // As the program has not fully started yet, Shutdown() is possibly overkill.
     if (fRequestShutdown)
     {

@@ -554,7 +554,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             ip[i + sizeof(pchOnionCat)] = vchAddr[i];
         return true;
     }
-    if (strName.size()>11 && strName.substr(strName.size() - 11, 11) == ".oc.b32.i2p") {
+    if (strName.size()>11 && strName.substr(strName.size() - 11, 11) == ".ac.b32.i2p") {
         std::vector<unsigned char> vchAddr = DecodeBase32(strName.substr(0, strName.size() - 11).c_str());
         if (vchAddr.size() != 16-sizeof(pchGarliCat))
             return false;
@@ -764,7 +764,7 @@ std::string CNetAddr::ToStringIP() const
     if (IsTor())
         return EncodeBase32(&ip[6], 10) + ".onion";
     if (IsI2P())
-        return EncodeBase32(&ip[6], 10) + ".oc.b32.i2p";
+        return EncodeBase32(&ip[6], 10) + ".ac.b32.i2p";
     CService serv(*this, 0);
 #ifdef USE_IPV6
     struct sockaddr_storage sockaddr;

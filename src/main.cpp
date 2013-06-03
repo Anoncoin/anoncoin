@@ -29,8 +29,8 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0x12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2");
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Litecoin: starting difficulty is 1 / 2^12
+uint256 hashGenesisBlock("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3");
+static CBigNum bnProofOfWorkLimit( CBigNum().SetCompact(0x1e0ffff0) );
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 CBigNum bnBestChainWork = 0;
@@ -830,14 +830,20 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
 {
     int64 nSubsidy = 20 * COIN;
 
-    // Subsidy is cut in half every 370000 blocks, which will occur unapproximately
-    nSubsidy >>= (nHeight / 840000); // Anoncoin: 370k blocks in
+    // Some adjustments to the start of the lifetime to Anoncoin
+    if (nHeight < 42000) {
+        nSubsidy = 4.2 * COIN;
+    } else if (nHeight < 77777) { // All luck is seven ;)
+        nSubsidy = 7 * COIN;
+    } else if (nHeight < 177777) {
+        nSubsidy = 17.42 * COIN;
+    }
 
     return nSubsidy + nFees;
 }
 
-static const int64 nTargetTimespan = 2.5 * 24 * 60 * 60; // Anoncoin: 2.5 days
-static const int64 nTargetSpacing = 2 * 60; // Anoncoin: 2.5 minutes
+static const int64 nTargetTimespan = 420 * 205.2; // Anoncoin: 420 blocks
+static const int64 nTargetSpacing = 3.42 * 60; // Anoncoin: 3.42 minutes
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
@@ -855,8 +861,8 @@ unsigned int ComputeMinWork(unsigned int nBase, int64 nTime)
     bnResult.SetCompact(nBase);
     while (nTime > 0 && bnResult < bnProofOfWorkLimit)
     {
-        // Maximum 400% adjustment...
-        bnResult *= 4;
+        // Maximum 141% adjustment...
+        bnResult = (bnResult * 99) / 70;
         // ... in best-case exactly 4-times-normal target time
         nTime -= nTargetTimespan*4;
     }
@@ -896,7 +902,7 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
         return pindexLast->nBits;
     }
 
-    // Litecoin: This fixes an issue where a 51% attack can change difficulty at will.
+    // Anoncoin: This fixes an issue where a 51% attack can change difficulty at will.
     // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
     int blockstogoback = nInterval-1;
     if ((pindexLast->nHeight+1) != nInterval)
@@ -910,11 +916,13 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
     // Limit adjustment step
     int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+    int64 nActualTimespanMax = ((nTargetTimespan*99)/70);
+    int64 nActualTimespanMin = ((nTargetTimespan*70)/99);
     printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
-    if (nActualTimespan < nTargetTimespan/4)
-        nActualTimespan = nTargetTimespan/4;
-    if (nActualTimespan > nTargetTimespan*4)
-        nActualTimespan = nTargetTimespan*4;
+    if (nActualTimespan < nActualTimespanMin)
+        nActualTimespan = nActualTimespanMin;
+    if (nActualTimespan > nActualTimespanMax)
+        nActualTimespan = nActualTimespanMax;
 
     // Retarget
     CBigNum bnNew;
@@ -1160,7 +1168,7 @@ bool CTransaction::ConnectInputs(MapPrevTx inputs,
 {
     // Take over previous transactions' spent pointers
     // fBlock is true when this is called from AcceptBlock when a new best-block is added to the blockchain
-    // fMiner is true when called from the internal litecoin miner
+    // fMiner is true when called from the internal anoncoin miner
     // ... both are false when called from CTransaction::AcceptToMemoryPool
     if (!IsCoinBase())
     {
@@ -1907,7 +1915,7 @@ bool CheckDiskSpace(uint64 nAdditionalBytes)
         string strMessage = _("Warning: Disk space is low");
         strMiscWarning = strMessage;
         printf("*** %s\n", strMessage.c_str());
-        uiInterface.ThreadSafeMessageBox(strMessage, "Litecoin", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+        uiInterface.ThreadSafeMessageBox(strMessage, "Anoncoin", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
         StartShutdown();
         return false;
     }
@@ -1959,10 +1967,10 @@ bool LoadBlockIndex(bool fAllowNew)
 {
     if (fTestNet)
     {
-        pchMessageStart[0] = 0xfc;
-        pchMessageStart[1] = 0xc1;
-        pchMessageStart[2] = 0xb7;
-        pchMessageStart[3] = 0xdc;
+        pchMessageStart[0] = 0xfa;
+        pchMessageStart[1] = 0xca;
+        pchMessageStart[2] = 0xa7;
+        pchMessageStart[3] = 0x4a;
         hashGenesisBlock = uint256("0xf5ae71e26c74beacc88382716aced69cddf3dffff24f384e1808905e0188f68f");
     }
 
@@ -1982,42 +1990,47 @@ bool LoadBlockIndex(bool fAllowNew)
         if (!fAllowNew)
             return false;
 
-        // Genesis Block:
-        // CBlock(hash=12a765e31ffd4059bada, PoW=0000050c34a64b415b6b, ver=1, hashPrevBlock=00000000000000000000, hashMerkleRoot=97ddfbbae6, nTime=1317972665, nBits=1e0ffff0, nNonce=2084524493, vtx=1)
-        //   CTransaction(hash=97ddfbbae6, ver=1, vin.size=1, vout.size=1, nLockTime=0)
-        //     CTxIn(COutPoint(0000000000, -1), coinbase 04ffff001d0104404e592054696d65732030352f4f63742f32303131205374657665204a6f62732c204170706c65e280997320566973696f6e6172792c2044696573206174203536)
-        //     CTxOut(nValue=50.00000000, scriptPubKey=040184710fa689ad5023690c80f3a4)
-        //   vMerkleTree: 97ddfbbae6
+// Genesis:
+//2ca51355580bb293fe369c5f34954069c263e9a9e8d70945ebb4c38f05778558
+//238467b132120c9660156a6752663593e01b2f3e79b2abbc21b71308daa22ec4
+//7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736
+//block.nTime = 1370190760
+//block.nNonce = 347089008
+//block.GetHash = 2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3
+//CBlock(hash=2c85519db50a40c033cc, PoW=00000be19c5a519257aa, ver=1, hashPrevBlock=00000000000000000000, hashMerkleRoot=7ce7004d76, nTime=1370190760, nBits=1e0ffff0, nNonce=347089008, vtx=1)
+//  CTransaction(hash=7ce7004d76, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+//    CTxIn(COutPoint(0000000000, -1), coinbase 04ffff001d01044c5e30322f4a756e2f323031333a202054686520556e6976657273652c20776527726520616c6c206f6e652e20427574207265616c6c792c206675636b207468652043656e7472616c2062616e6b732e202d20416e6f6e796d6f757320343230)
+//    CTxOut(error)
+//  vMerkleTree: 7ce7004d76
+
 
         // Genesis block
-        const char* pszTimestamp = "NY Times 05/Oct/2011 Steve Jobs, Apple’s Visionary, Dies at 56";
+        const char* pszTimestamp = "02/Jun/2013:  The Universe, we're all one. But really, fuck the Central banks. - Anonymous 420";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 50 * COIN;
-        txNew.vout[0].scriptPubKey = CScript() << ParseHex("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9") << OP_CHECKSIG;
+        txNew.vout[0].nValue = 0;
+        txNew.vout[0].scriptPubKey = CScript() << 0x0 << OP_CHECKSIG;
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1317972665;
+        block.nTime    = 1370190760;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 2084524493;
+        block.nNonce   = 347089008;
 
         if (fTestNet)
         {
-            block.nTime    = 1317798646;
-            block.nNonce   = 385270584;
+            block.nTime    = 1370190760;
+            block.nNonce   = 345270584;
         }
 
         //// debug print
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
-
         // If genesis block hash does not match, then generate new genesis hash.
         if (false && block.GetHash() != hashGenesisBlock)
         {
@@ -2063,7 +2076,6 @@ bool LoadBlockIndex(bool fAllowNew)
 
     return true;
 }
-
 
 
 void PrintBlockTree()
@@ -2359,10 +2371,8 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 
 
 
-// The message start string is designed to be unlikely to occur in normal data.
-// The characters are rarely used upper ascii, not valid as UTF-8, and produce
-// a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0xfb, 0xc0, 0xb6, 0xdb }; // Litecoin: increase each by adding 2 to bitcoin's value.
+// Hopefully unique
+unsigned char pchMessageStart[4] = { 0xfa, 0xca, 0xba, 0xda };
 
 
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
@@ -3450,7 +3460,7 @@ CBlock* CreateNewBlock(CReserveKey& reservekey)
                 continue;
 
             // Transaction fee required depends on block size
-            // Litecoind: Reduce the exempted free transactions to 500 bytes (from Bitcoin's 3000 bytes)
+            // Anoncoind: Reduce the exempted free transactions to 500 bytes (from Bitcoin's 3000 bytes)
             bool fAllowFree = (nBlockSize + nTxSize < 1500 || CTransaction::AllowFree(dPriority));
             int64 nMinFee = tx.GetMinFee(nBlockSize, fAllowFree, GMF_BLOCK);
 
@@ -3659,7 +3669,7 @@ void static BitcoinMiner(CWallet *pwallet)
             return;
         IncrementExtraNonce(pblock.get(), pindexPrev, nExtraNonce);
 
-        printf("Running BitcoinMiner with %d transactions in block\n", pblock->vtx.size());
+        printf("Running AnonMiner with %d transactions in block\n", pblock->vtx.size());
 
 
         //
@@ -3777,15 +3787,15 @@ void static ThreadBitcoinMiner(void* parg)
     }
     catch (std::exception& e) {
         vnThreadsRunning[THREAD_MINER]--;
-        PrintException(&e, "ThreadBitcoinMiner()");
+        PrintException(&e, "ThreadAnoncoinMiner()");
     } catch (...) {
         vnThreadsRunning[THREAD_MINER]--;
-        PrintException(NULL, "ThreadBitcoinMiner()");
+        PrintException(NULL, "ThreadAnoncoinMiner()");
     }
     nHPSTimerStart = 0;
     if (vnThreadsRunning[THREAD_MINER] == 0)
         dHashesPerSec = 0;
-    printf("ThreadBitcoinMiner exiting, %d threads remaining\n", vnThreadsRunning[THREAD_MINER]);
+    printf("ThreadAnoncoinMiner exiting, %d threads remaining\n", vnThreadsRunning[THREAD_MINER]);
 }
 
 
