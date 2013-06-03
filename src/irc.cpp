@@ -297,9 +297,9 @@ void ThreadIRCSeed2(void* parg)
             Send(hSocket, "JOIN #anoncoinTEST3\r");
             Send(hSocket, "WHO #anoncoinTEST3\r");
         } else {
-            // randomly join #litecoin00-#litecoin99
+            // randomly join #anoncoin00-#anoncoin99
             int channel_number = GetRandInt(100);
-            channel_number = 0; // Litecoin: for now, just use one channel
+            channel_number = 0; // Anoncoin: for now, just use one channel
             Send(hSocket, strprintf("JOIN #anoncoin%02d\r", channel_number).c_str());
             Send(hSocket, strprintf("WHO #anoncoin%02d\r", channel_number).c_str());
         }

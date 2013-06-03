@@ -312,7 +312,7 @@ Value getdifficulty(const Array& params, bool fHelp)
 }
 
 
-// Litecoin: Return average network hashes per second based on last number of blocks.
+// Anoncoin: Return average network hashes per second based on last number of blocks.
 Value GetNetworkHashPS(int lookup) {
     if (pindexBest == NULL)
         return 0;
@@ -1098,7 +1098,7 @@ Value addmultisigaddress(const Array& params, bool fHelp)
     {
         const std::string& ks = keys[i].get_str();
 
-        // Case 1: Litecoin address and we have full public key:
+        // Case 1: Anoncoin address and we have full public key:
         CBitcoinAddress address(ks);
         if (address.IsValid())
         {
@@ -2061,7 +2061,7 @@ Value getwork(const Array& params, bool fHelp)
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
         result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
-        result.push_back(Pair("algorithm", "scrypt:1024,1,1"));  // Litecoin: specify that we should use the scrypt algorithm
+        result.push_back(Pair("algorithm", "scrypt:1024,1,1"));  // Anoncoin: specify that we should use the scrypt algorithm
         return result;
     }
     else
@@ -2565,7 +2565,7 @@ bool HTTPAuthorized(map<string, string>& mapHeaders)
 }
 
 //
-// JSON-RPC protocol.  Litecoin speaks version 1.0 for maximum compatibility,
+// JSON-RPC protocol.  Anoncoin speaks version 1.0 for maximum compatibility,
 // but uses JSON-RPC 1.1/2.0 standards for parts of the 1.0 standard that were
 // unspecified (HTTP errors and contents of 'error').
 //
@@ -2889,7 +2889,7 @@ void ThreadRPCServer2(void* parg)
     // Try a dual IPv6/IPv4 socket, falling back to separate IPv4 and IPv6 sockets
     const bool loopback = !mapArgs.count("-rpcallowip");
     asio::ip::address bindAddress = loopback ? asio::ip::address_v6::loopback() : asio::ip::address_v6::any();
-    ip::tcp::endpoint endpoint(bindAddress, GetArg("-rpcport", 9332));
+    ip::tcp::endpoint endpoint(bindAddress, GetArg("-rpcport", 7332));
 
     boost::signals2::signal<void ()> StopRequests;
 
@@ -3165,7 +3165,7 @@ Object CallRPC(const string& strMethod, const Array& params)
     asio::ssl::stream<asio::ip::tcp::socket> sslStream(io_service, context);
     SSLIOStreamDevice<asio::ip::tcp> d(sslStream, fUseSSL);
     iostreams::stream< SSLIOStreamDevice<asio::ip::tcp> > stream(d);
-    if (!d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", "9332")))
+    if (!d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", "7332")))
         throw runtime_error("couldn't connect to server");
 
     // HTTP basic authentication
