@@ -7,7 +7,7 @@ SetCompressor /SOLID lzma
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 0.7.0
 !define COMPANY "Anoncoin project"
-!define URL http://www.anoncoin.org/
+!define URL http://www.anoncoin.net/
 
 # MUI Symbol Definitions
 !define MUI_ICON "../share/pixmaps/bitcoin.ico"
@@ -99,7 +99,7 @@ Section -post SEC0001
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
     WriteRegStr HKCR "anoncoin" "URL Protocol" ""
-    WriteRegStr HKCR "anoncoin" "" "URL:Bitcoin"
+    WriteRegStr HKCR "anoncoin" "" "URL:Anoncoin"
     WriteRegStr HKCR "anoncoin\DefaultIcon" "" $INSTDIR\anoncoin-qt.exe
     WriteRegStr HKCR "anoncoin\shell\open\command" "" '"$INSTDIR\anoncoin-qt.exe" "$$1"'
 SectionEnd
