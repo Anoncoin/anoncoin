@@ -73,6 +73,7 @@ CAddrMan addrman;
 
 #ifdef USE_NATIVE_I2P
 static std::vector<SOCKET> vhI2PListenSocket;
+int nI2PNodeCount = 0;
 #endif
 
 vector<CNode*> vNodes;
@@ -532,6 +533,10 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, int64 nTimeout)
         {
             LOCK(cs_vNodes);
             vNodes.push_back(pnode);
+#ifdef USE_NATIVE_I2P
+            if (addrConnect.IsNativeI2P())
+                ++nI2PNodeCount;
+#endif
         }
 
         pnode->nTimeConnected = GetTime();
@@ -643,7 +648,40 @@ void CNode::copyStats(CNodeStats &stats)
 #undef X
 
 
-
+#ifdef USE_NATIVE_I2P
+void AddIncomingConnection(SOCKET hSocket, const CAddress& addr) {
+    int nInbound = 0;
+    {
+        LOCK(cs_vNodes);
+        BOOST_FOREACH(CNode* pnode, vNodes)
+            if (pnode->fInbound)
+                nInbound++;
+    }
+    if (hSocket == INVALID_SOCKET) {
+        int nErr = WSAGetLastError();
+        if (nErr != WSAEWOULDBLOCK)
+            printf("socket error accept failed: %d\n", nErr);
+    } else if (nInbound >= GetArg("-maxconnections", 125) - MAX_OUTBOUND_CONNECTIONS) {
+        {
+            LOCK(cs_setservAddNodeAddresses);
+            if (!setservAddNodeAddresses.count(addr))
+                closesocket(hSocket);
+        }
+    } else if (CNode::IsBanned(addr)) {
+        printf("connection from %s dropped (banned)\n", addr.ToString().c_str());
+        closesocket(hSocket);
+    } else {
+        printf("accepted connection %s\n", addr.ToString().c_str());
+        CNode* pnode = new CNode(hSocket, addr, "", true);
+        pnode->AddRef();
+        {
+            LOCK(cs_vNodes);
+            vNodes.push_back(pnode);
+            ++nI2PNodeCount;
+        }
+    }
+}
+#endif
 
 
 
@@ -679,6 +717,9 @@ void ThreadSocketHandler2(void* parg)
     printf("ThreadSocketHandler started\n");
     list<CNode*> vNodesDisconnected;
     unsigned int nPrevNodeCount = 0;
+#ifdef USE_NATIVE_I2P
+    int nPrevI2PNodeCount = 0;
+#endif
 
     loop
     {
@@ -709,6 +750,10 @@ void ThreadSocketHandler2(void* parg)
                     if (pnode->fNetworkNode || pnode->fInbound)
                         pnode->Release();
                     vNodesDisconnected.push_back(pnode);
+#ifdef USE_NATIVE_I2P
+                    if (pnode->addr.IsNativeI2P())
+                        --nI2PNodeCount;
+#endif
                 }
             }
 
@@ -751,6 +796,13 @@ void ThreadSocketHandler2(void* parg)
             uiInterface.NotifyNumConnectionsChanged(vNodes.size());
         }
 
+#ifdef USE_NATIVE_I2P
+        if (nPrevI2PNodeCount != nI2PNodeCount) {
+            nPrevI2PNodeCount = nI2PNodeCount;
+            uiInterface.NotifyNumI2PConnectionsChanged(nI2PNodeCount);
+        }
+#endif
+
 
         //
         // Find which sockets have data to receive
@@ -766,6 +818,16 @@ void ThreadSocketHandler2(void* parg)
         FD_ZERO(&fdsetSend);
         FD_ZERO(&fdsetError);
         SOCKET hSocketMax = 0;
+        bool have_fds = false;
+
+#ifdef USE_NATIVE_I2P
+        BOOST_FOREACH(SOCKET hI2PListenSocket, vhI2PListenSocket) {
+            if (hI2PListenSocket != INVALID_SOCKET) {
+                FD_SET(hI2PListenSocket, &fdsetRecv);
+                hSocketMax = max(hSocketMax, hI2PListenSocket);
+            }
+        }
+#endif
 
         BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket) {
             FD_SET(hListenSocket, &fdsetRecv);
@@ -807,7 +869,54 @@ void ThreadSocketHandler2(void* parg)
             Sleep(timeout.tv_usec/1000);
         }
 
-
+#ifdef USE_NATIVE_I2P
+        //
+        // Accept new I2P connections
+        //
+        bool haveInvalids = false;
+        for (std::vector<SOCKET>::iterator it = vhI2PListenSocket.begin(); it != vhI2PListenSocket.end(); ++it) {
+            SOCKET& hI2PListenSocket = *it;
+            if (hI2PListenSocket == INVALID_SOCKET) {
+                if (haveInvalids)
+                    it = vhI2PListenSocket.erase(it) - 1;
+                else
+                    BindListenNativeI2P(hI2PListenSocket);
+                haveInvalids = true;
+            } else if (FD_ISSET(hI2PListenSocket, &fdsetRecv)) {
+                const size_t bufSize = NATIVE_I2P_DESTINATION_SIZE + 1;
+                char pchBuf[bufSize];
+                memset(pchBuf, 0, bufSize);
+                int nBytes = recv(hI2PListenSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+                if (nBytes > 0) {
+                    if (nBytes == NATIVE_I2P_DESTINATION_SIZE + 1) {// we're waiting for dest-hash + '\n' symbol
+                        std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
+                        CAddress addr;
+                        if (addr.SetSpecial(incomingAddr) && addr.IsNativeI2P()) {
+                            AddIncomingConnection(hI2PListenSocket, addr);
+                        } else {
+                            printf("Invalid incoming destination hash received (%s)\n", incomingAddr.c_str());
+                            closesocket(hI2PListenSocket);
+                        }
+                    } else {
+                        printf("Invalid incoming destination hash size received (%d)\n", nBytes);
+                        closesocket(hI2PListenSocket);
+                    }
+                }  else if (nBytes == 0) {
+                    printf("I2P listen socket closed\n");
+                    closesocket(hI2PListenSocket);
+                } else if (nBytes < 0) {
+                    // Error
+                    const int nErr = WSAGetLastError();
+                    if (nErr == WSAEWOULDBLOCK || nErr == WSAEMSGSIZE || nErr == WSAEINTR || nErr == WSAEINPROGRESS)
+                        continue;
+                    printf("I2P listen socket recv error %d\n", nErr);
+                    closesocket(hI2PListenSocket);
+                }
+                hI2PListenSocket = INVALID_SOCKET;  // we've saved this socket in a CNode or closed it, so we can safety reset it anyway
+                BindListenNativeI2P(hI2PListenSocket);
+            }
+        }
+#endif
         //
         // Accept new connections
         //
@@ -1164,8 +1273,14 @@ void MapPort()
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
     {"coinpool.in", "anoncoin.dnsseed.coinpool.in"},
-    {"anoncoin.net", "dnsseed01.anoncoin.net"}
+    {"anoncoin.net", "dnsseed01.anoncoin.net"},
+#ifdef USE_NATIVE_I2P
+    {"v7mlin3b4vaass3nvin2l4ino2g4m33ddjche2wzcdodhf6paqxa.b32.i2p","v7mlin3b4vaass3nvin2l4ino2g4m33ddjche2wzcdodhf6paqxa.b32.i2p"},
+    {"bc2z4zx7lp6z5f7cge2yztdpbxoxcgnhrnrvmzikfndsi6bgem5q.b32.i2p", "bc2z4zx7lp6z5f7cge2yztdpbxoxcgnhrnrvmzikfndsi6bgem5q.b32.i2p"},
+#endif
+    {NULL, NULL}
 };
+
 
 void ThreadDNSAddressSeed(void* parg)
 {
@@ -1226,13 +1341,12 @@ void ThreadDNSAddressSeed2(void* parg)
 
 
 
-
-
-
-
-
-
-
+#ifdef USE_NATIVE_I2P
+const std::string pstrI2PSeed[] = {
+    "8w-NRnXaxoGZdyupTXX78~CmF8csc~RhJr8XR2vMbNpazKhGjWNfRjhCmwqXkkW9vwkNjovW2AAbof7PfVnMCff0sHSxMTiBNsH8cuHJS2ckBSJI3h4G4ffJLc5gflangrG1raHKrMXCw8Cn56pisx4RKokEKUYdeEPiMdyJUO5yjZW2oyk4NpaUaQCqFmcglIvNOCYzVe~LK124wjJQAJc5iME1Sg9sOHaGMPL5N2qkAm5osOg2S7cZNRdIkoNOq-ztxghrv5bDL0ybeC0sfIQzvxDiKugCrSHEHCvwkA~xOu9nhNlUvoPDyCRRi~ImeomdNoqke28di~h2JF7wBGE~3ACxxOMaa0I~c9LV3O7pRU2Xj9HDn76eMGL7YCcCU4dRByu97oqfB3E~qqmmFp8W1tgvnEAMtXFTFZPYc33ZaCaIJQD7UXcQRSRV7vjw39jhx49XFsmYV3K6~D8bN8U4sRJnKQpzOJGpOSEJWh88bII0XuA55bJsfrR4VEQ5AAAA",
+    "hL51K8bxVvqX2Z4epXReUYlWTNUAK-1XdlbBd7e796s2A3icCQRhJvGlaa6PX~tgPvos-2IJp9hFQrVa0lyKyYmpQN9X7GOErtsL-JbMQpglQsEd94jDRAsiBuvgyPZij~NNdBxKRMDvNm9s7eovzhEFTAimTSB-sgeZ4Afxx2IrNXDFM6KS8AUm8YsaMldzX9zKQDeuV0slp4ZfIAVQhZZy9zTZSmUNPnXQR7XPh5w7FkXzmKMTKSyG~layJ3AorQWqzZXmykzf4z3CE4zkzQcwc0~ZIcAg9tYvM2AdQIdgeN6ISMim6L8q6ku6abuONkyw-NJTi3NopeGHZva21Tc3uHetsKoW434N24HBVUtIjJVjGsbZ7xBfz2xM5kyhPl6SlD-RJarCw47Rovmfc9Piq6q3S~Zw-rvRl-xDMJzwraIYNjAROouDwjI9Bqnguq9DH5uFBxf4uN69X7T~yWTAjdvelZKp6BGe~HGo7bNQjBmymhlH4erCKZEXOaxDAAAA"
+};
+#endif
 
 
 unsigned int pnSeed[] =
@@ -1382,6 +1496,14 @@ void ThreadOpenConnections2(void* parg)
                 addr.nTime = GetTime()-GetRand(nOneWeek)-nOneWeek;
                 vAdd.push_back(addr);
             }
+#ifdef USE_NATIVE_I2P
+            for (size_t i = 0; i < ARRAYLEN(pstrI2PSeed); i++) {
+                const int64 nOneWeek = 7*24*60*60;
+                CAddress addr(CService((const std::string&)pstrI2PSeed[i]));
+                addr.nTime = GetTime()-GetRand(nOneWeek)-nOneWeek;
+                vAdd.push_back(addr);
+            }
+#endif
             addrman.Add(vAdd, CNetAddr("127.0.0.1"));
         }
 
@@ -1425,8 +1547,12 @@ void ThreadOpenConnections2(void* parg)
             if (nANow - addr.nLastTry < 600 && nTries < 30)
                 continue;
 
+#ifdef USE_NATIVE_I2P
+            if (!addr.IsNativeI2P() && addr.GetPort() != GetDefaultPort() && nTries < 50)
+#else
             // do not allow non-default ports, unless after 50 invalid addresses selected already
             if (addr.GetPort() != GetDefaultPort() && nTries < 50)
+#endif
                 continue;
 
             addrConnect = addr;
@@ -1653,8 +1779,27 @@ void ThreadMessageHandler2(void* parg)
 }
 
 
+#ifdef USE_NATIVE_I2P
 
+bool BindListenNativeI2P() {
+    SOCKET hNewI2PListenSocket = INVALID_SOCKET;
+    if (!BindListenNativeI2P(hNewI2PListenSocket))
+        return false;
+    vhI2PListenSocket.push_back(hNewI2PListenSocket);
+    return true;
+}
 
+bool BindListenNativeI2P(SOCKET& hSocket) {
+    hSocket = I2PSession::Instance().accept(false);
+    if (!SetSocketOptions(hSocket) || hSocket == INVALID_SOCKET)
+        return false;
+    CService addrBind(I2PSession::Instance().getMyAddress(), 0);
+    if (addrBind.IsRoutable() && fDiscover)
+        AddLocal(addrBind, LOCAL_BIND);
+    return true;
+}
+
+#endif
 
 
 bool BindListenPort(const CService &addrBind, string& strError)
@@ -1931,6 +2076,15 @@ public:
             if (hListenSocket != INVALID_SOCKET)
                 if (closesocket(hListenSocket) == SOCKET_ERROR)
                     printf("closesocket(hListenSocket) failed with error %d\n", WSAGetLastError());
+#ifdef USE_NATIVE_I2P
+                BOOST_FOREACH(SOCKET& hI2PListenSocket, vhI2PListenSocket)
+                    if (hI2PListenSocket != INVALID_SOCKET) {
+                        if (closesocket(hI2PListenSocket) == SOCKET_ERROR) {
+                            printf("closesocket(hI2PListenSocket) failed with error %d\n", WSAGetLastError());
+                        }
+                    }
+#endif
+
 
 #ifdef WIN32
         // Shutdown Windows Sockets

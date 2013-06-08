@@ -30,6 +30,9 @@ public:
     OptionsModel *getOptionsModel();
 
     int getNumConnections() const;
+#ifdef USE_NATIVE_I2P
+    void numI2PConnectionsChanged(int count);
+#endif
     int getNumBlocks() const;
     int getNumBlocksAtStartup();
     MiningType getMiningType() const;
@@ -105,6 +108,9 @@ public slots:
     void updateTimer();
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
+#ifdef USE_NATIVE_I2P
+    void updateNumI2PConnections(int numI2PConnections);
+#endif
 };
 
 #endif // CLIENTMODEL_H

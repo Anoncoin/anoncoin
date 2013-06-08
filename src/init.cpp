@@ -347,7 +347,7 @@ bool AppInit2()
         const std::pair<const std::string, const std::string> generatedDest = I2PSession::Instance().destGenerate();
         const std::string& pub = generatedDest.first;
         const std::string& priv = generatedDest.second;
-        uiInterface.ThreadSafeShowGeneratedI2PAddress("Anoncoin I2P", pub, priv, I2PSession::GenerateB32AddressFromDestination(pub), GetConfigFile().string());
+        uiInterface.ThreadSafeShowGeneratedI2PAddress("Generated I2P address", pub, priv, I2PSession::GenerateB32AddressFromDestination(pub), GetConfigFile().string());
         return false;
     }
 #endif

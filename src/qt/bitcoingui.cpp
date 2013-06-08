@@ -139,6 +139,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     labelMiningIcon = new QLabel();
     labelConnectionsIcon = new QLabel();
     labelBlocksIcon = new QLabel();
+
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelEncryptionIcon);
     frameBlocksLayout->addStretch();
@@ -383,6 +384,11 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
         setNumConnections(clientModel->getNumConnections());
         connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
+#ifdef USE_NATIVE_I2P
+        setNumI2PConnections(clientModel->getNumI2PConnections());
+        connect(clientModel, SIGNAL(numI2PConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
+#endif
+
         setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
         connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
@@ -508,6 +514,21 @@ void BitcoinGUI::setNumConnections(int count)
     labelConnectionsIcon->setPixmap(QIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
     labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Anoncoin network", "", count));
 }
+
+#ifdef USE_NATIVE_I2P
+void BitcoinGUI::setNumI2PConnections(int count) {
+    QString i2pIcon;
+    switch(count) {
+    case 0: i2pIcon = ":/icons/bwi2pconnect_0"; break;
+    case 1: /*case 2: case 3:*/ i2pIcon = ":/icons/bwi2pconnect_1"; break;
+    case 2:/*case 4: case 5: case 6:*/ i2pIcon = ":/icons/bwi2pconnect_2"; break;
+    case 3:/*case 7: case 8: case 9:*/ i2pIcon = ":/icons/bwi2pconnect_3"; break;
+    default: i2pIcon = ":/icons/bwi2pconnect_4"; break;
+    }
+    labelI2P->setPixmap(QPixmap(i2pIcon));
+    labelI2P->setToolTip(tr("%n active connection(s) to I2P-Bitcoin network", "", count));
+}
+#endif
 
 void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
 {
@@ -859,6 +880,14 @@ void BitcoinGUI::handleURI(QString strURI)
     else
         notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Anoncoin address or malformed URI parameters."));
 }
+
+#ifdef USE_NATIVE_I2P
+#include "showi2paddresses.h"
+void BitcoinGUI::showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName) {
+    ShowI2PAddresses i2pDialog(caption, pub, priv, b32, configFileName, this);
+    i2pDialog.exec();
+}
+#endif
 
 void BitcoinGUI::setEncryptionStatus(int status)
 {

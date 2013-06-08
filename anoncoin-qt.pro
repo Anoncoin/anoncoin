@@ -251,6 +251,13 @@ SOURCES += src/qt/qrcodedialog.cpp
 FORMS += src/qt/forms/qrcodedialog.ui
 }
 
+contains(DEFINES, USE_NATIVE_I2P) {
+HEADERS += src/i2p.h \
+    src/qt/showi2paddresses.h
+SOURCES +=  src/qt/showi2paddresses.cpp
+FORMS += src/qt/forms/showi2paddresses.ui
+}
+
 contains(BITCOIN_QT_TEST, 1) {
 SOURCES += src/qt/test/test_main.cpp \
     src/qt/test/uritests.cpp

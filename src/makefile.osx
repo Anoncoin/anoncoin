@@ -7,6 +7,7 @@
 # Modified for Anoncoin by Meeh
 # Originally by Laszlo Hanyecz (solar@heliacal.net)
 
+MAKE=make
 CXX=llvm-g++
 DEPSDIR=/opt/local
 
@@ -23,6 +24,7 @@ LIBPATHS= \
 USE_UPNP:=1
 
 LIBS= -dead_strip
+
 
 TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 
@@ -104,6 +106,12 @@ else
 endif
 endif
 
+ifdef USE_NATIVE_I2P
+    DEFS += -DUSE_NATIVE_I2P -I../i2psam/
+    LIBS += -L../i2psam/
+    LIBS += -li2psam
+endif
+
 all: anoncoind
 
 # auto-generated dependencies:
@@ -129,8 +137,18 @@ obj/%.o: %.cpp
 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 	  rm -f $(@:%.o=%.d)
 
+ifdef USE_NATIVE_I2P
+anoncoind: i2psam $(OBJS:obj/%=obj/%)
+	$(CXX) $(xCXXFLAGS) -o $@ $(OBJS) $(xLDFLAGS) $(LIBS)
+else
 anoncoind: $(OBJS:obj/%=obj/%)
-	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+	$(CXX) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
+endif
+
+ifdef USE_NATIVE_I2P
+i2psam:
+	$(MAKE) -C ../i2psam -f makefile.unix
+endif
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 
