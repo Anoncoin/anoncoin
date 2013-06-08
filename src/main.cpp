@@ -2448,6 +2448,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // Change version
         pfrom->PushMessage("verack");
         pfrom->vSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+#ifdef USE_NATIVE_I2P
+        if (pfrom->nServices & NODE_I2P)
+            pfrom->vSend.SetType(pfrom->vSend.GetType() & ~SER_IPADDRONLY);
+        else
+            pfrom->vSend.SetType(pfrom->vSend.GetType() & SER_IPADDRONLY);
+#endif
 
         if (!pfrom->fInbound)
         {
@@ -2511,6 +2517,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if (strCommand == "verack")
     {
         pfrom->vRecv.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+#ifdef USE_NATIVE_I2P
+        if (pfrom->nServices & NODE_I2P)
+            pfrom->vRecv.SetType(pfrom->vRecv.GetType() & ~SER_IPADDRONLY);
+        else
+            pfrom->vRecv.SetType(pfrom->vRecv.GetType() & SER_IPADDRONLY);
+#endif
     }
 
 

@@ -156,7 +156,11 @@ public:
 #define ADDRMAN_MIN_FAIL_DAYS 7
 
 // the maximum percentage of nodes to return in a getaddr call
+#ifdef USE_NATIVE_I2P
+#define ADDRMAN_GETADDR_MAX_PCT 100
+#else
 #define ADDRMAN_GETADDR_MAX_PCT 23
+#endif
 
 // the maximum number of nodes to return in a getaddr call
 #define ADDRMAN_GETADDR_MAX 2500

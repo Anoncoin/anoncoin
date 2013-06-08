@@ -16,6 +16,10 @@
 #include <string.h>
 #endif
 
+#ifdef USE_NATIVE_I2P
+#include "i2p.h"
+#endif
+
 #ifdef USE_UPNP
 #include <miniupnpc/miniwget.h>
 #include <miniupnpc/miniupnpc.h>
@@ -50,7 +54,13 @@ struct LocalServiceInfo {
 bool fClient = false;
 bool fDiscover = true;
 bool fUseUPnP = false;
+
+#ifdef USE_NATIVE_I2P
+uint64 nLocalServices = NODE_I2P | (fClient ? 0 : NODE_NETWORK);
+#else
 uint64 nLocalServices = (fClient ? 0 : NODE_NETWORK);
+#endif
+
 static CCriticalSection cs_mapLocalHost;
 static map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
@@ -60,6 +70,10 @@ uint64 nLocalHostNonce = 0;
 array<int, THREAD_MAX> vnThreadsRunning;
 static std::vector<SOCKET> vhListenSocket;
 CAddrMan addrman;
+
+#ifdef USE_NATIVE_I2P
+static std::vector<SOCKET> vhI2PListenSocket;
+#endif
 
 vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;

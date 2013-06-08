@@ -4,6 +4,8 @@
 
 USE_UPNP:=0
 
+MAKE=make-mingw32
+
 INCLUDEPATHS= \
  -I"C:\boost-1.49.0-mgw" \
  -I"C:\db-4.8.30.NC-mgw\build_unix" \
@@ -34,6 +36,12 @@ ifdef USE_UPNP
  LIBPATHS += -L"C:\miniupnpc-1.6-mgw"
  LIBS += -l miniupnpc -l iphlpapi
  DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
+endif
+
+ifdef USE_NATIVE_I2P
+    DEFS += -DUSE_NATIVE_I2P -I../i2psam/
+    LIBS += -L../i2psam/
+    LIBS += -li2psam
 endif
 
 LIBS += -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell32 -l comctl32 -l ole32 -l oleaut32 -l uuid -l rpcrt4 -l advapi32 -l ws2_32 -l mswsock -l shlwapi
@@ -76,8 +84,18 @@ obj/scrypt.o: scrypt.c
 obj/%.o: %.cpp $(HEADERS)
 	g++ -c $(CFLAGS) -o $@ $<
 
+ifdef USE_NATIVE_I2P
+anoncoind.exe: i2psam $(OBJS:obj/%=obj/%)
+	g++ $(CFLAGS) -o $@ $(LIBPATHS) $(OBJS) $(LIBS)
+else
 anoncoind.exe: $(OBJS:obj/%=obj/%)
 	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+endif
+
+ifdef USE_NATIVE_I2P
+i2psam:
+	$(MAKE) -C ../i2psam -f makefile.mingw
+endif
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 
@@ -88,6 +106,9 @@ test_anoncoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework $(LIBS)
 
 clean:
+ifdef USE_NATIVE_I2P
+	$(MAKE) -C ../i2psam -f makefile.mingw clean
+endif
 	-del /Q anoncoind test_anoncoin
 	-del /Q obj\*
 	-del /Q obj-test\*
