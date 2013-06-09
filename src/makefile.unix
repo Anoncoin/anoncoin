@@ -151,7 +151,7 @@ anoncoind: i2psam $(OBJS:obj/%=obj/%)
 	$(CXX) $(xCXXFLAGS) -o $@ $(OBJS) $(xLDFLAGS) $(LIBS)
 else
 anoncoind: $(OBJS:obj/%=obj/%)
-    $(CXX) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
+	$(CXX) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
 endif
 
 ifdef USE_NATIVE_I2P
