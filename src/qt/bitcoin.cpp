@@ -1,6 +1,9 @@
 /*
  * W.J. van der Laan 2011-2012
  */
+ //
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 #include "bitcoingui.h"
 #include "clientmodel.h"
 #include "walletmodel.h"

@@ -3,8 +3,11 @@
  *
  * W.J. van der Laan 2011-2012
  * The Bitcoin Developers 2011-2012
- * The Anoncoin Developers 201-2013
+ * The Anoncoin Developers 2013-2014
  */
+ //
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 #include "bitcoingui.h"
 #include "transactiontablemodel.h"
 #include "addressbookpage.h"

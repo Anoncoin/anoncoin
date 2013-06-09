@@ -1,3 +1,6 @@
+//
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 #include "showi2paddresses.h"
 #include "ui_showi2paddresses.h"
 
