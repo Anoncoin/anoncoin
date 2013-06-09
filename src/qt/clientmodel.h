@@ -31,7 +31,7 @@ public:
 
     int getNumConnections() const;
 #ifdef USE_NATIVE_I2P
-    void numI2PConnectionsChanged(int count);
+    int getNumI2PConnections() const;
 #endif
     int getNumBlocks() const;
     int getNumBlocksAtStartup();
@@ -98,6 +98,9 @@ private:
     void unsubscribeFromCoreSignals();
 signals:
     void numConnectionsChanged(int count);
+#ifdef USE_NATIVE_I2P
+    void numI2PConnectionsChanged(int count);
+#endif
     void numBlocksChanged(int count, int countOfPeers);
     void miningChanged(bool mining, int count);
 

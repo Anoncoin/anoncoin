@@ -139,6 +139,7 @@ QString ClientModel::getMiningUsername() const
     return miningUsername;
 }
 
+#ifdef USE_NATIVE_I2P
 void ClientModel::updateNumI2PConnections(int numI2PConnections) {
     emit numI2PConnectionsChanged(numI2PConnections);
 }
@@ -146,6 +147,7 @@ void ClientModel::updateNumI2PConnections(int numI2PConnections) {
 int ClientModel::getNumI2PConnections() const {
     return nI2PNodeCount;
 }
+#endif
 
 void ClientModel::setMiningUsername(QString username)
 {

@@ -519,11 +519,11 @@ void BitcoinGUI::setNumConnections(int count)
 void BitcoinGUI::setNumI2PConnections(int count) {
     QString i2pIcon;
     switch(count) {
-    case 0: i2pIcon = ":/icons/bwi2pconnect_0"; break;
-    case 1: /*case 2: case 3:*/ i2pIcon = ":/icons/bwi2pconnect_1"; break;
-    case 2:/*case 4: case 5: case 6:*/ i2pIcon = ":/icons/bwi2pconnect_2"; break;
-    case 3:/*case 7: case 8: case 9:*/ i2pIcon = ":/icons/bwi2pconnect_3"; break;
-    default: i2pIcon = ":/icons/bwi2pconnect_4"; break;
+    case 0: i2pIcon = ":/icons/connect_0"; break;
+    case 1: /*case 2: case 3:*/ i2pIcon = ":/icons/connect_1"; break;
+    case 2:/*case 4: case 5: case 6:*/ i2pIcon = ":/icons/connect_2"; break;
+    case 3:/*case 7: case 8: case 9:*/ i2pIcon = ":/icons/connect_3"; break;
+    default: i2pIcon = ":/icons/connect_4"; break;
     }
     labelI2P->setPixmap(QPixmap(i2pIcon));
     labelI2P->setToolTip(tr("%n active connection(s) to I2P-Bitcoin network", "", count));
