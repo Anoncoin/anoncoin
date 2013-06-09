@@ -73,6 +73,9 @@ private:
     QLabel *labelConnectionsIcon;
     QLabel *labelBlocksIcon;
     QLabel *progressBarLabel;
+#ifdef USE_NATIVE_I2P
+    QLabel *labelI2P;
+#endif
     QProgressBar *progressBar;
 
     QMenuBar *appMenuBar;
@@ -95,9 +98,7 @@ private:
     QAction *changePassphraseAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
-#ifdef USE_NATIVE_I2P
-    QLabel* labelI2P;
-#endif
+
 
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
