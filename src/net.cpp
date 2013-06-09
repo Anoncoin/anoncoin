@@ -1277,6 +1277,8 @@ static const char *strDNSSeed[][2] = {
 #ifdef USE_NATIVE_I2P
     {"d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p","d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p"},
     {"aa2vgk6qr6u5eaujni5vaucuadpleyq5nbjx56lclgr6jjbmbvrq.b32.i2p", "aa2vgk6qr6u5eaujni5vaucuadpleyq5nbjx56lclgr6jjbmbvrq.b32.i2p"},
+    {"u2om3hgjpghqfi7yid75xdmvzlgjybstzp6mtmaxse4aztm23rwq.b32.i2p", "u2om3hgjpghqfi7yid75xdmvzlgjybstzp6mtmaxse4aztm23rwq.b32.i2p"},
+    {"htigbyeisbqizn63ftqw7ggfwfeolwkb3zfxwmyffygbilwqsswq.b32.i2p", "htigbyeisbqizn63ftqw7ggfwfeolwkb3zfxwmyffygbilwqsswq.b32.i2p"},
     {"st4eyxcp73zzbpatgt26pt3rlfwb7g5ywedol65baalgpnhvzqpa.b32.i2p", "st4eyxcp73zzbpatgt26pt3rlfwb7g5ywedol65baalgpnhvzqpa.b32.i2p"},
 #endif
     {NULL, NULL}
