@@ -1275,8 +1275,8 @@ static const char *strDNSSeed[][2] = {
     {"coinpool.in", "anoncoin.dnsseed.coinpool.in"},
     {"anoncoin.net", "dnsseed01.anoncoin.net"},
 #ifdef USE_NATIVE_I2P
-    {"v7mlin3b4vaass3nvin2l4ino2g4m33ddjche2wzcdodhf6paqxa.b32.i2p","v7mlin3b4vaass3nvin2l4ino2g4m33ddjche2wzcdodhf6paqxa.b32.i2p"},
-    {"bc2z4zx7lp6z5f7cge2yztdpbxoxcgnhrnrvmzikfndsi6bgem5q.b32.i2p", "bc2z4zx7lp6z5f7cge2yztdpbxoxcgnhrnrvmzikfndsi6bgem5q.b32.i2p"},
+    {"d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p","d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p"},
+    {"aa2vgk6qr6u5eaujni5vaucuadpleyq5nbjx56lclgr6jjbmbvrq.b32.i2p", "aa2vgk6qr6u5eaujni5vaucuadpleyq5nbjx56lclgr6jjbmbvrq.b32.i2p"},
 #endif
     {NULL, NULL}
 };
@@ -1297,7 +1297,7 @@ void ThreadDNSAddressSeed(void* parg)
     }
     catch (std::exception& e) {
         vnThreadsRunning[THREAD_DNSSEED]--;
-        PrintException(&e, "ThreadDNSAddressSeed()");
+        //PrintException(&e, "ThreadDNSAddressSeed()"); // e will be null, and result in a segfault. Exception is throwed because of I2P.
     } catch (...) {
         vnThreadsRunning[THREAD_DNSSEED]--;
         throw; // support pthread_cancel()
