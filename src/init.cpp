@@ -357,11 +357,9 @@ bool AppInit2()
 #endif
 
     fTestNet = GetBoolArg("-testnet");
-    // Anoncoin: Keep irc seeding on by default for now.
-//    if (fTestNet)
-//    {
-        SoftSetBoolArg("-irc", true);
-//    }
+
+    // Keep irc on per default
+    SoftSetBoolArg("-irc", true);
 
     if (mapArgs.count("-bind")) {
         // when specifying an explicit binding address, you want to listen on it
@@ -507,6 +505,13 @@ bool AppInit2()
         std::set<enum Network> nets;
         BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
             enum Network net = ParseNetwork(snet);
+#ifdef USE_NATIVE_I2P
+            if (net == NATIVE_I2P_NET_STRING) {
+                // Disable IRC and upnp on I2P only.
+                SoftSetBoolArg("-irc", false);
+                SoftSetBoolArg("-upnp", false);
+            }
+#endif
             if (net == NET_UNROUTABLE)
                 return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet.c_str()));
             nets.insert(net);
