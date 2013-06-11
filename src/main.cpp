@@ -842,7 +842,7 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
     return nSubsidy + nFees;
 }
 
-static const int64 nTargetTimespan = 86100;//420 * 205.2; // Anoncoin: 420 blocks
+static const int64 nTargetTimespan = 86184; //420 * 205.2; // Anoncoin: 420 blocks
 static const int64 nTargetSpacing = 205;//3.42 * 60; // Anoncoin: 3.42 minutes
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
@@ -879,8 +879,17 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     if (pindexLast == NULL)
         return nProofOfWorkLimit;
 
-    // Only change once per interval
-    if ((pindexLast->nHeight+1) % nInterval != 0)
+    // Anoncoin difficulty adjustment protocol switch (Thanks to FeatherCoin for this idea)
+    static const int nDifficultySwitchHeight = 15420;
+    int nHeight = pindexLast->nHeight + 1;
+    bool fNewDifficultyProtocol = (nHeight >= nDifficultySwitchHeight || fTestNet);
+
+    int64 nTargetTimespanCurrent = fNewDifficultyProtocol ? (nTargetTimespan*4) : nTargetTimespan;
+    int64 nInterval = nTargetTimespanCurrent / nTargetSpacing;
+
+    // Only change once per interval, or at protocol switch height
+    if ((nHeight % nInterval != 0) &&
+        (nHeight != nDifficultySwitchHeight || fTestNet))
     {
         // Special difficulty rule for testnet:
         if (fTestNet)
@@ -916,13 +925,20 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
     // Limit adjustment step
     int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
-    int64 nActualTimespanMax = ((nTargetTimespan*99)/70);
-    int64 nActualTimespanMin = ((nTargetTimespan*70)/99);
+    int64 nActualTimespanMax = fNewDifficultyProtocol? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
+    int64 nActualTimespanMin = fNewDifficultyProtocol? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
     printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
-    if (nActualTimespan < nActualTimespanMin)
-        nActualTimespan = nActualTimespanMin;
-    if (nActualTimespan > nActualTimespanMax)
-        nActualTimespan = nActualTimespanMax;
+    if (pindexLast->nHeight+1 > 177777 && pindexLast->nHeight+1 < nDifficultySwitchHeight) {
+            if (nActualTimespan < nActualTimespanMin)
+                nActualTimespan = nActualTimespanMin;
+            if (nActualTimespan > nActualTimespanMax)
+                nActualTimespan = nActualTimespanMax;
+    } else if (pindexLast->nHeight+1 > nDifficultySwitchHeight) {
+            if (nActualTimespan < nActualTimespanMin/4)
+                nActualTimespan = nActualTimespanMin/4;
+            if (nActualTimespan > nActualTimespanMax)
+                nActualTimespan = nActualTimespanMax;
+    }
 
     // Retarget
     CBigNum bnNew;
