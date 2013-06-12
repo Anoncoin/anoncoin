@@ -818,7 +818,6 @@ void ThreadSocketHandler2(void* parg)
         FD_ZERO(&fdsetSend);
         FD_ZERO(&fdsetError);
         SOCKET hSocketMax = 0;
-        bool have_fds = false;
 
 #ifdef USE_NATIVE_I2P
         BOOST_FOREACH(SOCKET hI2PListenSocket, vhI2PListenSocket) {

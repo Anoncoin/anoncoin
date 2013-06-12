@@ -506,7 +506,7 @@ bool AppInit2()
         BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
             enum Network net = ParseNetwork(snet);
 #ifdef USE_NATIVE_I2P
-            if (net == NATIVE_I2P_NET_STRING) {
+            if (net == NET_NATIVE_I2P) {
                 // Disable IRC and upnp on I2P only.
                 SoftSetBoolArg("-irc", false);
                 SoftSetBoolArg("-upnp", false);
