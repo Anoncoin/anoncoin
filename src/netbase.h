@@ -21,7 +21,7 @@ extern int nConnectTimeout;
 #ifdef USE_NATIVE_I2P
 #define NATIVE_I2P_DESTINATION_SIZE    516
 #define NATIVE_I2P_B32ADDR_SIZE         60
-#define NATIVE_I2P_NET_STRING            "native_i2p"
+#define NATIVE_I2P_NET_STRING            "i2p"
 #endif
 
 enum Network

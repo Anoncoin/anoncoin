@@ -44,6 +44,7 @@ void StartNode(void* parg);
 bool StopNode();
 
 #ifdef USE_NATIVE_I2P
+bool IsI2PEnabled();
 bool BindListenNativeI2P();
 bool BindListenNativeI2P(SOCKET& hSocket);
 extern int nI2PNodeCount;

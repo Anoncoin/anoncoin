@@ -386,12 +386,12 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
         // Keep up to date with client
         setNumConnections(clientModel->getNumConnections());
         connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-
+/*
 #ifdef USE_NATIVE_I2P
         setNumI2PConnections(clientModel->getNumI2PConnections());
         connect(clientModel, SIGNAL(numI2PConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
 #endif
-
+*/
         setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
         connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
@@ -518,6 +518,7 @@ void BitcoinGUI::setNumConnections(int count)
     labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Anoncoin network", "", count));
 }
 
+/*
 #ifdef USE_NATIVE_I2P
 void BitcoinGUI::setNumI2PConnections(int count) {
     QString icon;
@@ -532,6 +533,7 @@ void BitcoinGUI::setNumI2PConnections(int count) {
     labelI2P->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", count));
 }
 #endif
+*/
 
 void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
 {

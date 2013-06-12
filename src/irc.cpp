@@ -9,6 +9,10 @@
 #include "strlcpy.h"
 #include "base58.h"
 
+#ifdef USE_NATIVE_I2P
+#include "i2p.h"
+#endif
+
 using namespace std;
 using namespace boost;
 
@@ -212,6 +216,19 @@ void ThreadIRCSeed2(void* parg)
     if (mapArgs.count("-connect") || fNoListen)
         return;
 
+#ifdef USE_NATIVE_I2P
+    if (mapArgs.count(I2P_NET_NAME_PARAM) && mapArgs[I2P_NET_NAME_PARAM] == "1" && !GetBoolArg("-irc", true))
+        return;
+    if (mapArgs.count("-onlynet")) {
+        std::set<enum Network> nets;
+        BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
+            enum Network net = ParseNetwork(snet);
+            if (net == NET_NATIVE_I2P) {
+                return;
+            }
+        }
+    }
+#endif
     if (!GetBoolArg("-irc", false))
         return;
 
@@ -268,7 +285,7 @@ void ThreadIRCSeed2(void* parg)
             if (nRet == 2)
             {
                 printf("IRC name already in use\n");
-                Wait(10);
+                Wait(30);
                 continue;
             }
             nErrorWait = nErrorWait * 11 / 10;

@@ -24,6 +24,7 @@
 
 #define I2P_SAM_GENERATE_DESTINATION_PARAM "-generatei2pdestination"
 
+
 class I2PSession : private SAM::StreamSession
 {
 private:

@@ -251,7 +251,7 @@ std::string HelpMessage()
         "  -connect=<ip>          " + _("Connect only to the specified node(s)") + "\n" +
         "  -seednode=<ip>         " + _("Connect to a node to retrieve peer addresses, and disconnect") + "\n" +
         "  -externalip=<ip>       " + _("Specify your own public address") + "\n" +
-        "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (IPv4, IPv6 or Tor)") + "\n" +
+        "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (IPv4, IPv6, I2P or Tor)") + "\n" +
         "  -discover              " + _("Discover own IP address (default: 1 when listening and no -externalip)") + "\n" +
         "  -irc                   " + _("Find peers using internet relay chat (default: 0)") + "\n" +
         "  -listen                " + _("Accept connections from outside (default: 1 if no -proxy or -connect)") + "\n" +
@@ -496,6 +496,7 @@ bool AppInit2()
 
     // ********************************************************* Step 5: network initialization
 
+
     int nSocksVersion = GetArg("-socks", 5);
 
     if (nSocksVersion != 4 && nSocksVersion != 5)
@@ -570,7 +571,9 @@ bool AppInit2()
     if (mapArgs.count(I2P_NET_NAME_PARAM) && mapArgs[I2P_NET_NAME_PARAM] == "1") {
         // Disable on i2p per default
         SoftSetBoolArg("-irc", false);
+#ifdef USE_UPNP
         SoftSetBoolArg("-upnp", false);
+#endif
         SoftSetBoolArg("-listen",true);
         SetReachable(NET_NATIVE_I2P);
     }

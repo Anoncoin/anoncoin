@@ -113,6 +113,25 @@ void CNode::PushGetBlocks(CBlockIndex* pindexBegin, uint256 hashEnd)
     PushMessage("getblocks", CBlockLocator(pindexBegin), hashEnd);
 }
 
+#ifdef USE_NATIVE_I2P
+bool IsI2PEnabled() {
+    bool I2P=false;
+    if (mapArgs.count("-onlynet")) {
+        std::set<enum Network> nets;
+        BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
+            enum Network net = ParseNetwork(snet);
+            if (net == NET_NATIVE_I2P) {
+                I2P=true;
+            }
+        }
+    }
+    if (mapArgs.count(I2P_NET_NAME_PARAM) && mapArgs[I2P_NET_NAME_PARAM] == "1") {
+        I2P=true;
+    }
+    return I2P;
+}
+#endif
+
 // find 'best' local address for a particular peer
 bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 {
@@ -364,6 +383,11 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
 // We now get our external IP from the IRC server first and only use this as a backup
 bool GetMyExternalIP(CNetAddr& ipRet)
 {
+#ifdef USE_NATIVE_I2P
+    // On -i2p drop looking up the ip.
+    if (IsI2PEnabled())
+        return false;
+#endif
     CService addrConnect;
     const char* pszGet;
     const char* pszKeyword;
@@ -820,10 +844,12 @@ void ThreadSocketHandler2(void* parg)
         SOCKET hSocketMax = 0;
 
 #ifdef USE_NATIVE_I2P
-        BOOST_FOREACH(SOCKET hI2PListenSocket, vhI2PListenSocket) {
-            if (hI2PListenSocket != INVALID_SOCKET) {
-                FD_SET(hI2PListenSocket, &fdsetRecv);
-                hSocketMax = max(hSocketMax, hI2PListenSocket);
+        if (IsI2PEnabled()) {
+            BOOST_FOREACH(SOCKET hI2PListenSocket, vhI2PListenSocket) {
+                if (hI2PListenSocket != INVALID_SOCKET) {
+                    FD_SET(hI2PListenSocket, &fdsetRecv);
+                    hSocketMax = max(hSocketMax, hI2PListenSocket);
+                }
             }
         }
 #endif
@@ -872,47 +898,49 @@ void ThreadSocketHandler2(void* parg)
         //
         // Accept new I2P connections
         //
-        bool haveInvalids = false;
-        for (std::vector<SOCKET>::iterator it = vhI2PListenSocket.begin(); it != vhI2PListenSocket.end(); ++it) {
-            SOCKET& hI2PListenSocket = *it;
-            if (hI2PListenSocket == INVALID_SOCKET) {
-                if (haveInvalids)
-                    it = vhI2PListenSocket.erase(it) - 1;
-                else
-                    BindListenNativeI2P(hI2PListenSocket);
-                haveInvalids = true;
-            } else if (FD_ISSET(hI2PListenSocket, &fdsetRecv)) {
-                const size_t bufSize = NATIVE_I2P_DESTINATION_SIZE + 1;
-                char pchBuf[bufSize];
-                memset(pchBuf, 0, bufSize);
-                int nBytes = recv(hI2PListenSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
-                if (nBytes > 0) {
-                    if (nBytes == NATIVE_I2P_DESTINATION_SIZE + 1) {// we're waiting for dest-hash + '\n' symbol
-                        std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
-                        CAddress addr;
-                        if (addr.SetSpecial(incomingAddr) && addr.IsNativeI2P()) {
-                            AddIncomingConnection(hI2PListenSocket, addr);
+        if (IsI2PEnabled()) {
+            bool haveInvalids = false;
+            for (std::vector<SOCKET>::iterator it = vhI2PListenSocket.begin(); it != vhI2PListenSocket.end(); ++it) {
+                SOCKET& hI2PListenSocket = *it;
+                if (hI2PListenSocket == INVALID_SOCKET) {
+                    if (haveInvalids)
+                        it = vhI2PListenSocket.erase(it) - 1;
+                    else
+                        BindListenNativeI2P(hI2PListenSocket);
+                    haveInvalids = true;
+                } else if (FD_ISSET(hI2PListenSocket, &fdsetRecv)) {
+                    const size_t bufSize = NATIVE_I2P_DESTINATION_SIZE + 1;
+                    char pchBuf[bufSize];
+                    memset(pchBuf, 0, bufSize);
+                    int nBytes = recv(hI2PListenSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+                    if (nBytes > 0) {
+                        if (nBytes == NATIVE_I2P_DESTINATION_SIZE + 1) {// we're waiting for dest-hash + '\n' symbol
+                            std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
+                            CAddress addr;
+                            if (addr.SetSpecial(incomingAddr) && addr.IsNativeI2P()) {
+                                AddIncomingConnection(hI2PListenSocket, addr);
+                            } else {
+                                printf("Invalid incoming destination hash received (%s)\n", incomingAddr.c_str());
+                                closesocket(hI2PListenSocket);
+                            }
                         } else {
-                            printf("Invalid incoming destination hash received (%s)\n", incomingAddr.c_str());
+                            printf("Invalid incoming destination hash size received (%d)\n", nBytes);
                             closesocket(hI2PListenSocket);
                         }
-                    } else {
-                        printf("Invalid incoming destination hash size received (%d)\n", nBytes);
+                    }  else if (nBytes == 0) {
+                        printf("I2P listen socket closed\n");
+                        closesocket(hI2PListenSocket);
+                    } else if (nBytes < 0) {
+                        // Error
+                        const int nErr = WSAGetLastError();
+                        if (nErr == WSAEWOULDBLOCK || nErr == WSAEMSGSIZE || nErr == WSAEINTR || nErr == WSAEINPROGRESS)
+                            continue;
+                        printf("I2P listen socket recv error %d\n", nErr);
                         closesocket(hI2PListenSocket);
                     }
-                }  else if (nBytes == 0) {
-                    printf("I2P listen socket closed\n");
-                    closesocket(hI2PListenSocket);
-                } else if (nBytes < 0) {
-                    // Error
-                    const int nErr = WSAGetLastError();
-                    if (nErr == WSAEWOULDBLOCK || nErr == WSAEMSGSIZE || nErr == WSAEINTR || nErr == WSAEINPROGRESS)
-                        continue;
-                    printf("I2P listen socket recv error %d\n", nErr);
-                    closesocket(hI2PListenSocket);
+                    hI2PListenSocket = INVALID_SOCKET;  // we've saved this socket in a CNode or closed it, so we can safety reset it anyway
+                    BindListenNativeI2P(hI2PListenSocket);
                 }
-                hI2PListenSocket = INVALID_SOCKET;  // we've saved this socket in a CNode or closed it, so we can safety reset it anyway
-                BindListenNativeI2P(hI2PListenSocket);
             }
         }
 #endif
@@ -1551,7 +1579,8 @@ void ThreadOpenConnections2(void* parg)
                 continue;
 
 #ifdef USE_NATIVE_I2P
-            if (!addr.IsNativeI2P() && addr.GetPort() != GetDefaultPort() && nTries < 50)
+            if (IsI2PEnabled())
+                if (!addr.IsNativeI2P() && addr.GetPort() != GetDefaultPort() && nTries < 50)
 #else
             // do not allow non-default ports, unless after 50 invalid addresses selected already
             if (addr.GetPort() != GetDefaultPort() && nTries < 50)
@@ -1785,6 +1814,8 @@ void ThreadMessageHandler2(void* parg)
 #ifdef USE_NATIVE_I2P
 
 bool BindListenNativeI2P() {
+    if (!IsI2PEnabled())
+        return false;
     SOCKET hNewI2PListenSocket = INVALID_SOCKET;
     if (!BindListenNativeI2P(hNewI2PListenSocket))
         return false;
@@ -1793,6 +1824,8 @@ bool BindListenNativeI2P() {
 }
 
 bool BindListenNativeI2P(SOCKET& hSocket) {
+    if (!IsI2PEnabled())
+        return false;
     hSocket = I2PSession::Instance().accept(false);
     if (!SetSocketOptions(hSocket) || hSocket == INVALID_SOCKET)
         return false;
@@ -1992,13 +2025,27 @@ void StartNode(void* parg)
         if (!CreateThread(ThreadDNSAddressSeed, NULL))
             printf("Error: CreateThread(ThreadDNSAddressSeed) failed\n");
 
+#ifdef USE_UPNP
     // Map ports with UPnP
     if (fUseUPnP)
         MapPort();
+#endif
 
     // Get addresses from IRC and advertise ours
-    if (!CreateThread(ThreadIRCSeed, NULL))
-        printf("Error: CreateThread(ThreadIRCSeed) failed\n");
+    // On -i2p don't even start the IRC thread
+#ifdef USE_NATIVE_I2P
+    if (IsI2PEnabled()) {
+        printf("ThreadIRCSeed is disabled on I2P.");
+    } else {
+        if (GetBoolArg("-irc", true))
+            if (!CreateThread(ThreadIRCSeed, NULL))
+                printf("Error: CreateThread(ThreadIRCSeed) failed\n");
+    }
+#else
+    if (GetBoolArg("-irc", true))
+        if (!CreateThread(ThreadIRCSeed, NULL))
+            printf("Error: CreateThread(ThreadIRCSeed) failed\n");
+#endif
 
     // Send and receive from sockets, accept connections
     if (!CreateThread(ThreadSocketHandler, NULL))
@@ -2080,12 +2127,13 @@ public:
                 if (closesocket(hListenSocket) == SOCKET_ERROR)
                     printf("closesocket(hListenSocket) failed with error %d\n", WSAGetLastError());
 #ifdef USE_NATIVE_I2P
-                BOOST_FOREACH(SOCKET& hI2PListenSocket, vhI2PListenSocket)
-                    if (hI2PListenSocket != INVALID_SOCKET) {
-                        if (closesocket(hI2PListenSocket) == SOCKET_ERROR) {
-                            printf("closesocket(hI2PListenSocket) failed with error %d\n", WSAGetLastError());
+                if (IsI2PEnabled())
+                    BOOST_FOREACH(SOCKET& hI2PListenSocket, vhI2PListenSocket)
+                        if (hI2PListenSocket != INVALID_SOCKET) {
+                            if (closesocket(hI2PListenSocket) == SOCKET_ERROR) {
+                                printf("closesocket(hI2PListenSocket) failed with error %d\n", WSAGetLastError());
+                            }
                         }
-                    }
 #endif
 
 

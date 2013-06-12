@@ -9,6 +9,7 @@
 
 #include "netbase.h"
 #include "util.h"
+#include "net.h"
 #ifdef USE_NATIVE_I2P
 #include "i2p.h"
 #endif
@@ -39,9 +40,10 @@ enum Network ParseNetwork(std::string net) {
     if (net == "tor")  return NET_TOR;
 #ifdef USE_NATIVE_I2P
     if (net == NATIVE_I2P_NET_STRING) return NET_NATIVE_I2P;
-#else
-    if (net == "i2p")  return NET_I2P;
 #endif
+    // Never worked
+    //if (net == "i2p")  return NET_I2P;
+
     return NET_UNROUTABLE;
 }
 
@@ -502,7 +504,7 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
     const proxyType &proxy = proxyInfo[addrDest.GetNetwork()];
 
 #ifdef USE_NATIVE_I2P
-    if (addrDest.IsNativeI2P()) {
+    if (addrDest.IsNativeI2P()&&IsI2PEnabled()) {
         SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2PDestination(), false/*, streamSocket*/);
         if (SetSocketOptions(streamSocket)) {
             hSocketRet = streamSocket;
@@ -594,11 +596,13 @@ static const unsigned char pchGarliCat[] = {0xFD,0x60,0xDB,0x4D,0xDD,0xB5};
 bool CNetAddr::SetSpecial(const std::string &strName)
 {
 #ifdef USE_NATIVE_I2P
-    const bool isBase32Addr = (strName.size() == NATIVE_I2P_B32ADDR_SIZE) && (strName.substr(strName.size() - 8, 8) == ".b32.i2p");
-    const std::string addr = isBase32Addr ? I2PSession::Instance().namingLookup(strName) : strName;
-    if ((addr.size() == NATIVE_I2P_DESTINATION_SIZE) && (addr.substr(addr.size() - 4, 4) == "AAAA")) { // last 4 symbols of b64-destination must be AAAA
-        memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);
-        return true;
+    if (IsI2PEnabled()) {
+        const bool isBase32Addr = (strName.size() == NATIVE_I2P_B32ADDR_SIZE) && (strName.substr(strName.size() - 8, 8) == ".b32.i2p");
+        const std::string addr = isBase32Addr ? I2PSession::Instance().namingLookup(strName) : strName;
+        if ((addr.size() == NATIVE_I2P_DESTINATION_SIZE) && (addr.substr(addr.size() - 4, 4) == "AAAA")) { // last 4 symbols of b64-destination must be AAAA
+            memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);
+            return true;
+        }
     }
 #endif
     if (strName.size()>6 && strName.substr(strName.size() - 6, 6) == ".onion") {
@@ -608,15 +612,6 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         memcpy(ip, pchOnionCat, sizeof(pchOnionCat));
         for (unsigned int i=0; i<16-sizeof(pchOnionCat); i++)
             ip[i + sizeof(pchOnionCat)] = vchAddr[i];
-        return true;
-    }
-    if (strName.size()>11 && strName.substr(strName.size() - 11, 11) == ".ac.b32.i2p") {
-        std::vector<unsigned char> vchAddr = DecodeBase32(strName.substr(0, strName.size() - 11).c_str());
-        if (vchAddr.size() != 16-sizeof(pchGarliCat))
-            return false;
-        memcpy(ip, pchOnionCat, sizeof(pchGarliCat));
-        for (unsigned int i=0; i<16-sizeof(pchGarliCat); i++)
-            ip[i + sizeof(pchGarliCat)] = vchAddr[i];
         return true;
     }
     return false;
@@ -744,6 +739,8 @@ bool CNetAddr::IsTor() const
 
 #ifdef USE_NATIVE_I2P
 bool CNetAddr::IsNativeI2P() const {
+    if (!IsI2PEnabled())
+        return false;
     static const unsigned char pchAAAA[] = {'A','A','A','A'};
     return (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }
