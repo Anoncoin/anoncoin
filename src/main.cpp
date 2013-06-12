@@ -931,16 +931,21 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     int64 nActualTimespanMax = fNewDifficultyProtocol ? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
     int64 nActualTimespanMin = fNewDifficultyProtocol ? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
     printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
-    if (pindexLast->nHeight+1 < 177777 && pindexLast->nHeight+1 < nDifficultySwitchHeight) {
-            if (nActualTimespan < nActualTimespanMin)
-                nActualTimespan = nActualTimespanMin;
-            if (nActualTimespan > nActualTimespanMax)
-                nActualTimespan = nActualTimespanMax;
+    if (pindexLast->nHeight+1 > 177777) {
+        if (nActualTimespan < nActualTimespanMin)
+            nActualTimespan = nActualTimespanMin;
+        if (nActualTimespan > nActualTimespanMax)
+            nActualTimespan = nActualTimespanMax;
     } else if (pindexLast->nHeight+1 > nDifficultySwitchHeight) {
-            if (nActualTimespan < nActualTimespanMin/4)
-                nActualTimespan = nActualTimespanMin/4;
-            if (nActualTimespan > nActualTimespanMax)
-                nActualTimespan = nActualTimespanMax;
+        if (nActualTimespan < nActualTimespanMin/4)
+            nActualTimespan = nActualTimespanMin/4;
+        if (nActualTimespan > nActualTimespanMax)
+            nActualTimespan = nActualTimespanMax;
+    } else {
+        if (nActualTimespan < nActualTimespanMin)
+            nActualTimespan = nActualTimespanMin;
+        if (nActualTimespan > nActualTimespanMax)
+            nActualTimespan = nActualTimespanMax;
     }
 
     // Retarget
