@@ -8,6 +8,8 @@
 #include "util.h"
 #include "i2psam.h"
 
+#define I2P_NET_NAME_PARAM              "-i2p"
+
 #define I2P_SESSION_NAME_PARAM          "-i2psessionname"
 #define I2P_SESSION_NAME_DEFAULT        "Anoncoin-client"
 

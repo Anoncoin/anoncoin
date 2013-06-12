@@ -510,6 +510,7 @@ bool AppInit2()
                 // Disable IRC and upnp on I2P only.
                 SoftSetBoolArg("-irc", false);
                 SoftSetBoolArg("-upnp", false);
+                SoftSetBoolArg("-listen",true);
             }
 #endif
             if (net == NET_UNROUTABLE)
@@ -562,6 +563,19 @@ bool AppInit2()
 #ifdef USE_UPNP
     fUseUPnP = GetBoolArg("-upnp", USE_UPNP);
 #endif
+
+
+#ifdef USE_NATIVE_I2P
+    // -i2p can override both tor and proxy
+    if (mapArgs.count(I2P_NET_NAME_PARAM) && mapArgs[I2P_NET_NAME_PARAM] == "1") {
+        // Disable on i2p per default
+        SoftSetBoolArg("-irc", false);
+        SoftSetBoolArg("-upnp", false);
+        SoftSetBoolArg("-listen",true);
+        SetReachable(NET_NATIVE_I2P);
+    }
+#endif
+
 
     bool fBound = false;
     if (!fNoListen)
