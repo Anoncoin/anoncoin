@@ -616,6 +616,14 @@ inline void SetThreadPriority(int nPriority)
 #endif
 }
 
+inline void MilliSleep(int64 n) {
+#if BOOST_VERSION >= 105000
+    boost::this_thread::sleep_for(boost::chrono::milliseconds(n));
+#else
+    boost::this_thread::sleep(boost::posix_time::milliseconds(n));
+#endif
+}
+
 inline void ExitThread(size_t nExitCode)
 {
     pthread_exit((void*)nExitCode);
