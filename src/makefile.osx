@@ -15,11 +15,13 @@ INCLUDEPATHS= \
  -I"$(CURDIR)" \
  -I"$(CURDIR)"/obj \
  -I"$(DEPSDIR)/include" \
- -I"$(DEPSDIR)/include/db48"
+ -I"$(DEPSDIR)/include/db48" \
+ -I"../i2psam"
 
 LIBPATHS= \
  -L"$(DEPSDIR)/lib" \
- -L"$(DEPSDIR)/lib/db48"
+ -L"$(DEPSDIR)/lib/db48" \
+ -L"../i2psam"
 
 USE_UPNP:=1
 
@@ -52,11 +54,12 @@ LIBS += \
  -lboost_thread-mt \
  -lssl \
  -lcrypto \
- -lz
+ -lz \
+ -li2psam
 TESTDEFS += -DBOOST_TEST_DYN_LINK
 endif
 
-DEFS=-DMAC_OSX -DMSG_NOSIGNAL=0 -DBOOST_SPIRIT_THREADSAFE -DUSE_IPV6
+DEFS=-DMAC_OSX -DMSG_NOSIGNAL=0 -DBOOST_SPIRIT_THREADSAFE -DUSE_IPV6 -DUSE_NATIVE_I2P
 
 ifdef RELEASE
 # Compile for maximum compatibility and smallest size.
@@ -106,12 +109,6 @@ else
 endif
 endif
 
-ifdef USE_NATIVE_I2P
-    DEFS += -DUSE_NATIVE_I2P -I../i2psam/
-    LIBS += -L../i2psam/
-    LIBS += -li2psam
-endif
-
 all: anoncoind
 
 # auto-generated dependencies:
@@ -137,18 +134,11 @@ obj/%.o: %.cpp
 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 	  rm -f $(@:%.o=%.d)
 
-ifdef USE_NATIVE_I2P
-anoncoind: i2psam $(OBJS:obj/%=obj/%)
-	$(CXX) $(xCXXFLAGS) -o $@ $(OBJS) $(xLDFLAGS) $(LIBS)
-else
 anoncoind: $(OBJS:obj/%=obj/%)
-	$(CXX) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
-endif
+	$(CXX) $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ $(xLDFLAGS) $(LIBS)
 
-ifdef USE_NATIVE_I2P
 i2psam:
 	$(MAKE) -C ../i2psam -f makefile.unix
-endif
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 
