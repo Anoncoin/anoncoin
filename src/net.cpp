@@ -2035,7 +2035,7 @@ void StartNode(void* parg)
     // On -i2p don't even start the IRC thread
 #ifdef USE_NATIVE_I2P
     if (IsI2PEnabled()) {
-        printf("ThreadIRCSeed is disabled on I2P.");
+        printf("ThreadIRCSeed is disabled on I2P.\n");
     } else {
         if (GetBoolArg("-irc", true))
             if (!CreateThread(ThreadIRCSeed, NULL))
