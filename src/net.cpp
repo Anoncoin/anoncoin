@@ -1300,17 +1300,19 @@ void MapPort()
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
     {"coinpool.in", "anoncoin.dnsseed.coinpool.in"},
-    {"anoncoin.net", "dnsseed01.anoncoin.net"},
+    {"anoncoin.net", "dnsseed01.anoncoin.net"}
+};
+
 #ifdef USE_NATIVE_I2P
+static const char *strI2PDNSSeed[][2] = {
     {"d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p","d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p"},
     {"aa2vgk6qr6u5eaujni5vaucuadpleyq5nbjx56lclgr6jjbmbvrq.b32.i2p", "aa2vgk6qr6u5eaujni5vaucuadpleyq5nbjx56lclgr6jjbmbvrq.b32.i2p"},
     {"u2om3hgjpghqfi7yid75xdmvzlgjybstzp6mtmaxse4aztm23rwq.b32.i2p", "u2om3hgjpghqfi7yid75xdmvzlgjybstzp6mtmaxse4aztm23rwq.b32.i2p"},
     {"htigbyeisbqizn63ftqw7ggfwfeolwkb3zfxwmyffygbilwqsswq.b32.i2p", "htigbyeisbqizn63ftqw7ggfwfeolwkb3zfxwmyffygbilwqsswq.b32.i2p"},
     {"st4eyxcp73zzbpatgt26pt3rlfwb7g5ywedol65baalgpnhvzqpa.b32.i2p", "st4eyxcp73zzbpatgt26pt3rlfwb7g5ywedol65baalgpnhvzqpa.b32.i2p"},
-    {"qgmxpnpujddsd5ez67p4ognqsvo64tnzdbzesezdbtb3atyoxcpq.b32.i2p", "qgmxpnpujddsd5ez67p4ognqsvo64tnzdbzesezdbtb3atyoxcpq.b32.i2p"},
-#endif
-    {NULL, NULL}
+    {"qgmxpnpujddsd5ez67p4ognqsvo64tnzdbzesezdbtb3atyoxcpq.b32.i2p", "qgmxpnpujddsd5ez67p4ognqsvo64tnzdbzesezdbtb3atyoxcpq.b32.i2p"}
 };
+#endif
 
 
 void ThreadDNSAddressSeed(void* parg)
@@ -1365,6 +1367,28 @@ void ThreadDNSAddressSeed2(void* parg)
                 addrman.Add(vAdd, CNetAddr(strDNSSeed[seed_idx][0], true));
             }
         }
+#ifdef USE_NATIVE_I2P
+        if (IsI2PEnabled()) {
+            for (unsigned int seed_idx = 0; seed_idx < ARRAYLEN(strI2PDNSSeed); seed_idx++) {
+                if (GetNameProxy()) {
+                    AddOneShot(strI2PDNSSeed[seed_idx][1]);
+                } else {
+                    vector<CNetAddr> vaddr;
+                    vector<CAddress> vAdd;
+                    if (LookupHost(strI2PDNSSeed[seed_idx][1], vaddr)) {
+                        BOOST_FOREACH(CNetAddr& ip, vaddr) {
+                            int nOneDay = 24*3600;
+                            CAddress addr = CAddress(CService(ip, GetDefaultPort()));
+                            addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                            vAdd.push_back(addr);
+                            found++;
+                        }
+                    }
+                    addrman.Add(vAdd, CNetAddr(strI2PDNSSeed[seed_idx][0], true));
+                }
+            }
+        }
+#endif
     }
 
     printf("%d addresses found from DNS seeds\n", found);
@@ -1528,11 +1552,13 @@ void ThreadOpenConnections2(void* parg)
                 vAdd.push_back(addr);
             }
 #ifdef USE_NATIVE_I2P
-            for (size_t i = 0; i < ARRAYLEN(pstrI2PSeed); i++) {
-                const int64 nOneWeek = 7*24*60*60;
-                CAddress addr(CService((const std::string&)pstrI2PSeed[i]));
-                addr.nTime = GetTime()-GetRand(nOneWeek)-nOneWeek;
-                vAdd.push_back(addr);
+            if (IsI2PEnabled()) {
+                for (size_t i = 0; i < ARRAYLEN(pstrI2PSeed); i++) {
+                    const int64 nOneWeek = 7*24*60*60;
+                    CAddress addr(CService((const std::string&)pstrI2PSeed[i]));
+                    addr.nTime = GetTime()-GetRand(nOneWeek)-nOneWeek;
+                    vAdd.push_back(addr);
+                }
             }
 #endif
             addrman.Add(vAdd, CNetAddr("127.0.0.1"));
