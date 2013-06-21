@@ -4,8 +4,8 @@ Anoncoin - a fork version of Litecoin optimized for CPU mining using scrypt as a
  - 7 coin blocks until block 77777
  - 17.42 coin blocks until block 177777
  - 20 coin blocks from block 177777
- - Max 800% adjustment at retargeting until block 177777
- - Max 400% adjustment at retargeting after block 177777
+ - Max factor 16 adjustment at retargeting until block 177777
+ - Max factor 4 adjustment at retargeting after block 177777
 
 Development process
 ===================

@@ -1,8 +1,8 @@
 TEMPLATE = app
 TARGET =
-VERSION = 0.6.3
-INCLUDEPATH += src src/json src/qt
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6
+VERSION = 0.7.3
+INCLUDEPATH += src src/json src/qt i2psam
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6 USE_NATIVE_I2P
 CONFIG += no_include_pwd
 
 # for boost 1.37, add -mt to the boost libraries
@@ -166,7 +166,8 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/miningpage.h \
     src/version.h \
     src/qt/rpcconsole.h \
-    src/qt/showi2paddresses.h
+    src/qt/showi2paddresses.h \
+    src/i2p.h
 
 SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/transactiontablemodel.cpp \
@@ -254,12 +255,6 @@ SOURCES += src/qt/qrcodedialog.cpp
 FORMS += src/qt/forms/qrcodedialog.ui
 }
 
-contains(DEFINES, USE_NATIVE_I2P) {
-HEADERS += src/i2p.h \
-    src/qt/showi2paddresses.h
-SOURCES +=  src/qt/showi2paddresses.cpp
-FORMS += src/qt/forms/showi2paddresses.ui
-}
 
 contains(BITCOIN_QT_TEST, 1) {
 SOURCES += src/qt/test/test_main.cpp \
