@@ -4,7 +4,8 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
-extern void qt_mac_set_dock_menu(QMenu*);
+#include <QTemporaryFile>
+#include <QImageWriter>
 
 #undef slots
 #include <Cocoa/Cocoa.h>
@@ -47,11 +48,10 @@ extern void qt_mac_set_dock_menu(QMenu*);
 MacDockIconHandler::MacDockIconHandler() : QObject()
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    this->m_dockIconClickEventHandler = [[DockIconClickEventHandler alloc] initWithDockIconHandler:this];
+    this->m_dockIconClickEventHandler = (objc_object *)[[DockIconClickEventHandler alloc] initWithDockIconHandler:this];
 
     this->m_dummyWidget = new QWidget();
     this->m_dockMenu = new QMenu(this->m_dummyWidget);
-    qt_mac_set_dock_menu(this->m_dockMenu);
     [pool release];
 }
 
@@ -69,15 +69,24 @@ QMenu *MacDockIconHandler::dockMenu()
 void MacDockIconHandler::setIcon(const QIcon &icon)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSImage *image;
+    NSImage *image = nil;
     if (icon.isNull())
         image = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
     else {
         QSize size = icon.actualSize(QSize(128, 128));
         QPixmap pixmap = icon.pixmap(size);
-        CGImageRef cgImage = pixmap.toMacCGImageRef();
-        image = [[NSImage alloc] initWithCGImage:cgImage size:NSZeroSize];
-        CFRelease(cgImage);
+        QTemporaryFile notificationIconFile;
+        if (!pixmap.isNull() && notificationIconFile.open()) {
+            QImageWriter writer(&notificationIconFile, "PNG");
+            if (writer.write(pixmap.toImage())) {
+                const char *cString = notificationIconFile.fileName().toUtf8().data();
+                NSString *macString = [NSString stringWithCString:cString encoding:NSUTF8StringEncoding];
+                image =  [[NSImage alloc] initWithContentsOfFile:macString];
+            }
+        }
+        if(!image) {
+            image = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
+        }
     }
 
     [NSApp setApplicationIconImage:image];

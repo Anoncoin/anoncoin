@@ -3,7 +3,11 @@
 
 #include <QString>
 #include <QObject>
+#ifdef MAC_OSX
+#include <QtGui/QMessageBox>
+#else
 #include <QMessageBox>
+#endif
 
 QT_BEGIN_NAMESPACE
 class QFont;

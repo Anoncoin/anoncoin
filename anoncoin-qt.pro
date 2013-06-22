@@ -4,6 +4,7 @@ VERSION = 0.7.3
 INCLUDEPATH += src src/json src/qt i2psam
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6 USE_NATIVE_I2P
 CONFIG += no_include_pwd
+QT += core gui
 
 # for boost 1.37, add -mt to the boost libraries
 # use: qmake BOOST_LIB_SUFFIX=-mt
@@ -14,6 +15,12 @@ CONFIG += no_include_pwd
 # Dependency library locations can be customized with:
 #    BOOST_INCLUDE_PATH, BOOST_LIB_PATH, BDB_INCLUDE_PATH,
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
+BOOST_INCLUDE_PATH="/usr/local/opt/boost/include"
+BOOST_LIB_PATH="/usr/local/opt/boost/lib"
+BDB_INCLUDE_PATH="/usr/local/opt/berkeley-db4/lib"
+DBD_LIB_PATH="/usr/local/opt/berkeley-db4/include"
+OPENSSL_INCLUDE_PATH="/opt/local/include/openssl/"
+OPENSSL_LIB_PATH="/opt/local/lib/"
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -79,7 +86,29 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     # for extra security against potential buffer overflows
     QMAKE_CXXFLAGS += -fstack-protector
     QMAKE_LFLAGS += -fstack-protector
+    !contains(USE_CLANG, 1) {
+        QMAKE_LFLAGS += -fstack-protector
+    }
     # do not enable this on windows, as it will result in a non-working executable!
+}
+
+contains(USE_CLANG, 1) {
+    QMAKE_CC = clang
+    QMAKE_CXX = clang++
+    QMAKE_LINK = llvm-ld
+    QMAKE_LFLAGS = -native
+    QMAKE_LFLAGS_RELEASE =
+}
+
+contains(USE_LTO, 1) {
+    contains(USE_CLANG, 1) {
+        QMAKE_CFLAGS += -emit-llvm
+        QMAKE_CXXFLAGS += -emit-llvm
+    } else {
+        QMAKE_CFLAGS += -flto
+        QMAKE_CXXFLAGS += -flto
+        QMAKE_LFLAGS += -flto
+    }
 }
 
 # regenerate src/build.h
@@ -350,7 +379,7 @@ macx:TARGET = "Anoncoin-Qt"
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -li2psam -Li2psam
 # -lgdi32 has to happen after -lcrypto (see  #681)
 windows:LIBS += -lole32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
