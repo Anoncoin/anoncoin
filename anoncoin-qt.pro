@@ -15,12 +15,7 @@ QT += core gui
 # Dependency library locations can be customized with:
 #    BOOST_INCLUDE_PATH, BOOST_LIB_PATH, BDB_INCLUDE_PATH,
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
-BOOST_INCLUDE_PATH="/usr/local/opt/boost/include"
-BOOST_LIB_PATH="/usr/local/opt/boost/lib"
-BDB_INCLUDE_PATH="/usr/local/opt/berkeley-db4/lib"
-DBD_LIB_PATH="/usr/local/opt/berkeley-db4/include"
-OPENSSL_INCLUDE_PATH="/opt/local/include/openssl/"
-OPENSSL_LIB_PATH="/opt/local/lib/"
+
 
 OBJECTS_DIR = build
 MOC_DIR = build
