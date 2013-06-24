@@ -21,7 +21,7 @@ packages:
 - "libc6-dev"
 reference_datetime: "2011-01-30 00:00:00"
 remotes:
-- "url": "https://github.com/anoncoin/anoncoin.git"
+- "url": "https://github.com/Anoncoin/anoncoin.git"
   "dir": "anoncoin"
 files:
 - "miniupnpc-1.6.tar.gz"
