@@ -8,6 +8,7 @@
 #include "net.h"
 #include "strlcpy.h"
 #include "base58.h"
+#include "util.h"
 
 #ifdef USE_NATIVE_I2P
 #include "i2p.h"
