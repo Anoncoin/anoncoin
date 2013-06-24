@@ -845,7 +845,7 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
     return nSubsidy + nFees;
 }
 
-static const int64 nTargetTimespan = 86184; //420 * 205.2; // Anoncoin: 420 blocks
+static const int64 nTargetTimespan = 86184; //420 * 205.2; = 86184 // Anoncoin: 420 blocks
 static const int64 nTargetSpacing = 205;//3.42 * 60; // Anoncoin: 3.42 minutes
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 

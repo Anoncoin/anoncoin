@@ -839,10 +839,10 @@ enum Network CNetAddr::GetNetwork() const
 #ifdef USE_NATIVE_I2P
     if (IsNativeI2P())
         return NET_NATIVE_I2P;
-#endif
+#else
     if (IsI2P())
         return NET_I2P;
-
+#endif
     return NET_IPV6;
 }
 
@@ -854,8 +854,9 @@ std::string CNetAddr::ToStringIP() const
 #endif
     if (IsTor())
         return EncodeBase32(&ip[6], 10) + ".onion";
-    if (IsI2P())
-        return EncodeBase32(&ip[6], 10) + ".ac.b32.i2p";
+    // Disabling code, seems unfinished.
+    //if (IsI2P())
+    //    return EncodeBase32(&ip[6], 10) + ".ac.b32.i2p";
     CService serv(*this, 0);
 #ifdef USE_IPV6
     struct sockaddr_storage sockaddr;
@@ -1089,12 +1090,13 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         default:             return REACH_UNREACHABLE;
         case NET_NATIVE_I2P: return REACH_PRIVATE;
         }
-#endif
+#else
     case NET_I2P:
         switch(ourNet) {
         default:         return REACH_DEFAULT;
         case NET_I2P:    return REACH_PRIVATE;
         }
+#endif
     case NET_TEREDO:
         switch(ourNet) {
         default:          return REACH_DEFAULT;

@@ -1346,27 +1346,6 @@ void ThreadDNSAddressSeed2(void* parg)
     if (!fTestNet)
     {
         printf("Loading addresses from DNS seeds (could take a while)\n");
-
-        for (unsigned int seed_idx = 0; seed_idx < ARRAYLEN(strDNSSeed); seed_idx++) {
-            if (GetNameProxy()) {
-                AddOneShot(strDNSSeed[seed_idx][1]);
-            } else {
-                vector<CNetAddr> vaddr;
-                vector<CAddress> vAdd;
-                if (LookupHost(strDNSSeed[seed_idx][1], vaddr))
-                {
-                    BOOST_FOREACH(CNetAddr& ip, vaddr)
-                    {
-                        int nOneDay = 24*3600;
-                        CAddress addr = CAddress(CService(ip, GetDefaultPort()));
-                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                        vAdd.push_back(addr);
-                        found++;
-                    }
-                }
-                addrman.Add(vAdd, CNetAddr(strDNSSeed[seed_idx][0], true));
-            }
-        }
 #ifdef USE_NATIVE_I2P
         if (IsI2PEnabled()) {
             for (unsigned int seed_idx = 0; seed_idx < ARRAYLEN(strI2PDNSSeed); seed_idx++) {
@@ -1387,8 +1366,31 @@ void ThreadDNSAddressSeed2(void* parg)
                     addrman.Add(vAdd, CNetAddr(strI2PDNSSeed[seed_idx][0], true));
                 }
             }
+            // Prefer I2P, if 4 is found, drop the clearnet dnsseed
+            if (found>4)
+                return;
         }
 #endif
+        for (unsigned int seed_idx = 0; seed_idx < ARRAYLEN(strDNSSeed); seed_idx++) {
+            if (GetNameProxy()) {
+                AddOneShot(strDNSSeed[seed_idx][1]);
+            } else {
+                vector<CNetAddr> vaddr;
+                vector<CAddress> vAdd;
+                if (LookupHost(strDNSSeed[seed_idx][1], vaddr))
+                {
+                    BOOST_FOREACH(CNetAddr& ip, vaddr)
+                    {
+                        int nOneDay = 24*3600;
+                        CAddress addr = CAddress(CService(ip, GetDefaultPort()));
+                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                        vAdd.push_back(addr);
+                        found++;
+                    }
+                }
+                addrman.Add(vAdd, CNetAddr(strDNSSeed[seed_idx][0], true));
+            }
+        }
     }
 
     printf("%d addresses found from DNS seeds\n", found);
@@ -1606,7 +1608,7 @@ void ThreadOpenConnections2(void* parg)
 
 #ifdef USE_NATIVE_I2P
             if (IsI2PEnabled())
-                if (!addr.IsNativeI2P() && addr.GetPort() != GetDefaultPort() && nTries < 50)
+                if (!addr.IsNativeI2P() && addr.GetPort() != GetDefaultPort() && nTries < 20)
 #else
             // do not allow non-default ports, unless after 50 invalid addresses selected already
             if (addr.GetPort() != GetDefaultPort() && nTries < 50)
