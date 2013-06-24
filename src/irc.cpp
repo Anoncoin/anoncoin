@@ -8,7 +8,6 @@
 #include "net.h"
 #include "strlcpy.h"
 #include "base58.h"
-#include "util.h"
 
 #ifdef USE_NATIVE_I2P
 #include "i2p.h"
@@ -113,7 +112,7 @@ bool RecvLineFixed(SOCKET hSocket, string& strLine) {
         while(!stop) {
             boost::this_thread::interruption_point();
             if (SocketCanRead(hSocket) >= 1) { stop = true; }
-            else { MilliSleep(10); }
+            else { Sleep(10); }
         }
 
         int nBytes = recv(hSocket, &c, 1, 0);
@@ -132,7 +131,7 @@ bool RecvLineFixed(SOCKET hSocket, string& strLine) {
                 if (nErr == WSAEMSGSIZE)
                     continue;
                 if (nErr == WSAEWOULDBLOCK || nErr == WSAEINTR || nErr == WSAEINPROGRESS) {
-                    MilliSleep(10);
+                    Sleep(10);
                     continue;
                 }
             }
@@ -215,7 +214,7 @@ bool Wait(int nSeconds) {
     printf("IRC waiting %d seconds to reconnect\n", nSeconds);
     for (int i = 0; i < nSeconds; i++) {
         boost::this_thread::interruption_point();
-        MilliSleep(1000);
+        Sleep(1000);
     }
     return true;
 }
