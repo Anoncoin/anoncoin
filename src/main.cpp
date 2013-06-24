@@ -885,9 +885,10 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     // Anoncoin difficulty adjustment protocol switch (Thanks to FeatherCoin for this idea)
     static const int nDifficultySwitchHeight = 15420;
     int nHeight = pindexLast->nHeight + 1;
-    bool fNewDifficultyProtocol = (nHeight >= nDifficultySwitchHeight || fTestNet);
+    bool fNewDifficultyProtocol = true; // (nHeight >= nDifficultySwitchHeight || fTestNet);
 
-    int64 nTargetTimespanCurrent = fNewDifficultyProtocol ? (nTargetTimespan*4) : nTargetTimespan;
+    //int64 nTargetTimespanCurrent = fNewDifficultyProtocol ? (nTargetTimespan*4) : nTargetTimespan;
+    int64 nTargetTimespanCurrent = (nTargetTimespan*4);
     int64 nInterval = nTargetTimespanCurrent / nTargetSpacing;
 
     // Only change once per interval, or at protocol switch height
@@ -928,8 +929,10 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
     // Limit adjustment step
     int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
-    int64 nActualTimespanMax = fNewDifficultyProtocol ? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
-    int64 nActualTimespanMin = fNewDifficultyProtocol ? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
+    //int64 nActualTimespanMax = fNewDifficultyProtocol ? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
+    //int64 nActualTimespanMin = fNewDifficultyProtocol ? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
+    int64 nActualTimespanMax = (nTargetTimespanCurrent*4);
+    int64 nActualTimespanMin = (nTargetTimespanCurrent/4);
     printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
     if (pindexLast->nHeight+1 > 177777) {
         if (nActualTimespan < nActualTimespanMin)
