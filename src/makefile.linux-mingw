@@ -3,26 +3,30 @@
 # file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 DEPSDIR:=/usr/i586-mingw32msvc
+BUILDDIR=/home/ubuntu/build
 
 USE_UPNP:=0
 
 INCLUDEPATHS= \
- -I"$(DEPSDIR)/boost_1_50_0" \
- -I"$(DEPSDIR)/db-4.8.30.NC/build_unix" \
- -I"$(DEPSDIR)/openssl-1.0.1c/include" \
- -I"$(DEPSDIR)" \
+ -I"$(BUILDDIR)/boost_1_50_0" \
+ -I"$(BUILDDIR)/db-4.8.30.NC/build_unix" \
+ -I"$(BUILDDIR)/openssl-1.0.1c/include" \
+ -I"$(BUILDDIR)/miniupnpc" \
+ -I"$(BUILDDIR)" \
  -I"$(CURDIR)"/obj \
 
 LIBPATHS= \
- -L"$(DEPSDIR)/boost_1_50_0/stage/lib" \
- -L"$(DEPSDIR)/db-4.8.30.NC/build_unix" \
- -L"$(DEPSDIR)/openssl-1.0.1c"
+ -L"$(BUILDDIR)/boost_1_50_0/stage/lib" \
+ -L"$(BUILDDIR)/db-4.8.30.NC/build_unix" \
+ -L"$(BUILDDIR)/miniupnpc" \
+ -L"$(BUILDDIR)/openssl-1.0.1c"
 
 LIBS= \
  -l boost_system-mt-s \
  -l boost_filesystem-mt-s \
  -l boost_program_options-mt-s \
  -l boost_thread_win32-mt-s \
+ -l boost_chrono-mt-s \
  -l db_cxx \
  -l ssl \
  -l crypto
