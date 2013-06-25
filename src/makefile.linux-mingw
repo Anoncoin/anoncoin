@@ -2,13 +2,13 @@
 # Distributed under the MIT/X11 software license, see the accompanying
 # file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
-DEPSDIR:=/usr/i586-mingw32msvc
+DEPSDIR:=/usr/i686-w64-mingw32
 BUILDDIR=/home/ubuntu/build
 
 USE_UPNP:=0
 
 INCLUDEPATHS= \
- -I"$(BUILDDIR)/boost_1_50_0" \
+ -I"$(BUILDDIR)/boost_1_53_0" \
  -I"$(BUILDDIR)/db-4.8.30.NC/build_unix" \
  -I"$(BUILDDIR)/openssl-1.0.1c/include" \
  -I"$(BUILDDIR)/miniupnpc" \
@@ -16,7 +16,7 @@ INCLUDEPATHS= \
  -I"$(CURDIR)"/obj \
 
 LIBPATHS= \
- -L"$(BUILDDIR)/boost_1_50_0/stage/lib" \
+ -L"$(BUILDDIR)/boost_1_53_0/stage/lib" \
  -L"$(BUILDDIR)/db-4.8.30.NC/build_unix" \
  -L"$(BUILDDIR)/miniupnpc" \
  -L"$(BUILDDIR)/openssl-1.0.1c"
@@ -77,7 +77,7 @@ OBJS= \
 all: anoncoind.exe
 
 obj/scrypt.o: scrypt.c
-	i586-mingw32msvc-gcc -c $(CFLAGS) -o $@ $^
+	i686-w64-mingw32-gcc -c $(CFLAGS) -o $@ $^
 
 obj/build.h: FORCE
 	/bin/sh ../share/genbuild.sh obj/build.h
@@ -85,18 +85,18 @@ version.cpp: obj/build.h
 DEFS += -DHAVE_BUILD_INFO
 
 obj/%.o: %.cpp $(HEADERS)
-	i586-mingw32msvc-g++ -c $(CFLAGS) -o $@ $<
+	i686-w64-mingw32-g++ -c $(CFLAGS) -o $@ $<
 
 anoncoind.exe: $(OBJS:obj/%=obj/%)
-	i586-mingw32msvc-g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+	i686-w64-mingw32-g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 
 obj-test/%.o: test/%.cpp $(HEADERS)
-	i586-mingw32msvc-g++ -c $(TESTDEFS) $(CFLAGS) -o $@ $<
+	i686-w64-mingw32-g++ -c $(TESTDEFS) $(CFLAGS) -o $@ $<
 
 test_anoncoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
-	i586-mingw32msvc-g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework $(LIBS)
+	i686-w64-mingw32-g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework $(LIBS)
 
 
 clean:

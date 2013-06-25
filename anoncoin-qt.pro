@@ -84,7 +84,7 @@ QMAKE_LFLAGS += -fstack-protector -fstack-protector-all
     QMAKE_LFLAGS += -fstack-protector -fstack-protector-all
 }
 # for extra security (see: https://wiki.debian.org/Hardening)
-QMAKE_CXXFLAGS *= -D_FORTIFY_SOURCE=2 -Wl,-z,relro -Wl,-z,now
+QMAKE_CXXFLAGS *= -D_FORTIFY_SOURCE=2 
 win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
 win32:QMAKE_LFLAGS *= -static-libgcc -static-libstdc++
 
@@ -345,7 +345,7 @@ isEmpty(BOOST_INCLUDE_PATH) {
     macx:BOOST_INCLUDE_PATH = /opt/local/include
 }
 
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock
+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -Wl,-Bstatic -static
 windows:DEFINES += WIN32
 windows:RC_FILE = src/qt/res/bitcoin-qt.rc
 

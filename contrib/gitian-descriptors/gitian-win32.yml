@@ -1,11 +1,12 @@
 ---
 name: "anoncoin"
 suites:
-- "lucid"
+- "precise"
 architectures:
 - "i386"
 packages:
-- "mingw32"
+- "g++-mingw-w64"
+- "mingw-w64"
 - "git-core"
 - "unzip"
 - "nsis"
@@ -16,31 +17,31 @@ remotes:
 - "url": "git://github.com/Anoncoin/anoncoin.git"
   "dir": "anoncoin"
 files:
-- "qt-win32-4.8.3-gitian-r1.zip"
-- "boost-win32-1.50.0-gitian2.zip"
-- "anoncoin-deps-0.0.5.zip"
+- "qt-w64-win32-4.8.3-gitian-r1.zip"
+- "boost-win32-1.53.0-gitian2.zip"
+- "anoncoin-deps-w64-win32-0.0.5.zip"
 script: |
   #
   mkdir $HOME/qt
   cd $HOME/qt
-  unzip ../build/qt-win32-4.8.3-gitian-r1.zip
+  unzip ../build/qt-w64-win32-4.8.3-gitian-r1.zip
   cd $HOME/build/
   export PATH=$HOME/qt/bin/:$PATH
   #
-  mkdir boost_1_50_0
-  cd boost_1_50_0
+  mkdir boost_1_53_0
+  cd boost_1_53_0
   mkdir -p stage/lib
-  unzip ../boost-win32-1.50.0-gitian2.zip
+  unzip ../boost-win32-1.53.0-gitian2.zip
   cd bin/$GBUILD_BITS
   for lib in *; do
-    i586-mingw32msvc-ar rc ../../stage/lib/libboost_${lib}-mt-s.a $lib/*.o
-    i586-mingw32msvc-ranlib ../../stage/lib/libboost_${lib}-mt-s.a
+    i686-w64-mingw32-ar rc ../../stage/lib/libboost_${lib}-mt-s.a $lib/*.o
+    i686-w64-mingw32-ranlib ../../stage/lib/libboost_${lib}-mt-s.a
   done
   cd ../..
   mv include/boost .
   cd ..
   #
-  unzip anoncoin-deps-0.0.5.zip
+  unzip anoncoin-deps-w64-win32-0.0.5.zip
   #
   find -type f | xargs touch --date="$REFERENCE_DATETIME"
   #
@@ -52,7 +53,7 @@ script: |
   export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
   export FAKETIME=$REFERENCE_DATETIME
   export TZ=UTC
-  $HOME/qt/src/bin/qmake -spec unsupported/win32-g++-cross MINIUPNPC_LIB_PATH=$HOME/build/miniupnpc MINIUPNPC_INCLUDE_PATH=$HOME/build/ BDB_LIB_PATH=$HOME/build/db-4.8.30.NC/build_unix BDB_INCLUDE_PATH=$HOME/build/db-4.8.30.NC/build_unix BOOST_LIB_PATH=$HOME/build/boost_1_50_0/stage/lib BOOST_INCLUDE_PATH=$HOME/build/boost_1_50_0 BOOST_LIB_SUFFIX=-mt-s BOOST_THREAD_LIB_SUFFIX=_win32-mt-s OPENSSL_LIB_PATH=$HOME/build/openssl-1.0.1c OPENSSL_INCLUDE_PATH=$HOME/build/openssl-1.0.1c/include QRENCODE_LIB_PATH=$HOME/build/qrencode-3.2.0/.libs QRENCODE_INCLUDE_PATH=$HOME/build/qrencode-3.2.0 USE_QRCODE=1 INCLUDEPATH=$HOME/build DEFINES=BOOST_THREAD_USE_LIB BITCOIN_NEED_QT_PLUGINS=1 QMAKE_LRELEASE=lrelease QMAKE_CXXFLAGS=-frandom-seed=anoncoin USE_BUILD_INFO=1
+  $HOME/qt/src/bin/qmake -spec unsupported/win32-g++-cross MINIUPNPC_LIB_PATH=$HOME/build/miniupnpc MINIUPNPC_INCLUDE_PATH=$HOME/build/ BDB_LIB_PATH=$HOME/build/db-4.8.30.NC/build_unix BDB_INCLUDE_PATH=$HOME/build/db-4.8.30.NC/build_unix BOOST_LIB_PATH=$HOME/build/boost_1_53_0/stage/lib BOOST_INCLUDE_PATH=$HOME/build/boost_1_53_0 BOOST_LIB_SUFFIX=-mt-s BOOST_THREAD_LIB_SUFFIX=_win32-mt-s OPENSSL_LIB_PATH=$HOME/build/openssl-1.0.1c OPENSSL_INCLUDE_PATH=$HOME/build/openssl-1.0.1c/include QRENCODE_LIB_PATH=$HOME/build/qrencode-3.2.0/.libs QRENCODE_INCLUDE_PATH=$HOME/build/qrencode-3.2.0 USE_QRCODE=1 INCLUDEPATH=$HOME/build DEFINES=BOOST_THREAD_USE_LIB BITCOIN_NEED_QT_PLUGINS=1 QMAKE_LRELEASE=lrelease QMAKE_CXXFLAGS=-frandom-seed=anoncoin USE_BUILD_INFO=1
   cd i2psam
   make -f makefile.mingw
   cd ..
@@ -64,7 +65,7 @@ script: |
   export FAKETIME=$REFERENCE_DATETIME
   export TZ=UTC
   make -f makefile.linux-mingw $MAKEOPTS DEPSDIR=$HOME/build anoncoind.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=anoncoin"
-  i586-mingw32msvc-strip anoncoind.exe
+  i686-w64-mingw32-strip anoncoind.exe
   mkdir $OUTDIR/daemon
   cp anoncoind.exe $OUTDIR/daemon
   cd ..
