@@ -77,14 +77,11 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
 }
 
-!windows {
-    # for extra security against potential buffer overflows
-    QMAKE_CXXFLAGS += -fstack-protector
+# for extra security against potential buffer overflows
+QMAKE_CXXFLAGS += -fstack-protector
+QMAKE_LFLAGS += -fstack-protector
+!contains(USE_CLANG, 1) {
     QMAKE_LFLAGS += -fstack-protector
-    !contains(USE_CLANG, 1) {
-        QMAKE_LFLAGS += -fstack-protector
-    }
-    # do not enable this on windows, as it will result in a non-working executable!
 }
 
 contains(USE_CLANG, 1) {
