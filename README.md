@@ -1,5 +1,5 @@
 Anoncoin - a fork version of Litecoin optimized for CPU mining using scrypt as a proof of work scheme.
- - 3.42 minute block targets (420 blocks retarget)
+ - 3.42 minute block targets (retarget on ~1680 blocks, 4days)
  - Starts with 4.2 coin blocks until block 42000
  - 7 coin blocks until block 77777
  - 17.42 coin blocks until block 177777
