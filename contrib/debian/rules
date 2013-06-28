@@ -5,8 +5,8 @@
 #build/anoncoind::
 #	$(if $(filter nocheck,$(DEB_BUILD_OPTIONS)),,src/test_anoncoin)
 
-DEB_INSTALL_EXAMPLES_bitcoind += debian/examples/*
-DEB_INSTALL_MANPAGES_bitcoind += debian/manpages/*
+DEB_INSTALL_EXAMPLES_anoncoind += debian/examples/*
+DEB_INSTALL_MANPAGES_anoncoind += debian/manpages/*
 
 %:
 	dh --with bash-completion $@
@@ -20,7 +20,7 @@ override_dh_auto_clean:
 	cd src; $(MAKE) -f makefile.unix clean
 
 override_dh_auto_configure:
-	qmake bitcoin-qt.pro USE_QRCODE=1
+	qmake anoncoin-qt.pro USE_QRCODE=1
 
 override_dh_auto_test:
 	cd src; $(MAKE) -f makefile.unix test_anoncoin

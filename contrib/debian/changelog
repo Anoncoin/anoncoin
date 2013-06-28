@@ -1,1 +1,7 @@
-Initial.
+anoncoin (0.7.2.3~raring-1) raring; urgency=low
+
+  [ Meeh ]
+  * Initial release.
+
+ -- Meeh <meeh@i2pmail.org>  Fri, 28 Jun 2013 19:02:00 +0100
+
