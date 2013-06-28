@@ -1,5 +1,6 @@
 # bash programmable completion for anoncoind(1)
 # Copyright (c) 2012 Christian von Roques <roques@mti.ag>
+# Copyright (c) 2013 Meeh <meeh@i2pmail.org>
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 

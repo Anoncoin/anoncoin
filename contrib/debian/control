@@ -1,59 +1,65 @@
-Source: bitcoin
+Source: anoncoin
 Section: utils
 Priority: optional
-Maintainer: Jonas Smedegaard <dr@jones.dk>
-Uploaders: Micah Anderson <micah@debian.org>
+Maintainer: Meeh <meeh@i2pmail.org>
+Uploaders: Meeh <meeh@i2pmail.org>
 Build-Depends: debhelper,
  devscripts,
  bash-completion,
- libboost-system-dev (>> 1.35) | libboost-system1.35-dev,
+ libboost-system-dev (>> 1.46) | libboost-system1.46-dev,
  libdb4.8++-dev,
  libssl-dev,
  pkg-config,
  libminiupnpc8-dev,
- libboost-filesystem-dev (>> 1.35) | libboost-filesystem1.35-dev,
- libboost-program-options-dev (>> 1.35) | libboost-program-options1.35-dev,
- libboost-thread-dev (>> 1.35) | libboost-thread1.35-dev,
- libboost-test-dev (>> 1.35) | libboost-test1.35-dev,
+ libboost-filesystem-dev (>> 1.46) | libboost-filesystem1.46-dev,
+ libboost-program-options-dev (>> 1.46) | libboost-program-options1.46-dev,
+ libboost-thread-dev (>> 1.46) | libboost-thread1.46-dev,
+ libboost-test-dev (>> 1.46) | libboost-test1.46-dev,
  qt4-qmake,
  libqt4-dev,
  libqrencode-dev
 Standards-Version: 3.9.2
-Homepage: http://www.bitcoin.org/
-Vcs-Git: git://github.com/bitcoin/bitcoin.git
-Vcs-Browser: http://github.com/bitcoin/bitcoin
+Homepage: http://anoncoin.net/
+Vcs-Git: https://github.com/Anoncoin/anoncoin.git
+Vcs-Browser: http://github.com/Anoncoin/anoncoin
 
-Package: bitcoind
+Package: anoncoind
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - daemon
- Bitcoin is a free open source peer-to-peer electronic cash system that
+ Anoncoin is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
  trusted parties.  Users hold the crypto keys to their own money and
  transact directly with each other, with the help of a P2P network to
  check for double-spending.
+ .
+ Anoncoin is a fork of litecoin which has native I2P support. And is created 
+ for use on darknets.
  .
  By default connects to an IRC network to discover other peers.
  .
  Full transaction history is stored locally at each client.  This
  requires 2+ GB of space, slowly growing.
  .
- This package provides bitcoind, a combined daemon and CLI tool to
+ This package provides anoncoind, a combined daemon and CLI tool to
  interact with the daemon.
 
-Package: bitcoin-qt
+Package: anoncoin-qt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - Qt GUI
- Bitcoin is a free open source peer-to-peer electronic cash system that
+ Anoncoin is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
  trusted parties.  Users hold the crypto keys to their own money and
  transact directly with each other, with the help of a P2P network to
  check for double-spending.
+ .
+ Anoncoin is a fork of litecoin which has native I2P support. And is created
+ for use on darknets.
  .
  By default connects to an IRC network to discover other peers.
  .
  Full transaction history is stored locally at each client.  This
  requires 2+ GB of space, slowly growing.
  .
- This package provides Bitcoin-Qt, a GUI for Bitcoin based on Qt.
+ This package provides Anoncoin-Qt, a GUI for Anoncoin based on Qt.

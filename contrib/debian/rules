@@ -1,9 +1,9 @@
 #!/usr/bin/make -f
 # -*- mode: makefile; coding: utf-8 -*-
 
-#DEB_MAKE_CHECK_TARGET = test_bitcoin
-#build/bitcoind::
-#	$(if $(filter nocheck,$(DEB_BUILD_OPTIONS)),,src/test_bitcoin)
+#DEB_MAKE_CHECK_TARGET = test_anoncoin
+#build/anoncoind::
+#	$(if $(filter nocheck,$(DEB_BUILD_OPTIONS)),,src/test_anoncoin)
 
 DEB_INSTALL_EXAMPLES_bitcoind += debian/examples/*
 DEB_INSTALL_MANPAGES_bitcoind += debian/manpages/*
@@ -12,22 +12,22 @@ DEB_INSTALL_MANPAGES_bitcoind += debian/manpages/*
 	dh --with bash-completion $@
 
 override_dh_auto_build:
-	cd src; $(MAKE) -f makefile.unix bitcoind
+	cd src; $(MAKE) -f makefile.unix anoncoind
 	$(MAKE)
 
 override_dh_auto_clean:
-	if [ -f Makefile ]; then $(MAKE) clean; else rm -rf build/; rm -f bitcoin-qt; fi
+	if [ -f Makefile ]; then $(MAKE) clean; else rm -rf build/; rm -f anoncoin-qt; fi
 	cd src; $(MAKE) -f makefile.unix clean
 
 override_dh_auto_configure:
 	qmake bitcoin-qt.pro USE_QRCODE=1
 
 override_dh_auto_test:
-	cd src; $(MAKE) -f makefile.unix test_bitcoin
-	src/test_bitcoin
+	cd src; $(MAKE) -f makefile.unix test_anoncoin
+	src/test_anoncoin
 
 # Ensure wrapper is set executable
-binary-post-install/bitcoind:
-	chmod +x $(cdbs_curdestdir)usr/bin/bitcoind
-binary-post-install/bitcoin-qt:
-	chmod +x $(cdbs_curdestdir)usr/bin/bitcoin-qt
+binary-post-install/anoncoind:
+	chmod +x $(cdbs_curdestdir)usr/bin/anoncoind
+binary-post-install/anoncoin-qt:
+	chmod +x $(cdbs_curdestdir)usr/bin/anoncoin-qt

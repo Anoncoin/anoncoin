@@ -1,0 +1,5 @@
+anoncoin-qt usr/bin
+share/pixmaps/anoncoin32.xpm usr/share/pixmaps
+share/pixmaps/anoncoin80.xpm usr/share/pixmaps
+debian/anoncoin-qt.desktop usr/share/applications
+debian/anoncoin-qt.protocol usr/share/kde4/services/
