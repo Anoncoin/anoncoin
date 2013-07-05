@@ -345,7 +345,7 @@ isEmpty(BOOST_INCLUDE_PATH) {
     macx:BOOST_INCLUDE_PATH = /opt/local/include
 }
 
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -Wl,-Bstatic -static
+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -Wl,-Bstatic -static -fstack-protector -fstack-protector-all
 windows:DEFINES += WIN32
 windows:RC_FILE = src/qt/res/bitcoin-qt.rc
 
