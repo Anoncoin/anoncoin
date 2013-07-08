@@ -45,13 +45,13 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile anoncoin-0.7.2.2-win32-setup.exe
+OutFile anoncoin-0.7.2.4-win32-setup.exe
 InstallDir $PROGRAMFILES\Anoncoin
 CRCCheck on
 XPStyle on
 BrandingText " "
 ShowInstDetails show
-VIProductVersion 0.7.2.2
+VIProductVersion 0.7.2.4
 VIAddVersionKey ProductName Anoncoin
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
