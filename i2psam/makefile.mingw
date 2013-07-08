@@ -7,13 +7,13 @@
 
 ####### Compiler, tools and options
 
-CC            = i586-mingw32msvc-gcc
-CXX           = i586-mingw32msvc-g++
+CC            = i686-w64-mingw32-gcc
+CXX           = i686-w64-mingw32-g++
 DEFINES       = -D_MT -DWIN32 -D_WINDOWS
-CFLAGS        = -pipe -isystem /usr/i586-mingw32msvc/include/ -O2 -Wall -Wextra $(DEFINES)
+CFLAGS        = -pipe -isystem /usr/i686-w64-mingw32/include/ -O2 -Wall -Wextra $(DEFINES)
 CXXFLAGS      = -O2 -fexceptions -Wall -Wextra $(DEFINES)
 INCPATH       = -I'../../dependencies/mingw32/qt/include' -I'../../dependencies/mingw32' -I'../../dependencies/mingw32/qt/include/ActiveQt' -I'../../dependencies/mingw32/qt/mkspecs/unsupported/win32-g++-cross'
-LIB           = i586-mingw32msvc-ar -ru
+LIB           = i686-w64-mingw32-ar -ru
 COPY          = cp
 SED           = sed
 COPY_FILE     = $(COPY)
