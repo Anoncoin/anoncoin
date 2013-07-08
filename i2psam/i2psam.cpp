@@ -16,6 +16,7 @@
 #endif
 
 #ifndef WIN32
+#include <unistd.h>
 #define closesocket         close
 #endif
 
