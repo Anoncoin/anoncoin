@@ -383,11 +383,6 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
 // We now get our external IP from the IRC server first and only use this as a backup
 bool GetMyExternalIP(CNetAddr& ipRet)
 {
-#ifdef USE_NATIVE_I2P
-    // On -i2p drop looking up the ip.
-    if (IsI2PEnabled())
-        return false;
-#endif
     CService addrConnect;
     const char* pszGet;
     const char* pszKeyword;
@@ -1613,7 +1608,7 @@ void ThreadOpenConnections2(void* parg)
             // do not allow non-default ports, unless after 50 invalid addresses selected already
             if (addr.GetPort() != GetDefaultPort() && nTries < 50)
 #endif
-                continue;
+                    continue;
 
             addrConnect = addr;
             break;
@@ -1857,7 +1852,7 @@ bool BindListenNativeI2P(SOCKET& hSocket) {
     hSocket = I2PSession::Instance().accept(false);
     if (!SetSocketOptions(hSocket) || hSocket == INVALID_SOCKET)
         return false;
-    CService addrBind(I2PSession::Instance().getMyAddress(), 0);
+    CService addrBind(I2PSession::Instance().getMyDestination().pub, 0);
     if (addrBind.IsRoutable() && fDiscover)
         AddLocal(addrBind, LOCAL_BIND);
     return true;
