@@ -393,6 +393,8 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
 // We now get our external IP from the IRC server first and only use this as a backup
 bool GetMyExternalIP(CNetAddr& ipRet)
 {
+    if (IsI2POnly())
+        return false;
     CService addrConnect;
     const char* pszGet;
     const char* pszKeyword;
@@ -2068,6 +2070,8 @@ void StartNode(void* parg)
     // On -i2p don't even start the IRC thread
 #ifdef USE_NATIVE_I2P
     if (IsI2PEnabled()) {
+        printf("ThreadIRCSeed is disabled on I2P.\n");
+    } else if (IsI2POnly()) {
         printf("ThreadIRCSeed is disabled on I2P.\n");
     } else {
         if (GetBoolArg("-irc", true))
