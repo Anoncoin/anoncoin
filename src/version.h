@@ -17,6 +17,8 @@
 #define CLIENT_VERSION_REVISION    2
 #define CLIENT_VERSION_BUILD       4
 
+#define I2P_NATIVE_BUILD "0.2"
+
 static const int CLIENT_VERSION =
                            1000000 * CLIENT_VERSION_MAJOR
                          +   10000 * CLIENT_VERSION_MINOR 

@@ -1,8 +1,15 @@
+//
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "optionsmodel.h"
 #include "addresstablemodel.h"
 #include "transactiontablemodel.h"
+
+#ifdef USE_NATIVE_I2P
+#include "i2p.h"
+#endif
 
 #include "main.h"
 #include "init.h" // for pwalletMain
@@ -138,16 +145,6 @@ QString ClientModel::getMiningUsername() const
 {
     return miningUsername;
 }
-
-#ifdef USE_NATIVE_I2P
-void ClientModel::updateNumI2PConnections(int numI2PConnections) {
-    emit numI2PConnectionsChanged(numI2PConnections);
-}
-
-int ClientModel::getNumI2PConnections() const {
-    return nI2PNodeCount;
-}
-#endif
 
 void ClientModel::setMiningUsername(QString username)
 {
@@ -296,6 +293,56 @@ QString ClientModel::formatFullVersion() const
     return QString::fromStdString(FormatFullVersion());
 }
 
+#ifdef USE_NATIVE_I2P
+QString ClientModel::formatI2PNativeFullVersion() const
+{
+    return QString::fromStdString(FormatI2PNativeFullVersion());
+}
+
+void ClientModel::updateNumI2PConnections(int numI2PConnections)
+{
+    emit numI2PConnectionsChanged(numI2PConnections);
+}
+
+int ClientModel::getNumI2PConnections() const
+{
+    return nI2PNodeCount;
+}
+
+QString ClientModel::getPublicI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().pub);
+}
+
+QString ClientModel::getPrivateI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().priv);
+}
+
+bool ClientModel::isI2PAddressGenerated() const
+{
+    return I2PSession::Instance().getMyDestination().isGenerated;
+}
+
+bool ClientModel::isI2POnly() const
+{
+    return IsI2POnly();
+}
+
+QString ClientModel::getB32Address(const QString& destination) const
+{
+    return QString::fromStdString(I2PSession::GenerateB32AddressFromDestination(destination.toStdString()));
+}
+
+void ClientModel::generateI2PDestination(QString& pub, QString& priv) const
+{
+    const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
+    pub = QString::fromStdString(generatedDest.pub);
+    priv = QString::fromStdString(generatedDest.priv);
+}
+
+#endif
+
 QString ClientModel::formatBuildDate() const
 {
     return QString::fromStdString(CLIENT_DATE);
@@ -326,7 +373,8 @@ static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConn
 }
 
 #ifdef USE_NATIVE_I2P
-static void NotifyNumI2PConnectionsChanged(ClientModel *clientmodel, int newNumI2PConnections) {
+static void NotifyNumI2PConnectionsChanged(ClientModel *clientmodel, int newNumI2PConnections)
+{
     QMetaObject::invokeMethod(clientmodel, "updateNumI2PConnections", Qt::QueuedConnection,
                               Q_ARG(int, newNumI2PConnections));
 }
@@ -358,6 +406,6 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
 #ifdef USE_NATIVE_I2P
-    uiInterface.NotifyNumI2PConnectionsChanged.disconnect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
+    uiInterface.NotifyNumI2PConnectionsChanged.connect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
 #endif
 }

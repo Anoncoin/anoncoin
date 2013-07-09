@@ -1,3 +1,6 @@
+//
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 #ifndef CLIENTMODEL_H
 #define CLIENTMODEL_H
 
@@ -30,9 +33,6 @@ public:
     OptionsModel *getOptionsModel();
 
     int getNumConnections() const;
-#ifdef USE_NATIVE_I2P
-    int getNumI2PConnections() const;
-#endif
     int getNumBlocks() const;
     int getNumBlocksAtStartup();
     MiningType getMiningType() const;
@@ -73,6 +73,20 @@ public:
     QString clientName() const;
     QString formatClientStartupTime() const;
 
+#ifdef USE_NATIVE_I2P
+    QString formatI2PNativeFullVersion() const;
+    int getNumI2PConnections() const;
+
+    QString getPublicI2PKey() const;
+    QString getPrivateI2PKey() const;
+    bool isI2PAddressGenerated() const;
+    bool isI2POnly() const;
+    QString getB32Address(const QString& destination) const;
+    void generateI2PDestination(QString& pub, QString& priv) const;
+//    I2PSession& getI2PSession() const;
+//    bool isPermanent
+#endif
+
 private:
     OptionsModel *optionsModel;
 
@@ -110,10 +124,10 @@ signals:
 public slots:
     void updateTimer();
     void updateNumConnections(int numConnections);
-    void updateAlert(const QString &hash, int status);
 #ifdef USE_NATIVE_I2P
     void updateNumI2PConnections(int numI2PConnections);
 #endif
+    void updateAlert(const QString &hash, int status);
 };
 
 #endif // CLIENTMODEL_H

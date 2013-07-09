@@ -130,6 +130,16 @@ bool IsI2PEnabled() {
     }
     return I2P;
 }
+bool IsI2POnly() {
+
+    bool i2pOnly = NET_MAX > 0; // if NET_MAX == 0 we set i2pOnly to false and exit
+    for (int n = 0; n < NET_MAX; n++)
+    {
+        Network net = (Network)n;
+        i2pOnly &= ((net == NET_NATIVE_I2P) != IsLimited(net)); // isI2P xor IsLimited
+    }
+    return i2pOnly;
+}
 #endif
 
 // find 'best' local address for a particular peer

@@ -33,7 +33,10 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Ready to save parameter (save this text in the configuration file and keep it secret):</string>
+      <string>Ready to save parameter (If you want to use this address save this text in the configuration file and keep it secret):</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -95,7 +98,7 @@
      <item>
       <widget class="QPushButton" name="privButton">
        <property name="text">
-        <string>Copy 'mydestination' parameter
+        <string>Copy &quot;mydestination&quot; parameter
 to the clipboard</string>
        </property>
       </widget>

@@ -192,7 +192,9 @@ HEADERS += src/qt/bitcoingui.h \
     src/version.h \
     src/qt/rpcconsole.h \
     src/qt/showi2paddresses.h \
-    src/i2p.h
+    src/i2p.h \
+    src/hash.h \
+    src/qt/i2poptionswidget.h
 
 SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/transactiontablemodel.cpp \
@@ -254,7 +256,10 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/scrypt.c \
     src/qt/miningpage.cpp \
     src/noui.cpp \
-    src/qt/showi2paddresses.cpp
+    src/qt/showi2paddresses.cpp \
+    src/qt/i2poptionswidget.cpp \
+    src/i2p.cpp \
+    src/hash.cpp
 
 RESOURCES += \
     src/qt/bitcoin.qrc
@@ -272,7 +277,8 @@ FORMS += \
     src/qt/forms/rpcconsole.ui \
     src/qt/forms/miningpage.ui \
     src/qt/forms/optionsdialog.ui \
-    src/qt/forms/showi2paddresses.ui
+    src/qt/forms/showi2paddresses.ui \
+    src/qt/forms/i2poptionswidget.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h

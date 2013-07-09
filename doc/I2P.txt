@@ -11,7 +11,7 @@ Here are some parameters:
 -mydestination=<pub+priv i2p-keys> - your full destination (public+private keys). If it is not specified, the client will geneterate a random destination for you. See below (Starting wallet with a permanent i2p-address) more details about this option.
 -generatei2pdestination - if this option is specified, your client will start for generation i2p-destination only and will close after that.
 
-Your client will act as a gateway between I2P and clearnet if you don't add -onlynet=native_i2p
+Your client will act as a gateway between I2P and clearnet if you don't add -onlynet=i2p
 
 If you have used your Anoncoin client on clearnet before, you might need to delete peers.dat if you don't get any connections.
 

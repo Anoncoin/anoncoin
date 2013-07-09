@@ -1,3 +1,6 @@
+//
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 #ifndef BITCOINGUI_H
 #define BITCOINGUI_H
 
@@ -79,7 +82,9 @@ private:
     QLabel *labelBlocksIcon;
     QLabel *progressBarLabel;
 #ifdef USE_NATIVE_I2P
-    QLabel *labelI2P;
+    QLabel* labelI2PConnections;
+    QLabel* labelI2POnly;
+    QLabel* labelI2PGenerated;
 #endif
     QProgressBar *progressBar;
 
@@ -122,11 +127,11 @@ private:
     void createTrayIcon();
 
 public slots:
-/*
+
 #ifdef USE_NATIVE_I2P
     void setNumI2PConnections(int count);
 #endif
-*/
+
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
     /** Set number of blocks shown in the UI */

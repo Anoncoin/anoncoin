@@ -48,6 +48,7 @@ bool IsI2PEnabled();
 bool BindListenNativeI2P();
 bool BindListenNativeI2P(SOCKET& hSocket);
 extern int nI2PNodeCount;
+bool IsI2POnly();
 #endif
 
 enum
