@@ -109,6 +109,9 @@ RPCConsole::RPCConsole(QWidget *parent) :
     historyPtr(0)
 {
     ui->setupUi(this);
+    // Temporary disabling some views
+    ui->label_4->hide();
+    ui->totalBlocks->hide();
 
 #ifndef Q_WS_MAC
     ui->openDebugLogfileButton->setIcon(QIcon(":/icons/export"));
