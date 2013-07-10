@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET =
 VERSION = 0.7.3
 INCLUDEPATH += src src/json src/qt i2psam
-DEFINES += QT_GUI BOOST_CHRONO_INLINED BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6 USE_NATIVE_I2P
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6 USE_NATIVE_I2P
 CONFIG += no_include_pwd
 QT += core gui
 
@@ -384,7 +384,13 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -li2psam -Li2psam
 # -lgdi32 has to happen after -lcrypto (see  #681)
 windows:LIBS += -lole32 -luuid -lgdi32
-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_LIB_SUFFIX
+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
+
+contains(USE_BOOST_46, 1) {
+} else {
+    DEFINES += BOOST_CHRONO_INLINED
+    LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
+}
 
 contains(RELEASE, 1) {
     !windows:!macx {
