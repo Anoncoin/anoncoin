@@ -108,7 +108,6 @@ bool RecvLineFixed(SOCKET hSocket, string& strLine) {
 
         // +megacoin added for irc exits, without this, recv(hSocket, &c, 1, 0); will hang when closing the program after using irc on windows.
         bool stop = false;
-        u_long RecvCount;
         while(!stop) {
             boost::this_thread::interruption_point();
             if (SocketCanRead(hSocket) >= 1) { stop = true; }

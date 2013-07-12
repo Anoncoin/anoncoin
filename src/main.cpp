@@ -1995,7 +1995,7 @@ bool LoadBlockIndex(bool fAllowNew)
         pchMessageStart[1] = 0xca;
         pchMessageStart[2] = 0xa7;
         pchMessageStart[3] = 0x4a;
-        hashGenesisBlock = uint256("0xf5ae71e26c74beacc88382716aced69cddf3dffff24f384e1808905e0188f68f");
+        hashGenesisBlock = uint256("0x66d320494074f837363642a0c848ead1dbbbc9f7b854f8cda1f3eabbf08eb48c");
     }
 
     //
@@ -2047,8 +2047,8 @@ bool LoadBlockIndex(bool fAllowNew)
 
         if (fTestNet)
         {
-            block.nTime    = 1370190760;
-            block.nNonce   = 345270584;
+            block.nTime    = 1373625296;
+            block.nNonce   = 346280655;
         }
 
         //// debug print
@@ -3339,39 +3339,6 @@ void SHA256Transform(void* pstate, void* pinput, const void* pinit)
     SHA256_Update(&ctx, data, sizeof(data));
     for (int i = 0; i < 8; i++)
         ((uint32_t*)pstate)[i] = ctx.h[i];
-}
-
-//
-// ScanHash scans nonces looking for a hash with at least some zero bits.
-// It operates on big endian data.  Caller does the byte reversing.
-// All input buffers are 16-byte aligned.  nNonce is usually preserved
-// between calls, but periodically or if nNonce is 0xffff0000 or above,
-// the block is rebuilt and nNonce starts over at zero.
-//
-unsigned int static ScanHash_CryptoPP(char* pmidstate, char* pdata, char* phash1, char* phash, unsigned int& nHashesDone)
-{
-    unsigned int& nNonce = *(unsigned int*)(pdata + 12);
-    for (;;)
-    {
-        // Crypto++ SHA-256
-        // Hash pdata using pmidstate as the starting state into
-        // preformatted buffer phash1, then hash phash1 into phash
-        nNonce++;
-        SHA256Transform(phash1, pdata, pmidstate);
-        SHA256Transform(phash, phash1, pSHA256InitState);
-
-        // Return the nonce if the hash has at least some zero bits,
-        // caller will check if it has enough to reach the target
-        if (((unsigned short*)phash)[14] == 0)
-            return nNonce;
-
-        // If nothing found after trying for a while, return -1
-        if ((nNonce & 0xffff) == 0)
-        {
-            nHashesDone = 0xffff+1;
-            return (unsigned int) -1;
-        }
-    }
 }
 
 // Some explaining would be appreciated
