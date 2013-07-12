@@ -386,8 +386,10 @@ LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -li2psam -Li2psam
 windows:LIBS += -lole32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 
-contains(USE_BOOST_46, 1) {
+CONFIG(USE_BOOST_46) {
+    message(Building with boost 1.4.6. Excluding chrono library.)
 } else {
+    message(Building with boost over 1.4.6. Including chrono library.)
     DEFINES += BOOST_CHRONO_INLINED
     LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 }
