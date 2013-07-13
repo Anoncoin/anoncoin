@@ -829,17 +829,17 @@ uint256 static GetOrphanRoot(const CBlock* pblock)
     return pblock->GetHash();
 }
 
-int64 static GetBlockValue(int nHeight, int64 nFees)
-{
-    int64 nSubsidy = 20 * COIN;
-
+int64 static GetBlockValue(int nHeight, int64 nFees) {
+    int64 nSubsidy = 5 * COIN;
     // Some adjustments to the start of the lifetime to Anoncoin
     if (nHeight < 42000) {
         nSubsidy = 4.2 * COIN;
     } else if (nHeight < 77777) { // All luck is seven ;)
         nSubsidy = 7 * COIN;
-    } else if (nHeight < 177777) {
-        nSubsidy = 17.42 * COIN;
+    } else if (nHeight == 77778) {
+        nSubsidy = 10 * COIN;
+    } else {
+        nSubsidy >>= (nHeight / 306600); // Anoncoin: 306600 blocks in ~2 years
     }
 
     return nSubsidy + nFees;
