@@ -143,6 +143,19 @@ bool IsI2POnly() {
     }
     return i2pOnly;
 }
+bool IsTOROnly() {
+    bool torOnly = false;
+    if (mapArgs.count("-onlynet")) {
+        std::set<enum Network> nets;
+        BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
+            enum Network net = ParseNetwork(snet);
+            if (net == NET_TOR) {
+                torOnly=true;
+            }
+        }
+    }
+    return torOnly;
+}
 #endif
 
 // find 'best' local address for a particular peer
