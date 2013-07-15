@@ -13,7 +13,7 @@ INCLUDEPATHS= \
  -I"$(BUILDDIR)/openssl-1.0.1c/include" \
  -I"$(BUILDDIR)/miniupnpc" \
  -I"$(BUILDDIR)" \
- -I"$(BUILDDIR)/i2psam" \
+ -I"$(CURDIR)/i2psam" \
  -I"$(CURDIR)"/obj \
 
 LIBPATHS= \
@@ -21,7 +21,7 @@ LIBPATHS= \
  -L"$(BUILDDIR)/db-4.8.30.NC/build_unix" \
  -L"$(BUILDDIR)/miniupnpc" \
  -L"$(BUILDDIR)/openssl-1.0.1c" \
- -L"$(BUILDDIR)/i2psam"
+ -L"$(CURDIR)/i2psam"
 
 LIBS= \
  -l boost_system-mt-s \
