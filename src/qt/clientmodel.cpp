@@ -324,6 +324,11 @@ bool ClientModel::isI2PAddressGenerated() const
     return I2PSession::Instance().getMyDestination().isGenerated;
 }
 
+bool ClientModel::isI2PEnabled() const
+{
+    return IsI2PEnabled();
+}
+
 bool ClientModel::isI2POnly() const
 {
     return IsI2POnly();

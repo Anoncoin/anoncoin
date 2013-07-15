@@ -80,6 +80,7 @@ public:
     QString getPublicI2PKey() const;
     QString getPrivateI2PKey() const;
     bool isI2PAddressGenerated() const;
+    bool isI2PEnabled() const;
     bool isI2POnly() const;
     bool isTOROnly() const;
     QString getB32Address(const QString& destination) const;

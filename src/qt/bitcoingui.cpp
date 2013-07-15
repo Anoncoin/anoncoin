@@ -135,8 +135,13 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     // Status bar notification icons
     QFrame *frameBlocks = new QFrame();
     frameBlocks->setContentsMargins(0,0,0,0);
-    frameBlocks->setMinimumWidth(173);
-    frameBlocks->setMaximumWidth(173);
+    if (clientModel->isI2PEnabled()) {
+        frameBlocks->setMinimumWidth(173);
+        frameBlocks->setMaximumWidth(173);
+    } else {
+        frameBlocks->setMinimumWidth(73);
+        frameBlocks->setMaximumWidth(73);
+    }
     QHBoxLayout *frameBlocksLayout = new QHBoxLayout(frameBlocks);
     frameBlocksLayout->setContentsMargins(3,0,3,0);
     frameBlocksLayout->setSpacing(3);
@@ -150,12 +155,23 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     labelI2POnly = new QLabel();
     labelI2PGenerated = new QLabel();
 
-    frameBlocksLayout->addWidget(labelEncryptionIcon);
-    frameBlocksLayout->addWidget(labelI2PGenerated);
-    frameBlocksLayout->addWidget(labelI2POnly);
-    frameBlocksLayout->addWidget(labelI2PConnections);
-    frameBlocksLayout->addWidget(labelConnectionsIcon);
-    frameBlocksLayout->addWidget(labelBlocksIcon);
+    if (clientModel->isI2PEnabled()) {
+        frameBlocksLayout->addWidget(labelEncryptionIcon);
+        frameBlocksLayout->addWidget(labelI2PGenerated);
+        frameBlocksLayout->addWidget(labelI2POnly);
+        frameBlocksLayout->addWidget(labelI2PConnections);
+        frameBlocksLayout->addWidget(labelConnectionsIcon);
+        frameBlocksLayout->addWidget(labelBlocksIcon);
+    } else {
+        frameBlocksLayout->addStretch();
+        frameBlocksLayout->addWidget(labelEncryptionIcon);
+        frameBlocksLayout->addStretch();
+        frameBlocksLayout->addWidget(labelConnectionsIcon);
+        frameBlocksLayout->addStretch();
+        frameBlocksLayout->addWidget(labelBlocksIcon);
+        frameBlocksLayout->addStretch();
+    }
+    
 #else
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelEncryptionIcon);
