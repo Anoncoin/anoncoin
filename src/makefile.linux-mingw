@@ -13,13 +13,15 @@ INCLUDEPATHS= \
  -I"$(BUILDDIR)/openssl-1.0.1c/include" \
  -I"$(BUILDDIR)/miniupnpc" \
  -I"$(BUILDDIR)" \
+ -I"$(BUILDDIR)/i2psam" \
  -I"$(CURDIR)"/obj \
 
 LIBPATHS= \
  -L"$(BUILDDIR)/boost_1_53_0/stage/lib" \
  -L"$(BUILDDIR)/db-4.8.30.NC/build_unix" \
  -L"$(BUILDDIR)/miniupnpc" \
- -L"$(BUILDDIR)/openssl-1.0.1c"
+ -L"$(BUILDDIR)/openssl-1.0.1c" \
+ -L"$(BUILDDIR)/i2psam"
 
 LIBS= \
  -l boost_system-mt-s \
@@ -29,7 +31,8 @@ LIBS= \
  -l boost_chrono-mt-s \
  -l db_cxx \
  -l ssl \
- -l crypto
+ -l crypto \
+ -l i2psam
 
 DEFS=-D_MT -DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -DUSE_IPV6 -DUSE_NATIVE_I2P
 DEBUGFLAGS=-g
