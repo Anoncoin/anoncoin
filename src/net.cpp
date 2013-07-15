@@ -402,8 +402,10 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
 // We now get our external IP from the IRC server first and only use this as a backup
 bool GetMyExternalIP(CNetAddr& ipRet)
 {
+#ifdef USE_NATIVE_I2P
     if (IsI2POnly())
         return false;
+#endif
     CService addrConnect;
     const char* pszGet;
     const char* pszKeyword;
