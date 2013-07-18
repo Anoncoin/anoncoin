@@ -884,33 +884,30 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
     // Anoncoin difficulty adjustment protocol switch (Thanks to FeatherCoin for this idea)
     static const int nDifficultySwitchHeight = 15420;
+    static const int nDifficultySwitchHeight2 = 77777;
+    static const int newTargetTimespan = 2050;
     int nHeight = pindexLast->nHeight + 1;
     bool fNewDifficultyProtocol = (nHeight >= nDifficultySwitchHeight || fTestNet);
+    bool fNewDifficultyProtocol2 = (nHeight >= nDifficultySwitchHeight2 || fTestNet);
+    if (fNewDifficultyProtocol2) {
+        // Jumping back to sqrt(2) as the factor of adjustment.
+        fNewDifficultyProtocol = false;
+    }
 
     int64 nTargetTimespanCurrent = fNewDifficultyProtocol ? (nTargetTimespan*4) : nTargetTimespan;
+    if (fNewDifficultyProtocol2) {
+        nTargetTimespanCurrent = newTargetTimespan;
+    }
     int64 nInterval = nTargetTimespanCurrent / nTargetSpacing;
 
-    // Only change once per interval, or at protocol switch height
-    if ((nHeight % nInterval != 0) &&
-        (nHeight != nDifficultySwitchHeight || fTestNet))
-    {
-        // Special difficulty rule for testnet:
-        if (fTestNet)
-        {
-            // If the new block's timestamp is more than 2* 10 minutes
-            // then allow mining of a min-difficulty block.
-            if (pblock->nTime > pindexLast->nTime + nTargetSpacing*2)
-                return nProofOfWorkLimit;
-            else
-            {
-                // Return the last non-special-min-difficulty-rules-block
-                const CBlockIndex* pindex = pindexLast;
-                while (pindex->pprev && pindex->nHeight % nInterval != 0 && pindex->nBits == nProofOfWorkLimit)
-                    pindex = pindex->pprev;
-                return pindex->nBits;
-            }
-        }
+    if (fTestNet && nHeight < (newTargetTimespan/205)+1) {
+        return pindexLast->nBits;
+    }
 
+    // Only change once per interval, or at protocol switch height
+    if ((nHeight % nInterval != 0 && !fNewDifficultyProtocol2) &&
+        (nHeight != nDifficultySwitchHeight) && !fTestNet)
+    {
         return pindexLast->nBits;
     }
 
@@ -922,6 +919,7 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
     // Go back by what we want to be 14 days worth of blocks
     const CBlockIndex* pindexFirst = pindexLast;
+    blockstogoback = fNewDifficultyProtocol2 ? (newTargetTimespan/205) : blockstogoback;
     for (int i = 0; pindexFirst && i < blockstogoback; i++)
         pindexFirst = pindexFirst->pprev;
     assert(pindexFirst);
@@ -930,8 +928,10 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     int64 nActualTimespanMax = fNewDifficultyProtocol ? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
     int64 nActualTimespanMin = fNewDifficultyProtocol ? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
+#ifdef __DEBUG
     printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
-    if (pindexLast->nHeight+1 > 177777) {
+#endif
+    if (pindexLast->nHeight+1 >= nDifficultySwitchHeight2) {
         if (nActualTimespan < nActualTimespanMin)
             nActualTimespan = nActualTimespanMin;
         if (nActualTimespan > nActualTimespanMax)
@@ -952,16 +952,22 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     CBigNum bnNew;
     bnNew.SetCompact(pindexLast->nBits);
     bnNew *= nActualTimespan;
-    bnNew /= nTargetTimespan;
+    if (fNewDifficultyProtocol2) {
+        bnNew /= nTargetTimespanCurrent;
+    } else {
+        bnNew /= nTargetTimespan;
+    }
 
     if (bnNew > bnProofOfWorkLimit)
         bnNew = bnProofOfWorkLimit;
 
     /// debug print
+#ifdef __DEBUG
     printf("GetNextWorkRequired RETARGET\n");
-    printf("nTargetTimespan = %"PRI64d"    nActualTimespan = %"PRI64d"\n", nTargetTimespan, nActualTimespan);
+    printf("nTargetTimespan = %"PRI64d"    nActualTimespan = %"PRI64d"\n", nTargetTimespanCurrent, nActualTimespan);
     printf("Before: %08x  %s\n", pindexLast->nBits, CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
     printf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+#endif
 
     return bnNew.GetCompact();
 }
