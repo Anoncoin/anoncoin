@@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.7.2
+!define VERSION 0.7.4
 !define COMPANY "Anoncoin project"
 !define URL http://www.anoncoin.net/
 
@@ -45,13 +45,13 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile anoncoin-0.7.2.4-win32-setup.exe
+OutFile anoncoin-0.7.4.0-win32-setup.exe
 InstallDir $PROGRAMFILES\Anoncoin
 CRCCheck on
 XPStyle on
 BrandingText " "
 ShowInstDetails show
-VIProductVersion 0.7.2.4
+VIProductVersion 0.7.4.0
 VIAddVersionKey ProductName Anoncoin
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"

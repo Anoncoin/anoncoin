@@ -14,8 +14,8 @@
 // These need to be macro's, as version.cpp's voodoo requires it
 #define CLIENT_VERSION_MAJOR       0
 #define CLIENT_VERSION_MINOR       7
-#define CLIENT_VERSION_REVISION    2
-#define CLIENT_VERSION_BUILD       4
+#define CLIENT_VERSION_REVISION    4
+#define CLIENT_VERSION_BUILD       0
 
 #define I2P_NATIVE_BUILD "0.2"
 
@@ -33,7 +33,7 @@ extern const std::string CLIENT_DATE;
 // network protocol versioning
 //
 
-static const int PROTOCOL_VERSION = 70002;
+static const int PROTOCOL_VERSION = 70004;
 
 // earlier versions not supported as of Feb 2012, and are disconnected
 static const int MIN_PROTO_VERSION = 209;

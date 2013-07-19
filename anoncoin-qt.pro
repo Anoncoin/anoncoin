@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET =
-VERSION = 0.7.3
+VERSION = 0.7.4
 INCLUDEPATH += src src/json src/qt i2psam
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6 USE_NATIVE_I2P
 CONFIG += no_include_pwd
@@ -386,6 +386,7 @@ LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -li2psam -Li2psam
 windows:LIBS += -lole32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 
+# use: qmake "USE_BOOST_46=1"
 CONFIG(USE_BOOST_46) {
     message(Building with boost 1.4.6. Excluding chrono library.)
 } else {
