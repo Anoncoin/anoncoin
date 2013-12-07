@@ -1,0 +1,22 @@
+Howto use Anoncoin on I2P (Still beta software, but working).
+
+To build the daemon, in any operating system:
+cd src
+make -f makefile.YOUR_OS USE_NATIVE_I2P=1
+
+Here are some parameters:
+-i2psessionname=<session name> - name of an I2P session. If it is not specified, value will be "Bitcoin-client"
+-samhost=<ip or host name> - address of the SAM bridge host. If it is not specified, value will be "127.0.0.1"
+-samport=<port> - port number of the SAM bridge host. If it is not specified, value will be "7656".
+-mydestination=<pub+priv i2p-keys> - your full destination (public+private keys). If it is not specified, the client will geneterate a random destination for you. See below (Starting wallet with a permanent i2p-address) more details about this option.
+-generatei2pdestination - if this option is specified, your client will start for generation i2p-destination only and will close after that.
+
+Your client will act as a gateway between I2P and clearnet if you don't add -onlynet=i2p
+
+If you have used your Anoncoin client on clearnet before, you might need to delete peers.dat if you don't get any connections.
+
+
+-------------
+Many thanks to giv for his original patch to the Bitcoin client!
+https://bitcointalk.org/index.php?topic=151181.0
+

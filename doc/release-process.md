@@ -6,7 +6,7 @@ Release Process
 ###update (commit) version in sources
 
 
-	litecoin-qt.pro
+	anoncoin-qt.pro
 	contrib/verifysfbinaries/verify.sh
 	doc/README*
 	share/setup.nsi
