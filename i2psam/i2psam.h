@@ -22,6 +22,7 @@
 #include <arpa/inet.h>      // for ntohs and htons
 #endif
 
+// TODO: check a possible bug about cast -1 to SOCKET
 #define SAM_INVALID_SOCKET      (-1)
 #define SAM_SOCKET_ERROR        (-1)
 
@@ -34,7 +35,7 @@
 #define SAM_DEFAULT_I2P_OPTIONS     ""
 
 #define SAM_NAME_INBOUND_QUANTITY           "inbound.quantity"
-#define SAM_DEFAULT_INBOUND_QUANTITY        3
+#define SAM_DEFAULT_INBOUND_QUANTITY        2
 #define SAM_NAME_INBOUND_LENGTH             "inbound.length"
 #define SAM_DEFAULT_INBOUND_LENGTH          2
 #define SAM_NAME_INBOUND_LENGTHVARIANCE     "inbound.lengthVariance"
@@ -46,7 +47,7 @@
 #define SAM_NAME_INBOUND_IPRESTRICTION      "inbound.iprestriction"
 #define SAM_DEFAULT_INBOUND_IPRESTRICTION   2
 #define SAM_NAME_OUTBOUND_QUANTITY          "outbound.quantity"
-#define SAM_DEFAULT_OUTBOUND_QUANTITY       3
+#define SAM_DEFAULT_OUTBOUND_QUANTITY       2
 #define SAM_NAME_OUTBOUND_LENGTH            "outbound.length"
 #define SAM_DEFAULT_OUTBOUND_LENGTH         2
 #define SAM_NAME_OUTBOUND_LENGTHVARIANCE    "outbound.lengthvariance"

@@ -62,8 +62,12 @@ LIBS+= \
  -Wl,-B$(LMODE2) \
    -l z \
    -l dl \
-   -l pthread
+   -l pthread \
+   -l i2psam
 
+# I2P Support
+DEFS +=  -DUSE_NATIVE_I2P -I"../i2psam"
+LIBS += -L"../i2psam"
 
 # Hardening
 # Make some classes of vulnerabilities unexploitable in case one is discovered.

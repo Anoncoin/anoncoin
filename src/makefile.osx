@@ -13,11 +13,13 @@ INCLUDEPATHS= \
  -I"$(CURDIR)" \
  -I"$(CURDIR)"/obj \
  -I"$(DEPSDIR)/include" \
- -I"$(DEPSDIR)/include/db48"
+ -I"$(DEPSDIR)/include/db48" \
+ -I"../i2psam"
 
 LIBPATHS= \
  -L"$(DEPSDIR)/lib" \
- -L"$(DEPSDIR)/lib/db48"
+ -L"$(DEPSDIR)/lib/db48" \
+ -L"../i2psam"
 
 USE_UPNP:=1
 USE_IPV6:=1
@@ -52,7 +54,8 @@ LIBS += \
  -lboost_chrono-mt \
  -lssl \
  -lcrypto \
- -lz
+ -lz \
+ -l i2psam
 TESTDEFS += -DBOOST_TEST_DYN_LINK
 endif
 
@@ -66,6 +69,11 @@ CFLAGS = -mmacosx-version-min=10.5 -arch i386 -O3
 else
 DEBUGFLAGS = -g
 endif
+
+
+# I2P Support
+DEFS +=  -DUSE_NATIVE_I2P -I"../i2psam"
+LIBS += -L"../i2psam"
 
 # ppc doesn't work because we don't support big-endian
 CFLAGS += -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
