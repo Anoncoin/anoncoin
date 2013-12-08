@@ -1630,6 +1630,9 @@ public:
     // (memory only) pointer to the index of the *active* successor of this block
     CBlockIndex* pnext;
 
+    // Keep track of money supply
+    int64 nMoneySupply;
+
     // height of the entry in the chain. The genesis block has height 0
     int nHeight;
 
@@ -1673,6 +1676,7 @@ public:
         nDataPos = 0;
         nUndoPos = 0;
         nChainWork = 0;
+        nMoneySupply = 0;
         nTx = 0;
         nChainTx = 0;
         nStatus = 0;
@@ -1694,6 +1698,7 @@ public:
         nDataPos = 0;
         nUndoPos = 0;
         nChainWork = 0;
+        nMoneySupply = 0;
         nTx = 0;
         nChainTx = 0;
         nStatus = 0;
@@ -1850,6 +1855,7 @@ public:
         if (!(nType & SER_GETHASH))
             READWRITE(VARINT(nVersion));
 
+        READWRITE(VARINT(nMoneySupply));
         READWRITE(VARINT(nHeight));
         READWRITE(VARINT(nStatus));
         READWRITE(VARINT(nTx));
