@@ -9,6 +9,7 @@
 #include "addrman.h"
 #include "ui_interface.h"
 #include "script.h"
+#include "irc.h"
 
 #ifdef WIN32
 #include <string.h>
@@ -1796,6 +1797,9 @@ void StartNode(boost::thread_group& threadGroup)
     // Map ports with UPnP
     MapPort(GetBoolArg("-upnp", USE_UPNP));
 #endif
+
+    // Get addresses from IRC and advertise ours
+    threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "irc", &ThreadIRCSeed));
 
     // Send and receive from sockets, accept connections
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
