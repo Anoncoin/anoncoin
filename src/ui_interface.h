@@ -76,6 +76,10 @@ public:
     /** Handle a URL passed at the command line. */
     boost::signals2::signal<void (const std::string& strURI)> ThreadSafeHandleURI;
 
+    boost::signals2::signal<void (const std::string& caption, const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName)> ThreadSafeShowGeneratedI2PAddress;
+
+    boost::signals2::signal<void (int newNumI2PConnections)> NotifyNumI2PConnectionsChanged;
+
     /** Progress message during initialization. */
     boost::signals2::signal<void (const std::string &message)> InitMessage;
 

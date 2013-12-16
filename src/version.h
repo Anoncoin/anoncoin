@@ -21,6 +21,7 @@ extern const std::string CLIENT_NAME;
 extern const std::string CLIENT_BUILD;
 extern const std::string CLIENT_DATE;
 
+const std::string I2P_MODULE_VERSION = "0.2";
 //
 // network protocol versioning
 //

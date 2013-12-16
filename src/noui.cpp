@@ -32,6 +32,25 @@ static bool noui_ThreadSafeMessageBox(const std::string& message, const std::str
     return false;
 }
 
+static void noui_ThreadSafeShowGeneratedI2PAddress(const std::string& caption, const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName)
+{
+    std::string msg = "\nIf you want to use a permanent I2P-address you have to set a \'mydestination\' option in the configuration file:\n";
+    msg += configFileName;
+
+    msg += "\nAddress + private key (save this text in the configuration file and keep it secret):\n";
+    msg += priv;
+
+    msg += "\n\nAddress (you can make it public):\n";
+    msg += pub;
+
+    msg += "\n\nShort base32-address:\n";
+    msg += b32;
+    msg += "\n\n";
+
+    printf("%s: %s\n", caption.c_str(), msg.c_str());
+    fprintf(stderr, "%s: %s\n", caption.c_str(), msg.c_str());
+}
+
 static bool noui_ThreadSafeAskFee(int64 /*nFeeRequired*/)
 {
     return true;
