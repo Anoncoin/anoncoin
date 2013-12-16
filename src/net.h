@@ -45,6 +45,11 @@ void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
 
+bool BindListenNativeI2P();
+bool BindListenNativeI2P(SOCKET& hSocket);
+bool IsI2POnly();
+bool IsI2PEnabled();
+
 enum
 {
     LOCAL_NONE,   // unknown
@@ -224,7 +229,10 @@ public:
     std::multimap<int64, CInv> mapAskFor;
 
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION)
+      , nSendStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
+      , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
     {
+        ssSend.SetType(nSendStreamType);
         nServices = 0;
         hSocket = hSocketIn;
         nRecvVersion = INIT_PROTO_VERSION;
@@ -278,8 +286,34 @@ public:
 private:
     CNode(const CNode&);
     void operator=(const CNode&);
+    int nSendStreamType;
+    int nRecvStreamType;
 public:
+    void SetSendStreamType(int nType)
+    {
+        nSendStreamType = nType;
+        ssSend.SetType(nSendStreamType);
+    }
 
+    void SetRecvStreamType(int nType)
+    {
+        nRecvStreamType = nType;
+        for (std::deque<CNetMessage>::iterator it = vRecvMsg.begin(), end = vRecvMsg.end(); it != end; ++it)
+        {
+            it->hdrbuf.SetType(nRecvStreamType);
+            it->vRecv.SetType(nRecvStreamType);
+        }
+    }
+
+    int GetSendStreamType() const
+    {
+        return nSendStreamType;
+    }
+
+    int GetRecvStreamType() const
+    {
+        return nRecvStreamType;
+    }
 
     int GetRefCount()
     {
@@ -331,7 +365,9 @@ public:
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
         if (addr.IsValid() && !setAddrKnown.count(addr))
-            vAddrToSend.push_back(addr);
+            // if receiver doesn't support i2p-address we don't send it
+            if ((this->nServices & NODE_I2P) || !addr.IsNativeI2P())
+                vAddrToSend.push_back(addr);
     }
 
 

@@ -70,6 +70,7 @@ enum
 {
     NODE_NETWORK = (1 << 0),
     NODE_BLOOM = (1 << 1),
+    NODE_I2P     = (1 << 7),
 };
 
 /** A CService with information about it as peer */

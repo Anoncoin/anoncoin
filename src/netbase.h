@@ -17,13 +17,17 @@ extern int nConnectTimeout;
 #undef SetPort
 #endif
 
+#define NATIVE_I2P_DESTINATION_SIZE     516
+#define NATIVE_I2P_B32ADDR_SIZE         60
+#define NATIVE_I2P_NET_STRING           "i2p"
+
 enum Network
 {
     NET_UNROUTABLE,
     NET_IPV4,
     NET_IPV6,
     NET_TOR,
-
+    NET_NATIVE_I2P,
     NET_MAX,
 };
 
@@ -35,6 +39,7 @@ class CNetAddr
 {
     protected:
         unsigned char ip[16]; // in network byte order
+        unsigned char i2pDest[NATIVE_I2P_DESTINATION_SIZE]; // I2P Destination
 
     public:
         CNetAddr();
@@ -70,6 +75,8 @@ class CNetAddr
         std::vector<unsigned char> GetGroup() const;
         int GetReachabilityFrom(const CNetAddr *paddrPartner = NULL) const;
         void print() const;
+        bool IsNativeI2P() const;
+        std::string GetI2PDestination() const;
 
 #ifdef USE_IPV6
         CNetAddr(const struct in6_addr& pipv6Addr);
@@ -83,6 +90,10 @@ class CNetAddr
         IMPLEMENT_SERIALIZE
             (
              READWRITE(FLATDATA(ip));
+             if (!(nType & SER_IPADDRONLY))
+             {
+                READWRITE(FLATDATA(i2pDest));
+             }
             )
 };
 
@@ -124,6 +135,10 @@ class CService : public CNetAddr
             (
              CService* pthis = const_cast<CService*>(this);
              READWRITE(FLATDATA(ip));
+	     if (!(nType & SER_IPADDRONLY))
+	     {
+	         READWRITE(FLATDATA(i2pDest));
+	     }
              unsigned short portN = htons(port);
              READWRITE(portN);
              if (fRead)
@@ -147,5 +162,6 @@ bool Lookup(const char *pszName, std::vector<CService>& vAddr, int portDefault =
 bool LookupNumeric(const char *pszName, CService& addr, int portDefault = 0);
 bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout = nConnectTimeout);
 bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault = 0, int nTimeout = nConnectTimeout);
+bool SetSocketOptions(SOCKET& hSocket);
 
 #endif
