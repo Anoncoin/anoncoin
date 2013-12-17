@@ -6,6 +6,8 @@
 #include "netbase.h"
 #include "optionsmodel.h"
 
+#include "clientmodel.h"
+
 #include <QDir>
 #include <QIntValidator>
 #include <QLocale>
@@ -18,7 +20,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     mapper(0),
     fRestartWarningDisplayed_Proxy(false),
     fRestartWarningDisplayed_Lang(false),
-    fProxyIpValid(true)
+    fProxyIpValid(true),
+    fRestartWarningDisplayed_I2P(false),
+    tabI2P(new I2POptionsWidget())
 {
     ui->setupUi(this);
 
@@ -92,6 +96,8 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     connect(mapper, SIGNAL(currentIndexChanged(int)), this, SLOT(disableApplyButton()));
     /* setup/change UI elements when proxy IP is invalid/valid */
     connect(this, SIGNAL(proxyIpValid(QValidatedLineEdit *, bool)), this, SLOT(handleProxyIpValid(QValidatedLineEdit *, bool)));
+
+    ui->tabWidget->addTab(tabI2P, QString("I2P"));
 }
 
 OptionsDialog::~OptionsDialog()
@@ -117,9 +123,18 @@ void OptionsDialog::setModel(OptionsModel *model)
 
     /* warn only when language selection changes by user action (placed here so init via mapper doesn't trigger this) */
     connect(ui->lang, SIGNAL(valueChanged()), this, SLOT(showRestartWarning_Lang()));
+    QObject::connect(tabI2P, SIGNAL(settingsChanged()), this, SLOT(showRestartWarning_I2P()));
 
     /* disable apply button after settings are loaded as there is nothing to save */
     disableApplyButton();
+}
+
+void OptionsDialog::setClientModel(ClientModel* clientModel)
+{
+    if (clientModel)
+    {
+        tabI2P->setModel(clientModel);
+    }
 }
 
 void OptionsDialog::setMapper()
@@ -147,6 +162,8 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
     mapper->addMapping(ui->displayAddresses, OptionsModel::DisplayAddresses);
     mapper->addMapping(ui->coinControlFeatures, OptionsModel::CoinControlFeatures);
+
+    tabI2P->setMapper(*mapper);
 }
 
 void OptionsDialog::enableApplyButton()
@@ -193,6 +210,7 @@ void OptionsDialog::on_resetButton_clicked()
 
         /* disable restart warning messages display */
         fRestartWarningDisplayed_Lang = fRestartWarningDisplayed_Proxy = true;
+        fRestartWarningDisplayed_I2P = true;
 
         /* reset all options and save the default values (QSettings) */
         model->Reset();
@@ -201,6 +219,7 @@ void OptionsDialog::on_resetButton_clicked()
 
         /* re-enable restart warning messages display */
         fRestartWarningDisplayed_Lang = fRestartWarningDisplayed_Proxy = false;
+        fRestartWarningDisplayed_I2P = false;
     }
 }
 
@@ -227,6 +246,15 @@ void OptionsDialog::showRestartWarning_Proxy()
     {
         QMessageBox::warning(this, tr("Warning"), tr("This setting will take effect after restarting Anoncoin."), QMessageBox::Ok);
         fRestartWarningDisplayed_Proxy = true;
+    }
+}
+
+void OptionsDialog::showRestartWarning_I2P()
+{
+    if(!fRestartWarningDisplayed_I2P)
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("This setting will take effect after restarting Bitcoin."), QMessageBox::Ok);
+        fRestartWarningDisplayed_I2P = true;
     }
 }
 

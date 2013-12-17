@@ -30,6 +30,25 @@ public:
         DisplayAddresses,  // bool
         Language,          // QString
         CoinControlFeatures, // bool
+        I2PUseI2POnly,              // bool
+        I2PSAMHost,                 // QString
+        I2PSAMPort,                 // int
+        I2PSessionName,             // QString
+
+        I2PInboundQuantity,         // int
+        I2PInboundLength,           // int
+        I2PInboundLengthVariance,   // int
+        I2PInboundBackupQuantity,   // int
+        I2PInboundAllowZeroHop,     // bool
+        I2PInboundIPRestriction,    // int
+
+        I2POutboundQuantity,        // int
+        I2POutboundLength,          // int
+        I2POutboundLengthVariance,  // int
+        I2POutboundBackupQuantity,  // int
+        I2POutboundAllowZeroHop,    // bool
+        I2POutboundIPRestriction,   // int
+        I2POutboundPriority,        // int
         OptionIDRowCount,
     };
 
@@ -59,6 +78,20 @@ private:
     bool fMinimizeOnClose;
     QString language;
     bool fCoinControlFeatures;
+    int i2pInboundQuantity;
+    int i2pInboundLength;
+    int i2pInboundLengthVariance;
+    int i2pInboundBackupQuantity;
+    bool i2pInboundAllowZeroHop;
+    int i2pInboundIPRestriction;
+    int i2pOutboundQuantity;
+    int i2pOutboundLength;
+    int i2pOutboundLengthVariance;
+    int i2pOutboundBackupQuantity;
+    bool i2pOutboundAllowZeroHop;
+    int i2pOutboundIPRestriction;
+    int i2pOutboundPriority;
+    QString i2pOptions;
 
 signals:
     void displayUnitChanged(int unit);

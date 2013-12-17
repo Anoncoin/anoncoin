@@ -3,12 +3,15 @@
 
 #include <QDialog>
 
+#include "i2poptionswidget.h"
+
 namespace Ui {
 class OptionsDialog;
 }
 class OptionsModel;
 class MonitoredDataMapper;
 class QValidatedLineEdit;
+class ClientModel;
 
 /** Preferences dialog. */
 class OptionsDialog : public QDialog
@@ -19,6 +22,7 @@ public:
     explicit OptionsDialog(QWidget *parent = 0);
     ~OptionsDialog();
 
+    void setClientModel(ClientModel* clientModel);
     void setModel(OptionsModel *model);
     void setMapper();
 
@@ -41,6 +45,7 @@ private slots:
     void on_cancelButton_clicked();
     void on_applyButton_clicked();
 
+    void showRestartWarning_I2P();
     void showRestartWarning_Proxy();
     void showRestartWarning_Lang();
     void updateDisplayUnit();
@@ -56,6 +61,8 @@ private:
     bool fRestartWarningDisplayed_Proxy;
     bool fRestartWarningDisplayed_Lang;
     bool fProxyIpValid;
+    bool fRestartWarningDisplayed_I2P;
+    I2POptionsWidget* tabI2P;
 };
 
 #endif // OPTIONSDIALOG_H
