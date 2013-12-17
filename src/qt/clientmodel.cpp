@@ -1,13 +1,19 @@
+
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
+//
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 #include "clientmodel.h"
 
 #include "guiconstants.h"
 #include "optionsmodel.h"
 #include "addresstablemodel.h"
 #include "transactiontablemodel.h"
+
+#include "i2p.h"
+#include "net.h"
 
 #include "alert.h"
 #include "main.h"
@@ -112,6 +118,53 @@ void ClientModel::updateAlert(const QString &hash, int status)
     emit alertsChanged(getStatusBarWarnings());
 }
 
+QString ClientModel::formatI2PNativeFullVersion() const
+{
+    return QString::fromStdString(FormatI2PNativeFullVersion());
+}
+
+void ClientModel::updateNumI2PConnections(int numI2PConnections)
+{
+    emit numI2PConnectionsChanged(numI2PConnections);
+}
+
+int ClientModel::getNumI2PConnections() const
+{
+    return nI2PNodeCount;
+}
+
+QString ClientModel::getPublicI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().pub);
+}
+
+QString ClientModel::getPrivateI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().priv);
+}
+
+bool ClientModel::isI2PAddressGenerated() const
+{
+    return I2PSession::Instance().getMyDestination().isGenerated;
+}
+
+bool ClientModel::isI2POnly() const
+{
+    return IsI2POnly();
+}
+
+QString ClientModel::getB32Address(const QString& destination) const
+{
+    return QString::fromStdString(I2PSession::GenerateB32AddressFromDestination(destination.toStdString()));
+}
+
+void ClientModel::generateI2PDestination(QString& pub, QString& priv) const
+{
+    const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
+    pub = QString::fromStdString(generatedDest.pub);
+    priv = QString::fromStdString(generatedDest.priv);
+}
+
 bool ClientModel::isTestNet() const
 {
     return fTestNet;
@@ -188,6 +241,12 @@ static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConn
                               Q_ARG(int, newNumConnections));
 }
 
+static void NotifyNumI2PConnectionsChanged(ClientModel *clientmodel, int newNumI2PConnections)
+{
+    QMetaObject::invokeMethod(clientmodel, "updateNumI2PConnections", Qt::QueuedConnection,
+                              Q_ARG(int, newNumI2PConnections));
+}
+
 static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, ChangeType status)
 {
     OutputDebugStringF("NotifyAlertChanged %s status=%i\n", hash.GetHex().c_str(), status);
@@ -202,6 +261,7 @@ void ClientModel::subscribeToCoreSignals()
     uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this));
     uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.connect(boost::bind(NotifyAlertChanged, this, _1, _2));
+    uiInterface.NotifyNumI2PConnectionsChanged.connect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
 }
 
 void ClientModel::unsubscribeFromCoreSignals()
@@ -210,4 +270,5 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this));
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
+    uiInterface.NotifyNumI2PConnectionsChanged.disconnect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
 }

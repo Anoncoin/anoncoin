@@ -44,7 +44,7 @@ contains(RELEASE, 1) {
     # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 }
 # for extra security (see: https://wiki.debian.org/Hardening): this flag is GCC compiler-specific
-QMAKE_CXXFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2
+QMAKE_CXXFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -I"i2psam"
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
 win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
 # on Windows: enable GCC large address aware linker flag
@@ -161,6 +161,8 @@ HEADERS += src/qt/bitcoingui.h \
     src/serialize.h \
     src/main.h \
     src/net.h \
+    src/irc.h \
+    src/i2p.h \
     src/key.h \
     src/db.h \
     src/walletdb.h \
@@ -219,7 +221,9 @@ HEADERS += src/qt/bitcoingui.h \
     src/threadsafety.h \
     src/limitedmap.h \
     src/qt/macnotificationhandler.h \
-    src/qt/splashscreen.h
+    src/qt/splashscreen.h \
+    src/qt/showi2paddresses.h \
+    src/qt/i2poptionswidget.h
 
 SOURCES += src/qt/bitcoin.cpp \
     src/qt/bitcoingui.cpp \
@@ -245,6 +249,8 @@ SOURCES += src/qt/bitcoin.cpp \
     src/main.cpp \
     src/init.cpp \
     src/net.cpp \
+    src/irc.cpp \
+    src/i2p.cpp \
     src/bloom.cpp \
     src/checkpoints.cpp \
     src/addrman.cpp \
@@ -290,7 +296,9 @@ SOURCES += src/qt/bitcoin.cpp \
     src/noui.cpp \
     src/leveldb.cpp \
     src/txdb.cpp \
-    src/qt/splashscreen.cpp
+    src/qt/splashscreen.cpp \
+    src/qt/showi2paddresses.cpp \
+    src/qt/i2poptionswidget.cpp
 
 RESOURCES += src/qt/bitcoin.qrc
 
@@ -305,7 +313,9 @@ FORMS += src/qt/forms/sendcoinsdialog.ui \
     src/qt/forms/sendcoinsentry.ui \
     src/qt/forms/askpassphrasedialog.ui \
     src/qt/forms/rpcconsole.ui \
-    src/qt/forms/optionsdialog.ui
+    src/qt/forms/optionsdialog.ui \
+    src/qt/forms/showi2paddresses.ui \
+    src/qt/forms/i2poptionswidget.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h
@@ -428,7 +438,7 @@ macx:QMAKE_INFO_PLIST = share/qt/Info.plist
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -L"i2psam" -li2psam
 # -lgdi32 has to happen after -lcrypto (see  #681)
 win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX

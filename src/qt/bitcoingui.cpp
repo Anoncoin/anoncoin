@@ -1,6 +1,15 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+/*
+ * Qt4 bitcoin GUI.
+ *
+ * W.J. van der Laan 2011-2012
+ * The Bitcoin Developers 2011-2012
+ */
+//
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 
 #include <QApplication>
 
@@ -22,6 +31,8 @@
 #include "ui_interface.h"
 #include "wallet.h"
 #include "init.h"
+
+#include "showi2paddresses.h"
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -101,20 +112,23 @@ BitcoinGUI::BitcoinGUI(QWidget *parent) :
     QFrame *frameBlocks = new QFrame();
     frameBlocks->setContentsMargins(0,0,0,0);
     frameBlocks->setMinimumWidth(56);
-    frameBlocks->setMaximumWidth(56);
+    //frameBlocks->setMaximumWidth(56);
     QHBoxLayout *frameBlocksLayout = new QHBoxLayout(frameBlocks);
     frameBlocksLayout->setContentsMargins(3,0,3,0);
     frameBlocksLayout->setSpacing(3);
     labelEncryptionIcon = new QLabel();
     labelConnectionsIcon = new QLabel();
     labelBlocksIcon = new QLabel();
-    frameBlocksLayout->addStretch();
+    labelI2PConnections = new QLabel();
+    labelI2POnly = new QLabel();
+    labelI2PGenerated = new QLabel();
+
     frameBlocksLayout->addWidget(labelEncryptionIcon);
-    frameBlocksLayout->addStretch();
+    frameBlocksLayout->addWidget(labelI2PGenerated);
+    frameBlocksLayout->addWidget(labelI2POnly);
+    frameBlocksLayout->addWidget(labelI2PConnections);
     frameBlocksLayout->addWidget(labelConnectionsIcon);
-    frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelBlocksIcon);
-    frameBlocksLayout->addStretch();
 
     // Progress bar and label for blocks download
     progressBarLabel = new QLabel();
@@ -330,6 +344,31 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
         setNumConnections(clientModel->getNumConnections());
         connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
+        setNumI2PConnections(clientModel->getNumI2PConnections());
+        connect(clientModel, SIGNAL(numI2PConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
+
+        if (clientModel->isI2POnly())
+        {
+            labelI2POnly->setText("I2P");
+            labelI2POnly->setToolTip(tr("Wallet is using I2P-network only"));
+        }
+        else
+        {
+            labelI2POnly->setText("CLR");
+            labelI2POnly->setToolTip(tr("Wallet is using mixed or non-I2P (clear) network"));
+        }
+
+        if (clientModel->isI2PAddressGenerated())
+        {
+            labelI2PGenerated->setText("DYN");
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a random generated I2P-address"));
+        }
+        else
+        {
+            labelI2PGenerated->setText("STA");
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a static I2P-address"));
+        }
+
         setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
         connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
@@ -461,6 +500,7 @@ void BitcoinGUI::optionsClicked()
         return;
     OptionsDialog dlg;
     dlg.setModel(clientModel->getOptionsModel());
+    dlg.setClientModel(clientModel);
     dlg.exec();
 }
 
@@ -519,6 +559,21 @@ void BitcoinGUI::setNumConnections(int count)
     }
     labelConnectionsIcon->setPixmap(QIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
     labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Anoncoin network", "", count));
+}
+
+void BitcoinGUI::setNumI2PConnections(int count)
+{
+    QString i2pIcon;
+    switch(count)
+    {
+    case 0: i2pIcon = ":/icons/bwi2pconnect_0"; break;
+    case 1: /*case 2: case 3:*/ i2pIcon = ":/icons/bwi2pconnect_1"; break;
+    case 2:/*case 4: case 5: case 6:*/ i2pIcon = ":/icons/bwi2pconnect_2"; break;
+    case 3:/*case 7: case 8: case 9:*/ i2pIcon = ":/icons/bwi2pconnect_3"; break;
+    default: i2pIcon = ":/icons/bwi2pconnect_4"; break;
+    }
+    labelI2PConnections->setPixmap(QPixmap(i2pIcon));
+    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Bitcoin network", "", count));
 }
 
 void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
@@ -781,6 +836,12 @@ void BitcoinGUI::handleURI(QString strURI)
     if (!walletFrame->handleURI(strURI))
         message(tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Anoncoin address or malformed URI parameters."),
                   CClientUIInterface::ICON_WARNING);
+}
+
+void BitcoinGUI::showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName)
+{
+    ShowI2PAddresses i2pDialog(caption, pub, priv, b32, configFileName, this);
+    i2pDialog.exec();
 }
 
 void BitcoinGUI::setEncryptionStatus(int status)

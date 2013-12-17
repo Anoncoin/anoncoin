@@ -86,6 +86,9 @@ private:
     QLabel *labelEncryptionIcon;
     QLabel *labelConnectionsIcon;
     QLabel *labelBlocksIcon;
+    QLabel* labelI2PConnections;
+    QLabel* labelI2POnly;
+    QLabel* labelI2PGenerated;
     QLabel *progressBarLabel;
     QProgressBar *progressBar;
 
@@ -134,6 +137,8 @@ private:
     void setWalletActionsEnabled(bool enabled);
 
 public slots:
+    /** Set number of I2P connections shown in the UI */
+    void setNumI2PConnections(int count);
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
     /** Set number of blocks shown in the UI */
@@ -165,6 +170,8 @@ public slots:
 
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address);
+
+    void showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName);
 
 private slots:
     /** Switch to overview (home) page */

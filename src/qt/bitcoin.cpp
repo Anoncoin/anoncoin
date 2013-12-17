@@ -1,6 +1,12 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+/*
+ * W.J. van der Laan 2011-2012
+ */
+//
+// I2P-patch
+// Copyright (c) 2012-2013 giv
 
 #include <QApplication>
 #include <QMessageBox>
@@ -50,6 +56,39 @@ Q_DECLARE_METATYPE(bool*)
 // Need a global reference for the notifications to find the GUI
 static BitcoinGUI *guiref;
 static SplashScreen *splashref;
+
+static void ThreadSafeShowGeneratedI2PAddress(const std::string& caption, const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName)
+{
+    if(guiref)
+    {
+        QMetaObject::invokeMethod(guiref, "showGeneratedI2PAddr",
+                                   GUIUtil::blockingGUIThreadConnection(),
+                                   Q_ARG(QString, QString::fromStdString(caption)),
+                                   Q_ARG(QString, QString::fromStdString(pub)),
+                                   Q_ARG(QString, QString::fromStdString(priv)),
+                                   Q_ARG(QString, QString::fromStdString(b32)),
+                                   Q_ARG(QString, QString::fromStdString(configFileName)));
+    }
+    else
+    {
+        std::string msg = "\nIf you want to use a permanent I2P-address you have to set a \'mydestination\' option in the configuration file: ";
+        msg += configFileName;
+        msg += "\nGenerated address:\n";
+
+        msg += "\nAddress + private key (save this text in the configuration file and keep it secret):\n";
+        msg += priv;
+
+        msg += "\n\nAddress (you can make it public):\n";
+        msg += pub;
+
+        msg += "\n\nShort base32-address:\n";
+        msg += b32;
+        msg += "\n\n";
+
+        printf("%s: %s\n", caption.c_str(), msg.c_str());
+        fprintf(stderr, "%s: %s\n", caption.c_str(), msg.c_str());
+    }
+}
 
 static bool ThreadSafeMessageBox(const std::string& message, const std::string& caption, unsigned int style)
 {
@@ -198,6 +237,7 @@ int main(int argc, char *argv[])
     // Subscribe to global signals from core
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);
     uiInterface.ThreadSafeAskFee.connect(ThreadSafeAskFee);
+    uiInterface.ThreadSafeShowGeneratedI2PAddress.connect(ThreadSafeShowGeneratedI2PAddress);
     uiInterface.InitMessage.connect(InitMessage);
     uiInterface.Translate.connect(Translate);
 
