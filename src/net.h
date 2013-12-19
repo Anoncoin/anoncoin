@@ -50,6 +50,10 @@ bool BindListenNativeI2P(SOCKET& hSocket);
 bool IsI2POnly();
 bool IsI2PEnabled();
 
+bool IsTorOnly();
+bool IsDarknetOnly();
+bool IsBehindDarknet();
+
 enum
 {
     LOCAL_NONE,   // unknown

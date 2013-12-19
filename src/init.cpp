@@ -573,6 +573,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         nLocalServices |= NODE_BLOOM;
 
     SoftSetBoolArg("-irc", true);
+    SoftSetBoolArg("-stfu", false); // STFU mode stops complaining about darknets.
 
     if (mapArgs.count("-bind")) {
         // when specifying an explicit binding address, you want to listen on it
@@ -728,6 +729,12 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (fDaemon)
         fprintf(stdout, "Anoncoin server starting\n");
+
+    if (!GetBoolArg("-stfu", false)) {
+        if (!IsBehindDarknet()) {
+	InitWarning("Anoncoin is running on clearnet!\n");
+        }
+    }
 
     if (nScriptCheckThreads) {
         printf("Using %u threads for script verification\n", nScriptCheckThreads);

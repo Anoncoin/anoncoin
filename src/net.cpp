@@ -23,6 +23,8 @@
 #include <miniupnpc/upnperrors.h>
 #endif
 
+#define TOR_NET_STRING "tor"
+
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 
@@ -123,6 +125,35 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
     return nBestScore >= 0;
 }
 
+bool IsDarknetOnly()
+{
+    if (mapArgs.count("-onlynet"))
+    {
+        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+        if (onlyNets.size() != 2)
+            return false;
+
+        if (onlyNets[0] == NATIVE_I2P_NET_STRING and
+            onlyNets[1] == TOR_NET_STRING)
+            return true;
+
+        if (onlyNets[0] == TOR_NET_STRING and
+            onlyNets[1] == NATIVE_I2P_NET_STRING)
+            return true;
+
+        return false;
+    }
+    return false;
+}
+
+bool IsTorOnly()
+{
+    bool i2pOnly = false;
+    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == TOR_NET_STRING);
+    return i2pOnly;
+}
+
 bool IsI2POnly()
 {
     bool i2pOnly = false;
@@ -143,6 +174,19 @@ bool IsI2PEnabled()
     {
         return true;
     }
+    return false;
+}
+
+bool IsBehindDarknet()
+{
+    if (IsI2POnly())
+        return true;
+    if (IsTorOnly())
+        return true;
+    if (IsDarknetOnly())
+        return true;
+    if ((mapArgs.count("-tor") && mapArgs["-tor"] != "0"))
+        return true;
     return false;
 }
 
