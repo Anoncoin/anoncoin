@@ -6,6 +6,10 @@
 // Copyright (c) 2012-2013 giv
 
 #include <QApplication>
+#include <QMessageBox>
+#include <QFile>
+#include <QDir>
+#include <QTextStream>
 
 #include "bitcoingui.h"
 #include "clientmodel.h"
@@ -256,6 +260,32 @@ int main(int argc, char *argv[])
         splash.show();
         splash.setAutoFillBackground(true);
         splashref = &splash;
+    }
+
+    if (mapArgs.count("-style"))
+    {
+        QString filename = QString::fromStdString((std::string)GetDataDir().string());
+        filename = filename.append(QDir::separator()).append(QString::fromStdString((std::string)mapArgs["-style"]));
+        QFile file(filename);
+        if (file.exists())
+        {
+            if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                QTextStream in(&file);
+                QString content = "";
+                while (!in.atEnd())
+                {
+                    content.append(in.readLine());
+                }
+                app.setStyleSheet(content);
+            }
+            else
+            {
+                QMessageBox::warning(NULL, BitcoinGUI::tr("Failed to load style!"),
+                    BitcoinGUI::tr("Failed to load the stylesheet provided."),
+                    QMessageBox::Ok, QMessageBox::Ok);
+            }
+        }
     }
 
     app.processEvents();
