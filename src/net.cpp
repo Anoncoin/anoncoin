@@ -127,22 +127,12 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 
 bool IsDarknetOnly()
 {
-    if (mapArgs.count("-onlynet"))
-    {
-        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        if (onlyNets.size() != 2)
-            return false;
-
-        if (onlyNets[0] == NATIVE_I2P_NET_STRING and
-            onlyNets[1] == TOR_NET_STRING)
-            return true;
-
-        if (onlyNets[0] == TOR_NET_STRING and
-            onlyNets[1] == NATIVE_I2P_NET_STRING)
-            return true;
-
-        return false;
-    }
+    if (IsI2POnly())
+	return true;
+    if (IsTorOnly())
+	return true;
+    if ((mapArgs.count("-tor") && mapArgs["-tor"] != "0") && (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0"))
+	return true;
     return false;
 }
 
