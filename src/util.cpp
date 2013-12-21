@@ -13,6 +13,7 @@
 #include <sys/resource.h>
 #endif
 
+#include "base58.h"
 #include "util.h"
 #include "sync.h"
 #include "version.h"
@@ -20,6 +21,12 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/case_conv.hpp> // for to_lower()
 #include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
+
+// Anoncoin
+// For writing config file
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+#include <boost/property_tree/detail/info_parser_error.hpp>
 
 // Work around clang compilation problem in Boost 1.46:
 // /usr/include/boost/program_options/detail/config_file.hpp:163:17: error: call to function 'to_internal' that is neither visible in the template definition nor found by argument-dependent lookup
@@ -969,6 +976,52 @@ bool WildcardMatch(const string& str, const string& mask)
     return WildcardMatch(str.c_str(), mask.c_str());
 }
 
+
+// Anoncoin
+// Write config file
+
+bool writeConfig(boost::filesystem::path configFile, boost::property_tree::ptree data)
+{
+    // Write file
+    try
+    {
+        write_ini(configFile.string(), data);
+    }
+    catch (boost::property_tree::info_parser::info_parser_error &e)
+    {
+        printf("Error writing config file: %s\n", e.what());
+        return false;
+    }
+    return true;
+}
+
+// Used by GUI wizard
+bool writeFirstConfig(bool i2pOnlyEnabled, bool torOnlyEnabled, bool i2pEnabled, bool torEnabled)
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    if (i2pOnlyEnabled)
+        pt.put("onlynet", "i2p");
+    if (torOnlyEnabled)
+    {
+        pt.put("tor", "127.0.0.1:9050");
+        pt.put("onlynet", "tor");
+    }
+    if (i2pEnabled)
+        pt.put("i2p", 1);
+    if (torEnabled)
+        pt.put("proxy", "127.0.0.1:9050");
+    unsigned char rand_pwd[32];
+    RAND_bytes(rand_pwd, 32);
+    pt.put("rpcuser", "anoncoinrpc");
+    pt.put("rpcpassword", EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32).c_str());
+    pt.put("daemon", 1);
+    pt.put("server", 1);
+
+    // Write file
+    return writeConfig(GetConfigFile().string().c_str(), pt);
+}
 
 
 

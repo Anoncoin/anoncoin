@@ -27,6 +27,10 @@
 #include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 
+// Anoncoin
+// For writing config file
+#include <boost/property_tree/ptree.hpp>
+
 #include "netbase.h" // for AddTimeData
 
 typedef long long  int64;
@@ -127,7 +131,9 @@ inline void MilliSleep(int64 n)
 #endif
 
 
-
+// Anoncoin
+bool WriteConfig(boost::filesystem::path configFile, boost::property_tree::ptree data);
+bool writeFirstConfig(bool i2pOnlyEnabled, bool torOnlyEnabled, bool i2pEnabled, bool torEnabled);
 
 
 
