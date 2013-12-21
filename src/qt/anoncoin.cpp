@@ -1,6 +1,7 @@
 /*
  * W.J. van der Laan 2011-2012
  */
+// Copyright 2013 The Anoncoin Developers
 //
 // I2P-patch
 // Copyright (c) 2012-2013 giv
@@ -22,6 +23,7 @@
 #include "ui_interface.h"
 #include "paymentserver.h"
 #include "splashscreen.h"
+#include "setupdarknet.h"
 
 #include <QMessageBox>
 #if QT_VERSION < 0x050000
@@ -190,6 +192,13 @@ int main(int argc, char *argv[])
                               QString("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
         return 1;
     }
+    // Anoncoin
+    if (!boost::filesystem::exists(GetConfigFile().string()))
+    {
+        // Run wizard
+        runFirstRunWizard();
+    }
+    // Read config after it's potentional written by the wizard.
     ReadConfigFile(mapArgs, mapMultiArgs);
 
     // Application identification (must be set before OptionsModel is initialized,
