@@ -11,8 +11,10 @@
 #define CLIENT_VERSION_REVISION    5
 #define CLIENT_VERSION_BUILD       1
 
+#define ANONOCOIN_RELEASE          7
+
 // Set to true for release, false for prerelease or test build
-#define CLIENT_VERSION_IS_RELEASE  true
+#define CLIENT_VERSION_IS_RELEASE  false
 
 // Copyright year (2009-this)
 // Todo: update this when changing our copyright comments in the source
