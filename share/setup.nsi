@@ -5,9 +5,9 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.8.5.1
+!define VERSION 0.8.5.6
 !define COMPANY "Anoncoin project"
-!define URL https://anoncoin/
+!define URL https://anoncoin.net/
 
 # MUI Symbol Definitions
 !define MUI_ICON "../share/pixmaps/bitcoin.ico"
@@ -45,13 +45,13 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile anoncoin-0.8.5.1-win32-setup.exe
+OutFile anoncoin-0.8.5.6-win32-setup.exe
 InstallDir $PROGRAMFILES\Anoncoin
 CRCCheck on
 XPStyle on
 BrandingText " "
 ShowInstDetails show
-VIProductVersion 0.8.5.1
+VIProductVersion 0.8.5.6
 VIAddVersionKey ProductName Anoncoin
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
