@@ -1,5 +1,5 @@
 ---
-name: "bitcoin-deps"
+name: "anoncoin-deps"
 suites:
 - "precise"
 architectures:
@@ -90,4 +90,4 @@ script: |
   cd ..
   #
   cd $INSTALLPREFIX
-  zip -r $OUTDIR/bitcoin-deps-win32-gitian-r9.zip include lib
+  zip -r $OUTDIR/anoncoin-deps-win32-gitian-r9.zip include lib
