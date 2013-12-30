@@ -62,12 +62,7 @@ LIBS+= \
  -Wl,-B$(LMODE2) \
    -l z \
    -l dl \
-   -l pthread \
-   -l i2psam
-
-# I2P Support
-DEFS +=  -DUSE_NATIVE_I2P -I"../i2psam"
-LIBS += -L"../i2psam"
+   -l pthread
 
 # Hardening
 # Make some classes of vulnerabilities unexploitable in case one is discovered.
@@ -114,8 +109,12 @@ xCXXFLAGS=-O2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-para
 # adds some defaults in front. Unfortunately, LDFLAGS=... $(LDFLAGS) does not work.
 xLDFLAGS=$(LDHARDENING) $(LDFLAGS)
 
+# HACK: libleveldb.a and libi2psam.a are only in here so that make recognizes that
+# anoncoind depends on them. This is inelegant because they are redundant when listed
+# in $OBJS (NOTE: compilation fails if they are not in $LIBS, even if present here).
 OBJS= \
     leveldb/libleveldb.a \
+    ../i2psam/libi2psam.a \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
@@ -172,6 +171,14 @@ DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 leveldb/libleveldb.a:
 	@echo "Building LevelDB ..." && cd leveldb && $(MAKE) CC=$(CC) CXX=$(CXX) OPT="$(xCXXFLAGS)" libleveldb.a libmemenv.a && cd ..
 
+#
+# I2P support
+#
+LIBS += ../i2psam/libi2psam.a
+DEFS += -DUSE_NATIVE_I2P -I../i2psam
+../i2psam/libi2psam.a:
+	$(MAKE) -C ../i2psam -f makefile.unix
+
 # auto-generated dependencies:
 -include obj/*.P
 -include obj-test/*.P
@@ -211,6 +218,7 @@ test_anoncoin: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	$(LINK) $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ $(TESTLIBS) $(xLDFLAGS) $(LIBS)
 
 clean:
+	$(MAKE) -C ../i2psam -f makefile.unix clean
 	-rm -f anoncoind test_anoncoin
 	-rm -f obj/*.o
 	-rm -f obj-test/*.o
