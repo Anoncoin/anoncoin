@@ -174,8 +174,8 @@ leveldb/libleveldb.a:
 #
 # I2P support
 #
-LIBS += ../i2psam/libi2psam.a
-DEFS += -DUSE_NATIVE_I2P -I../i2psam
+LIBS += $(abspath ../i2psam/libi2psam.a)
+DEFS += -DUSE_NATIVE_I2P -I$(abspath ../i2psam)
 ../i2psam/libi2psam.a:
 	$(MAKE) -C ../i2psam -f makefile.unix
 
