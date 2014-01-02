@@ -45,6 +45,9 @@ all: libzerocoin test tutorial
 # Tool invocations
 libzerocoin: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
+	@echo 'Invoking: Unix archive utility'
+	rm -f libzerocoin.a
+	ar cqs libzerocoin.a $(OBJS) $(USER_OBJS)
 	@echo 'Invoking: Cross G++ Linker'
 	g++ -fopenmp -L/opt/local/lib -shared -o "libzerocoin.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
@@ -80,7 +83,7 @@ tutorial: $(OBJS) $(USER_OBJS)
 
 # Other Targets
 clean:
-	-$(RM) -f $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(LIBRARIES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libzerocoin.so tests benchmark paramgen
+	-$(RM) -f $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(LIBRARIES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libzerocoin.{so,a} tests benchmark paramgen
 	-@echo ' '
 
 .PHONY: all clean dependents
