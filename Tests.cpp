@@ -436,7 +436,7 @@ Test_MintAndSpend()
 	return false;
 }
 
-void
+bool
 Test_RunAllTests()
 {
 	// Make a new set of parameters from a random RSA modulus
@@ -474,11 +474,13 @@ Test_RunAllTests()
 
 	cout << endl << gSuccessfulTests << " out of " << gNumTests << " tests passed." << endl << endl;
 	delete g_Params;
+
+	return gSuccessfulTests == gNumTests;
 }
 
 int main(int argc, char **argv)
 {
 	cout << "libzerocoin v" << ZEROCOIN_VERSION_STRING << " test utility." << endl << endl;
 	
-	Test_RunAllTests();
+	return Test_RunAllTests() ? 0 : 1;  // exit with code 1 if not all tests passed
 }
