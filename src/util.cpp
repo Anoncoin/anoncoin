@@ -376,7 +376,7 @@ bool ParseMoney(const char* pszIn, int64_t& nRet)
 
 // safeChars chosen to allow simple messages/URLs/email addresses, but avoid anything
 // even possibly remotely dangerous like & or >
-static string safeChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890 .,;_/:?@()");
+static string safeChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890 .,;_/:?@-()");
 string SanitizeString(const string& str)
 {
     string strResult;
@@ -1336,6 +1336,8 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
     if (!comments.empty())
         ss << "(" << boost::algorithm::join(comments, "; ") << ")";
     ss << "/";
+    ss << "Primecoin:" << FormatVersion(PRIMECOIN_VERSION);
+    ss << "(" << CLIENT_BUILD << ")/";
     return ss.str();
 }
 
