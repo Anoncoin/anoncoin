@@ -1,6 +1,9 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
 ################################################################################
+# TODO: I edited these makefiles anyway, even though the correct procedure is to
+#       edit CMakeLists.txt.  When I have time to understand CMake, I should go
+#       back and do this the right way.
 
 -include ../makefile.init
 
