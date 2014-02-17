@@ -86,7 +86,7 @@ tutorial: $(OBJS) $(USER_OBJS)
 
 # Other Targets
 clean:
-	-$(RM) -f $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(LIBRARIES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libzerocoin.{so,a} tests benchmark paramgen tutorial
+	-$(RM) -f $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(LIBRARIES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libzerocoin.so libzerocoin.a tests benchmark paramgen tutorial
 	-@echo ' '
 
 .PHONY: all clean dependents
