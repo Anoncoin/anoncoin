@@ -16,12 +16,12 @@
 #include "Params.h"
 #include "Coin.h"
 #include "Commitment.h"
-#include "bitcoin_bignum/bignum.h"
+#include <bignum.h>
 #include "Accumulator.h"
 #include "AccumulatorProofOfKnowledge.h"
 #include "SerialNumberSignatureOfKnowledge.h"
 #include "SpendMetaData.h"
-#include "bitcoin_bignum/serialize.h"
+#include <serialize.h>
 
 namespace libzerocoin {
 

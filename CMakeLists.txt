@@ -33,7 +33,6 @@ include(FindOpenSSL)
 #
 # Project-wide directory settings
 #
-set(BITCOIN_BIGNUM_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/bitcoin_bignum)
 
 #
 # Project-wide installation settings
@@ -75,7 +74,6 @@ add_custom_target(uninstall
 # Tell compiler where to search for include files
 #
 include_directories(
-  ${BITCOIN_BIGNUM_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
   ${OPENSSL_INCLUDE_DIR}
 )

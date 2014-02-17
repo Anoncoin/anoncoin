@@ -12,7 +12,7 @@
 
 #ifndef COIN_H_
 #define COIN_H_
-#include "bitcoin_bignum/bignum.h"
+#include <bignum.h>
 #include "Params.h"
 namespace libzerocoin {
 

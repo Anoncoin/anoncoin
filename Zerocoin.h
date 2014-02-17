@@ -47,9 +47,11 @@ public:
 	explicit ZerocoinException(const std::string& str) : std::runtime_error(str) {}
 };
 
-#include "bitcoin_bignum/serialize.h"
-#include "bitcoin_bignum/bignum.h"
-#include "bitcoin_bignum/hash.h"
+// use the Anoncoin versions (previously: modified versions in bitcoin_bignum/)
+#include <serialize.h>
+#include <bignum.h>
+#include <hash.h>
+
 #include "Params.h"
 #include "Coin.h"
 #include "Commitment.h"
