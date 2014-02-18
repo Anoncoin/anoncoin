@@ -11,7 +11,7 @@
 #define CLIENT_VERSION_REVISION    5
 #define CLIENT_VERSION_BUILD       6
 
-#define ANONOCOIN_RELEASE          7
+#define ANONCOIN_RELEASE           7
 
 // Set to true for release, false for prerelease or test build
 #define CLIENT_VERSION_IS_RELEASE  false
