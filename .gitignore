@@ -31,4 +31,7 @@ qrc_*.cpp
 .DS_Store
 build
 
+# Zerocoin auto-generated header
+src/zc_ufo_pre.gen.h
+
 !src/leveldb-*/Makefile

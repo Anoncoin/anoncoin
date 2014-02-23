@@ -189,6 +189,9 @@ DEFS += -DUSE_NATIVE_I2P -I$(abspath libzerocoin)
 libzerocoin/Build-gcc/libzerocoin.a:
 	$(MAKE) -C libzerocoin/Build-gcc
 
+zc_ufo_pre.gen.h: zc_ufo_pre.py
+	python2.7 zc_ufo_pre.py > zc_ufo_pre.gen.h
+
 # auto-generated dependencies:
 -include obj/*.P
 -include obj-test/*.P
