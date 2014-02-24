@@ -117,6 +117,7 @@ OBJS= \
     leveldb/libleveldb.a \
     ../i2psam/libi2psam.a \
     libzerocoin/Build-gcc/libzerocoin.a \
+    obj/zc_ufo.o \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
@@ -239,6 +240,7 @@ clean:
 	-rm -f obj/*.P
 	-rm -f obj-test/*.P
 	-rm -f obj/build.h
+	-rm -f zc_ufo_pre.gen.h
 	-cd leveldb && $(MAKE) clean || true
 
 FORCE:
