@@ -1,0 +1,33 @@
+Debian-specific Anoncoin usage notes
+===================================
+
+
+Wrapper to ease initial startup
+-------------------------------
+
+Debian ships with a small wrapper for anoncoind to ease initial startup:
+
+  * Store a random generated password in ~/.anoncoin/anoncoin.conf
+  * Setup ~/.anoncoin/DB_CONFIG to purge no longer needed dblog files
+
+Above is done only when the respective files do not already exist.
+
+
+Upgrading Problems
+------------------
+
+Anoncoin uses a recent (at compile time) version of Berkeley DB.
+
+Unfortunately Anoncoin is not clever enough to automatically update its
+database, so if you fail to restart Anoncoin after a package update, the
+database may be outdated and need manual update.
+
+The following might work:
+
+    db4.8_recover -h ~/.anoncoin
+    db_upgrade -h ~/.anoncoin wallet.dat
+
+Above commands need the packages db-util and db4.8-util installed.
+If that fails then try with db4.7-util instead.
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 07 Jun 2011 10:52:52 +0200
