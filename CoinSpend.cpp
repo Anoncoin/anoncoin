@@ -10,6 +10,7 @@
  * @license    This project is released under the MIT license.
  **/
 
+#include <sys/time.h>
 #include "Zerocoin.h"
 
 namespace libzerocoin {
@@ -67,10 +68,35 @@ CoinSpend::getDenomination() {
 bool
 CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 	// Verify both of the sub-proofs using the given meta-data
+	struct timeval tv0, tv1;
+	double elapsed;
+
+	gettimeofday(&tv0, NULL);
+
+	bool result_cPoK   = commitmentPoK.Verify(serialCommitmentToCoinValue, accCommitmentToCoinValue);
+	gettimeofday(&tv1, NULL);
+	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
+	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
+	cout << "GNOSIS DEBUG: cPoK time: " << elapsed << endl;
+
+	bool result_accPoK = accumulatorPoK.Verify(a, accCommitmentToCoinValue);
+	tv0 = tv1;
+	gettimeofday(&tv1, NULL);
+	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
+	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
+	cout << "GNOSIS DEBUG: accPoK time: " << elapsed << endl;
+
+	bool result_snSoK  = serialNumberSoK.Verify(coinSerialNumber, serialCommitmentToCoinValue, signatureHash(m));
+	tv0 = tv1;
+	gettimeofday(&tv1, NULL);
+	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
+	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
+	cout << "GNOSIS DEBUG: snSoK time: " << elapsed << endl;
+
 	return  (a.getDenomination() == this->denomination)
-	        && commitmentPoK.Verify(serialCommitmentToCoinValue, accCommitmentToCoinValue)
-	        && accumulatorPoK.Verify(a, accCommitmentToCoinValue)
-	        && serialNumberSoK.Verify(coinSerialNumber, serialCommitmentToCoinValue, signatureHash(m));
+	        && result_cPoK
+	        && result_accPoK
+	        && result_snSoK;
 }
 
 const uint256 CoinSpend::signatureHash(const SpendMetaData &m) const {
