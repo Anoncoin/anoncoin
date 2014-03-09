@@ -1,0 +1,12 @@
+debian/*.png
+debian/*.xpm
+debian/*.menu
+
+# GUI test files:
+Makefile_test
+bitcoin-qt_test
+
+# upstream leftovers
+build/*.o
+build/build.h
+src/obj/build.h

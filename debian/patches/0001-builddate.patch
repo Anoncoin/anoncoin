@@ -1,0 +1,35 @@
+From: Kill Your TV <killyourtv@i2pmail.org>
+Date: Sat, 8 Mar 2014 00:02:53 +0000
+Subject: builddate
+
+Patch borrowed from the Debian litecoin packaging. Original header info
+follows:
+
+Last-Update: 2013-11-20
+Forwarded: not-needed
+Author: Dmitry Smirnov <onlyjob@member.fsf.org>
+Description: provide build date information.
+
+---
+ share/genbuild.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/share/genbuild.sh b/share/genbuild.sh
+index d959877..e6500ba 100755
+--- a/share/genbuild.sh
++++ b/share/genbuild.sh
+@@ -1,5 +1,4 @@
+ #!/bin/sh
+-
+ if [ $# -gt 0 ]; then
+     FILE="$1"
+     shift
+@@ -11,6 +10,8 @@ else
+     exit 1
+ fi
+ 
++TIME=$(date '+%F %T %z')
++
+ if [ -e "$(which git)" ]; then
+     # clean 'dirty' status of touched files that haven't been modified
+     git diff >/dev/null 2>/dev/null 

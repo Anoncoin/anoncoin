@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Anoncoin
+Comment=Anoncoin P2P Cryptocurrency
+Comment[fr]=Anoncoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Anoncoin, eşten eşe kriptografik sanal para birimi
+Exec=/usr/bin/anoncoin
+Terminal=false
+Type=Application
+Icon=anoncoin
+MimeType=x-scheme-handler/anoncoin;
+Categories=Office;Network;

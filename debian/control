@@ -1,0 +1,57 @@
+Source: anoncoin
+Section: utils
+Priority: optional
+Maintainer: Kill Your TV <killyourtv@i2pmail.org>
+Build-Depends: debhelper (>= 9), imagemagick
+ ,bash-completion
+# desktop2menu requirements:
+ ,devscripts ,libfile-desktopentry-perl
+#  libjson-spirit-dev/4.0.3 (customised) is bundled with upstream sources.
+# ,libjson-spirit-dev
+ ,libboost-all-dev
+ ,libdb++-dev
+ ,libleveldb-dev (>= 1.10.0)
+ ,libminiupnpc-dev [!hurd-any]
+ ,libqrencode-dev
+ ,libqt4-dev
+ ,libssl-dev
+ ,qt4-qmake
+Standards-Version: 3.9.5
+Homepage: https://anoncoin.net/
+VCS-Browser: https://github.com/Anoncoin/anoncoin
+VCS-Git: git://github.com/Anoncoin/anoncoin.git
+
+Package: anoncoind
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: i2p | i2p-router, tor
+Suggests: db-util
+Description: peer-to-peer network based digital currency - daemon
+ Anoncoin is a free open source peer-to-peer electronic cash system that
+ is completely decentralized, without the need for a central server or
+ trusted parties.  Users hold the crypto keys to their own money and
+ transact directly with each other, with the help of a P2P network to
+ check for double-spending. Anoncoin is a fork of Bitcoin.
+ .
+ Full transaction history is stored locally at each client.
+ This requires 200 MB+ of space, slowly growing.
+ .
+ This package provides anoncoind, a combined daemon and CLI tool to
+ interact with the daemon.
+
+Package: anoncoin-qt
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: i2p | i2p-router, tor
+Suggests: db-util
+Description: peer-to-peer network based digital currency - Qt GUI
+ Anoncoin is a free open source peer-to-peer electronic cash system that
+ is completely decentralized, without the need for a central server or
+ trusted parties.  Users hold the crypto keys to their own money and
+ transact directly with each other, with the help of a P2P network to
+ check for double-spending. Anoncoin is a fork of Bitcoin.
+ .
+ Full transaction history is stored locally at each client.
+ This requires 200 MB+ of space, slowly growing.
+ .
+ This package provides Anoncoin-Qt, a GUI for Anoncoin based on Qt.

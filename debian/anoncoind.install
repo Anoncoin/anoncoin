@@ -1,0 +1,2 @@
+src/anoncoind		usr/lib/anoncoin
+debian/bin/anoncoind	usr/bin
