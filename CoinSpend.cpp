@@ -45,14 +45,17 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 
 	// 2. Generate a ZK proof that the two commitments contain the same public coin.
 	this->commitmentPoK = CommitmentProofOfKnowledge(&p->serialNumberSoKCommitmentGroup, &p->accumulatorParams.accumulatorPoKCommitmentGroup, fullCommitmentToCoinUnderSerialParams, fullCommitmentToCoinUnderAccParams);
+	cout << "GNOSIS DEBUG: commitmentPoK is " << this->commitmentPoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// Now generate the two core ZK proofs:
 	// 3. Proves that the committed public coin is in the Accumulator (PoK of "witness")
 	this->accumulatorPoK = AccumulatorProofOfKnowledge(&p->accumulatorParams, fullCommitmentToCoinUnderAccParams, witness, a);
+	cout << "GNOSIS DEBUG: accPoK is " << this->accumulatorPoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// 4. Proves that the coin is correct w.r.t. serial number and hidden coin secret
 	// (This proof is bound to the coin 'metadata', i.e., transaction hash)
 	this->serialNumberSoK = SerialNumberSignatureOfKnowledge(p, coin, fullCommitmentToCoinUnderSerialParams, signatureHash(m));
+	cout << "GNOSIS DEBUG: snSoK is " << this->serialNumberSoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 }
 
 const Bignum&
