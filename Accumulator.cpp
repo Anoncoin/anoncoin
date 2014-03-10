@@ -11,6 +11,7 @@
  **/
 
 #include <sstream>
+#include <sys/time.h>
 #include "Zerocoin.h"
 
 namespace libzerocoin {
@@ -52,8 +53,16 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 	}
 
 	if(coin.validate()) {
+		struct timeval tv0, tv1;
+		double elapsed;
 		// Compute new accumulator = "old accumulator"^{element} mod N
+		gettimeofday(&tv0, NULL);
 		this->value = this->value.pow_mod(coin.getValue(), this->params->accumulatorModulus);
+		gettimeofday(&tv1, NULL);
+		elapsed = (tv1.tv_sec  - tv0.tv_sec) +
+		          (tv1.tv_usec - tv0.tv_usec) / 1e6;
+		cout << "GNOSIS DEBUG: accumulate time: " << elapsed << endl;
+
 	} else {
 		throw ZerocoinException("Coin is not valid");
 	}
