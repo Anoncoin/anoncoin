@@ -34,6 +34,23 @@ namespace libzerocoin {
 /// in length, and 3072 bits is strongly recommended.
 ///
 
+#define PRINT_BIGNUM(name, val)                                            \
+{                                                                          \
+  CBigNum v = (val);                                                       \
+  std::cout << "GNOSIS DEBUG: " name << "(" << v.bitSize() << " bits) is " \
+            << v.ToString(16) << std::endl;                                \
+}
+
+#define PRINT_GROUP_PARAMS(p)                                              \
+{                                                                          \
+  IntegerGroupParams _p = (p);                                             \
+  PRINT_BIGNUM(""#p ".g", _p.g);                                           \
+  PRINT_BIGNUM(""#p ".h", _p.h);                                           \
+  PRINT_BIGNUM(""#p ".groupOrder", _p.groupOrder);                         \
+  PRINT_BIGNUM(""#p ".modulus",    _p.modulus);                            \
+  std::cout << std::endl;                                                  \
+}
+
 void
 CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 {
@@ -71,31 +88,20 @@ CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 	// the dedicated string "COMMITMENTGROUP".
 	params.coinCommitmentGroup = deriveIntegerGroupParams(calculateSeed(N, aux, securityLevel, STRING_COMMIT_GROUP),
 	                             pLen, qLen);
-  cout << "GNOSIS DEBUG: coinCommitmentGroup.g(" << params.coinCommitmentGroup.g.bitSize() <<
-          " bits) is " << params.coinCommitmentGroup.g.ToString(16) << endl;
-  cout << "GNOSIS DEBUG: coinCommitmentGroup.h(" << params.coinCommitmentGroup.h.bitSize() <<
-          " bits) is " << params.coinCommitmentGroup.h.ToString(16) << endl;
+	PRINT_GROUP_PARAMS(params.coinCommitmentGroup);
 
 	// Next, we derive parameters for a second Accumulated Value commitment group.
 	// This is a Schnorr group with the specific property that the order of the group
 	// must be exactly equal to "q" from the commitment group. We set
 	// the modulus of the new group equal to "2q+1" and test to see if this is prime.
 	params.serialNumberSoKCommitmentGroup = deriveIntegerGroupFromOrder(params.coinCommitmentGroup.modulus);
-  cout << "GNOSIS DEBUG: serialNumberSoKCommitmentGroup.g(" << params.serialNumberSoKCommitmentGroup.g.bitSize() <<
-          " bits) is " << params.serialNumberSoKCommitmentGroup.g.ToString(16) << endl;
-  cout << "GNOSIS DEBUG: serialNumberSoKCommitmentGroup.h(" << params.serialNumberSoKCommitmentGroup.h.bitSize() <<
-          " bits) is " << params.serialNumberSoKCommitmentGroup.h.ToString(16) << endl;
+	PRINT_GROUP_PARAMS(params.serialNumberSoKCommitmentGroup);
 
 	// Calculate the parameters for the internal commitment
 	// using the same process.
 	params.accumulatorParams.accumulatorPoKCommitmentGroup = deriveIntegerGroupParams(calculateSeed(N, aux, securityLevel, STRING_AIC_GROUP),
 	        qLen + 300, qLen + 1);
-  cout << "GNOSIS DEBUG: accumulatorParams.accumulatorPoKCommitmentGroup.g(" <<
-          params.accumulatorParams.accumulatorPoKCommitmentGroup.g.bitSize() << " bits) is "
-       << params.accumulatorParams.accumulatorPoKCommitmentGroup.g.ToString(16) << endl;
-  cout << "GNOSIS DEBUG: accumulatorParams.accumulatorPoKCommitmentGroup.h(" <<
-          params.accumulatorParams.accumulatorPoKCommitmentGroup.h.bitSize() << " bits) is "
-       << params.accumulatorParams.accumulatorPoKCommitmentGroup.h.ToString(16) << endl;
+	PRINT_GROUP_PARAMS(params.accumulatorParams.accumulatorPoKCommitmentGroup);
 
 	// Calculate the parameters for the accumulator QRN commitment generators. This isn't really
 	// a whole group, just a pair of random generators in QR_N.
@@ -106,12 +112,8 @@ CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 	params.accumulatorParams.accumulatorQRNCommitmentGroup.h = generateIntegerFromSeed(NLen - 1,
 	        calculateSeed(N, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
 	        &resultCtr).pow_mod(Bignum(2), N);
-  cout << "GNOSIS DEBUG: accumulatorParams.accumulatorQRNCommitmentGroup.g(" <<
-          params.accumulatorParams.accumulatorQRNCommitmentGroup.g.bitSize() << " bits) is "
-       << params.accumulatorParams.accumulatorQRNCommitmentGroup.g.ToString(16) << endl;
-  cout << "GNOSIS DEBUG: accumulatorParams.accumulatorQRNCommitmentGroup.h(" <<
-          params.accumulatorParams.accumulatorQRNCommitmentGroup.h.bitSize() << " bits) is "
-       << params.accumulatorParams.accumulatorQRNCommitmentGroup.h.ToString(16) << endl;
+	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.g", params.accumulatorParams.accumulatorQRNCommitmentGroup.g);
+	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.h", params.accumulatorParams.accumulatorQRNCommitmentGroup.h);
 
 	// Calculate the accumulator base, which we calculate as "u = C**2 mod N"
 	// where C is an arbitrary value. In the unlikely case that "u = 1" we increment
