@@ -72,15 +72,21 @@ endif
 
 
 # I2P Support
-DEFS +=  -DUSE_NATIVE_I2P -I"../i2psam"
-LIBS += -L"../i2psam"
+DEFS += -DUSE_NATIVE_I2P -I$(abspath ../i2psam)
+LIBS += $(abspath ../i2psam/libi2psam.a)
+../i2psam/libi2psam.a:
+	$(MAKE) -C ../i2psam -f makefile.unix
 
 # ppc doesn't work because we don't support big-endian
 CFLAGS += -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
     $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
 
+# HACK: libleveldb.a and libi2psam.a are only in here so that make recognizes that
+# anoncoind depends on them. This is inelegant because they are redundant when listed
+# in $OBJS (NOTE: compilation fails if they are not in $LIBS, even if present here).
 OBJS= \
     leveldb/libleveldb.a \
+    ../i2psam/libi2psam.a \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
@@ -190,6 +196,7 @@ test_anoncoin: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS) $(TESTLIBS)
 
 clean:
+	$(MAKE) -C ../i2psam -f makefile.unix clean
 	-rm -f anoncoind test_anoncoin
 	-rm -f obj/*.o
 	-rm -f obj-test/*.o
