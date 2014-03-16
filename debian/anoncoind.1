@@ -1,0 +1,358 @@
+.TH ANONCOIND "1" "March 2014" "Anoncoin 0.8.5.6" "User Commands"
+.SH NAME
+anoncoind \- peer-to-peer network based anonymous digital currency
+.SH DESCRIPTION
+Anoncoin is a peer-to-peer digital currency. Peer-to-peer (P2P) means that
+there is no central authority to issue new money or keep track of transactions.
+Instead, these tasks are managed collectively by the nodes of the network.
+
+.SS "Usage:"
+.PP
+anoncoind [options]
+.PP
+anoncoind [options] <command> [params]  # Send command to \fB\-server\fR or anoncoind
+.PP
+anoncoind [options] help                # List commands
+.PP
+anoncoind [options] help <command>      # Get help for a command
+.SH OPTIONS
+.TP
+\fB\-conf=\fR<file>
+Specify configuration file (default: \fIanoncoin.conf\fR)
+.TP
+\fB\-pid=\fR<file>
+Specify pid file (default: \fIanoncoind.pid\fR)
+.TP
+\fB-gen
+Generate coins (default: \fI0\fR)
+.TP
+\fB\-datadir=\fR<dir>
+Specify data directory
+.TP
+\fB\-dbcache=\fR<n>
+Set database cache size in megabytes (default: \fI25\fR)
+.TP
+\fB\-timeout=\fR<n>
+Specify connection timeout in milliseconds (default: \fI5000\fR)
+.TP
+\fB\-proxy=\fR<ip:port>
+Connect through socks proxy
+.TP
+\fB\-socks=\fR<n>
+Select the version of socks proxy to use (\fI4\fR\-\fI5\fR, default: \fI5\fR)
+.TP
+\fB\-tor=\fR<ip:port>
+Use proxy to reach tor hidden services (default: same as \fB\-proxy\fR)
+.TP
+\fB\-dns\fR
+Allow DNS lookups for \fB\-addnode\fR, \fB\-seednode\fR and \fB\-connect\fR
+.TP
+\fB\-port=\fR<port>
+Listen for connections on <port> (default: \fI9377\fR or testnet: \fI19377\fR)
+.TP
+\fB\-maxconnections=\fR<n>
+Maintain at most <n> connections to peers (default: \fI200\fR)
+.TP
+\fB\-addnode=\fR<ip>
+Add a node to connect to and attempt to keep the connection open
+.TP
+\fB\-connect=\fR<ip>
+Connect only to the specified node(s)
+.TP
+\fB\-seednode=\fR<ip>
+Connect to a node to retrieve peer addresses, and disconnect
+.TP
+\fB\-externalip=\fR<ip>
+Specify your own public address
+.TP
+\fB\-onlynet=\fR<net>
+Only connect to nodes in network <net> (\fIIPv4\fR, \fIIPv6\fR, \fII2P\fR or \fITor\fR)
+.TP
+\fB\-discover\fR
+Discover own IP address (default: \fI1\fR when listening and no \fB\-externalip\fR)
+.TP
+\fB\-checkpoints\fR
+Only accept block chain matching built\-in checkpoints (default: \fI1\fR)
+.TP
+\fB\-listen\fR
+Accept connections from outside (default: \fI1\fR if no \fB\-proxy\fR or \fB\-connect\fR)
+.TP
+\fB\-bind=\fR<addr>
+Bind to given address and always listen on it. Use [host]:port notation for IPv6
+.TP
+\fB\-dnsseed\fR
+Find peers using DNS lookup (default: \fI1\fR unless \fB\-connect\fR)
+.TP
+\fB\-irc\fR
+Find peers using internet relay chat (default: \fI0\fR)
+.TP
+\fB\-banscore=\fR<n>
+Threshold for disconnecting misbehaving peers (default: \fI100\fR)
+.TP
+\fB\-bantime=\fR<n>
+Number of seconds to keep misbehaving peers from reconnecting (default: \fI86400\fR)
+.TP
+\fB\-maxreceivebuffer=\fR<n>
+Maximum per\-connection receive buffer, <n>*1000 bytes (default: \fI5000\fR)
+.TP
+\fB\-maxsendbuffer=\fR<n>
+Maximum per\-connection send buffer, <n>*1000 bytes (default: \fI1000\fR)
+.TP
+\fB\-bloomfilters\fR
+Allow peers to set bloom filters (default: \fI1\fR)
+.TP
+\fB\-upnp\fR
+Use UPnP to map the listening port (default: \fI1\fR when listening)
+.TP
+\fB\-paytxfee=\fR<amt>
+Fee per KB to add to transactions you send
+.TP
+\fB\-mininput=\fR<amt>
+When creating transactions, ignore inputs with value less than this (default: \fI0.0001\fR)
+.TP
+\fB\-daemon\fR
+Run in the background as a daemon and accept commands
+.TP
+\fB\-testnet\fR
+Use the test network
+.TP
+\fB\-debug\fR
+Output extra debugging information. Implies all other \fB\-debug\fR* options
+.TP
+\fB\-debugnet\fR
+Output extra network debugging information
+.TP
+\fB\-logtimestamps\fR
+Prepend debug output with timestamp (default: \fI1\fR)
+.TP
+\fB\-shrinkdebugfile\fR
+Shrink debug.log file on client startup (default: \fI1\fR when no \fB\-debug\fR)
+.TP
+\fB\-printtoconsole\fR
+Send trace/debug info to console instead of debug.log file
+.TP
+\fB\-rpcuser=\fR<user>
+Username for JSON\-RPC connections
+.TP
+\fB\-rpcpassword=\fR<pw>
+Password for JSON\-RPC connections
+.TP
+\fB\-rpcport=\fR<port>
+Listen for JSON\-RPC connections on <port> (default: \fI9376\fR or testnet: \fI19376\fR)
+.TP
+\fB\-rpcallowip=\fR<ip>
+Allow JSON\-RPC connections from specified IP address
+.TP
+\fB\-rpcconnect=\fR<ip>
+Send commands to node running on <ip> (default: \fI127.0.0.1\fR)
+.TP
+\fB\-rpcthreads=\fR<n>
+Set the number of threads to service RPC calls (default: \fI4\fR)
+.TP
+\fB\-blocknotify=\fR<cmd>
+Execute command when the best block changes (%s in cmd is replaced by block hash)
+.TP
+\fB\-walletnotify=\fR<cmd>
+Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)
+.TP
+\fB\-alertnotify=\fR<cmd>
+Execute command when a relevant alert is received (%s in cmd is replaced by message)
+.TP
+\fB\-upgradewallet\fR
+Upgrade wallet to latest format
+.TP
+\fB\-keypool=\fR<n>
+Set key pool size to <n> (default: \fI100\fR)
+.TP
+\fB\-rescan\fR
+Rescan the block chain for missing wallet transactions
+.TP
+\fB\-salvagewallet\fR
+Attempt to recover private keys from a corrupt wallet.dat
+.TP
+\fB\-checkblocks=\fR<n>
+How many blocks to check at startup (default: \fI288\fR, \fI0\fR = all)
+.TP
+\fB\-checklevel=\fR<n>
+How thorough the block verification is (\fI0\fR\-\fI4\fR, default: \fI3\fR)
+.TP
+\fB\-txindex\fR
+Maintain a full transaction index (default: \fI0\fR)
+.TP
+\fB\-loadblock=\fR<file>
+Imports blocks from external blk000??.dat file
+.TP
+\fB\-reindex\fR
+Rebuild block chain index from current blk000??.dat files
+.TP
+\fB\-par=\fR<n>
+Set the number of script verification threads (up to \fI16\fR, \fI0\fR = auto, <\fI0\fR = leave that many cores free, default: \fI0\fR)
+.SS "Block creation options:"
+.TP
+\fB\-blockminsize=\fR<n>
+Set minimum block size in bytes (default: \fI0\fR)
+.TP
+\fB\-blockmaxsize=\fR<n>
+Set maximum block size in bytes (default: \fI250000\fR)
+.HP
+\fB\-blockprioritysize=\fR<n> Set maximum size of high\-priority/low\-fee transactions in bytes (default: \fI27000\fR)
+.SS "I2P Options:"
+.TP
+\fB\-generatei2pdestination\fR
+Generate an I2P destination, print it and exit.
+.TP
+\fB-i2p\fR
+Enable I2P
+.TP
+\fB\-onlynet\fR=\fIi2p\fR
+Enable I2P only mode
+.TP
+\fB\-i2psessionname=\fR<session name>
+Name of an I2P session. If it is not specified, value will be \fI'Anoncoin\-client'\fR
+.TP
+\fB\-samhost=\fR<ip or host name>
+Address of the SAM bridge host. If it is not specified, value will be \fI'127.0.0.1'\fR.
+.TP
+\fB\-samport=\fR<port>
+Port number of the SAM bridge host. If it is not specified, value will be \fI'7656'\fR.
+.TP
+\fB\-mydestination=\fR<pub+priv i2p\-keys>
+Set full I2P destination (public+private keys). If it is not specified, the client will geneterate a random destination for you.
+.SS "SSL options"
+(see the Anoncoin Wiki for SSL setup instructions)
+.TP
+\fB\-rpcssl\fR
+Use OpenSSL (https) for JSON\-RPC connections
+.TP
+\fB\-rpcsslcertificatechainfile=\fR<file.cert>
+Server certificate file (default: \fIserver.cert\fR)
+.TP
+\fB\-rpcsslprivatekeyfile=\fR<file.pem>
+Server private key (default: \fIserver.pem\fR)
+.TP
+\fB\-rpcsslciphers=\fR<ciphers>
+Acceptable ciphers (default: \fITLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH\fR)
+
+.SH COMMANDS
+.TP
+\fBbackupwallet 'destination'\fR
+Safely copies *wallet.dat* to 'destination', which can be a directory or a path with filename.
+.TP
+\fBgetaccount 'bitcoinaddress'\fR
+Returns the account associated with the given address.
+.TP
+\fBsetaccount 'bitcoinaddress' ['account']\fR
+Sets the ['account'] associated with the given address. ['account'] may be omitted to remove an address from ['account'].
+.TP
+\fBgetaccountaddress 'account'\fR
+Returns a new bitcoin address for 'account'.
+.TP
+\fBgetaddressesbyaccount 'account'\fR
+Returns the list of addresses associated with the given 'account'.
+.TP
+\fBgetbalance 'account'\fR
+Returns the server's available balance, or the balance for 'account'.
+.TP
+\fBgetblockcount\fR
+Returns the number of blocks in the longest block chain.
+.TP
+\fBgetblocknumber\fR
+Returns the block number of the latest block in the longest block chain.
+.TP
+\fBgetconnectioncount\fR
+Returns the number of connections to other nodes.
+.TP
+\fBgetdifficulty\fR
+Returns the proof-of-work difficulty as a multiple of the minimum difficulty.
+.TP
+\fBgetgenerate\fR
+Returns boolean true if server is trying to generate bitcoins, false otherwise.
+.TP
+\fBsetgenerate 'generate' ['genproclimit']\fR
+Generation is limited to ['genproclimit'] processors, \-1 is unlimited.
+.TP
+\fBgethashespersec\fR
+Returns a recent hashes per second performance measurement while generating.
+.TP
+\fBgetinfo\fR
+Returns an object containing server information.
+.TP
+\fBgetnewaddress 'account'\fR
+Returns a new bitcoin address for receiving payments. If 'account' is specified (recommended), it is added to the address book so payments received with the address will be credited to 'account'.
+.TP
+\fBgetreceivedbyaccount 'account' ['minconf=1']\fR
+Returns the total amount received by addresses associated with 'account' in transactions with at least ['minconf'] confirmations.
+.TP
+\fBgetreceivedbyaddress 'bitcoinaddress' ['minconf=1']\fR
+Returns the total amount received by 'bitcoinaddress' in transactions with at least ['minconf'] confirmations.
+.TP
+\fBgettransaction 'txid'\fR
+Returns information about a specific transaction, given hexadecimal transaction ID.
+.TP
+\fBgetwork 'data'\fR
+If 'data' is specified, tries to solve the block and returns true if it was successful. If 'data' is not specified, returns formatted hash 'data' to work on:
+
+    "midstate" : precomputed hash state after hashing the first half of the data.
+    "data"     : block data.
+    "hash1"    : formatted hash buffer for second hash.
+    "target"   : little endian hash target.
+.TP
+\fBhelp 'command'\fR
+List commands, or get help for a command.
+.TP
+\fBlistaccounts ['minconf=1']\fR
+List accounts and their current balances.
+     *note: requires bitcoin 0.3.20 or later.
+.TP
+\fBlistreceivedbyaccount ['minconf=1'] ['includeempty=false']\fR
+['minconf'] is the minimum number of confirmations before payments are included. ['includeempty'] whether to include addresses that haven't received any payments. Returns an array of objects containing:
+
+    "account"       : the account of the receiving address.
+    "amount"        : total amount received by the address.
+    "confirmations" : number of confirmations of the most recent transaction included.
+.TP
+\fBlistreceivedbyaddress ['minconf=1'] ['includeempty=false']\fR
+['minconf'] is the minimum number of confirmations before payments are included. ['includeempty'] whether to include addresses that haven't received any payments. Returns an array of objects containing:
+
+    "address"       : receiving address.
+    "account"       : the account of the receiving address.
+    "amount"        : total amount received by the address.
+    "confirmations" : number of confirmations of the most recent transaction included.
+.TP
+\fBlisttransactions 'account' ['count=10']\fR
+Returns a list of the last ['count'] transactions for 'account' \- for all accounts if 'account' is not specified or is "*". Each entry in the list may contain:
+
+    "category"      : will be generate, send, receive, or move.
+    "amount"        : amount of transaction.
+    "fee"           : Fee (if any) paid (only for send transactions).
+    "confirmations" : number of confirmations (only for generate/send/receive).
+    "txid"          : transaction ID (only for generate/send/receive).
+    "otheraccount"  : account funds were moved to or from (only for move).
+    "message"       : message associated with transaction (only for send).
+    "to"            : message-to associated with transaction (only for send).
+
+    *note: requires bitcoin 0.3.20 or later.
+.TP
+\fBmove <'fromaccount'> <'toaccount'> <'amount'> ['minconf=1'] ['comment']\fR
+Moves funds between accounts.
+.TP
+\fBsendfrom* <'account'> <'bitcoinaddress'> <'amount'> ['minconf=1'] ['comment'] ['comment-to']\fR
+Sends amount from account's balance to 'bitcoinaddress'. This method will fail if there is less than amount bitcoins with ['minconf'] confirmations in the account's balance (unless account is the empty-string-named default account; it behaves like the *sendtoaddress* method). Returns transaction ID on success.
+.TP     
+\fBsendtoaddress 'bitcoinaddress' 'amount' ['comment'] ['comment-to']\fR
+Sends amount from the server's available balance to 'bitcoinaddress'. amount is a real and is rounded to the nearest 0.01. Returns transaction id on success.
+.TP    
+\fBstop\fR
+Stops the bitcoin server.
+.TP    
+\fBvalidateaddress 'bitcoinaddress'\fR
+Checks that 'bitcoinaddress' looks like a proper bitcoin address. Returns an object containing:
+
+    "isvalid" : true or false.
+    "ismine"  : true if the address is in the server's wallet.
+    "address" : bitcoinaddress.
+
+    *note: ismine and address are only returned if the address is valid.
+
+.SH "SEE ALSO"
+\fBanoncoin.conf\fR(5), \fBanoncoin\fR(1)
