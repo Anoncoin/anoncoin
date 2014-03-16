@@ -1,0 +1,4 @@
+# Linked code is Expat - only Debian packaging is GPL-2+
+possible-gpl-code-linked-with-openssl
+
+manpage-has-errors-from-man usr/share/man/man5/anoncoin.conf.5.gz 58:*

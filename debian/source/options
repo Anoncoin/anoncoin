@@ -1,0 +1,4 @@
+compression = "xz"
+
+# ignore changes on refreshed translations
+extend-diff-ignore = "(^|/)src/(version\.cpp|qt/locale/[^/]+\.ts)$"
