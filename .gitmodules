@@ -1,3 +1,0 @@
-[submodule "src/libzerocoin"]
-	path = src/libzerocoin
-	url = https://github.com/Anoncoin/libzerocoin.git
