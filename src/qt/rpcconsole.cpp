@@ -1,6 +1,8 @@
 #include "rpcconsole.h"
 #include "ui_rpcconsole.h"
 
+#include "util.h"
+
 #include "clientmodel.h"
 #include "bitcoinrpc.h"
 #include "guiutil.h"
