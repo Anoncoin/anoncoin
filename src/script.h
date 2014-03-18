@@ -199,9 +199,9 @@ enum opcodetype
     OP_NOP10 = 0xb9,
 
     // zerocoin template matching - invalid if used in an actual script
-    OP_ZC_CHECKPT = 0xc0,
-    OP_ZC_MINT = 0xc1,
-    OP_ZC_SPEND = 0xc2,
+    OP_ZCCHECKPT = 0xc0,
+    OP_ZCMINT = 0xc1,
+    OP_ZCSPEND = 0xc2,
 
 
 
