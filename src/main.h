@@ -86,8 +86,6 @@ extern unsigned int nTransactionsUpdated;
 extern uint64 nLastBlockTx;
 extern uint64 nLastBlockSize;
 extern const std::string strMessageMagic;
-extern double dHashesPerSec;
-extern int64 nHPSTimerStart;
 extern int64 nTimeBestReceived;
 extern CCriticalSection cs_setpwalletRegistered;
 extern std::set<CWallet*> setpwalletRegistered;
@@ -107,12 +105,17 @@ extern int64 nMinimumInputValue;
 static const uint64 nMinDiskSpace = 52428800;
 
 
+extern double dHashesPerSec;
+extern int64 nHPSTimerStart;
+
 class CReserveKey;
 class CCoinsDB;
 class CBlockTreeDB;
 struct CDiskBlockPos;
 class CCoins;
 class CTxUndo;
+class CBlockHeader;
+class CBlock;
 class CCoinsView;
 class CCoinsViewCache;
 class CScriptCheck;
@@ -188,9 +191,8 @@ bool VerifySignature(const CCoins& txFrom, const CTransaction& txTo, unsigned in
 /** Abort with a message */
 bool AbortNode(const std::string &msg);
 
-
-
-
+int64 GetBlockValue(int nHeight, int64 nFees);
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock);
 
 
 

@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main.h"
+#include "miner.h"
 #include "db.h"
 #include "init.h"
 #include "bitcoinrpc.h"

@@ -7,12 +7,15 @@
 
 
 #include "txdb.h"
+#ifdef ENABLE_WALLET
 #include "walletdb.h"
+#endif
 #include "bitcoinrpc.h"
 #include "net.h"
 #include "init.h"
 #include "util.h"
 #include "ui_interface.h"
+#include "miner.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
