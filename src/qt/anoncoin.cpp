@@ -14,14 +14,16 @@
 
 #include "bitcoingui.h"
 #include "clientmodel.h"
+#ifdef ENABLE_WALLET
 #include "walletmodel.h"
+#include "paymentserver.h"
+#endif
 #include "optionsmodel.h"
 #include "guiutil.h"
 #include "guiconstants.h"
 #include "init.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "paymentserver.h"
 #include "splashscreen.h"
 #include "setupdarknet.h"
 
@@ -174,11 +176,13 @@ int main(int argc, char *argv[])
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
 
+#ifdef ENABLE_WALLET
     // Do this early as we don't want to bother initializing if we are just calling IPC
     // ... but do it after creating app, so QCoreApplication::arguments is initialized:
     if (PaymentServer::ipcSendCommandLine())
         exit(0);
     PaymentServer* paymentServer = new PaymentServer(&app);
+#endif
 
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
@@ -330,16 +334,19 @@ int main(int argc, char *argv[])
                     splash.finish(&window);
 
                 ClientModel clientModel(&optionsModel);
+#ifdef ENABLE_WALLET
                 WalletModel *walletModel = 0;
                 if(pwalletMain)
                     walletModel = new WalletModel(pwalletMain, &optionsModel);
-
+#endif
                 window.setClientModel(&clientModel);
+#ifdef ENABLE_WALLET
                 if(walletModel)
                 {
                     window.addWallet("~Default", walletModel);
                     window.setCurrentWallet("~Default");
                 }
+#endif
 
                 // If -min option passed, start window minimized.
                 if(GetBoolArg("-min"))
@@ -351,18 +358,24 @@ int main(int argc, char *argv[])
                     window.show();
                 }
 
+#ifdef ENABLE_WALLET
                 // Now that initialization/startup is done, process any command-line
                 // bitcoin: URIs
                 QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
                 QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
+#endif
 
                 app.exec();
 
                 window.hide();
                 window.setClientModel(0);
+#ifdef ENABLE_WALLET
                 window.removeAllWallets();
+#endif
                 guiref = 0;
+#ifdef ENABLE_WALLET
                 delete walletModel;
+#endif
             }
             // Shutdown the core and its threads, but don't exit Bitcoin-Qt here
             threadGroup.interrupt_all();

@@ -8,7 +8,7 @@
 #include "sync.h"
 #include "ui_interface.h"
 #include "base58.h"
-#include "bitcoinrpc.h"
+#include "anoncoinrpc.h"
 #include "db.h"
 
 #include <boost/asio.hpp>

@@ -10,7 +10,7 @@
 #ifdef ENABLE_WALLET
 #include "walletdb.h"
 #endif
-#include "bitcoinrpc.h"
+#include "anoncoinrpc.h"
 #include "net.h"
 #include "init.h"
 #include "util.h"
@@ -45,7 +45,9 @@
 using namespace std;
 using namespace boost;
 
+#ifdef ENABLE_WALLET
 CWallet* pwalletMain;
+#endif
 CClientUIInterface uiInterface;
 
 #ifdef WIN32
@@ -134,12 +136,14 @@ void Shutdown()
         delete pcoinsdbview; pcoinsdbview = NULL;
         delete pblocktree; pblocktree = NULL;
     }
+#ifdef ENABLE_WALLET
     if (pwalletMain)
         bitdb.Flush(true);
     boost::filesystem::remove(GetPidFile());
     UnregisterWallet(pwalletMain);
     if (pwalletMain)
         delete pwalletMain;
+#endif
     printf("Shutdown : done\n");
 }
 
@@ -384,12 +388,18 @@ std::string HelpMessage()
 #endif
         "  -rpcthreads=<n>        " + _("Set the number of threads to service RPC calls (default: 4)") + "\n" +
         "  -blocknotify=<cmd>     " + _("Execute command when the best block changes (%s in cmd is replaced by block hash)") + "\n" +
+#ifdef ENABLE_WALLET
         "  -walletnotify=<cmd>    " + _("Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)") + "\n" +
+#endif
         "  -alertnotify=<cmd>     " + _("Execute command when a relevant alert is received (%s in cmd is replaced by message)") + "\n" +
+#ifdef ENABLE_WALLET
         "  -upgradewallet         " + _("Upgrade wallet to latest format") + "\n" +
+#endif
         "  -keypool=<n>           " + _("Set key pool size to <n> (default: 100)") + "\n" +
         "  -rescan                " + _("Rescan the block chain for missing wallet transactions") + "\n" +
+#ifdef ENABLE_WALLET
         "  -salvagewallet         " + _("Attempt to recover private keys from a corrupt wallet.dat") + "\n" +
+#endif
         "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 288, 0 = all)") + "\n" +
         "  -checklevel=<n>        " + _("How thorough the block verification is (0-4, default: 3)") + "\n" +
         "  -txindex               " + _("Maintain a full transaction index (default: 0)") + "\n" +
@@ -606,10 +616,12 @@ bool AppInit2(boost::thread_group& threadGroup)
         SoftSetBoolArg("-discover", false);
     }
 
+#ifdef ENABLE_WALLET
     if (GetBoolArg("-salvagewallet")) {
         // Rewrite just private keys: rescan to find transactions
         SoftSetBoolArg("-rescan", true);
     }
+#endif
 
     // Make sure enough file descriptors are available
     int nBind = std::max((int)mapArgs.count("-bind"), 1);
@@ -653,7 +665,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     fPrintToConsole = GetBoolArg("-printtoconsole");
     fPrintToDebugger = GetBoolArg("-printtodebugger");
     fLogTimestamps = GetBoolArg("-logtimestamps", true);
+#ifdef ENABLE_WALLET
     bool fDisableWallet = GetBoolArg("-disablewallet", false);
+#endif
 
     if (mapArgs.count("-timeout"))
     {
@@ -748,7 +762,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     int64 nStart;
 
     // ********************************************************* Step 5: verify wallet database integrity
-
+#ifdef ENABLE_WALLET
     if (!fDisableWallet) {
         uiInterface.InitMessage(_("Verifying wallet..."));
 
@@ -794,6 +808,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 return InitError(_("wallet.dat corrupt, salvage failed"));
         }
     } // (!fDisableWallet)
+#endif
 
     // ********************************************************* Step 6: network initialization
 
@@ -1079,6 +1094,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         return false;
     }
 
+#ifdef ENABLE_WALLET
     // ********************************************************* Step 8: load wallet
 
     if (fDisableWallet) {
@@ -1172,6 +1188,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             nWalletDBUpdated++;
         }
     } // (!fDisableWallet)
+#endif
 
     // ********************************************************* Step 9: import blocks
 
@@ -1216,9 +1233,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     //// debug print
     printf("mapBlockIndex.size() = %"PRIszu"\n",   mapBlockIndex.size());
     printf("nBestHeight = %d\n",                   nBestHeight);
+#ifdef ENABLE_WALLET
     printf("setKeyPool.size() = %"PRIszu"\n",      pwalletMain ? pwalletMain->setKeyPool.size() : 0);
     printf("mapWallet.size() = %"PRIszu"\n",       pwalletMain ? pwalletMain->mapWallet.size() : 0);
     printf("mapAddressBook.size() = %"PRIszu"\n",  pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
+#endif
 
     StartNode(threadGroup);
 
@@ -1227,14 +1246,17 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (fServer)
         StartRPCThreads();
 
+#ifdef ENABLE_WALLET
     // Generate coins in the background
     if (pwalletMain)
-        GenerateBitcoins(GetBoolArg("-gen", false), pwalletMain);
+        GenerateAnoncoins(GetBoolArg("-gen", false), pwalletMain);
+#endif
 
     // ********************************************************* Step 12: finished
 
     uiInterface.InitMessage(_("Done loading"));
 
+#ifdef ENABLE_WALLET
     if (pwalletMain) {
         // Add wallet transactions that aren't already in a block to mapTransactions
         pwalletMain->ReacceptWalletTransactions();
@@ -1242,6 +1264,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         // Run a thread to flush wallet periodically
         threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
     }
+#endif
 
     return !fRequestShutdown;
 }

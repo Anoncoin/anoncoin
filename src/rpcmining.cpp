@@ -5,9 +5,11 @@
 
 #include "main.h"
 #include "miner.h"
+#ifdef ENABLE_WALLET
 #include "db.h"
+#endif
 #include "init.h"
-#include "bitcoinrpc.h"
+#include "anoncoinrpc.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -64,7 +66,7 @@ Value getnetworkhashps(const Array& params, bool fHelp)
     return GetNetworkHashPS(params.size() > 0 ? params[0].get_int() : 120, params.size() > 1 ? params[1].get_int() : -1);
 }
 
-
+#ifdef ENABLE_WALLET
 // Key used by getwork/getblocktemplate miners.
 // Allocated in InitRPCMining, free'd in ShutdownRPCMining
 static CReserveKey* pMiningKey = NULL;
@@ -85,6 +87,16 @@ void ShutdownRPCMining()
 
     delete pMiningKey; pMiningKey = NULL;
 }
+#else
+void InitRPCMining()
+{
+}
+void ShutdownRPCMining()
+{
+}
+#endif
+
+#ifdef ENABLE_WALLET
 
 Value getgenerate(const Array& params, bool fHelp)
 {
@@ -139,6 +151,7 @@ Value gethashespersec(const Array& params, bool fHelp)
     return (boost::int64_t)dHashesPerSec;
 }
 
+#endif
 
 Value getmininginfo(const Array& params, bool fHelp)
 {
@@ -153,16 +166,18 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("currentblocktx",(boost::uint64_t)nLastBlockTx));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
     obj.push_back(Pair("errors",        GetWarnings("statusbar")));
-    obj.push_back(Pair("generate",      GetBoolArg("-gen")));
     obj.push_back(Pair("genproclimit",  (int)GetArg("-genproclimit", -1)));
+#ifdef ENABLE_WALLET
+    obj.push_back(Pair("generate",      GetBoolArg("-gen")));
     obj.push_back(Pair("hashespersec",  gethashespersec(params, false)));
+#endif
     obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
     obj.push_back(Pair("pooledtx",      (boost::uint64_t)mempool.size()));
     obj.push_back(Pair("testnet",       fTestNet));
     return obj;
 }
 
-
+#ifdef ENABLE_WALLET
 Value getworkex(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2)
@@ -411,7 +426,7 @@ Value getwork(const Array& params, bool fHelp)
         return CheckWork(pblock, *pwalletMain, *pMiningKey);
     }
 }
-
+#endif
 
 Value getblocktemplate(const Array& params, bool fHelp)
 {
