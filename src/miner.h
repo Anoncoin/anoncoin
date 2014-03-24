@@ -20,7 +20,7 @@ void AnoncoinMiner(CWallet *pwallet);
 #endif
 
 /** Run the miner threads */
-void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads);
+void GenerateAnoncoins(bool fGenerate, CWallet* pwallet);
 /** Generate a new block, without valid proof-of-work */
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn);
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey);

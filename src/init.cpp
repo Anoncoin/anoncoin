@@ -9,6 +9,7 @@
 #include "txdb.h"
 #ifdef ENABLE_WALLET
 #include "walletdb.h"
+#include "miner.h"
 #endif
 #include "anoncoinrpc.h"
 #include "net.h"
@@ -122,7 +123,7 @@ void Shutdown()
     ShutdownRPCMining();
     if (pwalletMain)
         bitdb.Flush(false);
-    GenerateBitcoins(false, NULL);
+    GenerateAnoncoins(false, NULL);
     StopNode();
     {
         LOCK(cs_main);

@@ -11,6 +11,7 @@
 #include "script.h"
 #include "irc.h"
 #include "i2p.h"
+#include "miner.h"
 
 #ifdef WIN32
 #include <string.h>
@@ -2069,7 +2070,7 @@ void StartNode(boost::thread_group& threadGroup)
 bool StopNode()
 {
     printf("StopNode()\n");
-    GenerateBitcoins(false, NULL);
+    GenerateAnoncoins(false, NULL);
     MapPort(false);
     nTransactionsUpdated++;
     if (semOutbound)
