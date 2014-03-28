@@ -202,6 +202,7 @@ enum opcodetype
     OP_ZCCHECKPT = 0xc0,
     OP_ZCMINT = 0xc1,
     OP_ZCSPEND = 0xc2,
+    OP_ZCFIRSTHALF = 0xc3,
 
 
 
