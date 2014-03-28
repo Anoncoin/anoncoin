@@ -28,9 +28,11 @@ New output types:
   occur at most once for any given denomination, and is required if any ZC mints
   using that denomination occur in the block.
 
-* ZC mint:
+* ZC mint: amount must be one of the denomination amounts.
+  Script format: RETURN ZCMINT <version: VarInt> <coinCommitment: VarInt>
 
-* ZC first half: ZCFIRSTHALF <version: VarInt> <firstHalfHash: VarInt>
+* ZC first half: always has an amount of zero.
+  Script format: RETURN ZCFIRSTHALF <version: VarInt> <firstHalfHash: VarInt>
   At the time that this transaction is verified, only the length of firstHalfHash
   is checked, since the information required to verify more is not yet
   available.
