@@ -39,7 +39,7 @@ New output types:
   available.
   `firstHalfHash` consists of a hash of `spendTxHash commitmentToCoinUnderSerialParams t1-20hash t21-40hash`.
   `t1-20hash` and `t21-40hash` should match the "snSoK t" hashes described in
-  the spend root section (below). spendTxHash is produced by taking the binary
+  the spend root section (below). `spendTxHash` is produced by taking the binary
   representation of the ZC spend transaction as found in "tx" network messages,
   and replacing the input's spendRootHash with all zero bytes.
 
