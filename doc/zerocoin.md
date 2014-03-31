@@ -51,7 +51,7 @@ Contents:
 
 * the block hash containing the accumulator checkpoint
 
-* 4 hashes of accPoKs (one for each UFO)
+* N hashes of accPoKs (one for each UFO)
 
 * hashes (4 if non-rate-limited, 2 if rate-limited) of snSoK s, s': each part
   corresponds to a separate 20 bits of the challenge hash, and thus are
