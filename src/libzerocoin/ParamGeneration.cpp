@@ -88,7 +88,11 @@ CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 	// the dedicated string "COMMITMENTGROUP".
 	params.coinCommitmentGroup = deriveIntegerGroupParams(calculateSeed(N, aux, securityLevel, STRING_COMMIT_GROUP),
 	                             pLen, qLen);
-	PRINT_GROUP_PARAMS(params.coinCommitmentGroup);
+	// g and h are invalid, since they are now different for each coin; see
+	// "Rational Zero" by Garman et al., section 4.4.
+	params.coinCommitmentGroup.invalidateGenerators();
+	PRINT_BIGNUM("params.coinCommitmentGroup.groupOrder", params.coinCommitmentGroup.groupOrder);
+	PRINT_BIGNUM("params.coinCommitmentGroup.modulus", params.coinCommitmentGroup.modulus);
 
 	// Next, we derive parameters for a second Accumulated Value commitment group.
 	// This is a Schnorr group with the specific property that the order of the group
