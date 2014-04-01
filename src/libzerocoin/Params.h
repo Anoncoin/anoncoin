@@ -29,17 +29,58 @@ public:
 	Bignum randomElement() const;
 	bool initialized;
 
+private:
 	/**
 	 * A generator for the group.
 	 */
-	Bignum g;
+	Bignum _g;
 
 	/**
 	 * A second generator for the group.
 	 * Note log_g(h) and log_h(g) must
 	 * be unknown.
 	 */
-	Bignum h;
+	Bignum _h;
+	bool generatorsAreValid;
+public:
+	// Generator getters; these throw ZerocoinException if generatorsAreValid is
+	// false.
+	Bignum g() const {
+		if (!generatorsAreValid) {
+			throw ZerocoinException("Generators are invalid for this group.");
+		}
+		return _g;
+	}
+
+	Bignum h() const {
+		if (!generatorsAreValid) {
+			throw ZerocoinException("Generators are invalid for this group.");
+		}
+		return _h;
+	}
+
+	// Generator setters; these throw ZerocoinException if generatorsAreValid is
+	// false.
+	void g(Bignum g) {
+		if (!generatorsAreValid) {
+			throw ZerocoinException("Generators cannot be set for this group.");
+		}
+		_g = g;
+	}
+	void h(Bignum h) {
+		if (!generatorsAreValid) {
+			throw ZerocoinException("Generators cannot be set for this group.");
+		}
+		_h = h;
+	}
+
+	// Mark the generators g and h as invalid; this is done for the coin
+	// commitment group.
+	void invalidateGenerators() {
+		_g = 0;
+		_h = 0;
+		generatorsAreValid = false;
+	}
 
 	/**
 	 * The modulus for the group.
@@ -54,8 +95,8 @@ public:
 	IMPLEMENT_SERIALIZE
 	(
 	    READWRITE(initialized);
-	    READWRITE(g);
-	    READWRITE(h);
+	    READWRITE(_g);
+	    READWRITE(_h);
 	    READWRITE(modulus);
 	    READWRITE(groupOrder);
 	)

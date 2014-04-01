@@ -20,11 +20,11 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
         const Commitment& commitmentToCoin, const AccumulatorWitness& witness,
         Accumulator& a): params(p) {
 
-	Bignum sg = params->accumulatorPoKCommitmentGroup.g;
-	Bignum sh = params->accumulatorPoKCommitmentGroup.h;
+	Bignum sg = params->accumulatorPoKCommitmentGroup.g();
+	Bignum sh = params->accumulatorPoKCommitmentGroup.h();
 
-	Bignum g_n = params->accumulatorQRNCommitmentGroup.g;
-	Bignum h_n = params->accumulatorQRNCommitmentGroup.h;
+	Bignum g_n = params->accumulatorQRNCommitmentGroup.g();
+	Bignum h_n = params->accumulatorQRNCommitmentGroup.h();
 
 	Bignum e = commitmentToCoin.getContents();
 	Bignum r = commitmentToCoin.getRandomness();
@@ -101,11 +101,11 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
 /** Verifies that a commitment c is accumulated in accumulator a
  */
 bool AccumulatorProofOfKnowledge:: Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin) const {
-	Bignum sg = params->accumulatorPoKCommitmentGroup.g;
-	Bignum sh = params->accumulatorPoKCommitmentGroup.h;
+	Bignum sg = params->accumulatorPoKCommitmentGroup.g();
+	Bignum sh = params->accumulatorPoKCommitmentGroup.h();
 
-	Bignum g_n = params->accumulatorQRNCommitmentGroup.g;
-	Bignum h_n = params->accumulatorQRNCommitmentGroup.h;
+	Bignum g_n = params->accumulatorQRNCommitmentGroup.g();
+	Bignum h_n = params->accumulatorQRNCommitmentGroup.h();
 
 	//According to the proof, this hash should be of length k_prime bits.  It is currently greater than that, which should not be a problem, but we should check this.
 	CHashWriter hasher(0,0);

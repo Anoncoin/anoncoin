@@ -44,8 +44,8 @@ namespace libzerocoin {
 #define PRINT_GROUP_PARAMS(p)                                              \
 {                                                                          \
   IntegerGroupParams _p = (p);                                             \
-  PRINT_BIGNUM(""#p ".g", _p.g);                                           \
-  PRINT_BIGNUM(""#p ".h", _p.h);                                           \
+  PRINT_BIGNUM(""#p ".g", _p.g());                                           \
+  PRINT_BIGNUM(""#p ".h", _p.h());                                           \
   PRINT_BIGNUM(""#p ".groupOrder", _p.groupOrder);                         \
   PRINT_BIGNUM(""#p ".modulus",    _p.modulus);                            \
   std::cout << std::endl;                                                  \
@@ -106,14 +106,14 @@ CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 	// Calculate the parameters for the accumulator QRN commitment generators. This isn't really
 	// a whole group, just a pair of random generators in QR_N.
 	uint32_t resultCtr;
-	params.accumulatorParams.accumulatorQRNCommitmentGroup.g = generateIntegerFromSeed(NLen - 1,
+	params.accumulatorParams.accumulatorQRNCommitmentGroup.g(generateIntegerFromSeed(NLen - 1,
 	        calculateSeed(N, aux, securityLevel, STRING_QRNCOMMIT_GROUPG),
-	        &resultCtr).pow_mod(Bignum(2), N);
-	params.accumulatorParams.accumulatorQRNCommitmentGroup.h = generateIntegerFromSeed(NLen - 1,
+	        &resultCtr).pow_mod(Bignum(2), N));
+	params.accumulatorParams.accumulatorQRNCommitmentGroup.h(generateIntegerFromSeed(NLen - 1,
 	        calculateSeed(N, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
-	        &resultCtr).pow_mod(Bignum(2), N);
-	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.g", params.accumulatorParams.accumulatorQRNCommitmentGroup.g);
-	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.h", params.accumulatorParams.accumulatorQRNCommitmentGroup.h);
+	        &resultCtr).pow_mod(Bignum(2), N));
+	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.g", params.accumulatorParams.accumulatorQRNCommitmentGroup.g());
+	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.h", params.accumulatorParams.accumulatorQRNCommitmentGroup.h());
 
 	// Calculate the accumulator base, which we calculate as "u = C**2 mod N"
 	// where C is an arbitrary value. In the unlikely case that "u = 1" we increment
@@ -283,20 +283,20 @@ deriveIntegerGroupParams(uint256 seed, uint32_t pLen, uint32_t qLen)
 	// NIST FIPS 186-3, Appendix A.2.3. This algorithm takes ("p", "q",
 	// "domain_parameter_seed", "index"). We use "index" value 1
 	// to generate "g" and "index" value 2 to generate "h".
-	result.g = calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 1);
-	result.h = calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 2);
+	result.g(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 1));
+	result.h(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 2));
 
 	// Perform some basic tests to make sure we have good parameters
 	if ((uint32_t)(result.modulus.bitSize()) < pLen ||          // modulus is pLen bits long
 	        (uint32_t)(result.groupOrder.bitSize()) < qLen ||       // order is qLen bits long
 	        !(result.modulus.isPrime()) ||                          // modulus is prime
 	        !(result.groupOrder.isPrime()) ||                       // order is prime
-	        !((result.g.pow_mod(result.groupOrder, result.modulus)).isOne()) || // g^order mod modulus = 1
-	        !((result.h.pow_mod(result.groupOrder, result.modulus)).isOne()) || // h^order mod modulus = 1
-	        ((result.g.pow_mod(Bignum(100), result.modulus)).isOne()) ||        // g^100 mod modulus != 1
-	        ((result.h.pow_mod(Bignum(100), result.modulus)).isOne()) ||        // h^100 mod modulus != 1
-	        result.g == result.h ||                                 // g != h
-	        result.g.isOne()) {                                     // g != 1
+	        !((result.g().pow_mod(result.groupOrder, result.modulus)).isOne()) || // g^order mod modulus = 1
+	        !((result.h().pow_mod(result.groupOrder, result.modulus)).isOne()) || // h^order mod modulus = 1
+	        ((result.g().pow_mod(Bignum(100), result.modulus)).isOne()) ||        // g^100 mod modulus != 1
+	        ((result.h().pow_mod(Bignum(100), result.modulus)).isOne()) ||        // h^100 mod modulus != 1
+	        result.g() == result.h() ||                                 // g != h
+	        result.g().isOne()) {                                      // g != 1
 		// If any of the above tests fail, throw an exception
 		throw ZerocoinException("Group parameters are not valid");
 	}
@@ -338,18 +338,18 @@ deriveIntegerGroupFromOrder(Bignum &groupOrder)
 			uint256 seed = calculateSeed(groupOrder, "", 128, "");
 			uint256 pSeed = calculateHash(seed);
 			uint256 qSeed = calculateHash(pSeed);
-			result.g = calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 1);
-			result.h = calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 2);
+			result.g(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 1));
+			result.h(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 2));
 
 			// Perform some basic tests to make sure we have good parameters
 			if (!(result.modulus.isPrime()) ||                          // modulus is prime
 			        !(result.groupOrder.isPrime()) ||                       // order is prime
-			        !((result.g.pow_mod(result.groupOrder, result.modulus)).isOne()) || // g^order mod modulus = 1
-			        !((result.h.pow_mod(result.groupOrder, result.modulus)).isOne()) || // h^order mod modulus = 1
-			        ((result.g.pow_mod(Bignum(100), result.modulus)).isOne()) ||        // g^100 mod modulus != 1
-			        ((result.h.pow_mod(Bignum(100), result.modulus)).isOne()) ||        // h^100 mod modulus != 1
-			        result.g == result.h ||                                 // g != h
-			        result.g.isOne()) {                                     // g != 1
+			        !((result.g().pow_mod(result.groupOrder, result.modulus)).isOne()) || // g^order mod modulus = 1
+			        !((result.h().pow_mod(result.groupOrder, result.modulus)).isOne()) || // h^order mod modulus = 1
+			        ((result.g().pow_mod(Bignum(100), result.modulus)).isOne()) ||        // g^100 mod modulus != 1
+			        ((result.h().pow_mod(Bignum(100), result.modulus)).isOne()) ||        // h^100 mod modulus != 1
+			        result.g() == result.h() ||                                 // g != h
+			        result.g().isOne()) {                                       // g != 1
 				// If any of the above tests fail, throw an exception
 				throw ZerocoinException("Group parameters are not valid");
 			}

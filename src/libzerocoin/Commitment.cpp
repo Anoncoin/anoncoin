@@ -19,8 +19,8 @@ namespace libzerocoin {
 Commitment::Commitment::Commitment(const IntegerGroupParams* p,
                                    const Bignum& value): params(p), contents(value) {
 	this->randomness = Bignum::randBignum(params->groupOrder);
-	this->commitmentValue = (params->g.pow_mod(this->contents, params->modulus).mul_mod(
-	                         params->h.pow_mod(this->randomness, params->modulus), params->modulus));
+	this->commitmentValue = (params->g().pow_mod(this->contents, params->modulus).mul_mod(
+	                         params->h().pow_mod(this->randomness, params->modulus), params->modulus));
 }
 
 const Bignum& Commitment::getCommitmentValue() const {
@@ -71,8 +71,8 @@ CommitmentProofOfKnowledge::CommitmentProofOfKnowledge(const IntegerGroupParams*
 	// T2 = g2^r1 * h2^r3 mod p2
 	//
 	// Where (g1, h1, p1) are from "aParams" and (g2, h2, p2) are from "bParams".
-	Bignum T1 = this->ap->g.pow_mod(r1, this->ap->modulus).mul_mod((this->ap->h.pow_mod(r2, this->ap->modulus)), this->ap->modulus);
-	Bignum T2 = this->bp->g.pow_mod(r1, this->bp->modulus).mul_mod((this->bp->h.pow_mod(r3, this->bp->modulus)), this->bp->modulus);
+	Bignum T1 = this->ap->g().pow_mod(r1, this->ap->modulus).mul_mod((this->ap->h().pow_mod(r2, this->ap->modulus)), this->ap->modulus);
+	Bignum T2 = this->bp->g().pow_mod(r1, this->bp->modulus).mul_mod((this->bp->h().pow_mod(r3, this->bp->modulus)), this->bp->modulus);
 
 	// Now hash commitment "A" with commitment "B" as well as the
 	// parameters and the two ephemeral commitments "T1, T2" we just generated
@@ -118,12 +118,12 @@ bool CommitmentProofOfKnowledge::Verify(const Bignum& A, const Bignum& B) const
 
 	// Compute T1 = g1^S1 * h1^S2 * inverse(A^{challenge}) mod p1
 	Bignum T1 = A.pow_mod(this->challenge, ap->modulus).inverse(ap->modulus).mul_mod(
-	                (ap->g.pow_mod(S1, ap->modulus).mul_mod(ap->h.pow_mod(S2, ap->modulus), ap->modulus)),
+	                (ap->g().pow_mod(S1, ap->modulus).mul_mod(ap->h().pow_mod(S2, ap->modulus), ap->modulus)),
 	                ap->modulus);
 
 	// Compute T2 = g2^S1 * h2^S3 * inverse(B^{challenge}) mod p2
 	Bignum T2 = B.pow_mod(this->challenge, bp->modulus).inverse(bp->modulus).mul_mod(
-	                (bp->g.pow_mod(S1, bp->modulus).mul_mod(bp->h.pow_mod(S3, bp->modulus), bp->modulus)),
+	                (bp->g().pow_mod(S1, bp->modulus).mul_mod(bp->h().pow_mod(S3, bp->modulus), bp->modulus)),
 	                bp->modulus);
 
 	// Hash T1 and T2 along with all of the public parameters

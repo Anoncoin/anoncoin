@@ -29,10 +29,10 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const
 		throw ZerocoinException("Groups are not structured correctly.");
 	}
 
-	Bignum a = params->coinCommitmentGroup.g;
-	Bignum b = params->coinCommitmentGroup.h;
-	Bignum g = params->serialNumberSoKCommitmentGroup.g;
-	Bignum h = params->serialNumberSoKCommitmentGroup.h;
+	Bignum a = params->coinCommitmentGroup.g();
+	Bignum b = params->coinCommitmentGroup.h();
+	Bignum g = params->serialNumberSoKCommitmentGroup.g();
+	Bignum h = params->serialNumberSoKCommitmentGroup.h();
 
 	CHashWriter hasher(0,0);
 	hasher << *params << commitmentToCoin.getCommitmentValue() << coin.getSerialNumber() << msghash;
@@ -92,10 +92,10 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const
 inline Bignum SerialNumberSignatureOfKnowledge::challengeCalculation(const Bignum& a_exp,const Bignum& b_exp,
         const Bignum& h_exp) const {
 
-	Bignum a = params->coinCommitmentGroup.g;
-	Bignum b = params->coinCommitmentGroup.h;
-	Bignum g = params->serialNumberSoKCommitmentGroup.g;
-	Bignum h = params->serialNumberSoKCommitmentGroup.h;
+	Bignum a = params->coinCommitmentGroup.g();
+	Bignum b = params->coinCommitmentGroup.h();
+	Bignum g = params->serialNumberSoKCommitmentGroup.g();
+	Bignum h = params->serialNumberSoKCommitmentGroup.h();
 
 	Bignum exponent = (a.pow_mod(a_exp, params->serialNumberSoKCommitmentGroup.groupOrder)
 	                   * b.pow_mod(b_exp, params->serialNumberSoKCommitmentGroup.groupOrder)) % params->serialNumberSoKCommitmentGroup.groupOrder;
@@ -105,10 +105,10 @@ inline Bignum SerialNumberSignatureOfKnowledge::challengeCalculation(const Bignu
 
 bool SerialNumberSignatureOfKnowledge::Verify(const Bignum& coinSerialNumber, const Bignum& valueOfCommitmentToCoin,
         const uint256 msghash) const {
-	Bignum a = params->coinCommitmentGroup.g;
-	Bignum b = params->coinCommitmentGroup.h;
-	Bignum g = params->serialNumberSoKCommitmentGroup.g;
-	Bignum h = params->serialNumberSoKCommitmentGroup.h;
+	Bignum a = params->coinCommitmentGroup.g();
+	Bignum b = params->coinCommitmentGroup.h();
+	Bignum g = params->serialNumberSoKCommitmentGroup.g();
+	Bignum h = params->serialNumberSoKCommitmentGroup.h();
 	CHashWriter hasher(0,0);
 	hasher << *params << valueOfCommitmentToCoin << coinSerialNumber << msghash;
 

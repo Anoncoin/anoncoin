@@ -31,7 +31,7 @@ AccumulatorAndProofParams::AccumulatorAndProofParams() {
 	this->initialized = false;
 }
 
-IntegerGroupParams::IntegerGroupParams() {
+IntegerGroupParams::IntegerGroupParams(): generatorsAreValid(true) {
 	this->initialized = false;
 }
 
@@ -39,7 +39,7 @@ Bignum IntegerGroupParams::randomElement() const {
 	// The generator of the group raised
 	// to a random number less than the order of the group
 	// provides us with a uniformly distributed random number.
-	return this->g.pow_mod(Bignum::randBignum(this->groupOrder),this->modulus);
+	return this->g().pow_mod(Bignum::randBignum(this->groupOrder),this->modulus);
 }
 
 } /* namespace libzerocoin */
