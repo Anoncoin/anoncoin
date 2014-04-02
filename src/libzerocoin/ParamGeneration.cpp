@@ -142,11 +142,33 @@ CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 }
 
 /// \brief Format a seed string by hashing several values.
-/// \param N                A Bignum
-/// \param aux              An auxiliary string
-/// \param securityLevel    The security level in bits
-/// \param groupName        A group description string
-/// \throws         ZerocoinException if the process fails
+/// TODO documentation
+/// \throws         bignum_error and whatever CHashWriter throws?
+///
+/// Returns the hash of the value.
+
+uint256
+calculateGeneratorSeed(Bignum serialNumber, string label, uint32_t index, uint32_t count)
+{
+	CHashWriter hasher(0,0);
+	uint256     hash;
+
+	// Compute the hash of:
+	// <serialNumber>||<label>||<index>||<count>
+	hasher << serialNumber;
+	hasher << string("||");
+	hasher << label;
+	hasher << string("||");
+	hasher << index;
+	hasher << string("||");
+	hasher << count;
+
+	return hasher.GetHash();
+}
+
+/// \brief Format a seed string by hashing several values.
+/// TODO documentation
+/// \throws         bignum_error and whatever CHashWriter throws?
 ///
 /// Returns the hash of the value.
 
@@ -157,7 +179,7 @@ calculateGeneratorSeed(uint256 seed, uint256 pSeed, uint256 qSeed, string label,
 	uint256     hash;
 
 	// Compute the hash of:
-	// <modulus>||<securitylevel>||<auxString>||groupName
+	// <seed>||<pSeed>||<qSeed>||<label>||<index>||<count>
 	hasher << seed;
 	hasher << string("||");
 	hasher << pSeed;
@@ -178,7 +200,7 @@ calculateGeneratorSeed(uint256 seed, uint256 pSeed, uint256 qSeed, string label,
 /// \param aux              An auxiliary string
 /// \param securityLevel    The security level in bits
 /// \param groupName        A group description string
-/// \throws         ZerocoinException if the process fails
+/// \throws         bignum_error and whatever CHashWriter throws? TODO
 ///
 /// Returns the hash of the value.
 
@@ -287,8 +309,8 @@ deriveIntegerGroupParams(uint256 seed, uint32_t pLen, uint32_t qLen)
 	// NIST FIPS 186-3, Appendix A.2.3. This algorithm takes ("p", "q",
 	// "domain_parameter_seed", "index"). We use "index" value 1
 	// to generate "g" and "index" value 2 to generate "h".
-	result.g(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 1));
-	result.h(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 2));
+	result.g(calculateGroupGenerator(Bignum(0), seed, pSeed, qSeed, result.modulus, result.groupOrder, 1));
+	result.h(calculateGroupGenerator(Bignum(0), seed, pSeed, qSeed, result.modulus, result.groupOrder, 2));
 
 	// Perform some basic tests to make sure we have good parameters
 	if ((uint32_t)(result.modulus.bitSize()) < pLen ||          // modulus is pLen bits long
@@ -342,8 +364,8 @@ deriveIntegerGroupFromOrder(Bignum &groupOrder)
 			uint256 seed = calculateSeed(groupOrder, "", 128, "");
 			uint256 pSeed = calculateHash(seed);
 			uint256 qSeed = calculateHash(pSeed);
-			result.g(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 1));
-			result.h(calculateGroupGenerator(seed, pSeed, qSeed, result.modulus, result.groupOrder, 2));
+			result.g(calculateGroupGenerator(Bignum(0), seed, pSeed, qSeed, result.modulus, result.groupOrder, 1));
+			result.h(calculateGroupGenerator(Bignum(0), seed, pSeed, qSeed, result.modulus, result.groupOrder, 2));
 
 			// Perform some basic tests to make sure we have good parameters
 			if (!(result.modulus.isPrime()) ||                          // modulus is prime
@@ -469,6 +491,7 @@ calculateGroupModulusAndOrder(uint256 seed, uint32_t pLen, uint32_t qLen,
 }
 
 /// \brief Deterministically compute a generator for a given group.
+/// \param serialNumber                 For coin commitment group. *seed params used iff zero.
 /// \param seed                         A first seed for the process.
 /// \param pSeed                        A second seed for the process.
 /// \param qSeed                        A third seed for the process.
@@ -482,7 +505,7 @@ calculateGroupModulusAndOrder(uint256 seed, uint32_t pLen, uint32_t qLen,
 /// Uses the algorithm described in FIPS 186-3 Appendix A.2.3.
 
 Bignum
-calculateGroupGenerator(uint256 seed, uint256 pSeed, uint256 qSeed, Bignum modulus, Bignum groupOrder, uint32_t index)
+calculateGroupGenerator(Bignum serialNumber, uint256 seed, uint256 pSeed, uint256 qSeed, Bignum modulus, Bignum groupOrder, uint32_t index)
 {
 	Bignum result;
 
@@ -497,7 +520,8 @@ calculateGroupGenerator(uint256 seed, uint256 pSeed, uint256 qSeed, Bignum modul
 	// Loop until we find a generator
 	for (uint32_t count = 1; count < MAX_GENERATOR_ATTEMPTS; count++) {
 		// hash = Hash(seed || pSeed || qSeed || “ggen” || index || count
-		uint256 hash = calculateGeneratorSeed(seed, pSeed, qSeed, "ggen", index, count);
+		uint256 hash = (serialNumber > 0) ? calculateGeneratorSeed(serialNumber, "ggen", index, count)
+		                                  : calculateGeneratorSeed(seed, pSeed, qSeed, "ggen", index, count);
 		Bignum W(hash);
 
 		// Compute result = W^e mod p
