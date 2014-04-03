@@ -2073,7 +2073,9 @@ void StartNode(boost::thread_group& threadGroup)
 bool StopNode()
 {
     printf("StopNode()\n");
+#ifdef ENABLE_WALLET
     GenerateAnoncoins(false, NULL);
+#endif
     MapPort(false);
     nTransactionsUpdated++;
     if (semOutbound)

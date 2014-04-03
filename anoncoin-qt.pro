@@ -215,6 +215,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/i2p.h \
     src/scrypt.h \
     src/version.h \
+    src/miner.h \
     src/netbase.h \
     src/clientversion.h \
     src/txdb.h \
@@ -296,6 +297,7 @@ SOURCES += src/qt/anoncoin.cpp \
     src/i2p.cpp \
     src/scrypt.cpp \
     src/noui.cpp \
+    src/miner.cpp \
     src/leveldb.cpp \
     src/txdb.cpp \
     src/qt/splashscreen.cpp \

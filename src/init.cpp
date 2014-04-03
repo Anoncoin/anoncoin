@@ -6,6 +6,7 @@
 // Copyright (c) 2012-2013 giv
 
 
+#include "main.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
 #include "txdb.h"
@@ -120,9 +121,11 @@ void Shutdown()
     nTransactionsUpdated++;
     StopRPCThreads();
     ShutdownRPCMining();
+#ifdef ENABLE_WALLET
     if (pwalletMain)
         bitdb.Flush(false);
     GenerateAnoncoins(false, NULL);
+#endif
     StopNode();
     {
         LOCK(cs_main);
@@ -139,11 +142,11 @@ void Shutdown()
 #ifdef ENABLE_WALLET
     if (pwalletMain)
         bitdb.Flush(true);
-    boost::filesystem::remove(GetPidFile());
     UnregisterWallet(pwalletMain);
     if (pwalletMain)
         delete pwalletMain;
 #endif
+    boost::filesystem::remove(GetPidFile());
     printf("Shutdown : done\n");
 }
 
