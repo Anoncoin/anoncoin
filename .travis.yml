@@ -1,0 +1,25 @@
+language: cpp
+matrix:
+  include:
+    - env: QTTYPE=4
+compiler:
+  - gcc
+cache:
+  - bundler
+  - apt
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libboost-all-dev libdb++-dev libleveldb-dev libminiupnpc-dev libqrencode-dev libqt4-dev libssl-dev qt4-qmake
+script:
+  - cd i2psam
+  - make -f makefile.unix
+  - cd ..
+  - qmake USE_UPNP=-
+  - make
+notifications: 
+  irc: 
+    channels: 
+      - "chat.freenode.net#anoncoin"
+    on_failure: always
+    on_success: always
+
