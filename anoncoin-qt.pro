@@ -5,7 +5,7 @@ VERSION = 0.8.5.6
 INCLUDEPATH += src src/json src/qt i2psam
 QT += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE ENABLE_WALLET
 CONFIG += no_include_pwd
 CONFIG += thread
 SUBDIR = i2psam
@@ -196,7 +196,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/walletview.h \
     src/qt/walletstack.h \
     src/qt/walletframe.h \
-    src/bitcoinrpc.h \
+    src/anoncoinrpc.h \
     src/qt/overviewpage.h \
     src/qt/csvmodelwriter.h \
     src/crypter.h \
@@ -215,6 +215,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/i2p.h \
     src/scrypt.h \
     src/version.h \
+    src/miner.h \
     src/netbase.h \
     src/clientversion.h \
     src/txdb.h \
@@ -273,7 +274,7 @@ SOURCES += src/qt/anoncoin.cpp \
     src/qt/walletview.cpp \
     src/qt/walletstack.cpp \
     src/qt/walletframe.cpp \
-    src/bitcoinrpc.cpp \
+    src/anoncoinrpc.cpp \
     src/rpcdump.cpp \
     src/rpcnet.cpp \
     src/rpcmining.cpp \
@@ -296,6 +297,7 @@ SOURCES += src/qt/anoncoin.cpp \
     src/i2p.cpp \
     src/scrypt.cpp \
     src/noui.cpp \
+    src/miner.cpp \
     src/leveldb.cpp \
     src/txdb.cpp \
     src/qt/splashscreen.cpp \

@@ -1,3 +1,12 @@
+The Anoncoin project
+====================
+
+[![Build Status](https://travis-ci.org/Anoncoin/anoncoin.png?branch=master)](https://travis-ci.org/Anoncoin/anoncoin)
+
+
+
+Specs:
+
 Anoncoin - a fork version of Litecoin optimized for CPU mining using scrypt as a proof of work scheme.
  - 3.42 minute block targets (retarget on ~1680 blocks, 4days)
  - Starts with 4.2 coin blocks until block 42000

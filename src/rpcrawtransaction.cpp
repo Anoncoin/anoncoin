@@ -6,12 +6,14 @@
 #include <boost/assign/list_of.hpp>
 
 #include "base58.h"
-#include "bitcoinrpc.h"
+#include "anoncoinrpc.h"
 #include "db.h"
 #include "init.h"
 #include "main.h"
 #include "net.h"
+#ifdef ENABLE_WALLET
 #include "wallet.h"
+#endif
 
 using namespace std;
 using namespace boost;
@@ -166,6 +168,7 @@ Value getrawtransaction(const Array& params, bool fHelp)
     return result;
 }
 
+#ifdef ENABLE_WALLET
 Value listunspent(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 3)
@@ -252,6 +255,7 @@ Value listunspent(const Array& params, bool fHelp)
 
     return results;
 }
+#endif
 
 Value createrawtransaction(const Array& params, bool fHelp)
 {
@@ -351,7 +355,11 @@ Value signrawtransaction(const Array& params, bool fHelp)
             "Returns json object with keys:\n"
             "  hex : raw transaction with signature(s) (hex-encoded string)\n"
             "  complete : 1 if transaction has a complete set of signature (0 if not)"
+#ifdef ENABLE_WALLET
             + HelpRequiringPassphrase());
+#else
+            + "\n";
+#endif
 
     RPCTypeCheck(params, list_of(str_type)(array_type)(array_type)(str_type), true);
 
@@ -412,8 +420,10 @@ Value signrawtransaction(const Array& params, bool fHelp)
             tempKeystore.AddKey(key);
         }
     }
+#ifdef ENABLE_WALLET
     else
         EnsureWalletIsUnlocked();
+#endif
 
     // Add previous txouts given in the RPC call:
     if (params.size() > 1 && params[1].type() != null_type)
@@ -469,7 +479,11 @@ Value signrawtransaction(const Array& params, bool fHelp)
         }
     }
 
+#ifdef ENABLE_WALLET
     const CKeyStore& keystore = ((fGivenKeys || !pwalletMain) ? tempKeystore : *pwalletMain);
+#else
+    const CKeyStore& keystore = tempKeystore;
+#endif
 
     int nHashType = SIGHASH_ALL;
     if (params.size() > 3 && params[3].type() != null_type)

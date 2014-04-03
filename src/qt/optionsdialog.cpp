@@ -253,7 +253,7 @@ void OptionsDialog::showRestartWarning_I2P()
 {
     if(!fRestartWarningDisplayed_I2P)
     {
-        QMessageBox::warning(this, tr("Warning"), tr("This setting will take effect after restarting Bitcoin."), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Warning"), tr("This setting will take effect after restarting Anoncoin."), QMessageBox::Ok);
         fRestartWarningDisplayed_I2P = true;
     }
 }

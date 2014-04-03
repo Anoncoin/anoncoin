@@ -81,6 +81,7 @@ LIBS += $(abspath ../i2psam/libi2psam.a)
 CFLAGS += -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
     $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
 
+DEFS += -DENABLE_WALLET
 # HACK: libleveldb.a and libi2psam.a are only in here so that make recognizes that
 # anoncoind depends on them. This is inelegant because they are redundant when listed
 # in $OBJS (NOTE: compilation fails if they are not in $LIBS, even if present here).
@@ -102,7 +103,7 @@ OBJS= \
     obj/main.o \
     obj/net.o \
     obj/protocol.o \
-    obj/bitcoinrpc.o \
+    obj/anoncoinrpc.o \
     obj/rpcdump.o \
     obj/rpcnet.o \
     obj/rpcmining.o \
@@ -119,7 +120,8 @@ OBJS= \
     obj/bloom.o \
     obj/noui.o \
     obj/leveldb.o \
-    obj/txdb.o
+    obj/txdb.o \
+    obj/miner.o
 
 ifdef USE_SSE2
 DEFS += -DUSE_SSE2

@@ -5,9 +5,11 @@
 #ifndef BITCOIN_INIT_H
 #define BITCOIN_INIT_H
 
+#ifdef ENABLE_WALLET
 #include "wallet.h"
-
+#include "miner.h"
 extern CWallet* pwalletMain;
+#endif
 
 void StartShutdown();
 bool ShutdownRequested();

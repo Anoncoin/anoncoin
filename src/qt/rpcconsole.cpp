@@ -1,8 +1,10 @@
 #include "rpcconsole.h"
 #include "ui_rpcconsole.h"
 
+#include "util.h"
+
 #include "clientmodel.h"
-#include "bitcoinrpc.h"
+#include "anoncoinrpc.h"
 #include "guiutil.h"
 
 #include <QTime>

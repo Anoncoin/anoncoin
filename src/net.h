@@ -21,6 +21,9 @@
 #include "addrman.h"
 #include "hash.h"
 #include "bloom.h"
+#ifdef ENABLE_WALLET
+#include "miner.h"
+#endif
 
 class CNode;
 class CBlockIndex;
