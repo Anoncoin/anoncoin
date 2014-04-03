@@ -7,6 +7,7 @@
 #include "init.h"
 #include "net.h"
 #include "main.h"
+#include "util.h"
 
 #ifdef ENABLE_WALLET
 #include "miner.h"
@@ -17,6 +18,11 @@
 
 using namespace json_spirit;
 using namespace std;
+
+extern double dHashesPerSec;
+extern int64 nHPSTimerStart;
+extern uint64 nLastBlockSize;
+extern uint64 nLastBlockTx;
 
 // Return average network hashes per second based on the last 'lookup' blocks,
 // or from the last difficulty change if 'lookup' is nonpositive.

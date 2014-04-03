@@ -7,7 +7,7 @@
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
-
+#include "miner.h"
 extern CWallet* pwalletMain;
 #endif
 
