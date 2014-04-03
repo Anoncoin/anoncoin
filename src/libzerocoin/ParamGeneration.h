@@ -41,6 +41,7 @@ IntegerGroupParams  deriveIntegerGroupFromOrder(Bignum &groupOrder);
 void                calculateGroupModulusAndOrder(uint256 seed, uint32_t pLen, uint32_t qLen,
         Bignum *resultModulus, Bignum *resultGroupOrder,
         uint256 *resultPseed, uint256 *resultQseed);
+void                deriveGeneratorsFromSerialNumber(Bignum serialNumber, Bignum modulus, Bignum groupOrder, Bignum& g_out, Bignum& h_out);  // throws ZerocoinException
 Bignum              calculateGroupGenerator(Bignum serialNumber, uint256 seed, uint256 pSeed, uint256 qSeed, Bignum modulus,
         Bignum groupOrder, uint32_t index);
 Bignum              generateRandomPrime(uint32_t primeBitLen, uint256 in_seed, uint256 *out_seed,

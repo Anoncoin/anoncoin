@@ -490,6 +490,33 @@ calculateGroupModulusAndOrder(uint256 seed, uint32_t pLen, uint32_t qLen,
 	throw ZerocoinException("Unable to generate a prime modulus for the group");
 }
 
+/// \brief Deterministically derives coin commitment group generators g & h from a serial number (and group modulus and order).
+/// \param serialNumber                 Serial number of the ZC spend.
+/// \param modulus                      Prime modulus for the field.
+/// \param groupOrder                   Order of the group.
+/// \param g_out						Out param for g generator.
+/// \param h_out						Out param for h generator.
+/// \throws                             A ZerocoinException if error.
+///
+/// The purpose of having different generators for each ZC spend is to prevent
+/// one solution of the discrete log problem from allowing infinite double spends.
+/// See "Rational Zero" by Garman et al., section 4.4 for more.
+///
+/// Unlike the other functions in this file, this is called after initial setup
+/// of Zerocoin parameters (i.e., it is called during minting, spending, and verifying).
+void
+deriveGeneratorsFromSerialNumber(Bignum serialNumber, Bignum modulus, Bignum groupOrder, Bignum& g_out, Bignum& h_out)
+{
+	Bignum g, h;
+	g = calculateGroupGenerator(serialNumber, 0, 0, 0, modulus, groupOrder, 1);
+	h = calculateGroupGenerator(serialNumber, 0, 0, 0, modulus, groupOrder, 2);
+	if (g == h) {
+		throw ZerocoinException("g == h for coin commitment group generators derived from serial number");
+	}
+	g_out = g;
+	h_out = h;
+}
+
 /// \brief Deterministically compute a generator for a given group.
 /// \param serialNumber                 For coin commitment group. *seed params used iff zero.
 /// \param seed                         A first seed for the process.
@@ -501,7 +528,7 @@ calculateGroupModulusAndOrder(uint256 seed, uint32_t pLen, uint32_t qLen,
 /// \return                             The resulting generator.
 /// \throws                             A ZerocoinException if error.
 ///
-/// Generates a random group generator deterministically as a function of (seed,pSeed,qSeed)
+/// Generates a random group generator deterministically as a function of either (serialNumber) or (seed,pSeed,qSeed)
 /// Uses the algorithm described in FIPS 186-3 Appendix A.2.3.
 
 Bignum
