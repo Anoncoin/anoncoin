@@ -6,6 +6,7 @@
 // Copyright (c) 2012-2013 giv
 
 
+#include "util.h"
 #ifdef ENABLE_WALLET
 #include "txdb.h"
 #include "walletdb.h"
@@ -14,7 +15,6 @@
 #include "anoncoinrpc.h"
 #include "net.h"
 #include "init.h"
-#include "util.h"
 #include "ui_interface.h"
 
 #include <boost/filesystem.hpp>

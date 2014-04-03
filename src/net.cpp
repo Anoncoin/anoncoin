@@ -3,7 +3,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "db.h"
+#include "util.h"
 #include "net.h"
 #include "init.h"
 #include "addrman.h"
@@ -12,6 +12,7 @@
 #include "irc.h"
 #include "i2p.h"
 #ifdef ENABLE_WALLET
+#include "db.h"
 #include "miner.h"
 #endif
 
