@@ -59,12 +59,12 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 }
 
 const Bignum&
-CoinSpend::getCoinSerialNumber() {
+CoinSpend::getCoinSerialNumber() const {
 	return this->coinSerialNumber;
 }
 
 const CoinDenomination
-CoinSpend::getDenomination() {
+CoinSpend::getDenomination() const {
 	return static_cast<CoinDenomination>(this->denomination);
 }
 

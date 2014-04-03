@@ -68,13 +68,13 @@ public:
 	 *
 	 * @return the coin's serial number
 	 */
-	const Bignum& getCoinSerialNumber();
+	const Bignum& getCoinSerialNumber() const;
 
 	/**Gets the denomination of the coin spent in this proof.
 	 *
 	 * @return the denomination
 	 */
-	const CoinDenomination getDenomination();
+	const CoinDenomination getDenomination() const;
 
 	bool Verify(const Accumulator& a, const SpendMetaData &metaData) const;
 
