@@ -6,8 +6,8 @@
 // Copyright (c) 2012-2013 giv
 
 
-#include "txdb.h"
 #ifdef ENABLE_WALLET
+#include "txdb.h"
 #include "walletdb.h"
 #include "miner.h"
 #endif
@@ -16,7 +16,6 @@
 #include "init.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "miner.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>

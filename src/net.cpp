@@ -11,7 +11,9 @@
 #include "script.h"
 #include "irc.h"
 #include "i2p.h"
+#ifdef ENABLE_WALLET
 #include "miner.h"
+#endif
 
 #ifdef WIN32
 #include <string.h>

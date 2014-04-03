@@ -3,12 +3,16 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+
+#include "init.h"
+#include "net.h"
 #include "main.h"
-#include "miner.h"
+
 #ifdef ENABLE_WALLET
+#include "miner.h"
 #include "db.h"
 #endif
-#include "init.h"
+
 #include "anoncoinrpc.h"
 
 using namespace json_spirit;
