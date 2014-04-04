@@ -123,9 +123,12 @@ void PrivateCoin::mintCoinFast(const CoinDenomination denomination) {
 	// Generate a random number "r" in the range 0...{q-1}
 	Bignum r = Bignum::randBignum(this->params->coinCommitmentGroup.groupOrder);
 	
+	Bignum cc_g, cc_h; // generators g & h for coin commitment group
+	deriveGeneratorsFromSerialNumber(s, this->params->coinCommitmentGroup.modulus, this->params->coinCommitmentGroup.groupOrder, cc_g, cc_h);
+
 	// Manually compute a Pedersen commitment to the serial number "s" under randomness "r"
 	// C = g^s * h^r mod p
-	Bignum commitmentValue = this->params->coinCommitmentGroup.g().pow_mod(s, this->params->coinCommitmentGroup.modulus).mul_mod(this->params->coinCommitmentGroup.h().pow_mod(r, this->params->coinCommitmentGroup.modulus), this->params->coinCommitmentGroup.modulus);
+	Bignum commitmentValue = cc_g.pow_mod(s, this->params->coinCommitmentGroup.modulus).mul_mod(cc_h.pow_mod(r, this->params->coinCommitmentGroup.modulus), this->params->coinCommitmentGroup.modulus);
 	
 	// Repeat this process up to MAX_COINMINT_ATTEMPTS times until
 	// we obtain a prime number
@@ -152,7 +155,7 @@ void PrivateCoin::mintCoinFast(const CoinDenomination denomination) {
 		// r = r + r_delta mod q
 		// C = C * h mod p
 		r = (r + r_delta) % this->params->coinCommitmentGroup.groupOrder;
-		commitmentValue = commitmentValue.mul_mod(this->params->coinCommitmentGroup.h().pow_mod(r_delta, this->params->coinCommitmentGroup.modulus), this->params->coinCommitmentGroup.modulus);
+		commitmentValue = commitmentValue.mul_mod(cc_h.pow_mod(r_delta, this->params->coinCommitmentGroup.modulus), this->params->coinCommitmentGroup.modulus);
 	}
 		
 	// We only get here if we did not find a coin within

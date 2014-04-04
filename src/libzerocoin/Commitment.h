@@ -37,19 +37,31 @@ public:
 	 * @param value the value to commit to
 	 */
 	Commitment(const IntegerGroupParams* p, const Bignum& value);
+	/**Generates a Pedersen commitment to the given value.
+	 *
+	 * @param p the group parameters for the coin
+	 * @param value the value to commit to
+	 * @param g the value of generator g (overrides the group)
+	 * @param h the value of generator h (overrides the group)
+	 */
+	Commitment(const IntegerGroupParams* p, const Bignum& value, const Bignum& g, const Bignum& h);
 	const Bignum& getCommitmentValue() const;
 	const Bignum& getRandomness() const;
 	const Bignum& getContents() const;
 private:
+	void _init(const IntegerGroupParams* p, const Bignum& value);
 	const IntegerGroupParams *params;
 	Bignum commitmentValue;
 	Bignum randomness;
 	const Bignum contents;
+	Bignum g, h;
 	IMPLEMENT_SERIALIZE
 	(
 	    READWRITE(commitmentValue);
 	    READWRITE(randomness);
 	    READWRITE(contents);
+	    READWRITE(g);
+	    READWRITE(h);
 	)
 };
 

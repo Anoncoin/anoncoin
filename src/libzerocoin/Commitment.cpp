@@ -17,10 +17,30 @@ namespace libzerocoin {
 
 //Commitment class
 Commitment::Commitment(const IntegerGroupParams* p,
-                       const Bignum& value): params(p), contents(value) {
+                       const Bignum& value):
+	params(p),
+	contents(value),
+	g(p->g()),
+	h(p->h()) {
+	_init(p, value);
+}
+
+// allow the generators to be overriden from p - needed by coin commitment group
+Commitment::Commitment(const IntegerGroupParams* p,
+                       const Bignum& value,
+                       const Bignum& g,
+                       const Bignum& h):
+	params(p),
+	contents(value),
+	g(g),
+	h(h) {
+	_init(p, value);
+}
+
+void Commitment::_init(const IntegerGroupParams* p, const Bignum& value) {
 	this->randomness = Bignum::randBignum(params->groupOrder);
-	this->commitmentValue = (params->g().pow_mod(this->contents, params->modulus).mul_mod(
-	                         params->h().pow_mod(this->randomness, params->modulus), params->modulus));
+	this->commitmentValue = (g.pow_mod(this->contents, params->modulus).mul_mod(
+	                         h.pow_mod(this->randomness, params->modulus), params->modulus));
 }
 
 const Bignum& Commitment::getCommitmentValue() const {
