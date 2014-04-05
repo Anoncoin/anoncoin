@@ -52,7 +52,7 @@ public:
 	 * 1) params is the right params
 	 * 2) the accumulator actually is in some block
 	 * 3) that the serial number is unspent
-	 * 4) that the transaction
+	 * 4) that the transaction outputs sum to at most the sum of the inputs
 	 *
 	 * @param p cryptographic parameters
 	 * @param coin The coin to be spend
