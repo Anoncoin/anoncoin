@@ -41,11 +41,11 @@ public:
 	/**Generates a proof spending a zerocoin.
 	 *
 	 * To use this, provide an unspent PrivateCoin, the latest Accumulator
-	 * (e.g from the most recent Bitcoin block) containing the public part
-	 * of the coin, a witness to that, and whatever medeta data is needed.
+	 * (e.g from the most recent Anoncoin block) containing the public part
+	 * of the coin, a witness to that, and the transaction hash.
 	 *
 	 * Once constructed, this proof can be serialized and sent.
-	 * It is validated simply be calling validate.
+	 * It is validated simply by calling validate.
 	 * @warning Validation only checks that the proof is correct
 	 * @warning for the specified values in this class. These values must be validated
 	 *  Clients ought to check that
@@ -58,8 +58,8 @@ public:
 	 * @param coin The coin to be spend
 	 * @param a The current accumulator containing the coin
 	 * @param witness The witness showing that the accumulator contains the coin
-	 * @param m arbitrary meta data related to the spend that might be needed by Bitcoin
-	 * 			(i.e. the transaction hash)
+	 * @param m the transaction hash as described in docs/zerocoin.md; this is "signed"
+	 * 				  by the ZC spend (specifically the snSoK).
 	 * @throw ZerocoinException if the process fails
 	 */
 	CoinSpend(const Params* p, const PrivateCoin& coin, Accumulator& a, const AccumulatorWitness& witness, const SpendMetaData& m);
