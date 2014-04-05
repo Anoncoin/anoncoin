@@ -29,8 +29,8 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const
 		throw ZerocoinException("Groups are not structured correctly.");
 	}
 
-	Bignum a = params->coinCommitmentGroup.g();
-	Bignum b = params->coinCommitmentGroup.h();
+	Bignum a, b;
+	deriveGeneratorsFromSerialNumber(coin.getSerialNumber(), params->coinCommitmentGroup.modulus, params->coinCommitmentGroup.groupOrder, a, b);
 	Bignum g = params->serialNumberSoKCommitmentGroup.g();
 	Bignum h = params->serialNumberSoKCommitmentGroup.h();
 
@@ -58,7 +58,7 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const
 #endif
 	for(uint32_t i=0; i < params->zkp_iterations; i++) {
 		// compute g^{ {a^x b^r} h^v} mod p2
-		c[i] = challengeCalculation(coin.getSerialNumber(), r[i], v[i]);
+		c[i] = challengeCalculation(coin.getSerialNumber(), r[i], v[i], a, b);
 	}
 
 	// We can't hash data in parallel either
@@ -90,10 +90,8 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const
 }
 
 inline Bignum SerialNumberSignatureOfKnowledge::challengeCalculation(const Bignum& a_exp,const Bignum& b_exp,
-        const Bignum& h_exp) const {
+        const Bignum& h_exp, const Bignum& a, const Bignum& b) const {
 
-	Bignum a = params->coinCommitmentGroup.g();
-	Bignum b = params->coinCommitmentGroup.h();
 	Bignum g = params->serialNumberSoKCommitmentGroup.g();
 	Bignum h = params->serialNumberSoKCommitmentGroup.h();
 
@@ -105,8 +103,8 @@ inline Bignum SerialNumberSignatureOfKnowledge::challengeCalculation(const Bignu
 
 bool SerialNumberSignatureOfKnowledge::Verify(const Bignum& coinSerialNumber, const Bignum& valueOfCommitmentToCoin,
         const uint256 msghash) const {
-	Bignum a = params->coinCommitmentGroup.g();
-	Bignum b = params->coinCommitmentGroup.h();
+	Bignum a, b;
+	deriveGeneratorsFromSerialNumber(coinSerialNumber, params->coinCommitmentGroup.modulus, params->coinCommitmentGroup.groupOrder, a, b);
 	Bignum g = params->serialNumberSoKCommitmentGroup.g();
 	Bignum h = params->serialNumberSoKCommitmentGroup.h();
 	CHashWriter hasher(0,0);
@@ -122,7 +120,7 @@ bool SerialNumberSignatureOfKnowledge::Verify(const Bignum& coinSerialNumber, co
 		int byte = i / 8;
 		bool challenge_bit = ((hashbytes[byte] >> bit) & 0x01);
 		if(challenge_bit) {
-			tprime[i] = challengeCalculation(coinSerialNumber, s_notprime[i], sprime[i]);
+			tprime[i] = challengeCalculation(coinSerialNumber, s_notprime[i], sprime[i], a, b);
 		} else {
 			Bignum exp = b.pow_mod(s_notprime[i], params->serialNumberSoKCommitmentGroup.groupOrder);
 			tprime[i] = ((valueOfCommitmentToCoin.pow_mod(exp, params->serialNumberSoKCommitmentGroup.modulus) % params->serialNumberSoKCommitmentGroup.modulus) *

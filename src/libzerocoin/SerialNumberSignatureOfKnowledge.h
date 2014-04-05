@@ -68,7 +68,8 @@ private:
 	vector<Bignum> s_notprime;
 	vector<Bignum> sprime;
 	inline Bignum challengeCalculation(const Bignum& a_exp, const Bignum& b_exp,
-	                                   const Bignum& h_exp) const;
+	                                   const Bignum& h_exp, const Bignum& a,
+	                                   const Bignum& b) const;
 };
 
 } /* namespace libzerocoin */
