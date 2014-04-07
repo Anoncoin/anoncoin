@@ -61,13 +61,13 @@ public:
 
 	// Generator setters; these throw ZerocoinException if generatorsAreValid is
 	// false.
-	void g(Bignum g) {
+	void g(const Bignum& g) {
 		if (!generatorsAreValid) {
 			throw ZerocoinException("Generators cannot be set for this group.");
 		}
 		_g = g;
 	}
-	void h(Bignum h) {
+	void h(const Bignum& h) {
 		if (!generatorsAreValid) {
 			throw ZerocoinException("Generators cannot be set for this group.");
 		}
