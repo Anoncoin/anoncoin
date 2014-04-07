@@ -21,7 +21,9 @@ before_install:
 script:
   - cd i2psam
   - make -f makefile.unix
-  - cd ../src
+  - cd ../src/libzerocoin/Build-gcc
+  - make
+  - cd ../..
   - make -f makefile.unix
   - cd ..
   - qmake USE_UPNP=-
