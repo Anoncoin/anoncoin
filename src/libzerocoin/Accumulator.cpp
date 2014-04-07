@@ -72,7 +72,7 @@ const CoinDenomination Accumulator::getDenomination() const {
 	return static_cast<CoinDenomination> (this->denomination);
 }
 
-const Bignum& Accumulator::getValue() const {
+Bignum Accumulator::getValue() const {
 	return this->value;
 }
 
@@ -96,7 +96,7 @@ void AccumulatorWitness::AddElement(const PublicCoin& c) {
 	}
 }
 
-const Bignum& AccumulatorWitness::getValue() const {
+Bignum AccumulatorWitness::getValue() const {
 	return this->witness.getValue();
 }
 

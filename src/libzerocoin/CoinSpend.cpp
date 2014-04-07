@@ -58,7 +58,7 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 	cout << "GNOSIS DEBUG: snSoK is " << this->serialNumberSoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 }
 
-const Bignum&
+Bignum
 CoinSpend::getCoinSerialNumber() const {
 	return this->coinSerialNumber;
 }

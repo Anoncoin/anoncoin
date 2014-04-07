@@ -48,7 +48,7 @@ public:
 	 * @param denomination The denomination of the coin. Defaults to ZQ_LOVELACE
 	 */
 	PublicCoin( const Params* p, const Bignum& coin, const CoinDenomination d = ZQ_LOVELACE);
-	const Bignum& getValue() const;
+	Bignum getValue() const;
 	const CoinDenomination getDenomination() const;
 	bool operator==(const PublicCoin& rhs) const;
 	bool operator!=(const PublicCoin& rhs) const;
@@ -89,9 +89,9 @@ public:
 		strm >> *this;
 	}
 	PrivateCoin(const Params* p,const CoinDenomination denomination = ZQ_LOVELACE);
-	const PublicCoin& getPublicCoin() const;
-	const Bignum& getSerialNumber() const;
-	const Bignum& getRandomness() const;
+	PublicCoin getPublicCoin() const;
+	Bignum getSerialNumber() const;
+	Bignum getRandomness() const;
 
 	IMPLEMENT_SERIALIZE
 	(

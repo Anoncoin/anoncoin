@@ -68,7 +68,7 @@ public:
 	 *
 	 * @return the coin's serial number
 	 */
-	const Bignum& getCoinSerialNumber() const;
+	Bignum getCoinSerialNumber() const;
 
 	/**Gets the denomination of the coin spent in this proof.
 	 *

@@ -43,15 +43,15 @@ void Commitment::_init(const IntegerGroupParams* p, const Bignum& value) {
 	                         h.pow_mod(this->randomness, params->modulus), params->modulus));
 }
 
-const Bignum& Commitment::getCommitmentValue() const {
+Bignum Commitment::getCommitmentValue() const {
 	return this->commitmentValue;
 }
 
-const Bignum& Commitment::getRandomness() const {
+Bignum Commitment::getRandomness() const {
 	return this->randomness;
 }
 
-const Bignum& Commitment::getContents() const {
+Bignum Commitment::getContents() const {
 	return this->contents;
 }
 

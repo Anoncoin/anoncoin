@@ -38,7 +38,7 @@ bool PublicCoin::operator!=(const PublicCoin& rhs) const {
 	return !(*this == rhs);
 }
 
-const Bignum& PublicCoin::getValue() const {
+Bignum PublicCoin::getValue() const {
 	return this->value;
 }
 
@@ -73,11 +73,11 @@ PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): 
  *
  * @return the coins serial number
  */
-const Bignum& PrivateCoin::getSerialNumber() const {
+Bignum PrivateCoin::getSerialNumber() const {
 	return this->serialNumber;
 }
 
-const Bignum& PrivateCoin::getRandomness() const {
+Bignum PrivateCoin::getRandomness() const {
 	return this->randomness;
 }
 
@@ -163,7 +163,7 @@ void PrivateCoin::mintCoinFast(const CoinDenomination denomination) {
 	throw ZerocoinException("Unable to mint a new Zerocoin (too many attempts)");
 }
 	
-const PublicCoin& PrivateCoin::getPublicCoin() const {
+PublicCoin PrivateCoin::getPublicCoin() const {
 	return this->publicCoin;
 }
 

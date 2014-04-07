@@ -45,9 +45,9 @@ public:
 	 * @param h the value of generator h (overrides the group)
 	 */
 	Commitment(const IntegerGroupParams* p, const Bignum& value, const Bignum& g, const Bignum& h);
-	const Bignum& getCommitmentValue() const;
-	const Bignum& getRandomness() const;
-	const Bignum& getContents() const;
+	Bignum getCommitmentValue() const;
+	Bignum getRandomness() const;
+	Bignum getContents() const;
 private:
 	void _init(const IntegerGroupParams* p, const Bignum& value);
 	const IntegerGroupParams *params;

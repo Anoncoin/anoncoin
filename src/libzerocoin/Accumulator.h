@@ -63,7 +63,7 @@ public:
 	 *
 	 * @return a Bignum containing the result.
 	 */
-	const Bignum& getValue() const;
+	Bignum getValue() const;
 
 
 	// /**
@@ -123,7 +123,7 @@ public:
 	 *
 	 * @return the value of the witness
 	 */
-	const Bignum& getValue() const;
+	Bignum getValue() const;
 
 	/** Checks that this is a witness to the accumulation of coin
 	 * @param a             the accumulator we are checking against.
