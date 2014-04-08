@@ -89,5 +89,9 @@ def categorize(tup, easy_ecm_frac=(180./3800), ecm_frac=(500./3800), gnfs_frac=(
 
 # estimated probability that a UFO of this bit size is secure
 P = lambda c: float(c['valid']+c['valid_lopsided'])/(sum(c.values())-c['can_factor'])
-
+def f(hash, s):
+    assert type(hash) is defaultdict
+    assert hash.default_factory in (int, long)
+    hash[s] += 1
+    return hash
 P(reduce(f, map(categorize, factor_arr[:]), defaultdict(int)))
