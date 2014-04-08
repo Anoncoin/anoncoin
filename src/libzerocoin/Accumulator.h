@@ -106,14 +106,14 @@ public:
 		strm >> *this;
 	}
 
-	/**  Construct's a witness.  You must add all elements after the witness
+	/**  Constructs a witness.  You must add all elements after the witness
 	 * @param p pointer to params
 	 * @param checkpoint the last known accumulator value before the element was added
 	 * @param coin the coin we want a witness to
 	 */
 	AccumulatorWitness(const Params* p, const Accumulator& checkpoint, const PublicCoin coin);
 
-	/** Adds element to the set whose's accumulation we are proving coin is a member of
+	/** Adds element to the set whose accumulation we are proving coin is a member of
 	 *
 	 * @param c the coin to add
 	 */
@@ -133,7 +133,7 @@ public:
 	bool VerifyWitness(const Accumulator& a, const PublicCoin &publicCoin) const;
 
 	/**
-	 * Adds rhs to the set whose's accumulation ware proving coin is a member of
+	 * Adds rhs to the set whose accumulation we're proving coin is a member of
 	 * @param rhs the PublicCoin to add
 	 * @return
 	 */
