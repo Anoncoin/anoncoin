@@ -16,14 +16,60 @@
 #include "Params.h"
 namespace libzerocoin {
 
-enum  CoinDenomination {
-    ZQ_LOVELACE = 1,
-    ZQ_GOLDWASSER = 10,
-    ZQ_RACKOFF = 25,
-    ZQ_PEDERSEN = 50,
-    ZQ_WILLIAMSON = 100 // Malcolm J. Williamson,
-                    // the scientist who actually invented
-                    // Public key cryptography
+class CoinDenomination {
+public:
+	// Anoncoin denominations are (in satoshis) either 10^e or 5*10^e where e is in [0, 11]
+	// throws ZerocoinException if value not one of the Anoncoin denominations
+	explicit CoinDenomination(int64 value) {
+		if (value <= 0) {
+			throw ZerocoinException("coin denomination must be positive");
+		}
+		int64 e = 0, m = value;
+		while (m % 10 == 0) {
+			m /= 10;
+			e++;
+		}
+		if (e > 11 || (m != 1 && m != 5)) {
+			throw ZerocoinException("coin denomination is invalid");
+		}
+		this->value = value;
+		this->initialized = true;
+	}
+
+	CoinDenomination() : initialized(false) { }
+
+	// value in satoshis
+	// throws ZerocoinException if constructed w/ default constructor
+	int64 getValue() const {
+		if (!this->initialized) {
+			throw ZerocoinException("coin denomination not initialized");
+		}
+		return this->value;
+	}
+
+	// throws ZerocoinException if either are not initialized
+	bool operator==(const CoinDenomination& d) const {
+		if (!this->initialized || !d.initialized) {
+			throw ZerocoinException("cannot compare denominations when one or both are not initialized");
+		}
+		return this->value == d.value;
+	}
+
+	// throws ZerocoinException if either are not initialized
+	bool operator!=(const CoinDenomination& d) const {
+		return !CoinDenomination::operator==(d);
+	}
+
+private:
+	int64 value;
+	bool initialized;
+
+public:
+	IMPLEMENT_SERIALIZE
+	(
+		READWRITE(value);
+		READWRITE(initialized);   // TODO: throw error if not initialized
+	)
 };
 
 /** A Public coin is the part of a coin that
@@ -47,9 +93,9 @@ public:
 	 * @param coin the value of the commitment.
 	 * @param denomination The denomination of the coin. Defaults to ZQ_LOVELACE
 	 */
-	PublicCoin( const Params* p, const Bignum& coin, const CoinDenomination d = ZQ_LOVELACE);
+	PublicCoin( const Params* p, const Bignum& coin, const CoinDenomination d);
 	Bignum getValue() const;
-	const CoinDenomination getDenomination() const;
+	CoinDenomination getDenomination() const;
 	bool operator==(const PublicCoin& rhs) const;
 	bool operator!=(const PublicCoin& rhs) const;
 	/** Checks that a coin prime
@@ -68,7 +114,7 @@ private:
 	Bignum value;
 	// Denomination is stored as an INT because storing
 	// and enum raises amigiuities in the serialize code //FIXME if possible
-	int denomination;
+	CoinDenomination denomination;
 };
 
 /**
@@ -88,7 +134,7 @@ public:
 	PrivateCoin(const Params* p, Stream& strm): params(p), publicCoin(p) {
 		strm >> *this;
 	}
-	PrivateCoin(const Params* p,const CoinDenomination denomination = ZQ_LOVELACE);
+	PrivateCoin(const Params* p,const CoinDenomination denomination);
 	PublicCoin getPublicCoin() const;
 	Bignum getSerialNumber() const;
 	Bignum getRandomness() const;

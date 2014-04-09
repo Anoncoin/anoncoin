@@ -17,7 +17,7 @@ namespace libzerocoin {
 
 //PublicCoin class
 PublicCoin::PublicCoin(const Params* p):
-	params(p), denomination(ZQ_LOVELACE) {
+	params(p) {
 	if (this->params->initialized == false) {
 		throw ZerocoinException("Params are not initialized");
 	}
@@ -42,8 +42,8 @@ Bignum PublicCoin::getValue() const {
 	return this->value;
 }
 
-const CoinDenomination PublicCoin::getDenomination() const {
-	return static_cast<CoinDenomination>(this->denomination);
+CoinDenomination PublicCoin::getDenomination() const {
+	return this->denomination;
 }
 
 bool PublicCoin::validate() const{

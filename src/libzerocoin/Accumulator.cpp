@@ -46,9 +46,9 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 		//std::stringstream msg;
 		std::string msg;
 		msg = "Wrong denomination for coin. Expected coins of denomination: ";
-		msg += this->denomination;
+		msg += this->denomination.getValue();
 		msg += ". Instead, got a coin of denomination: ";
-		msg += coin.getDenomination();
+		msg += coin.getDenomination().getValue();
 		throw ZerocoinException(msg);
 	}
 
@@ -68,8 +68,8 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 	}
 }
 
-const CoinDenomination Accumulator::getDenomination() const {
-	return static_cast<CoinDenomination> (this->denomination);
+CoinDenomination Accumulator::getDenomination() const {
+	return this->denomination;
 }
 
 Bignum Accumulator::getValue() const {

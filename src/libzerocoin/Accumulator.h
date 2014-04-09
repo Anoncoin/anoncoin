@@ -43,9 +43,9 @@ public:
 	 * @param d the denomination of coins we are accumulating
 	 * @throw     Zerocoin exception in case of invalid parameters
 	 **/
-	Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d = ZQ_LOVELACE);
+	Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d);
 
-	Accumulator(const Params* p, const CoinDenomination d = ZQ_LOVELACE);
+	Accumulator(const Params* p, const CoinDenomination d);
 
 	/**
 	 * Accumulate a coin into the accumulator. Validates
@@ -58,7 +58,7 @@ public:
 	 **/
 	void accumulate(const PublicCoin &coin);
 
-	const CoinDenomination getDenomination() const;
+	CoinDenomination getDenomination() const;
 	/** Get the accumulator result
 	 *
 	 * @return a Bignum containing the result.
@@ -93,7 +93,7 @@ private:
 	Bignum value;
 	// Denomination is stored as an INT because storing
 	// and enum raises amigiuities in the serialize code //FIXME if possible
-	int denomination;
+	CoinDenomination denomination;
 };
 
 /**A witness that a PublicCoin is in the accumulation of a set of coins

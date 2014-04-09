@@ -69,6 +69,9 @@ ZerocoinTutorial()
 
 		cout << "Successfully loaded parameters." << endl;
 
+		// all coins in this tutorial will be worth 1000 satoshis (or 1e-5 ANC).
+		libzerocoin::CoinDenomination denom(1000);
+
 		/********************************************************************/
 		// What is it:      Coin generation
 		// Who does it:     ZEROCOIN CLIENTS
@@ -84,7 +87,7 @@ ZerocoinTutorial()
 		// new zerocoin. It stores all the private values inside the
 		// PrivateCoin object. This includes the coin secrets, which must be
 		// stored in a secure location (wallet) at the client.
-		libzerocoin::PrivateCoin newCoin(params);
+		libzerocoin::PrivateCoin newCoin(params, denom);
 
 		// Get a copy of the 'public' portion of the coin. You should
 		// embed this into a Zerocoin 'MINT' transaction along with a series
@@ -138,11 +141,11 @@ ZerocoinTutorial()
 		/********************************************************************/
 
 		// Create an empty accumulator object
-		libzerocoin::Accumulator accumulator(params);
+		libzerocoin::Accumulator accumulator(params, denom);
 
 		// Add several coins to it (we'll generate them here on the fly).
 		for (uint32_t i = 0; i < COINS_TO_ACCUMULATE; i++) {
-			libzerocoin::PrivateCoin testCoin(params);
+			libzerocoin::PrivateCoin testCoin(params, denom);
 			accumulator += testCoin.getPublicCoin();
 		}
 

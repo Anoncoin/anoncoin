@@ -32,7 +32,7 @@ namespace libzerocoin {
 class CoinSpend {
 public:
 	template<typename Stream>
-	CoinSpend(const Params* p,  Stream& strm):denomination(ZQ_LOVELACE),
+	CoinSpend(const Params* p,  Stream& strm):
 		accumulatorPoK(&p->accumulatorParams),
 		serialNumberSoK(p),
 		commitmentPoK(&p->serialNumberSoKCommitmentGroup, &p->accumulatorParams.accumulatorPoKCommitmentGroup) {
@@ -74,7 +74,7 @@ public:
 	 *
 	 * @return the denomination
 	 */
-	const CoinDenomination getDenomination() const;
+	CoinDenomination getDenomination() const;
 
 	bool Verify(const Accumulator& a, const SpendMetaData &metaData) const;
 
@@ -94,7 +94,7 @@ private:
 	const uint256 signatureHash(const SpendMetaData &m) const;
 	// Denomination is stored as an INT because storing
 	// and enum raises amigiuities in the serialize code //FIXME if possible
-	int denomination;
+	CoinDenomination denomination;
 	Bignum accCommitmentToCoinValue;
 	Bignum serialCommitmentToCoinValue;
 	Bignum coinSerialNumber;
