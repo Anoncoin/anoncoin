@@ -151,7 +151,6 @@ uint256
 calculateGeneratorSeed(Bignum serialNumber, string label, uint32_t index, uint32_t count)
 {
 	CHashWriter hasher(0,0);
-	uint256     hash;
 
 	// Compute the hash of:
 	// <serialNumber>||<label>||<index>||<count>
@@ -176,7 +175,6 @@ uint256
 calculateGeneratorSeed(uint256 seed, uint256 pSeed, uint256 qSeed, string label, uint32_t index, uint32_t count)
 {
 	CHashWriter hasher(0,0);
-	uint256     hash;
 
 	// Compute the hash of:
 	// <seed>||<pSeed>||<qSeed>||<label>||<index>||<count>
@@ -208,7 +206,6 @@ uint256
 calculateSeed(Bignum modulus, string auxString, uint32_t securityLevel, string groupName)
 {
 	CHashWriter hasher(0,0);
-	uint256     hash;
 
 	// Compute the hash of:
 	// <modulus>||<securitylevel>||<auxString>||groupName
