@@ -42,7 +42,7 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: libzerocoin test tutorial
+all: libzerocoin test tutorial ufo
 
 # Tool invocations
 libzerocoin: $(OBJS) $(USER_OBJS)
@@ -83,9 +83,16 @@ tutorial: $(OBJS) $(USER_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '  
 
+ufo: $(OBJS) $(USER_OBJS)
+	@echo 'Building target: $@'
+	@echo 'Invoking: Cross G++ Linker'
+	g++ -L/opt/local/lib -o "ufo" ../PrintUFOCandidate.cpp $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Finished building target: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) -f $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(LIBRARIES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libzerocoin.so libzerocoin.a tests benchmark paramgen tutorial
+	-$(RM) -f $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(LIBRARIES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libzerocoin.so libzerocoin.a tests benchmark paramgen tutorial ufo
 	-@echo ' '
 
 .PHONY: all clean dependents
