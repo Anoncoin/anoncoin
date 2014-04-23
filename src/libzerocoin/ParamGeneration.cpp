@@ -747,7 +747,7 @@ primalityTestByTrialDivision(uint32_t candidate)
 Bignum
 calculateRawUFO(uint32_t ufoIndex, uint32_t numBits) {
 	Bignum result(0);
-	uint32_t hashes = HASH_OUTPUT_BITS / numBits;
+	uint32_t hashes = numBits / HASH_OUTPUT_BITS;
 
 	if (numBits != HASH_OUTPUT_BITS * hashes) {
 		throw ZerocoinException("numBits must be divisible by HASH_OUTPUT_BITS");		// not implemented
@@ -762,7 +762,7 @@ calculateRawUFO(uint32_t ufoIndex, uint32_t numBits) {
 		hasher << i;
 		uint256 hash = hasher.GetHash();
 		result <<= HASH_OUTPUT_BITS;
-		result += hash;
+		result += Bignum(hash);
 	}
 
 	return result;
