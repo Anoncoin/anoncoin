@@ -729,4 +729,43 @@ primalityTestByTrialDivision(uint32_t candidate)
 	return canBignum.isPrime();
 }
 
+/// \brief Deterministically calculates a "raw" UFO by concatenating the bits of SHA-256 hashes.
+/// \param ufoIndex        The index of this UFO. Start at 0.
+/// \param numBits         Number of bits of SHA-256 data to use.
+/// \return                The "raw" UFO, meaning small factors have not been removed.
+///
+/// Using only one of these UFOs is insecure, since there is a non-negligible
+/// probability that it can be factored. To use securely, about 13 ~3800-bit
+/// UFOs are required, after filtering out those that can be completely
+/// factorized, as well as those that can be significantly reduced by removing
+/// small factors (a threshold number of bits should be chosen at the
+/// beginning; if the product of all small factors has a log_2 greater than
+/// this threshold, the candidate should be rejected).
+///
+/// This relies on HASH_OUTPUT_BITS matching the bit length from CHashWriter.
+
+Bignum
+calculateRawUFO(uint32_t ufoIndex, uint32_t numBits) {
+	Bignum result(0);
+	uint32_t hashes = HASH_OUTPUT_BITS / numBits;
+
+	if (numBits != HASH_OUTPUT_BITS * hashes) {
+		throw ZerocoinException("numBits must be divisible by HASH_OUTPUT_BITS");		// not implemented
+	}
+
+	for (uint32_t i = 0; i < hashes; i++) {
+		CHashWriter hasher(0,0);
+		hasher << ufoIndex;
+		hasher << string("||");
+		hasher << numBits;
+		hasher << string("||");
+		hasher << i;
+		uint256 hash = hasher.GetHash();
+		result <<= HASH_OUTPUT_BITS;
+		result += hash;
+	}
+
+	return result;
+}
+
 } // namespace libzerocoin

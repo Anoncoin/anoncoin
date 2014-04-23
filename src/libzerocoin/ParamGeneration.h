@@ -48,6 +48,7 @@ Bignum              generateRandomPrime(uint32_t primeBitLen, uint256 in_seed, u
                                         uint32_t *prime_gen_counter);
 Bignum              generateIntegerFromSeed(uint32_t numBits, uint256 seed, uint32_t *numIterations);
 bool                primalityTestByTrialDivision(uint32_t candidate);
+Bignum              calculateRawUFO(uint32_t ufoIndex, uint32_t numBits);
 
 }/* namespace libzerocoin */
 
