@@ -131,13 +131,16 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 
 bool IsDarknetOnly()
 {
-    if (IsI2POnly())
-	return true;
-    if (IsTorOnly())
-	return true;
+    if (IsI2POnly()) {
+        return true;
+    }
+    if (IsTorOnly()) {
+        return true;
+    }
     if (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-tor") &&
-	mapArgs["-tor"] != "0")) && (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0"))
-	return true;
+	mapArgs["-tor"] != "0")) && (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0")) {
+        return true;
+    }
     return false;
 }
 
