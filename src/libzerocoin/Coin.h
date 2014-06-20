@@ -112,8 +112,6 @@ public:
 private:
 	const Params* params;
 	Bignum value;
-	// Denomination is stored as an INT because storing
-	// and enum raises amigiuities in the serialize code //FIXME if possible
 	CoinDenomination denomination;
 };
 
