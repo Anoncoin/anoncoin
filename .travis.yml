@@ -1,4 +1,7 @@
-language: cpp
+os:
+ - linux
+language:
+ - cpp
 matrix:
   allow_failures:
     - compiler: clang
@@ -36,7 +39,48 @@ notifications:
     channels: 
       - "irc.freenode.net#anoncoin"
     template:
-      - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
+      - "%{repository}/%{branch} [linux] (%{commit} - %{author}): %{message}"
     on_failure: always
     on_success: change
+
+---
+
+os:
+ - osx
+language:
+ - cpp
+include:
+  - env: QTTYPE=4 USE_UPNP=- -DENABLE_WALLET=1 -DCMAKE_BUILD_TYPE=Release"
+compiler:
+  - clang
+cache:
+  - apt
+branches:
+  only:
+    - master
+before_install:
+  - brew doctor
+  - brew install autoconf automake pkg-config berkeley-db4 boost miniupnpc openssl qt5
+script:
+  - cd i2psam
+  - make -f makefile.unix
+  - cd ../src
+  - make -f makefile.osx
+  - cd ..
+  - qmake USE_UPNP=-
+  - make
+notifications:
+  email:
+    recipients:
+      - meeh@sigterm.no
+    on_success: change
+    on_failure: change
+  irc:
+    channels:
+      - "irc.freenode.net#anoncoin"
+    template:
+      - "%{repository}/%{branch} [osx] (%{commit} - %{author}): %{message}"
+    on_failure: always
+    on_success: change
+
 
