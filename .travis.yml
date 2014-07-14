@@ -1,17 +1,20 @@
+# Travis file for Anoncoin (anoncoind/anoncoin-qt)
+# Documentation:
+# - http://docs.travis-ci.com/user/build-configuration/#The-Build-Matrix
+# - http://blog.travis-ci.com/2014-05-13-multi-os-feature-available/
+# Management & lint tool;
+# - https://github.com/travis-ci/travis.rb#readme
+matrix:
+  include:
+      - env: QTTYPE=4 USE_UPNP=- -DENABLE_WALLET=1 -DCMAKE_BUILD_TYPE=Release"
 os:
  - linux
 language:
  - cpp
-matrix:
-  allow_failures:
-    - compiler: clang
-  include:
-    - env: QTTYPE=4 USE_UPNP=- -DENABLE_WALLET=1 -DCMAKE_BUILD_TYPE=Release"
 compiler:
   - gcc
   - clang
 cache:
-  - bundler
   - apt
 branches:
   only:
@@ -49,12 +52,11 @@ os:
  - osx
 language:
  - cpp
+ - objective-c
 include:
   - env: QTTYPE=4 USE_UPNP=- -DENABLE_WALLET=1 -DCMAKE_BUILD_TYPE=Release"
 compiler:
   - clang
-cache:
-  - apt
 branches:
   only:
     - master
