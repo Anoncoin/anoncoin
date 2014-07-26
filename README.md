@@ -1,9 +1,11 @@
 The Anoncoin project
 ====================
 
-[![Build Status - Linux](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Linux)](https://jenkins.nordcloud.no/job/Anoncoin-Linux/)
-[![Build Status - Mingw-w64](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Mingw-w64)](https://jenkins.nordcloud.no/job/Anoncoin-Mingw-w64/)
-
+Build Statuses
+---------------
+- Linux build - [![Build Status - Linux](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Linux)](https://jenkins.nordcloud.no/job/Anoncoin-Linux/)
+- Mingw-w64 (Windows) - [![Build Status - Mingw-w64](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Mingw-w64)](https://jenkins.nordcloud.no/job/Anoncoin-Mingw-w64/)
+- OSX (Too be added real soon)
 
 
 Specs:
