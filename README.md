@@ -1,7 +1,8 @@
 The Anoncoin project
 ====================
 
-[![Build Status](https://travis-ci.org/Anoncoin/anoncoin.png?branch=master)](https://travis-ci.org/Anoncoin/anoncoin)
+[![Build Status - Linux](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Linux)](https://jenkins.nordcloud.no/job/Anoncoin-Linux/)
+[![Build Status - Mingw-w64](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Mingw-w64)](https://jenkins.nordcloud.no/job/Anoncoin-Mingw-w64/)
 
 
 
