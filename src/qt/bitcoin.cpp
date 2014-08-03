@@ -5,6 +5,11 @@
 #if defined(HAVE_CONFIG_H)
 #include "bitcoin-config.h"
 #endif
+#include <QApplication>
+#include <QMessageBox>
+#include <QFile>
+#include <QDir>
+#include <QTextStream>
 
 #include "bitcoingui.h"
 
@@ -537,6 +542,39 @@ int main(int argc, char *argv[])
     // - Do this after parsing the configuration file, as the network can be switched there
     // - QSettings() will use the new application name after this, resulting in network-specific settings
     // - Needs to be done before createOptionsModel
+
+
+
+    // With this you can load a Qt Stylesheet file into the GUI to colorize or customize different objects.
+    // By Meeh
+    if (mapArgs.count("-style"))
+    {
+        QString filename = QString::fromStdString((std::string)GetDataDir().string());
+        filename = filename.append(QDir::separator()).append(QString::fromStdString((std::string)mapArgs["-style"]));
+        QFile file(filename);
+        if (file.exists())
+        {
+            if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                QTextStream in(&file);
+                QString content = "";
+                while (!in.atEnd())
+                {
+                    content.append(in.readLine());
+                }
+                app.setStyleSheet(content);
+            }
+            else
+            {
+                QMessageBox::warning(NULL, BitcoinGUI::tr("Failed to load style!"),
+                    BitcoinGUI::tr("Failed to load the stylesheet provided."),
+                    QMessageBox::Ok, QMessageBox::Ok);
+            }
+        }
+    }
+
+    app.processEvents();
+    app.setQuitOnLastWindowClosed(false);
 
     // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
     if (!SelectParamsFromCommandLine()) {
