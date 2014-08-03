@@ -40,6 +40,7 @@ namespace boost {
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <stdarg.h>
+#include "i2p.h"
 
 #ifdef WIN32
 #ifdef _MSC_VER
@@ -85,6 +86,11 @@ bool fLogTimestamps = false;
 CMedianFilter<int64> vTimeOffsets(200,0);
 volatile bool fReopenDebugLog = false;
 bool fCachedPath[2] = {false, false};
+
+std::string FormatI2PNativeFullVersion()
+{
+  return I2P_MODULE_VERSION;
+}
 
 // Init OpenSSL library multithreading support
 static CCriticalSection** ppmutexOpenSSL;

@@ -45,12 +45,22 @@ void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
 
+bool BindListenNativeI2P();
+bool BindListenNativeI2P(SOCKET& hSocket);
+bool IsI2POnly();
+bool IsI2PEnabled();
+
+bool IsTorOnly();
+bool IsDarknetOnly();
+bool IsBehindDarknet();
+
 enum
 {
     LOCAL_NONE,   // unknown
     LOCAL_IF,     // address a local interface listens on
     LOCAL_BIND,   // address explicit bound to
     LOCAL_UPNP,   // address reported by UPnP
+    LOCAL_IRC,    // address reported by IRC
     LOCAL_HTTP,   // address reported by whatismyip.com and similar
     LOCAL_MANUAL, // address explicitly specified (-externalip=)
 
@@ -179,7 +189,7 @@ public:
     std::string addrName;
     CService addrLocal;
     int nVersion;
-    // strSubVer is whatever byte array we read from the wire. However, this field is intended 
+    // strSubVer is whatever byte array we read from the wire. However, this field is intended
     // to be printed out, displayed to humans in various forms and so on. So we sanitize it and
     // store the sanitized version in cleanSubVer. The original should be used when dealing with
     // the network or wire types and the cleaned string used when displayed or logged.
@@ -227,7 +237,10 @@ public:
     std::multimap<int64, CInv> mapAskFor;
 
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION)
+      , nSendStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
+      , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
     {
+        ssSend.SetType(nSendStreamType);
         nServices = 0;
         hSocket = hSocketIn;
         nRecvVersion = INIT_PROTO_VERSION;
@@ -281,8 +294,34 @@ public:
 private:
     CNode(const CNode&);
     void operator=(const CNode&);
+    int nSendStreamType;
+    int nRecvStreamType;
 public:
+    void SetSendStreamType(int nType)
+    {
+        nSendStreamType = nType;
+        ssSend.SetType(nSendStreamType);
+    }
 
+    void SetRecvStreamType(int nType)
+    {
+        nRecvStreamType = nType;
+        for (std::deque<CNetMessage>::iterator it = vRecvMsg.begin(), end = vRecvMsg.end(); it != end; ++it)
+        {
+            it->hdrbuf.SetType(nRecvStreamType);
+            it->vRecv.SetType(nRecvStreamType);
+        }
+    }
+
+    int GetSendStreamType() const
+    {
+        return nSendStreamType;
+    }
+
+    int GetRecvStreamType() const
+    {
+        return nRecvStreamType;
+    }
 
     int GetRefCount()
     {
@@ -294,7 +333,7 @@ public:
     unsigned int GetTotalRecvSize()
     {
         unsigned int total = 0;
-        BOOST_FOREACH(const CNetMessage &msg, vRecvMsg) 
+        BOOST_FOREACH(const CNetMessage &msg, vRecvMsg)
             total += msg.vRecv.size() + 24;
         return total;
     }
@@ -335,6 +374,9 @@ public:
         // after addresses were pushed.
         if (addr.IsValid() && !setAddrKnown.count(addr))
             vAddrToSend.push_back(addr);
+            // if receiver doesn't support i2p-address we don't send it
+            if ((this->nServices & NODE_I2P) || !addr.IsNativeI2P())
+              vAddrToSend.push_back(addr);
     }
 
 

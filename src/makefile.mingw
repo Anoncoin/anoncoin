@@ -25,11 +25,13 @@ BOOST_SUFFIX?=-mgw46-mt-sd-1_52
 
 INCLUDEPATHS= \
  -I"$(CURDIR)" \
- -I"$(DEPSDIR)/include"
+ -I"$(DEPSDIR)/include" \
+ -I"$(CURDIR)/../i2psam"
 
 LIBPATHS= \
  -L"$(CURDIR)/leveldb" \
- -L"$(DEPSDIR)/lib"
+ -L"$(DEPSDIR)/lib" \
+ -L"$(CURDIR)/../i2psam"
 
 LIBS= \
  -l leveldb \
@@ -41,7 +43,8 @@ LIBS= \
  -l boost_chrono$(BOOST_SUFFIX) \
  -l db_cxx \
  -l ssl \
- -l crypto
+ -l crypto \
+ -l i2psam
 
 DEFS=-D_MT -DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE
 DEBUGFLAGS=-g
@@ -82,6 +85,8 @@ OBJS= \
     obj/keystore.o \
     obj/main.o \
     obj/net.o \
+		obj/i2p.o \
+		obj/irc.o \
     obj/protocol.o \
     obj/bitcoinrpc.o \
     obj/rpcdump.o \

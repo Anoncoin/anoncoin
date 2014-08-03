@@ -147,7 +147,7 @@ public:
 #define ADDRMAN_HORIZON_DAYS 30
 
 // after how many failed attempts we give up on a new node
-#define ADDRMAN_RETRIES 3
+#define ADDRMAN_RETRIES 7 // Increase because of I2P connections can be delayed at first contact.
 
 // how many successive failures are allowed ...
 #define ADDRMAN_MAX_FAILURES 10
@@ -156,7 +156,7 @@ public:
 #define ADDRMAN_MIN_FAIL_DAYS 7
 
 // the maximum percentage of nodes to return in a getaddr call
-#define ADDRMAN_GETADDR_MAX_PCT 23
+#define ADDRMAN_GETADDR_MAX_PCT 15
 
 // the maximum number of nodes to return in a getaddr call
 #define ADDRMAN_GETADDR_MAX 2500

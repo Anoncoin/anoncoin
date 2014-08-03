@@ -6,6 +6,7 @@
 #define BITCOIN_UTIL_H
 
 #include "uint256.h"
+#include "i2p.h"
 
 #include <stdarg.h>
 
@@ -235,7 +236,7 @@ void runCommand(std::string strCommand);
 
 
 
-
+std::string FormatI2PNativeFullVersion();
 
 
 

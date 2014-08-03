@@ -10,6 +10,7 @@
 #include "init.h"
 #include "util.h"
 #include "ui_interface.h"
+#include "i2p.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -226,6 +227,12 @@ bool AppInit(int argc, char* argv[])
         }
 #endif
 
+        if (!GetBoolArg("-stfu", false)) {
+            if (!IsBehindDarknet()) {
+                InitWarning("Anoncoin is running on clearnet!\n");
+            }
+        }
+
         detectShutdownThread = new boost::thread(boost::bind(&DetectShutdownThread, &threadGroup));
         fRet = AppInit2(threadGroup);
     }
@@ -280,6 +287,12 @@ bool static InitWarning(const std::string &str)
     return true;
 }
 
+bool static BindNativeI2P(/*bool fError = true*/) {
+  if (IsLimited(NET_NATIVE_I2P))
+    return false;
+  return BindListenNativeI2P();
+}
+
 bool static Bind(const CService &addr, unsigned int flags) {
     if (!(flags & BF_EXPLICIT) && IsLimited(addr))
         return false;
@@ -313,12 +326,13 @@ std::string HelpMessage()
         "  -connect=<ip>          " + _("Connect only to the specified node(s)") + "\n" +
         "  -seednode=<ip>         " + _("Connect to a node to retrieve peer addresses, and disconnect") + "\n" +
         "  -externalip=<ip>       " + _("Specify your own public address") + "\n" +
-        "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (IPv4, IPv6 or Tor)") + "\n" +
+        "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (IPv4, IPv6, I2P or Tor)") + "\n" +
         "  -discover              " + _("Discover own IP address (default: 1 when listening and no -externalip)") + "\n" +
         "  -checkpoints           " + _("Only accept block chain matching built-in checkpoints (default: 1)") + "\n" +
         "  -listen                " + _("Accept connections from outside (default: 1 if no -proxy or -connect)") + "\n" +
         "  -bind=<addr>           " + _("Bind to given address and always listen on it. Use [host]:port notation for IPv6") + "\n" +
         "  -dnsseed               " + _("Find peers using DNS lookup (default: 1 unless -connect)") + "\n" +
+        " -irc                    " + _("Find peers using internet relay chat (default: 0)") + "\n" +
         "  -banscore=<n>          " + _("Threshold for disconnecting misbehaving peers (default: 100)") + "\n" +
         "  -bantime=<n>           " + _("Number of seconds to keep misbehaving peers from reconnecting (default: 86400)") + "\n" +
         "  -maxreceivebuffer=<n>  " + _("Maximum per-connection receive buffer, <n>*1000 bytes (default: 5000)") + "\n" +
@@ -380,8 +394,17 @@ std::string HelpMessage()
         "  -rpcssl                                  " + _("Use OpenSSL (https) for JSON-RPC connections") + "\n" +
         "  -rpcsslcertificatechainfile=<file.cert>  " + _("Server certificate file (default: server.cert)") + "\n" +
         "  -rpcsslprivatekeyfile=<file.pem>         " + _("Server private key (default: server.pem)") + "\n" +
-        "  -rpcsslciphers=<ciphers>                 " + _("Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)") + "\n";
+        "  -rpcsslciphers=<ciphers>                 " + _("Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)") + "\n" +
 
+        "\n"+ _("I2P Options:") + "\n" +
+        " -generatei2pdestination            " + _("Generate an I2P destination, print it and exit.")+ "\n" +
+        " -i2p=1                             " + _("Enable I2P.") + "\n" +
+        " -onlynet=i2p                       " + _("Enable I2P only mode.") + "\n" +
+        " -i2psessionname=<session name>     " + _("Name of an I2P session. If it is not specified, value will be \"Anoncoin-client\"") + "\n" +
+        " -samhost=<ip or host name>         " + _("Address of the SAM bridge host. If it is not specified, value will be \"127.0.0.1\".") + "\n" +
+        " -samport=<port>                    " + _("Port number of the SAM bridge host. If it is not specified, value will be \"7656\".") + "\n" +
+        " -mydestination=<pub+priv i2p-keys> " + _("Your full destination (public+private keys). If it is not specified, the client will geneterate a random destination for you. See below (Starting wallet with a permanent i2p-address) more details about this option.") +
+        "\n";
     return strUsage;
 }
 
@@ -503,6 +526,18 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
 
+    if (GetBoolArg(I2P_SAM_GENERATE_DESTINATION_PARAM))
+    {
+      const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
+      uiInterface.ThreadSafeShowGeneratedI2PAddress(
+        "Generated I2P address",
+        generatedDest.pub,
+        generatedDest.priv,
+        I2PSession::GenerateB32AddressFromDestination(generatedDest.pub),
+        GetConfigFile().string());
+      return false;
+    }
+
     fTestNet = GetBoolArg("-testnet");
     fBloomFilters = GetBoolArg("-bloomfilters", true);
     if (fBloomFilters)
@@ -540,6 +575,9 @@ bool AppInit2(boost::thread_group& threadGroup)
         // Rewrite just private keys: rescan to find transactions
         SoftSetBoolArg("-rescan", true);
     }
+
+    SoftSetBoolArg("-irc", true);
+    SoftSetBoolArg("-stfu", false); // STFU mode stops complaining about darknets.
 
     // Make sure enough file descriptors are available
     int nBind = std::max((int)mapArgs.count("-bind"), 1);
@@ -652,6 +690,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         ShrinkDebugFile();
     printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     printf("Anoncoin version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
+    printf("I2P module version %s\n", FormatI2PNativeFullVersion().c_str());
     printf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
     if (!fLogTimestamps)
         printf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
@@ -733,6 +772,16 @@ bool AppInit2(boost::thread_group& threadGroup)
         std::set<enum Network> nets;
         BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
             enum Network net = ParseNetwork(snet);
+            if (net == NET_NATIVE_I2P)
+            {
+              // Disable upnp and IRC and listen on I2P only.
+#ifdef USE_UPNP
+              SoftSetBoolArg("-upnp", false);
+#endif
+              SoftSetBoolArg("-listen",true);
+              SoftSetBoolArg("-irc",false);
+              SoftSetBoolArg("-discover",false);
+            }
             if (net == NET_UNROUTABLE)
                 return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet.c_str()));
             nets.insert(net);
@@ -787,6 +836,17 @@ bool AppInit2(boost::thread_group& threadGroup)
     fDiscover = GetBoolArg("-discover", true);
     fNameLookup = GetBoolArg("-dns", true);
 
+    // -i2p can override both tor and proxy
+    if (!(mapArgs.count("-i2p") && mapArgs["-i2p"] == "0") || IsI2POnly())
+    {
+      // Disable on i2p per default
+#ifdef USE_UPNP
+      SoftSetBoolArg("-upnp", false);
+#endif
+      SoftSetBoolArg("-listen",true);
+      SetReachable(NET_NATIVE_I2P);
+    }
+
     bool fBound = false;
     if (!fNoListen) {
         if (mapArgs.count("-bind")) {
@@ -804,6 +864,8 @@ bool AppInit2(boost::thread_group& threadGroup)
             fBound |= Bind(CService(in6addr_any, GetListenPort()), BF_NONE);
 #endif
             fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound ? BF_REPORT_ERROR : BF_NONE);
+            if (!IsLimited(NET_NATIVE_I2P))
+              fBound |= BindNativeI2P();
         }
         if (!fBound)
             return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));

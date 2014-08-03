@@ -50,11 +50,11 @@ static const unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
 static const unsigned int MEMPOOL_HEIGHT = 0x7FFFFFFF;
 /** Dust Soft Limit, allowed with additional fee per output */
-static const int64 DUST_SOFT_LIMIT = 100000; // 0.001 LTC
+static const int64 DUST_SOFT_LIMIT = 100000; // 0.001 ANC
 /** Dust Hard Limit, ignored as wallet inputs (mininput default) */
-static const int64 DUST_HARD_LIMIT = 1000;   // 0.00001 LTC mininput
+static const int64 DUST_HARD_LIMIT = 1000;   // 0.00001 ANC mininput
 /** No amount larger than this (in satoshi) is valid */
-static const int64 MAX_MONEY = 4200000 * COIN;
+static const int64 MAX_MONEY = 4200000 * COIN; // Anoncoin Max 4,2mill * 8 satoshi
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
 static const int COINBASE_MATURITY = 100;

@@ -13,11 +13,13 @@ INCLUDEPATHS= \
  -I"$(CURDIR)" \
  -I"$(CURDIR)"/obj \
  -I"$(DEPSDIR)/include" \
- -I"$(DEPSDIR)/include/db48"
+ -I"$(DEPSDIR)/include/db48" \
+ -I"$(CURDIR)/../i2psam"
 
 LIBPATHS= \
  -L"$(DEPSDIR)/lib" \
- -L"$(DEPSDIR)/lib/db48"
+ -L"$(DEPSDIR)/lib/db48" \
+ -L"$(CURDIR)/../i2psam"
 
 USE_UPNP:=1
 USE_IPV6:=1
@@ -52,6 +54,7 @@ LIBS += \
  -lboost_chrono-mt \
  -lssl \
  -lcrypto \
+ -li2psam \
  -lz
 TESTDEFS += -DBOOST_TEST_DYN_LINK
 endif
@@ -88,6 +91,8 @@ OBJS= \
     obj/keystore.o \
     obj/main.o \
     obj/net.o \
+		obj/i2p.o \
+		obj/irc.o \
     obj/protocol.o \
     obj/bitcoinrpc.o \
     obj/rpcdump.o \
