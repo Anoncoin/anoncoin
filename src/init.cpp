@@ -124,6 +124,19 @@ void Shutdown()
     printf("Shutdown : done\n");
 }
 
+
+bool static InitError(const std::string &str)
+{
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
+    return false;
+}
+
+bool static InitWarning(const std::string &str)
+{
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
+    return true;
+}
+
 //
 // Signal handlers are very limited in what they are allowed to do, so:
 //
@@ -275,17 +288,6 @@ int main(int argc, char* argv[])
 }
 #endif
 
-bool static InitError(const std::string &str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
-    return false;
-}
-
-bool static InitWarning(const std::string &str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
-    return true;
-}
 
 bool static BindNativeI2P(/*bool fError = true*/) {
   if (IsLimited(NET_NATIVE_I2P))
@@ -837,7 +839,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     fNameLookup = GetBoolArg("-dns", true);
 
     // -i2p can override both tor and proxy
-    if (!(mapArgs.count("-i2p") && mapArgs["-i2p"] == "0") || IsI2POnly())
+    if (!(mapArgs.count("-i2p") && mapArgs["-i2p"] == "1") || IsI2POnly())
     {
       // Disable on i2p per default
 #ifdef USE_UPNP

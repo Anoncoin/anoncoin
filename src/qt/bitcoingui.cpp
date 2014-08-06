@@ -352,6 +352,28 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
             labelI2POnly->setText("I2P");
             labelI2POnly->setToolTip(tr("Wallet is using I2P-network only"));
         }
+        else if (clientModel->isTorOnly())
+        {
+            labelI2POnly->setText("Tor");
+            labelI2POnly->setToolTip(tr("Wallet is using Tor-network only"));
+        }
+        else if (clientModel->isDarknetOnly())
+        {
+            labelI2POnly->setText("I&T");
+            labelI2POnly->setToolTip(tr("Wallet is using both I2P and Tor network only (Darknet mode)"));
+        }
+        else if (clientModel->isBehindDarknet())
+        {
+            labelI2POnly->setText("ICT");
+            labelI2POnly->setToolTip(tr("Wallet is using both I2P and Tor network, but also Tor as a proxy"));
+        }
+        else
+        {
+            labelI2POnly->setText("CLR");
+            labelI2POnly->setToolTip(tr("Wallet is using mixed or non-I2P (clear) network"));
+        }
+
+
         else
         {
             labelI2POnly->setText("CLR");
@@ -567,13 +589,13 @@ void BitcoinGUI::setNumI2PConnections(int count)
     switch(count)
     {
     case 0: i2pIcon = ":/icons/bwi2pconnect_0"; break;
-    case 1: /*case 2: case 3:*/ i2pIcon = ":/icons/bwi2pconnect_1"; break;
-    case 2:/*case 4: case 5: case 6:*/ i2pIcon = ":/icons/bwi2pconnect_2"; break;
-    case 3:/*case 7: case 8: case 9:*/ i2pIcon = ":/icons/bwi2pconnect_3"; break;
+    case 1: case 2: /*case 3:*/ i2pIcon = ":/icons/bwi2pconnect_1"; break;
+    /*case 2:*/ case 4: case 5: i2pIcon = ":/icons/bwi2pconnect_2"; break;
+    case 7: i2pIcon = ":/icons/bwi2pconnect_3"; break;
     default: i2pIcon = ":/icons/bwi2pconnect_4"; break;
     }
     labelI2PConnections->setPixmap(QPixmap(i2pIcon));
-    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Bitcoin network", "", count));
+    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", count));
 }
 
 void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)

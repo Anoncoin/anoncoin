@@ -346,7 +346,7 @@ bool IsBehindDarknet()
         return true;
     if (IsDarknetOnly())
         return true;
-    if ((mapArgs.count("-tor") && mapArgs["-tor"] != "0"))
+    if (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-tor") && mapArgs["-tor"] != "0")) && (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0"))
         return true;
     return false;
 }

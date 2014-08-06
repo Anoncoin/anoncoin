@@ -1,73 +1,43 @@
-Litecoin integration/staging tree
-================================
+The Anoncoin project
+====================
 
-http://www.litecoin.org
+[![Build Status](https://travis-ci.org/Anoncoin/anoncoin.png?branch=master)](https://travis-ci.org/Anoncoin/anoncoin)
 
-Copyright (c) 2009-2014 Bitcoin Developers
-Copyright (c) 2011-2014 Litecoin Developers
 
-What is Litecoin?
-----------------
 
-Litecoin is a lite version of Bitcoin using scrypt as a proof-of-work algorithm.
- - 2.5 minute block targets
- - subsidy halves in 840k blocks (~4 years)
- - ~84 million total coins
+Specs:
 
-The rest is the same as Bitcoin.
- - 50 coins per block
- - 2016 blocks to retarget difficulty
-
-For more information, as well as an immediately useable, binary version of
-the Litecoin client sofware, see http://www.litecoin.org.
-
-License
--------
-
-Litecoin is released under the terms of the MIT license. See `COPYING` for more
-information or see http://opensource.org/licenses/MIT.
+Anoncoin - a fork version of Litecoin optimized for CPU mining using scrypt as a proof of work scheme.
+ - 3.42 minute block targets (retarget on ~1680 blocks, 4days)
+ - Starts with 4.2 coin blocks until block 42000
+ - 7 coin blocks until block 77777
+ - 5 coin blocks after 77778, then subsidy halves in 306600 blocks (~2 years)
 
 Development process
--------------------
+===================
 
-Developers work in their own trees, then submit pull requests when they think
-their feature or bug fix is ready.
+Developers work in their own trees, then submit pull requests when
+they think their feature or bug fix is ready.
 
-If it is a simple/trivial/non-controversial change, then one of the Litecoin
-development team members simply pulls it.
+The patch will be accepted if there is broad consensus that it is a
+good thing.  Developers should expect to rework and resubmit patches
+if they don't match the project's coding conventions (see coding.txt)
+or are controversial.
 
-If it is a *more complicated or potentially controversial* change, then the patch
-submitter will be asked to start a discussion with the devs and community.
+The master branch is regularly built and tested, but is not guaranteed
+to be completely stable. Tags are regularly created to indicate new
+official, stable release versions of Anoncoin.
 
-The patch will be accepted if there is broad consensus that it is a good thing.
-Developers should expect to rework and resubmit patches if the code doesn't
-match the project's coding conventions (see `doc/coding.txt`) or are
-controversial.
+Feature branches are created when there are major new features being
+worked on by several people.
 
-The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/litecoin-project/litecoin/tags) are created
-regularly to indicate new official, stable release versions of Litecoin.
+From time to time a pull request will become outdated. If this occurs, and
+the pull is no longer automatically mergeable; a comment on the pull will
+be used to issue a warning of closure. The pull will be closed 15 days
+after the warning if action is not taken by the author. Pull requests closed
+in this manner will have their corresponding issue labeled 'stagnant'.
 
-Testing
--------
-
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test. Please be patient and help out, and
-remember this is a security-critical project where any mistake might cost people
-lots of money.
-
-### Automated Testing
-
-Developers are strongly encouraged to write unit tests for new code, and to
-submit new unit tests for old code.
-
-Unit tests for the core code are in `src/test/`. To compile and run them:
-
-    cd src; make -f makefile.unix test
-
-Unit tests for the GUI code are in `src/qt/test/`. To compile and run them:
-
-    qmake BITCOIN_QT_TEST=1 -o Makefile.test bitcoin-qt.pro
-    make -f Makefile.test
-    ./litecoin-qt_test
+Issues with no commits will be given a similar warning, and closed after
+15 days from their last activity. Issues closed in this manner will be 
+labeled 'stale'. 
 
