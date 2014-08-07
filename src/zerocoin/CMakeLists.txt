@@ -2,9 +2,6 @@
 # This file is part of the Zerocoin project
 # See LICENSE file or http://opensource.org/licenses/MIT for terms
 
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-    message(FATAL_ERROR "Prevented in-tree build. This is bad practice.")
-endif(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
@@ -173,12 +170,6 @@ install(
 
 add_executable(paramgen paramgen.cpp)
 target_link_libraries(paramgen zerocoin)
-
-add_executable(benchmark Benchmark.cpp)
-target_link_libraries(benchmark zerocoin)
-
-add_executable(test Tests.cpp)
-target_link_libraries(test zerocoin)
 
 add_executable(tutorial Tutorial.cpp)
 target_link_libraries(tutorial zerocoin)

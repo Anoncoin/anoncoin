@@ -48,9 +48,9 @@ public:
 };
 
 // use the Anoncoin versions (previously: modified versions in bitcoin_bignum/)
-#include <serialize.h>
-#include <bignum.h>
-#include <hash.h>
+#include "serialize.h"
+#include "bignum.h"
+#include "hash.h"
 
 #include "Params.h"
 #include "Coin.h"
