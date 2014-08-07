@@ -12,6 +12,10 @@
 #include "ui_interface.h"
 #include "i2p.h"
 
+#ifdef ENABLE_ZEROCOIN
+#include "zerocoin/Zerocoin.h"
+#endif
+
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -762,6 +766,26 @@ bool AppInit2(boost::thread_group& threadGroup)
             if (r == CDBEnv::RECOVER_FAIL)
                 return InitError(_("wallet.dat corrupt, salvage failed"));
         }
+
+#ifdef ENABLE_ZEROCOIN
+        if (fTestNet)
+        {
+          // Zerocoin Initialization
+          //
+          libzerocoin::Params* ZCParams;
+
+          // Zerocoin wallet
+          if (filesystem::exists(GetDataDir() / "zerocoin_wallet.dat"))
+          {
+            // Zerocoin wallet found
+          }
+          else
+          {
+            // Zerocoin wallet not found
+            // TODO: Create. Edit wallet structure.
+          }
+        }
+#endif
     } // (!fDisableWallet)
 
     // ********************************************************* Step 6: network initialization
