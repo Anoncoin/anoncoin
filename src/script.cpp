@@ -215,7 +215,11 @@ const char* GetOpName(opcodetype opcode)
     case OP_NOP9                   : return "OP_NOP9";
     case OP_NOP10                  : return "OP_NOP10";
 
-
+    // Zerocoin
+    case OP_ZCSPEND                : return "OP_ZCSPEND";
+    case OP_ZCCHECKPT              : return "OP_ZCCHECKPT";
+    case OP_ZCMINT                 : return "OP_ZCMINT";
+    case OP_ZCFIRSTHALF            : return "OP_ZCFIRSTHALF";
 
     // template matching params
     case OP_PUBKEYHASH             : return "OP_PUBKEYHASH";
