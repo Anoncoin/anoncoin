@@ -9,7 +9,7 @@
 * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
 * @license    This project is released under the MIT license.
 **/
-#include "Zerocoin.h"
+#include "../Zerocoin.h"
 
 namespace libzerocoin {
 

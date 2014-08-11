@@ -40,6 +40,7 @@ namespace boost {
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <stdarg.h>
+
 #include "i2p.h"
 
 #ifdef WIN32

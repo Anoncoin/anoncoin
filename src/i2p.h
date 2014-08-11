@@ -6,6 +6,8 @@
 #define I2P_H
 
 #include "util.h"
+
+#ifndef ZC_DISABLE_I2P
 #include "i2psam.h"
 
 #define I2P_NET_NAME_PARAM              "-i2p"
@@ -91,5 +93,7 @@ private:
     I2PSession(const I2PSession&);
     I2PSession& operator=(const I2PSession&);
 };
+
+#endif // ZC_DISABLE_I2P // Used for paramgen
 
 #endif // I2P_H

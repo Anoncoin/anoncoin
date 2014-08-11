@@ -34,9 +34,13 @@ include(FindOpenSSL)
 #
 # Project-wide installation settings
 #
-set(ZEROCOIN_INCLUDE_DIR include/zerocoin)
+set(ZEROCOIN_INCLUDE_DIR ".")
 set(ZEROCOIN_BIN_DIR     bin)
 set(ZEROCOIN_LIB_DIR     lib)
+
+# Disable I2P for the libzerocoin library
+add_definitions(-DZC_DISABLE_I2P)
+
 
 #
 # pkg-config substitution variables
@@ -122,16 +126,16 @@ install(TARGETS zerocoin
 # Install header files
 #
 install(FILES
-  bitcoin_bignum/allocators.h
-  bitcoin_bignum/bignum.h
-  bitcoin_bignum/clientversion.h
-  bitcoin_bignum/compat.h
-  bitcoin_bignum/hash.h
-  bitcoin_bignum/netbase.h
-  bitcoin_bignum/serialize.h
-  bitcoin_bignum/uint256.h
-  bitcoin_bignum/version.h
-  DESTINATION ${ZEROCOIN_INCLUDE_DIR}/bitcoin_bignum
+  ../allocators.h
+  ../bignum.h
+  ../clientversion.h
+  ../compat.h
+  ../hash.h
+  ../netbase.h
+  ../serialize.h
+  ../uint256.h
+  ../version.h
+  DESTINATION ${ZEROCOIN_INCLUDE_DIR}/../
 )
 
 install(FILES
@@ -144,7 +148,7 @@ install(FILES
   Params.h
   SerialNumberSignatureOfKnowledge.h
   SpendMetaData.h
-  Zerocoin.h
+  ../Zerocoin.h
   DESTINATION ${ZEROCOIN_INCLUDE_DIR}
 )
 
@@ -168,8 +172,8 @@ install(
 # Executable files
 ########################################################################
 
-add_executable(paramgen paramgen.cpp)
-target_link_libraries(paramgen zerocoin)
+#add_executable(paramgen ../util.cpp paramgen.cpp)
+#target_link_libraries(paramgen zerocoin)
 
-add_executable(tutorial Tutorial.cpp)
-target_link_libraries(tutorial zerocoin)
+#add_executable(tutorial Tutorial.cpp)
+#target_link_libraries(tutorial zerocoin)

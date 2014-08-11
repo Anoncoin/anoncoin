@@ -11,7 +11,7 @@
  **/
 
 #include <sys/time.h>
-#include "Zerocoin.h"
+#include "../Zerocoin.h"
 
 namespace libzerocoin {
 

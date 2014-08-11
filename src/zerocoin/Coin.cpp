@@ -11,7 +11,7 @@
  **/
 
 #include <stdexcept>
-#include "Zerocoin.h"
+#include "../Zerocoin.h"
 
 namespace libzerocoin {
 

@@ -41,6 +41,10 @@
 
 // Errors thrown by the Zerocoin library
 
+#ifndef ZC_DISABLE_I2P
+#define ZC_DISABLE_I2P 1
+#endif
+
 class ZerocoinException : public std::runtime_error
 {
 public:
@@ -52,13 +56,15 @@ public:
 #include "bignum.h"
 #include "hash.h"
 
-#include "Params.h"
-#include "Coin.h"
-#include "Commitment.h"
-#include "Accumulator.h"
-#include "AccumulatorProofOfKnowledge.h"
-#include "CoinSpend.h"
-#include "SerialNumberSignatureOfKnowledge.h"
-#include "ParamGeneration.h"
+typedef CBigNum Bignum;
+
+#include "zerocoin/Params.h"
+#include "zerocoin/Coin.h"
+#include "zerocoin/Commitment.h"
+#include "zerocoin/Accumulator.h"
+#include "zerocoin/AccumulatorProofOfKnowledge.h"
+#include "zerocoin/CoinSpend.h"
+#include "zerocoin/SerialNumberSignatureOfKnowledge.h"
+#include "zerocoin/ParamGeneration.h"
 
 #endif /* ZEROCOIN_H_ */

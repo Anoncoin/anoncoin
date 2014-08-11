@@ -10,7 +10,7 @@
 /// \license    This project is released under the MIT license.
 
 #include <string>
-#include "Zerocoin.h"
+#include "../Zerocoin.h"
 
 using namespace std;
 

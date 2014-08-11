@@ -17,7 +17,7 @@ using namespace std;
 #include <fstream>
 #include <curses.h>
 #include <exception>
-#include "Zerocoin.h"
+#include "../Zerocoin.h"
 
 #define COINS_TO_ACCUMULATE     5
 #define DUMMY_TRANSACTION_HASH  0 // in real life these would be uint256 hashes
