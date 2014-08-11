@@ -263,7 +263,153 @@ public:
         reverse(vch.begin(), vch.end());
         return vch;
     }
+    /**Returns the size in bits of the underlying bignum.
+    * *
+    * * @return the size
+    * */
+    int bitSize() const{
+    return BN_num_bits(this);
+    }
 
+    /**
+    * * modular multiplication: (this * b) mod m
+    * * @param b operand
+    * * @param m modulus
+    * */
+    CBigNum mul_mod(const CBigNum& b, const CBigNum& m) const {
+      CAutoBN_CTX pctx;
+      CBigNum ret;
+      if (!BN_mod_mul(&ret, this, &b, &m, pctx))
+        throw bignum_error("CBigNum::mul_mod : BN_mod_mul failed");
+      return ret;
+    }
+
+    /**
+    * * modular exponentiation: this^e mod n
+    * * @param e exponent
+    * * @param m modulus
+    * */
+    CBigNum pow_mod(const CBigNum& e, const CBigNum& m) const {
+      CAutoBN_CTX pctx;
+      CBigNum ret;
+      const CBigNum nil(0);
+      if( &e < &nil){
+        //g^-x = (g^-1)^x
+        CBigNum inv = this->inverse(m);
+        const CBigNum t(-1);
+    //    const CBigNum posE = &e * &t;
+    CAutoBN_CTX pctx;
+    CBigNum r;
+    if (!BN_mul(&r, &e, &t, pctx))
+    { throw "fu."; }
+        if (!BN_mod_exp(&ret, &inv, &r, &m, pctx))
+          throw bignum_error("CBigNum::pow_mod: BN_mod_exp failed on negative exponent");
+      } else
+        if (!BN_mod_exp(&ret, this, &e, &m, pctx))
+          throw bignum_error("CBigNum::pow_mod : BN_mod_exp failed");
+        return ret;
+      }
+
+      /**
+      * * exponentiation with an int. this^e
+      * * @param e the exponent as an int
+      * * @return
+      * */
+      CBigNum pow(const int e) const {
+        return this->pow(CBigNum(e));
+      }
+      /**
+      * * exponentiation this^e
+      * * @param e the exponent
+      * * @return
+      * */
+      CBigNum pow(const CBigNum& e) const {
+        CAutoBN_CTX pctx;
+        CBigNum ret;
+        if (!BN_exp(&ret, this, &e, pctx))
+          throw bignum_error("CBigNum::pow : BN_exp failed");
+        return ret;
+      }
+
+      /** Generates a cryptographically secure random number between zero and
+      * range exclusive
+      * * i.e. 0 < returned number < range
+      * * @param range The upper bound on the number.
+      * * @return
+      * */
+      static CBigNum randBignum(const CBigNum& range) {
+        CBigNum ret;
+        if(!BN_rand_range(&ret, &range)){
+          throw bignum_error("CBigNum:rand element : BN_rand_range failed");
+        }
+        return ret;
+      }
+        /** Generates a cryptographically secure random k-bit number
+        * * @param k The bit length of the number.
+        * * @return
+        * */
+        static CBigNum RandKBitBigum(const uint32_t k){
+          CBigNum ret;
+          if(!BN_rand(&ret, k, -1, 0)){
+            throw bignum_error("CBigNum:rand element : BN_rand failed");
+          }
+          return ret;
+        }
+  /**
+* Calculates the greatest common divisor (GCD) of two numbers.
+* @param m the second element
+* @return the GCD
+*/
+CBigNum gcd( const CBigNum& b) const{
+  CAutoBN_CTX pctx;
+  CBigNum ret;
+  if (!BN_gcd(&ret, this, &b, pctx))
+    throw bignum_error("CBigNum::gcd*= :BN_gcd");
+  return ret;
+}
+/**
+* * Generates a random (safe) prime of numBits bits
+* * @param numBits the number of bits
+* * @param safe true for a safe prime
+* * @return the prime
+* */
+static CBigNum generatePrime(const unsigned int numBits, bool safe = false) {
+  CBigNum ret;
+  if(!BN_generate_prime_ex(&ret, numBits, (safe == true), NULL, NULL, NULL))
+    throw bignum_error("CBigNum::generatePrime*= :BN_generate_prime_ex");
+  return ret;
+}
+/**
+* Miller-Rabin primality test on this element
+* @param checks: optional, the number of Miller-Rabin tests to run
+* default causes error rate of 2^-80.
+* @return true if prime
+*/
+bool isPrime(const int checks=BN_prime_checks) const {
+CAutoBN_CTX pctx;
+int ret = BN_is_prime(this, checks, NULL, pctx, NULL);
+if(ret < 0){
+throw bignum_error("CBigNum::isPrime :BN_is_prime");
+}
+return ret;
+}
+
+bool isOne() const {
+return BN_is_one(this);
+}
+   /**
+   * * Calculates the inverse of this element mod m.
+   * * i.e. i such this*i = 1 mod m
+   * * @param m the modu
+   * * @return the inverse
+   * */
+   CBigNum inverse(const CBigNum& m) const {
+     CAutoBN_CTX pctx;
+     CBigNum ret;
+     if (!BN_mod_inverse(&ret, this, &m, pctx))
+       throw bignum_error("CBigNum::inverse*= :BN_mod_inverse");
+     return ret;
+   }
     // The "compact" format is a representation of a whole
     // number N using an unsigned 32bit number similar to a
     // floating point format.
