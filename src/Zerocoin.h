@@ -41,9 +41,6 @@
 
 // Errors thrown by the Zerocoin library
 
-#ifndef ZC_DISABLE_I2P
-#define ZC_DISABLE_I2P 1
-#endif
 
 class ZerocoinException : public std::runtime_error
 {

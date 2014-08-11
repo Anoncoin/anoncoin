@@ -13,7 +13,7 @@
 #include "i2p.h"
 
 #ifdef ENABLE_ZEROCOIN
-#include "zerocoin/Zerocoin.h"
+#include "Zerocoin.h"
 #endif
 
 #include <boost/filesystem.hpp>
