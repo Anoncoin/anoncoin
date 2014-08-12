@@ -19,8 +19,9 @@ using namespace std;
 map<uint256, CAlert> mapAlerts;
 CCriticalSection cs_mapAlerts;
 
-static const char* pszMainKey = "040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9";
-static const char* pszTestKey = "04302390343f91cc401d56d68b123028bf52e5fca1939df127f63c6467cdf9c8e2c14b61104cf817d0b780da337893ecc4aaff1309e536162dabbdb45200ca2b0a";
+// Using same alert key for testnet4 and new clients for now. Messages broadcasted will affect all.
+static const char* pszMainKey = "044db3b6b605fd84df8ac3edd2109a858603f592ec7875cc1c09856ae8584c3673760ec8d7fe83956a113ec87370502d3fc65693bc78c49781d8ae22a793a08998";
+static const char* pszTestKey = "044db3b6b605fd84df8ac3edd2109a858603f592ec7875cc1c09856ae8584c3673760ec8d7fe83956a113ec87370502d3fc65693bc78c49781d8ae22a793a08998";
 
 void CUnsignedAlert::SetNull()
 {
