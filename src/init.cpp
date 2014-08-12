@@ -720,6 +720,30 @@ bool AppInit2(boost::thread_group& threadGroup)
     scrypt_detect_sse2();
 #endif
 
+    // ********************************************************* Step 4.5: Zerocoin if enabled
+#ifdef ENABLE_ZEROCOIN
+    try {
+        if (fTestnet)
+        {
+            CBigNum testModulus;
+            testModulus.SetHex(std::string(TESTNET_MODULUS));
+            libzerocoin::Params* zerocoinParams = new libzerocoin::Params(testModulus);
+
+            // TODO: Move this bellow the if when mainnet got UFO.
+            assert(zerocoinParams);
+            printf("Successfully loaded Zerocoin mudulus(params).");
+        }
+        else
+        {
+            // UFO goes here.
+        }
+    }
+    catch (runtime_error &e)
+    {
+        printf("Error: Zerocoin Exception: %s\n", e.what());
+    }
+#endif
+
     // ********************************************************* Step 5: verify wallet database integrity
 
     if (!fDisableWallet) {

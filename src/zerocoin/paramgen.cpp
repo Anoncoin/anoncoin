@@ -12,6 +12,8 @@
 
 using namespace std;
 
+#define ZC_DISABLE_I2P          1
+
 #include <string>
 #include <iostream>
 #include <fstream>

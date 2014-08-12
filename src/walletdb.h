@@ -7,6 +7,7 @@
 
 #include "db.h"
 #include "base58.h"
+#include "Zerocoin.h"
 
 class CKeyPool;
 class CAccount;
@@ -20,6 +21,9 @@ enum DBErrors
     DB_NONCRITICAL_ERROR,
     DB_TOO_NEW,
     DB_LOAD_FAIL,
+#ifdef ENABLE_ZEROCOIN
+    DB_WRONG_WALLET_FILE,
+#endif
     DB_NEED_REWRITE
 };
 
