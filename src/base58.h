@@ -274,7 +274,7 @@ public:
     {
         PUBKEY_ADDRESS = 23, // Anoncoin addresses start with A
         SCRIPT_ADDRESS = 5,
-        PUBKEY_ADDRESS_TEST = 111,
+        PUBKEY_ADDRESS_TEST = 50, // Testnet4 starts with M
         SCRIPT_ADDRESS_TEST = 196,
     };
 
