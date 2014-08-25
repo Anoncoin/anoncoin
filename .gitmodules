@@ -1,0 +1,3 @@
+[submodule "src/libi2p"]
+	path = src/libi2p
+	url = https://github.com/PrivacySolutions/i2pd.git
