@@ -27,7 +27,7 @@ const std::string I2P_MODULE_VERSION = "0.2";
 // network protocol versioning
 //
 
-static const int PROTOCOL_VERSION = 70007;
+static const int PROTOCOL_VERSION = 70008;
 
 // intial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
