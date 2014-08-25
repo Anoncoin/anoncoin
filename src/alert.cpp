@@ -22,6 +22,7 @@ CCriticalSection cs_mapAlerts;
 // Using same alert key for testnet4 and new clients for now. Messages broadcasted will affect all.
 static const char* pszMainKey = "044db3b6b605fd84df8ac3edd2109a858603f592ec7875cc1c09856ae8584c3673760ec8d7fe83956a113ec87370502d3fc65693bc78c49781d8ae22a793a08998";
 static const char* pszTestKey = "044db3b6b605fd84df8ac3edd2109a858603f592ec7875cc1c09856ae8584c3673760ec8d7fe83956a113ec87370502d3fc65693bc78c49781d8ae22a793a08998";
+static const char* pszOldKey  = "04b2941a448ab9860beb73fa2f600c09bf9fe4d18d5ff0b3957bf94c6d177d61f88660d7c0dd9adef984080ddea03c898039759f66c2011c111c4394692f814962";
 
 void CUnsignedAlert::SetNull()
 {
@@ -147,7 +148,12 @@ bool CAlert::CheckSignature() const
 {
     CPubKey key(ParseHex(fTestNet ? pszTestKey : pszMainKey));
     if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
-        return error("CAlert::CheckSignature() : verify signature failed");
+    {
+        //
+        CPubKey key(ParseHex(fTestNet ? pszTestKey : pszOldKey));
+        if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
+            return error("CAlert::CheckSignature() : verify signature failed");
+    }
 
     // Now unserialize the data
     CDataStream sMsg(vchMsg, SER_NETWORK, PROTOCOL_VERSION);
