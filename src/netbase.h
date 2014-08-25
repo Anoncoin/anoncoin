@@ -28,7 +28,6 @@ enum Network
     NET_IPV6,
     NET_TOR,
     NET_NATIVE_I2P,
-
     NET_MAX,
 };
 
