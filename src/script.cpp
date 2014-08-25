@@ -711,6 +711,31 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 }
                 break;
 
+#ifdef ENABLE_ZEROCOIN
+                // FSM code for Zerocoin
+                case OP_ZCMINT:
+                    if (strack.size() < 2)
+                        return false;
+                    int version = (int)stacktop(-1);
+                    CBigNum coinCommitment = CastToBigNum(stacktop(-2));
+                case OP_ZCSPEND:
+                    if (strack.size() < 2)
+                        return false;
+                    int version = (int)stacktop(-1);
+                    CBigNum serialNum = CastToBigNum(stacktop(-2));
+                    CBigNum spendRootHash = CastToBigNum(stacktop(-3));
+                case OP_ZCFIRSTHALF:
+                    if (strack.size() < 2)
+                        return false;
+                    int version = (int)stacktop(-1);
+                    CBigNum firstHalfHash = CastToBigNum(stacktop(-2));
+                    //TODO: Check length of firstHalfHash
+                case OP_ZCCHECKPT:
+                    if (strack.size() < 3)
+                        return false;
+                break;
+#endif
+
                 case OP_ADD:
                 case OP_SUB:
                 case OP_BOOLAND:
@@ -1815,7 +1840,7 @@ void CScript::SetMultisig(int nRequired, const std::vector<CPubKey>& keys)
 
 bool CScriptCompressor::IsToKeyID(CKeyID &hash) const
 {
-    if (script.size() == 25 && script[0] == OP_DUP && script[1] == OP_HASH160 
+    if (script.size() == 25 && script[0] == OP_DUP && script[1] == OP_HASH160
                             && script[2] == 20 && script[23] == OP_EQUALVERIFY
                             && script[24] == OP_CHECKSIG) {
         memcpy(&hash, &script[3], 20);
