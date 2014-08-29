@@ -31,4 +31,9 @@ qrc_*.cpp
 .DS_Store
 build
 
+# Python
+*.pyc
+*.pyd
+*.pyo
+
 !src/leveldb*/Makefile
