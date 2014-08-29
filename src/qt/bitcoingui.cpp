@@ -373,13 +373,6 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
             labelI2POnly->setToolTip(tr("Wallet is using mixed or non-I2P (clear) network"));
         }
 
-
-        else
-        {
-            labelI2POnly->setText("CLR");
-            labelI2POnly->setToolTip(tr("Wallet is using mixed or non-I2P (clear) network"));
-        }
-
         if (clientModel->isI2PAddressGenerated())
         {
             labelI2PGenerated->setText("DYN");
