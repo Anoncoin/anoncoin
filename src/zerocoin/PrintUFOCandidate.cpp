@@ -5,7 +5,7 @@ using namespace std;
 #include <fstream>
 #include <exception>
 #include <cstdlib>      // strtol
-#include "Zerocoin.h"
+#include "../Zerocoin.h"
 
 
 

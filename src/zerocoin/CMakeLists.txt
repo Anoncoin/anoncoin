@@ -175,5 +175,8 @@ install(
 #add_executable(paramgen ../util.cpp paramgen.cpp)
 #target_link_libraries(paramgen zerocoin)
 
-#add_executable(tutorial Tutorial.cpp)
-#target_link_libraries(tutorial zerocoin)
+add_executable(tutorial Tutorial.cpp)
+target_link_libraries(tutorial zerocoin)
+
+add_executable(ufo PrintUFOCandidate.cpp)
+target_link_libraries(ufo zerocoin)
