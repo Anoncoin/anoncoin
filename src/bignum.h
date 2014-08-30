@@ -290,25 +290,20 @@ public:
     * * @param m modulus
     * */
     CBigNum pow_mod(const CBigNum& e, const CBigNum& m) const {
-      CAutoBN_CTX pctx;
-      CBigNum ret;
-      const CBigNum nil(0);
-      if( &e < &nil){
-        //g^-x = (g^-1)^x
-        CBigNum inv = this->inverse(m);
-        const CBigNum t(-1);
-    //    const CBigNum posE = &e * &t;
-    CAutoBN_CTX pctx;
-    CBigNum r;
-    if (!BN_mul(&r, &e, &t, pctx))
-    { throw "fu."; }
-        if (!BN_mod_exp(&ret, &inv, &r, &m, pctx))
-          throw bignum_error("CBigNum::pow_mod: BN_mod_exp failed on negative exponent");
-      } else
-        if (!BN_mod_exp(&ret, this, &e, &m, pctx))
-          throw bignum_error("CBigNum::pow_mod : BN_mod_exp failed");
+        CAutoBN_CTX pctx;
+        CBigNum ret;
+        if( e < 0){
+            // g^-x = (g^-1)^x
+            CBigNum inv = this->inverse(m);
+            CBigNum posE = e * -1;
+            if (!BN_mod_exp(&ret, &inv, &posE, &m, pctx))
+                throw bignum_error("CBigNum::pow_mod: BN_mod_exp failed on negative exponent");
+        }else
+            if (!BN_mod_exp(&ret, this, &e, &m, pctx))
+                throw bignum_error("CBigNum::pow_mod : BN_mod_exp failed");
+
         return ret;
-      }
+    }
 
       /**
       * * exponentiation with an int. this^e
