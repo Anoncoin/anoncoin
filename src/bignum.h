@@ -348,7 +348,7 @@ public:
         * * @param k The bit length of the number.
         * * @return
         * */
-        static CBigNum RandKBitBigum(const uint32_t k){
+        static CBigNum RandKBitBignum(const uint32_t k){
           CBigNum ret;
           if(!BN_rand(&ret, k, -1, 0)){
             throw bignum_error("CBigNum:rand element : BN_rand failed");
@@ -657,6 +657,8 @@ return BN_is_one(this);
     friend inline const CBigNum operator-(const CBigNum& a, const CBigNum& b);
     friend inline const CBigNum operator/(const CBigNum& a, const CBigNum& b);
     friend inline const CBigNum operator%(const CBigNum& a, const CBigNum& b);
+    friend inline const CBigNum operator*(const CBigNum& a, const CBigNum& b);
+    friend inline bool operator<(const CBigNum& a, const CBigNum& b);
 };
 
 
@@ -706,8 +708,8 @@ inline const CBigNum operator%(const CBigNum& a, const CBigNum& b)
 {
     CAutoBN_CTX pctx;
     CBigNum r;
-    if (!BN_mod(&r, &a, &b, pctx))
-        throw bignum_error("CBigNum::operator% : BN_div failed");
+    if (!BN_nnmod(&r, &a, &b, pctx))
+        throw bignum_error("CBigNum::operator% : BN_nnmod failed");
     return r;
 }
 
@@ -732,5 +734,8 @@ inline bool operator<=(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, 
 inline bool operator>=(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, &b) >= 0); }
 inline bool operator<(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) < 0); }
 inline bool operator>(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) > 0); }
-
+inline std::ostream& operator<<(std::ostream &strm, const CBigNum &b) {
+    return strm << "0x" << b.ToString(16);
+}
+typedef  CBigNum Bignum;
 #endif
