@@ -12,6 +12,8 @@
 #ifndef ACCUMULATOR_H_
 #define ACCUMULATOR_H_
 
+#include "../Zerocoin.h"
+
 namespace libzerocoin {
 /**
  * \brief Implementation of the RSA-based accumulator.

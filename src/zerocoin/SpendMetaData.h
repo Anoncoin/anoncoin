@@ -13,6 +13,8 @@
 #ifndef SPENDMETADATA_H_
 #define SPENDMETADATA_H_
 
+#include "../Zerocoin.h"
+
 #include "../uint256.h"
 #include "../serialize.h"
 

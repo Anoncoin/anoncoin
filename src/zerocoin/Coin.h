@@ -12,6 +12,9 @@
 
 #ifndef COIN_H_
 #define COIN_H_
+
+#include "../Zerocoin.h"
+
 #include "../bignum.h"
 #include "Params.h"
 namespace libzerocoin {

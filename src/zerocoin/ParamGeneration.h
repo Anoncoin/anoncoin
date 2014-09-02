@@ -11,6 +11,8 @@
 #ifndef PARAMGENERATION_H_
 #define PARAMGENERATION_H_
 
+#include "../Zerocoin.h"
+
 namespace libzerocoin {
 
 void CalculateParams(Params &params, Bignum N, std::string aux, uint32_t securityLevel);

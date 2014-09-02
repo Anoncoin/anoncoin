@@ -13,6 +13,8 @@
 #ifndef SERIALNUMBERPROOF_H_
 #define SERIALNUMBERPROOF_H_
 
+#include "../Zerocoin.h"
+
 #include <list>
 #include <vector>
 #include <bitset>

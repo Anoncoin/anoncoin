@@ -13,6 +13,8 @@
 #ifndef COINSPEND_H_
 #define COINSPEND_H_
 
+#include "../Zerocoin.h"
+
 #include "Params.h"
 #include "Coin.h"
 #include "Commitment.h"

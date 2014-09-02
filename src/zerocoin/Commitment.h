@@ -13,6 +13,8 @@
 #ifndef COMMITMENT_H_
 #define COMMITMENT_H_
 
+#include "../Zerocoin.h"
+
 #include "Params.h"
 #include "../serialize.h"
 
