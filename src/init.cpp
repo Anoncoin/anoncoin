@@ -723,7 +723,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 4.5: Zerocoin if enabled
 #ifdef ENABLE_ZEROCOIN
     try {
-        if (fTestnet)
+        if (fTestNet)
         {
             CBigNum testModulus;
             testModulus.SetHex(std::string(TESTNET_MODULUS));
