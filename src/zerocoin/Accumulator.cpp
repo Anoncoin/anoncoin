@@ -61,7 +61,7 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 		gettimeofday(&tv1, NULL);
 		elapsed = (tv1.tv_sec  - tv0.tv_sec) +
 		          (tv1.tv_usec - tv0.tv_usec) / 1e6;
-		cout << "GNOSIS DEBUG: accumulate time: " << elapsed << endl;
+		std::cout << "GNOSIS DEBUG: accumulate time: " << elapsed << std::endl;
 
 	} else {
 		throw ZerocoinException("Coin is not valid");
