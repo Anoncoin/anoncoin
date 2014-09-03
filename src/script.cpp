@@ -711,14 +711,15 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 break;
 
 #ifdef ENABLE_ZEROCOIN
+                /** // GNOSIS TODO: convert to template matching, rather than interpreted script
                 // FSM code for Zerocoin
                 case OP_ZCMINT:
-                    if (strack.size() < 2)
+                    if (stack.size() < 2)
                         return false;
                     int version = (int)stacktop(-1);
                     CBigNum coinCommitment = CastToBigNum(stacktop(-2));
                 case OP_ZCSPEND:
-                    if (strack.size() < 2)
+                    if (stack.size() < 2)
                         return false;
                     int version = (int)stacktop(-1);
                     CBigNum serialNum = CastToBigNum(stacktop(-2));
@@ -727,15 +728,15 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 //       so the following needs to be removed. How does its removal influence the
                 //       remaining ZC code?
                 case OP_ZCFIRSTHALF:
-                    if (strack.size() < 2)
+                    if (stack.size() < 2)
                         return false;
                     int version = (int)stacktop(-1);
                     CBigNum firstHalfHash = CastToBigNum(stacktop(-2));
                     //TODO: Check length of firstHalfHash
                 case OP_ZCCHECKPT:
-                    if (strack.size() < 3)
+                    if (stack.size() < 3)
                         return false;
-                break;
+                break; */
 #endif
 
                 case OP_ADD:
