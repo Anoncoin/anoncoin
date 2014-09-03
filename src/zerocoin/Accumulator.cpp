@@ -10,6 +10,7 @@
  * @license    This project is released under the MIT license.
  **/
 
+#include <iostream>     // GNOSIS DEBUG
 #include <sstream>
 #include <sys/time.h>
 #include "../Zerocoin.h"
