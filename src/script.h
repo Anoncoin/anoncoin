@@ -200,10 +200,9 @@ enum opcodetype
 
 #ifdef ENABLE_ZEROCOIN
     // Zerocoin
-    OP_ZCSPEND      = 0xd7;
-    OP_ZCCHECKPT    = 0xd4;
-    OP_ZCMINT       = 0xd3;
-    OP_ZCFIRSTHALF  = 0xd9;
+    OP_ZCSPEND      = 0xd7,
+    OP_ZCCHECKPT    = 0xd4,
+    OP_ZCMINT       = 0xd3,
 #endif
 
     // template matching params

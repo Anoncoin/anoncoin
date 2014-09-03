@@ -220,7 +220,6 @@ const char* GetOpName(opcodetype opcode)
     case OP_ZCSPEND                : return "OP_ZCSPEND";
     case OP_ZCCHECKPT              : return "OP_ZCCHECKPT";
     case OP_ZCMINT                 : return "OP_ZCMINT";
-    case OP_ZCFIRSTHALF            : return "OP_ZCFIRSTHALF";
 #endif
 
     // template matching params
@@ -724,6 +723,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     int version = (int)stacktop(-1);
                     CBigNum serialNum = CastToBigNum(stacktop(-2));
                     CBigNum spendRootHash = CastToBigNum(stacktop(-3));
+                // TODO: OP_ZCFIRSTHALF is obsolete since we will not be doing rate-limiting soon
+                //       so the following needs to be removed. How does its removal influence the
+                //       remaining ZC code?
                 case OP_ZCFIRSTHALF:
                     if (strack.size() < 2)
                         return false;
