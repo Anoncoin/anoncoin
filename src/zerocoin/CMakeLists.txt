@@ -110,16 +110,16 @@ list(APPEND zerocoin_sources
 )
 
 #
-# Create shared library libzerocoin.so
+# Create static library libzerocoin.so
 #
-add_library(zerocoin SHARED ${zerocoin_sources})
+add_library(zerocoin STATIC ${zerocoin_sources})
 target_link_libraries(zerocoin ${zerocoin_libs})
 
 #
-# Install shared library
+# Install static library
 #
 install(TARGETS zerocoin
-  LIBRARY DESTINATION ${ZEROCOIN_LIB_DIR}
+	ARCHIVE DESTINATION ${ZEROCOIN_LIB_DIR}
 )
 
 #
@@ -152,21 +152,22 @@ install(FILES
   DESTINATION ${ZEROCOIN_INCLUDE_DIR}
 )
 
+# GNOSIS 2014-09-03: no need for pkgconfig files if only used by Anoncoin
+##
+## Create pkg-config file
+##
+#configure_file(
+#  ${CMAKE_CURRENT_SOURCE_DIR}/zerocoin.pc.in
+#  ${CMAKE_CURRENT_BINARY_DIR}/zerocoin.pc
+#@ONLY)
 #
-# Create pkg-config file
-#
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/zerocoin.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/zerocoin.pc
-@ONLY)
-
-#
-# Install pkg-config file
-#
-install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/zerocoin.pc
-  DESTINATION ${ZEROCOIN_LIB_DIR}/pkgconfig
-)
+##
+## Install pkg-config file
+##
+#install(
+#  FILES ${CMAKE_CURRENT_BINARY_DIR}/zerocoin.pc
+#  DESTINATION ${ZEROCOIN_LIB_DIR}/pkgconfig
+#)
 
 ########################################################################
 # Executable files

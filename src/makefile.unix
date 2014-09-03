@@ -41,7 +41,7 @@ LIBS += \
    -l db_cxx$(BDB_LIB_SUFFIX) \
    -l ssl \
    -l crypto \
-	 -l i2psam
+   -l i2psam
 
 TESTLIBS += \
  -Wl,-B$(LMODE) \
@@ -145,7 +145,8 @@ OBJS= \
     obj/bloom.o \
     obj/noui.o \
     obj/leveldb.o \
-    obj/txdb.o
+    obj/txdb.o \
+	zerocoin/libzerocoin.a
 
 
 ifdef USE_SSE2
