@@ -9,6 +9,7 @@
 /// \copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
 /// \license    This project is released under the MIT license.
 
+#include <iostream>				// GNOSIS DEBUG
 #include <string>
 #include "../Zerocoin.h"
 
@@ -54,7 +55,7 @@ namespace libzerocoin {
 void
 CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 {
-  cout << "GNOSIS DEBUG: CalculateParams in ParamGeneration.cpp" << endl;
+	std::cout << "GNOSIS DEBUG: CalculateParams in ParamGeneration.cpp" << std::endl;
 	params.initialized = false;
 	params.accumulatorParams.initialized = false;
   cout << "GNOSIS DEBUG: aux is " << aux << endl;
