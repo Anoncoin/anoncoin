@@ -91,7 +91,7 @@ AccumulatorWitness::AccumulatorWitness(const Params* p,
                                        const Accumulator& checkpoint, const PublicCoin coin): params(p), witness(checkpoint), element(coin) {
 }
 
-void AccumulatorWitness::AddElement(const PublicCoin& c) {
+void AccumulatorWitness::addElement(const PublicCoin& c) {
 	if(element != c) {
 		witness += c;
 	}
@@ -101,7 +101,7 @@ Bignum AccumulatorWitness::getValue() const {
 	return this->witness.getValue();
 }
 
-bool AccumulatorWitness::VerifyWitness(const Accumulator& a, const PublicCoin &publicCoin) const {
+bool AccumulatorWitness::verifyWitness(const Accumulator& a, const PublicCoin &publicCoin) const {
 	Accumulator temp(witness);
 	temp += element;
 	return (temp == a && this->element == publicCoin);
@@ -109,7 +109,7 @@ bool AccumulatorWitness::VerifyWitness(const Accumulator& a, const PublicCoin &p
 
 AccumulatorWitness& AccumulatorWitness::operator +=(
     const PublicCoin& rhs) {
-	this->AddElement(rhs);
+	this->addElement(rhs);
 	return *this;
 }
 

@@ -117,7 +117,7 @@ public:
 	 *
 	 * @param c the coin to add
 	 */
-	void AddElement(const PublicCoin& c);
+	void addElement(const PublicCoin& c);
 
 	/**
 	 *
@@ -130,7 +130,7 @@ public:
 	 * @param publicCoin    the coin we're providing a witness for
 	 * @return True if the witness computation validates
 	 */
-	bool VerifyWitness(const Accumulator& a, const PublicCoin &publicCoin) const;
+	bool verifyWitness(const Accumulator& a, const PublicCoin &publicCoin) const;
 
 	/**
 	 * Adds rhs to the set whose accumulation we're proving coin is a member of

@@ -28,7 +28,7 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 
 	// Sanity check: let's verify that the Witness is valid with respect to
 	// the coin and Accumulator provided.
-	if (!(witness.VerifyWitness(a, coin.getPublicCoin()))) {
+	if (!(witness.verifyWitness(a, coin.getPublicCoin()))) {
 		throw ZerocoinException("Accumulator witness does not verify");
 	}
 

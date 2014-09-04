@@ -228,7 +228,7 @@ Test_Accumulator()
 		}
 
 		// Verify that the witness is correct
-		if (!wThree.VerifyWitness(accThree, gCoins[0]->getPublicCoin()) ) {
+		if (!wThree.verifyWitness(accThree, gCoins[0]->getPublicCoin()) ) {
 			cout << "Witness not valid" << endl;
 			return false;
 		}

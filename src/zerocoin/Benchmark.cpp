@@ -20,7 +20,7 @@ using namespace std;
 #include <cstdlib>
 #include <sys/time.h>
 
-#include "Zerocoin.h"
+#include "../Zerocoin.h"
 
 using namespace libzerocoin;
 
@@ -262,7 +262,7 @@ Test_Accumulator()
 		}
 
 		// Verify that the witness is correct
-		if (!wThree.VerifyWitness(accThree, gCoins[0]->getPublicCoin()) ) {
+		if (!wThree.verifyWitness(accThree, gCoins[0]->getPublicCoin()) ) {
 			cout << "Witness not valid" << endl;
 			return false;
 		}
