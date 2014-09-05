@@ -30,6 +30,8 @@
 using namespace std;
 using namespace boost;
 
+namespace zc = libzerocoin;
+
 CWallet* pwalletMain;
 CClientUIInterface uiInterface;
 
@@ -727,15 +729,11 @@ bool AppInit2(boost::thread_group& threadGroup)
         {
             CBigNum testModulus;
             testModulus.SetHex(std::string(TESTNET_MODULUS));
-            libzerocoin::Params* zerocoinParams = new libzerocoin::Params(testModulus);
+            zc::Params* zerocoinParams = new zc::Params(testModulus);
 
             // TODO: Move this bellow the if when mainnet got UFO.
             assert(zerocoinParams);
             printf("Successfully loaded Zerocoin mudulus(params).");
-        }
-        else
-        {
-            // UFO goes here.
         }
     }
     catch (runtime_error &e)
@@ -794,9 +792,10 @@ bool AppInit2(boost::thread_group& threadGroup)
 #ifdef ENABLE_ZEROCOIN
         if (fTestNet)
         {
+          // GNOSIS TODO: no, get rid of this block, if wallets containing zerocoins can be backwards-compatible (this is likely)
           // Zerocoin Initialization
           //
-          libzerocoin::Params* ZCParams;
+          zc::Params* ZCParams;
 
           // Zerocoin wallet
           if (filesystem::exists(GetDataDir() / "zerocoin_wallet.dat"))
