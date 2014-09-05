@@ -106,22 +106,6 @@ public:
 
 class AccumulatorAndProofParams {
 public:
-	/** @brief Construct a set of Zerocoin parameters from a modulus "N".
-	* @param N                A trusted RSA modulus
-	* @param securityLevel    A security level expressed in symmetric bits (default 80)
-	*
-	* Allocates and derives a set of Zerocoin parameters from
-	* a trustworthy RSA modulus "N". This routine calculates all
-	* of the remaining parameters (group descriptions etc.) from N
-	* using a verifiable, deterministic procedure.
-	*
-	* Note: this constructor makes the fundamental assumption that "N"
-	* encodes a valid RSA-style modulus of the form "e1 * e2" where
-	* "e1" and "e2" are safe primes. The factors "e1", "e2" MUST NOT
-	* be known to any party, or the security of Zerocoin is
-	* compromised. The integer "N" must be a MINIMUM of 1024
-	* in length. 3072 bits is strongly recommended.
-	**/
 	AccumulatorAndProofParams();
 
 	//AccumulatorAndProofParams(Bignum accumulatorModulus);
