@@ -51,6 +51,7 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 
 	// Now generate the two core ZK proofs:
 	// 3. Proves that the committed public coin is in the Accumulator (PoK of "witness")
+	// TODO: ONE FOR EACH UFO
 	this->accumulatorPoK = AccumulatorProofOfKnowledge(&p->accumulatorParams, fullCommitmentToCoinUnderAccParams, witness, a);
 	cout << "GNOSIS DEBUG: accPoK is " << this->accumulatorPoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 

@@ -98,7 +98,7 @@ private:
 	Bignum accCommitmentToCoinValue;
 	Bignum serialCommitmentToCoinValue;
 	Bignum coinSerialNumber;
-	AccumulatorProofOfKnowledge accumulatorPoK;
+	AccumulatorProofOfKnowledge accumulatorPoK;    // TODO: ONE FOR EACH UFO
 	SerialNumberSignatureOfKnowledge serialNumberSoK;
 	CommitmentProofOfKnowledge commitmentPoK;
 };
