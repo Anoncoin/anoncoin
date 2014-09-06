@@ -62,14 +62,14 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 	// Add the UFOs together for deterministically seeding all other parameters.
 	// This is kind of arbitrary, but I had to pick something...
 	vector<const Bignum>& r_ufos = params.accumulatorParams.accumulatorModuli;
-	for (uint32_t ufoIndex = 0; ufoIndex < r_ufos.size(); ufoIndex++) {
-		uint32_t N_i_len = r_ufos[ufoIndex].bitSize();
+	for (uint32_t i = 0; i < r_ufos.size(); i++) {
+		uint32_t N_i_len = r_ufos[i].bitSize();
 		if (N_i_len < UFO_MIN_BIT_LENGTH) {
 			throw ZerocoinException("RSA UFO modulus is too small");
 		}
-		std::cout << "GNOSIS DEBUG: accumulator modulus " << ufoIndex << " is " << N_i_len
+		std::cout << "GNOSIS DEBUG: accumulator modulus " << i << " is " << N_i_len
 				  << " bits" <<  std::endl;
-		ufo_sum += r_ufos[ufoIndex];
+		ufo_sum += r_ufos[i];
 	}
 
 	// Calculate the required size of the field "F_p" into which
@@ -105,19 +105,19 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 	PRINT_GROUP_PARAMS(params.accumulatorParams.accumulatorPoKCommitmentGroup);
 
 	//TODO: ONE FOR EACH UFO
-	for (uint32_t ufoIndex = 0; ufoIndex < r_ufos.size(); ufoIndex++) {
+	for (uint32_t i = 0; i < r_ufos.size(); i++) {
 		// Calculate the parameters for the accumulator QRN commitment generators. This isn't really
 		// a whole group, just a pair of random generators in QR_N.
 		uint32_t resultCtr;
 		IntegerGroupParams accQRNGrp;
-		uint32_t N_i_len = r_ufos[ufoIndex].bitSize();
+		uint32_t N_i_len = r_ufos[i].bitSize();
 		accQRNGrp.g(generateIntegerFromSeed(N_i_len - 1,
 				calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPG),
-				&resultCtr).pow_mod(Bignum(2), r_ufos[ufoIndex]));
+				&resultCtr).pow_mod(Bignum(2), r_ufos[i]));
 		accQRNGrp.h(generateIntegerFromSeed(N_i_len - 1,
 				calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
-				&resultCtr).pow_mod(Bignum(2), r_ufos[ufoIndex]));
-		std::cout << "GNOSIS DEBUG: ufoIndex " << ufoIndex << " accumulator QR_N group setup:" << std::endl;
+				&resultCtr).pow_mod(Bignum(2), r_ufos[i]));
+		std::cout << "GNOSIS DEBUG: r_ufos[" << i << "] accumulator QR_N group setup:" << std::endl;
 		PRINT_BIGNUM("SHOULD BE DIFFERENT FROM OTHER G: accQRNGrp.g", accQRNGrp.g());    // probably fine
 		PRINT_BIGNUM("SHOULD BE DIFFERENT FROM OTHER H: accQRNGrp.h", accQRNGrp.h());
 
@@ -129,7 +129,7 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 		Bignum constant(ACCUMULATOR_BASE_CONSTANT);
 		Bignum accBase(1);
 		for (uint32_t count = 0; count < MAX_ACCUMGEN_ATTEMPTS && accBase.isOne(); count++) {
-			accBase = constant.pow_mod(Bignum(2), r_ufos[ufoIndex]);
+			accBase = constant.pow_mod(Bignum(2), r_ufos[i]);
 		}
 		if (!accBase.isOne()) {
 			throw ZerocoinException("failed to calculate accumulator base (max attempts)!");

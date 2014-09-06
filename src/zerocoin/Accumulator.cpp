@@ -58,8 +58,8 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 	double elapsed;
 	// Compute new accumulator = for each UFO N_i: "old accumulator_i"^{minted_coin} mod N_i
 	gettimeofday(&tv0, NULL);
-	for (uint32_t ufoIndex = 0; ufoIndex < UFO_COUNT; ufoIndex++) {
-		this->value[ufoIndex] = this->value[ufoIndex].pow_mod(coin.getValue(), this->params->accumulatorModuli[ufoIndex]);
+	for (uint32_t i = 0; i < UFO_COUNT; i++) {
+		this->value[i] = this->value[i].pow_mod(coin.getValue(), this->params->accumulatorModuli[i]);
 	}
 	gettimeofday(&tv1, NULL);
 	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
