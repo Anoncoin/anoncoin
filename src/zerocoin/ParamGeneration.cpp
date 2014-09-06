@@ -826,9 +826,9 @@ calculateUFOs(AccumulatorAndProofParams& out_accParams)
 
 	//out_accParams.accumulatorModuli
 	for (unsigned int ufoIndex = 0; out_accParams.accumulatorModuli.size() < UFO_COUNT; ufoIndex++) {
-		// 1. divide out the factors
-		//	  throw ZerocoinException if f_ufos too small
-		//	  throw ZerocoinException if not evenly divisible
+		// divide out the factors
+		// throw ZerocoinException if f_ufos too small
+		// throw ZerocoinException if not evenly divisible
 		if (f_ufos.size() - 1 < (unsigned long)ufoIndex) {
 			throw ZerocoinException("factor product not found");
 		}
@@ -840,14 +840,10 @@ calculateUFOs(AccumulatorAndProofParams& out_accParams)
 
 		u /= f_ufos[ufoIndex];
 
-		// 2. if prime, continue
-		if (u.isPrime()) continue;
-
-		// 3. if bits <90%, continue
-		if (u.bitSize() < UFO_MIN_BIT_LENGTH) continue;
-
-		// 4. push into accModuli
-		out_accParams.accumulatorModuli.push_back(u);
+		// push into accModuli
+		if (!u.isPrime() && u.bitSize() >= UFO_MIN_BIT_LENGTH) {
+			out_accParams.accumulatorModuli.push_back(u);
+		}
 	}
 }
 
