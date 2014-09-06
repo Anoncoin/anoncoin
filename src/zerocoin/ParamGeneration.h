@@ -15,7 +15,7 @@
 
 namespace libzerocoin {
 
-void CalculateParams(Params &params, Bignum N, std::string aux, uint32_t securityLevel);
+void CalculateParams(Params &params, std::string aux, uint32_t securityLevel);
 void calculateGroupParamLengths(uint32_t maxPLen, uint32_t securityLevel,
                                 uint32_t *pLen, uint32_t *qLen);
 
@@ -31,6 +31,10 @@ void calculateGroupParamLengths(uint32_t maxPLen, uint32_t securityLevel,
 #define MAX_ACCUMGEN_ATTEMPTS       10000
 #define MAX_GENERATOR_ATTEMPTS      10000
 #define NUM_SCHNORRGEN_ATTEMPTS     10000
+// RSA UFO-related constants below
+#define UFO_COUNT                   13
+#define UFO_MIN_BIT_LENGTH          3456
+#define UFO_INITIAL_BIT_LENGTH      3840
 
 // Prototypes
 bool                primalityTestByTrialDivision(uint32_t candidate);
@@ -51,6 +55,7 @@ Bignum              generateRandomPrime(uint32_t primeBitLen, uint256 in_seed, u
 Bignum              generateIntegerFromSeed(uint32_t numBits, uint256 seed, uint32_t *numIterations);
 bool                primalityTestByTrialDivision(uint32_t candidate);
 Bignum              calculateRawUFO(uint32_t ufoIndex, uint32_t numBits);
+void                calculateUFOs(AccumulatorAndProofParams& out_accParams);
 
 }/* namespace libzerocoin */
 

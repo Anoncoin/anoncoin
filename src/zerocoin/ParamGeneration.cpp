@@ -13,27 +13,7 @@
 #include <string>
 #include "../Zerocoin.h"
 
-using namespace std;
-
 namespace libzerocoin {
-
-/// \brief Fill in a set of Zerocoin parameters from a modulus "N".
-/// \param N                A trusted RSA modulus
-/// \param aux              An optional auxiliary string used in derivation
-/// \param securityLevel    A security level
-///
-/// \throws         ZerocoinException if the process fails
-///
-/// Fills in a ZC_Params data structure deterministically from
-/// a trustworthy RSA modulus "N", which is provided as a Bignum.
-///
-/// Note: this routine makes the fundamental assumption that "N"
-/// encodes a valid RSA-style modulus of the form "e1*e2" for some
-/// unknown safe primes "e1" and "e2". These factors must not
-/// be known to any party, or the security of Zerocoin is
-/// compromised. The integer "N" must be a MINIMUM of 1023
-/// in length, and 3072 bits is strongly recommended.
-///
 
 #define PRINT_BIGNUM(name, val)                                            \
 {                                                                          \
@@ -52,29 +32,52 @@ namespace libzerocoin {
   std::cout << std::endl;                                                  \
 }
 
+/// \brief Fill in a set of Zerocoin parameters deterministically.
+/// \param aux              An optional auxiliary string used in derivation
+/// \param securityLevel    A security level
+///
+/// \throws         ZerocoinException if the process fails
+///
+/// Fills in a ZC_Params data structure deterministically from
+/// the results of the RSA UFO project (2014-06-31 - 2014-09-15).
+
 void
-CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
+CalculateParams(Params &params, string aux, uint32_t securityLevel)
 {
 	std::cout << "GNOSIS DEBUG: CalculateParams in ParamGeneration.cpp" << std::endl;
 	params.initialized = false;
 	params.accumulatorParams.initialized = false;
-  cout << "GNOSIS DEBUG: aux is " << aux << endl;
-
-	// Verify that |N| is > 1023 bits.
-	uint32_t NLen = N.bitSize();
-  cout << "GNOSIS DEBUG: NLen is " << NLen << endl;
-	if (NLen < 1023) {
-		throw ZerocoinException("Modulus must be at least 1023 bits");
-	}
+	std::cout << "GNOSIS DEBUG: aux is " << aux << std::endl;
 
 	// Verify that "securityLevel" is  at least 80 bits (minimum).
 	if (securityLevel < 80) {
 		throw ZerocoinException("Security level must be at least 80 bits.");
 	}
-  cout << "GNOSIS DEBUG: securityLevel is " << securityLevel << endl;
+	std::cout << "GNOSIS DEBUG: securityLevel is " << securityLevel << std::endl;
+
+	// Calculate UFOs
+	calculateUFOs(params.accumulatorParams);
+
+	Bignum ufo_sum(0);
+	// Add the UFOs together for deterministically seeding everything else.
+	// This is kind of arbitrary, but I had to pick something...
+	vector<const Bignum>& r_ufos = params.accumulatorParams.accumulatorModuli;
+	for (vector<const Bignum>::const_iterator it = r_ufos.begin(); it < r_ufos.end(); it++) {
+		ufo_sum += *it;
+	}
+
+//TODO UFO
+#if 0      // GNOSIS COMMENTED OUT UNTIL FOREACH UFO IMPLEMENTED
+	// Verify that |N| is > 1023 bits.
+	uint32_t NLen = N.bitSize();
+	std::cout << "GNOSIS DEBUG: NLen is " << NLen << std::endl;
+	if (NLen < 1023) {
+		throw ZerocoinException("Modulus must be at least 1023 bits");
+	}
 
 	// Set the accumulator modulus to "N".
 	params.accumulatorParams.accumulatorModulus = N;
+#endif
 
 	// Calculate the required size of the field "F_p" into which
 	// we're embedding the coin commitment group. This may throw an
@@ -82,12 +85,12 @@ CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 	// by the current modulus.
 	uint32_t pLen = 0;
 	uint32_t qLen = 0;
-	calculateGroupParamLengths(NLen - 2, securityLevel, &pLen, &qLen);
+	calculateGroupParamLengths(2048, securityLevel, &pLen, &qLen);	// GNOSIS: replaced "NLen - 2" with 2048
 
 	// Calculate candidate parameters ("p", "q") for the coin commitment group
-	// using a deterministic process based on "N", the "aux" string, and
+	// using a deterministic process based on the RSA UFOs, the "aux" string, and
 	// the dedicated string "COMMITMENTGROUP".
-	params.coinCommitmentGroup = deriveIntegerGroupParams(calculateSeed(N, aux, securityLevel, STRING_COMMIT_GROUP),
+	params.coinCommitmentGroup = deriveIntegerGroupParams(calculateSeed(ufo_sum, aux, securityLevel, STRING_COMMIT_GROUP),
 	                             pLen, qLen);
 	// g and h are invalid, since they are now different for each coin; see
 	// "Rational Zero" by Garman et al., section 4.4.
@@ -104,27 +107,31 @@ CalculateParams(Params &params, Bignum N, string aux, uint32_t securityLevel)
 
 	// Calculate the parameters for the internal commitment
 	// using the same process.
-	params.accumulatorParams.accumulatorPoKCommitmentGroup = deriveIntegerGroupParams(calculateSeed(N, aux, securityLevel, STRING_AIC_GROUP),
+	params.accumulatorParams.accumulatorPoKCommitmentGroup = deriveIntegerGroupParams(calculateSeed(ufo_sum, aux, securityLevel, STRING_AIC_GROUP),
 	        qLen + 300, qLen + 1);
 	PRINT_GROUP_PARAMS(params.accumulatorParams.accumulatorPoKCommitmentGroup);
 
+//TODO: ONE FOR EACH UFO (commented out until fixed)
+#if 0
 	// Calculate the parameters for the accumulator QRN commitment generators. This isn't really
 	// a whole group, just a pair of random generators in QR_N.
 	uint32_t resultCtr;
 	params.accumulatorParams.accumulatorQRNCommitmentGroup.g(generateIntegerFromSeed(NLen - 1,
-	        calculateSeed(N, aux, securityLevel, STRING_QRNCOMMIT_GROUPG),
+	        calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPG),
 	        &resultCtr).pow_mod(Bignum(2), N));
 	params.accumulatorParams.accumulatorQRNCommitmentGroup.h(generateIntegerFromSeed(NLen - 1,
-	        calculateSeed(N, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
+	        calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
 	        &resultCtr).pow_mod(Bignum(2), N));
 	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.g", params.accumulatorParams.accumulatorQRNCommitmentGroup.g());
 	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.h", params.accumulatorParams.accumulatorQRNCommitmentGroup.h());
+#endif
 
 	// Calculate the accumulator base, which we calculate as "u = C**2 mod N"
 	// where C is an arbitrary value. In the unlikely case that "u = 1" we increment
 	// "C" and repeat.
 	Bignum constant(ACCUMULATOR_BASE_CONSTANT);
-	params.accumulatorParams.accumulatorBase = Bignum(1);
+	params.accumulatorParams.accumulatorBase = Bignum(1);	// TODO: ONE FOR EACH UFO
+	// TODO: ONE FOR EACH UFO
 	for (uint32_t count = 0; count < MAX_ACCUMGEN_ATTEMPTS && params.accumulatorParams.accumulatorBase.isOne(); count++) {
 		params.accumulatorParams.accumulatorBase = constant.pow_mod(Bignum(2), params.accumulatorParams.accumulatorModulus);
 	}
@@ -250,6 +257,8 @@ calculateHash(uint256 input)
 ///
 /// If the length of "p" exceeds the length provided in "maxPLen", or
 /// if "securityLevel < 80" this routine throws an exception.
+
+// GNOSIS: now that we have RSA UFOs, this function is not important.
 
 void
 calculateGroupParamLengths(uint32_t maxPLen, uint32_t securityLevel,
@@ -411,7 +420,7 @@ calculateGroupModulusAndOrder(uint256 seed, uint32_t pLen, uint32_t qLen,
 	}
 
 #ifdef ZEROCOIN_DEBUG
-	cout << "calculateGroupModulusAndOrder: pLen = " << pLen << endl;
+	std::cout << "calculateGroupModulusAndOrder: pLen = " << pLen << std::endl;
 #endif
 
 	// Generate a random prime for the group order.
@@ -598,8 +607,8 @@ generateRandomPrime(uint32_t primeBitLen, uint256 in_seed, uint256 *out_seed,
 			uint32_t iteration_count;
 			Bignum c = generateIntegerFromSeed(primeBitLen, prime_seed, &iteration_count);
 #ifdef ZEROCOIN_DEBUG
-			cout << "generateRandomPrime: primeBitLen = " << primeBitLen << endl;
-			cout << "Generated c = " << c << endl;
+			std::cout << "generateRandomPrime: primeBitLen = " << primeBitLen << std::endl;
+			std::cout << "Generated c = " << c << std::endl;
 #endif
 
 			prime_seed += (iteration_count + 1);
@@ -609,8 +618,8 @@ generateRandomPrime(uint32_t primeBitLen, uint256 in_seed, uint256 *out_seed,
 			uint32_t intc = c.getulong();
 			intc = (2 * floor(intc / 2.0)) + 1;
 #ifdef ZEROCOIN_DEBUG
-			cout << "Should be odd. c = " << intc << endl;
-			cout << "The big num is: c = " << c << endl;
+			std::cout << "Should be odd. c = " << intc << std::endl;
+			std::cout << "The big num is: c = " << c << std::endl;
 #endif
 
 			// Perform trial division on this (relatively small) integer to determine if "intc"
@@ -698,8 +707,8 @@ generateIntegerFromSeed(uint32_t numBits, uint256 seed, uint32_t *numIterations)
 	uint32_t    iterations = ceil((double)numBits / (double)HASH_OUTPUT_BITS);
 
 #ifdef ZEROCOIN_DEBUG
-	cout << "numBits = " << numBits << endl;
-	cout << "iterations = " << iterations << endl;
+	std::cout << "numBits = " << numBits << std::endl;
+	std::cout << "iterations = " << iterations << std::endl;
 #endif
 
 	// Loop "iterations" times filling up the value "result" with random bits
@@ -767,6 +776,78 @@ calculateRawUFO(uint32_t ufoIndex, uint32_t numBits) {
 	}
 
 	return result;
+}
+
+//
+void
+calculateUFOs(AccumulatorAndProofParams& out_accParams)
+{
+	//TODO: refactor this and chain of callers to allow supplying of new factors from outside libzerocoin
+	vector<const Bignum> f_ufos;
+
+	// These are the products of the known RSA UFO factors. The factors
+	// themselves can be recovered in minutes using the msieve program.
+	
+	Bignum tmp;
+
+	tmp.SetHex("138b1bb66beb5");
+	f_ufos.push_back(tmp); // ufoIndex 0
+	tmp.SetHex("705b7363063e8ec4304d7c93c60685");
+	f_ufos.push_back(tmp); // ufoIndex 1
+	tmp.SetHex("1161f7fee1c13ef659dec7078ad");
+	f_ufos.push_back(tmp); // ufoIndex 2
+	tmp.SetHex("21dccb848ed9a2d191fd48a2766509f852e6f54fd");
+	f_ufos.push_back(tmp); // ufoIndex 3
+	tmp.SetHex("b1acbba887");
+	f_ufos.push_back(tmp); // ufoIndex 4
+	tmp.SetHex("65bd9c8b14ab1b5032");
+	f_ufos.push_back(tmp); // ufoIndex 5
+	tmp.SetHex("2e29e0c390");
+	f_ufos.push_back(tmp); // ufoIndex 6
+	tmp.SetHex("12a672f13277467c915630167075b56a420430cae6a");
+	f_ufos.push_back(tmp); // ufoIndex 7
+	tmp.SetHex("f0cfe54b22265234827f0397e9d88f2a2b8ca2be5cec7c51d4");
+	f_ufos.push_back(tmp); // ufoIndex 8
+	tmp.SetHex("9bc2b1d6970d5726e9e930ad7b62fb9bfce5149fde6");
+	f_ufos.push_back(tmp); // ufoIndex 9
+	tmp.SetHex("91b4b08ddf306ff2fce4");
+	f_ufos.push_back(tmp); // ufoIndex 10
+	tmp.SetHex("4cf7b332c2a4edbbc4617e9c20ce47859674ab4727e386059ee03ac");
+	f_ufos.push_back(tmp); // ufoIndex 11
+	tmp.SetHex("b37af95a3b722da08af71fc3c6725d064");
+	f_ufos.push_back(tmp); // ufoIndex 12
+	tmp.SetHex("28aac40f4cbd78ff9372718d4e12eecb4b543284744be3afa31d63fc55a47bf9d2aba2362582963e7c3ce8c0e06fc9f2c7b82e992b37be83e52be6ab6afe71");
+	f_ufos.push_back(tmp); // ufoIndex 13
+	tmp.SetHex("131411f01b");
+	f_ufos.push_back(tmp); // ufoIndex 14
+	tmp.SetHex("c29236dfc030d03e4d50a4116994213dab7b5e1cf27d1cfb43e35893ca3e6379444f99bee0720d928ac");
+	f_ufos.push_back(tmp); // ufoIndex 15
+
+	//out_accParams.accumulatorModuli
+	for (int ufoIndex = 0; out_accParams.accumulatorModuli.size() < UFO_COUNT; ufoIndex++) {
+		// 1. divide out the factors
+		//	  throw ZerocoinException if f_ufos too small
+		//	  throw ZerocoinException if not evenly divisible
+		if (f_ufos.size() - 1 < ufoIndex) {
+			throw ZerocoinException("factor product not found");
+		}
+
+		Bignum u = calculateRawUFO(ufoIndex, UFO_INITIAL_BIT_LENGTH);
+		if (u % f_ufos[ufoIndex] != 0) {
+			throw ZerocoinException("FATAL: factor product is not divisible into raw UFO!!!");
+		}
+
+		u /= f_ufos[ufoIndex];
+
+		// 2. if prime, continue
+		if (u.isPrime()) continue;
+
+		// 3. if bits <90%, continue
+		if (u.bitSize() < UFO_MIN_BIT_LENGTH) continue;
+
+		// 4. push into accModuli
+		out_accParams.accumulatorModuli.push_back(u);
+	}
 }
 
 } // namespace libzerocoin

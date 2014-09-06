@@ -22,7 +22,7 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 	params(p),
 	denomination(coin.getPublicCoin().getDenomination()),
 	coinSerialNumber((coin.getSerialNumber())),
-	accumulatorPoK(&p->accumulatorParams),
+	accumulatorPoK(&p->accumulatorParams),				// TODO: ONE FOR EACH UFO
 	serialNumberSoK(p),
 	commitmentPoK(&p->serialNumberSoKCommitmentGroup, &p->accumulatorParams.accumulatorPoKCommitmentGroup) {
 
@@ -85,6 +85,7 @@ CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
 	cout << "GNOSIS DEBUG: cPoK time: " << elapsed << endl;
 
+	// TODO: ONE FOR EACH UFO (FOREACH AccPoKSingleModulus)
 	bool result_accPoK = accumulatorPoK.Verify(a, accCommitmentToCoinValue);
 	tv0 = tv1;
 	gettimeofday(&tv1, NULL);
@@ -107,7 +108,7 @@ CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 
 const uint256 CoinSpend::signatureHash(const SpendMetaData &m) const {
 	CHashWriter h(0,0);
-	h << m << serialCommitmentToCoinValue << accCommitmentToCoinValue << commitmentPoK << accumulatorPoK;
+	h << m << serialCommitmentToCoinValue << accCommitmentToCoinValue << commitmentPoK << accumulatorPoK;  // TODO: ONE FOR EACH UFO
 	return h.GetHash();
 }
 
