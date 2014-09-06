@@ -293,7 +293,7 @@ calculateGroupParamLengths(uint32_t maxPLen, uint32_t securityLevel,
 /// \return         An IntegerGroupParams object
 ///
 /// Calculates the description of a group G of prime order "q" embedded within
-/// a field "F_p". The input to this routine is in arbitrary seed. It uses the
+/// a field "F_p". The input to this routine is an arbitrary seed. It uses the
 /// algorithms described in FIPS 186-3 Appendix A.1.2 to calculate
 /// primes "p" and "q". It uses the procedure in Appendix A.2.3 to
 /// derive two generators "g", "h".
