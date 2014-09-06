@@ -47,8 +47,6 @@ public:
 	 **/
 	Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d);
 
-	Accumulator(const Params* p, const CoinDenomination d);
-
 	/**
 	 * Accumulate a coin into the accumulator. Validates
 	 * the coin prior to accumulation.
@@ -65,7 +63,7 @@ public:
 	 *
 	 * @return a Bignum containing the result.
 	 */
-	Bignum getValue() const;
+	std::vector<Bignum> getValue() const;
 
 
 	// /**
@@ -92,7 +90,7 @@ public:
 	)
 private:
 	const AccumulatorAndProofParams* params;
-	Bignum value;
+	std::vector<Bignum> value;
 	CoinDenomination denomination;
 };
 
@@ -123,7 +121,7 @@ public:
 	 *
 	 * @return the value of the witness
 	 */
-	Bignum getValue() const;
+	std::vector<Bignum> getValue() const;
 
 	/** Checks that this is a witness to the accumulation of coin
 	 * @param a             the accumulator we are checking against.
