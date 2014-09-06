@@ -59,25 +59,18 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 	calculateUFOs(params.accumulatorParams);
 
 	Bignum ufo_sum(0);
-	// Add the UFOs together for deterministically seeding everything else.
+	// Add the UFOs together for deterministically seeding all other parameters.
 	// This is kind of arbitrary, but I had to pick something...
 	vector<const Bignum>& r_ufos = params.accumulatorParams.accumulatorModuli;
-	for (vector<const Bignum>::const_iterator it = r_ufos.begin(); it < r_ufos.end(); it++) {
-		ufo_sum += *it;
+	for (uint32_t ufoIndex = 0; ufoIndex < r_ufos.size(); ufoIndex++) {
+		uint32_t N_i_len = r_ufos[ufoIndex].bitSize();
+		if (N_i_len < UFO_MIN_BIT_LENGTH) {
+			throw ZerocoinException("RSA UFO modulus is too small");
+		}
+		std::cout << "GNOSIS DEBUG: accumulator modulus " << ufoIndex << " is " << N_i_len
+				  << " bits" <<  std::endl;
+		ufo_sum += r_ufos[ufoIndex];
 	}
-
-//TODO UFO
-#if 0      // GNOSIS COMMENTED OUT UNTIL FOREACH UFO IMPLEMENTED
-	// Verify that |N| is > 1023 bits.
-	uint32_t NLen = N.bitSize();
-	std::cout << "GNOSIS DEBUG: NLen is " << NLen << std::endl;
-	if (NLen < 1023) {
-		throw ZerocoinException("Modulus must be at least 1023 bits");
-	}
-
-	// Set the accumulator modulus to "N".
-	params.accumulatorParams.accumulatorModulus = N;
-#endif
 
 	// Calculate the required size of the field "F_p" into which
 	// we're embedding the coin commitment group. This may throw an
@@ -111,29 +104,37 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 	        qLen + 300, qLen + 1);
 	PRINT_GROUP_PARAMS(params.accumulatorParams.accumulatorPoKCommitmentGroup);
 
-//TODO: ONE FOR EACH UFO (commented out until fixed)
-#if 0
-	// Calculate the parameters for the accumulator QRN commitment generators. This isn't really
-	// a whole group, just a pair of random generators in QR_N.
-	uint32_t resultCtr;
-	params.accumulatorParams.accumulatorQRNCommitmentGroup.g(generateIntegerFromSeed(NLen - 1,
-	        calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPG),
-	        &resultCtr).pow_mod(Bignum(2), N));
-	params.accumulatorParams.accumulatorQRNCommitmentGroup.h(generateIntegerFromSeed(NLen - 1,
-	        calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
-	        &resultCtr).pow_mod(Bignum(2), N));
-	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.g", params.accumulatorParams.accumulatorQRNCommitmentGroup.g());
-	PRINT_BIGNUM("params.accumulatorParams.accumulatorQRNCommitmentGroup.h", params.accumulatorParams.accumulatorQRNCommitmentGroup.h());
-#endif
+	//TODO: ONE FOR EACH UFO
+	for (uint32_t ufoIndex = 0; ufoIndex < r_ufos.size(); ufoIndex++) {
+		// Calculate the parameters for the accumulator QRN commitment generators. This isn't really
+		// a whole group, just a pair of random generators in QR_N.
+		uint32_t resultCtr;
+		IntegerGroupParams accQRNGrp;
+		uint32_t N_i_len = r_ufos[ufoIndex].bitSize();
+		accQRNGrp.g(generateIntegerFromSeed(N_i_len - 1,
+				calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPG),
+				&resultCtr).pow_mod(Bignum(2), r_ufos[ufoIndex]));
+		accQRNGrp.h(generateIntegerFromSeed(N_i_len - 1,
+				calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
+				&resultCtr).pow_mod(Bignum(2), r_ufos[ufoIndex]));
+		std::cout << "GNOSIS DEBUG: ufoIndex " << ufoIndex << " accumulator QR_N group setup:" << std::endl;
+		PRINT_BIGNUM("SHOULD BE DIFFERENT FROM OTHER G: accQRNGrp.g", accQRNGrp.g());    // probably fine
+		PRINT_BIGNUM("SHOULD BE DIFFERENT FROM OTHER H: accQRNGrp.h", accQRNGrp.h());
 
-	// Calculate the accumulator base, which we calculate as "u = C**2 mod N"
-	// where C is an arbitrary value. In the unlikely case that "u = 1" we increment
-	// "C" and repeat.
-	Bignum constant(ACCUMULATOR_BASE_CONSTANT);
-	params.accumulatorParams.accumulatorBase = Bignum(1);	// TODO: ONE FOR EACH UFO
-	// TODO: ONE FOR EACH UFO
-	for (uint32_t count = 0; count < MAX_ACCUMGEN_ATTEMPTS && params.accumulatorParams.accumulatorBase.isOne(); count++) {
-		params.accumulatorParams.accumulatorBase = constant.pow_mod(Bignum(2), params.accumulatorParams.accumulatorModulus);
+		params.accumulatorParams.accumulatorQRNCommitmentGroups.push_back(accQRNGrp);
+
+		// Calculate the accumulator base, which we calculate as "u = C**2 mod N"
+		// where C is an arbitrary value. In the unlikely case that "u = 1" we increment
+		// "C" and repeat.
+		Bignum constant(ACCUMULATOR_BASE_CONSTANT);
+		Bignum accBase(1);
+		for (uint32_t count = 0; count < MAX_ACCUMGEN_ATTEMPTS && accBase.isOne(); count++) {
+			accBase = constant.pow_mod(Bignum(2), r_ufos[ufoIndex]);
+		}
+		if (!accBase.isOne()) {
+			throw ZerocoinException("failed to calculate accumulator base (max attempts)!");
+		}
+		params.accumulatorParams.accumulatorBases.push_back(accBase);
 	}
 
 	// Compute the accumulator range. The upper range is the largest possible coin commitment value.
@@ -778,7 +779,7 @@ calculateRawUFO(uint32_t ufoIndex, uint32_t numBits) {
 	return result;
 }
 
-//
+/// \throws         ZerocoinException if the process fails
 void
 calculateUFOs(AccumulatorAndProofParams& out_accParams)
 {
@@ -824,11 +825,11 @@ calculateUFOs(AccumulatorAndProofParams& out_accParams)
 	f_ufos.push_back(tmp); // ufoIndex 15
 
 	//out_accParams.accumulatorModuli
-	for (int ufoIndex = 0; out_accParams.accumulatorModuli.size() < UFO_COUNT; ufoIndex++) {
+	for (unsigned int ufoIndex = 0; out_accParams.accumulatorModuli.size() < UFO_COUNT; ufoIndex++) {
 		// 1. divide out the factors
 		//	  throw ZerocoinException if f_ufos too small
 		//	  throw ZerocoinException if not evenly divisible
-		if (f_ufos.size() - 1 < ufoIndex) {
+		if (f_ufos.size() - 1 < (unsigned long)ufoIndex) {
 			throw ZerocoinException("factor product not found");
 		}
 
