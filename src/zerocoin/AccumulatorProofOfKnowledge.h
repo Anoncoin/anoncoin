@@ -97,7 +97,7 @@ class AccumulatorProofSet {
 public:
 	AccumulatorProofSet(const AccumulatorAndProofParams* p);
 	AccumulatorProofSet(const AccumulatorAndProofParams* p, const Commitment& commitmentToCoin, const AccumulatorWitness& witness, Accumulator& a);
-	bool Verify(const Accumulator& a,const Bignum& valueOfCommitmentToCoin) const;
+	bool Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin) const;
 private:
 	std::vector<AccumulatorProofOfKnowledge> accPoKs;
 	bool initialized;

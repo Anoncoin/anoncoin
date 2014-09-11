@@ -166,6 +166,17 @@ AccumulatorProofSet::AccumulatorProofSet(const AccumulatorAndProofParams* p,
 	}
 }
 
+bool AccumulatorProofSet::Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin) const
+{
+	// GNOSIS TODO: PARALLELIZE!
+	for (unsigned int mIdx = 0; mIdx < UFO_COUNT; mIdx++) {
+		if (!accPoKs.at(mIdx).Verify(a, valueOfCommitmentToCoin, mIdx))
+			return false;
+	}
+
+	return true;
+}
+
 
 
 } /* namespace libzerocoin */
