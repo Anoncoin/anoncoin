@@ -61,7 +61,7 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 	Bignum ufo_sum(0);
 	// Add the UFOs together for deterministically seeding all other parameters.
 	// This is kind of arbitrary, but I had to pick something...
-	vector<const Bignum>& r_ufos = params.accumulatorParams.accumulatorModuli;
+	vector<Bignum>& r_ufos = params.accumulatorParams.accumulatorModuli;
 	for (uint32_t i = 0; i < r_ufos.size(); i++) {
 		uint32_t N_i_len = r_ufos[i].bitSize();
 		if (N_i_len < UFO_MIN_BIT_LENGTH) {
@@ -784,7 +784,7 @@ void
 calculateUFOs(AccumulatorAndProofParams& out_accParams)
 {
 	//TODO: refactor this and chain of callers to allow supplying of new factors from outside libzerocoin
-	vector<const Bignum> f_ufos;
+	vector<Bignum> f_ufos;
 
 	// These are the products of the known RSA UFO factors. The factors
 	// themselves can be recovered in minutes using the msieve program.

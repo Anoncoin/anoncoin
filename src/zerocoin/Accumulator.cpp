@@ -25,7 +25,7 @@ Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenominat
 
 	// copy in the accumulator bases
 	//TODO: make this less fucking verbose... BOOST_FOREACH?
-	for (std::vector<const Bignum>::const_iterator it = this->params->accumulatorBases.begin(); it < this->params->accumulatorBases.end(); it++) {
+	for (std::vector<Bignum>::const_iterator it = this->params->accumulatorBases.begin(); it < this->params->accumulatorBases.end(); it++) {
 		this->value.push_back(*it);
 	}
 
