@@ -151,7 +151,7 @@ public:
 	 * Hidden order quadratic residue groups mod N_i.
 	 * Used in the accumulator proofs.
 	 */
-	std::vector<const IntegerGroupParams> accumulatorQRNCommitmentGroups;
+	std::vector<IntegerGroupParams> accumulatorQRNCommitmentGroups;
 
 	/**
 	 * Security parameter.
