@@ -58,8 +58,8 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 	double elapsed;
 	// Compute new accumulator = for each UFO N_i: "old accumulator_i"^{minted_coin} mod N_i
 	gettimeofday(&tv0, NULL);
-	for (uint32_t i = 0; i < UFO_COUNT; i++) {
-		this->value[i] = this->value[i].pow_mod(coin.getValue(), this->params->accumulatorModuli[i]);
+	for (uint32_t i = 0; i < this->value.size(); i++) {
+		this->value[i] = this->value[i].pow_mod(coin.getValue(), this->params->accumulatorModuli.at(i));
 	}
 	gettimeofday(&tv1, NULL);
 	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
@@ -73,6 +73,10 @@ CoinDenomination Accumulator::getDenomination() const {
 
 std::vector<Bignum> Accumulator::getValue() const {
 	return this->value;
+}
+
+Bignum Accumulator::getValue(unsigned int modulusIdx) const {
+	return this->value.at(modulusIdx);
 }
 
 Accumulator& Accumulator::operator += (const PublicCoin& c) {
@@ -97,6 +101,10 @@ void AccumulatorWitness::addElement(const PublicCoin& c) {
 
 std::vector<Bignum> AccumulatorWitness::getValue() const {
 	return this->witness.getValue();
+}
+
+Bignum AccumulatorWitness::getValue(unsigned int modulusIdx) const {
+	return this->witness.getValue(modulusIdx);
 }
 
 bool AccumulatorWitness::verifyWitness(const Accumulator& a, const PublicCoin &publicCoin) const {

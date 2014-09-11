@@ -35,7 +35,7 @@ class CoinSpend {
 public:
 	template<typename Stream>
 	CoinSpend(const Params* p,  Stream& strm):
-		accumulatorPoK(&p->accumulatorParams),
+		accumulatorPoKset(&p->accumulatorParams),
 		serialNumberSoK(p),
 		commitmentPoK(&p->serialNumberSoKCommitmentGroup, &p->accumulatorParams.accumulatorPoKCommitmentGroup) {
 		strm >> *this;
@@ -86,7 +86,7 @@ public:
 	    READWRITE(accCommitmentToCoinValue);
 	    READWRITE(serialCommitmentToCoinValue);
 	    READWRITE(coinSerialNumber);
-	    READWRITE(accumulatorPoK);
+	    READWRITE(accumulatorPoKset);
 	    READWRITE(serialNumberSoK);
 	    READWRITE(commitmentPoK);
 	)
@@ -98,7 +98,7 @@ private:
 	Bignum accCommitmentToCoinValue;
 	Bignum serialCommitmentToCoinValue;
 	Bignum coinSerialNumber;
-	AccumulatorProofOfKnowledge accumulatorPoK;    // TODO: ONE FOR EACH UFO
+	AccumulatorProofSet accumulatorPoKset;
 	SerialNumberSignatureOfKnowledge serialNumberSoK;
 	CommitmentProofOfKnowledge commitmentPoK;
 };

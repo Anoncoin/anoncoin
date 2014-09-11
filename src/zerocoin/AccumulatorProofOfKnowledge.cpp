@@ -14,28 +14,30 @@
 
 namespace libzerocoin {
 
-AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p): params(p) {}
+AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p): params(p), initialized(false) {}
 
 AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p,
         const Commitment& commitmentToCoin, const AccumulatorWitness& witness,
-        Accumulator& a): params(p) {
+        Accumulator& a, unsigned int mIdx): params(p), initialized(false) {
 
 	Bignum sg = params->accumulatorPoKCommitmentGroup.g();
 	Bignum sh = params->accumulatorPoKCommitmentGroup.h();
 
-	Bignum g_n = params->accumulatorQRNCommitmentGroup.g();
-	Bignum h_n = params->accumulatorQRNCommitmentGroup.h();
+	Bignum g_n = params->accumulatorQRNCommitmentGroups.at(mIdx).g();
+	Bignum h_n = params->accumulatorQRNCommitmentGroups.at(mIdx).h();
 
 	Bignum e = commitmentToCoin.getContents();
 	Bignum r = commitmentToCoin.getRandomness();
 
-	Bignum r_1 = Bignum::randBignum(params->accumulatorModulus/4);
-	Bignum r_2 = Bignum::randBignum(params->accumulatorModulus/4);
-	Bignum r_3 = Bignum::randBignum(params->accumulatorModulus/4);
+	const Bignum& N = params->accumulatorModuli.at(mIdx);
 
-	this->C_e = g_n.pow_mod(e, params->accumulatorModulus) * h_n.pow_mod(r_1, params->accumulatorModulus);
-	this->C_u = witness.getValue() * h_n.pow_mod(r_2, params->accumulatorModulus);
-	this->C_r = g_n.pow_mod(r_2, params->accumulatorModulus) * h_n.pow_mod(r_3, params->accumulatorModulus);
+	Bignum r_1 = Bignum::randBignum(N/4);
+	Bignum r_2 = Bignum::randBignum(N/4);
+	Bignum r_3 = Bignum::randBignum(N/4);
+
+	this->C_e = g_n.pow_mod(e, N) * h_n.pow_mod(r_1, N);
+	this->C_u = witness.getValue(mIdx) * h_n.pow_mod(r_2, N);
+	this->C_r = g_n.pow_mod(r_2, N) * h_n.pow_mod(r_3, N);
 
 	Bignum r_alpha = Bignum::randBignum(params->maxCoinValue * Bignum(2).pow(params->k_prime + params->k_dprime));
 	if(!(Bignum::randBignum(Bignum(3)) % 2)) {
@@ -48,24 +50,24 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
 	Bignum r_sigma = Bignum::randBignum(params->accumulatorPoKCommitmentGroup.modulus);
 	Bignum r_xi = Bignum::randBignum(params->accumulatorPoKCommitmentGroup.modulus);
 
-	Bignum r_epsilon =  Bignum::randBignum((params->accumulatorModulus/4) * Bignum(2).pow(params->k_prime + params->k_dprime));
+	Bignum r_epsilon =  Bignum::randBignum((N/4) * Bignum(2).pow(params->k_prime + params->k_dprime));
 	if(!(Bignum::randBignum(Bignum(3)) % 2)) {
 		r_epsilon = 0-r_epsilon;
 	}
-	Bignum r_eta = Bignum::randBignum((params->accumulatorModulus/4) * Bignum(2).pow(params->k_prime + params->k_dprime));
+	Bignum r_eta = Bignum::randBignum((N/4) * Bignum(2).pow(params->k_prime + params->k_dprime));
 	if(!(Bignum::randBignum(Bignum(3)) % 2)) {
 		r_eta = 0-r_eta;
 	}
-	Bignum r_zeta = Bignum::randBignum((params->accumulatorModulus/4) * Bignum(2).pow(params->k_prime + params->k_dprime));
+	Bignum r_zeta = Bignum::randBignum((N/4) * Bignum(2).pow(params->k_prime + params->k_dprime));
 	if(!(Bignum::randBignum(Bignum(3)) % 2)) {
 		r_zeta = 0-r_zeta;
 	}
 
-	Bignum r_beta = Bignum::randBignum((params->accumulatorModulus/4) * params->accumulatorPoKCommitmentGroup.modulus * Bignum(2).pow(params->k_prime + params->k_dprime));
+	Bignum r_beta = Bignum::randBignum((N/4) * params->accumulatorPoKCommitmentGroup.modulus * Bignum(2).pow(params->k_prime + params->k_dprime));
 	if(!(Bignum::randBignum(Bignum(3)) % 2)) {
 		r_beta = 0-r_beta;
 	}
-	Bignum r_delta = Bignum::randBignum((params->accumulatorModulus/4) * params->accumulatorPoKCommitmentGroup.modulus * Bignum(2).pow(params->k_prime + params->k_dprime));
+	Bignum r_delta = Bignum::randBignum((N/4) * params->accumulatorPoKCommitmentGroup.modulus * Bignum(2).pow(params->k_prime + params->k_dprime));
 	if(!(Bignum::randBignum(Bignum(3)) % 2)) {
 		r_delta = 0-r_delta;
 	}
@@ -74,10 +76,10 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
 	this->st_2 = (((commitmentToCoin.getCommitmentValue() * sg.inverse(params->accumulatorPoKCommitmentGroup.modulus)).pow_mod(r_gamma, params->accumulatorPoKCommitmentGroup.modulus)) * sh.pow_mod(r_psi, params->accumulatorPoKCommitmentGroup.modulus)) % params->accumulatorPoKCommitmentGroup.modulus;
 	this->st_3 = ((sg * commitmentToCoin.getCommitmentValue()).pow_mod(r_sigma, params->accumulatorPoKCommitmentGroup.modulus) * sh.pow_mod(r_xi, params->accumulatorPoKCommitmentGroup.modulus)) % params->accumulatorPoKCommitmentGroup.modulus;
 
-	this->t_1 = (h_n.pow_mod(r_zeta, params->accumulatorModulus) * g_n.pow_mod(r_epsilon, params->accumulatorModulus)) % params->accumulatorModulus;
-	this->t_2 = (h_n.pow_mod(r_eta, params->accumulatorModulus) * g_n.pow_mod(r_alpha, params->accumulatorModulus)) % params->accumulatorModulus;
-	this->t_3 = (C_u.pow_mod(r_alpha, params->accumulatorModulus) * ((h_n.inverse(params->accumulatorModulus)).pow_mod(r_beta, params->accumulatorModulus))) % params->accumulatorModulus;
-	this->t_4 = (C_r.pow_mod(r_alpha, params->accumulatorModulus) * ((h_n.inverse(params->accumulatorModulus)).pow_mod(r_delta, params->accumulatorModulus)) * ((g_n.inverse(params->accumulatorModulus)).pow_mod(r_beta, params->accumulatorModulus))) % params->accumulatorModulus;
+	this->t_1 = (h_n.pow_mod(r_zeta, N) * g_n.pow_mod(r_epsilon, N)) % N;
+	this->t_2 = (h_n.pow_mod(r_eta, N) * g_n.pow_mod(r_alpha, N)) % N;
+	this->t_3 = (C_u.pow_mod(r_alpha, N) * ((h_n.inverse(N)).pow_mod(r_beta, N))) % N;
+	this->t_4 = (C_r.pow_mod(r_alpha, N) * ((h_n.inverse(N)).pow_mod(r_delta, N)) * ((g_n.inverse(N)).pow_mod(r_beta, N))) % N;
 
 	CHashWriter hasher(0,0);
 	hasher << *params << sg << sh << g_n << h_n << commitmentToCoin.getCommitmentValue() << C_e << C_u << C_r << st_1 << st_2 << st_3 << t_1 << t_2 << t_3 << t_4;
@@ -96,16 +98,24 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
 	this->s_phi = (r_phi - c*r) % params->accumulatorPoKCommitmentGroup.groupOrder;
 	this->s_gamma = r_gamma - c*((e-1).inverse(params->accumulatorPoKCommitmentGroup.groupOrder));
 	this->s_psi = r_psi + c*r*((e-1).inverse(params->accumulatorPoKCommitmentGroup.groupOrder));
+
+	this->initialized = true;
 }
 
 /** Verifies that a commitment c is accumulated in accumulator a
  */
-bool AccumulatorProofOfKnowledge:: Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin) const {
+bool AccumulatorProofOfKnowledge:: Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin, unsigned int mIdx) const {
+	if (!this->initialized) {
+		throw ZerocoinException("AccumulatorProofOfKnowledge is not initialized");
+	}
+
+	const Bignum& N = params->accumulatorModuli.at(mIdx);
+
 	Bignum sg = params->accumulatorPoKCommitmentGroup.g();
 	Bignum sh = params->accumulatorPoKCommitmentGroup.h();
 
-	Bignum g_n = params->accumulatorQRNCommitmentGroup.g();
-	Bignum h_n = params->accumulatorQRNCommitmentGroup.h();
+	Bignum g_n = params->accumulatorQRNCommitmentGroups.at(mIdx).g();
+	Bignum h_n = params->accumulatorQRNCommitmentGroups.at(mIdx).h();
 
 	//According to the proof, this hash should be of length k_prime bits.  It is currently greater than that, which should not be a problem, but we should check this.
 	CHashWriter hasher(0,0);
@@ -117,10 +127,10 @@ bool AccumulatorProofOfKnowledge:: Verify(const Accumulator& a, const Bignum& va
 	Bignum st_2_prime = (sg.pow_mod(c, params->accumulatorPoKCommitmentGroup.modulus) * ((valueOfCommitmentToCoin * sg.inverse(params->accumulatorPoKCommitmentGroup.modulus)).pow_mod(s_gamma, params->accumulatorPoKCommitmentGroup.modulus)) * sh.pow_mod(s_psi, params->accumulatorPoKCommitmentGroup.modulus)) % params->accumulatorPoKCommitmentGroup.modulus;
 	Bignum st_3_prime = (sg.pow_mod(c, params->accumulatorPoKCommitmentGroup.modulus) * (sg * valueOfCommitmentToCoin).pow_mod(s_sigma, params->accumulatorPoKCommitmentGroup.modulus) * sh.pow_mod(s_xi, params->accumulatorPoKCommitmentGroup.modulus)) % params->accumulatorPoKCommitmentGroup.modulus;
 
-	Bignum t_1_prime = (C_r.pow_mod(c, params->accumulatorModulus) * h_n.pow_mod(s_zeta, params->accumulatorModulus) * g_n.pow_mod(s_epsilon, params->accumulatorModulus)) % params->accumulatorModulus;
-	Bignum t_2_prime = (C_e.pow_mod(c, params->accumulatorModulus) * h_n.pow_mod(s_eta, params->accumulatorModulus) * g_n.pow_mod(s_alpha, params->accumulatorModulus)) % params->accumulatorModulus;
-	Bignum t_3_prime = ((a.getValue()).pow_mod(c, params->accumulatorModulus) * C_u.pow_mod(s_alpha, params->accumulatorModulus) * ((h_n.inverse(params->accumulatorModulus)).pow_mod(s_beta, params->accumulatorModulus))) % params->accumulatorModulus;
-	Bignum t_4_prime = (C_r.pow_mod(s_alpha, params->accumulatorModulus) * ((h_n.inverse(params->accumulatorModulus)).pow_mod(s_delta, params->accumulatorModulus)) * ((g_n.inverse(params->accumulatorModulus)).pow_mod(s_beta, params->accumulatorModulus))) % params->accumulatorModulus;
+	Bignum t_1_prime = (C_r.pow_mod(c, N) * h_n.pow_mod(s_zeta, N) * g_n.pow_mod(s_epsilon, N)) % N;
+	Bignum t_2_prime = (C_e.pow_mod(c, N) * h_n.pow_mod(s_eta, N) * g_n.pow_mod(s_alpha, N)) % N;
+	Bignum t_3_prime = ((a.getValue(mIdx)).pow_mod(c, N) * C_u.pow_mod(s_alpha, N) * ((h_n.inverse(N)).pow_mod(s_beta, N))) % N;
+	Bignum t_4_prime = (C_r.pow_mod(s_alpha, N) * ((h_n.inverse(N)).pow_mod(s_delta, N)) * ((g_n.inverse(N)).pow_mod(s_beta, N))) % N;
 
 	bool result = false;
 
@@ -139,5 +149,23 @@ bool AccumulatorProofOfKnowledge:: Verify(const Accumulator& a, const Bignum& va
 
 	return result;
 }
+
+AccumulatorProofSet::AccumulatorProofSet(const AccumulatorAndProofParams* p)
+	: initialized(false) { }
+
+AccumulatorProofSet::AccumulatorProofSet(const AccumulatorAndProofParams* p,
+										 const Commitment& commitmentToCoin,
+										 const AccumulatorWitness& witness,
+										 Accumulator& a)
+	: initialized(false)
+{
+	// construct all the accPoKs; can be parallelized
+	for (unsigned int mIdx = 0; mIdx < UFO_COUNT; mIdx++) {
+		AccumulatorProofOfKnowledge accPoK(p, commitmentToCoin, witness, a, mIdx);
+		accPoKs.push_back(accPoK);
+	}
+}
+
+
 
 } /* namespace libzerocoin */

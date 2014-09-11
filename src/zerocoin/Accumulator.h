@@ -59,11 +59,20 @@ public:
 	void accumulate(const PublicCoin &coin);
 
 	CoinDenomination getDenomination() const;
+
 	/** Get the accumulator result
 	 *
 	 * @return a Bignum containing the result.
 	 */
 	std::vector<Bignum> getValue() const;
+
+	/**
+	 *
+	 * @return the value of the accumulator for a single modulus
+	 * @throws std::out_of_range if the index is out of bounds
+	 */
+	Bignum getValue(unsigned int modulusIdx) const;
+
 
 
 	// /**
@@ -119,9 +128,16 @@ public:
 
 	/**
 	 *
-	 * @return the value of the witness
+	 * @return the value of the witnesses for all accumulator moduli
 	 */
 	std::vector<Bignum> getValue() const;
+
+	/**
+	 *
+	 * @return the value of the witness for a single accumulator modulus
+	 * @throws std::out_of_range if the index is out of bounds
+	 */
+	Bignum getValue(unsigned int modulusIdx) const;
 
 	/** Checks that this is a witness to the accumulation of coin
 	 * @param a             the accumulator we are checking against.

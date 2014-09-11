@@ -28,12 +28,13 @@ public:
 	 * @param p  Cryptographic parameters
 	 * @param commitmentToCoin commitment containing the coin we want to prove is accumulated
 	 * @param witness The witness to the accumulation of the coin
-	 * @param a
+	 * @param a The accumulator state corresponding to the supplied witness
+	 * @param modulusIdx The index of the accumulator modulus this proof will use
 	 */
-	AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p, const Commitment& commitmentToCoin, const AccumulatorWitness& witness, Accumulator& a);
+	AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p, const Commitment& commitmentToCoin, const AccumulatorWitness& witness, Accumulator& a, unsigned int modulusIdx);
 	/** Verifies that  a commitment c is accumulated in accumulated a
 	 */
-	bool Verify(const Accumulator& a,const Bignum& valueOfCommitmentToCoin) const;
+	bool Verify(const Accumulator& a,const Bignum& valueOfCommitmentToCoin, unsigned int modulusIdx) const;
 
 	IMPLEMENT_SERIALIZE
 	(
@@ -58,6 +59,7 @@ public:
 	    READWRITE(s_phi);
 	    READWRITE(s_gamma);
 	    READWRITE(s_psi);
+		if (fRead) this->initialized = true;	// GNOSIS hack to set initialized on unserialize
 	)
 private:
 	const AccumulatorAndProofParams* params;
@@ -87,6 +89,18 @@ private:
 	Bignum s_phi;
 	Bignum s_gamma;
 	Bignum s_psi;
+
+	bool initialized;
+};
+
+class AccumulatorProofSet {
+public:
+	AccumulatorProofSet(const AccumulatorAndProofParams* p);
+	AccumulatorProofSet(const AccumulatorAndProofParams* p, const Commitment& commitmentToCoin, const AccumulatorWitness& witness, Accumulator& a);
+	bool Verify(const Accumulator& a,const Bignum& valueOfCommitmentToCoin) const;
+private:
+	std::vector<AccumulatorProofOfKnowledge> accPoKs;
+	bool initialized;
 };
 
 } /* namespace libzerocoin */
