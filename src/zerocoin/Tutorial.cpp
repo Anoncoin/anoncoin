@@ -131,7 +131,7 @@ ZerocoinTutorial()
 		/********************************************************************/
 
 		// Create an empty accumulator object
-		libzerocoin::Accumulator accumulator(params, denom);
+		libzerocoin::Accumulator accumulator(&(params->accumulatorParams), denom);
 
 		// Add several coins to it (we'll generate them here on the fly).
 		for (uint32_t i = 0; i < COINS_TO_ACCUMULATE; i++) {
