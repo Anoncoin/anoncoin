@@ -164,6 +164,7 @@ AccumulatorProofSet::AccumulatorProofSet(const AccumulatorAndProofParams* p,
 		AccumulatorProofOfKnowledge accPoK(p, commitmentToCoin, witness, a, mIdx);
 		accPoKs.push_back(accPoK);
 	}
+	this->initialized = true;
 }
 
 bool AccumulatorProofSet::Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin) const
