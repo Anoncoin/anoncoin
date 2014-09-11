@@ -59,7 +59,7 @@ public:
 	    READWRITE(s_phi);
 	    READWRITE(s_gamma);
 	    READWRITE(s_psi);
-		if (fRead) this->initialized = true;	// GNOSIS hack to set initialized on unserialize
+		//if (fRead) this->initialized = true;	// GNOSIS hack to set initialized on unserialize
 	)
 private:
 	const AccumulatorAndProofParams* params;
@@ -98,6 +98,11 @@ public:
 	AccumulatorProofSet(const AccumulatorAndProofParams* p);
 	AccumulatorProofSet(const AccumulatorAndProofParams* p, const Commitment& commitmentToCoin, const AccumulatorWitness& witness, Accumulator& a);
 	bool Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin) const;
+	IMPLEMENT_SERIALIZE
+	(
+		READWRITE(accPoKs);
+		//if (fRead) this->initialized = true;	// GNOSIS hack to set initialized on unserialize
+	)
 private:
 	std::vector<AccumulatorProofOfKnowledge> accPoKs;
 	bool initialized;

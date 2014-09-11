@@ -22,7 +22,7 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 	params(p),
 	denomination(coin.getPublicCoin().getDenomination()),
 	coinSerialNumber((coin.getSerialNumber())),
-	accumulatorPoK(&p->accumulatorParams),				// TODO: ONE FOR EACH UFO
+	accumulatorPoKset(&p->accumulatorParams),
 	serialNumberSoK(p),
 	commitmentPoK(&p->serialNumberSoKCommitmentGroup, &p->accumulatorParams.accumulatorPoKCommitmentGroup) {
 
@@ -50,10 +50,10 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 	cout << "GNOSIS DEBUG: commitmentPoK is " << this->commitmentPoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// Now generate the two core ZK proofs:
-	// 3. Proves that the committed public coin is in the Accumulator (PoK of "witness")
-	// TODO: ONE FOR EACH UFO
-	this->accumulatorPoK = AccumulatorProofOfKnowledge(&p->accumulatorParams, fullCommitmentToCoinUnderAccParams, witness, a);
-	cout << "GNOSIS DEBUG: accPoK is " << this->accumulatorPoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
+	// 3. Proves that the committed public coin is in the Accumulator (actually
+	// a set of 13 accumulators) (PoK of "witness")
+	this->accumulatorPoKset = AccumulatorProofSet(&p->accumulatorParams, fullCommitmentToCoinUnderAccParams, witness, a);
+	cout << "GNOSIS DEBUG: accPoKset is " << this->accumulatorPoKset.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// 4. Proves that the coin is correct w.r.t. serial number and hidden coin secret
 	// (This proof is bound to the coin 'metadata', i.e., transaction hash)
@@ -85,8 +85,8 @@ CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
 	cout << "GNOSIS DEBUG: cPoK time: " << elapsed << endl;
 
-	// TODO: ONE FOR EACH UFO (FOREACH AccPoKSingleModulus)
-	bool result_accPoK = accumulatorPoK.Verify(a, accCommitmentToCoinValue);
+	// TODO: PARALLELIZE!
+	bool result_accPoK = accumulatorPoKset.Verify(a, accCommitmentToCoinValue);
 	tv0 = tv1;
 	gettimeofday(&tv1, NULL);
 	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
@@ -108,7 +108,7 @@ CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 
 const uint256 CoinSpend::signatureHash(const SpendMetaData &m) const {
 	CHashWriter h(0,0);
-	h << m << serialCommitmentToCoinValue << accCommitmentToCoinValue << commitmentPoK << accumulatorPoK;  // TODO: ONE FOR EACH UFO
+	h << m << serialCommitmentToCoinValue << accCommitmentToCoinValue << commitmentPoK << accumulatorPoKset;
 	return h.GetHash();
 }
 
