@@ -22,6 +22,7 @@ namespace libzerocoin {
  */
 class AccumulatorProofOfKnowledge {
 public:
+	AccumulatorProofOfKnowledge() : initialized(false) {};         // required for deserialization of vector of AccPoKs
 	AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p);
 
 	/** Generates a proof that a commitment to a coin c was accumulated
