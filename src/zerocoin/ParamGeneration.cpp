@@ -130,8 +130,9 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 		Bignum accBase(1);
 		for (uint32_t count = 0; count < MAX_ACCUMGEN_ATTEMPTS && accBase.isOne(); count++) {
 			accBase = constant.pow_mod(Bignum(2), r_ufos[i]);
+			constant++;
 		}
-		if (!accBase.isOne()) {
+		if (accBase.isOne()) {
 			throw ZerocoinException("failed to calculate accumulator base (max attempts)!");
 		}
 		params.accumulatorParams.accumulatorBases.push_back(accBase);
