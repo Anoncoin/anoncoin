@@ -231,7 +231,7 @@ ZerocoinTutorial()
 		//                  transaction.
 		/********************************************************************/
 
-		// Deserialize the CoinSpend intro a fresh object
+		// Deserialize the CoinSpend into a fresh object.
 		libzerocoin::CoinSpend newSpend(params, serializedCoinSpend);
 
 		// Create a new metadata object to contain the hash of the received
