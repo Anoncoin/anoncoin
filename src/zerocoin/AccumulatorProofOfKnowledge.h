@@ -37,7 +37,7 @@ public:
 	 */
 	bool Verify(const Accumulator& a,const Bignum& valueOfCommitmentToCoin, unsigned int modulusIdx) const;
 
-	IMPLEMENT_SERIALIZE
+	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
 	    READWRITE(C_e);
 	    READWRITE(C_u);
