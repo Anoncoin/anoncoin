@@ -60,7 +60,6 @@ public:
 	    READWRITE(s_phi);
 	    READWRITE(s_gamma);
 	    READWRITE(s_psi);
-		//if (fRead) this->initialized = true;	// GNOSIS hack to set initialized on unserialize
 	)
 private:
 	const AccumulatorAndProofParams* params;
