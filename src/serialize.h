@@ -93,6 +93,7 @@ enum
         const bool fRead = true;                \
         unsigned int nSerSize = 0;              \
         assert(fGetSize||fWrite||fRead); /* suppress warning */ \
+        assert(!this->initialized);             \
         this->initialized = true;               \
         {statements}                            \
     }

@@ -68,10 +68,9 @@ private:
 	bool initialized;
 
 public:
-	IMPLEMENT_SERIALIZE
+	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
 		READWRITE(value);
-		READWRITE(initialized);   // TODO: throw error if not initialized
 	)
 };
 
