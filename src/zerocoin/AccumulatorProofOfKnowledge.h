@@ -35,7 +35,7 @@ public:
 	AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p, const Commitment& commitmentToCoin, const AccumulatorWitness& witness, Accumulator& a, unsigned int modulusIdx);
 	/** Verifies that  a commitment c is accumulated in accumulated a
 	 */
-	bool Verify(const Accumulator& a,const Bignum& valueOfCommitmentToCoin, unsigned int modulusIdx) const;
+	bool Verify(const AccumulatorAndProofParams* p, const Accumulator& a,const Bignum& valueOfCommitmentToCoin, unsigned int modulusIdx) const;
 
 	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
@@ -62,8 +62,6 @@ public:
 	    READWRITE(s_psi);
 	)
 private:
-	const AccumulatorAndProofParams* params;
-
 	/* Return values for proof */
 	Bignum C_e;
 	Bignum C_u;
@@ -105,7 +103,8 @@ public:
 	)
 private:
 	std::vector<AccumulatorProofOfKnowledge> accPoKs;
-	bool initialized;
+	bool initialized;			// TODO: use this
+	const AccumulatorAndProofParams* params;
 };
 
 } /* namespace libzerocoin */

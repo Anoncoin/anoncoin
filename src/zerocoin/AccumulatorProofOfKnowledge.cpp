@@ -14,11 +14,9 @@
 
 namespace libzerocoin {
 
-AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p): params(p), initialized(false) {}
-
-AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* p,
+AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndProofParams* params,
         const Commitment& commitmentToCoin, const AccumulatorWitness& witness,
-        Accumulator& a, unsigned int mIdx): params(p), initialized(false) {
+        Accumulator& a, unsigned int mIdx): initialized(false) {
 
 	Bignum sg = params->accumulatorPoKCommitmentGroup.g();
 	Bignum sh = params->accumulatorPoKCommitmentGroup.h();
@@ -104,7 +102,7 @@ AccumulatorProofOfKnowledge::AccumulatorProofOfKnowledge(const AccumulatorAndPro
 
 /** Verifies that a commitment c is accumulated in accumulator a
  */
-bool AccumulatorProofOfKnowledge:: Verify(const Accumulator& a, const Bignum& valueOfCommitmentToCoin, unsigned int mIdx) const {
+bool AccumulatorProofOfKnowledge::Verify(const AccumulatorAndProofParams* params, const Accumulator& a, const Bignum& valueOfCommitmentToCoin, unsigned int mIdx) const {
 	if (!this->initialized) {
 		throw ZerocoinException("AccumulatorProofOfKnowledge is not initialized");
 	}
@@ -151,13 +149,13 @@ bool AccumulatorProofOfKnowledge:: Verify(const Accumulator& a, const Bignum& va
 }
 
 AccumulatorProofSet::AccumulatorProofSet(const AccumulatorAndProofParams* p)
-	: initialized(false) { }
+	: initialized(false), params(p) { }
 
 AccumulatorProofSet::AccumulatorProofSet(const AccumulatorAndProofParams* p,
 										 const Commitment& commitmentToCoin,
 										 const AccumulatorWitness& witness,
 										 Accumulator& a)
-	: initialized(false)
+	: initialized(false), params(p)
 {
 	// construct all the accPoKs; can be parallelized
 	for (unsigned int mIdx = 0; mIdx < UFO_COUNT; mIdx++) {
@@ -171,7 +169,7 @@ bool AccumulatorProofSet::Verify(const Accumulator& a, const Bignum& valueOfComm
 {
 	// GNOSIS TODO: PARALLELIZE!
 	for (unsigned int mIdx = 0; mIdx < UFO_COUNT; mIdx++) {
-		if (!accPoKs.at(mIdx).Verify(a, valueOfCommitmentToCoin, mIdx))
+		if (!accPoKs.at(mIdx).Verify(params, a, valueOfCommitmentToCoin, mIdx))
 			return false;
 	}
 
