@@ -1,7 +1,7 @@
 src/*.exe
-src/litecoin
-src/litecoind
-src/test_litecoin
+src/anoncoin
+src/anoncoind
+src/test_anoncoin
 .*.swp
 *.*~*
 *.bak
@@ -9,17 +9,17 @@ src/test_litecoin
 *.orig
 *.o
 *.patch
-.litecoin
+.anoncoin
 
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-litecoin-qt
-Litecoin-Qt.app
+anoncoin-qt
+Anoncoin-Qt.app
 
 # Unit-tests
 Makefile.test
-litecoin-qt_test
+anoncoin-qt_test
 
 # Resources cpp
 qrc_*.cpp
@@ -37,3 +37,8 @@ build
 *.pyo
 
 !src/leveldb*/Makefile
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake

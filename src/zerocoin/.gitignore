@@ -16,6 +16,7 @@ tests
 benchmark
 paramgen
 tutorial
+ufo
 
 # External tool builders
 .externalToolBuilders/
@@ -81,3 +82,7 @@ tutorial
 
 *~
 /build
+
+# CMake misc
+cmake_uninstall.cmake
+zerocoin.pc
