@@ -1,17 +1,21 @@
-The Anoncoin project
+Anoncoin
 ====================
 
-[![Build Status](https://travis-ci.org/Anoncoin/anoncoin.png?branch=master)](https://travis-ci.org/Anoncoin/anoncoin)
+Anoncoin is a privacy-oriented decentralized crypto-currency which uses the I2P network to hide users' identities (Tor is also supported).
 
-
+Platforms:
+- Linux - [![Build Status - Linux](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Linux)](https://jenkins.nordcloud.no/job/Anoncoin-Linux/)
+- Windows (Mingw-w64) - [![Build Status - Mingw-w64](https://jenkins.nordcloud.no/buildStatus/icon?job=Anoncoin-Mingw-w64)](https://jenkins.nordcloud.no/job/Anoncoin-Mingw-w64/)
+- OSX (Build status to be added soon)
 
 Specs:
-
-Anoncoin - a fork version of Litecoin optimized for CPU mining using scrypt as a proof of work scheme.
- - 3.42 minute block targets (retarget on ~1680 blocks, 4days)
+ - launched in June 2013
+ - scrypt proof-of-work (same as Litecoin)
+ - 3 minute block targets with KGW retargeting (before block 87777, it was 3.42 minute targets using classic algorithm)
  - Starts with 4.2 coin blocks until block 42000
  - 7 coin blocks until block 77777
- - 5 coin blocks after 77778, then subsidy halves in 306600 blocks (~2 years)
+ - 5 coin blocks after 77778, then subsidy halves when block height divisible by 306600 (~1.75 years)
+ - total supply will be 3,103,954 ANC
 
 Development process
 ===================
@@ -38,6 +42,6 @@ after the warning if action is not taken by the author. Pull requests closed
 in this manner will have their corresponding issue labeled 'stagnant'.
 
 Issues with no commits will be given a similar warning, and closed after
-15 days from their last activity. Issues closed in this manner will be 
-labeled 'stale'. 
+15 days from their last activity. Issues closed in this manner will be
+labeled 'stale'.
 
