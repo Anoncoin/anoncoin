@@ -41,9 +41,11 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 	// group with a significantly larger order.
 	const Commitment fullCommitmentToCoinUnderSerialParams(&p->serialNumberSoKCommitmentGroup, coin.getPublicCoin().getValue());
 	this->serialCommitmentToCoinValue = fullCommitmentToCoinUnderSerialParams.getCommitmentValue();
+	cout << "GNOSIS DEBUG: comSerParams is " << this->serialCommitmentToCoinValue.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	const Commitment fullCommitmentToCoinUnderAccParams(&p->accumulatorParams.accumulatorPoKCommitmentGroup, coin.getPublicCoin().getValue());
 	this->accCommitmentToCoinValue = fullCommitmentToCoinUnderAccParams.getCommitmentValue();
+	cout << "GNOSIS DEBUG: accSerParams is " << this->accCommitmentToCoinValue.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// 2. Generate a ZK proof that the two commitments contain the same public coin.
 	this->commitmentPoK = CommitmentProofOfKnowledge(&p->serialNumberSoKCommitmentGroup, &p->accumulatorParams.accumulatorPoKCommitmentGroup, fullCommitmentToCoinUnderSerialParams, fullCommitmentToCoinUnderAccParams);
@@ -83,7 +85,7 @@ CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 	gettimeofday(&tv1, NULL);
 	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
 	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
-	cout << "GNOSIS DEBUG: cPoK time: " << elapsed << endl;
+	cout << "GNOSIS DEBUG: cPoK verify time: " << elapsed << endl;
 
 	// TODO: PARALLELIZE!
 	bool result_accPoK = accumulatorPoKset.Verify(a, accCommitmentToCoinValue);
@@ -91,14 +93,14 @@ CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 	gettimeofday(&tv1, NULL);
 	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
 	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
-	cout << "GNOSIS DEBUG: accPoK time: " << elapsed << endl;
+	cout << "GNOSIS DEBUG: accPoK verify time: " << elapsed << endl;
 
 	bool result_snSoK  = serialNumberSoK.Verify(coinSerialNumber, serialCommitmentToCoinValue, signatureHash(m));
 	tv0 = tv1;
 	gettimeofday(&tv1, NULL);
 	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
 	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
-	cout << "GNOSIS DEBUG: snSoK time: " << elapsed << endl;
+	cout << "GNOSIS DEBUG: snSoK verify time: " << elapsed << endl;
 
 	return  (a.getDenomination() == this->denomination)
 	        && result_cPoK
