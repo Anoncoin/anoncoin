@@ -70,6 +70,10 @@ SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge(const
 	this->hash = hasher.GetHash();
 	unsigned char *hashbytes =  (unsigned char*) &hash;
 
+	if (params->zkp_iterations > sizeof(this->hash)*8) {
+		throw ZerocoinException("zkp_iterations too large for hash size");
+	}
+
 #ifdef ZEROCOIN_THREADING
 	#pragma omp parallel for
 #endif
