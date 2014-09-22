@@ -31,7 +31,7 @@
 
 // Uses a fast technique for coin generation. Could be more vulnerable
 // to timing attacks. Turn off if an attacker can measure coin minting time.
-#define	ZEROCOIN_FAST_MINT 1
+//#define	ZEROCOIN_FAST_MINT 1
 
 // Errors thrown by the Zerocoin library
 

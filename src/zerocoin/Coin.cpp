@@ -107,8 +107,13 @@ void PrivateCoin::mintCoin(const CoinDenomination denomination) {
 		// "q" is the order of the commitment group.
 		Bignum s = Bignum::randBignum(this->params->coinCommitmentGroup.groupOrder);
 
+		// derive generators from serial number
+		Bignum g, h;
+		deriveGeneratorsFromSerialNumber(s, params->coinCommitmentGroup.modulus,
+										 params->coinCommitmentGroup.groupOrder, g, h);
+
 		// Generate a Pedersen commitment to the serial number "s"
-		Commitment coin(&params->coinCommitmentGroup, s);
+		Commitment coin(&params->coinCommitmentGroup, s, g, h);
 
 		// Now verify that the commitment is a prime number
 		// in the appropriate range. If not, we'll throw this coin
