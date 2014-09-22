@@ -30,20 +30,17 @@ public:
 	 **/
 	template<typename Stream>
 	Accumulator(const AccumulatorAndProofParams* p, Stream& strm): params(p) {
-		std::cout << "GNOSIS DEBUG: constructed Accumulator from acc params and stream!" << std::endl;
 		strm >> *this;
 	}
 
 	template<typename Stream>
 	Accumulator(const Params* p, Stream& strm) {
 		strm >> *this;
-		std::cout << "GNOSIS DEBUG: constructed Accumulator from params and stream!" << std::endl;
 		this->params = &(p->accumulatorParams);
 	}
 
-	Accumulator() {
-		std::cout << "GNOSIS DEBUG: used default constructor for Accumulator!" << std::endl;
-	}
+	// GNOSIS TODO: need the following for any reason?
+	//Accumulator() { }
 
 	/**
 	 * @brief      Construct an Accumulator from a Params object.

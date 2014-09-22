@@ -37,7 +37,7 @@ Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenominat
 void Accumulator::accumulate(const PublicCoin& coin) {
 	// Make sure we're initialized
 	if(this->value.size() == 0) {
-		throw ZerocoinException("Accumulator is not initialized");
+		throw ZerocoinException("attempted to accumulate a coin in an Accumulator that's not initialized");
 	}
 
 	if(this->denomination != coin.getDenomination()) {
@@ -64,18 +64,26 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 	gettimeofday(&tv1, NULL);
 	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
 			  (tv1.tv_usec - tv0.tv_usec) / 1e6;
-	std::cout << "GNOSIS DEBUG: accumulate time: " << elapsed << std::endl;
 }
 
 CoinDenomination Accumulator::getDenomination() const {
+	if(this->value.size() == 0) {
+		throw ZerocoinException("attempted to get denomination of a coin in an Accumulator that's not initialized");
+	}
 	return this->denomination;
 }
 
 std::vector<Bignum> Accumulator::getValue() const {
+	if(this->value.size() == 0) {
+		throw ZerocoinException("attempted to get value of a coin in an Accumulator that's not initialized");
+	}
 	return this->value;
 }
 
 Bignum Accumulator::getValue(unsigned int modulusIdx) const {
+	if(this->value.size() == 0) {
+		throw ZerocoinException("attempted to get value of a coin in an Accumulator that's not initialized");
+	}
 	return this->value.at(modulusIdx);
 }
 
@@ -85,6 +93,9 @@ Accumulator& Accumulator::operator += (const PublicCoin& c) {
 }
 
 bool Accumulator::operator == (const Accumulator rhs) const {
+	if(this->value.size() == 0 || rhs.value.size() == 0) {
+		throw ZerocoinException("attempted to compare Accumulators when one or both are not initialized");
+	}
 	return this->value == rhs.value;
 }
 

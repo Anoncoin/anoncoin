@@ -93,7 +93,7 @@ public:
 	 *
 	 * @param p cryptographic paramters
 	 * @param coin the value of the commitment.
-	 * @param denomination The denomination of the coin. Defaults to ZQ_LOVELACE
+	 * @param denomination The denomination of the coin.
 	 */
 	PublicCoin( const Params* p, const Bignum& coin, const CoinDenomination d);
 	Bignum getValue() const;
@@ -106,7 +106,7 @@ public:
 	 * @return true if valid
 	 */
     bool validate() const;
-	IMPLEMENT_SERIALIZE
+	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
 	    READWRITE(value);
 	    READWRITE(denomination);
@@ -115,6 +115,7 @@ private:
 	const Params* params;
 	Bignum value;
 	CoinDenomination denomination;
+	bool initialized;
 };
 
 /**
@@ -139,7 +140,7 @@ public:
 	Bignum getSerialNumber() const;
 	Bignum getRandomness() const;
 
-	IMPLEMENT_SERIALIZE
+	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
 	    READWRITE(publicCoin);
 	    READWRITE(randomness);
@@ -150,6 +151,7 @@ private:
 	PublicCoin publicCoin;
 	Bignum randomness;
 	Bignum serialNumber;
+	bool initialized;
 
 	/**
 	 * @brief Mint a new coin.

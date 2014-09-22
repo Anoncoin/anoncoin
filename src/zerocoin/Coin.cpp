@@ -17,21 +17,26 @@ namespace libzerocoin {
 
 //PublicCoin class
 PublicCoin::PublicCoin(const Params* p):
-	params(p) {
+	params(p),
+    initialized(false) {
 	if (this->params->initialized == false) {
 		throw ZerocoinException("Params are not initialized");
 	}
 };
 
 PublicCoin::PublicCoin(const Params* p, const Bignum& coin, const CoinDenomination d):
-	params(p), value(coin), denomination(d) {
+	params(p), value(coin), denomination(d), initialized(true) {
 	if (this->params->initialized == false) {
 		throw ZerocoinException("Params are not initialized");
 	}
 };
 
 bool PublicCoin::operator==(const PublicCoin& rhs) const {
-	return this->value == rhs.value; // FIXME check param equality
+	// FIXME check param equality
+	if (!this->initialized || !rhs.initialized) {
+		throw ZerocoinException("attempted to compare a PublicCoin that was not initialized");
+	}
+	return this->value == rhs.value && this->denomination == rhs.denomination;
 }
 
 bool PublicCoin::operator!=(const PublicCoin& rhs) const {
@@ -39,19 +44,30 @@ bool PublicCoin::operator!=(const PublicCoin& rhs) const {
 }
 
 Bignum PublicCoin::getValue() const {
+	if (!this->initialized) {
+		throw ZerocoinException("attempted to get value of PublicCoin that was not initialized!");
+	}
 	return this->value;
 }
 
 CoinDenomination PublicCoin::getDenomination() const {
+	if (!this->initialized) {
+		throw ZerocoinException("attempted to get denomination of PublicCoin that was not initialized!");
+	}
 	return this->denomination;
 }
 
 bool PublicCoin::validate() const{
-    return (this->params->accumulatorParams.minCoinValue < value) && (value < this->params->accumulatorParams.maxCoinValue) && value.isPrime(params->zkp_iterations);
+	if (!this->initialized) {
+		throw ZerocoinException("attempted to validate PublicCoin that was not initialized!");
+	}
+	return (this->params->accumulatorParams.minCoinValue < value) &&
+		   (value < this->params->accumulatorParams.maxCoinValue) &&
+		   value.isPrime(params->zkp_iterations);
 }
 
 //PrivateCoin class
-PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): params(p), publicCoin(p) {
+PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): params(p), publicCoin(p), initialized(false) {
 	// Verify that the parameters are valid
 	if(this->params->initialized == false) {
 		throw ZerocoinException("Params are not initialized");
@@ -67,6 +83,7 @@ PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): 
 	this->mintCoin(denomination);
 #endif
 	
+	this->initialized = true;
 }
 
 /**
@@ -74,10 +91,16 @@ PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): 
  * @return the coins serial number
  */
 Bignum PrivateCoin::getSerialNumber() const {
+	if (!this->initialized) {
+		throw ZerocoinException("tried to get serial number of PrivateCoin that was not initialized");
+	}
 	return this->serialNumber;
 }
 
 Bignum PrivateCoin::getRandomness() const {
+	if (!this->initialized) {
+		throw ZerocoinException("tried to get randomness of PrivateCoin that was not initialized");
+	}
 	return this->randomness;
 }
 
