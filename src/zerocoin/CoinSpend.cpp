@@ -4,8 +4,6 @@
 // Copyright 2013-2014 The Anoncoin developers.
 // Distributed under the MIT license.
 
-#include <iostream>    // GNOSIS DEBUG
-using namespace std;   // GNOSIS DEBUG
 #include <sys/time.h>
 #include "../Zerocoin.h"
 
@@ -35,26 +33,21 @@ CoinSpend::CoinSpend(const Params* p, const PrivateCoin& coin,
 	// group with a significantly larger order.
 	const Commitment fullCommitmentToCoinUnderSerialParams(&p->serialNumberSoKCommitmentGroup, coin.getPublicCoin().getValue());
 	this->serialCommitmentToCoinValue = fullCommitmentToCoinUnderSerialParams.getCommitmentValue();
-	cout << "GNOSIS DEBUG: comSerParams is " << this->serialCommitmentToCoinValue.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	const Commitment fullCommitmentToCoinUnderAccParams(&p->accumulatorParams.accumulatorPoKCommitmentGroup, coin.getPublicCoin().getValue());
 	this->accCommitmentToCoinValue = fullCommitmentToCoinUnderAccParams.getCommitmentValue();
-	cout << "GNOSIS DEBUG: accSerParams is " << this->accCommitmentToCoinValue.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// 2. Generate a ZK proof that the two commitments contain the same public coin.
 	this->commitmentPoK = CommitmentProofOfKnowledge(&p->serialNumberSoKCommitmentGroup, &p->accumulatorParams.accumulatorPoKCommitmentGroup, fullCommitmentToCoinUnderSerialParams, fullCommitmentToCoinUnderAccParams);
-	cout << "GNOSIS DEBUG: commitmentPoK is " << this->commitmentPoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// Now generate the two core ZK proofs:
 	// 3. Proves that the committed public coin is in the Accumulator (actually
 	// a set of 13 accumulators) (PoK of "witness")
 	this->accumulatorPoKset = AccumulatorProofSet(&p->accumulatorParams, fullCommitmentToCoinUnderAccParams, witness, a);
-	cout << "GNOSIS DEBUG: accPoKset is " << this->accumulatorPoKset.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 
 	// 4. Proves that the coin is correct w.r.t. serial number and hidden coin secret
 	// (This proof is bound to the coin 'metadata', i.e., transaction hash)
 	this->serialNumberSoK = SerialNumberSignatureOfKnowledge(p, coin, fullCommitmentToCoinUnderSerialParams, signatureHash(m));
-	cout << "GNOSIS DEBUG: snSoK is " << this->serialNumberSoK.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION) << " bytes" << endl;;
 }
 
 Bignum
@@ -70,31 +63,13 @@ CoinSpend::getDenomination() const {
 bool
 CoinSpend::Verify(const Accumulator& a, const SpendMetaData &m) const {
 	// Verify both of the sub-proofs using the given meta-data
-	struct timeval tv0, tv1;
-	double elapsed;
-
-	gettimeofday(&tv0, NULL);
 
 	bool result_cPoK   = commitmentPoK.Verify(serialCommitmentToCoinValue, accCommitmentToCoinValue);
-	gettimeofday(&tv1, NULL);
-	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
-	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
-	cout << "GNOSIS DEBUG: cPoK verify time: " << elapsed << endl;
 
 	// TODO: PARALLELIZE!
 	bool result_accPoK = accumulatorPoKset.Verify(a, accCommitmentToCoinValue);
-	tv0 = tv1;
-	gettimeofday(&tv1, NULL);
-	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
-	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
-	cout << "GNOSIS DEBUG: accPoK verify time: " << elapsed << endl;
 
 	bool result_snSoK  = serialNumberSoK.Verify(coinSerialNumber, serialCommitmentToCoinValue, signatureHash(m));
-	tv0 = tv1;
-	gettimeofday(&tv1, NULL);
-	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
-	          (tv1.tv_usec - tv0.tv_usec) / 1e6;
-	cout << "GNOSIS DEBUG: snSoK verify time: " << elapsed << endl;
 
 	return  (a.getDenomination() == this->denomination)
 	        && result_cPoK

@@ -47,16 +47,10 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 		throw ZerocoinException("Coin is not valid");
 	}
 
-	struct timeval tv0, tv1;
-	double elapsed;
 	// Compute new accumulator = for each UFO N_i: "old accumulator_i"^{minted_coin} mod N_i
-	gettimeofday(&tv0, NULL);
 	for (uint32_t i = 0; i < this->value.size(); i++) {
 		this->value[i] = this->value[i].pow_mod(coin.getValue(), this->params->accumulatorModuli.at(i));
 	}
-	gettimeofday(&tv1, NULL);
-	elapsed = (tv1.tv_sec  - tv0.tv_sec) +
-			  (tv1.tv_usec - tv0.tv_usec) / 1e6;
 }
 
 CoinDenomination Accumulator::getDenomination() const {

@@ -6,7 +6,6 @@
 // Distributed under the MIT license.
 
 
-#include <iostream>				// GNOSIS DEBUG
 #include <string>
 #include "../Zerocoin.h"
 
@@ -22,8 +21,8 @@ namespace libzerocoin {
 #define PRINT_GROUP_PARAMS(p)                                              \
 {                                                                          \
   IntegerGroupParams _p = (p);                                             \
-  PRINT_BIGNUM(""#p ".g", _p.g());                                           \
-  PRINT_BIGNUM(""#p ".h", _p.h());                                           \
+  PRINT_BIGNUM(""#p ".g", _p.g());                                         \
+  PRINT_BIGNUM(""#p ".h", _p.h());                                         \
   PRINT_BIGNUM(""#p ".groupOrder", _p.groupOrder);                         \
   PRINT_BIGNUM(""#p ".modulus",    _p.modulus);                            \
   std::cout << std::endl;                                                  \
@@ -44,13 +43,11 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 	std::cout << "GNOSIS DEBUG: CalculateParams in ParamGeneration.cpp" << std::endl;
 	params.initialized = false;
 	params.accumulatorParams.initialized = false;
-	std::cout << "GNOSIS DEBUG: aux is " << aux << std::endl;
 
 	// Verify that "securityLevel" is  at least 80 bits (minimum).
 	if (securityLevel < 80) {
 		throw ZerocoinException("Security level must be at least 80 bits.");
 	}
-	std::cout << "GNOSIS DEBUG: securityLevel is " << securityLevel << std::endl;
 
 	// Calculate UFOs
 	calculateUFOs(params.accumulatorParams);
@@ -64,8 +61,6 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 		if (N_i_len < UFO_MIN_BIT_LENGTH) {
 			throw ZerocoinException("RSA UFO modulus is too small");
 		}
-		std::cout << "GNOSIS DEBUG: accumulator modulus " << i << " is " << N_i_len
-				  << " bits" <<  std::endl;
 		ufo_sum += r_ufos[i];
 	}
 
@@ -85,21 +80,17 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 	// g and h are invalid, since they are now different for each coin; see
 	// "Rational Zero" by Garman et al., section 4.4.
 	params.coinCommitmentGroup.invalidateGenerators();
-	PRINT_BIGNUM("params.coinCommitmentGroup.groupOrder", params.coinCommitmentGroup.groupOrder);
-	PRINT_BIGNUM("params.coinCommitmentGroup.modulus", params.coinCommitmentGroup.modulus);
 
 	// Next, we derive parameters for a second Accumulated Value commitment group.
 	// This is a Schnorr group with the specific property that the order of the group
 	// must be exactly equal to "q" from the commitment group. We set
 	// the modulus of the new group equal to "2q+1" and test to see if this is prime.
 	params.serialNumberSoKCommitmentGroup = deriveIntegerGroupFromOrder(params.coinCommitmentGroup.modulus);
-	PRINT_GROUP_PARAMS(params.serialNumberSoKCommitmentGroup);
 
 	// Calculate the parameters for the internal commitment
 	// using the same process.
 	params.accumulatorParams.accumulatorPoKCommitmentGroup = deriveIntegerGroupParams(calculateSeed(ufo_sum, aux, securityLevel, STRING_AIC_GROUP),
 	        qLen + 300, qLen + 1);
-	PRINT_GROUP_PARAMS(params.accumulatorParams.accumulatorPoKCommitmentGroup);
 
 	//TODO: ONE FOR EACH UFO
 	for (uint32_t i = 0; i < r_ufos.size(); i++) {
@@ -114,9 +105,6 @@ CalculateParams(Params &params, string aux, uint32_t securityLevel)
 		accQRNGrp.h(generateIntegerFromSeed(N_i_len - 1,
 				calculateSeed(ufo_sum, aux, securityLevel, STRING_QRNCOMMIT_GROUPH),
 				&resultCtr).pow_mod(Bignum(2), r_ufos[i]));
-		std::cout << "GNOSIS DEBUG: r_ufos[" << i << "] accumulator QR_N group setup:" << std::endl;
-		PRINT_BIGNUM("SHOULD BE DIFFERENT FROM OTHER G: accQRNGrp.g", accQRNGrp.g());    // probably fine
-		PRINT_BIGNUM("SHOULD BE DIFFERENT FROM OTHER H: accQRNGrp.h", accQRNGrp.h());
 
 		params.accumulatorParams.accumulatorQRNCommitmentGroups.push_back(accQRNGrp);
 

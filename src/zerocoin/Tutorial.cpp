@@ -212,8 +212,6 @@ ZerocoinTutorial()
 		CDataStream serializedCoinSpend(SER_NETWORK, PROTOCOL_VERSION);
 		serializedCoinSpend << spend;
 
-		cout << "GNOSIS DEBUG: serialized coin spend size is " << serializedCoinSpend.size() << endl;
-		
 		cout << "Successfully generated a coin spend transaction." << endl;
 
 		/********************************************************************/
