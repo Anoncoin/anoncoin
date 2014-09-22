@@ -1,14 +1,8 @@
-/**
- * @file       Commitment.h
- *
- * @brief      Commitment and CommitmentProof classes for the Zerocoin library.
- *
- * @author     Ian Miers, Christina Garman and Matthew Green
- * @date       June 2013
- *
- * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
- * @license    This project is released under the MIT license.
- **/
+// Commitment and CommitmentProof classes for Zerocoin.
+//
+// Copyright 2013 Ian Miers, Christina Garman and Matthew Green
+// Copyright 2013-2014 The Anoncoin developers.
+// Distributed under the MIT license.
 
 #ifndef COMMITMENT_H_
 #define COMMITMENT_H_

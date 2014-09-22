@@ -1,14 +1,9 @@
-/**
-* @file       Params.h
-*
-* @brief      Parameter classes for Zerocoin.
-*
-* @author     Ian Miers, Christina Garman and Matthew Green
-* @date       June 2013
-*
-* @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
-* @license    This project is released under the MIT license.
-**/
+// Parameter classes for Zerocoin.
+//
+// Copyright 2013 Ian Miers, Christina Garman and Matthew Green
+// Copyright 2013-2014 The Anoncoin developers.
+// Distributed under the MIT license.
+
 #ifndef PARAMS_H_
 #define PARAMS_H_
 

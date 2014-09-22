@@ -1,13 +1,10 @@
-/// \file       ParamGeneration.cpp
-///
-/// \brief      Parameter manipulation routines for the Zerocoin cryptographic
-///             components.
-///
-/// \author     Ian Miers, Christina Garman and Matthew Green
-/// \date       June 2013
-///
-/// \copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
-/// \license    This project is released under the MIT license.
+// Parameter manipulation routines for the Zerocoin cryptographic
+// components.
+//
+// Copyright 2013 Ian Miers, Christina Garman and Matthew Green
+// Copyright 2013-2014 The Anoncoin developers.
+// Distributed under the MIT license.
+
 
 #include <iostream>				// GNOSIS DEBUG
 #include <string>

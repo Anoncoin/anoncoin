@@ -1,14 +1,7 @@
-/**
- * @file       Benchmark.cpp
- *
- * @brief      Benchmarking tests for Zerocoin.
- *
- * @author     Ian Miers, Christina Garman and Matthew Green
- * @date       June 2013
- *
- * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
- * @license    This project is released under the MIT license.
- **/
+// Benchmarking tests for Zerocoin.
+//
+// Copyright 2013 Ian Miers, Christina Garman and Matthew Green
+// Distributed under the MIT license.
 
 using namespace std;
 

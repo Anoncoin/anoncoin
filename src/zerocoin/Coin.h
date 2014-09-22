@@ -1,14 +1,8 @@
-/**
- * @file       Coin.h
- *
- * @brief      PublicCoin and PrivateCoin classes for the Zerocoin library.
- *
- * @author     Ian Miers, Christina Garman and Matthew Green
- * @date       June 2013
- *
- * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
- * @license    This project is released under the MIT license.
- **/
+// CoinDenomination, PublicCoin, and PrivateCoin classes for Zerocoin.
+//
+// Copyright 2013 Ian Miers, Christina Garman and Matthew Green
+// Copyright 2013-2014 The Anoncoin developers.
+// Distributed under the MIT license.
 
 #ifndef COIN_H_
 #define COIN_H_

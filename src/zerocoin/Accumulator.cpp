@@ -1,16 +1,9 @@
-/**
- * @file       Accumulator.cpp
- *
- * @brief      Accumulator and AccumulatorWitness classes for the Zerocoin library.
- *
- * @author     Ian Miers, Christina Garman and Matthew Green
- * @date       June 2013
- *
- * @copyright  Copyright 2013 Ian Miers, Christina Garman and Matthew Green
- * @license    This project is released under the MIT license.
- **/
+// Accumulator and AccumulatorWitness classes for Zerocoin.
+//
+// Copyright 2013 Ian Miers, Christina Garman and Matthew Green
+// Copyright 2013-2014 The Anoncoin developers.
+// Distributed under the MIT license.
 
-#include <iostream>     // GNOSIS DEBUG
 #include <sstream>
 #include <sys/time.h>
 #include "../Zerocoin.h"

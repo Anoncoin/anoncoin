@@ -1,3 +1,8 @@
+// Program to display "raw" RSA UFOs (meaning no small factors have been removed).
+//
+// Copyright 2013-2014 The Anoncoin developers.
+// Distributed under the MIT license.
+
 using namespace std;
 
 #include <string>
