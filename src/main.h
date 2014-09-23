@@ -68,6 +68,13 @@ static const int fHaveUPnP = true;
 static const int fHaveUPnP = false;
 #endif
 
+/** Zerocoin block heights (GNOSIS TODO: put our actual desired block height here!!!) */
+static const unsigned int ZC_ENABLE_BLOCKS_HEIGHT = 1;  // first block height that can have ZC txns
+static const unsigned int ZC_ENABLE_RELAY_HEIGHT =
+    ZC_ENABLE_BLOCKS_HEIGHT + 6;// minimum block height for relaying ZC txns
+static const unsigned int ZC_ENABLE_MINT_SPEND_HEIGHT =
+    ZC_ENABLE_RELAY_HEIGHT + 2;  // minimum block height to allow creating ZC mint & spend txns in the GUI
+
 
 extern CScript COINBASE_FLAGS;
 
