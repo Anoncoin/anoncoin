@@ -21,9 +21,7 @@ enum DBErrors
     DB_NONCRITICAL_ERROR,
     DB_TOO_NEW,
     DB_LOAD_FAIL,
-#ifdef ENABLE_ZEROCOIN
-    DB_WRONG_WALLET_FILE,
-#endif
+    DB_WRONG_WALLET_FILE,       // GNOSIS TODO: necessary?
     DB_NEED_REWRITE
 };
 

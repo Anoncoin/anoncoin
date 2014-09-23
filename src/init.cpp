@@ -11,10 +11,7 @@
 #include "util.h"
 #include "ui_interface.h"
 #include "i2p.h"
-
-#ifdef ENABLE_ZEROCOIN
 #include "Zerocoin.h"
-#endif
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -723,7 +720,6 @@ bool AppInit2(boost::thread_group& threadGroup)
 #endif
 
     // ********************************************************* Step 4.5: Zerocoin if enabled
-#ifdef ENABLE_ZEROCOIN
     try {
         if (fTestNet)
         {
@@ -737,7 +733,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         printf("Error: Zerocoin Exception: %s\n", e.what());
     }
-#endif
 
     // ********************************************************* Step 5: verify wallet database integrity
 
@@ -786,7 +781,6 @@ bool AppInit2(boost::thread_group& threadGroup)
                 return InitError(_("wallet.dat corrupt, salvage failed"));
         }
 
-#ifdef ENABLE_ZEROCOIN
         if (fTestNet)
         {
           // Zerocoin Initialization
@@ -803,7 +797,6 @@ bool AppInit2(boost::thread_group& threadGroup)
             // TODO: Create. Edit wallet structure.
           }
         }
-#endif
     } // (!fDisableWallet)
 
     // ********************************************************* Step 6: network initialization

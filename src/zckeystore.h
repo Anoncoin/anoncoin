@@ -1,14 +1,11 @@
 #ifndef _ZCKEYSTORE_H_
 #define _ZCKEYSTORE_H_
 
-#ifdef ENABLE_ZEROCOIN
-
 #include <map>
 #include <string>
-// PrivateCoin
-#include "zerocoin/Coin.h"
+#include "zerocoin/Coin.h"   // PrivateCoin
 
-typedef std::map<std::string, PrivateCoin> zPrivCoinMap;
+typedef std::map<std::string, libzerocoin::PrivateCoin> zPrivCoinMap;
 
 class ZCKeyStore
 {
@@ -21,8 +18,6 @@ private:
 };
 
 
-
-#endif // Enable ZC
 
 #endif
 

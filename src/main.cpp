@@ -11,10 +11,7 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "checkqueue.h"
-
-#ifdef ENABLE_ZEROCOIN
 #include "Zerocoin.h"
-#endif
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>

@@ -198,12 +198,10 @@ enum opcodetype
     OP_NOP9 = 0xb8,
     OP_NOP10 = 0xb9,
 
-#ifdef ENABLE_ZEROCOIN
     // Zerocoin
     OP_ZCSPEND      = 0xd7,
     OP_ZCCHECKPT    = 0xd4,
     OP_ZCMINT       = 0xd3,
-#endif
 
     // template matching params
     OP_SMALLINTEGER = 0xfa,

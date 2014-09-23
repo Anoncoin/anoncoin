@@ -215,12 +215,10 @@ const char* GetOpName(opcodetype opcode)
     case OP_NOP9                   : return "OP_NOP9";
     case OP_NOP10                  : return "OP_NOP10";
 
-#ifdef ENABLE_ZEROCOIN
     // Zerocoin
     case OP_ZCSPEND                : return "OP_ZCSPEND";
     case OP_ZCCHECKPT              : return "OP_ZCCHECKPT";
     case OP_ZCMINT                 : return "OP_ZCMINT";
-#endif
 
     // template matching params
     case OP_PUBKEYHASH             : return "OP_PUBKEYHASH";
@@ -710,7 +708,6 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 }
                 break;
 
-#ifdef ENABLE_ZEROCOIN
                 /** // GNOSIS TODO: convert to template matching, rather than interpreted script
                 // FSM code for Zerocoin
                 case OP_ZCMINT:
@@ -737,7 +734,6 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     if (stack.size() < 3)
                         return false;
                 break; */
-#endif
 
                 case OP_ADD:
                 case OP_SUB:
