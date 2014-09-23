@@ -723,9 +723,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     try {
         if (fTestNet)
         {
-            zc::Params* zerocoinParams = new zc::Params();
-
-            assert(zerocoinParams);
+            // params are generated the first time GetZerocoinParams() is called
+            zc::Params* tmp_zerocoinParams = GetZerocoinParams();
+            assert(tmp_zerocoinParams);
             printf("Successfully loaded Zerocoin params.\n");
         }
     }

@@ -223,7 +223,8 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/macnotificationhandler.h \
     src/qt/splashscreen.h \
     src/qt/showi2paddresses.h \
-    src/qt/i2poptionswidget.h
+    src/qt/i2poptionswidget.h \
+    src/zcparams.h
 
 SOURCES += src/qt/bitcoin.cpp \
     src/qt/bitcoingui.cpp \
@@ -298,7 +299,8 @@ SOURCES += src/qt/bitcoin.cpp \
     src/txdb.cpp \
     src/qt/splashscreen.cpp \
     src/qt/showi2paddresses.cpp \
-    src/qt/i2poptionswidget.cpp
+    src/qt/i2poptionswidget.cpp \
+    src/zcparams.cpp
 
 RESOURCES += src/qt/bitcoin.qrc
 
