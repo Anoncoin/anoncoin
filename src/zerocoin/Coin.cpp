@@ -18,8 +18,24 @@ PublicCoin::PublicCoin(const Params* p):
 	}
 };
 
+PublicCoin::PublicCoin(const Params* p, const Bignum& coin):
+	params(p),
+	value(coin),
+	has_denomination(false),
+	initialized(true)
+{
+	if (this->params->initialized == false) {
+		throw ZerocoinException("Params are not initialized");
+	}
+};
+
 PublicCoin::PublicCoin(const Params* p, const Bignum& coin, const CoinDenomination d):
-	params(p), value(coin), denomination(d), initialized(true) {
+	params(p),
+	value(coin),
+	denomination(d),
+	has_denomination(true),
+	initialized(true)
+{
 	if (this->params->initialized == false) {
 		throw ZerocoinException("Params are not initialized");
 	}
@@ -51,6 +67,16 @@ CoinDenomination PublicCoin::getDenomination() const {
 	return this->denomination;
 }
 
+// set the denomination if coin does not have one; otherwise, throw ZerocoinException
+void PublicCoin::setDenomination(const CoinDenomination d) {
+	if (this->has_denomination) {
+		throw ZerocoinException("attempted to set denomination of PublicCoin that already has one");
+	}
+
+	this->denomination = d;
+	this->has_denomination = true;
+}
+
 bool PublicCoin::validate() const{
 	if (!this->initialized) {
 		throw ZerocoinException("attempted to validate PublicCoin that was not initialized!");
@@ -61,7 +87,20 @@ bool PublicCoin::validate() const{
 }
 
 //PrivateCoin class
-PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): params(p), publicCoin(p), initialized(false) {
+PrivateCoin::PrivateCoin(const Params* p): params(p), publicCoin(p), initialized(false) {
+	this->_init();
+}
+
+PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination):
+	params(p),
+	publicCoin(p),
+	initialized(false)
+{
+	this->_init();
+	this->publicCoin.setDenomination(denomination);
+}
+
+void PrivateCoin::_init() {
 	// Verify that the parameters are valid
 	if(this->params->initialized == false) {
 		throw ZerocoinException("Params are not initialized");
@@ -71,10 +110,10 @@ PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): 
 	// Mint a new coin with a random serial number using the fast process.
 	// This is more vulnerable to timing attacks so don't mint coins when
 	// somebody could be timing you.
-	this->mintCoinFast(denomination);
+	this->mintCoinFast();
 #else
 	// Mint a new coin with a random serial number using the standard process.
-	this->mintCoin(denomination);
+	this->mintCoin();
 #endif
 	
 	this->initialized = true;
@@ -82,7 +121,7 @@ PrivateCoin::PrivateCoin(const Params* p, const CoinDenomination denomination): 
 
 /**
  *
- * @return the coins serial number
+ * @return the coin's serial number
  */
 Bignum PrivateCoin::getSerialNumber() const {
 	if (!this->initialized) {
@@ -98,7 +137,15 @@ Bignum PrivateCoin::getRandomness() const {
 	return this->randomness;
 }
 
-void PrivateCoin::mintCoin(const CoinDenomination denomination) {
+CoinDenomination PrivateCoin::getDenomination() const {
+	return this->publicCoin.getDenomination();
+}
+
+void PrivateCoin::setDenomination(const CoinDenomination d) {
+	this->publicCoin.setDenomination(d);
+}
+
+void PrivateCoin::mintCoin() {
 	// Repeat this process up to MAX_COINMINT_ATTEMPTS times until
 	// we obtain a prime number
 	for(uint32_t attempt = 0; attempt < MAX_COINMINT_ATTEMPTS; attempt++) {
@@ -124,7 +171,7 @@ void PrivateCoin::mintCoin(const CoinDenomination denomination) {
 			// Found a valid coin. Store it.
 			this->serialNumber = s;
 			this->randomness = coin.getRandomness();
-			this->publicCoin = PublicCoin(params,coin.getCommitmentValue(), denomination);
+			this->publicCoin = PublicCoin(params,coin.getCommitmentValue());
 
 			// Success! We're done.
 			return;
@@ -136,7 +183,7 @@ void PrivateCoin::mintCoin(const CoinDenomination denomination) {
 	throw ZerocoinException("Unable to mint a new Zerocoin (too many attempts)");
 }
 
-void PrivateCoin::mintCoinFast(const CoinDenomination denomination) {
+void PrivateCoin::mintCoinFast() {
 	
 	// Generate a random serial number in the range 0...{q-1} where
 	// "q" is the order of the commitment group.
@@ -164,7 +211,7 @@ void PrivateCoin::mintCoinFast(const CoinDenomination denomination) {
 			// Found a valid coin. Store it.
 			this->serialNumber = s;
 			this->randomness = r;
-			this->publicCoin = PublicCoin(params, commitmentValue, denomination);
+			this->publicCoin = PublicCoin(params, commitmentValue);
 				
 			// Success! We're done.
 			return;

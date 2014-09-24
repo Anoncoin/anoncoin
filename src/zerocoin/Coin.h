@@ -88,10 +88,13 @@ public:
 	 * @param p cryptographic paramters
 	 * @param coin the value of the commitment.
 	 * @param denomination The denomination of the coin.
+	 *		  If not present, indeterminate denomination.
 	 */
+	PublicCoin( const Params* p, const Bignum& coin);
 	PublicCoin( const Params* p, const Bignum& coin, const CoinDenomination d);
 	Bignum getValue() const;
 	CoinDenomination getDenomination() const;
+	void setDenomination(const CoinDenomination d);
 	bool operator==(const PublicCoin& rhs) const;
 	bool operator!=(const PublicCoin& rhs) const;
 	/** Checks that a coin prime
@@ -102,6 +105,9 @@ public:
     bool validate() const;
 	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
+		if (!has_denomination) {
+			throw ZerocoinException("cannot perform serialization operations on coin without denomination");
+		}
 	    READWRITE(value);
 	    READWRITE(denomination);
 	)
@@ -109,6 +115,7 @@ private:
 	const Params* params;
 	Bignum value;
 	CoinDenomination denomination;
+	bool has_denomination;
 	bool initialized;
 };
 
@@ -129,10 +136,13 @@ public:
 	PrivateCoin(const Params* p, Stream& strm): params(p), publicCoin(p) {
 		strm >> *this;
 	}
+	PrivateCoin(const Params* p);
 	PrivateCoin(const Params* p,const CoinDenomination denomination);
 	PublicCoin getPublicCoin() const;
 	Bignum getSerialNumber() const;
 	Bignum getRandomness() const;
+	CoinDenomination getDenomination() const;
+	void setDenomination(const CoinDenomination d);
 
 	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
@@ -141,6 +151,7 @@ public:
 	    READWRITE(serialNumber);
 	)
 private:
+	void _init();
 	const Params* params;
 	PublicCoin publicCoin;
 	Bignum randomness;
@@ -149,7 +160,6 @@ private:
 
 	/**
 	 * @brief Mint a new coin.
-	 * @param denomination the denomination of the coin to mint
 	 * @throws ZerocoinException if the process takes too long
 	 *
 	 * Generates a new Zerocoin by (a) selecting a random serial
@@ -157,11 +167,10 @@ private:
 	 * the resulting commitment is prime. Stores the
 	 * resulting commitment (coin) and randomness (trapdoor).
 	 **/
-	void mintCoin(const CoinDenomination denomination);
+	void mintCoin();
 	
 	/**
 	 * @brief Mint a new coin using a faster process.
-	 * @param denomination the denomination of the coin to mint
 	 * @throws ZerocoinException if the process takes too long
 	 *
 	 * Generates a new Zerocoin by (a) selecting a random serial
@@ -173,7 +182,7 @@ private:
 	 * to timing attacks. Don't use it if you think someone
 	 * could be timing your coin minting.
 	 **/
-	void mintCoinFast(const CoinDenomination denomination);
+	void mintCoinFast();
 
 };
 
