@@ -16,7 +16,7 @@
 #define ACCPROOF_KDPRIME                    128
 #define MAX_COINMINT_ATTEMPTS               10000
 #define ZEROCOIN_MINT_PRIME_PARAM			20
-#define ZEROCOIN_VERSION_STRING             "0.12"
+#define ZEROCOIN_VERSION_STRING             "0.13"
 #define ZEROCOIN_VERSION_INT				11
 #define ZEROCOIN_PROTOCOL_VERSION           "1"
 #define HASH_OUTPUT_BITS                    256
