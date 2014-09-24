@@ -77,7 +77,7 @@ public:
 class PublicCoin {
 public:
 	template<typename Stream>
-	PublicCoin(const Params* p, Stream& strm): params(p) {
+	PublicCoin(Stream& strm, const Params* p): params(p) {
 		strm >> *this;
 	}
 

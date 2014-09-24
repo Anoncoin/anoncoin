@@ -98,7 +98,7 @@ ZerocoinTutorial()
 		/********************************************************************/
 
 		// Deserialize the public coin into a fresh object.
-		libzerocoin::PublicCoin pubCoinNew(params, serializedCoin);
+		libzerocoin::PublicCoin pubCoinNew(serializedCoin, params);
 
 		// Now make sure the coin is valid.
 		if (!pubCoinNew.validate()) {
