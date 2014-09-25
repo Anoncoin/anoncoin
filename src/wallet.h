@@ -17,6 +17,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "walletdb.h"
+#include "zcparams.h"
 
 extern bool bSpendZeroConfChange;
 

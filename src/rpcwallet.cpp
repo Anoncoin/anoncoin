@@ -15,6 +15,7 @@ using namespace std;
 using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
+namespace zc = libzerocoin;
 
 int64 nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
@@ -126,6 +127,40 @@ Value getnewaddress(const Array& params, bool fHelp)
 
     return CBitcoinAddress(keyID).ToString();
 }
+
+
+
+
+Value getnewzerocoins(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "getnewzerocoins <count>\n"             // GNOSIS TODO: [account]
+            "Mint the specified number of zerocoins (unspecified denomination)");
+
+    int n = params[0].get_int();
+    if (n < 1)
+        throw runtime_error("Error: expected a positive integer");
+
+    zc::Params* p = GetZerocoinParams();
+    Array ret;
+    for (int i = 0; i < n; i++) {
+        // GNOSIS TODO: mint in a separate thread (like with the keypool)
+        zc::PrivateCoin_Ptr pprivcoin(new zc::PrivateCoin(p)); // no denomination
+
+        //  save in coinstore
+        //XXX GNOSIS TODO
+
+        //  get PublicCoin value
+        CBigNum bnPublicCoin = pprivcoin->getPublicCoin().getValue();
+
+        //  push hex into array
+        ret.push_back(bnPublicCoin.GetHex());
+    }
+
+    return ret;
+}
+
 
 
 CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew=false)
