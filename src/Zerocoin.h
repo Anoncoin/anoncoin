@@ -8,6 +8,7 @@
 #define ZEROCOIN_H_
 
 #include <stdexcept>
+#include <boost/shared_ptr.hpp>
 
 #define ZEROCOIN_DEFAULT_SECURITYLEVEL      80
 #define ZEROCOIN_MIN_SECURITY_LEVEL         80
