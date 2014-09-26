@@ -8,6 +8,12 @@
 
 typedef std::map<CBigNum, libzerocoin::PrivateCoin_Ptr> ZerocoinMap;
 
+class ZerocoinStoreError: public std::runtime_error
+{
+public:
+    explicit ZerocoinStoreError(const std::string& str) : std::runtime_error(str) {}
+};
+
 
 // this is intended to have a similar interface to CKeyStore
 class CZerocoinStore
@@ -24,7 +30,9 @@ public:
     bool HaveCoin(const CBigNum& bnPublicCoinValue) const;
 
     // Get a PrivateCoin corresponding to the given PublicCoin from the store.
-    libzerocoin::PrivateCoin_Ptr GetCoin() const;
+    // throws ZerocoinStoreError if not found
+    libzerocoin::PrivateCoin_Ptr GetCoin(const libzerocoin::PublicCoin& pubcoin) const;
+    libzerocoin::PrivateCoin_Ptr GetCoin(const CBigNum& bnPublicCoinValue) const;
     // TODO? GetCoins()
 
 private:

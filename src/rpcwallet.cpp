@@ -149,10 +149,11 @@ Value getnewzerocoins(const Array& params, bool fHelp)
         zc::PrivateCoin_Ptr pprivcoin(new zc::PrivateCoin(p)); // no denomination
 
         //  save in coinstore
-        //XXX GNOSIS TODO
+        CZerocoinStore *pstore = GetZerocoinStore();
+        pstore->AddCoin(pprivcoin);
 
         //  get PublicCoin value
-        CBigNum bnPublicCoin = pprivcoin->getPublicCoin().getValue();
+        CBigNum bnPublicCoin = pprivcoin->getPublicCoin()->getValue();
 
         //  push hex into array
         ret.push_back(bnPublicCoin.GetHex());

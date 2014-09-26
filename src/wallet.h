@@ -18,6 +18,7 @@
 #include "util.h"
 #include "walletdb.h"
 #include "zcparams.h"
+#include "zcstore.h"
 
 extern bool bSpendZeroConfChange;
 
