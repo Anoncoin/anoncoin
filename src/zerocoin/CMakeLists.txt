@@ -148,6 +148,7 @@ install(FILES
   Params.h
   SerialNumberSignatureOfKnowledge.h
   SpendMetaData.h
+  SetupOpenSSL.h
   ../Zerocoin.h
   DESTINATION ${ZEROCOIN_INCLUDE_DIR}
 )

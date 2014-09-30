@@ -13,6 +13,10 @@ using namespace std;
 #include <exception>
 #include "../Zerocoin.h"
 
+// setup OpenSSL PRNG for multi-threading
+// do this only if using Zerocoin outside of anoncoin{d,-qt}
+#include "OpenSSLSetup.h"
+
 #define COINS_TO_ACCUMULATE     5
 #define DUMMY_TRANSACTION_HASH  0 // in real life these would be uint256 hashes
 #define DUMMY_ACCUMULATOR_ID    0 // in real life these would be uint256 hashes

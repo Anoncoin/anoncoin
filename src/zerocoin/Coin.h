@@ -11,17 +11,7 @@
 
 #include "../bignum.h"
 #include "Params.h"
-
 namespace libzerocoin {
-
-// forward declarations
-class PrivateCoin;
-class PublicCoin;
-
-// smart pointers
-typedef boost::shared_ptr<PublicCoin> PublicCoin_Ptr;
-typedef boost::shared_ptr<PrivateCoin> PrivateCoin_Ptr;
-
 
 class CoinDenomination {
 public:
@@ -163,7 +153,7 @@ public:
 private:
 	void _init();
 	const Params* params;
-	PublicCoin publicCoin;		// TODO: PublicCoin_Ptr
+	PublicCoin publicCoin;
 	Bignum randomness;
 	Bignum serialNumber;
 	bool initialized;
