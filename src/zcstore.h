@@ -6,7 +6,7 @@
 #include "Zerocoin.h"
 
 
-typedef std::map<CBigNum, libzerocoin::PrivateCoin_Ptr> ZerocoinMap;
+typedef std::map<CBigNum, libzerocoin::PrivateCoin*> PrivateCoinMap;
 
 class ZerocoinStoreError: public std::runtime_error
 {
@@ -16,14 +16,14 @@ public:
 
 
 // this is intended to have a similar interface to CKeyStore
-class CZerocoinStore
+class CPrivateCoinStore
 {
 protected:
     mutable CCriticalSection cs_CoinStore;
 
 public:
     // add a PrivateCoin to the store
-    void AddCoin(libzerocoin::PrivateCoin_Ptr pprivcoin);
+    void AddCoin(const libzerocoin::PrivateCoin& privcoin);
 
     // Check whether a PrivateCoin corresponding to the given PublicCoin is present in the store.
     bool HaveCoin(const libzerocoin::PublicCoin& pubcoin) const;
@@ -31,16 +31,21 @@ public:
 
     // Get a PrivateCoin corresponding to the given PublicCoin from the store.
     // throws ZerocoinStoreError if not found
-    libzerocoin::PrivateCoin_Ptr GetCoin(const libzerocoin::PublicCoin& pubcoin) const;
-    libzerocoin::PrivateCoin_Ptr GetCoin(const CBigNum& bnPublicCoinValue) const;
+    // IMPORTANT: the PrivateCoin referred to is owned by this CPrivateCoinStore!
+    const libzerocoin::PrivateCoin& GetCoin(const libzerocoin::PublicCoin& pubcoin) const;
+    const libzerocoin::PrivateCoin& GetCoin(const CBigNum& bnPublicCoinValue) const;
     // TODO? GetCoins()
 
-private:
-    ZerocoinMap mapCoins;
-};
+    ~CPrivateCoinStore()
+    {
+        BOOST_FOREACH(PrivateCoinMap::value_type& item, mapCoins) {
+            delete item.second;
+        }
+    }
 
-// gets the global instance, initializing it on first call
-CZerocoinStore* GetZerocoinStore();
+private:
+    PrivateCoinMap mapCoins;
+};
 
 #endif /* ifndef ANONCOIN_ZCSTORE_H_ */
 

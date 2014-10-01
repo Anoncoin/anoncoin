@@ -15,7 +15,8 @@ using namespace std;
 using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
-namespace zc = libzerocoin;
+using libzerocoin::Params;
+using libzerocoin::PrivateCoin;
 
 int64 nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
@@ -142,18 +143,18 @@ Value getnewzerocoins(const Array& params, bool fHelp)
     if (n < 1)
         throw runtime_error("Error: expected a positive integer");
 
-    zc::Params* p = GetZerocoinParams();
+    Params* p = GetZerocoinParams();
     Array ret;
     for (int i = 0; i < n; i++) {
         // GNOSIS TODO: mint in a separate thread (like with the keypool)
-        zc::PrivateCoin_Ptr pprivcoin(new zc::PrivateCoin(p)); // no denomination
+        PrivateCoin privcoin(p); // no denomination
 
         //  save in coinstore
-        CZerocoinStore *pstore = GetZerocoinStore();
-        pstore->AddCoin(pprivcoin);
+        CPrivateCoinStore *pstore = GetZerocoinStore();
+        pstore->AddCoin(privcoin);
 
         //  get PublicCoin value
-        CBigNum bnPublicCoin = pprivcoin->getPublicCoin()->getValue();
+        CBigNum bnPublicCoin = privcoin.getPublicCoin().getValue();
 
         //  push hex into array
         ret.push_back(bnPublicCoin.GetHex());

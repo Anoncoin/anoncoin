@@ -1,19 +1,25 @@
 #include "zcstore.h"
 
-namespace zc = libzerocoin;
+using libzerocoin::PublicCoin;
+using libzerocoin::PrivateCoin;
 
 
 // GNOSIS TODO: allow persistent storage to a Berkeley DB file
 
-// add a PrivateCoin to the store
-void CZerocoinStore::AddCoin(zc::PrivateCoin_Ptr pprivcoin) {
-    CBigNum bnPublicCoinValue(pprivcoin->getPublicCoin()->getValue());
-    mapCoins[bnPublicCoinValue] = pprivcoin;
+// add a copy of the given PrivateCoin to the store
+void CPrivateCoinStore::AddCoin(const PrivateCoin& privcoin) {
+    PrivateCoin* pprivcoin = new PrivateCoin(privcoin);
+    CBigNum bnPublicCoinValue(pprivcoin->getPublicCoin().getValue());
+    {
+        LOCK(cs_CoinStore);
+        if (mapCoins.count(bnPublicCoinValue) == 0)
+            mapCoins[bnPublicCoinValue] = pprivcoin;
+    }
 }
 
 
 // check if a PrivateCoin is in the store
-bool CZerocoinStore::HaveCoin(const CBigNum& bnPublicCoinValue) const
+bool CPrivateCoinStore::HaveCoin(const CBigNum& bnPublicCoinValue) const
 {
     bool result;
     {
@@ -23,7 +29,7 @@ bool CZerocoinStore::HaveCoin(const CBigNum& bnPublicCoinValue) const
     return result;
 }
 
-bool CZerocoinStore::HaveCoin(const zc::PublicCoin& pubcoin) const
+bool CPrivateCoinStore::HaveCoin(const PublicCoin& pubcoin) const
 {
     return this->HaveCoin(pubcoin.getValue());
 }
@@ -32,28 +38,19 @@ bool CZerocoinStore::HaveCoin(const zc::PublicCoin& pubcoin) const
 
 // get the PrivateCoin from the store
 // throws ZerocoinStoreError if not found
-zc::PrivateCoin_Ptr CZerocoinStore::GetCoin(const CBigNum& bnPublicCoinValue) const
+const PrivateCoin& CPrivateCoinStore::GetCoin(const CBigNum& bnPublicCoinValue) const
 {
     {
         LOCK(cs_CoinStore);
-        ZerocoinMap::const_iterator mi = mapCoins.find(bnPublicCoinValue);
+        PrivateCoinMap::const_iterator mi = mapCoins.find(bnPublicCoinValue);
         if (mi != mapCoins.end()) {
-            return mi->second;
+            return *mi->second;
         }
     }
-    throw ZerocoinStoreError("PrivateCoin not found in this CZerocoinStore");
+    throw ZerocoinStoreError("PrivateCoin not found in this CPrivateCoinStore");
 }
 
-zc::PrivateCoin_Ptr CZerocoinStore::GetCoin(const zc::PublicCoin& pubcoin) const
+const PrivateCoin& CPrivateCoinStore::GetCoin(const PublicCoin& pubcoin) const
 {
     return this->GetCoin(pubcoin.getValue());
-}
-
-
-
-// gets the global instance, initializing it on first call
-CZerocoinStore* GetZerocoinStore()
-{
-    static CZerocoinStore coinstore;
-    return &coinstore;
 }
