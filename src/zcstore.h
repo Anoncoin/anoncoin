@@ -2,6 +2,7 @@
 #define ANONCOIN_ZCSTORE_H_
 
 #include <map>
+#include <boost/foreach.hpp>
 #include "sync.h"    // CCriticalSection
 #include "Zerocoin.h"
 
@@ -22,6 +23,8 @@ protected:
     mutable CCriticalSection cs_CoinStore;
 
 public:
+    // TODO? NewCoin
+
     // add a PrivateCoin to the store
     void AddCoin(const libzerocoin::PrivateCoin& privcoin);
 

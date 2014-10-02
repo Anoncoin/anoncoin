@@ -84,6 +84,7 @@ private:
     // the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
     int nWalletMaxVersion;
 
+    CPrivateCoinStore* pprivZC;
 public:
     mutable CCriticalSection cs_wallet;
 
@@ -105,6 +106,7 @@ public:
         nMasterKeyMaxID = 0;
         pwalletdbEncryption = NULL;
         nOrderPosNext = 0;
+        pprivZC = NULL;
     }
     CWallet(std::string strWalletFileIn)
     {
@@ -115,6 +117,13 @@ public:
         nMasterKeyMaxID = 0;
         pwalletdbEncryption = NULL;
         nOrderPosNext = 0;
+        pprivZC = NULL;
+    }
+
+    ~CWallet()
+    {
+        if (pprivZC)
+            delete pprivZC;
     }
 
     std::map<uint256, CWalletTx> mapWallet;
