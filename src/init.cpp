@@ -30,6 +30,7 @@ using namespace boost;
 namespace zc = libzerocoin;
 
 CWallet* pwalletMain;
+CWallet* pwalletZC;
 CClientUIInterface uiInterface;
 
 #ifdef WIN32
@@ -124,6 +125,8 @@ void Shutdown()
     UnregisterWallet(pwalletMain);
     if (pwalletMain)
         delete pwalletMain;
+    if (pwalletZC)      // GNOSIS TODO: other cleanup for ZC wallet in this function (see above)
+        delete pwalletZC;
     printf("Shutdown : done\n");
 }
 
@@ -1077,12 +1080,41 @@ bool AppInit2(boost::thread_group& threadGroup)
         return false;
     }
 
-    // ********************************************************* Step 8: load wallet
+    // ********************************************************* Step 8: load wallet.dat and zerocoin_wallet.dat
+    // GNOSIS TODO: translations in src/qt/locale
 
     if (fDisableWallet) {
         printf("Wallet disabled!\n");
         pwalletMain = NULL;
+        pwalletZC = NULL;
     } else {
+        uiInterface.InitMessage(_("Loading Zerocoin wallet..."));
+        pwalletZC = new CWallet("zerocoin_wallet.dat");
+        bool fZCFirstRun;
+        DBErrors nLoadZCWalletRet = pwalletZC->LoadWallet(fZCFirstRun);
+        if (nLoadZCWalletRet != DB_LOAD_OK)
+        {
+            if (nLoadZCWalletRet == DB_CORRUPT)
+                strErrors << _("Error loading zerocoin_wallet.dat: Wallet corrupted") << "\n";
+            else if (nLoadZCWalletRet == DB_NONCRITICAL_ERROR)
+            {
+                string msg(_("Warning: error reading zerocoin_wallet.dat! All keys read correctly, but transaction data"
+                             " or address book entries might be missing or incorrect."));
+                InitWarning(msg);
+            }
+            else if (nLoadZCWalletRet == DB_TOO_NEW)
+                strErrors << _("Error loading zerocoin_wallet.dat: Wallet requires newer version of Anoncoin") << "\n";
+            else if (nLoadZCWalletRet == DB_NEED_REWRITE)
+            {
+                strErrors << _("Zerocoin wallet needs to be rewritten: restart Anoncoin to complete") << "\n";
+                printf("%s", strErrors.str().c_str());
+                return InitError(strErrors.str());
+            }
+            else
+                strErrors << _("Error loading wallet.dat") << "\n";
+        }
+        // GNOSIS TODO: recovery stuff like for regular wallet.dat
+
         uiInterface.InitMessage(_("Loading wallet..."));
 
         nStart = GetTimeMillis();
@@ -1103,7 +1135,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 strErrors << _("Error loading wallet.dat: Wallet requires newer version of Anoncoin") << "\n";
             else if (nLoadWalletRet == DB_NEED_REWRITE)
             {
-                strErrors << _("Wallet needed to be rewritten: restart Anoncoin to complete") << "\n";
+                strErrors << _("Wallet needs to be rewritten: restart Anoncoin to complete") << "\n";
                 printf("%s", strErrors.str().c_str());
                 return InitError(strErrors.str());
             }
