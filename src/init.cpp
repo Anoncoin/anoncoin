@@ -1114,6 +1114,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 strErrors << _("Error loading wallet.dat") << "\n";
         }
         // GNOSIS TODO: recovery stuff like for regular wallet.dat
+        RegisterWallet(pwalletZC);
 
         uiInterface.InitMessage(_("Loading wallet..."));
 

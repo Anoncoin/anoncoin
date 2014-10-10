@@ -40,6 +40,14 @@ enum WalletFeature
     FEATURE_LATEST = 80000
 };
 
+// storage disposition: can this wallet store Zerocoins, regular transactions, both, or is it unspecified?
+enum ZCStorageDisp
+{
+    ZCDISP_BOTH = 0,
+    ZCDISP_ZEROCOINS_ONLY = 1,
+    ZCDISP_TXNS_ONLY = 2,
+};
+
 
 /** A key pool entry */
 class CKeyPool
@@ -85,6 +93,8 @@ private:
     int nWalletMaxVersion;
 
     CPrivateCoinStore* pprivZC;
+
+    enum ZCStorageDisp nZCDisp;
 public:
     mutable CCriticalSection cs_wallet;
 
@@ -107,6 +117,7 @@ public:
         pwalletdbEncryption = NULL;
         nOrderPosNext = 0;
         pprivZC = NULL;
+        nZCDisp = ZCDISP_BOTH;
     }
     CWallet(std::string strWalletFileIn)
     {
@@ -118,6 +129,7 @@ public:
         pwalletdbEncryption = NULL;
         nOrderPosNext = 0;
         pprivZC = NULL;
+        nZCDisp = ZCDISP_BOTH;
     }
 
     ~CWallet()

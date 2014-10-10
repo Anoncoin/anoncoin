@@ -22,7 +22,6 @@ enum DBErrors
     DB_NONCRITICAL_ERROR,
     DB_TOO_NEW,
     DB_LOAD_FAIL,
-    DB_WRONG_WALLET_FILE,       // GNOSIS TODO: necessary?
     DB_NEED_REWRITE
 };
 
