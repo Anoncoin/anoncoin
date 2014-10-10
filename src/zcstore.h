@@ -19,10 +19,9 @@ public:
 // this is intended to have a similar interface to CKeyStore
 class CPrivateCoinStore
 {
-protected:
+public:
     mutable CCriticalSection cs_CoinStore;
 
-public:
     // TODO? NewCoin
 
     // add a PrivateCoin to the store
