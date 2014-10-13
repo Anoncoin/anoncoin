@@ -148,6 +148,10 @@ public:
 
     std::set<COutPoint> setLockedCoins;
 
+    // get/set ZC disp
+    enum ZCStorageDisp GetZCStorageDisposition() { return nZCDisp; }
+    void SetZCStorageDisposition(enum ZCStorageDisp d) { nZCDisp = d; }
+
     // check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf) { return nWalletMaxVersion >= wf; }
 

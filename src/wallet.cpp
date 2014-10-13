@@ -50,6 +50,8 @@ CPubKey CWallet::GenerateNewKey()
 
 bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
 {
+    if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+        return false;
     if (!CCryptoKeyStore::AddKeyPubKey(secret, pubkey))
         return false;
     if (!fFileBacked)
@@ -62,6 +64,8 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
 
 bool CWallet::AddCryptedKey(const CPubKey &vchPubKey, const vector<unsigned char> &vchCryptedSecret)
 {
+    if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+        return false;
     if (!CCryptoKeyStore::AddCryptedKey(vchPubKey, vchCryptedSecret))
         return false;
     if (!fFileBacked)
@@ -83,6 +87,8 @@ bool CWallet::LoadCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigne
 
 bool CWallet::AddCScript(const CScript& redeemScript)
 {
+    if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+        return false;
     if (!CCryptoKeyStore::AddCScript(redeemScript))
         return false;
     if (!fFileBacked)
@@ -375,6 +381,8 @@ void CWallet::MarkDirty()
 
 bool CWallet::AddToWallet(const CWalletTx& wtxIn)
 {
+    if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+        return false;
     uint256 hash = wtxIn.GetHash();
     {
         LOCK(cs_wallet);
@@ -528,6 +536,8 @@ bool CWallet::AddToWalletIfInvolvingMe(const uint256 &hash, const CTransaction& 
 
 bool CWallet::EraseFromWallet(uint256 hash)
 {
+    if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+        return false;
     if (!fFileBacked)
         return false;
     {
@@ -1185,6 +1195,11 @@ bool CWallet::SelectCoins(int64 nTargetValue, set<pair<const CWalletTx*,unsigned
 bool CWallet::CreateTransaction(const vector<pair<CScript, int64> >& vecSend,
                                 CWalletTx& wtxNew, CReserveKey& reservekey, int64& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl)
 {
+    if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+    {
+        strFailReason = _("Transaction cannot be created in a Zerocoin-only wallet");
+        return false;
+    }
     int64 nValue = 0;
     BOOST_FOREACH (const PAIRTYPE(CScript, int64)& s, vecSend)
     {

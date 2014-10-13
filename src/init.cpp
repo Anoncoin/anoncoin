@@ -1090,6 +1090,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     } else {
         uiInterface.InitMessage(_("Loading Zerocoin wallet..."));
         pwalletZC = new CWallet("zerocoin_wallet.dat");
+        pwalletZC->SetZCStorageDisposition(ZCDISP_ZEROCOINS_ONLY);
+        // GNOSIS TODO: need some way of setting ZCDISP_ZEROCOINS_ONLY if a new DB is created
         bool fZCFirstRun;
         DBErrors nLoadZCWalletRet = pwalletZC->LoadWallet(fZCFirstRun);
         if (nLoadZCWalletRet != DB_LOAD_OK)
@@ -1121,6 +1123,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         nStart = GetTimeMillis();
         bool fFirstRun = true;
         pwalletMain = new CWallet("wallet.dat");
+        pwalletMain->SetZCStorageDisposition(ZCDISP_TXNS_ONLY);
         DBErrors nLoadWalletRet = pwalletMain->LoadWallet(fFirstRun);
         if (nLoadWalletRet != DB_LOAD_OK)
         {
