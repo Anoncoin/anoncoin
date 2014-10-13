@@ -17,8 +17,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "walletdb.h"
-#include "zcparams.h"
-#include "zcstore.h"
+#include "zc.h"
 
 extern bool bSpendZeroConfChange;
 
@@ -169,7 +168,12 @@ public:
     // Adds a key to the store, and saves it to disk.
     bool AddKeyPubKey(const CKey& key, const CPubKey &pubkey);
     // Adds a key to the store, without saving it to disk (used by LoadWallet)
-    bool LoadKey(const CKey& key, const CPubKey &pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
+    bool LoadKey(const CKey& key, const CPubKey &pubkey)
+    {
+        if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+            return false;
+        return CCryptoKeyStore::AddKeyPubKey(key, pubkey);
+    }
 
     bool LoadMinVersion(int nVersion) { nWalletVersion = nVersion; nWalletMaxVersion = std::max(nWalletMaxVersion, nVersion); return true; }
 
@@ -178,7 +182,12 @@ public:
     // Adds an encrypted key to the store, without saving it to disk (used by LoadWallet)
     bool LoadCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
     bool AddCScript(const CScript& redeemScript);
-    bool LoadCScript(const CScript& redeemScript) { return CCryptoKeyStore::AddCScript(redeemScript); }
+    bool LoadCScript(const CScript& redeemScript)
+    {
+        if (nZCDisp == ZCDISP_ZEROCOINS_ONLY)
+            return false;
+        return CCryptoKeyStore::AddCScript(redeemScript);
+    }
 
     bool Unlock(const SecureString& strWalletPassphrase);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);

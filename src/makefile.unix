@@ -146,8 +146,7 @@ OBJS= \
     obj/noui.o \
     obj/leveldb.o \
     obj/txdb.o \
-	obj/zcparams.o \
-	obj/zcstore.o \
+	obj/zc.o \
 	zerocoin/libzerocoin.a
 
 

@@ -1,10 +1,16 @@
-#ifndef ANONCOIN_ZCSTORE_H_
-#define ANONCOIN_ZCSTORE_H_
+#ifndef ANONCOIN_ZC_H_
+#define ANONCOIN_ZC_H_
 
 #include <map>
 #include <boost/foreach.hpp>
 #include "sync.h"    // CCriticalSection
 #include "Zerocoin.h"
+
+
+
+// contains static Params that is initialized on first use
+libzerocoin::Params* GetZerocoinParams();
+
 
 
 typedef std::map<CBigNum, libzerocoin::PrivateCoin*> PrivateCoinMap;
@@ -49,5 +55,4 @@ private:
     PrivateCoinMap mapCoins;
 };
 
-#endif /* ifndef ANONCOIN_ZCSTORE_H_ */
-
+#endif /* #ifndef ANONCOIN_ZC_H */

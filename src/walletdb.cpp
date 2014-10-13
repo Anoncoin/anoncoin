@@ -200,6 +200,10 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         }
         else if (strType == "tx")
         {
+            if (pwallet->GetZCStorageDisposition() == ZCDISP_ZEROCOINS_ONLY)
+            {
+                return false;
+            }
             uint256 hash;
             ssKey >> hash;
             CWalletTx wtx;

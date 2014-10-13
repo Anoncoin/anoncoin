@@ -2,10 +2,19 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zcstore.h"
+#include "zc.h"
 
+using libzerocoin::Params;
 using libzerocoin::PublicCoin;
 using libzerocoin::PrivateCoin;
+
+
+// ensure that Zerocoin parameters are initialized exactly once, and before first use.
+Params* GetZerocoinParams()
+{
+    static Params params;
+    return &params;
+}
 
 
 // GNOSIS TODO: allow persistent storage to a Berkeley DB file

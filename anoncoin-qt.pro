@@ -224,8 +224,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/splashscreen.h \
     src/qt/showi2paddresses.h \
     src/qt/i2poptionswidget.h \
-    src/zcstore.h \
-    src/zcparams.h
+    src/zc.h
 
 SOURCES += src/qt/bitcoin.cpp \
     src/qt/bitcoingui.cpp \
@@ -301,8 +300,7 @@ SOURCES += src/qt/bitcoin.cpp \
     src/qt/splashscreen.cpp \
     src/qt/showi2paddresses.cpp \
     src/qt/i2poptionswidget.cpp \
-    src/zcstore.cpp \
-    src/zcparams.cpp
+    src/zc.cpp
 
 RESOURCES += src/qt/bitcoin.qrc
 
