@@ -171,6 +171,12 @@ DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 leveldb/libleveldb.a:
 	@echo "Building LevelDB ..." && cd leveldb && $(MAKE) CC=$(CC) CXX=$(CXX) OPT="$(xCXXFLAGS)" libleveldb.a libmemenv.a && cd ..
 
+
+# Zerocoin
+zerocoin/libzerocoin.a: FORCE
+	cd zerocoin && cmake . && $(MAKE) zerocoin
+
+
 # auto-generated dependencies:
 -include obj/*.P
 -include obj-test/*.P
@@ -216,6 +222,8 @@ clean:
 	-rm -f obj/*.P
 	-rm -f obj-test/*.P
 	-rm -f obj/build.h
+	-rm -f zerocoin/libzerocoin.a
+	-rm -f zerocoin/*.o
 	-cd leveldb && $(MAKE) clean || true
 
 FORCE:

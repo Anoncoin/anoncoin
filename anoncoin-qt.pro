@@ -121,6 +121,17 @@ QMAKE_EXTRA_TARGETS += genleveldb
 # Gross ugly hack that depends on qmake internals, unfortunately there is no other way to do it.
 QMAKE_CLEAN += $$PWD/src/leveldb/libleveldb.a; cd $$PWD/src/leveldb ; $(MAKE) clean
 
+# compile libzerocoin.a; modeled on the above steps for libleveldb.a, but requires CMake
+INCLUDEPATH += src/zerocoin
+LIBS += $$PWD/src/zerocoin/libzerocoin.a
+genlibzc.commands = cd $$PWD/src/zerocoin && cmake . && $(MAKE) zerocoin    # QUESTION: need switch for win32 like above???
+genlibzc.target = $$PWD/src/zerocoin/libzerocoin.a
+genlibzc.depends = FORCE
+PRE_TARGETDEPS += $$PWD/src/zerocoin/libzerocoin.a
+QMAKE_EXTRA_TARGETS += genlibzc
+# Gross ugly hack that depends on qmake internals, unfortunately there is no other way to do it.
+QMAKE_CLEAN += ; cd $$PWD/src/zerocoin ; $(MAKE) clean
+
 # regenerate src/build.h
 !win32|contains(USE_BUILD_INFO, 1) {
     genbuild.depends = FORCE
