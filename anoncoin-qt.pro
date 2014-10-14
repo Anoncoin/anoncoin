@@ -124,7 +124,7 @@ QMAKE_CLEAN += $$PWD/src/leveldb/libleveldb.a; cd $$PWD/src/leveldb ; $(MAKE) cl
 # compile libzerocoin.a; modeled on the above steps for libleveldb.a, but requires CMake
 INCLUDEPATH += src/zerocoin
 LIBS += $$PWD/src/zerocoin/libzerocoin.a
-genlibzc.commands = cd $$PWD/src/zerocoin && cmake . && $(MAKE) zerocoin    # QUESTION: need switch for win32 like above???
+genlibzc.commands = cd $$PWD/src/zerocoin && cmake -DCMAKE_BUILD_TYPE=Debug . && $(MAKE) zerocoin    # QUESTION: need switch for win32 like above???
 genlibzc.target = $$PWD/src/zerocoin/libzerocoin.a
 genlibzc.depends = FORCE
 PRE_TARGETDEPS += $$PWD/src/zerocoin/libzerocoin.a
