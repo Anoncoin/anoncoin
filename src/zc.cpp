@@ -4,6 +4,8 @@
 
 #include "zc.h"
 
+using libzerocoin::Accumulator;
+using libzerocoin::AccumulatorWitness;
 using libzerocoin::Params;
 using libzerocoin::PublicCoin;
 using libzerocoin::PrivateCoin;
@@ -67,3 +69,53 @@ const PrivateCoin& CPrivateCoinStore::GetCoin(const PublicCoin& pubcoin) const
 {
     return this->GetCoin(pubcoin.getValue());
 }
+
+
+
+
+// contains a PrivateCoin along with metadata. Stored in zerocoin_wallet.dat
+
+
+// these change the status by updating what is known
+// throw runtime_error if the values are being supplied out of order
+void CWalletCoin::SetMintOutputAndDenomination(COutPoint outputMint, CoinDenomination denom)
+{
+    if (nStatus > ZCWST_MINTED_NOT_IN_BLOCK)
+        throw std::runtime_error("cannot set CWalletCoin mint output or denomination once mint txn in block"); // or can we (txn malleability...)?
+    nStatus = ZCWST_MINTED_NOT_IN_BLOCK;
+    this->outputMint = outputMint;
+    coin.setDenomination(denom);
+}
+
+
+// we set it to 0 if the new fork does not contain our ZC mint txn
+void CWalletCoin::SetMintedBlock(uint256 hashBlock)
+{
+    if (nStatus < ZCWST_MINTED_NOT_IN_BLOCK)
+        throw std::runtime_error("cannot set CWalletCoin mint block hash once mint txn in block");
+    if (nStatus > ZCWST_MINTED_IN_BLOCK)
+    {
+        // big problem! we have a deep fork!
+        // we assumed that our ZC mint txn was deep enough to not be reverted by a fork, and we created a spend
+        // to fix this, we need to undo all of our spend-related behavior
+        throw std::runtime_error("OMGWTF"); // GNOSIS TODO
+    }
+    nStatus = ZCWST_MINTED_IN_BLOCK;
+    hashMintBlock = hashBlock;
+
+    //XXX GNOSIS TODO: WRONG!!! we may be able to salvage some mapWitnesses
+    mapWitnesses.clear();
+    const Accumulator& chkptPrevBlock = GetParentBlockCheckpoint(hashBlock, coin.getDenomination());
+    AccumulatorWitness w(GetZerocoinParams(), chkptPrevBlock, pubcoin);
+    mapWitnesses.push_back(std::make_pair(hashBlock, w));
+}
+
+void SetSpendInput(CInPoint inputSpend)
+{
+    //XXX
+    nStatus = ZCWST_SPENT_NOT_IN_BLOCK;
+    this->inputSpend = inputSpend;
+}
+
+
+//GetParentBlockCheckpoint // GNOSIS TODO
