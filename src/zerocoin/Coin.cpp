@@ -69,7 +69,10 @@ CoinDenomination PublicCoin::getDenomination() const {
 
 // set the denomination if coin does not have one; otherwise, throw ZerocoinException
 void PublicCoin::setDenomination(const CoinDenomination d) {
-	if (this->has_denomination) {
+    if (!this->initialized) {
+        throw ZerocoinException("attempted to set denomination of PublicCoin that was not initialized!");
+    }
+    if (this->has_denomination && this->denomination != d) {
 		throw ZerocoinException("attempted to set denomination of PublicCoin that already has one");
 	}
 
