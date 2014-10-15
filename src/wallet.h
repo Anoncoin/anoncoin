@@ -91,7 +91,7 @@ private:
     // the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
     int nWalletMaxVersion;
 
-    CPrivateCoinStore* pprivZC;
+    CWalletCoinStore* pprivZC;
 
     enum ZCStorageDisp nZCDisp;
 public:
@@ -161,6 +161,9 @@ public:
     void UnlockCoin(COutPoint& output);
     void UnlockAllCoins();
     void ListLockedCoins(std::vector<COutPoint>& vOutpts);
+
+    // generates a new zerocoin and saves it to disk
+    //XXX NewZerocoin
 
     // keystore implementation
     // Generate a new key
@@ -243,6 +246,7 @@ public:
     int64 GetDebit(const CTxIn& txin) const;
     bool IsMine(const CTxOut& txout) const
     {
+        // GNOSIS TODO: see if it's a ZC mint of one of our coins
         return ::IsMine(*this, txout.scriptPubKey);
     }
     int64 GetCredit(const CTxOut& txout) const

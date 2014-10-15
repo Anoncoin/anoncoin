@@ -40,6 +40,8 @@ public:
 
     bool EraseName(const std::string& strAddress);
 
+    // GNOSIS TODO: WriteCoin
+
     bool WriteTx(uint256 hash, const CWalletTx& wtx)
     {
         nWalletDBUpdated++;

@@ -23,7 +23,7 @@ Params* GetZerocoinParams()
 // GNOSIS TODO: allow persistent storage to a Berkeley DB file
 
 // add a copy of the given PrivateCoin to the store
-void CPrivateCoinStore::AddCoin(const PrivateCoin& privcoin) {
+void CWalletCoinStore::AddCoin(const PrivateCoin& privcoin) {
     PrivateCoin* pprivcoin = new PrivateCoin(privcoin);
     CBigNum bnPublicCoinValue(pprivcoin->getPublicCoin().getValue());
     {
@@ -35,7 +35,7 @@ void CPrivateCoinStore::AddCoin(const PrivateCoin& privcoin) {
 
 
 // check if a PrivateCoin is in the store
-bool CPrivateCoinStore::HaveCoin(const CBigNum& bnPublicCoinValue) const
+bool CWalletCoinStore::HaveCoin(const CBigNum& bnPublicCoinValue) const
 {
     bool result;
     {
@@ -45,7 +45,7 @@ bool CPrivateCoinStore::HaveCoin(const CBigNum& bnPublicCoinValue) const
     return result;
 }
 
-bool CPrivateCoinStore::HaveCoin(const PublicCoin& pubcoin) const
+bool CWalletCoinStore::HaveCoin(const PublicCoin& pubcoin) const
 {
     return this->HaveCoin(pubcoin.getValue());
 }
@@ -54,7 +54,7 @@ bool CPrivateCoinStore::HaveCoin(const PublicCoin& pubcoin) const
 
 // get the PrivateCoin from the store
 // throws ZerocoinStoreError if not found
-const PrivateCoin& CPrivateCoinStore::GetCoin(const CBigNum& bnPublicCoinValue) const
+const PrivateCoin& CWalletCoinStore::GetCoin(const CBigNum& bnPublicCoinValue) const
 {
     {
         LOCK(cs_CoinStore);
@@ -63,10 +63,10 @@ const PrivateCoin& CPrivateCoinStore::GetCoin(const CBigNum& bnPublicCoinValue) 
             return *mi->second;
         }
     }
-    throw ZerocoinStoreError("PrivateCoin not found in this CPrivateCoinStore");
+    throw ZerocoinStoreError("PrivateCoin not found in this CWalletCoinStore");
 }
 
-const PrivateCoin& CPrivateCoinStore::GetCoin(const PublicCoin& pubcoin) const
+const PrivateCoin& CWalletCoinStore::GetCoin(const PublicCoin& pubcoin) const
 {
     return this->GetCoin(pubcoin.getValue());
 }
@@ -90,17 +90,20 @@ void CWalletCoin::SetMintOutputAndDenomination(COutPoint outputMint, CoinDenomin
 }
 
 
-// we set it to 0 if the new fork does not contain our ZC mint txn
+// hashBlock should be set to 0 if the new fork does not contain our ZC mint txn
 void CWalletCoin::SetMintedBlock(uint256 hashBlock)
 {
     if (nStatus < ZCWST_MINTED_NOT_IN_BLOCK)
-        throw std::runtime_error("cannot set CWalletCoin mint block hash once mint txn in block");
+        throw std::runtime_error("cannot set CWalletCoin mint block hash before a mint txn is specified");
     if (nStatus > ZCWST_MINTED_IN_BLOCK)
     {
         // big problem! we have a deep fork!
         // we assumed that our ZC mint txn was deep enough to not be reverted by a fork, and we created a spend
         // to fix this, we need to undo all of our spend-related behavior
         throw std::runtime_error("OMGWTF"); // GNOSIS TODO
+        inputSpend_hash = 0;  // CInPoint::SetNull()
+        inputSpend_vin = -1;
+        hashSpendBlock = 0;
     }
     nStatus = ZCWST_MINTED_IN_BLOCK;
     hashMintBlock = hashBlock;
@@ -117,10 +120,27 @@ void CWalletCoin::SetMintedBlock(uint256 hashBlock)
 
 void CWalletCoin::SetSpendInput(CInPoint inputSpend)
 {
-    //XXX
+    if (nStatus < ZCWST_MINTED_IN_BLOCK)
+        throw std::runtime_error("cannot set CWalletCoin spend input until coin has been minted");
+    if (nStatus >= ZCWST_SPENT_IN_BLOCK)
+    {
+        printf("WARNING: SetSpendInput has already been called on this CWalletCoin\n");
+        hashSpendBlock = 0;
+    }
     nStatus = ZCWST_SPENT_NOT_IN_BLOCK;
     this->inputSpend_hash = inputSpend.ptx->GetHash();
     this->inputSpend_vin = inputSpend.n;
+}
+
+// hashBlock should be set to 0 if the new fork does not contain our ZC spend txn
+void CWalletCoin::SetSpentBlock(uint256 hashBlock)
+{
+    if (nStatus < ZCWST_SPENT_NOT_IN_BLOCK)
+        throw std::runtime_error("cannot set CWalletCoin spent block hash before a spend txn was specified");
+    if (nStatus == ZCWST_SPENT_IN_BLOCK)
+        printf("WARNING: SetSpentBlock has already been called on this CWalletCoin\n");
+    nStatus = ZCWST_SPENT_IN_BLOCK;
+    hashSpendBlock = hashBlock;
 }
 
 

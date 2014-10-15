@@ -28,7 +28,7 @@ public:
 
 
 // this is intended to have a similar interface to CKeyStore
-class CPrivateCoinStore
+class CWalletCoinStore
 {
 public:
     mutable CCriticalSection cs_CoinStore;
@@ -44,12 +44,12 @@ public:
 
     // Get a PrivateCoin corresponding to the given PublicCoin from the store.
     // throws ZerocoinStoreError if not found
-    // IMPORTANT: the PrivateCoin referred to is owned by this CPrivateCoinStore!
+    // IMPORTANT: the PrivateCoin referred to is owned by this CWalletCoinStore!
     const libzerocoin::PrivateCoin& GetCoin(const libzerocoin::PublicCoin& pubcoin) const;
     const libzerocoin::PrivateCoin& GetCoin(const CBigNum& bnPublicCoinValue) const;
     // TODO? GetCoins()
 
-    ~CPrivateCoinStore()
+    ~CWalletCoinStore()
     {
         BOOST_FOREACH(PrivateCoinMap::value_type& item, mapCoins) {
             delete item.second;
@@ -99,10 +99,10 @@ public:
     CWalletCoin()
         : nStatus(ZCWST_NOT_MINTED),
           coin(GetZerocoinParams()),
-          outputMint_hash(0),
+          outputMint_hash(0),     // COutPoint::SetNull()
           outputMint_vout(-1),
           hashMintBlock(0),
-          inputSpend_hash(0),
+          inputSpend_hash(0),     // CInPoint::SetNull()
           inputSpend_vin(-1),
           hashSpendBlock(0)
     {
@@ -124,6 +124,8 @@ public:
 
     void SetSpendInput(CInPoint inputSpend);
 
+    void SetSpentBlock(uint256 hashBlock);
+
     std::string ToString() const
     {
         return strprintf("CWalletCoin(status=%d, XXX)", static_cast<int>(nStatus)); //XXX GNOSIS TODO
@@ -135,7 +137,7 @@ public:
 
         if (!(nType & SER_GETHASH))
             READWRITE(nVersion);
-        READWRITE(nStatus);
+        READWRITE(nStatus); // GNOSIS TODO: fix warning about ambiguity
         READWRITE(coin);
         // as the status increases to later stages, more is known and so more is serialized here
         if (nStatus >= ZCWST_MINTED_NOT_IN_BLOCK)

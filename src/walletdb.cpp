@@ -192,6 +192,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         // Taking advantage of the fact that pair serialization
         // is just the two items serialized one after the other
         ssKey >> strType;
+        printf("GNOSIS walletdb: key '%s'\n", strType.c_str()); // GNOSIS DEBUG
         if (strType == "name")
         {
             string strAddress;
@@ -202,6 +203,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         {
             if (pwallet->GetZCStorageDisposition() == ZCDISP_ZEROCOINS_ONLY)
             {
+                printf("GNOSIS walletdb: tried to read tx from disk into ZC-only CWallet!"); // GNOSIS DEBUG
                 return false;
             }
             uint256 hash;
@@ -245,6 +247,15 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             //    DateTimeStrFormat("%Y-%m-%d %H:%M:%S", wtx.GetBlockTime()).c_str(),
             //    wtx.hashBlock.ToString().c_str(),
             //    wtx.mapValue["message"].c_str());
+        }
+        else if (strType == "zc")
+        {
+            if (pwallet->GetZCStorageDisposition() == ZCDISP_TXNS_ONLY)
+            {
+                printf("GNOSIS walletdb: tried to read zerocoins from disk into txn-only CWallet!");
+                return false;
+            }
+            //XXX GNOSIS TODO
         }
         else if (strType == "acentry")
         {

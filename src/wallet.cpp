@@ -517,6 +517,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn)
 // If fUpdate is true, existing transactions will be updated.
 bool CWallet::AddToWalletIfInvolvingMe(const uint256 &hash, const CTransaction& tx, const CBlock* pblock, bool fUpdate, bool fFindBlock)
 {
+    // XXX GNOSIS TODO
     {
         LOCK(cs_wallet);
         bool fExisted = mapWallet.count(hash);
