@@ -235,7 +235,18 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/splashscreen.h \
     src/qt/showi2paddresses.h \
     src/qt/i2poptionswidget.h \
-    src/zc.h
+    src/zc.h \
+    src/zerocoin/Accumulator.h \
+    src/zerocoin/AccumulatorProofOfKnowledge.h \
+    src/zerocoin/Coin.h \
+    src/zerocoin/CoinSpend.h \
+    src/zerocoin/Commitment.h \
+    src/zerocoin/OpenSSLSetup.h \
+    src/zerocoin/ParamGeneration.h \
+    src/zerocoin/Params.h \
+    src/zerocoin/SerialNumberSignatureOfKnowledge.h \
+    src/zerocoin/SpendMetaData.h \
+    src/Zerocoin.h
 
 SOURCES += src/qt/bitcoin.cpp \
     src/qt/bitcoingui.cpp \
@@ -311,7 +322,20 @@ SOURCES += src/qt/bitcoin.cpp \
     src/qt/splashscreen.cpp \
     src/qt/showi2paddresses.cpp \
     src/qt/i2poptionswidget.cpp \
-    src/zc.cpp
+    src/zc.cpp \
+    src/zerocoin/Accumulator.cpp \
+    src/zerocoin/AccumulatorProofOfKnowledge.cpp \
+    src/zerocoin/Benchmark.cpp \
+    src/zerocoin/Coin.cpp \
+    src/zerocoin/CoinSpend.cpp \
+    src/zerocoin/Commitment.cpp \
+    src/zerocoin/ParamGeneration.cpp \
+    src/zerocoin/Params.cpp \
+    src/zerocoin/PrintUFOCandidate.cpp \
+    src/zerocoin/SerialNumberSignatureOfKnowledge.cpp \
+    src/zerocoin/SpendMetaData.cpp \
+    src/zerocoin/Tests.cpp \
+    src/zerocoin/Tutorial.cpp
 
 RESOURCES += src/qt/bitcoin.qrc
 
