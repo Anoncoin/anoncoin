@@ -9,6 +9,7 @@ using libzerocoin::AccumulatorWitness;
 using libzerocoin::Params;
 using libzerocoin::PublicCoin;
 using libzerocoin::PrivateCoin;
+using libzerocoin::CoinDenomination;
 
 
 // ensure that Zerocoin parameters are initialized exactly once, and before first use.
@@ -83,7 +84,8 @@ void CWalletCoin::SetMintOutputAndDenomination(COutPoint outputMint, CoinDenomin
     if (nStatus > ZCWST_MINTED_NOT_IN_BLOCK)
         throw std::runtime_error("cannot set CWalletCoin mint output or denomination once mint txn in block"); // or can we (txn malleability...)?
     nStatus = ZCWST_MINTED_NOT_IN_BLOCK;
-    this->outputMint = outputMint;
+    this->outputMint_hash = outputMint.hash;
+    this->outputMint_vout = outputMint.n;
     coin.setDenomination(denom);
 }
 
@@ -103,18 +105,22 @@ void CWalletCoin::SetMintedBlock(uint256 hashBlock)
     nStatus = ZCWST_MINTED_IN_BLOCK;
     hashMintBlock = hashBlock;
 
+    std::abort();  // the following is a work in progress
+    /*
     //XXX GNOSIS TODO: WRONG!!! we may be able to salvage some mapWitnesses
     mapWitnesses.clear();
     const Accumulator& chkptPrevBlock = GetParentBlockCheckpoint(hashBlock, coin.getDenomination());
     AccumulatorWitness w(GetZerocoinParams(), chkptPrevBlock, pubcoin);
-    mapWitnesses.push_back(std::make_pair(hashBlock, w));
+    mapWitnesses[hashBlock] = w;
+    */
 }
 
-void SetSpendInput(CInPoint inputSpend)
+void CWalletCoin::SetSpendInput(CInPoint inputSpend)
 {
     //XXX
     nStatus = ZCWST_SPENT_NOT_IN_BLOCK;
-    this->inputSpend = inputSpend;
+    this->inputSpend_hash = inputSpend.ptx->GetHash();
+    this->inputSpend_vin = inputSpend.n;
 }
 
 

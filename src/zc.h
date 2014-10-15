@@ -10,6 +10,7 @@
 
 
 class CWalletCoin;
+class CInPoint;
 
 
 // contains static Params that is initialized on first use
@@ -98,11 +99,13 @@ public:
     CWalletCoin()
         : nStatus(ZCWST_NOT_MINTED),
           coin(GetZerocoinParams()),
+          outputMint_hash(0),
+          outputMint_vout(-1),
           hashMintBlock(0),
+          inputSpend_hash(0),
+          inputSpend_vin(-1),
           hashSpendBlock(0)
     {
-        outputMint.SetNull();
-        inputSpend.SetNull();
         mapWitnesses.clear();
     }
 
@@ -115,7 +118,7 @@ public:
 
     // these change the status by updating what is known
     // throw runtime_error if the values are being supplied out of order
-    void SetMintOutputAndDenomination(COutPoint outputMint, CoinDenomination denom);
+    void SetMintOutputAndDenomination(COutPoint outputMint, libzerocoin::CoinDenomination denom);
 
     void SetMintedBlock(uint256 hashBlock);
 
@@ -123,7 +126,7 @@ public:
 
     std::string ToString() const
     {
-        return strprintf("CWalletCoin(status=%d, XXX)", status); //XXX GNOSIS TODO
+        return strprintf("CWalletCoin(status=%d, XXX)", static_cast<int>(nStatus)); //XXX GNOSIS TODO
     }
 
     IMPLEMENT_SERIALIZE
@@ -134,15 +137,24 @@ public:
             READWRITE(nVersion);
         READWRITE(nStatus);
         READWRITE(coin);
+        // as the status increases to later stages, more is known and so more is serialized here
         if (nStatus >= ZCWST_MINTED_NOT_IN_BLOCK)
-            READWRITE(outputMint);
+        {
+            // COutPoint
+            READWRITE(outputMint_hash);
+            READWRITE(outputMint_vout);
+        }
         if (nStatus >= ZCWST_MINTED_IN_BLOCK)
         {
             READWRITE(hashMintBlock);
             READWRITE(mapWitnesses);
         }
         if (nStatus >= ZCWST_SPENT_NOT_IN_BLOCK)
-            READWRITE(inputSpend);
+        {
+            // CInPoint
+            READWRITE(inputSpend_hash);
+            READWRITE(inputSpend_vin);
+        }
         if (nStatus >= ZCWST_SPENT_IN_BLOCK)
             READWRITE(hashSpendBlock);
     )
@@ -150,10 +162,12 @@ public:
 private:
     Status nStatus;                 // describes what state the coin is in and what is present
     libzerocoin::PrivateCoin coin;  // the coin itself (serial, randomness, public coin, and optional denom.)
-    COutPoint outputMint;           // points to transaction and vout of mint, if not null
+    uint256 outputMint_hash;        // outputMint - points to transaction and vout of mint, if not null
+    unsigned int outputMint_vout;
     uint256 hashMintBlock;          // points to mint block, if not null
-    std::map<uint256,libzerocoin::Witness> mapWitnesses;
-    CInPoint inputSpend;            // points to transaction and vin of spend, if not null
+    std::map<uint256,libzerocoin::AccumulatorWitness> mapWitnesses;
+    uint256 inputSpend_hash;            // inputSpend - points to transaction and vin of spend, if not null
+    unsigned int inputSpend_vin;
     uint256 hashSpendBlock;         // points to spend block, if not null
 
 

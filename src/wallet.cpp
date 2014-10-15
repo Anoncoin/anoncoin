@@ -349,6 +349,7 @@ void CWallet::WalletUpdateSpent(const CTransaction &tx)
     // Update the wallet spent flag if it doesn't know due to wallet.dat being
     // restored from backup or the user making copies of wallet.dat.
     {
+        // XXX GNOSIS TODO
         LOCK(cs_wallet);
         BOOST_FOREACH(const CTxIn& txin, tx.vin)
         {

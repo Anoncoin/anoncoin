@@ -150,6 +150,11 @@ public:
 	 * @return
 	 */
 	AccumulatorWitness& operator +=(const PublicCoin& rhs);
+    // GNOSIS TODO: make sure params are set by serializers that use this
+    IMPLEMENT_SERIALIZE (
+        READWRITE(witness);
+        READWRITE(element);
+    )
 private:
 	const Params* params;
 	Accumulator witness;
