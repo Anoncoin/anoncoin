@@ -45,12 +45,7 @@ public:
     CWalletCoin& GetCoin(uint256 hashPubCoin);
     // TODO? GetCoins()
 
-    ~CWalletCoinStore()
-    {
-        BOOST_FOREACH(WalletCoinMap::value_type& item, mapCoins) {
-            delete item.second;
-        }
-    }
+    ~CWalletCoinStore();
 
 private:
     WalletCoinMap mapCoins;

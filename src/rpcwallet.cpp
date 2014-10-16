@@ -143,15 +143,13 @@ Value getnewzerocoins(const Array& params, bool fHelp)
     if (n < 1)
         throw runtime_error("Error: expected a positive integer");
 
-    Params* p = GetZerocoinParams();
     Array ret;
     for (int i = 0; i < n; i++) {
         // GNOSIS TODO: mint in a separate thread (like with the keypool)
-        PrivateCoin privcoin(p); // no denomination
 
-        //  save in coinstore
-        CPrivateCoinStore *pstore = GetZerocoinStore();
-        pstore->AddCoin(privcoin);
+        CWalletCoin& wzc = pwalletZC->GenerateNewZerocoin(); // reference to a coin owned by the wallet
+
+        const PrivateCoin& privcoin = wzc.GetPrivateCoin();
 
         //  get PublicCoin value
         CBigNum bnPublicCoin = privcoin.getPublicCoin().getValue();

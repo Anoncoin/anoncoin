@@ -59,6 +59,13 @@ CWalletCoin& CWalletCoinStore::GetCoin(uint256 hashPubCoin)
     throw ZerocoinStoreError("CWalletCoin not found in this CWalletCoinStore");
 }
 
+CWalletCoinStore::~CWalletCoinStore()
+{ 
+    BOOST_FOREACH(WalletCoinMap::value_type& item, mapCoins) {
+        delete item.second;
+    }
+}
+
 
 
 
