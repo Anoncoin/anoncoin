@@ -108,10 +108,10 @@ public:
     bool validate() const;
 	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
-		if (fWrite && !has_denomination)
-			throw ZerocoinException("cannot serialize a coin with no denomination");
 	    READWRITE(value);
-	    READWRITE(denomination);
+		READWRITE(has_denomination);
+		if (has_denomination)
+			READWRITE(denomination);
 	)
 private:
 	const Params* params;

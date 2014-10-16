@@ -109,6 +109,9 @@ public:
         return coin.getDenomination();
     }
 
+    // IMPORTANT: it is NOT safe to link the public coin hash to a spend
+    // transaction in any way; this results in a complete loss of anonymity.
+    // However, it is safe to link this hash to a mint transaction.
     uint256 GetPublicCoinHash() const
     {
         uint256 hashPubCoin;

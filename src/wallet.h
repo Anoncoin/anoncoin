@@ -115,7 +115,7 @@ public:
         nMasterKeyMaxID = 0;
         pwalletdbEncryption = NULL;
         nOrderPosNext = 0;
-        pprivZC = NULL;
+        pprivZC = new CWalletCoinStore();
         nZCDisp = ZCDISP_BOTH;
     }
     CWallet(std::string strWalletFileIn)
@@ -127,7 +127,7 @@ public:
         nMasterKeyMaxID = 0;
         pwalletdbEncryption = NULL;
         nOrderPosNext = 0;
-        pprivZC = NULL;
+        pprivZC = new CWalletCoinStore();
         nZCDisp = ZCDISP_BOTH;
     }
 

@@ -1091,6 +1091,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         uiInterface.InitMessage(_("Loading Zerocoin wallet..."));
         pwalletZC = new CWallet("zerocoin_wallet.dat");
         pwalletZC->SetZCStorageDisposition(ZCDISP_ZEROCOINS_ONLY);
+        pwalletZC->SetMinVersion(FEATURE_ZEROCOIN);
         bool fZCFirstRun;
         DBErrors nLoadZCWalletRet = pwalletZC->LoadWallet(fZCFirstRun);
         if (nLoadZCWalletRet != DB_LOAD_OK)
