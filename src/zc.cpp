@@ -20,55 +20,43 @@ Params* GetZerocoinParams()
 }
 
 
-// GNOSIS TODO: allow persistent storage to a Berkeley DB file
-
-// add a copy of the given PrivateCoin to the store
-void CWalletCoinStore::AddCoin(const PrivateCoin& privcoin) {
-    PrivateCoin* pprivcoin = new PrivateCoin(privcoin);
-    CBigNum bnPublicCoinValue(pprivcoin->getPublicCoin().getValue());
+// add the given CWalletCoin to the store -- must have been allocated on heap
+// this store takes ownership of it
+void CWalletCoinStore::AddCoin(CWalletCoin* pwzc) {
+    uint256 hashPubCoin = pwzc->GetPublicCoinHash();
     {
         LOCK(cs_CoinStore);
-        if (mapCoins.count(bnPublicCoinValue) == 0)
-            mapCoins[bnPublicCoinValue] = pprivcoin;
+        if (mapCoins.count(hashPubCoin) == 0)
+            mapCoins[hashPubCoin] = pwzc;
     }
 }
 
 
-// check if a PrivateCoin is in the store
-bool CWalletCoinStore::HaveCoin(const CBigNum& bnPublicCoinValue) const
+// check if a CWalletCoin is in the store
+bool CWalletCoinStore::HaveCoin(uint256 hashPubCoin) const
 {
     bool result;
     {
         LOCK(cs_CoinStore);
-        result = (mapCoins.count(bnPublicCoinValue) > 0);
+        result = (mapCoins.count(hashPubCoin) > 0);
     }
     return result;
 }
 
-bool CWalletCoinStore::HaveCoin(const PublicCoin& pubcoin) const
-{
-    return this->HaveCoin(pubcoin.getValue());
-}
 
 
-
-// get the PrivateCoin from the store
+// get the CWalletCoin from the store
 // throws ZerocoinStoreError if not found
-const PrivateCoin& CWalletCoinStore::GetCoin(const CBigNum& bnPublicCoinValue) const
+CWalletCoin& CWalletCoinStore::GetCoin(uint256 hashPubCoin)
 {
     {
         LOCK(cs_CoinStore);
-        PrivateCoinMap::const_iterator mi = mapCoins.find(bnPublicCoinValue);
+        WalletCoinMap::const_iterator mi = mapCoins.find(hashPubCoin);
         if (mi != mapCoins.end()) {
             return *mi->second;
         }
     }
-    throw ZerocoinStoreError("PrivateCoin not found in this CWalletCoinStore");
-}
-
-const PrivateCoin& CWalletCoinStore::GetCoin(const PublicCoin& pubcoin) const
-{
-    return this->GetCoin(pubcoin.getValue());
+    throw ZerocoinStoreError("CWalletCoin not found in this CWalletCoinStore");
 }
 
 

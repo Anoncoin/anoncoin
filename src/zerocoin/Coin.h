@@ -81,6 +81,9 @@ public:
 		strm >> *this;
 	}
 
+	// needed for deserializing into containers
+	PublicCoin(): initialized(false) {}
+
 	PublicCoin( const Params* p);
 
 	/**Generates a public coin
@@ -105,9 +108,8 @@ public:
     bool validate() const;
 	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
-		if (!has_denomination) {
-			throw ZerocoinException("cannot perform serialization operations on coin without denomination");
-		}
+		if (fWrite && !has_denomination)
+			throw ZerocoinException("cannot serialize a coin with no denomination");
 	    READWRITE(value);
 	    READWRITE(denomination);
 	)
@@ -136,6 +138,10 @@ public:
 	PrivateCoin(const Params* p, Stream& strm): params(p), publicCoin(p) {
 		strm >> *this;
 	}
+
+	// needed for deserialization
+	PrivateCoin(): params(NULL), initialized(false) {}
+
 	PrivateCoin(const Params* p);
 	PrivateCoin(const Params* p,const CoinDenomination denomination);
 	PublicCoin getPublicCoin() const;

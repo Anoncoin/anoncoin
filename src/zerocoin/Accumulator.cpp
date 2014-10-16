@@ -29,7 +29,7 @@ Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenominat
 
 void Accumulator::accumulate(const PublicCoin& coin) {
 	// Make sure we're initialized
-	if(this->value.size() == 0) {
+	if(!this->initialized) {
 		throw ZerocoinException("attempted to accumulate a coin in an Accumulator that's not initialized");
 	}
 
@@ -54,21 +54,21 @@ void Accumulator::accumulate(const PublicCoin& coin) {
 }
 
 CoinDenomination Accumulator::getDenomination() const {
-	if(this->value.size() == 0) {
+	if(!this->initialized) {
 		throw ZerocoinException("attempted to get denomination of a coin in an Accumulator that's not initialized");
 	}
 	return this->denomination;
 }
 
 std::vector<Bignum> Accumulator::getValue() const {
-	if(this->value.size() == 0) {
+	if(!this->initialized) {
 		throw ZerocoinException("attempted to get value of a coin in an Accumulator that's not initialized");
 	}
 	return this->value;
 }
 
 Bignum Accumulator::getValue(unsigned int modulusIdx) const {
-	if(this->value.size() == 0) {
+	if(!this->initialized) {
 		throw ZerocoinException("attempted to get value of a coin in an Accumulator that's not initialized");
 	}
 	return this->value.at(modulusIdx);
@@ -79,8 +79,8 @@ Accumulator& Accumulator::operator += (const PublicCoin& c) {
 	return *this;
 }
 
-bool Accumulator::operator == (const Accumulator rhs) const {
-	if(this->value.size() == 0 || rhs.value.size() == 0) {
+bool Accumulator::operator == (const Accumulator& rhs) const {
+	if(!this->initialized || !rhs.initialized) {
 		throw ZerocoinException("attempted to compare Accumulators when one or both are not initialized");
 	}
 	return this->value == rhs.value;

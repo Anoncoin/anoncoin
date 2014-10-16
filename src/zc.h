@@ -18,7 +18,7 @@ libzerocoin::Params* GetZerocoinParams();
 
 
 
-typedef std::map<CBigNum, libzerocoin::PrivateCoin*> PrivateCoinMap;
+typedef std::map<uint256, CWalletCoin*> WalletCoinMap;
 
 class ZerocoinStoreError: public std::runtime_error
 {
@@ -33,31 +33,27 @@ class CWalletCoinStore
 public:
     mutable CCriticalSection cs_CoinStore;
 
-    // TODO? NewCoin
+    // add a CWalletCoin to the store
+    void AddCoin(CWalletCoin* pwzc);
 
-    // add a PrivateCoin to the store
-    void AddCoin(const libzerocoin::PrivateCoin& privcoin);
+    // Check whether a CWalletCoin corresponding to the given PublicCoin hash is present in the store.
+    bool HaveCoin(uint256 hashPubCoin) const;
 
-    // Check whether a PrivateCoin corresponding to the given PublicCoin is present in the store.
-    bool HaveCoin(const libzerocoin::PublicCoin& pubcoin) const;
-    bool HaveCoin(const CBigNum& bnPublicCoinValue) const;
-
-    // Get a PrivateCoin corresponding to the given PublicCoin from the store.
+    // Get a CWalletCoin corresponding to the given PublicCoin hash from the store.
     // throws ZerocoinStoreError if not found
-    // IMPORTANT: the PrivateCoin referred to is owned by this CWalletCoinStore!
-    const libzerocoin::PrivateCoin& GetCoin(const libzerocoin::PublicCoin& pubcoin) const;
-    const libzerocoin::PrivateCoin& GetCoin(const CBigNum& bnPublicCoinValue) const;
+    // IMPORTANT: the CWalletCoin referred to is owned by this CWalletCoinStore!
+    CWalletCoin& GetCoin(uint256 hashPubCoin);
     // TODO? GetCoins()
 
     ~CWalletCoinStore()
     {
-        BOOST_FOREACH(PrivateCoinMap::value_type& item, mapCoins) {
+        BOOST_FOREACH(WalletCoinMap::value_type& item, mapCoins) {
             delete item.second;
         }
     }
 
 private:
-    PrivateCoinMap mapCoins;
+    WalletCoinMap mapCoins;
 };
 
 // contains a PrivateCoin along with metadata. Stored in zerocoin_wallet.dat
@@ -111,7 +107,65 @@ public:
 
     // getters
     const libzerocoin::PrivateCoin& GetPrivateCoin() const { return coin; }
-    //XXX
+    libzerocoin::CoinDenomination GetDenomination() const
+    {
+        if (nStatus < ZCWST_MINTED_NOT_IN_BLOCK)
+            throw std::runtime_error("cannot get denomination from CWalletCoin not yet minted");
+        return coin.getDenomination();
+    }
+
+    uint256 GetPublicCoinHash() const
+    {
+        uint256 hashPubCoin;
+        Bignum bnPubVal = coin.getPublicCoin().getValue();
+        CHashWriter h(SER_GETHASH, 0);
+        h << bnPubVal;
+        hashPubCoin = h.GetHash();
+        return hashPubCoin;
+    }
+
+    uint256 GetMintOutputHash() const
+    {
+        if (nStatus < ZCWST_MINTED_NOT_IN_BLOCK)
+            throw std::runtime_error("cannot get mint txn hash from CWalletCoin not yet minted");
+        return outputMint_hash;
+    }
+
+    int GetMintOutputVout() const
+    {
+        if (nStatus < ZCWST_MINTED_NOT_IN_BLOCK)
+            throw std::runtime_error("cannot get mint txn vout from CWalletCoin not yet minted");
+        return outputMint_vout;
+    }
+
+    uint256 GetMintedBlock() const
+    {
+        if (nStatus < ZCWST_MINTED_IN_BLOCK)
+            throw std::runtime_error("CWalletCoin: cannot get block hash containing mint txn because not in block yet");
+        return hashMintBlock;
+    }
+
+    uint256 GetSpendInputHash() const
+    {
+        if (nStatus < ZCWST_SPENT_NOT_IN_BLOCK)
+            throw std::runtime_error("CWalletCoin: cannot get spend input hash before spending");
+        return inputSpend_hash;
+    }
+
+    int GetSpendInputVin() const
+    {
+        if (nStatus < ZCWST_SPENT_NOT_IN_BLOCK)
+            throw std::runtime_error("CWalletCoin: cannot get spend input vin before spending");
+        return inputSpend_vin;
+    }
+
+    uint256 GetSpentBlock() const
+    {
+        if (nStatus < ZCWST_SPENT_IN_BLOCK)
+            throw std::runtime_error("CWalletCoin: cannot get hash of block containing spend tx until tx gets in a block");
+        return hashSpendBlock;
+    }
+
 
     // status
     Status GetStatus() const { return nStatus; }
@@ -137,7 +191,20 @@ public:
 
         if (!(nType & SER_GETHASH))
             READWRITE(nVersion);
-        READWRITE(nStatus); // GNOSIS TODO: fix warning about ambiguity
+        // nStatus
+        if (fRead)
+        {
+            // deserializing
+            int _nStatus;
+            READWRITE(_nStatus);
+            me.nStatus = static_cast<CWalletCoin::Status>(_nStatus);
+        }
+        else
+        {
+            // serializing or getting size
+            int _nStatus = static_cast<int>(nStatus);
+            READWRITE(_nStatus);
+        }
         READWRITE(coin);
         // as the status increases to later stages, more is known and so more is serialized here
         if (nStatus >= ZCWST_MINTED_NOT_IN_BLOCK)
@@ -150,6 +217,7 @@ public:
         {
             READWRITE(hashMintBlock);
             READWRITE(mapWitnesses);
+            // GNOSIS TODO: set params for each!
         }
         if (nStatus >= ZCWST_SPENT_NOT_IN_BLOCK)
         {

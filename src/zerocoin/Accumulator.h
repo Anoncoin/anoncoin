@@ -34,8 +34,8 @@ public:
 		this->params = &(p->accumulatorParams);
 	}
 
-	// GNOSIS TODO: need the following for any reason?
-	//Accumulator() { }
+	// need for deserializing a container of these
+	Accumulator(): initialized(false) { }
 
 	/**
 	 * @brief      Construct an Accumulator from a Params object.
@@ -88,9 +88,9 @@ public:
 	 * @return a refrence to the updated accumulator.
 	 */
 	Accumulator& operator +=(const PublicCoin& c);
-	bool operator==(const Accumulator rhs) const;
+	bool operator==(const Accumulator& rhs) const;
 
-	IMPLEMENT_SERIALIZE
+	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
 	    READWRITE(value);
 	    READWRITE(denomination);
@@ -99,6 +99,7 @@ private:
 	const AccumulatorAndProofParams* params;
 	std::vector<Bignum> value;
 	CoinDenomination denomination;
+	bool initialized;
 };
 
 /**A witness that a PublicCoin is in the accumulation of a set of coins
@@ -110,6 +111,9 @@ public:
 	AccumulatorWitness(const Params* p, Stream& strm): params(p) {
 		strm >> *this;
 	}
+
+	// need for deserializing a container of these
+	AccumulatorWitness(): initialized(false) {}
 
 	/**  Constructs a witness.  You must add all elements after the witness
 	 * @param p pointer to params
@@ -150,15 +154,21 @@ public:
 	 * @return
 	 */
 	AccumulatorWitness& operator +=(const PublicCoin& rhs);
-    // GNOSIS TODO: make sure params are set by serializers that use this
-    IMPLEMENT_SERIALIZE (
+    IMPLEMENT_SERIALIZE_AND_SET_INIT (
+		AccumulatorWitness& me = *const_cast<AccumulatorWitness*>(this);
         READWRITE(witness);
-        READWRITE(element);
+		READWRITE(*const_cast<PublicCoin*>(&(me.element)));
+		if (fRead)
+		{
+			// GNOSIS TODO: make sure params are set by serializers that use this
+			me.params = NULL;
+		}
     )
 private:
 	const Params* params;
 	Accumulator witness;
 	const PublicCoin element;
+	bool initialized;		// GNOSIS TODO: we only need this if the `witness` member can be initialized without `this` being initialized
 };
 
 } /* namespace libzerocoin */
