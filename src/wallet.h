@@ -163,7 +163,12 @@ public:
     void ListLockedCoins(std::vector<COutPoint>& vOutpts);
 
     // generates a new zerocoin and saves it to disk
-    //XXX NewZerocoin
+    // retains ownership of the returned reference (which will be freed)
+    CWalletCoin& GenerateNewZerocoin();
+
+    // saves zerocoin to the CWallet and to disk (if file backed)
+    // takes ownership of the supplied reference (which will be freed)
+    bool AddZerocoin(CWalletCoin* pwzc);
 
     // keystore implementation
     // Generate a new key

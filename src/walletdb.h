@@ -9,6 +9,7 @@
 #include "db.h"
 #include "base58.h"
 #include "Zerocoin.h"
+#include "zc.h"
 
 class CKeyPool;
 class CAccount;
@@ -40,7 +41,14 @@ public:
 
     bool EraseName(const std::string& strAddress);
 
-    // GNOSIS TODO: WriteCoin
+    bool WriteZerocoin(const CWalletCoin& wzc)
+    {
+        // GNOSIS TODO? protection against accidental writing to non-ZC wallet?
+
+        nWalletDBUpdated++;
+        uint256 hashPubCoin = wzc.GetPublicCoinHash();
+        return Write(std::make_pair(std::string("zc"), hashPubCoin), wzc);
+    }
 
     bool WriteTx(uint256 hash, const CWalletTx& wtx)
     {

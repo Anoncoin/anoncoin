@@ -30,6 +30,38 @@ struct CompareValueOnly
     }
 };
 
+// returned reference to CWalletCoin is owned by the wallet (actually by CWalletCoinStore)
+CWalletCoin& CWallet::GenerateNewZerocoin()
+{
+    assert(CanSupportFeature(FEATURE_ZEROCOIN));
+    SetMinVersion(FEATURE_ZEROCOIN);
+
+    if (!pprivZC)
+        throw std::runtime_error("CWallet::GenerateNewZerocoin() : pprivZC is NULL!");
+
+    RandAddSeedPerfmon();               // is this obsolete???
+    CWalletCoin* pwzc = new CWalletCoin();      // this is CPU intensive
+
+    if (!AddZerocoin(pwzc))
+        throw std::runtime_error("CWallet::GenerateNewZerocoin() : AddZerocoin failed");
+    return *pwzc;
+}
+
+// takes ownership of the supplied reference (which will be freed)
+bool CWallet::AddZerocoin(CWalletCoin* pwzc)
+{
+    // add to in-memory store
+    pprivZC->AddCoin(pwzc);
+
+    if (!fFileBacked)
+        return true;
+
+    // save to disk
+    // GNOSIS TODO: support encryption for this!!!
+    //      (like CCryptoKeyStore)
+    return CWalletDB(strWalletFile).WriteZerocoin(*pwzc);
+}
+
 CPubKey CWallet::GenerateNewKey()
 {
     bool fCompressed = CanSupportFeature(FEATURE_COMPRPUBKEY); // default to compressed public keys if we want 0.6.0 wallets
