@@ -174,11 +174,13 @@ install(FILES
 # Executable files
 ########################################################################
 
+find_package(Threads)
+
 #add_executable(paramgen ../util.cpp paramgen.cpp)
 #target_link_libraries(paramgen zerocoin)
 
 add_executable(tutorial Tutorial.cpp)
-target_link_libraries(tutorial zerocoin)
+target_link_libraries(tutorial zerocoin ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(ufo PrintUFOCandidate.cpp)
-target_link_libraries(ufo zerocoin)
+target_link_libraries(ufo zerocoin ${CMAKE_THREAD_LIBS_INIT})
