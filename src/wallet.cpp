@@ -42,18 +42,20 @@ CWalletCoin& CWallet::GenerateNewZerocoin()
     RandAddSeedPerfmon();               // is this obsolete???
     CWalletCoin* pwzc = new CWalletCoin();      // this is CPU intensive
 
+    uint256 h = pwzc->GetPublicCoinHash();
+    printf("GenerateNewZerocoin() : storing with hashPubCoin %s\n", h.ToString().c_str()); // GNOSIS DEBUG
     if (!AddZerocoin(pwzc))
         throw std::runtime_error("CWallet::GenerateNewZerocoin() : AddZerocoin failed");
     return *pwzc;
 }
 
 // takes ownership of the supplied reference (which will be freed)
-bool CWallet::AddZerocoin(CWalletCoin* pwzc)
+bool CWallet::AddZerocoin(CWalletCoin* pwzc, bool fSaveToDB)
 {
     // add to in-memory store
     pprivZC->AddCoin(pwzc);
 
-    if (!fFileBacked)
+    if (!fFileBacked || !fSaveToDB)
         return true;
 
     // save to disk

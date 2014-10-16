@@ -168,7 +168,7 @@ public:
 
     // saves zerocoin to the CWallet and to disk (if file backed)
     // takes ownership of the supplied reference (which will be freed)
-    bool AddZerocoin(CWalletCoin* pwzc);
+    bool AddZerocoin(CWalletCoin* pwzc, bool fSaveToDB=true);
 
     // keystore implementation
     // Generate a new key

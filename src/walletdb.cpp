@@ -251,7 +251,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         {
             if (pwallet->GetZCStorageDisposition() == ZCDISP_TXNS_ONLY)
             {
-                printf("GNOSIS walletdb: tried to read zerocoins from disk into txn-only CWallet!\n");
+                strErr = "FATAL: GNOSIS walletdb: tried to read zerocoins from disk into txn-only CWallet!";
                 return false;
             }
             uint256 hashPubCoin;
@@ -262,9 +262,10 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             if (hashPubCoin != check_hashPubCoin)
             {
                 strErr = "Error reading Zerocoin wallet database: CWalletCoin corrupt";
+                delete pwzc;
                 return false;
             }
-            if (!pwallet->AddZerocoin(pwzc))                     // takes ownership of the CWalletCoin
+            if (!pwallet->AddZerocoin(pwzc, false))                     // takes ownership of the CWalletCoin
             {
                 strErr = strprintf("Failed to add ZC with hashPubCoin %s to CWallet", hashPubCoin.ToString().c_str());
                 return false;

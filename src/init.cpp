@@ -103,7 +103,7 @@ void Shutdown()
     nTransactionsUpdated++;
     StopRPCThreads();
     ShutdownRPCMining();
-    if (pwalletMain)
+    if (pwalletMain && pwalletZC)       // GNOSIS TODO: see if this is correct
         bitdb.Flush(false);
     GenerateBitcoins(false, NULL);
     StopNode();
@@ -111,6 +111,8 @@ void Shutdown()
         LOCK(cs_main);
         if (pwalletMain)
             pwalletMain->SetBestChain(CBlockLocator(pindexBest));
+        if (pwalletZC)
+            pwalletZC->SetBestChain(CBlockLocator(pindexBest));
         if (pblocktree)
             pblocktree->Flush();
         if (pcoinsTip)
@@ -119,13 +121,15 @@ void Shutdown()
         delete pcoinsdbview; pcoinsdbview = NULL;
         delete pblocktree; pblocktree = NULL;
     }
-    if (pwalletMain)
+    if (pwalletMain && pwalletZC)
         bitdb.Flush(true);
     boost::filesystem::remove(GetPidFile());
     UnregisterWallet(pwalletMain);
+    printf("GNOSIS DEBUG: Shutdown(): unregistering pwalletZC\n");
+    UnregisterWallet(pwalletZC);
     if (pwalletMain)
         delete pwalletMain;
-    if (pwalletZC)      // GNOSIS TODO: other cleanup for ZC wallet in this function (see above)
+    if (pwalletZC)
         delete pwalletZC;
     printf("Shutdown : done\n");
 }
@@ -534,6 +538,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
 
+    // GNOSIS TODO: non-ZC-related: This can sometimes take a long time to complete, and blocks
+    // argument parsing until it is complete. Maybe it should be done in a network thread?
     if (GetBoolArg(I2P_SAM_GENERATE_DESTINATION_PARAM))
     {
       const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
@@ -1090,8 +1096,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     } else {
         uiInterface.InitMessage(_("Loading Zerocoin wallet..."));
         pwalletZC = new CWallet("zerocoin_wallet.dat");
-        pwalletZC->SetZCStorageDisposition(ZCDISP_ZEROCOINS_ONLY);
-        pwalletZC->SetMinVersion(FEATURE_ZEROCOIN);
         bool fZCFirstRun;
         DBErrors nLoadZCWalletRet = pwalletZC->LoadWallet(fZCFirstRun);
         if (nLoadZCWalletRet != DB_LOAD_OK)
@@ -1116,6 +1120,8 @@ bool AppInit2(boost::thread_group& threadGroup)
                 strErrors << _("Error loading wallet.dat") << "\n";
         }
         // GNOSIS TODO: recovery stuff like for regular wallet.dat
+        pwalletZC->SetZCStorageDisposition(ZCDISP_ZEROCOINS_ONLY);
+        pwalletZC->SetMinVersion(FEATURE_ZEROCOIN);
         RegisterWallet(pwalletZC);
 
         uiInterface.InitMessage(_("Loading wallet..."));
