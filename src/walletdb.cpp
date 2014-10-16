@@ -192,7 +192,6 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         // Taking advantage of the fact that pair serialization
         // is just the two items serialized one after the other
         ssKey >> strType;
-        printf("GNOSIS walletdb: key '%s'\n", strType.c_str()); // GNOSIS DEBUG
         if (strType == "name")
         {
             string strAddress;
@@ -252,10 +251,25 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         {
             if (pwallet->GetZCStorageDisposition() == ZCDISP_TXNS_ONLY)
             {
-                printf("GNOSIS walletdb: tried to read zerocoins from disk into txn-only CWallet!");
+                printf("GNOSIS walletdb: tried to read zerocoins from disk into txn-only CWallet!\n");
                 return false;
             }
-            //XXX GNOSIS TODO
+            uint256 hashPubCoin;
+            ssKey >> hashPubCoin;
+            CWalletCoin* pwzc = new CWalletCoin(ssValue);
+
+            uint256 check_hashPubCoin = pwzc->GetPublicCoinHash();
+            if (hashPubCoin != check_hashPubCoin)
+            {
+                strErr = "Error reading Zerocoin wallet database: CWalletCoin corrupt";
+                return false;
+            }
+            if (!pwallet->AddZerocoin(pwzc))                     // takes ownership of the CWalletCoin
+            {
+                strErr = strprintf("Failed to add ZC with hashPubCoin %s to CWallet", hashPubCoin.ToString().c_str());
+                return false;
+            }
+            printf("GNOSIS walletdb: got ZC from zerocoin_wallet.dat with hashPubCoin %s\n", hashPubCoin.ToString().c_str());
         }
         else if (strType == "acentry")
         {
