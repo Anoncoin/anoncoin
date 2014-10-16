@@ -62,6 +62,7 @@ private:
 	bool initialized;
 
 public:
+    // GNOSIS TODO? validate value here???
 	IMPLEMENT_SERIALIZE_AND_SET_INIT
 	(
 		READWRITE(value);

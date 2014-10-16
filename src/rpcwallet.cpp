@@ -154,8 +154,12 @@ Value getnewzerocoins(const Array& params, bool fHelp)
         //  get PublicCoin value
         CBigNum bnPublicCoin = privcoin.getPublicCoin().getValue();
 
+        printf("GNOSIS DEBUG: RPC getnewzerocoins: actual hex of bnPublicCoin is %s\n", bnPublicCoin.GetHex().c_str());
         //  push hex into array
-        ret.push_back(bnPublicCoin.GetHex());
+        // GNOSIS HACK: changing the format because no quick way to import into a new CBigNum
+        vector<unsigned char> data;
+        data = bnPublicCoin.getvch();
+        ret.push_back(HexStr(data.begin(), data.end()));
     }
 
     return ret;

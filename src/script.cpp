@@ -337,7 +337,10 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 opcode == OP_DIV ||
                 opcode == OP_MOD ||
                 opcode == OP_LSHIFT ||
-                opcode == OP_RSHIFT)
+                opcode == OP_RSHIFT ||
+                opcode == OP_ZCMINT ||          // these three ZC opcodes are processed differently
+                opcode == OP_ZCCHECKPT ||
+                opcode == OP_ZCSPEND)
                 return false; // Disabled opcodes.
 
             if (fExec && 0 <= opcode && opcode <= OP_PUSHDATA4)
@@ -707,33 +710,6 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     stack.push_back(bn.getvch());
                 }
                 break;
-
-                /** // GNOSIS TODO: convert to template matching, rather than interpreted script
-                // FSM code for Zerocoin
-                case OP_ZCMINT:
-                    if (stack.size() < 2)
-                        return false;
-                    int version = (int)stacktop(-1);
-                    CBigNum coinCommitment = CastToBigNum(stacktop(-2));
-                case OP_ZCSPEND:
-                    if (stack.size() < 2)
-                        return false;
-                    int version = (int)stacktop(-1);
-                    CBigNum serialNum = CastToBigNum(stacktop(-2));
-                    CBigNum spendRootHash = CastToBigNum(stacktop(-3));
-                // TODO: OP_ZCFIRSTHALF is obsolete since we will not be doing rate-limiting soon
-                //       so the following needs to be removed. How does its removal influence the
-                //       remaining ZC code?
-                case OP_ZCFIRSTHALF:
-                    if (stack.size() < 2)
-                        return false;
-                    int version = (int)stacktop(-1);
-                    CBigNum firstHalfHash = CastToBigNum(stacktop(-2));
-                    //TODO: Check length of firstHalfHash
-                case OP_ZCCHECKPT:
-                    if (stack.size() < 3)
-                        return false;
-                break; */
 
                 case OP_ADD:
                 case OP_SUB:
@@ -1835,6 +1811,18 @@ void CScript::SetMultisig(int nRequired, const std::vector<CPubKey>& keys)
     BOOST_FOREACH(const CPubKey& key, keys)
         *this << key;
     *this << EncodeOP_N(keys.size()) << OP_CHECKMULTISIG;
+}
+
+// Zerocoin
+// GNOSIS TODO? should I do apply_visitor???
+void CScript::SetMint(const CBigNum& bnPublicCoin)
+{
+    this->clear();
+
+    *this << OP_RETURN;
+    *this << OP_ZCMINT;
+    *this << 1;             // Zerocoin transaction format version 1
+    *this << bnPublicCoin;  // GNOSIS HACK!
 }
 
 bool CScriptCompressor::IsToKeyID(CKeyID &hash) const

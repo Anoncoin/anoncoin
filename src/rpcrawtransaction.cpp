@@ -12,11 +12,14 @@
 #include "main.h"
 #include "net.h"
 #include "wallet.h"
+#include "Zerocoin.h"
 
 using namespace std;
 using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
+
+using libzerocoin::CoinDenomination;
 
 //
 // Utilities: convert hex-encoded Values
@@ -53,6 +56,7 @@ vector<unsigned char> ParseHexO(const Object& o, string strKey)
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out)
 {
+    // GNOSIS TODO: print ZC mints here(?)
     txnouttype type;
     vector<CTxDestination> addresses;
     int nRequired;
@@ -255,12 +259,14 @@ Value listunspent(const Array& params, bool fHelp)
 
 Value createrawtransaction(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 2)
+    if (fHelp || params.size() < 2 || params.size() > 3)
         throw runtime_error(
-            "createrawtransaction [{\"txid\":txid,\"vout\":n},...] {address:amount,...}\n"
+            "createrawtransaction [{\"txid\":txid,\"vout\":n},...] {address:amount,...} {\"pubcoinhex\":amount,...}\n"
             "Create a transaction spending given inputs\n"
             "(array of objects containing transaction id and output number),\n"
             "sending to given address(es).\n"
+            "The last argument is optional and specifies one or more zerocoins to mint.\n"
+             "The amounts must be a valid coin denomination (1eN or 5eN for N in [-8,3]).\n"
             "Returns hex-encoded raw transaction.\n"
             "Note that the transaction's inputs are not signed, and\n"
             "it is not stored in the wallet or transmitted to the network.");
@@ -269,6 +275,9 @@ Value createrawtransaction(const Array& params, bool fHelp)
 
     Array inputs = params[0].get_array();
     Object sendTo = params[1].get_obj();
+    Object mintZC;
+    if (params.size() > 2)
+        mintZC = params[2].get_obj();
 
     CTransaction rawTx;
 
@@ -308,6 +317,38 @@ Value createrawtransaction(const Array& params, bool fHelp)
         rawTx.vout.push_back(out);
     }
 
+    BOOST_FOREACH(const Pair& zm, mintZC)
+    {
+        // decode the hex in zm.name_ into a CBigNum (this is the public coin value)
+        CBigNum bnPublicCoin;
+        vector<unsigned char> data(ParseHexV(zm.name_, "argument"));
+        try
+        {
+            bnPublicCoin.setvch(data);
+        }
+        catch (std::exception &e) {
+            throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Public coin value decode failed");
+        }
+        printf("GNOSIS DEBUG: decoded pub coin value: %s\n", bnPublicCoin.GetHex().c_str()); //XXX DEBUG
+
+        // set denom using zm.value_
+        int64 nAmount = AmountFromValue(zm.value_);
+        CoinDenomination denom;
+        try
+        {
+            CoinDenomination tmp(nAmount);    // GNOSIS TODO: fix this ugliness
+            denom = tmp;
+        }
+        catch (ZerocoinException) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, amount must be a ZC denomination");
+        }
+
+        // turn public coin value (CBigNum) into CScript
+        CScript scriptPubKey;
+        scriptPubKey.SetMint(bnPublicCoin);
+        CTxOut out(nAmount, scriptPubKey);
+        rawTx.vout.push_back(out);
+    }
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << rawTx;
     return HexStr(ss.begin(), ss.end());

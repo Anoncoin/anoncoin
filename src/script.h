@@ -557,6 +557,9 @@ public:
     void SetDestination(const CTxDestination& address);
     void SetMultisig(int nRequired, const std::vector<CPubKey>& keys);
 
+    // Zerocoin
+    void SetMint(const CBigNum& bnPublicCoin);
+
 
     void PrintHex() const
     {
