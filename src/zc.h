@@ -3,7 +3,6 @@
 
 #include <map>
 #include <boost/foreach.hpp>
-#include "main.h"    // COutPoint
 #include "sync.h"    // CCriticalSection
 #include "serialize.h"
 #include "Zerocoin.h"
@@ -170,11 +169,11 @@ public:
 
     // these change the status by updating what is known
     // throw runtime_error if the values are being supplied out of order
-    void SetMintOutputAndDenomination(COutPoint outputMint, libzerocoin::CoinDenomination denom);
+    void SetMintOutputAndDenomination(uint256 outputMint_hash, int outputMint_vout, libzerocoin::CoinDenomination denom);
 
     void SetMintedBlock(uint256 hashBlock);
 
-    void SetSpendInput(CInPoint inputSpend);
+    void SetSpendInput(uint256 inputSpend_hash, int inputSpend_vin);
 
     void SetSpentBlock(uint256 hashBlock);
 

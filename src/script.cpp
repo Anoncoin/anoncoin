@@ -15,6 +15,7 @@ using namespace boost;
 #include "main.h"
 #include "sync.h"
 #include "util.h"
+#include "zc.h"
 
 bool CheckSig(vector<unsigned char> vchSig, const vector<unsigned char> &vchPubKey, const CScript &scriptCode, const CTransaction& txTo, unsigned int nIn, int nHashType, int flags);
 
@@ -1406,7 +1407,7 @@ bool IsMine(const CKeyStore &keystore, const CTxDestination &dest)
     return boost::apply_visitor(CKeyStoreIsMineVisitor(&keystore), dest);
 }
 
-bool IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
+bool IsMine(const CKeyStore &keystore, const CScript& scriptPubKey, const CWalletCoinStore* pprivZC)
 {
     vector<valtype> vSolutions;
     txnouttype whichType;
@@ -1420,8 +1421,18 @@ bool IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
         return false;
     case TX_ZCMINT:
     {
-        // GNOSIS FIXME
-        return wallet.HaveZerocoin(vSolutions[0]);
+        if (!pprivZC)
+            return false;
+
+        // GNOSIS TODO: some of this would be better as a .GetValueHash() function of PublicCoin...
+        //    or, better yet, overload CWalletCoinStore::HaveCoin()
+        CBigNum bnPublicCoin;
+        bnPublicCoin.setvch(vSolutions[0]);
+        uint256 hashPubCoin;
+        CHashWriter h(SER_GETHASH, 0);
+        h << bnPublicCoin;
+        hashPubCoin = h.GetHash();
+        return pprivZC->HaveCoin(hashPubCoin);
     }
     case TX_PUBKEY:
         keyID = CPubKey(vSolutions[0]).GetID();
@@ -1476,7 +1487,7 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
     return false;
 }
 
-bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vector<CTxDestination>& addressRet, int& nRequiredRet)
+bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vector<CTxDestination>& addressRet, int& nRequiredRet, bool& fIsZCMintRet)
 {
     addressRet.clear();
     typeRet = TX_NONSTANDARD;
@@ -1484,6 +1495,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
     if (!Solver(scriptPubKey, typeRet, vSolutions))
         return false;
 
+    fIsZCMintRet = false;
     if (typeRet == TX_MULTISIG)
     {
         nRequiredRet = vSolutions.front()[0];
@@ -1492,6 +1504,10 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
             CTxDestination address = CPubKey(vSolutions[i]).GetID();
             addressRet.push_back(address);
         }
+    }
+    else if (typeRet == TX_ZCMINT)
+    {
+        fIsZCMintRet = true;
     }
     else
     {

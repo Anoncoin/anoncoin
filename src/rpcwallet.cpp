@@ -1546,8 +1546,11 @@ public:
         std::vector<CTxDestination> addresses;
         txnouttype whichType;
         int nRequired;
-        ExtractDestinations(subscript, whichType, addresses, nRequired);
+        bool fIsZCMint;   // means that addresses and nRequired are invalid
+        ExtractDestinations(subscript, whichType, addresses, nRequired, fIsZCMint);
         obj.push_back(Pair("script", GetTxnOutputType(whichType)));
+        if (fIsZCMint)
+            return obj;
         Array a;
         BOOST_FOREACH(const CTxDestination& addr, addresses)
             a.push_back(CBitcoinAddress(addr).ToString());

@@ -60,19 +60,23 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out)
     txnouttype type;
     vector<CTxDestination> addresses;
     int nRequired;
+    bool fIsZCMint;  // means that addresses and nRequired are not valid
 
     out.push_back(Pair("asm", scriptPubKey.ToString()));
     out.push_back(Pair("hex", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
-    if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired))
+    if (!ExtractDestinations(scriptPubKey, type, addresses, nRequired, fIsZCMint))
     {
         out.push_back(Pair("type", GetTxnOutputType(TX_NONSTANDARD)));
         return;
     }
 
-    out.push_back(Pair("reqSigs", nRequired));
+    if (!fIsZCMint)
+        out.push_back(Pair("reqSigs", nRequired));
     out.push_back(Pair("type", GetTxnOutputType(type)));
 
+    if (fIsZCMint)
+        return;     // no addresses
     Array a;
     BOOST_FOREACH(const CTxDestination& addr, addresses)
         a.push_back(CBitcoinAddress(addr).ToString());

@@ -74,13 +74,13 @@ CWalletCoinStore::~CWalletCoinStore()
 
 // these change the status by updating what is known
 // throw runtime_error if the values are being supplied out of order
-void CWalletCoin::SetMintOutputAndDenomination(COutPoint outputMint, CoinDenomination denom)
+void CWalletCoin::SetMintOutputAndDenomination(uint256 outputMint_hash, int outputMint_vout, CoinDenomination denom)
 {
     if (nStatus > ZCWST_MINTED_NOT_IN_BLOCK)
         throw std::runtime_error("cannot set CWalletCoin mint output or denomination once mint txn in block"); // or can we (txn malleability...)?
     nStatus = ZCWST_MINTED_NOT_IN_BLOCK;
-    this->outputMint_hash = outputMint.hash;
-    this->outputMint_vout = outputMint.n;
+    this->outputMint_hash = outputMint_hash;
+    this->outputMint_vout = outputMint_vout;
     coin.setDenomination(denom);
 }
 
@@ -113,7 +113,7 @@ void CWalletCoin::SetMintedBlock(uint256 hashBlock)
     */
 }
 
-void CWalletCoin::SetSpendInput(CInPoint inputSpend)
+void CWalletCoin::SetSpendInput(uint256 inputSpend_hash, int inputSpend_vin)
 {
     if (nStatus < ZCWST_MINTED_IN_BLOCK)
         throw std::runtime_error("cannot set CWalletCoin spend input until coin has been minted");
@@ -123,8 +123,8 @@ void CWalletCoin::SetSpendInput(CInPoint inputSpend)
         hashSpendBlock = 0;
     }
     nStatus = ZCWST_SPENT_NOT_IN_BLOCK;
-    this->inputSpend_hash = inputSpend.ptx->GetHash();
-    this->inputSpend_vin = inputSpend.n;
+    this->inputSpend_hash = inputSpend_hash;
+    this->inputSpend_vin = inputSpend_vin;
 }
 
 // hashBlock should be set to 0 if the new fork does not contain our ZC spend txn
