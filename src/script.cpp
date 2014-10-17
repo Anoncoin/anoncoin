@@ -79,6 +79,7 @@ const char* GetTxnOutputType(txnouttype t)
     case TX_PUBKEYHASH: return "pubkeyhash";
     case TX_SCRIPTHASH: return "scripthash";
     case TX_MULTISIG: return "multisig";
+    case TX_ZCMINT: return "zcmint";
     }
     return NULL;
 }
@@ -1144,6 +1145,10 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
 
         // Sender provides N pubkeys, receivers provides M signatures
         mTemplates.insert(make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
+
+        // Zerocoin mint
+        // the byte before OP_ZCPUBCOIN is the version (GNOSIS TODO: support versions > 1?)
+        mTemplates.insert(make_pair(TX_ZCMINT, CScript() << OP_RETURN << OP_ZCMINT << 1 << OP_ZCPUBCOIN));
     }
 
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
@@ -1208,6 +1213,12 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
             if (opcode2 == OP_PUBKEY)
             {
                 if (vch1.size() < 33 || vch1.size() > 120)
+                    break;
+                vSolutionsRet.push_back(vch1);
+            }
+            else if (opcode2 == OP_ZCPUBCOIN)
+            {
+                if (vch1.size() < 65 || vch1.size() > 130)
                     break;
                 vSolutionsRet.push_back(vch1);
             }
@@ -1311,6 +1322,10 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
     case TX_MULTISIG:
         scriptSigRet << OP_0; // workaround CHECKMULTISIG bug
         return (SignN(vSolutions, keystore, hash, nHashType, scriptSigRet));
+    case TX_ZCMINT:
+        // Client error; cannot redeem this!
+        printf("GNOSIS ERROR: Solver() : caller attempted to redeem a ZC mint output, which is impossible\n");
+        return false;
     }
     return false;
 }
@@ -1321,6 +1336,8 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
     {
     case TX_NONSTANDARD:
         return -1;
+    case TX_ZCMINT:
+        return -1;      // this output cannot be redeemed (the normal way; a ZC spend is not "normal")
     case TX_PUBKEY:
         return 1;
     case TX_PUBKEYHASH:
@@ -1352,6 +1369,9 @@ bool IsStandard(const CScript& scriptPubKey)
         if (m < 1 || m > n)
             return false;
     }
+
+    // GNOSIS TODO: there is probably a better place to verify minted coins (size and primality), but if not,
+    // then verify it here.
 
     return whichType != TX_NONSTANDARD;
 }
@@ -1398,6 +1418,11 @@ bool IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
     {
     case TX_NONSTANDARD:
         return false;
+    case TX_ZCMINT:
+    {
+        // GNOSIS FIXME
+        return wallet.HaveZerocoin(vSolutions[0]);
+    }
     case TX_PUBKEY:
         keyID = CPubKey(vSolutions[0]).GetID();
         return keystore.HaveKey(keyID);
@@ -1641,6 +1666,10 @@ static CScript CombineSignatures(CScript scriptPubKey, const CTransaction& txTo,
         if (sigs1.size() >= sigs2.size())
             return PushAll(sigs1);
         return PushAll(sigs2);
+    case TX_ZCMINT:
+        // GNOSIS TODO: what do I do here???
+        std::abort();
+        return PushAll(sigs1);
     case TX_PUBKEY:
     case TX_PUBKEYHASH:
         // Signatures are bigger than placeholders or empty scripts:
