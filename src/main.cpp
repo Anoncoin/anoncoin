@@ -40,7 +40,7 @@ map<uint256, CBlockIndex*> mapBlockIndex;
 
 // Genesis
 uint256 hashGenesisBlock("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3");
-static CBigNum bnProofOfWorkLimit( CBigNum().SetCompact(0x1e0ffff0) );
+static CBigNum bnProofOfWorkLimit( CBigNum().SetCompact(0x1f0ffff0) );
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 uint256 nBestChainWork = 0;
@@ -677,7 +677,8 @@ bool CTxMemPool::accept(CValidationState &state, CTransaction &tx, bool fCheckIn
 
     // Rather not work on nonstandard transactions (unless -testnet)
     string strNonStd;
-    if (!fTestNet && !tx.IsStandard(strNonStd))
+    // GNOSIS TESTING
+    if (!tx.IsStandard(strNonStd))
         return error("CTxMemPool::accept() : nonstandard transaction (%s)",
                      strNonStd.c_str());
 
@@ -1109,7 +1110,7 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
 // Protocol 1 & 2
 
 static const int64 nTargetTimespan = 86184; //420 * 205.2; = 86184 // Anoncoin: 420 blocks
-static const int64 nTargetSpacing = 205;//3.42 * 60; // Anoncoin: 3.42 minutes
+static const int64 nTargetSpacing = 15;//3.42 * 60; // Anoncoin: 3.42 minutes
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 static const int nDifficultySwitchHeight = 15420;
@@ -1171,13 +1172,16 @@ unsigned int static KimotoGravityWell(const CBlockIndex* pindexLast, const CBloc
     }
     if (bnNew > bnProofOfWorkLimit) { bnNew = bnProofOfWorkLimit; }
 
-#ifdef _ANONDEBUG
-    /// debug print
-    printf("Difficulty Retarget - Kimoto Gravity Well\n");
-    printf("PastRateAdjustmentRatio = %g\n", PastRateAdjustmentRatio);
-    printf("Before: %08x %s\n", BlockLastSolved->nBits, CBigNum().SetCompact(BlockLastSolved->nBits).getuint256().ToString().c_str());
-    printf("After: %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
-#endif
+    static CBigNum bnPrevious_rate_limiting = -1;
+    if (bnNew != bnPrevious_rate_limiting)
+    {
+        /// debug print
+        printf("Difficulty Retarget - Kimoto Gravity Well\n");
+        printf("PastRateAdjustmentRatio = %g\n", PastRateAdjustmentRatio);
+        printf("Before: %08x %s\n", BlockLastSolved->nBits, CBigNum().SetCompact(BlockLastSolved->nBits).getuint256().ToString().c_str());
+        printf("After: %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+        bnPrevious_rate_limiting = bnNew;
+    }
 
     return bnNew.GetCompact();
 }
