@@ -20,6 +20,9 @@
 using namespace std;
 using namespace boost;
 
+using libzerocoin::PublicCoin;
+using libzerocoin::CoinDenomination;
+
 #if defined(NDEBUG)
 # error "Anoncoin cannot be compiled without assertions."
 #endif
@@ -366,6 +369,13 @@ bool CTxOut::IsDust() const
     // Anoncoin: IsDust() detection disabled, allows any valid dust to be relayed.
     // The fees imposed on each dust txo is considered sufficient spam deterrant.
     return false;
+}
+
+// If this is a ZC mint output, gets the corresponding fully validated PublicCoin
+// with CoinDenomination set; returns true. If not a valid ZC mint, returs false.
+bool CTxOut::GetMintedCoin(PublicCoin& pubCoinRet) const
+{
+    return this->scriptPubKey.GetMint(pubCoinRet, this->nValue);
 }
 
 bool CTransaction::IsStandard(string& strReason) const
@@ -4582,6 +4592,19 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             ++nBlockTx;
             nBlockSigOps += nTxSigOps;
             nFees += nTxFees;
+
+            // GNOSIS: if mint transaction, accumulate
+            //          1) mint output must be a valid PublicCoin
+            //          2) this minted zerocoin must never have been accumulated before (GNOSIS TODO)
+            for (unsigned int i = 0; i < tx.vout.size(); i++)
+            {
+                PublicCoin pubcoin;
+                if (tx.vout[i].GetMintedCoin(pubcoin))
+                {
+                    printf("GNOSIS minted coin! %s-%d\n", tx.GetHash().GetHex().c_str(), i);
+                    //XXX
+                }
+            }
 
             if (fPrintPriority)
             {

@@ -18,6 +18,24 @@ public:
 	// Anoncoin denominations are (in satoshis) either 10^e or 5*10^e where e is in [0, 11]
 	// throws ZerocoinException if value not one of the Anoncoin denominations
 	explicit CoinDenomination(int64 value) {
+		setValue(value);
+	}
+
+	CoinDenomination() : initialized(false) { }
+
+	// value in satoshis
+	// throws ZerocoinException if constructed w/ default constructor
+	int64 getValue() const {
+		if (!this->initialized) {
+			throw ZerocoinException("coin denomination not initialized");
+		}
+		return this->value;
+	}
+
+	void setValue(int64 value) {
+		if (this->initialized)
+			throw ZerocoinException("tried to set value of denomination that's already initialized");
+
 		if (value <= 0) {
 			throw ZerocoinException("coin denomination must be positive");
 		}
@@ -31,17 +49,6 @@ public:
 		}
 		this->value = value;
 		this->initialized = true;
-	}
-
-	CoinDenomination() : initialized(false) { }
-
-	// value in satoshis
-	// throws ZerocoinException if constructed w/ default constructor
-	int64 getValue() const {
-		if (!this->initialized) {
-			throw ZerocoinException("coin denomination not initialized");
-		}
-		return this->value;
 	}
 
 	// throws ZerocoinException if either are not initialized

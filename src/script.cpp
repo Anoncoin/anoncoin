@@ -17,6 +17,9 @@ using namespace boost;
 #include "util.h"
 #include "zc.h"
 
+using libzerocoin::PublicCoin;
+using libzerocoin::CoinDenomination;
+
 bool CheckSig(vector<unsigned char> vchSig, const vector<unsigned char> &vchPubKey, const CScript &scriptCode, const CTransaction& txTo, unsigned int nIn, int nHashType, int flags);
 
 
@@ -1867,7 +1870,49 @@ void CScript::SetMint(const CBigNum& bnPublicCoin)
     *this << OP_RETURN;
     *this << OP_ZCMINT;
     *this << 1;             // Zerocoin transaction format version 1
-    *this << bnPublicCoin;  // GNOSIS HACK!
+    *this << bnPublicCoin;
+}
+
+bool CScript::GetMint(CBigNum& bnPublicCoinRet) const
+{
+    txnouttype whichType;
+    vector<valtype> vSolutions;
+    if (!Solver(*this, whichType, vSolutions))
+        return false;
+    if (whichType != TX_ZCMINT)
+        return false;
+
+    bnPublicCoinRet.setvch(vSolutions[0]);
+    return true;
+}
+
+// "high-level" interface - performs additional checks of coin validity.
+// if nValueOut < 0, then PublicCoin has unspecified denomination.
+// Otherwise, the denomination is set. If either coin or denomination are
+// invalid, false is returned.
+bool CScript::GetMint(PublicCoin& pubcoinRet, int64 nValueOut) const
+{
+    CBigNum bnPublicCoin;
+    if (!GetMint(bnPublicCoin))
+        return false;
+
+    CoinDenomination denom;
+    try
+    {
+        if (nValueOut >= 0)
+            denom.setValue(nValueOut);
+        PublicCoin pubcoin(GetZerocoinParams(), bnPublicCoin);
+        if (nValueOut >= 0)
+            pubcoin.setDenomination(denom);
+        if (!pubcoin.validate())
+            return false;
+        pubcoinRet = pubcoin;
+        return true;
+    }
+    catch (ZerocoinException& e) {
+        printf("GNOSIS DEBUG: CScript::GetMint() : caught ZC exception: %s\n", e.what());
+        return false;
+    }
 }
 
 bool CScriptCompressor::IsToKeyID(CKeyID &hash) const

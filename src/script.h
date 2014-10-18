@@ -563,6 +563,9 @@ public:
 
     // Zerocoin
     void SetMint(const CBigNum& bnPublicCoin);
+    bool GetMint(CBigNum& bnPublicCoinRet) const;
+    bool GetMint(libzerocoin::PublicCoin& pubcoinRet, int64 nValueOut=-1) const;
+
 
 
     void PrintHex() const

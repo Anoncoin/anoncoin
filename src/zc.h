@@ -240,6 +240,15 @@ private:
 
 };
 
+// accumulator checkpoint class
+class CAccumCheckpt
+{
+public:
+    libzerocoin::Accumulator a;
+    int64 nCoins;           // total number of coins accumulated (not to be confused with total monetary value)
+    int64 nBlockHeight;     // the maximum of the block heights of all coins accumulated
+};
+
 //GetParentBlockCheckpoint
 
 #endif /* #ifndef ANONCOIN_ZC_H */
