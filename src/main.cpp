@@ -1111,7 +1111,6 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
 
 static const int64 nTargetTimespan = 86184; //420 * 205.2; = 86184 // Anoncoin: 420 blocks
 static const int64 nTargetSpacing = 15;//3.42 * 60; // Anoncoin: 3.42 minutes
-static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 static const int nDifficultySwitchHeight = 15420;
 static const int nDifficultySwitchHeight2 = 77777;
@@ -1125,8 +1124,6 @@ unsigned int static KimotoGravityWell(const CBlockIndex* pindexLast, const CBloc
     /* current difficulty formula, Anoncoin - kimoto gravity well */
     const CBlockIndex *BlockLastSolved = pindexLast;
     const CBlockIndex *BlockReading = pindexLast;
-    const CBlockHeader *BlockCreating = pblock;
-                        BlockCreating = BlockCreating;
     uint64 PastBlocksMass = 0;
     int64 PastRateActualSeconds = 0;
     int64 PastRateTargetSeconds = 0;
