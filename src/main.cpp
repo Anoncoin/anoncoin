@@ -1648,6 +1648,7 @@ bool CTransaction::CheckInputs(CValidationState &state, CCoinsViewCache &inputs,
 
 bool CBlock::DisconnectBlock(CValidationState &state, CBlockIndex *pindex, CCoinsViewCache &view, bool *pfClean)
 {
+    // GNOSIS TODO: handle ZC-related collections
     assert(pindex == view.GetBestBlock());
 
     if (pfClean)
@@ -1767,6 +1768,7 @@ void ThreadScriptCheck() {
 
 bool CBlock::ConnectBlock(CValidationState &state, CBlockIndex* pindex, CCoinsViewCache &view, bool fJustCheck)
 {
+    // GNOSIS TODO: handle ZC-related collections
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(state, !fJustCheck, !fJustCheck) && pindex->nHeight > 420)
         return false;
@@ -4455,6 +4457,8 @@ void GetLatestAccumulatorCheckpoints(CBlockIndex *pindexBest, map<CoinDenominati
 // GNOSIS TODO: since CreateNewBlock is called every time a new transaction is added, we really do not
 //              want to accumulate all mint outputs in the block each call, because that has quadratic
 //              complexity!
+// GNOSIS TODO: make sure we don't accumulate the same coin twice (in the same
+//              denomination)! This includes coins from previous blocks.
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 {
     // Create new block

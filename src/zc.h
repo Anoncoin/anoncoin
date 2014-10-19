@@ -247,7 +247,16 @@ public:
     libzerocoin::Accumulator a;
     int64 nCoins;           // total number of coins accumulated (not to be confused with total monetary value)
     int64 nBlockHeight;     // the maximum of the block heights of all coins accumulated
+    std::set<libzerocoin::PublicCoin> setPubCoins;
 };
+
+//GNOSIS TODO: use this
+class CAccumulatedCoins
+{
+public:
+    std::map<libzerocoin::CoinDenomination, CAccumCheckpt*> mapCheckpoints;
+};
+
 
 //GetParentBlockCheckpoint
 
