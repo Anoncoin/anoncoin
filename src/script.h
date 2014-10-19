@@ -47,7 +47,7 @@ enum txnouttype
     TX_SCRIPTHASH,
     TX_MULTISIG,
     TX_ZCMINT,
-    //TX_ZCCHECKPT,
+    TX_ZCCHECKPT,
 };
 
 class CNoDestination {
@@ -207,9 +207,11 @@ enum opcodetype
     OP_ZCMINT       = 0xd3,
 
     // template matching params
+    OP_ZCDENOM = 0xde,          // CoinDenomination, used by accumulator checkpoints
+    OP_ZCACCUMELEM = 0xdf,      // one element of an accumulator checkpoint (out of a total of UFO_COUNT)
     OP_SMALLINTEGER = 0xfa,
     OP_PUBKEYS = 0xfb,
-    OP_ZCPUBCOIN = 0xfc,    // ZC mint
+    OP_ZCPUBCOIN = 0xfc,        // ZC mint
     OP_PUBKEYHASH = 0xfd,
     OP_PUBKEY = 0xfe,
 
@@ -565,6 +567,7 @@ public:
     void SetMint(const CBigNum& bnPublicCoin);
     bool GetMint(CBigNum& bnPublicCoinRet) const;
     bool GetMint(libzerocoin::PublicCoin& pubcoinRet, int64 nValueOut=-1) const;
+    bool GetCheckpoint(CAccumCheckpt& chkpt) const;
 
 
 

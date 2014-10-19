@@ -1151,8 +1151,19 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
         mTemplates.insert(make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
 
         // Zerocoin mint
-        // the byte before OP_ZCPUBCOIN is the version (GNOSIS TODO: support versions > 1?)
+        // the byte before OP_ZCPUBCOIN is the transaction format version (currently v1)
         mTemplates.insert(make_pair(TX_ZCMINT, CScript() << OP_RETURN << OP_ZCMINT << 1 << OP_ZCPUBCOIN));
+
+        // Zerocoin accumulator checkpoint
+        {
+            CScript tmp;
+            tmp << OP_RETURN << OP_ZCCHECKPT << 1 << OP_ZCDENOM;
+            for (int i = 0; i < UFO_COUNT; i++)
+            {
+                tmp << OP_ZCACCUMELEM;
+            }
+            mTemplates.insert(make_pair(TX_ZCCHECKPT, tmp));
+        }
     }
 
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
@@ -1223,6 +1234,17 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
             else if (opcode2 == OP_ZCPUBCOIN)
             {
                 if (vch1.size() < 65 || vch1.size() > 130)
+                    break;
+                vSolutionsRet.push_back(vch1);
+            }
+            else if (opcode2 == OP_ZCDENOM)
+            {
+                printf("GNOSIS DEBUG: Solver() : OP_ZCDENOM vch1.size() is %d\n", (int)vch1.size()); //XXX
+                vSolutionsRet.push_back(vch1);
+            }
+            else if (opcode2 == OP_ZCACCUMELEM)
+            {
+                if (vch1.size() < 350 || vch1.size() > 495)
                     break;
                 vSolutionsRet.push_back(vch1);
             }
@@ -1884,6 +1906,15 @@ bool CScript::GetMint(CBigNum& bnPublicCoinRet) const
 
     bnPublicCoinRet.setvch(vSolutions[0]);
     return true;
+}
+
+bool CScript::GetCheckpoint(CAccumCheckpt& chkpt) const
+    txnouttype whichType;
+    vector<valtype> vSolutions;
+    if (!Solver(*this, whichType, vSolutions))
+        return false;
+
+    //XXX
 }
 
 // "high-level" interface - performs additional checks of coin validity.

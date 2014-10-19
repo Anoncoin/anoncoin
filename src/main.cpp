@@ -4454,6 +4454,50 @@ void GetLatestAccumulatorCheckpoints(CBlockIndex *pindexBest, map<CoinDenominati
     }
 }
 
+// Validate and extract checkpoints from coinbase tx outputs.
+// Returns true iff. any checkpoints that are present are valid, and no
+// denomination occurs more than once.
+// NOTE: it is still necessary to check that the denominations present match
+// the denominations of minted ZC in the block.
+//
+// Pre-condition: mapCheckptsRet is empty.
+// Post-condition: If return value is true: mapCheckptsRet contains the accumulator checkpoints (which the caller owns). May be empty.
+//                 If return value is false: mapCheckptsRet is empty.
+//
+// the caller is responsible for freeing the CAccumCheckpts
+bool CoinbaseCheckpointsAreValid(const vector<CTxOut>& vout_cb, map<CoinDenomination, CAccumCheckpt*>& mapCheckptsRet)
+{
+    mapCheckptsRet.clear();
+    for (unsigned int i = 0; i < vout_cb.size(); i++)
+    {
+        const CTxOut& out = vout_cb[i];
+        CAccumCheckpt *pchkpt = new CAccumCheckpt;
+        if (!out.scriptPubKey.GetCheckpoint(*pchkpt))
+        {
+            delete pchkpt;
+            continue;
+        }
+        CoinDenomination denom = pchkpt->a.getDenomination();
+        if (mapCheckptsRet.count(denom) > 0)
+        {
+            // we already have a checkpoint of this denomination, therefore the coinbase (and the block) is invalid
+            delete pchkpt;
+
+            // Clean up the returned map. GNOSIS TODO: make sure this is the best behavior
+            BOOST_FOREACH(PAIRTYPE(CoinDenomination, CAccumCheckpt*) item, mapCheckptsRet)
+                delete item.second;
+
+            mapCheckptsRet.clear();
+
+            return false;
+        }
+
+        mapCheckptsRet[denom] = pchkpt;
+    }
+
+    return true;
+}
+
 // GNOSIS TODO: since CreateNewBlock is called every time a new transaction is added, we really do not
 //              want to accumulate all mint outputs in the block each call, because that has quadratic
 //              complexity!
@@ -4578,6 +4622,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             // client code rounds up the size to the nearest 1K. That's good, because it gives an
             // incentive to create smaller transactions.
             double dFeePerKb =  double(nTotalIn-tx.GetValueOut()) / (double(nTxSize)/1000.0);
+
+            //GNOSIS TODO: fee per ZC mint and per ZC spend
 
             if (porphan)
             {
