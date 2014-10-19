@@ -11,10 +11,19 @@
 namespace libzerocoin {
 
 //Accumulator class
-Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d): params(p), denomination(d) {
+Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination& d): initialized(false) {
+	this->init(p, d);
+}
+
+void Accumulator::init(const AccumulatorAndProofParams* p, const CoinDenomination& d) {
+	if (this->initialized)
+		throw ZerocoinException("attempted to initialize an Accumulator that's already initialized");
+
+	this->params = p;
 	if (!(params->initialized)) {
 		throw ZerocoinException("Invalid parameters for accumulator");
 	}
+	this->denomination = d;
 
 	// copy in the accumulator bases
 	//TODO: make this less fucking verbose... BOOST_FOREACH?
@@ -25,6 +34,7 @@ Accumulator::Accumulator(const AccumulatorAndProofParams* p, const CoinDenominat
 	if (this->value.size() != UFO_COUNT) {
 		throw ZerocoinException("FATAL: number of elements in accumulator must match UFO count");
 	}
+	this->initialized = true;
 }
 
 void Accumulator::accumulate(const PublicCoin& coin) {

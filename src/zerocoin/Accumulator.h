@@ -43,7 +43,10 @@ public:
 	 * @param d the denomination of coins we are accumulating
 	 * @throw     Zerocoin exception in case of invalid parameters
 	 **/
-	Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination d);
+	Accumulator(const AccumulatorAndProofParams* p, const CoinDenomination& d);
+
+	// do the actual initialization
+	void init(const AccumulatorAndProofParams* p, const CoinDenomination& d);
 
 	/**
 	 * Accumulate a coin into the accumulator. Validates

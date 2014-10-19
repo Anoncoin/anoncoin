@@ -18,6 +18,7 @@ public:
 	// Anoncoin denominations are (in satoshis) either 10^e or 5*10^e where e is in [0, 11]
 	// throws ZerocoinException if value not one of the Anoncoin denominations
 	explicit CoinDenomination(int64 value) {
+		this->initialized = false;
 		setValue(value);
 	}
 
@@ -64,6 +65,9 @@ public:
 		return !CoinDenomination::operator==(d);
 	}
 
+	friend inline bool operator<(const CoinDenomination& a, const CoinDenomination& b);
+	friend inline bool operator>(const CoinDenomination& a, const CoinDenomination& b);
+
 private:
 	int64 value;
 	bool initialized;
@@ -75,6 +79,11 @@ public:
 		READWRITE(value);
 	)
 };
+
+inline bool operator<(const CoinDenomination& a, const CoinDenomination& b) { return a.value < b.value; };
+inline bool operator>(const CoinDenomination& a, const CoinDenomination& b) { return a.value > b.value; };
+inline bool operator<=(const CoinDenomination& a, const CoinDenomination& b) { return !(a > b); };
+inline bool operator>=(const CoinDenomination& a, const CoinDenomination& b) { return !(a < b); };
 
 /** A Public coin is the part of a coin that
  * is published to the network and what is handled

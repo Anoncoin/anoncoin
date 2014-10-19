@@ -70,11 +70,11 @@ static const int fHaveUPnP = false;
 #endif
 
 /** Zerocoin block heights (GNOSIS TODO: put our actual desired block height here!!!) */
-static const unsigned int ZC_ENABLE_BLOCKS_HEIGHT = 1;  // first block height that can have ZC txns
-static const unsigned int ZC_ENABLE_RELAY_HEIGHT =
+static const int ZC_ENABLE_BLOCKS_HEIGHT = 1;  // first block height that can have ZC txns
+static const int ZC_ENABLE_RELAY_HEIGHT =
     ZC_ENABLE_BLOCKS_HEIGHT + 6;// minimum block height for relaying ZC txns
-static const unsigned int ZC_ENABLE_MINT_SPEND_HEIGHT =
-    ZC_ENABLE_RELAY_HEIGHT + 2;  // minimum block height to allow creating ZC mint & spend txns in the GUI
+static const int ZC_ENABLE_MINT_SPEND_HEIGHT =
+    ZC_ENABLE_RELAY_HEIGHT + 2;  // minimum block height to allow creating ZC mint & spend txns in the GUI and RPC
 
 
 extern CScript COINBASE_FLAGS;
@@ -83,9 +83,11 @@ extern CScript COINBASE_FLAGS;
 
 
 
+typedef map<uint256, map<libzerocoin::CoinDenomination, CAccumCheckpt*> > BlockCheckpointsMap;
 
 extern CCriticalSection cs_main;
 extern std::map<uint256, CBlockIndex*> mapBlockIndex;
+extern BlockCheckpointsMap mapBlockCheckpoints;
 extern std::set<CBlockIndex*, CBlockIndexWorkComparator> setBlockIndexValid;
 extern uint256 hashGenesisBlock;
 extern CBlockIndex* pindexGenesisBlock;
@@ -168,6 +170,9 @@ bool SendMessages(CNode* pto, bool fSendTrickle);
 void ThreadScriptCheck();
 /** Run the miner threads */
 void GenerateBitcoins(bool fGenerate, CWallet* pwallet);
+/** Find the latest accumulator checkpoint for each zerocoin denomination */
+// GNOSIS TODO: storing accumulator checkpoints is too memory intensive -- could be anywhere from 40KB to 150KB per block
+void GetLatestAccumulatorCheckpoints(CBlockIndex *pindexBest, map<libzerocoin::CoinDenomination, CAccumCheckpt*>& mapLatestChkptsRet);
 /** Generate a new block, without valid proof-of-work */
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn);
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey);

@@ -72,6 +72,10 @@ multimap<uint256, CBlock*> mapOrphanBlocksByPrev;
 map<uint256, CTransaction> mapOrphanTransactions;
 map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 
+// note: this owns the CAccumCheckpt's
+// GNOSIS TODO: this will use a lot of memory
+map<uint256, map<CoinDenomination, CAccumCheckpt*> > mapBlockCheckpoints;
+
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
@@ -572,6 +576,7 @@ bool CTransaction::CheckTransaction(CValidationState &state) const
     if (vout.empty())
         return state.DoS(10, error("CTransaction::CheckTransaction() : vout empty"));
     // Size limits
+    // GNOSIS QUESTION: why is this checking max block size and not max tx size?
     if (::GetSerializeSize(*this, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE)
         return state.DoS(100, error("CTransaction::CheckTransaction() : size limits failed"));
 
@@ -2371,6 +2376,8 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
             if (!tx.IsFinal(nHeight, GetBlockTime()))
                 return state.DoS(10, error("AcceptBlock() : contains a non-final transaction"));
 
+        // GNOSIS TODO: reject if ZC mints, spends, or checkpoints and ZC_ENABLE_BLOCKS_HEIGHT
+
         // Check that the block chain matches the known block chain up to a checkpoint
         if (!Checkpoints::CheckBlock(nHeight, hash) && hash != hashGenesisBlock)
             return state.DoS(100, error("AcceptBlock() : rejected by checkpoint lock-in at %d", nHeight));
@@ -2461,6 +2468,7 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
     if (!pblock->CheckBlock(state) && hash != hashGenesisBlock)
         return error("ProcessBlock() : CheckBlock FAILED");
 
+    // note: these are distinct from accumulator checkpoints (which are a Zerocoin feature)
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
     if (pcheckpoint && pblock->hashPrevBlock != hashBestChain)
     {
@@ -4405,6 +4413,48 @@ public:
     }
 };
 
+// GNOSIS TODO: caching of this, including for several blocks back to avoid
+//      excessive work when best few blocks become orphaned
+void GetLatestAccumulatorCheckpoints(CBlockIndex *pindexBest, map<CoinDenomination, CAccumCheckpt*>& mapLatestChkptsRet)
+{
+    CBlockIndex* pindexCur = pindexBest;
+    for(;;)
+    {
+        if (pindexCur == NULL)
+            return;     // no more blocks
+
+        if (pindexCur->nHeight < ZC_ENABLE_BLOCKS_HEIGHT)
+            return;
+
+        assert(pindexCur->phashBlock != NULL);
+        assert(mapBlockIndex.count(*pindexCur->phashBlock) > 0);
+        uint256 hashBlock = *pindexCur->phashBlock;
+
+        BlockCheckpointsMap::iterator mi = mapBlockCheckpoints.find(hashBlock);
+        if (mi == mapBlockCheckpoints.end())
+        {
+            // no checkpoints in this block, go to the next
+            pindexCur = pindexCur->pprev;
+            continue;
+        }
+
+        map<CoinDenomination, CAccumCheckpt*>& mapCurCheckpts = mi->second;
+
+        BOOST_FOREACH(PAIRTYPE(CoinDenomination, CAccumCheckpt*) item, mapCurCheckpts)
+        {
+            if (mapLatestChkptsRet.count(item.first) == 0) {
+                // we don't already have a checkpoint for this denomination
+                mapLatestChkptsRet[item.first] = item.second;
+            }
+
+        }
+        pindexCur = pindexCur->pprev;
+    }
+}
+
+// GNOSIS TODO: since CreateNewBlock is called every time a new transaction is added, we really do not
+//              want to accumulate all mint outputs in the block each call, because that has quadratic
+//              complexity!
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 {
     // Create new block
@@ -4413,12 +4463,22 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         return NULL;
     CBlock *pblock = &pblocktemplate->block; // pointer for convenience
 
+    // Get accumulator checkpoints for this branch
+    map<CoinDenomination, CAccumCheckpt*> mapLatestChkpts;
+
+    // NOTE: all of the supplied checkpoints will be owned by mapBlockCheckpoints
+    GetLatestAccumulatorCheckpoints(pindexBest, mapLatestChkpts);
+
+    // these have one or more coins accumulated in the block we are creating
+    map<CoinDenomination, CAccumCheckpt*> mapCurrentChkpts;
+
     // Create coinbase tx
     CTransaction txNew;
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
     txNew.vout.resize(1);
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+    // note: additional zero-value outputs will be added for checkpoints
 
     // Add our coinbase tx as first transaction
     pblock->vtx.push_back(txNew);
@@ -4525,7 +4585,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         }
 
         // Collect transactions into block
-        uint64 nBlockSize = 1000;
+        uint64 nBlockSize = 15000;               // approx. max size of coinbase
         uint64 nBlockTx = 0;
         int nBlockSigOps = 100;
         bool fSortedByFee = (nBlockPrioritySize <= 0);
@@ -4545,6 +4605,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             // Size limits
             unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+            // GNOSIS: why is this not a break? I don't understand...
             if (nBlockSize + nTxSize >= nBlockMaxSize)
                 continue;
 
@@ -4602,7 +4663,33 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 if (tx.vout[i].GetMintedCoin(pubcoin))
                 {
                     printf("GNOSIS minted coin! %s-%d\n", tx.GetHash().GetHex().c_str(), i);
-                    //XXX
+                    CoinDenomination denom = pubcoin.getDenomination();
+
+                    if (mapCurrentChkpts.count(denom) == 0)
+                    {
+                        // We don't already have an accumulator checkpoint, meaning a coin
+                        // of this denomination has never been accumulated. Create a new one.
+                        CAccumCheckpt* pchkptNew;
+                        if (mapLatestChkpts.count(denom) == 0)
+                        {
+                            // create an empty CAccumCheckpt
+                            pchkptNew = new CAccumCheckpt();
+                            pchkptNew->a.init(&GetZerocoinParams()->accumulatorParams, denom);
+                        }
+                        else
+                        {
+                            // make a copy of the latest one
+                            pchkptNew = new CAccumCheckpt(*mapLatestChkpts[denom]);
+                        }
+
+                        pchkptNew->nBlockHeight = pindexPrev->nHeight + 1;
+
+                        mapCurrentChkpts[denom] = pchkptNew;
+                    }
+
+                    // accumulate
+                    mapCurrentChkpts[denom]->nCoins++;
+                    mapCurrentChkpts[denom]->a.accumulate(pubcoin);     // GNOSIS TODO: parallelize!
                 }
             }
 
@@ -4628,6 +4715,22 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                     }
                 }
             }
+        }
+
+        // GNOSIS TODO: Somehow, mapCurrentCheckpts has to make its way into mapBlockCheckpoints, which will have ownership of the memory.
+        //              Alternatively, we could free mapCurrentCheckpts and extract the checkpts from coinbase txn at a later time.
+        BOOST_FOREACH(PAIRTYPE(CoinDenomination, CAccumCheckpt*) itemcp, mapCurrentChkpts)
+        {
+            CTxOut outchk;
+            outchk.nValue = 0;          // accumulator checkpoints have zero value, since they cannot be redeemed
+            outchk.scriptPubKey << OP_RETURN << OP_ZCCHECKPT;
+            outchk.scriptPubKey << 1;   // Zerocoin transaction format version 1;
+            for (unsigned int modulusIdx = 0; modulusIdx < UFO_COUNT; modulusIdx++)
+            {
+                CBigNum bnElement = itemcp.second->a.getValue(modulusIdx);
+                outchk.scriptPubKey << bnElement;
+            }
+            pblock->vtx[0].vout.push_back(outchk);
         }
 
         nLastBlockTx = nBlockTx;

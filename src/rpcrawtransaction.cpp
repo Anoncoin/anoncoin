@@ -340,10 +340,9 @@ Value createrawtransaction(const Array& params, bool fHelp)
         CoinDenomination denom;
         try
         {
-            CoinDenomination tmp(nAmount);    // GNOSIS TODO: fix this ugliness
-            denom = tmp;
+            denom.setValue(nAmount);
         }
-        catch (ZerocoinException) {
+        catch (ZerocoinException& e) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, amount must be a ZC denomination");
         }
 
