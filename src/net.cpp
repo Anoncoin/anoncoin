@@ -1405,8 +1405,9 @@ static const char *strI2PDNSSeed[][2] = {
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strMainNetDNSSeed[][2] = {
-    {"coinpool.in", "anoncoin.dnsseed.coinpool.in"},
-    {"anoncoin.net", "dnsseed01.anoncoin.net"},
+    {"coinpool.in", "anoncoin.dnsseed.coinpool.in"}, // Normal Seednode, NO DNS-SEED!
+    {"anoncoin.net", "dnsseed01.anoncoin.net"}, // Normal Seednode, NO DNS-SEED!
+    {"anoncoin.darkgamex.ch", "anc.dnsseed01.anoncoin.darkgamex.ch"}, // K1773R's DNSSeed
     {NULL, NULL}
 };
 
