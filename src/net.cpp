@@ -1395,7 +1395,8 @@ static const char *strI2PDNSSeed[][2] = {
     {"72vaef5cmmlcilgvpeltcp77gutsnyic2l5khsgz7kyivla5lwjq.b32.i2p", "72vaef5cmmlcilgvpeltcp77gutsnyic2l5khsgz7kyivla5lwjq.b32.i2p"}, // riddler's seednode
     {"qc37luxnbh3hkihxfl2e7nwosebh5sbfvpvjqwn7c3g5kqftb5qq.b32.i2p", "qc37luxnbh3hkihxfl2e7nwosebh5sbfvpvjqwn7c3g5kqftb5qq.b32.i2p"}, // psi's seednode
     {"xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p", "xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p"}, // Cryptoslave's seednode
-    {"7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p", "7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p"} // lunokhod's seednode
+    {"7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p", "7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p"}, // lunokhod's seednode
+    {"ypwvq7jcu3uwyg4ufjqt4a26ca6pxdcnshv6q2okmmjsof5dxzkq.b32.i2p", "ypwvq7jcu3uwyg4ufjqt4a26ca6pxdcnshv6q2okmmjsof5dxzkq.b32.i2p"} // keystroke's seednode
 };
 
 
