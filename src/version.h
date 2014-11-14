@@ -28,6 +28,9 @@ static const int PRIMECOIN_VERSION =
                          +     100 * PRIMECOIN_VERSION_REVISION
                          +       1 * PRIMECOIN_VERSION_BUILD;
 
+// I2P
+const std::string I2P_MODULE_VERSION = "0.3";
+
 //
 // network protocol versioning
 //
