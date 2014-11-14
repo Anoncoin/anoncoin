@@ -901,7 +901,51 @@ bool WildcardMatch(const string& str, const string& mask)
     return WildcardMatch(str.c_str(), mask.c_str());
 }
 
+// Anoncoin
+// Write config file
 
+bool writeConfig(boost::filesystem::path configFile, boost::property_tree::ptree data)
+{
+    // Write file
+    try
+    {
+        write_ini(configFile.string(), data);
+    }
+    catch (boost::property_tree::info_parser::info_parser_error &e)
+    {
+        printf("Error writing config file: %s\n", e.what());
+        return false;
+    }
+    return true;
+}
+
+// Used by GUI wizard
+bool writeFirstConfig(bool i2pOnlyEnabled, bool torOnlyEnabled, bool i2pEnabled, bool torEnabled)
+{
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    if (i2pOnlyEnabled)
+        pt.put("onlynet", "i2p");
+    if (torOnlyEnabled)
+    {
+        pt.put("tor", "127.0.0.1:9050");
+        pt.put("onlynet", "tor");
+    }
+    if (i2pEnabled)
+        pt.put("i2p", 1);
+    if (torEnabled)
+        pt.put("proxy", "127.0.0.1:9050");
+    unsigned char rand_pwd[32];
+    RAND_bytes(rand_pwd, 32);
+    pt.put("rpcuser", "anoncoinrpc");
+    pt.put("rpcpassword", EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32).c_str());
+    pt.put("daemon", 1);
+    pt.put("server", 1);
+
+    // Write file
+    return writeConfig(GetConfigFile().string().c_str(), pt);
+}
 
 
 
@@ -914,7 +958,7 @@ static std::string FormatException(std::exception* pex, const char* pszThread)
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "litecoin";
+    const char* pszModule = "anoncoin";
 #endif
     if (pex)
         return strprintf(
@@ -947,7 +991,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Unix: ~/.bitcoin
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Litecoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Anoncoin";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -959,10 +1003,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     TryCreateDirectory(pathRet);
-    return pathRet / "Litecoin";
+    return pathRet / "Anoncoin";
 #else
     // Unix
-    return pathRet / ".litecoin";
+    return pathRet / ".anoncoin";
 #endif
 #endif
 }
@@ -1011,7 +1055,14 @@ void ClearDatadirCache()
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "litecoin.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "anoncoin.conf"));
+    if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
+    return pathConfigFile;
+}
+
+boost::filesystem::path GetQtStyleFile()
+{
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "anoncoin.qss"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
@@ -1044,7 +1095,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "litecoin.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "anoncoin.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -1436,4 +1487,21 @@ std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)
     ss.imbue(loc);
     ss << boost::posix_time::from_time_t(nTime);
     return ss.str();
+}
+
+void SetupEnvironment()
+{
+    +#ifndef WIN32
+    try
+    {
+	#if BOOST_FILESYSTEM_VERSION == 3
+            boost::filesystem::path::codecvt(); // Raises runtime error if current locale is invalid
+	#else				        // boost filesystem v2
+            std::locale();                      // Raises runtime error if current locale is invalid
+	#endif
+    } catch(std::runtime_error &e)
+    {
+        setenv("LC_ALL", "C", 1); // Force C locale
+    }
+    #endif
 }
