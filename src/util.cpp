@@ -1062,7 +1062,7 @@ boost::filesystem::path GetConfigFile()
 
 boost::filesystem::path GetQtStyleFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "anoncoin.qss"));
+    boost::filesystem::path pathConfigFile(GetArg("-style", "anoncoin.qss"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
