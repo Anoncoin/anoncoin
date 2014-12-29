@@ -1385,11 +1385,6 @@ void MapPort(bool)
 
 
 static const char *strI2PDNSSeed[][2] = {
-    {"d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p","d46o5wddsdrvg2ywnu4o57zeloayt7oyg56adz63xukordgfommq.b32.i2p"},
-    {"u2om3hgjpghqfi7yid75xdmvzlgjybstzp6mtmaxse4aztm23rwq.b32.i2p", "u2om3hgjpghqfi7yid75xdmvzlgjybstzp6mtmaxse4aztm23rwq.b32.i2p"},
-    {"htigbyeisbqizn63ftqw7ggfwfeolwkb3zfxwmyffygbilwqsswq.b32.i2p", "htigbyeisbqizn63ftqw7ggfwfeolwkb3zfxwmyffygbilwqsswq.b32.i2p"},
-    {"st4eyxcp73zzbpatgt26pt3rlfwb7g5ywedol65baalgpnhvzqpa.b32.i2p", "st4eyxcp73zzbpatgt26pt3rlfwb7g5ywedol65baalgpnhvzqpa.b32.i2p"},
-    {"qgmxpnpujddsd5ez67p4ognqsvo64tnzdbzesezdbtb3atyoxcpq.b32.i2p", "qgmxpnpujddsd5ez67p4ognqsvo64tnzdbzesezdbtb3atyoxcpq.b32.i2p"},
     {"a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p", "a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p"}, // K1773R's seednode
     {"b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p", "b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p"}, // K1773R's seednode (dnsseed01)
     {"72vaef5cmmlcilgvpeltcp77gutsnyic2l5khsgz7kyivla5lwjq.b32.i2p", "72vaef5cmmlcilgvpeltcp77gutsnyic2l5khsgz7kyivla5lwjq.b32.i2p"}, // riddler's seednode
