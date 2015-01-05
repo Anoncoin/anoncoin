@@ -14,7 +14,7 @@
 
 #include <boost/foreach.hpp>
 #include "json/json_spirit_value.h"
-#include "bitcoinrpc.h"
+/* #include "bitcoinrpc.h" */
 #include "alert.h"
 #include "base58.h"
 

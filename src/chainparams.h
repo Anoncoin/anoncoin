@@ -52,11 +52,19 @@ public:
         MAX_BASE58_TYPES
     };
 
+    enum MergedMinedWith {
+        ALGO_SCRYPT,
+        ALGO_SHA256D,
+        ALGO_PRIME,
+
+        MAX_ALGO_TYPES
+    };
+
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
-    const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
+    const CBigNum& ProofOfWorkLimit( MergedMinedWith mmw ) const { return bnProofOfWorkLimit[ mmw ]; }
     int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
@@ -75,7 +83,7 @@ protected:
     vector<unsigned char> vAlertPubKey;
     int nDefaultPort;
     int nRPCPort;
-    CBigNum bnProofOfWorkLimit;
+    CBigNum bnProofOfWorkLimit[ MAX_ALGO_TYPES ];
     int nSubsidyHalvingInterval;
     string strDataDir;
     vector<CDNSSeedData> vSeeds;

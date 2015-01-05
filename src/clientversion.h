@@ -23,9 +23,23 @@
 
 #endif //HAVE_CONFIG_H
 
+// Regardless of HAVE_CONFIG_H's state, these need to be declared, if they are not already.
+//
+// primecoin client version - ToDo: GR note - Needs review - copied these in so anc will compile the 'developer' branch.
+//                                            They should go here though, for ease in future upgrades.  IMO LightCoin should also be listed
+#if !defined(HAVE_PRIMECOIN_CONFIG_H)
+#define HAVE_PRIMECOIN_CONFIG_H
+
+#define PRIMECOIN_VERSION_MAJOR 0
+#define PRIMECOIN_VERSION_MINOR 1
+#define PRIMECOIN_VERSION_REVISION 2
+#define PRIMECOIN_VERSION_BUILD 0
+#endif
+
 // Converts the parameter X to a string after macro replacement on X has been performed.
 // Don't merge these into one macro!
 #define STRINGIZE(X) DO_STRINGIZE(X)
 #define DO_STRINGIZE(X) #X
 
 #endif // CLIENTVERSION_H
+

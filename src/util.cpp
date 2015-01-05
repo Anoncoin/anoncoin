@@ -5,6 +5,7 @@
 
 #include "util.h"
 
+#include "base58.h"
 #include "chainparams.h"
 #include "netbase.h"
 #include "sync.h"
@@ -15,6 +16,9 @@
 #include <stdarg.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+#include <boost/property_tree/info_parser.hpp>
 
 #ifndef WIN32
 // for posix_fallocate
@@ -903,13 +907,13 @@ bool WildcardMatch(const string& str, const string& mask)
 
 // Anoncoin
 // Write config file
-
+// ToDo: May have fixed the .ini file write via boost here (also note: required header includes)
 bool writeConfig(boost::filesystem::path configFile, boost::property_tree::ptree data)
 {
-    // Write file
+    // Write file if we can, or catch the error and report it.
     try
     {
-        write_ini(configFile.string(), data);
+        booost:write_ini(configFile.string(), data);
     }
     catch (boost::property_tree::info_parser::info_parser_error &e)
     {
@@ -1062,7 +1066,7 @@ boost::filesystem::path GetConfigFile()
 
 boost::filesystem::path GetQtStyleFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-style", "anoncoin.qss"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "anoncoin.qss"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
@@ -1462,6 +1466,8 @@ void RenameThread(const char* name)
 #endif
 }
 
+// ToDo: What's going on here, got a compiler error: stray ‘#’ in program, method defined twice, so deleted the dup with error.
+// GR note: Perhaps some additional thought needs to go into WIN32 environment construction, none is being provided for here.
 void SetupEnvironment()
 {
     #ifndef WIN32
@@ -1489,19 +1495,3 @@ std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)
     return ss.str();
 }
 
-void SetupEnvironment()
-{
-    +#ifndef WIN32
-    try
-    {
-	#if BOOST_FILESYSTEM_VERSION == 3
-            boost::filesystem::path::codecvt(); // Raises runtime error if current locale is invalid
-	#else				        // boost filesystem v2
-            std::locale();                      // Raises runtime error if current locale is invalid
-	#endif
-    } catch(std::runtime_error &e)
-    {
-        setenv("LC_ALL", "C", 1); // Force C locale
-    }
-    #endif
-}

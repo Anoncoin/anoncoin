@@ -110,8 +110,10 @@ public:
         vAlertPubKey = ParseHex("04b2941a448ab9860beb73fa2f600c09bf9fe4d18d5ff0b3957bf94c6d177d61f88660d7c0dd9adef984080ddea03c898039759f66c2011c111c4394692f814962");
         nDefaultPort = 9377;
         nRPCPort = 9376;
+
+        // ToDo: These proof of work limits need to be checked, PRIME's value hasn't been looked up yet.
         bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 20); // Litecoin: starting difficulty is 1 / 2^12
-        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 20);
+        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 32); /* Bitcoin difficulty is very large (taken from 9.99 code 12/2014 */
         bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 20);
         nSubsidyHalvingInterval = 840000;
 
@@ -234,7 +236,12 @@ public:
         pchMessageStart[2] = 0xb5;
         pchMessageStart[3] = 0xda;
         nSubsidyHalvingInterval = 150;
-        bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);
+
+        // ToDo: Proof of work limits, for regression testing are very small, more than likely these should work
+        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 1);
+        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 1);
+        bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 1);
+
         genesis.nTime = 1296688602;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 2;
