@@ -64,8 +64,7 @@ public:
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
-    const CBigNum& ProofOfWorkLimit( MergedMinedWith mmw ) const { return bnProofOfWorkLimit[ mmw ]; }
-    int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
+    const CBigNum& ProofOfWorkLimit( MergedMinedWith mmw = ALGO_SCRYPT ) const { return bnProofOfWorkLimit[ mmw ]; }
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }
@@ -84,7 +83,6 @@ protected:
     int nDefaultPort;
     int nRPCPort;
     CBigNum bnProofOfWorkLimit[ MAX_ALGO_TYPES ];
-    int nSubsidyHalvingInterval;
     string strDataDir;
     vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];

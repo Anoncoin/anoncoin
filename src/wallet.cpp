@@ -1072,7 +1072,7 @@ int64_t CWallet::GetWatchOnlyBalance() const
                 nTotal += pcoin->GetAvailableWatchOnlyCredit();
         }
     }
-    
+
     return nTotal;
 }
 
@@ -1572,7 +1572,7 @@ string CWallet::SendMoneyToDestination(const CTxDestination& address, int64_t nV
     if (nValue + nTransactionFee > GetBalance())
         return _("Insufficient funds");
 
-    // Parse Bitcoin address
+    // Parse Anoncoin address
     CScript scriptPubKey;
     scriptPubKey.SetDestination(address);
 

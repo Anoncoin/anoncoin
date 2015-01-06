@@ -786,7 +786,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../bitcoin.qrc"/>
+  <include location="../anoncoin.qrc"/>
  </resources>
  <connections/>
 </ui>

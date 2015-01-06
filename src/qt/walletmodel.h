@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -92,7 +93,7 @@ public:
     )
 };
 
-/** Interface to Bitcoin wallet from Qt view code. */
+/** Interface to Anoncoin wallet from Qt view code. */
 class WalletModel : public QObject
 {
     Q_OBJECT

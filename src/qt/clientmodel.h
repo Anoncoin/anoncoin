@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -32,7 +33,7 @@ enum NumConnections {
     CONNECTIONS_ALL  = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
-/** Model for Bitcoin network client. */
+/** Model for Anoncoin network client. */
 class ClientModel : public QObject
 {
     Q_OBJECT
@@ -69,6 +70,22 @@ public:
     QString clientName() const;
     QString formatClientStartupTime() const;
 
+    /*
+     * Public functions needed for handling the I2P Config and operational settings
+     */
+    QString formatI2PNativeFullVersion() const;
+    int getNumI2PConnections() const;
+
+    QString getPublicI2PKey() const;
+    QString getPrivateI2PKey() const;
+    bool isI2PAddressGenerated() const;
+    bool isI2POnly() const;
+    bool isTorOnly() const;
+    bool isDarknetOnly() const;
+    bool isBehindDarknet() const;
+    QString getB32Address(const QString& destination) const;
+    void generateI2PDestination(QString& pub, QString& priv) const;
+
 private:
     OptionsModel *optionsModel;
 
@@ -88,6 +105,7 @@ signals:
     void numBlocksChanged(int count);
     void alertsChanged(const QString &warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
+    void numI2PConnectionsChanged(int count);                                      // For I2P connections changed
 
     //! Fired when a message should be reported to the user
     void message(const QString &title, const QString &message, unsigned int style);
@@ -96,6 +114,7 @@ public slots:
     void updateTimer();
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
+    void updateNumI2PConnections(int numI2PConnections);                            // For I2P connection count updates
 };
 
 #endif // CLIENTMODEL_H

@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,7 +12,7 @@ QT_BEGIN_NAMESPACE
 class QNetworkProxy;
 QT_END_NAMESPACE
 
-/** Interface from Qt to configuration data structure for Bitcoin client.
+/** Interface from Qt to configuration data structure for Anoncoin client.
    To Qt, the options are presented as a list with the different options
    laid out vertically.
    This can be changed to a tree once the settings become sufficiently
@@ -34,13 +35,34 @@ public:
         ProxyPort,              // int
         ProxySocksVersion,      // int
         Fee,                    // qint64
-        DisplayUnit,            // BitcoinUnits::Unit
+        DisplayUnit,            // AnoncoinUnits::Unit
         ThirdPartyTxUrls,       // QString
         Language,               // QString
         CoinControlFeatures,    // bool
         ThreadsScriptVerif,     // int
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
+
+        I2PUseI2POnly,              // bool
+        I2PSAMHost,                 // QString
+        I2PSAMPort,                 // int
+        I2PSessionName,             // QString
+
+        I2PInboundQuantity,         // int
+        I2PInboundLength,           // int
+        I2PInboundLengthVariance,   // int
+        I2PInboundBackupQuantity,   // int
+        I2PInboundAllowZeroHop,     // bool
+        I2PInboundIPRestriction,    // int
+
+        I2POutboundQuantity,        // int
+        I2POutboundLength,          // int
+        I2POutboundLengthVariance,  // int
+        I2POutboundBackupQuantity,  // int
+        I2POutboundAllowZeroHop,    // bool
+        I2POutboundIPRestriction,   // int
+        I2POutboundPriority,        // int
+
         OptionIDRowCount,
     };
 

@@ -63,6 +63,14 @@ void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
 
+/* Anoncoin specific functions handled here */
+bool IsDarknetOnly();
+bool IsTorOnly();
+bool IsI2POnly();
+bool IsI2PEnabled();
+bool IsBehindDarknet();
+
+
 typedef int NodeId;
 
 // Signals for message handling

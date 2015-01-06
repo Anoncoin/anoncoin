@@ -1,10 +1,12 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "recentrequeststablemodel.h"
 
-#include "bitcoinunits.h"
+#include "anoncoinunits.h"
+#include "clientversion.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 

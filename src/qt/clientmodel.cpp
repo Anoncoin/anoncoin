@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,6 +13,7 @@
 #include "main.h"
 #include "net.h"
 #include "ui_interface.h"
+#include "i2pwrapper.h"            // Include for i2p interface
 
 #include <stdint.h>
 
@@ -234,4 +236,71 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this));
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
+}
+
+/**********************************************************************
+ *          These I2P functions handle values for the view
+ */
+QString ClientModel::formatI2PNativeFullVersion() const
+{
+    return QString::fromStdString(FormatI2PNativeFullVersion());
+}
+
+void ClientModel::updateNumI2PConnections(int numI2PConnections)
+{
+    emit numI2PConnectionsChanged(numI2PConnections);
+}
+
+int ClientModel::getNumI2PConnections() const
+{
+    // ToDo: Fix this in net.cpp
+    // return nI2PNodeCount;
+    return 0;
+}
+
+QString ClientModel::getPublicI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().pub);
+}
+
+QString ClientModel::getPrivateI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().priv);
+}
+
+bool ClientModel::isI2PAddressGenerated() const
+{
+    return I2PSession::Instance().getMyDestination().isGenerated;
+}
+
+bool ClientModel::isI2POnly() const
+{
+    return IsI2POnly();
+}
+
+bool ClientModel::isTorOnly() const
+{
+    return IsTorOnly();
+}
+
+bool ClientModel::isDarknetOnly() const
+{
+    return IsDarknetOnly();
+}
+
+bool ClientModel::isBehindDarknet() const
+{
+    return IsBehindDarknet();
+}
+
+QString ClientModel::getB32Address(const QString& destination) const
+{
+    return QString::fromStdString(I2PSession::GenerateB32AddressFromDestination(destination.toStdString()));
+}
+
+void ClientModel::generateI2PDestination(QString& pub, QString& priv) const
+{
+    const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
+    pub = QString::fromStdString(generatedDest.pub);
+    priv = QString::fromStdString(generatedDest.priv);
 }

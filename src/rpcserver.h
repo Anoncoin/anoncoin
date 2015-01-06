@@ -63,7 +63,7 @@ public:
 };
 
 /**
- * Bitcoin RPC command dispatcher.
+ * Anoncoin RPC command dispatcher.
  */
 class CRPCTable
 {

@@ -1,15 +1,17 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "bitcoin-config.h"
+#include "config/anoncoin-config.h"
 #endif
 
 #include "net.h"
 
 #include "addrman.h"
+#include "clientversion.h"
 #include "chainparams.h"
 #include "core.h"
 #include "ui_interface.h"
@@ -606,7 +608,7 @@ void CNode::copyStats(CNodeStats &stats)
         nPingUsecWait = GetTimeMicros() - nPingUsecStart;
     }
 
-    // Raw ping time is in microseconds, but show it to user as whole seconds (Bitcoin users should be well used to small numbers with many decimal places by now :)
+    // Raw ping time is in microseconds, but show it to user as whole seconds (Anoncoin users should be well used to small numbers with many decimal places by now :)
     stats.dPingTime = (((double)nPingUsecTime) / 1e6);
     stats.dPingWait = (((double)nPingUsecWait) / 1e6);
 
@@ -808,6 +810,14 @@ void ThreadSocketHandler()
         if(vNodes.size() != nPrevNodeCount) {
             nPrevNodeCount = vNodes.size();
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
+        }
+
+// ToDo: Finish coding so this works..and double check that it is now positioned in the correct spot of the code
+//        if (nPrevI2PNodeCount != nI2PNodeCount)
+        {
+//            nPrevI2PNodeCount = nI2PNodeCount;
+//            uiInterface.NotifyNumI2PConnectionsChanged(nI2PNodeCount);
+            uiInterface.NotifyNumI2PConnectionsChanged(0);
         }
 
 
@@ -1100,7 +1110,7 @@ void ThreadMapPort()
             }
         }
 
-        string strDesc = "Bitcoin " + FormatFullVersion();
+        string strDesc = "Anoncoin " + FormatFullVersion();
 
         try {
             while (true) {
@@ -1637,7 +1647,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
     {
         int nErr = WSAGetLastError();
         if (nErr == WSAEADDRINUSE)
-            strError = strprintf(_("Unable to bind to %s on this computer. Bitcoin Core is probably already running."), addrBind.ToString());
+            strError = strprintf(_("Unable to bind to %s on this computer. Anoncoin Core is probably already running."), addrBind.ToString());
         else
             strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %s)"), addrBind.ToString(), NetworkErrorString(nErr));
         LogPrintf("%s\n", strError);
@@ -2010,4 +2020,61 @@ bool CAddrDB::Read(CAddrMan& addr)
     }
 
     return true;
+}
+
+// ToDo: Dummy Functions ported from v8.5.6 code
+bool IsDarknetOnly()
+{
+/*    if (IsI2POnly())
+	return true;
+    if (IsTorOnly())
+	return true;
+    if (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-tor") &&
+	mapArgs["-tor"] != "0")) && (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0"))
+	return true; */
+    return false;
+}
+
+bool IsTorOnly()
+{
+    bool i2pOnly = false;
+    /* const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == TOR_NET_STRING); */
+    return i2pOnly;
+}
+
+bool IsI2POnly()
+{
+    bool i2pOnly = false;
+    /* if (mapArgs.count("-onlynet"))
+    {
+        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
+    } */
+    return i2pOnly;
+}
+
+bool IsI2PEnabled()
+{
+    /* if (IsI2POnly())
+        return true;
+
+    if (GetBoolArg("-i2p", false))
+    {
+        return true;
+    } */
+    return false;
+}
+
+bool IsBehindDarknet()
+{
+    /* if (IsI2POnly())
+        return true;
+    if (IsTorOnly())
+        return true;
+    if (IsDarknetOnly())
+        return true;
+    if ((mapArgs.count("-tor") && mapArgs["-tor"] != "0"))
+        return true; */
+    return false;
 }

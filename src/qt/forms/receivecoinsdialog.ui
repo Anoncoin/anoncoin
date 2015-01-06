@@ -313,7 +313,7 @@
   <customwidget>
    <class>BitcoinAmountField</class>
    <extends>QLineEdit</extends>
-   <header>bitcoinamountfield.h</header>
+   <header>anoncoinamountfield.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -328,7 +328,7 @@
   <tabstop>removeRequestButton</tabstop>
  </tabstops>
  <resources>
-  <include location="../bitcoin.qrc"/>
+  <include location="../anoncoin.qrc"/>
  </resources>
  <connections/>
 </ui>
