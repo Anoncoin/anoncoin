@@ -1,180 +1,181 @@
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Copyright (c) 2012-2013 giv
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //--------------------------------------------------------------------------------------------------
-#include <boost/thread/shared_mutex.hpp>
+
+// Many builder specific things set in the config file, don't forget to include it this way in your source files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include "i2pwrapper.h"
 #include "util.h"
 #include "hash.h"
 
-// ToDo: Check.  GR note: Not sure how to get the real version from i2psam, a value of 0.3 was in the v8.5.6 client code, think it was version.h, anyway
-// moved it here and would like to query the same library for its version level, not store it here as a const string that could be anything, I'm guessing
-// that setting it to this value is valid...ClientModel in qt needs this for display:
-const std::string I2P_MODULE_VERSION = "v3.0";
+#include <boost/thread/shared_mutex.hpp>
 
 namespace SAM
 {
 
-class StreamSessionAdapter::SessionHolder
-{
-public:
-    explicit SessionHolder(std::auto_ptr<SAM::StreamSession> session);
+    class StreamSessionAdapter::SessionHolder {
+        public:
+            explicit SessionHolder(std::auto_ptr<SAM::StreamSession> session);
 
-    const SAM::StreamSession& getSession() const;
-    SAM::StreamSession& getSession();
-private:
-    void heal() const;
-    void reborn() const;
+            const SAM::StreamSession& getSession() const;
+            SAM::StreamSession& getSession();
+        private:
+            void heal() const;
+            void reborn() const;
 
-    mutable std::auto_ptr<SAM::StreamSession> session_;
-    typedef boost::shared_mutex mutex_type;
-    mutable mutex_type mtx_;
-};
+            mutable std::auto_ptr<SAM::StreamSession> session_;
+            typedef boost::shared_mutex mutex_type;
+            mutable mutex_type mtx_;
+    };
 
-StreamSessionAdapter::SessionHolder::SessionHolder(std::auto_ptr<SAM::StreamSession> session)
-    : session_(session)
-{}
+    StreamSessionAdapter::SessionHolder::SessionHolder(std::auto_ptr<SAM::StreamSession> session) : session_(session)
+    {}
 
-const SAM::StreamSession& StreamSessionAdapter::SessionHolder::getSession() const
-{
-    boost::upgrade_lock<mutex_type> lock(mtx_);
-    if (session_->isSick())
+    const SAM::StreamSession& StreamSessionAdapter::SessionHolder::getSession() const
     {
-        boost::upgrade_to_unique_lock<mutex_type> ulock(lock);
-        heal();
+        boost::upgrade_lock<mutex_type> lock(mtx_);
+        if (session_->isSick())
+        {
+            boost::upgrade_to_unique_lock<mutex_type> ulock(lock);
+            heal();
+        }
+        return *session_;
     }
-    return *session_;
-}
 
-SAM::StreamSession& StreamSessionAdapter::SessionHolder::getSession()
-{
-    boost::upgrade_lock<mutex_type> lock(mtx_);
-    if (session_->isSick())
+    SAM::StreamSession& StreamSessionAdapter::SessionHolder::getSession()
     {
-        boost::upgrade_to_unique_lock<mutex_type> ulock(lock);
-        heal();
+        boost::upgrade_lock<mutex_type> lock(mtx_);
+        if (session_->isSick())
+        {
+            boost::upgrade_to_unique_lock<mutex_type> ulock(lock);
+            heal();
+        }
+        return *session_;
     }
-    return *session_;
-}
 
-void StreamSessionAdapter::SessionHolder::heal() const
-{
-    reborn(); // if we don't know how to heal it just reborn it
-}
+    void StreamSessionAdapter::SessionHolder::heal() const
+    {
+        reborn(); // if we don't know how to heal it just reborn it
+    }
 
-void StreamSessionAdapter::SessionHolder::reborn() const
-{
-    if (!session_->isSick())
-        return;
-    std::auto_ptr<SAM::StreamSession> newSession(new SAM::StreamSession(*session_));
-    if (!newSession->isSick() && session_->isSick())
-        session_ = newSession;
-}
+    void StreamSessionAdapter::SessionHolder::reborn() const
+    {
+        if (!session_->isSick())
+            return;
+        std::auto_ptr<SAM::StreamSession> newSession(new SAM::StreamSession(*session_));
+        if (!newSession->isSick() && session_->isSick())
+            session_ = newSession;
+    }
 
-//--------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------
 
-StreamSessionAdapter::StreamSessionAdapter(
-        const std::string& nickname,
-        const std::string& SAMHost       /*= SAM_DEFAULT_ADDRESS*/,
-              uint16_t     SAMPort       /*= SAM_DEFAULT_PORT*/,
-        const std::string& myDestination /*= SAM_GENERATE_MY_DESTINATION*/,
-        const std::string& i2pOptions    /*= SAM_DEFAULT_I2P_OPTIONS*/,
-        const std::string& minVer        /*= SAM_DEFAULT_MIN_VER*/,
-        const std::string& maxVer        /*= SAM_DEFAULT_MAX_VER*/)
-    : sessionHolder_(
-          new SessionHolder(
-              std::auto_ptr<SAM::StreamSession>(
-                  new SAM::StreamSession(nickname, SAMHost, SAMPort, myDestination, i2pOptions, minVer, maxVer))))
-{}
+    StreamSessionAdapter::StreamSessionAdapter(
+            const std::string& nickname,
+            const std::string& SAMHost       /*= SAM_DEFAULT_ADDRESS*/,
+                  uint16_t     SAMPort       /*= SAM_DEFAULT_PORT*/,
+            const std::string& myDestination /*= SAM_GENERATE_MY_DESTINATION*/,
+            const std::string& i2pOptions    /*= SAM_DEFAULT_I2P_OPTIONS*/,
+            const std::string& minVer        /*= SAM_DEFAULT_MIN_VER*/,
+            const std::string& maxVer        /*= SAM_DEFAULT_MAX_VER*/)
+        : sessionHolder_(
+              new SessionHolder(
+                  std::auto_ptr<SAM::StreamSession>(
+                      new SAM::StreamSession(nickname, SAMHost, SAMPort, myDestination, i2pOptions, minVer, maxVer))))
+    {}
 
-StreamSessionAdapter::~StreamSessionAdapter()
-{}
+    StreamSessionAdapter::~StreamSessionAdapter()
+    {}
 
-SAM::SOCKET StreamSessionAdapter::accept(bool silent)
-{
-    SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().accept(silent);
-    // call Socket::release
-    return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
-}
+    SAM::SOCKET StreamSessionAdapter::accept(bool silent)
+    {
+        SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().accept(silent);
+        // call Socket::release
+        return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
+    }
 
-SAM::SOCKET StreamSessionAdapter::connect(const std::string& destination, bool silent)
-{
-    SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().connect(destination, silent);
-    // call Socket::release
-    return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
-}
+    SAM::SOCKET StreamSessionAdapter::connect(const std::string& destination, bool silent)
+    {
+        SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().connect(destination, silent);
+        // call Socket::release
+        return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
+    }
 
-bool StreamSessionAdapter::forward(const std::string& host, uint16_t port, bool silent)
-{
-    return sessionHolder_->getSession().forward(host, port, silent).isOk;
-}
+    bool StreamSessionAdapter::forward(const std::string& host, uint16_t port, bool silent)
+    {
+        return sessionHolder_->getSession().forward(host, port, silent).isOk;
+    }
 
-std::string StreamSessionAdapter::namingLookup(const std::string& name) const
-{
-    SAM::RequestResult<const std::string> result = sessionHolder_->getSession().namingLookup(name);
-    return result.isOk ? result.value : std::string();
-}
+    std::string StreamSessionAdapter::namingLookup(const std::string& name) const
+    {
+        SAM::RequestResult<const std::string> result = sessionHolder_->getSession().namingLookup(name);
+        return result.isOk ? result.value : std::string();
+    }
 
-SAM::FullDestination StreamSessionAdapter::destGenerate() const
-{
-    SAM::RequestResult<const SAM::FullDestination> result = sessionHolder_->getSession().destGenerate();
-    return result.isOk ? result.value : SAM::FullDestination();
-}
+    SAM::FullDestination StreamSessionAdapter::destGenerate() const
+    {
+        SAM::RequestResult<const SAM::FullDestination> result = sessionHolder_->getSession().destGenerate();
+        return result.isOk ? result.value : SAM::FullDestination();
+    }
 
-void StreamSessionAdapter::stopForwarding(const std::string& host, uint16_t port)
-{
-    sessionHolder_->getSession().stopForwarding(host, port);
-}
+    void StreamSessionAdapter::stopForwarding(const std::string& host, uint16_t port)
+    {
+        sessionHolder_->getSession().stopForwarding(host, port);
+    }
 
-void StreamSessionAdapter::stopForwardingAll()
-{
-    sessionHolder_->getSession().stopForwardingAll();
-}
+    void StreamSessionAdapter::stopForwardingAll()
+    {
+        sessionHolder_->getSession().stopForwardingAll();
+    }
 
-const SAM::FullDestination& StreamSessionAdapter::getMyDestination() const
-{
-    return sessionHolder_->getSession().getMyDestination();
-}
+    const SAM::FullDestination& StreamSessionAdapter::getMyDestination() const
+    {
+        return sessionHolder_->getSession().getMyDestination();
+    }
 
-const sockaddr_in& StreamSessionAdapter::getSAMAddress() const
-{
-    return sessionHolder_->getSession().getSAMAddress();
-}
+    const sockaddr_in& StreamSessionAdapter::getSAMAddress() const
+    {
+        return sessionHolder_->getSession().getSAMAddress();
+    }
 
-const std::string& StreamSessionAdapter::getSAMHost() const
-{
-    return sessionHolder_->getSession().getSAMHost();
-}
+    const std::string& StreamSessionAdapter::getSAMHost() const
+    {
+        return sessionHolder_->getSession().getSAMHost();
+    }
 
-uint16_t StreamSessionAdapter::getSAMPort() const
-{
-    return sessionHolder_->getSession().getSAMPort();
-}
+    uint16_t StreamSessionAdapter::getSAMPort() const
+    {
+        return sessionHolder_->getSession().getSAMPort();
+    }
 
-const std::string& StreamSessionAdapter::getNickname() const
-{
-    return sessionHolder_->getSession().getNickname();
-}
+    const std::string& StreamSessionAdapter::getNickname() const
+    {
+        return sessionHolder_->getSession().getNickname();
+    }
 
-const std::string& StreamSessionAdapter::getSAMMinVer() const
-{
-    return sessionHolder_->getSession().getSAMMinVer();
-}
+    const std::string& StreamSessionAdapter::getSAMMinVer() const
+    {
+        return sessionHolder_->getSession().getSAMMinVer();
+    }
 
-const std::string& StreamSessionAdapter::getSAMMaxVer() const
-{
-    return sessionHolder_->getSession().getSAMMaxVer();
-}
+    const std::string& StreamSessionAdapter::getSAMMaxVer() const
+    {
+        return sessionHolder_->getSession().getSAMMaxVer();
+    }
 
-const std::string& StreamSessionAdapter::getSAMVersion() const
-{
-    return sessionHolder_->getSession().getSAMVersion();
-}
+    const std::string& StreamSessionAdapter::getSAMVersion() const
+    {
+        return sessionHolder_->getSession().getSAMVersion();
+    }
 
-const std::string& StreamSessionAdapter::getOptions() const
-{
-    return sessionHolder_->getSession().getOptions();
-}
+    const std::string& StreamSessionAdapter::getOptions() const
+    {
+        return sessionHolder_->getSession().getOptions();
+    }
 
 } // namespace SAM
 
@@ -209,7 +210,4 @@ std::string I2PSession::GenerateB32AddressFromDestination(const std::string& des
     return result;
 }
 
-std::string FormatI2PNativeFullVersion()
-{
-    return I2P_MODULE_VERSION;
-}
+

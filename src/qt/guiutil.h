@@ -35,16 +35,16 @@ namespace GUIUtil
     QString dateTimeStr(qint64 nTime);
 
     // Render Anoncoin addresses in monospace font
-    QFont bitcoinAddressFont();
+    QFont anoncoinAddressFont();
 
     // Set up widgets for address and amounts
     void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent);
     void setupAmountWidget(QLineEdit *widget, QWidget *parent);
 
-    // Parse "bitcoin:" URI into recipient object, return true on successful parsing
-    bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out);
-    bool parseBitcoinURI(QString uri, SendCoinsRecipient *out);
-    QString formatBitcoinURI(const SendCoinsRecipient &info);
+    // Parse "anoncoin:" URI into recipient object, return true on successful parsing
+    bool parseAnoncoinURI(const QUrl &uri, SendCoinsRecipient *out);
+    bool parseAnoncoinURI(QString uri, SendCoinsRecipient *out);
+    QString formatAnoncoinURI(const SendCoinsRecipient &info);
 
     // Returns true if given address+amount meets "dust" definition
     bool isDust(const QString& address, qint64 amount);

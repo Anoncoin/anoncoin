@@ -6,7 +6,6 @@
 
 #include "util.h"
 
-#include "base58.h"
 #include "chainparams.h"
 #include "netbase.h"
 #include "sync.h"
@@ -15,11 +14,6 @@
 #include "version.h"
 
 #include <stdarg.h>
-
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
-#include <boost/property_tree/info_parser.hpp>
 
 #ifndef WIN32
 // for posix_fallocate
@@ -31,22 +25,21 @@
 
 #define _POSIX_C_SOURCE 200112L
 #include <sys/prctl.h>
-
-#endif
+#endif // __linux_
 
 #include <algorithm>
 #include <fcntl.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 
-#else
+#else  // is WIN32
 
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
 #pragma warning(disable:4804)
 #pragma warning(disable:4805)
 #pragma warning(disable:4717)
-#endif
+#endif // _MSC_VER
 
 #ifdef _WIN32_WINNT
 #undef _WIN32_WINNT
@@ -65,16 +58,18 @@
 
 #include <io.h> /* for _commit */
 #include <shlobj.h>
-#endif
+#endif // WIN32
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_lower()
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/program_options/detail/config_file.hpp>
 #include <boost/program_options/parsers.hpp>
+
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 
@@ -906,58 +901,6 @@ bool WildcardMatch(const string& str, const string& mask)
     return WildcardMatch(str.c_str(), mask.c_str());
 }
 
-// Anoncoin
-// Write config file
-// ToDo: May have fixed the .ini file write via boost here (also note: required header includes)
-bool writeConfig(boost::filesystem::path configFile, boost::property_tree::ptree data)
-{
-    // Write file if we can, or catch the error and report it.
-    try
-    {
-        booost:write_ini(configFile.string(), data);
-    }
-    catch (boost::property_tree::info_parser::info_parser_error &e)
-    {
-        printf("Error writing config file: %s\n", e.what());
-        return false;
-    }
-    return true;
-}
-
-// Used by GUI wizard
-bool writeFirstConfig(bool i2pOnlyEnabled, bool torOnlyEnabled, bool i2pEnabled, bool torEnabled)
-{
-    using boost::property_tree::ptree;
-    ptree pt;
-
-    if (i2pOnlyEnabled)
-        pt.put("onlynet", "i2p");
-    if (torOnlyEnabled)
-    {
-        pt.put("tor", "127.0.0.1:9050");
-        pt.put("onlynet", "tor");
-    }
-    if (i2pEnabled)
-        pt.put("i2p", 1);
-    if (torEnabled)
-        pt.put("proxy", "127.0.0.1:9050");
-    unsigned char rand_pwd[32];
-    RAND_bytes(rand_pwd, 32);
-    pt.put("rpcuser", "anoncoinrpc");
-    // ToDo: Figure out why this line of code causes linker error, undefined ref to EncodeBase58...
-    // pt.put("rpcpassword", EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32).c_str());
-    pt.put("rpcpassword", "1234");
-    pt.put("daemon", 1);
-    pt.put("server", 1);
-
-    // Write file
-    return writeConfig(GetConfigFile().string().c_str(), pt);
-}
-
-
-
-
-
 
 static std::string FormatException(std::exception* pex, const char* pszThread)
 {
@@ -995,7 +938,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\Anoncoin
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Anoncoin
     // Mac: ~/Library/Application Support/Anoncoin
-    // Unix: ~/.Anoncoin
+    // Unix: ~/.anoncoin
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Anoncoin";
@@ -1014,8 +957,8 @@ boost::filesystem::path GetDefaultDataDir()
 #else
     // Unix
     return pathRet / ".anoncoin";
-#endif
-#endif
+#endif // MAC_OSX
+#endif // WIN32
 }
 
 static boost::filesystem::path pathCached[CChainParams::MAX_NETWORK_TYPES+1];
@@ -1062,14 +1005,14 @@ void ClearDatadirCache()
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-style", "anoncoin.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "anoncoin.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
 
 boost::filesystem::path GetQtStyleFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "anoncoin.qss"));
+    boost::filesystem::path pathConfigFile(GetArg("-style", "anoncoin.qss"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }

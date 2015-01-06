@@ -13,7 +13,10 @@
 #include "main.h"
 #include "net.h"
 #include "ui_interface.h"
+
+#ifdef ENABLE_I2PSAM
 #include "i2pwrapper.h"            // Include for i2p interface
+#endif
 
 #include <stdint.h>
 
@@ -148,6 +151,73 @@ QString ClientModel::getNetworkName() const
     return netname;
 }
 
+#ifdef ENABLE_I2PSAM
+/**********************************************************************
+ *          These I2P functions handle values for the view
+ */
+QString ClientModel::formatI2PNativeFullVersion() const
+{
+    return QString::fromStdString(FormatI2PNativeFullVersion());
+}
+
+void ClientModel::updateNumI2PConnections(int numI2PConnections)
+{
+    emit numI2PConnectionsChanged(numI2PConnections);
+}
+
+int ClientModel::getNumI2PConnections() const
+{
+    return nI2PNodeCount;
+}
+
+QString ClientModel::getPublicI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().pub);
+}
+
+QString ClientModel::getPrivateI2PKey() const
+{
+    return QString::fromStdString(I2PSession::Instance().getMyDestination().priv);
+}
+
+bool ClientModel::isI2PAddressGenerated() const
+{
+    return I2PSession::Instance().getMyDestination().isGenerated;
+}
+
+bool ClientModel::isI2POnly() const
+{
+    return IsI2POnly();
+}
+
+bool ClientModel::isTorOnly() const
+{
+    return IsTorOnly();
+}
+
+bool ClientModel::isDarknetOnly() const
+{
+    return IsDarknetOnly();
+}
+
+bool ClientModel::isBehindDarknet() const
+{
+    return IsBehindDarknet();
+}
+
+QString ClientModel::getB32Address(const QString& destination) const
+{
+    return QString::fromStdString(I2PSession::GenerateB32AddressFromDestination(destination.toStdString()));
+}
+
+void ClientModel::generateI2PDestination(QString& pub, QString& priv) const
+{
+    const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
+    pub = QString::fromStdString(generatedDest.pub);
+    priv = QString::fromStdString(generatedDest.priv);
+}
+#endif // ENABLE_I2PSAM
+
 bool ClientModel::inInitialBlockDownload() const
 {
     return IsInitialBlockDownload();
@@ -214,6 +284,14 @@ static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConn
                               Q_ARG(int, newNumConnections));
 }
 
+#ifdef ENABLE_I2PSAM
+static void NotifyNumI2PConnectionsChanged(ClientModel *clientmodel, int newNumI2PConnections)
+{
+    QMetaObject::invokeMethod(clientmodel, "updateNumI2PConnections", Qt::QueuedConnection,
+                              Q_ARG(int, newNumI2PConnections));
+}
+#endif // ENABLE_I2PSAM
+
 static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, ChangeType status)
 {
     qDebug() << "NotifyAlertChanged : " + QString::fromStdString(hash.GetHex()) + " status=" + QString::number(status);
@@ -228,6 +306,9 @@ void ClientModel::subscribeToCoreSignals()
     uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this));
     uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.connect(boost::bind(NotifyAlertChanged, this, _1, _2));
+#ifdef ENABLE_I2PSAM
+    uiInterface.NotifyNumI2PConnectionsChanged.connect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
+#endif
 }
 
 void ClientModel::unsubscribeFromCoreSignals()
@@ -236,71 +317,8 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this));
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
+#ifdef ENABLE_I2PSAM
+    uiInterface.NotifyNumI2PConnectionsChanged.disconnect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
+#endif
 }
 
-/**********************************************************************
- *          These I2P functions handle values for the view
- */
-QString ClientModel::formatI2PNativeFullVersion() const
-{
-    return QString::fromStdString(FormatI2PNativeFullVersion());
-}
-
-void ClientModel::updateNumI2PConnections(int numI2PConnections)
-{
-    emit numI2PConnectionsChanged(numI2PConnections);
-}
-
-int ClientModel::getNumI2PConnections() const
-{
-    // ToDo: Fix this in net.cpp
-    // return nI2PNodeCount;
-    return 0;
-}
-
-QString ClientModel::getPublicI2PKey() const
-{
-    return QString::fromStdString(I2PSession::Instance().getMyDestination().pub);
-}
-
-QString ClientModel::getPrivateI2PKey() const
-{
-    return QString::fromStdString(I2PSession::Instance().getMyDestination().priv);
-}
-
-bool ClientModel::isI2PAddressGenerated() const
-{
-    return I2PSession::Instance().getMyDestination().isGenerated;
-}
-
-bool ClientModel::isI2POnly() const
-{
-    return IsI2POnly();
-}
-
-bool ClientModel::isTorOnly() const
-{
-    return IsTorOnly();
-}
-
-bool ClientModel::isDarknetOnly() const
-{
-    return IsDarknetOnly();
-}
-
-bool ClientModel::isBehindDarknet() const
-{
-    return IsBehindDarknet();
-}
-
-QString ClientModel::getB32Address(const QString& destination) const
-{
-    return QString::fromStdString(I2PSession::GenerateB32AddressFromDestination(destination.toStdString()));
-}
-
-void ClientModel::generateI2PDestination(QString& pub, QString& priv) const
-{
-    const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
-    pub = QString::fromStdString(generatedDest.pub);
-    priv = QString::fromStdString(generatedDest.priv);
-}

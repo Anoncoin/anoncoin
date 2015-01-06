@@ -3,10 +3,6 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
-
 #include <QApplication>
 #include <QMessageBox>
 #include <QFile>
@@ -14,6 +10,7 @@
 #include <QTextStream>
 
 #include "anoncoingui.h"
+// Anoncoin-config.h has been loaded...
 
 #include "clientmodel.h"
 #include "guiconstants.h"
@@ -170,7 +167,7 @@ private:
     void handleRunawayException(std::exception *e);
 };
 
-/** Main Bitcoin application object */
+/** Main Anoncoin application object */
 class AnoncoinApplication: public QApplication
 {
     Q_OBJECT
@@ -197,7 +194,7 @@ public:
     /// Get process return value
     int getReturnValue() { return returnValue; }
 
-    /// Get window identifier of QMainWindow (BitcoinGUI)
+    /// Get window identifier of QMainWindow (AnoncoinGUI)
     WId getMainWinId() const;
 
 public slots:
@@ -216,7 +213,7 @@ private:
     QThread *coreThread;
     OptionsModel *optionsModel;
     ClientModel *clientModel;
-    BitcoinGUI *window;
+    AnoncoinGUI *window;
     QTimer *pollShutdownTimer;
 #ifdef ENABLE_WALLET
     PaymentServer* paymentServer;
@@ -326,7 +323,7 @@ void AnoncoinApplication::createOptionsModel()
 
 void AnoncoinApplication::createWindow(bool isaTestNet)
 {
-    window = new BitcoinGUI(isaTestNet, 0);
+    window = new AnoncoinGUI(isaTestNet, 0);
 
     pollShutdownTimer = new QTimer(window);
     connect(pollShutdownTimer, SIGNAL(timeout()), window, SLOT(detectShutdown()));
@@ -451,7 +448,7 @@ void AnoncoinApplication::shutdownResult(int retval)
 
 void AnoncoinApplication::handleRunawayException(const QString &message)
 {
-    QMessageBox::critical(0, "Runaway exception", BitcoinGUI::tr("A fatal error occurred. Bitcoin can no longer continue safely and will quit.") + QString("\n\n") + message);
+    QMessageBox::critical(0, "Runaway exception", AnoncoinGUI::tr("A fatal error occurred. Anoncoin can no longer continue safely and will quit.") + QString("\n\n") + message);
     ::exit(1);
 }
 
@@ -463,7 +460,7 @@ WId AnoncoinApplication::getMainWinId() const
     return window->winId();
 }
 
-#ifndef BITCOIN_QT_TEST
+#ifndef ANONCOIN_QT_TEST
 int main(int argc, char *argv[])
 {
     SetupEnvironment();
@@ -527,14 +524,23 @@ int main(int argc, char *argv[])
     /// - Do not call GetDataDir(true) before this step finishes
     if (!boost::filesystem::is_directory(GetDataDir(false)))
     {
-        QMessageBox::critical(0, QObject::tr("Bitcoin"),
+        QMessageBox::critical(0, QObject::tr("Anoncoin"),
                               QObject::tr("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
         return 1;
     }
+
+    // The Custom Anoncoin startup wizard....
+    if (!boost::filesystem::exists(GetConfigFile().string()))
+    {
+        // ToDo: Not linked in yet
+        // Run wizard
+        // runFirstRunWizard();
+    }
+    // Read config after it's potentional written by the wizard.
     try {
         ReadConfigFile(mapArgs, mapMultiArgs);
     } catch(std::exception &e) {
-        QMessageBox::critical(0, QObject::tr("Bitcoin"),
+        QMessageBox::critical(0, QObject::tr("Anoncoin"),
                               QObject::tr("Error: Cannot parse configuration file: %1. Only use key=value syntax.").arg(e.what()));
         return false;
     }
@@ -548,39 +554,33 @@ int main(int argc, char *argv[])
 
 
     // With this you can load a Qt Stylesheet file into the GUI to colorize or customize different objects.
-    // By Meeh
-    if (mapArgs.count("-style"))
-    {
-        QString filename = QString::fromStdString((std::string)GetDataDir().string());
-        filename = filename.append(QDir::separator()).append(QString::fromStdString((std::string)mapArgs["-style"]));
-        QFile file(filename);
-        if (file.exists())
-        {
-            if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-            {
-                QTextStream in(&file);
-                QString content = "";
-                while (!in.atEnd())
-                {
-                    content.append(in.readLine());
-                }
-                app.setStyleSheet(content);
-            }
-            else
-            {
-                QMessageBox::warning(NULL, BitcoinGUI::tr("Failed to load style!"),
-                    BitcoinGUI::tr("Failed to load the stylesheet provided."),
-                    QMessageBox::Ok, QMessageBox::Ok);
-            }
-        }
-    }
+    // By Meeh & GroundRod edits to integrate into v0.9 code as default behavior to load <pathtodatadir>anoncoin.qss
+    // ToDo: Work in progress...
+    QString filename = GUIUtil::boostPathToQString( GetQtStyleFile());
+    QFile file(filename);
+    if( file.exists() ) {        // Check if the file exists
+        if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+            QTextStream in(&file);
+            QString content = "";
+            while (!in.atEnd())
+                content.append(in.readLine());
+            app.setStyleSheet(content);                 // Load the Stylesheet, not sure what conditions cause an error here, or how it's reported.
+        } else                                          // ...Unlikely the file couldn't be opened, this should never happen
+            QMessageBox::warning( NULL, AnoncoinGUI::tr("Failed to open stylesheet file."),
+                                  filename.toLocal8Bit().data(),
+                                  QMessageBox::Ok, QMessageBox::Ok );
+    } else if( mapArgs.count("-style") )                // ...unless the user specifically requested a given file, and it doesn't exist.  That would be odd.
+        QMessageBox::warning( NULL, AnoncoinGUI::tr("Failed to find stylesheet file."),
+                              filename.toLocal8Bit().data(),
+                              QMessageBox::Ok, QMessageBox::Ok );
+    // else don't worry about stylesheets, proceed without error...
 
     app.processEvents();
     app.setQuitOnLastWindowClosed(false);
 
     // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
     if (!SelectParamsFromCommandLine()) {
-        QMessageBox::critical(0, QObject::tr("Bitcoin"), QObject::tr("Error: Invalid combination of -regtest and -testnet."));
+        QMessageBox::critical(0, QObject::tr("Anoncoin"), QObject::tr("Error: Invalid combination of -regtest and -testnet."));
         return 1;
     }
 #ifdef ENABLE_WALLET
@@ -654,4 +654,4 @@ int main(int argc, char *argv[])
     }
     return app.getReturnValue();
 }
-#endif // BITCOIN_QT_TEST
+#endif // ANONCOIN_QT_TEST

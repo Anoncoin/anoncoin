@@ -4,6 +4,11 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include "base58.h"
 #include "init.h"
 #include "main.h"
@@ -38,7 +43,7 @@ Value getinfo(const Array& params, bool fHelp)
             "  \"version\": xxxxx,           (numeric) the server version\n"
             "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
             "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-            "  \"balance\": xxxxxxx,         (numeric) the total bitcoin balance of the wallet\n"
+            "  \"balance\": xxxxxxx,         (numeric) the total anoncoin balance of the wallet\n"
             "  \"blocks\": xxxxxx,           (numeric) the current number of blocks processed in the server\n"
             "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
             "  \"connections\": xxxxx,       (numeric) the number of connections\n"
@@ -126,7 +131,7 @@ public:
             obj.push_back(Pair("hex", HexStr(subscript.begin(), subscript.end())));
             Array a;
             BOOST_FOREACH(const CTxDestination& addr, addresses)
-                a.push_back(CBitcoinAddress(addr).ToString());
+                a.push_back(CAnoncoinAddress(addr).ToString());
             obj.push_back(Pair("addresses", a));
             if (whichType == TX_MULTISIG)
                 obj.push_back(Pair("sigsrequired", nRequired));
@@ -140,14 +145,14 @@ Value validateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "validateaddress \"bitcoinaddress\"\n"
-            "\nReturn information about the given bitcoin address.\n"
+            "validateaddress \"anoncoinaddress\"\n"
+            "\nReturn information about the given anoncoin address.\n"
             "\nArguments:\n"
-            "1. \"bitcoinaddress\"     (string, required) The bitcoin address to validate\n"
+            "1. \"anoncoinaddress\"     (string, required) The anoncoin address to validate\n"
             "\nResult:\n"
             "{\n"
             "  \"isvalid\" : true|false,         (boolean) If the address is valid or not. If not, this is the only property returned.\n"
-            "  \"address\" : \"bitcoinaddress\", (string) The bitcoin address validated\n"
+            "  \"address\" : \"anoncoinaddress\", (string) The anoncoin address validated\n"
             "  \"ismine\" : true|false,          (boolean) If the address is yours or not\n"
             "  \"isscript\" : true|false,        (boolean) If the key is a script\n"
             "  \"pubkey\" : \"publickeyhex\",    (string) The hex value of the raw public key\n"
@@ -159,7 +164,7 @@ Value validateaddress(const Array& params, bool fHelp)
             + HelpExampleRpc("validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\"")
         );
 
-    CBitcoinAddress address(params[0].get_str());
+    CAnoncoinAddress address(params[0].get_str());
     bool isValid = address.IsValid();
 
     Object ret;
@@ -206,7 +211,7 @@ CScript _createmultisig_redeemScript(const Array& params)
         const std::string& ks = keys[i].get_str();
 #ifdef ENABLE_WALLET
         // Case 1: Anoncoin address and we have full public key:
-        CBitcoinAddress address(ks);
+        CAnoncoinAddress address(ks);
         if (pwalletMain && address.IsValid())
         {
             CKeyID keyID;
@@ -257,9 +262,9 @@ Value createmultisig(const Array& params, bool fHelp)
 
             "\nArguments:\n"
             "1. nrequired      (numeric, required) The number of required signatures out of the n keys or addresses.\n"
-            "2. \"keys\"       (string, required) A json array of keys which are bitcoin addresses or hex-encoded public keys\n"
+            "2. \"keys\"       (string, required) A json array of keys which are anoncoin addresses or hex-encoded public keys\n"
             "     [\n"
-            "       \"key\"    (string) bitcoin address or hex-encoded public key\n"
+            "       \"key\"    (string) anoncoin address or hex-encoded public key\n"
             "       ,...\n"
             "     ]\n"
 
@@ -281,7 +286,7 @@ Value createmultisig(const Array& params, bool fHelp)
     // Construct using pay-to-script-hash:
     CScript inner = _createmultisig_redeemScript(params);
     CScriptID innerID = inner.GetID();
-    CBitcoinAddress address(innerID);
+    CAnoncoinAddress address(innerID);
 
     Object result;
     result.push_back(Pair("address", address.ToString()));
@@ -294,10 +299,10 @@ Value verifymessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(
-            "verifymessage \"bitcoinaddress\" \"signature\" \"message\"\n"
+            "verifymessage \"anoncoinaddress\" \"signature\" \"message\"\n"
             "\nVerify a signed message\n"
             "\nArguments:\n"
-            "1. \"bitcoinaddress\"  (string, required) The bitcoin address to use for the signature.\n"
+            "1. \"anoncoinaddress\"  (string, required) The anoncoin address to use for the signature.\n"
             "2. \"signature\"       (string, required) The signature provided by the signer in base 64 encoding (see signmessage).\n"
             "3. \"message\"         (string, required) The message that was signed.\n"
             "\nResult:\n"
@@ -317,7 +322,7 @@ Value verifymessage(const Array& params, bool fHelp)
     string strSign     = params[1].get_str();
     string strMessage  = params[2].get_str();
 
-    CBitcoinAddress addr(strAddress);
+    CAnoncoinAddress addr(strAddress);
     if (!addr.IsValid())
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
 

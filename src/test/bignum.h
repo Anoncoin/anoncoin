@@ -1,10 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_BIGNUM_H
-#define BITCOIN_TEST_BIGNUM_H
+#ifndef ANONCOIN_TEST_BIGNUM_H
+#define ANONCOIN_TEST_BIGNUM_H
 
 #include <algorithm>
 #include <limits>
@@ -79,7 +80,7 @@ public:
 
         if (sn < (int64_t)0)
         {
-            // Since the minimum signed integer cannot be represented as positive so long as its type is signed, 
+            // Since the minimum signed integer cannot be represented as positive so long as its type is signed,
             // and it's not well-defined what happens if you make it unsigned before negating it,
             // we instead increment the negative integer by 1, convert it, then increment the (now positive) unsigned integer by 1 to compensate
             n = -(sn + 1);
@@ -177,4 +178,4 @@ inline bool operator>=(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, 
 inline bool operator<(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) < 0); }
 inline bool operator>(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) > 0); }
 
-#endif // BITCOIN_TEST_BIGNUM_H
+#endif // ANONCOIN_TEST_BIGNUM_H

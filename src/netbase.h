@@ -3,8 +3,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NETBASE_H
-#define BITCOIN_NETBASE_H
+#ifndef ANONCOIN_NETBASE_H
+#define ANONCOIN_NETBASE_H
 
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
@@ -24,13 +24,24 @@ extern int nConnectTimeout;
 #undef SetPort
 #endif
 
+/**
+ * Specific defines needed for I2P...
+ */
+#ifdef ENABLE_I2PSAM
+#define NATIVE_I2P_DESTINATION_SIZE     516
+#define NATIVE_I2P_B32ADDR_SIZE         60
+#define NATIVE_I2P_NET_STRING           "i2p"
+#endif // ENABLE_I2PSAM
+
 enum Network
 {
     NET_UNROUTABLE = 0,
     NET_IPV4,
     NET_IPV6,
     NET_TOR,
-
+#ifdef ENABLE_I2PSAM
+    NET_NATIVE_I2P,
+#endif
     NET_MAX,
 };
 
@@ -42,7 +53,9 @@ class CNetAddr
 {
     protected:
         unsigned char ip[16]; // in network byte order
-
+#ifdef ENABLE_I2PSAM
+        unsigned char i2pDest[NATIVE_I2P_DESTINATION_SIZE]; // I2P Destination
+#endif
     public:
         CNetAddr();
         CNetAddr(const struct in_addr& ipv4Addr);
@@ -77,7 +90,10 @@ class CNetAddr
         std::vector<unsigned char> GetGroup() const;
         int GetReachabilityFrom(const CNetAddr *paddrPartner = NULL) const;
         void print() const;
-
+#ifdef ENABLE_I2PSAM
+        bool IsNativeI2P() const;
+        std::string GetI2PDestination() const;
+#endif
         CNetAddr(const struct in6_addr& pipv6Addr);
         bool GetIn6Addr(struct in6_addr* pipv6Addr) const;
 
@@ -88,6 +104,11 @@ class CNetAddr
         IMPLEMENT_SERIALIZE
             (
              READWRITE(FLATDATA(ip));
+#ifdef ENABLE_I2PSAM
+             if (!(nType & SER_IPADDRONLY)) {
+                READWRITE(FLATDATA(i2pDest));
+             }
+#endif
             )
 };
 
@@ -127,6 +148,11 @@ class CService : public CNetAddr
             (
              CService* pthis = const_cast<CService*>(this);
              READWRITE(FLATDATA(ip));
+#ifdef ENABLE_I2PSAM
+             if (!(nType & SER_IPADDRONLY)) {
+                READWRITE(FLATDATA(i2pDest));
+             }
+#endif
              unsigned short portN = htons(port);
              READWRITE(portN);
              if (fRead)
@@ -153,5 +179,7 @@ bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout = nCon
 bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault = 0, int nTimeout = nConnectTimeout);
 /** Return readable error string for a network error code */
 std::string NetworkErrorString(int err);
-
+#ifdef ENABLE_I2PSAM
+bool SetSocketOptions(SOCKET& hSocket);
+#endif
 #endif

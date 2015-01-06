@@ -4,10 +4,6 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
-
 #include "net.h"
 
 #include "addrman.h"
@@ -15,6 +11,10 @@
 #include "chainparams.h"
 #include "core.h"
 #include "ui_interface.h"
+
+#ifdef ENABLE_I2PSAM
+#include "i2pwrapper.h"
+#endif
 
 #ifdef WIN32
 #include <string.h>
@@ -50,7 +50,6 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
 // Global state variables
 //
 bool fDiscover = true;
-uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM;
 CCriticalSection cs_mapLocalHost;
 map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
@@ -61,6 +60,16 @@ uint64_t nLocalHostNonce = 0;
 static std::vector<SOCKET> vhListenSocket;
 CAddrMan addrman;
 int nMaxConnections = 125;
+bool fAddressesInitialized = false;
+
+
+#ifdef ENABLE_I2PSAM
+uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
+static std::vector<SOCKET> vhI2PListenSocket;                   // We maintain a seperate vector for I2P network SOCKET's
+int nI2PNodeCount = 0;                                          // And a count of the active nodes we're connected with
+#else
+uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM;            // Standard services declaration
+#endif
 
 vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
@@ -393,6 +402,12 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
 void ThreadGetMyExternalIP()
 {
+#ifdef ENABLE_I2PSAM
+    // ToDo: check this, Seems that if we're i2p only, we should shut down the thread, as it's not needed. (GR Note: Just guessing)
+    // Bitcoin 9.99 code has completely eliminated the use of GetMyExternalIP, so take that into consideration, before spending allot of time here....
+
+    if( IsI2POnly() ) return;                   // Don't need External IP, if I2P only networking...
+#endif
     CNetAddr addrLocalHost;
     if (GetMyExternalIP(addrLocalHost))
     {
@@ -491,6 +506,9 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         {
             LOCK(cs_vNodes);
             vNodes.push_back(pnode);
+#ifdef ENABLE_I2PSAM
+            if (addrConnect.IsNativeI2P()) ++nI2PNodeCount;
+#endif
         }
 
         pnode->nTimeConnected = GetTime();
@@ -743,9 +761,65 @@ void SocketSendData(CNode *pnode)
 
 static list<CNode*> vNodesDisconnected;
 
+#ifdef ENABLE_I2PSAM
+/**
+ * Helper function, used below when adding a new I2P node, ported directly from 0.8.5.6 code
+ */
+static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
+{
+    int nInbound = 0;
+
+    {
+        LOCK(cs_vNodes);
+        BOOST_FOREACH(CNode* pnode, vNodes)
+            if (pnode->fInbound)
+                nInbound++;
+    }
+
+    if (hSocket == INVALID_SOCKET)
+    {
+        int nErr = WSAGetLastError();
+        if (nErr != WSAEWOULDBLOCK)
+            LogPrintf("socket error accept failed: %d\n", nErr);
+    }
+    else if (nInbound >= GetArg("-maxconnections", 125) - MAX_OUTBOUND_CONNECTIONS)
+    {
+        {
+            LOCK(cs_setservAddNodeAddresses);
+            if (!setservAddNodeAddresses.count(addr))
+                closesocket(hSocket);
+        }
+    }
+    else if (CNode::IsBanned(addr))
+    {
+        LogPrintf("connection from %s dropped (banned)\n", addr.ToString().c_str());
+        closesocket(hSocket);
+    }
+    else
+    {
+        LogPrintf("accepted connection %s\n", addr.ToString().c_str());
+        CNode* pnode = new CNode(hSocket, addr, "", true);
+        pnode->AddRef();
+        {
+            LOCK(cs_vNodes);
+            vNodes.push_back(pnode);
+            ++nI2PNodeCount;
+        }
+    }
+}
+#endif // ENABLE_I2PSAM
+
+/**
+ * Main Thread that handling socket's & their housekeeping...
+ */
+
 void ThreadSocketHandler()
 {
     unsigned int nPrevNodeCount = 0;
+#ifdef ENABLE_I2PSAM
+    int nPrevI2PNodeCount = 0;
+#endif
+
     while (true)
     {
         //
@@ -774,6 +848,10 @@ void ThreadSocketHandler()
                     if (pnode->fNetworkNode || pnode->fInbound)
                         pnode->Release();
                     vNodesDisconnected.push_back(pnode);
+#ifdef ENABLE_I2PSAM
+                    if (pnode->addr.IsNativeI2P()) --nI2PNodeCount;
+#endif
+
                 }
             }
         }
@@ -807,19 +885,23 @@ void ThreadSocketHandler()
                 }
             }
         }
+
+        // We notify the ui of I2P node count changes BEFORE, we notify the normal node count, this way QT's status
+        // icons display the correct number of nodes MINUS the i2p ones connected.  See: anoncoingui.cpp setNumConnections()
+        // This I think caused a bug in the display of non-i2p node connection counts right after startup, had to add a
+        // fix in the status line display output, so that if the value was negative, then it was set to 0, as it should be
+#ifdef ENABLE_I2PSAM
+        if (nPrevI2PNodeCount != nI2PNodeCount)
+        {
+            nPrevI2PNodeCount = nI2PNodeCount;
+            uiInterface.NotifyNumI2PConnectionsChanged(nI2PNodeCount);
+        }
+#endif // ENABLE_I2PSAM
+
         if(vNodes.size() != nPrevNodeCount) {
             nPrevNodeCount = vNodes.size();
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
         }
-
-// ToDo: Finish coding so this works..and double check that it is now positioned in the correct spot of the code
-//        if (nPrevI2PNodeCount != nI2PNodeCount)
-        {
-//            nPrevI2PNodeCount = nI2PNodeCount;
-//            uiInterface.NotifyNumI2PConnectionsChanged(nI2PNodeCount);
-            uiInterface.NotifyNumI2PConnectionsChanged(0);
-        }
-
 
         //
         // Find which sockets have data to receive
@@ -836,6 +918,16 @@ void ThreadSocketHandler()
         FD_ZERO(&fdsetError);
         SOCKET hSocketMax = 0;
         bool have_fds = false;
+
+#ifdef ENABLE_I2PSAM
+        BOOST_FOREACH(SOCKET hI2PListenSocket, vhI2PListenSocket) {
+            if (hI2PListenSocket != INVALID_SOCKET) {
+                FD_SET(hI2PListenSocket, &fdsetRecv);
+                hSocketMax = max(hSocketMax, hI2PListenSocket);
+                have_fds = true;
+            }
+        }
+#endif // ENABLE_I2PSAM
 
         BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket) {
             FD_SET(hListenSocket, &fdsetRecv);
@@ -906,53 +998,124 @@ void ThreadSocketHandler()
         //
         // Accept new connections
         //
-        BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket)
-        if (hListenSocket != INVALID_SOCKET && FD_ISSET(hListenSocket, &fdsetRecv))
-        {
-            struct sockaddr_storage sockaddr;
-            socklen_t len = sizeof(sockaddr);
-            SOCKET hSocket = accept(hListenSocket, (struct sockaddr*)&sockaddr, &len);
-            CAddress addr;
-            int nInbound = 0;
+        // ToDo: Double check me, all of this net.cpp code for I2PSAM should be looked over again.
+#ifdef ENABLE_I2PSAM
+        if (!IsI2POnly()) {
+#endif // Without I2P onlynet, execute the original code
+            BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket)
+            if (hListenSocket != INVALID_SOCKET && FD_ISSET(hListenSocket, &fdsetRecv))
+            {
+                struct sockaddr_storage sockaddr;
+                socklen_t len = sizeof(sockaddr);
+                SOCKET hSocket = accept(hListenSocket, (struct sockaddr*)&sockaddr, &len);
+                CAddress addr;
+                int nInbound = 0;
 
-            if (hSocket != INVALID_SOCKET)
-                if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
-                    LogPrintf("Warning: Unknown socket family\n");
+                if (hSocket != INVALID_SOCKET)
+                    if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
+                        LogPrintf("Warning: Unknown socket family\n");
 
-            {
-                LOCK(cs_vNodes);
-                BOOST_FOREACH(CNode* pnode, vNodes)
-                    if (pnode->fInbound)
-                        nInbound++;
-            }
-
-            if (hSocket == INVALID_SOCKET)
-            {
-                int nErr = WSAGetLastError();
-                if (nErr != WSAEWOULDBLOCK)
-                    LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
-            }
-            else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS)
-            {
-                closesocket(hSocket);
-            }
-            else if (CNode::IsBanned(addr))
-            {
-                LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
-                closesocket(hSocket);
-            }
-            else
-            {
-                LogPrint("net", "accepted connection %s\n", addr.ToString());
-                CNode* pnode = new CNode(hSocket, addr, "", true);
-                pnode->AddRef();
                 {
                     LOCK(cs_vNodes);
-                    vNodes.push_back(pnode);
+                    BOOST_FOREACH(CNode* pnode, vNodes)
+                        if (pnode->fInbound)
+                            nInbound++;
+                }
+
+                if (hSocket == INVALID_SOCKET)
+                {
+                    int nErr = WSAGetLastError();
+                    if (nErr != WSAEWOULDBLOCK)
+                        LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
+                }
+                else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS)
+                {
+                    closesocket(hSocket);
+                }
+                else if (CNode::IsBanned(addr))
+                {
+                    LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
+                    closesocket(hSocket);
+                }
+                else
+                {
+                    LogPrint("net", "accepted connection %s\n", addr.ToString());
+                    CNode* pnode = new CNode(hSocket, addr, "", true);
+                    pnode->AddRef();
+                    {
+                        LOCK(cs_vNodes);
+                        vNodes.push_back(pnode);
+                    }
+                }
+            }
+#ifdef ENABLE_I2PSAM
+        }
+        //
+        // Accept new I2P connections
+        //
+        {
+            bool haveInvalids = false;
+            for (std::vector<SOCKET>::iterator it = vhI2PListenSocket.begin(); it != vhI2PListenSocket.end(); ++it)
+            {
+                SOCKET& hI2PListenSocket = *it;
+                if (hI2PListenSocket == INVALID_SOCKET)
+                {
+                    if (haveInvalids)
+                        it = vhI2PListenSocket.erase(it) - 1;
+                    else
+                        BindListenNativeI2P(hI2PListenSocket);
+                    haveInvalids = true;
+                }
+                else if (FD_ISSET(hI2PListenSocket, &fdsetRecv))
+                {
+                    const size_t bufSize = NATIVE_I2P_DESTINATION_SIZE + 1;
+                    char pchBuf[bufSize];
+                    memset(pchBuf, 0, bufSize);
+                    int nBytes = recv(hI2PListenSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+                    if (nBytes > 0)
+                    {
+                        if (nBytes == NATIVE_I2P_DESTINATION_SIZE + 1) // we're waiting for dest-hash + '\n' symbol
+                        {
+                            std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
+                            CAddress addr;
+                            if (addr.SetSpecial(incomingAddr) && addr.IsNativeI2P())
+                            {
+                                AddIncomingI2pConnection(hI2PListenSocket, addr);
+                            }
+                            else
+                            {
+                                LogPrintf("Invalid incoming destination hash received (%s)\n", incomingAddr.c_str());
+                                closesocket(hI2PListenSocket);
+                            }
+                        }
+                        else
+                        {
+                            LogPrintf("Invalid incoming destination hash size received (%d)\n", nBytes);
+                            closesocket(hI2PListenSocket);
+                        }
+                    }
+                    else if (nBytes == 0)
+                    {
+                        // socket closed gracefully
+                        LogPrintf("I2P listen socket closed\n");
+                        closesocket(hI2PListenSocket);
+                    }
+                    else if (nBytes < 0)
+                    {
+                        // error
+                        const int nErr = WSAGetLastError();
+                        if (nErr == WSAEWOULDBLOCK || nErr == WSAEMSGSIZE || nErr == WSAEINTR || nErr == WSAEINPROGRESS)
+                            continue;
+
+                        LogPrintf("I2P listen socket recv error %d\n", nErr);
+                        closesocket(hI2PListenSocket);
+                    }
+                    hI2PListenSocket = INVALID_SOCKET;  // we've saved this socket in a CNode or closed it, so we can safety reset it anyway
+                    BindListenNativeI2P(hI2PListenSocket);
                 }
             }
         }
-
+#endif  // ENABLE_I2PSAM
 
         //
         // Service each socket
@@ -1059,13 +1222,6 @@ void ThreadSocketHandler()
         }
     }
 }
-
-
-
-
-
-
-
 
 
 #ifdef USE_UPNP
@@ -1178,10 +1334,9 @@ void MapPort(bool)
 #endif
 
 
-
-
-
-
+/**
+ * Process DNS seed data from chainparams
+ */
 void ThreadDNSAddressSeed()
 {
     // goal: only query DNS seeds if address need is acute
@@ -1196,44 +1351,65 @@ void ThreadDNSAddressSeed()
         }
     }
 
-    const vector<CDNSSeedData> &vSeeds = Params().DNSSeeds();
     int found = 0;
-
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
 
-    BOOST_FOREACH(const CDNSSeedData &seed, vSeeds) {
-        if (HaveNameProxy()) {
-            AddOneShot(seed.host);
-        } else {
-            vector<CNetAddr> vIPs;
-            vector<CAddress> vAdd;
-            if (LookupHost(seed.host.c_str(), vIPs))
-            {
-                BOOST_FOREACH(CNetAddr& ip, vIPs)
-                {
-                    int nOneDay = 24*3600;
-                    CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
-                    addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                    vAdd.push_back(addr);
-                    found++;
+#ifdef ENABLE_I2PSAM
+    // If I2P is enabled, we need to process those too...
+    if( IsI2PEnabled() ) {
+        LogPrintf("I2P DNS seed addresses...preferred\n");
+        const vector<CDNSSeedData> &i2pvSeeds = Params().i2pDNSSeeds();
+        BOOST_FOREACH(const CDNSSeedData &seed, i2pvSeeds) {
+            if (HaveNameProxy()) {
+                AddOneShot(seed.host);
+            } else {
+                vector<CNetAddr> vaddr;
+                vector<CAddress> vAdd;
+                if (LookupHost(seed.host.c_str(), vaddr)) {
+                    BOOST_FOREACH(CNetAddr& ip, vaddr) {
+                        int nOneDay = 24*3600;
+                        CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
+                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                        vAdd.push_back(addr);
+                        found++;
+                    }
                 }
+                addrman.Add(vAdd, CNetAddr(seed.name, true));
             }
-            addrman.Add(vAdd, CNetAddr(seed.name, true));
+        }
+    }
+    // If we are I2P only, clearnet seeds will do us no good, so no point in loading them.
+    if( IsI2POnly() )                                                           // Do what we normally would do on clearnet
+        LogPrintf("Skipping Clearnet DNS seeds, Running I2P net only.\n");
+    else
+#endif
+    {
+        const vector<CDNSSeedData> &vSeeds = Params().DNSSeeds();
+        LogPrintf("Loading clearnet DNS seed addresses...\n");
+        BOOST_FOREACH(const CDNSSeedData &seed, vSeeds) {
+            if (HaveNameProxy()) {
+                AddOneShot(seed.host);
+            } else {
+                vector<CNetAddr> vIPs;
+                vector<CAddress> vAdd;
+                if (LookupHost(seed.host.c_str(), vIPs))
+                {
+                    BOOST_FOREACH(CNetAddr& ip, vIPs)
+                    {
+                        int nOneDay = 24*3600;
+                        CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
+                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                        vAdd.push_back(addr);
+                        found++;
+                    }
+                }
+                addrman.Add(vAdd, CNetAddr(seed.name, true));
+            }
         }
     }
 
     LogPrintf("%d addresses found from DNS seeds\n", found);
 }
-
-
-
-
-
-
-
-
-
-
 
 
 void DumpAddresses()
@@ -1306,6 +1482,8 @@ void ThreadOpenConnections()
                 done = true;
             }
         }
+        // Note on I2P seed nodes: They are stored now in Chainparams, and loaded based on what Network we are running.
+        // No special code needs to be introduced here, as was the case in 0.8.5.6 builds.
 
         //
         // Choose an address to connect to based on most recently seen
@@ -1352,8 +1530,14 @@ void ThreadOpenConnections()
             if (nANow - addr.nLastTry < 600 && nTries < 30)
                 continue;
 
-            // do not allow non-default ports, unless after 50 invalid addresses selected already
-            if (addr.GetPort() != Params().GetDefaultPort() && nTries < 50)
+            if(
+#ifdef ENABLE_I2PSAM
+                !addr.IsNativeI2P() &&
+#endif
+                // do not allow non-default ports, unless after 50 invalid addresses selected already
+                addr.GetPort() != Params().GetDefaultPort() &&
+                nTries < 50
+            )
                 continue;
 
             addrConnect = addr;
@@ -1574,10 +1758,6 @@ void ThreadMessageHandler()
 }
 
 
-
-
-
-
 bool BindListenPort(const CService &addrBind, string& strError)
 {
     strError = "";
@@ -1671,6 +1851,76 @@ bool BindListenPort(const CService &addrBind, string& strError)
     return true;
 }
 
+
+#ifdef ENABLE_I2PSAM
+/**
+ * Functions ported from v8.5.6 code we need for I2P functionality
+ */
+std::string FormatI2PNativeFullVersion() {
+    return I2PSession::Instance().getSAMVersion();
+}
+
+// GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
+// in the end, put them back here in net.cpp for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
+// within our net.h header, where netbase.h is included as a dependency....clear as mud?
+bool IsTorOnly() {
+    bool i2pOnly = false;
+    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "tor");
+    return i2pOnly;
+}
+
+bool IsI2POnly()
+{
+    bool i2pOnly = false;
+    if (mapArgs.count("-onlynet")) {
+        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
+    }
+    return i2pOnly;
+}
+
+// ToDo: This may need to be upgraded to support the use of '-onion' as a coin configuration option
+bool IsDarknetOnly() {
+    return IsI2POnly() || IsTorOnly() ||
+            ((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-tor") && mapArgs["-tor"] != "0")) &&
+             (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0");
+}
+
+bool IsI2PEnabled() {
+    return  IsI2POnly() || GetBoolArg("-i2p", false);
+}
+
+bool IsBehindDarknet() {
+    return IsDarknetOnly() || (mapArgs.count("-tor") && mapArgs["-tor"] != "0");
+}
+
+/**
+ * I2P Specific socket listen binding functions
+ */
+bool BindListenNativeI2P()
+{
+    SOCKET hNewI2PListenSocket = INVALID_SOCKET;
+    if (!BindListenNativeI2P(hNewI2PListenSocket))
+        return false;
+    vhI2PListenSocket.push_back(hNewI2PListenSocket);
+    return true;
+}
+
+bool BindListenNativeI2P(SOCKET& hSocket)
+{
+    hSocket = I2PSession::Instance().accept(false);
+    if (!SetSocketOptions(hSocket) || hSocket == INVALID_SOCKET)
+        return false;
+    CService addrBind(I2PSession::Instance().getMyDestination().pub, 0);
+// ToDo: Check this code carefully.  Changed it some so it would work.  I2P onlynet means fDiscover is false.  AddLocal needs LOCAL_MANUAL or it will return false and not set
+//    if (addrBind.IsRoutable() && fDiscover)
+        // AddLocal(addrBind, LOCAL_BIND);
+    // return true;
+    return AddLocal(addrBind, LOCAL_MANUAL);
+}
+#endif // ENABLE_I2PSAM
+
 void static Discover(boost::thread_group& threadGroup)
 {
     if (!fDiscover)
@@ -1727,6 +1977,18 @@ void static Discover(boost::thread_group& threadGroup)
 
 void StartNode(boost::thread_group& threadGroup)
 {
+    uiInterface.InitMessage(_("Loading addresses..."));
+    // Load addresses for peers.dat
+    int64_t nStart = GetTimeMillis();
+    {
+        CAddrDB adb;
+        if (!adb.Read(addrman))
+            LogPrintf("Invalid or missing peers.dat; recreating\n");
+    }
+    LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
+           addrman.size(), GetTimeMillis() - nStart);
+    fAddressesInitialized = true;
+
     if (semOutbound == NULL) {
         // initialize semaphore
         int nMaxOutbound = min(MAX_OUTBOUND_CONNECTIONS, nMaxConnections);
@@ -1775,7 +2037,12 @@ bool StopNode()
     if (semOutbound)
         for (int i=0; i<MAX_OUTBOUND_CONNECTIONS; i++)
             semOutbound->post();
-    DumpAddresses();
+
+    if (fAddressesInitialized)
+    {
+        DumpAddresses();
+        fAddressesInitialized = false;
+    }
 
     return true;
 }
@@ -1796,6 +2063,12 @@ public:
             if (hListenSocket != INVALID_SOCKET)
                 if (closesocket(hListenSocket) == SOCKET_ERROR)
                     LogPrintf("closesocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
+#ifdef ENABLE_I2PSAM
+        BOOST_FOREACH(SOCKET& hI2PListenSocket, vhI2PListenSocket)
+            if (hI2PListenSocket != INVALID_SOCKET)
+                if (closesocket(hI2PListenSocket) == SOCKET_ERROR)
+                    LogPrintf("I2P closesocket(hI2PListenSocket) failed with error %d\n", WSAGetLastError());
+#endif // ENABLE_I2PSAM
 
         // clean up some globals (to help leak detection)
         BOOST_FOREACH(CNode *pnode, vNodes)
@@ -1816,10 +2089,6 @@ public:
     }
 }
 instance_of_cnetcleanup;
-
-
-
-
 
 
 
@@ -2022,59 +2291,3 @@ bool CAddrDB::Read(CAddrMan& addr)
     return true;
 }
 
-// ToDo: Dummy Functions ported from v8.5.6 code
-bool IsDarknetOnly()
-{
-/*    if (IsI2POnly())
-	return true;
-    if (IsTorOnly())
-	return true;
-    if (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-tor") &&
-	mapArgs["-tor"] != "0")) && (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0"))
-	return true; */
-    return false;
-}
-
-bool IsTorOnly()
-{
-    bool i2pOnly = false;
-    /* const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == TOR_NET_STRING); */
-    return i2pOnly;
-}
-
-bool IsI2POnly()
-{
-    bool i2pOnly = false;
-    /* if (mapArgs.count("-onlynet"))
-    {
-        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
-    } */
-    return i2pOnly;
-}
-
-bool IsI2PEnabled()
-{
-    /* if (IsI2POnly())
-        return true;
-
-    if (GetBoolArg("-i2p", false))
-    {
-        return true;
-    } */
-    return false;
-}
-
-bool IsBehindDarknet()
-{
-    /* if (IsI2POnly())
-        return true;
-    if (IsTorOnly())
-        return true;
-    if (IsDarknetOnly())
-        return true;
-    if ((mapArgs.count("-tor") && mapArgs["-tor"] != "0"))
-        return true; */
-    return false;
-}

@@ -4,6 +4,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
 #endif
@@ -24,6 +25,10 @@
 #include "db.h"
 #include "wallet.h"
 #include "walletdb.h"
+#endif
+
+#ifdef ENABLE_I2PSAM
+#include "i2pwrapper.h"
 #endif
 
 #include <stdint.h>
@@ -113,14 +118,14 @@ void Shutdown()
     TRY_LOCK(cs_Shutdown, lockShutdown);
     if (!lockShutdown) return;
 
-    RenameThread("bitcoin-shutoff");
+    RenameThread("anoncoin-shutoff");
     mempool.AddTransactionsUpdated(1);
     StopRPCThreads();
     ShutdownRPCMining();
 #ifdef ENABLE_WALLET
     if (pwalletMain)
         bitdb.Flush(false);
-    GenerateBitcoins(false, NULL, 0);
+    GenerateAnoncoins(false, NULL, 0);
 #endif
     StopNode();
     UnregisterNodeSignals(GetNodeSignals());
@@ -198,7 +203,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 288, 0 = all)") + "\n";
     strUsage += "  -checklevel=<n>        " + _("How thorough the block verification of -checkblocks is (0-4, default: 3)") + "\n";
     strUsage += "  -conf=<file>           " + _("Specify configuration file (default: anoncoin.conf)") + "\n";
-    if (hmm == HMM_BITCOIND)
+    if (hmm == HMM_ANONCOIND)
     {
 #if !defined(WIN32)
         strUsage += "  -daemon                " + _("Run in the background as a daemon and accept commands") + "\n";
@@ -210,7 +215,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -maxorphanblocks=<n>   " + strprintf(_("Keep at most <n> unconnectable blocks in memory (default: %u)"), DEFAULT_MAX_ORPHAN_BLOCKS) + "\n";
     strUsage += "  -maxorphantx=<n>       " + strprintf(_("Keep at most <n> unconnectable transactions in memory (default: %u)"), DEFAULT_MAX_ORPHAN_TRANSACTIONS) + "\n";
     strUsage += "  -par=<n>               " + strprintf(_("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)"), -(int)boost::thread::hardware_concurrency(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS) + "\n";
-    strUsage += "  -pid=<file>            " + _("Specify pid file (default: bitcoind.pid)") + "\n";
+    strUsage += "  -pid=<file>            " + _("Specify pid file (default: anoncoind.pid)") + "\n";
     strUsage += "  -reindex               " + _("Rebuild block chain index from current blk000??.dat files") + " " + _("on startup") + "\n";
     strUsage += "  -txindex               " + _("Maintain a full transaction index (default: 0)") + "\n";
 
@@ -273,7 +278,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "                         " + _("If <category> is not supplied, output all debugging information.") + "\n";
     strUsage += "                         " + _("<category> can be:");
     strUsage +=                                 " addrman, alert, coindb, db, lock, rand, rpc, selectcoins, mempool, net"; // Don't translate these and qt below
-    if (hmm == HMM_BITCOIN_QT)
+    if (hmm == HMM_ANONCOIN_QT)
         strUsage += ", qt";
     strUsage += ".\n";
 #ifdef ENABLE_WALLET
@@ -342,7 +347,7 @@ struct CImportingNow
 
 void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 {
-    RenameThread("bitcoin-loadblk");
+    RenameThread("anoncoin-loadblk");
 
     // -reindex
     if (fReindex) {
@@ -642,12 +647,17 @@ bool AppInit2(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
 #endif
+#ifdef ENABLE_I2PSAM
+    LogPrintf("I2P module version %s\n", FormatI2PNativeFullVersion());
+#endif
     if (!fLogTimestamps)
         LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", strDataDir);
     LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, nFD);
     std::ostringstream strErrors;
+
+    if (!IsBehindDarknet()) InitWarning("Anoncoin is running on clearnet!\n");
 
     if (nScriptCheckThreads) {
         LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
@@ -714,10 +724,54 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     RegisterNodeSignals(GetNodeSignals());
 
+// DO NOT Put this code in, until AFTER the notification signals have been registered.
+// GR Note: Cost me allot of time figuring that out.  noui function is used if this is anoncoind, a function in anoncoingui.cpp is called for the anoncoin-qt execuable,
+// which also must have had your updated MOC files generated after any code work is done there.
+#ifdef ENABLE_I2PSAM
+    // ToDo: Ported from 0.8.5.6 code, GR Notes: Allot of code work to include this functionality in both the gui/coind output correctly I hope...
+    if( GetBoolArg("-generatei2pdestination", false) )
+    {
+        const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
+
+        bool bRetVal = uiInterface.ThreadSafeMessageBox(
+            _("Generated I2P address"),
+            generatedDest.pub,
+            CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
+
+
+//        bool bRetVal = uiInterface.ThreadSafeShowGeneratedI2PAddress(
+//            _("Generated I2P address"),
+//            generatedDest.pub,
+//            generatedDest.priv,
+//            I2PSession::GenerateB32AddressFromDestination(generatedDest.pub),
+//            GetConfigFile().string()
+//        );
+        // ToDo: Not sure?  Maybe this?
+        // Removed this is not an error, the signal will produce a messagebox on the gui later (if there is one)
+        // if (!bRetVal ) InitError(_("Error - Reporting I2P generated Destination keys"));
+        if( !bRetVal ) fRequestShutdown = true;
+        // return false;
+
+    }
+#endif // ENABLE_I2PSAM
+
     if (mapArgs.count("-onlynet")) {
         std::set<enum Network> nets;
         BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
             enum Network net = ParseNetwork(snet);
+
+#ifdef ENABLE_I2PSAM
+            if (net == NET_NATIVE_I2P)
+            {
+                // Disable upnp, force listening and no discovery on I2P only.
+#ifdef USE_UPNP
+                SoftSetBoolArg("-upnp", false);
+#endif
+                SoftSetBoolArg("-listen",true);
+                SoftSetBoolArg("-discover",false);
+            }
+#endif // ENABLE_I2PSAM
+
             if (net == NET_UNROUTABLE)
                 return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet));
             nets.insert(net);
@@ -758,6 +812,19 @@ bool AppInit2(boost::thread_group& threadGroup)
         SetReachable(NET_TOR);
     }
 
+#ifdef ENABLE_I2PSAM
+    // -i2p can override both tor and proxy
+    if (!(mapArgs.count("-i2p") && mapArgs["-i2p"] == "0") || IsI2POnly())
+    {
+        // Disable on i2p per default
+#ifdef USE_UPNP
+        SoftSetBoolArg("-upnp", false);
+#endif
+        SoftSetBoolArg("-listen",true);
+        SetReachable(NET_NATIVE_I2P);
+    }
+#endif // ENABLE_I2PSAM
+
     // see Step 2: parameter interactions for more information about these
     fNoListen = !GetBoolArg("-listen", true);
     fDiscover = GetBoolArg("-discover", true);
@@ -779,6 +846,12 @@ bool AppInit2(boost::thread_group& threadGroup)
             fBound |= Bind(CService(in6addr_any, GetListenPort()), BF_NONE);
             fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound ? BF_REPORT_ERROR : BF_NONE);
         }
+
+#ifdef ENABLE_I2PSAM
+        // Regardless of users choice on binding or not, if I2P is not limited, then we always try to bind our node to listen on the I2P socket
+        if (!IsLimited(NET_NATIVE_I2P))
+            fBound |= BindListenNativeI2P();
+#endif
         if (!fBound)
             return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
     }
@@ -1082,22 +1155,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
 
-    // ********************************************************* Step 10: load peers
 
-    uiInterface.InitMessage(_("Loading addresses..."));
-
-    nStart = GetTimeMillis();
-
-    {
-        CAddrDB adb;
-        if (!adb.Read(addrman))
-            LogPrintf("Invalid or missing peers.dat; recreating\n");
-    }
-
-    LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
-           addrman.size(), GetTimeMillis() - nStart);
-
-    // ********************************************************* Step 11: start node
+    // ********************************************************* Step 10: start node
 
     if (!CheckDiskSpace())
         return false;
@@ -1125,10 +1184,10 @@ bool AppInit2(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     // Generate coins in the background
     if (pwalletMain)
-        GenerateBitcoins(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", -1));
+        GenerateAnoncoins(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", -1));
 #endif
 
-    // ********************************************************* Step 12: finished
+    // ********************************************************* Step 11: finished
 
     uiInterface.InitMessage(_("Done loading"));
 

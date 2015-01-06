@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2014 The Bitcoin Core developers
+# Copyright (c) 2013-2014 The Anoncoin Core developers
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,8 +14,8 @@ fi
 
 set -f
 
-BITCOIND=${1}/bitcoind
-CLI=${1}/bitcoin-cli
+ANONCOIND=${1}/anoncoind
+CLI=${1}/anoncoin-cli
 
 DIR="${BASH_SOURCE%/*}"
 SENDANDWAIT="${DIR}/send.sh"
@@ -29,13 +30,13 @@ D=$(mktemp -d test.XXXXX)
 D1=${D}/node1
 CreateDataDir $D1 port=11000 rpcport=11001
 B1ARGS="-datadir=$D1"
-$BITCOIND $B1ARGS &
+$ANONCOIND $B1ARGS &
 B1PID=$!
 
 D2=${D}/node2
 CreateDataDir $D2 port=11010 rpcport=11011
 B2ARGS="-datadir=$D2"
-$BITCOIND $B2ARGS &
+$ANONCOIND $B2ARGS &
 B2PID=$!
 
 # Wait until both nodes are at the same block number
@@ -85,7 +86,7 @@ CheckBalance "$B2ARGS" 0
 # restart B2 with no connection
 $CLI $B2ARGS stop > /dev/null 2>&1
 wait $B2PID
-$BITCOIND $B2ARGS &
+$ANONCOIND $B2ARGS &
 B2PID=$!
 
 B2ADDRESS=$( $CLI $B2ARGS getaccountaddress "from1" )

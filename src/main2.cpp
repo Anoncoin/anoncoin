@@ -35,7 +35,7 @@ int64_t GetBlockValue(int nHeight, int64_t nFees)
 unsigned int ComputeMinWork(unsigned int nBase, int64_t nTime)
 {
     // ToDo: Which Algo?
-    const CBigNum &bnLimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+    const CBigNum &bnLimit = Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC );
 
     // Testnet has min-difficulty blocks
     // after nTargetSpacing*2 time between blocks:
@@ -79,7 +79,7 @@ unsigned int static KimotoGravityWell(const CBlockIndex* pindexLast,
     double EventHorizonDeviation;
     double EventHorizonDeviationFast;
     double EventHorizonDeviationSlow;
-    CBigNum bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+    CBigNum bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC );
 
     if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || (uint64_t)BlockLastSolved->nHeight < PastBlocksMin) { return bnProofOfWorkLimit.GetCompact(); }
 
@@ -142,7 +142,7 @@ unsigned int static NeoGetNextWorkRequired(const CBlockIndex* pindexLast, const 
 unsigned int static OldGetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
     // ToDo: Which Algo?
-    CBigNum bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+    CBigNum bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC );
     unsigned int nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
 
     // Genesis block
@@ -247,7 +247,7 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 
     // Check range
     // ToDo: Which Algo?
-    if (bnTarget <= 0 || bnTarget > Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ))
+    if (bnTarget <= 0 || bnTarget > Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC ))
         return error("CheckProofOfWork() : nBits below minimum work");
 
     // Check proof of work matches claimed amount

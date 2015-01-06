@@ -79,7 +79,7 @@ WalletView::~WalletView()
 {
 }
 
-void WalletView::setBitcoinGUI(BitcoinGUI *gui)
+void WalletView::setAnoncoinGUI(AnoncoinGUI *gui)
 {
     if (gui)
     {

@@ -3,6 +3,11 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include "rpcconsole.h"
 #include "ui_rpcconsole.h"
 
@@ -14,6 +19,11 @@
 
 #include "json/json_spirit_value.h"
 #include <openssl/crypto.h>
+
+#ifdef ENABLE_WALLET
+#include <db_cxx.h>
+#endif
+
 #include <QKeyEvent>
 #include <QScrollBar>
 #include <QThread>
@@ -195,6 +205,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
     ui(new Ui::RPCConsole),
     clientModel(0),
     historyPtr(0)
+
 {
     ui->setupUi(this);
     GUIUtil::restoreWindowGeometry("nRPCConsoleWindow", this->size(), this);
@@ -210,8 +221,16 @@ RPCConsole::RPCConsole(QWidget *parent) :
     connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(clear()));
     connect(ui->btnClearTrafficGraph, SIGNAL(clicked()), ui->trafficGraph, SLOT(clear()));
 
-    // set OpenSSL version label
+    // set OpenSSL version string value
     ui->openSSLVersion->setText(SSLeay_version(SSLEAY_VERSION));
+
+    // Set berkelyDB Version string value
+#ifdef ENABLE_WALLET
+    ui->berkeleyDBVersion->setText(DbEnv::version(0, 0, 0));
+#else
+    ui->label_berkeleyDBVersion->hide();
+    ui->berkeleyDBVersion->hide();
+#endif
 
     startExecutor();
     setTrafficGraphRange(INITIAL_TRAFFIC_GRAPH_MINS);

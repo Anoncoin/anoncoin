@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,7 +15,7 @@
 
 #include <boost/foreach.hpp>
 #include "json/json_spirit_value.h"
-/* #include "bitcoinrpc.h" */
+/* #include "anoncoinrpc.h" */
 #include "alert.h"
 #include "base58.h"
 
@@ -215,7 +216,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
             "    \"connected\" : true|false,          (boolean) If connected\n"
             "    \"addresses\" : [\n"
             "       {\n"
-            "         \"address\" : \"192.168.0.201:9333\",  (string) The bitcoin server host and port\n"
+            "         \"address\" : \"192.168.0.201:9333\",  (string) The anoncoin server host and port\n"
             "         \"connected\" : \"outbound\"           (string) connection, inbound or outbound\n"
             "       }\n"
             "       ,...\n"
@@ -443,6 +444,6 @@ Value makekeypair(const Array& params, bool fHelp)
 
     Object result;
     result.push_back(Pair("PublicKey", HexStr(pubkey.begin(), pubkey.end())));
-    result.push_back(Pair("PrivateKey", CBitcoinSecret(key).ToString()));
+    result.push_back(Pair("PrivateKey", CAnoncoinSecret(key).ToString()));
     return result;
 }

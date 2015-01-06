@@ -1,10 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CORE_H
-#define BITCOIN_CORE_H
+#ifndef ANONCOIN_CORE_H
+#define ANONCOIN_CORE_H
 
 #include "script.h"
 #include "scrypt.h"
@@ -152,7 +153,7 @@ public:
     bool IsDust(int64_t nMinRelayTxFee) const
     {
         // Litecoin: IsDust() detection disabled, allows any valid dust to be relayed.
-        // The fees imposed on each dust txo is considered sufficient spam deterrant. 
+        // The fees imposed on each dust txo is considered sufficient spam deterrant.
         return false;
     }
 

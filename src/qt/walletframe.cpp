@@ -13,7 +13,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-WalletFrame::WalletFrame(BitcoinGUI *_gui) :
+WalletFrame::WalletFrame(AnoncoinGUI *_gui) :
     QFrame(_gui),
     gui(_gui)
 {
@@ -44,7 +44,7 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
         return false;
 
     WalletView *walletView = new WalletView(this);
-    walletView->setBitcoinGUI(gui);
+    walletView->setAnoncoinGUI(gui);
     walletView->setClientModel(clientModel);
     walletView->setWalletModel(walletModel);
     walletView->showOutOfSyncWarning(bOutOfSync);

@@ -4,8 +4,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef _BITCOINRPC_PROTOCOL_H_
-#define _BITCOINRPC_PROTOCOL_H_ 1
+#ifndef _ANONCOINRPC_PROTOCOL_H_
+#define _ANONCOINRPC_PROTOCOL_H_
 
 #include <list>
 #include <map>

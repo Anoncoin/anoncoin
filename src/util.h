@@ -4,8 +4,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_H
-#define BITCOIN_UTIL_H
+#ifndef ANONCOIN_UTIL_H
+#define ANONCOIN_UTIL_H
 
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
@@ -71,7 +71,7 @@ T* alignup(T* p)
 #endif
 #else
 #define MAX_PATH            1024
-#endif
+#endif // WIN32
 // As Solaris does not have the MSG_NOSIGNAL flag for send(2) syscall, it is defined as 0
 #if !defined(HAVE_MSG_NOSIGNAL) && !defined(MSG_NOSIGNAL)
 #define MSG_NOSIGNAL 0
@@ -200,17 +200,8 @@ int64_t GetTime();
 void SetMockTime(int64_t nMockTimeIn);
 int64_t GetAdjustedTime();
 int64_t GetTimeOffset();
-std::string FormatFullVersion();
-std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
 void AddTimeData(const CNetAddr& ip, int64_t nTime);
 void runCommand(std::string strCommand);
-
-
-
-
-
-
-
 
 
 inline std::string i64tostr(int64_t n)
@@ -523,7 +514,7 @@ inline uint32_t ByteReverse(uint32_t value)
 //    threadGroup.create_thread(boost::bind(&LoopForever<boost::function<void()> >, "nothing", f, milliseconds));
 template <typename Callable> void LoopForever(const char* name,  Callable func, int64_t msecs)
 {
-    std::string s = strprintf("bitcoin-%s", name);
+    std::string s = strprintf("anoncoin-%s", name);
     RenameThread(s.c_str());
     LogPrintf("%s thread start\n", name);
     try
@@ -551,7 +542,7 @@ template <typename Callable> void LoopForever(const char* name,  Callable func, 
 // .. and a wrapper that just calls func once
 template <typename Callable> void TraceThread(const char* name,  Callable func)
 {
-    std::string s = strprintf("bitcoin-%s", name);
+    std::string s = strprintf("anoncoin-%s", name);
     RenameThread(s.c_str());
     try
     {

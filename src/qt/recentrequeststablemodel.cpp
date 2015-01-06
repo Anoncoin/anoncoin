@@ -82,7 +82,7 @@ QVariant RecentRequestsTableModel::data(const QModelIndex &index, int role) cons
             if (rec->recipient.amount == 0 && role == Qt::DisplayRole)
                 return tr("(no amount)");
             else
-                return BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount);
+                return AnoncoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount);
         }
     }
     return QVariant();
@@ -118,7 +118,7 @@ QString RecentRequestsTableModel::getAmountTitle()
     QString amountTitle = tr("Amount");
     if (this->walletModel->getOptionsModel() != NULL)
     {
-        amountTitle += " ("+BitcoinUnits::name(this->walletModel->getOptionsModel()->getDisplayUnit()) + ")";
+        amountTitle += " ("+AnoncoinUnits::name(this->walletModel->getOptionsModel()->getDisplayUnit()) + ")";
     }
     return amountTitle;
 }

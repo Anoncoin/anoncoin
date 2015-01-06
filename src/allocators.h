@@ -1,10 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_ALLOCATORS_H
-#define BITCOIN_ALLOCATORS_H
+#ifndef ANONCOIN_ALLOCATORS_H
+#define ANONCOIN_ALLOCATORS_H
 
 #include <map>
 #include <string>
@@ -136,7 +137,7 @@ public:
 class LockedPageManager: public LockedPageManagerBase<MemoryPageLocker>
 {
 public:
-    static LockedPageManager& Instance() 
+    static LockedPageManager& Instance()
     {
         boost::call_once(LockedPageManager::CreateInstance, LockedPageManager::init_flag);
         return *LockedPageManager::_instance;

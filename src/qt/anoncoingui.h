@@ -3,9 +3,12 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOINGUI_H
-#define BITCOINGUI_H
+#ifndef ANONCOINGUI_H
+#define ANONCOINGUI_H
 
+// Many builder specific things set in the config file, for any source files where we rely on moc_xxx files being generated
+// it is best to include the anoncoin-config.h in the header file itself.  Not the .cpp src file, because otherwise any
+// conditional compilation guidelines, which rely on the build configuration, will not be present in the moc_xxx files.
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
 #endif
@@ -38,18 +41,18 @@ class QProgressBar;
 QT_END_NAMESPACE
 
 /**
-  Bitcoin GUI main class. This class represents the main window of the Bitcoin UI. It communicates with both the client and
+  Anoncoin GUI main class. This class represents the main window of the Anoncoin UI. It communicates with both the client and
   wallet models to give the user an up-to-date view of the current core state.
 */
-class BitcoinGUI : public QMainWindow
+class AnoncoinGUI : public QMainWindow
 {
     Q_OBJECT
 
 public:
     static const QString DEFAULT_WALLET;
 
-    explicit BitcoinGUI(bool fIsTestnet = false, QWidget *parent = 0);
-    ~BitcoinGUI();
+    explicit AnoncoinGUI(bool fIsTestnet = false, QWidget *parent = 0);
+    ~AnoncoinGUI();
 
     /** Set the client model.
         The client model represents the part of the core that communicates with the P2P network, and is wallet-agnostic.
@@ -58,7 +61,7 @@ public:
 
 #ifdef ENABLE_WALLET
     /** Set the wallet model.
-        The wallet model represents a bitcoin wallet, and offers access to the list of transactions, address book and sending
+        The wallet model represents a anoncoin wallet, and offers access to the list of transactions, address book and sending
         functionality.
     */
     bool addWallet(const QString& name, WalletModel *walletModel);
@@ -81,6 +84,11 @@ private:
     QLabel *labelEncryptionIcon;
     QLabel *labelConnectionsIcon;
     QLabel *labelBlocksIcon;
+#ifdef ENABLE_I2PSAM
+    QLabel* labelI2PConnections;
+    QLabel* labelI2POnly;
+    QLabel* labelI2PGenerated;
+#endif // ENABLE_I2PSAM
     QLabel *progressBarLabel;
     QProgressBar *progressBar;
 
@@ -112,7 +120,9 @@ private:
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
     int spinnerFrame;
-
+#ifdef ENABLE_I2PSAM
+    int i2pConnectCount;        // Keep track of the number of I2P connections, so we can remove them from the clearnet amount
+#endif
     /** Create the main UI actions. */
     void createActions(bool fIsTestnet);
     /** Create the menu bar and sub-menus. */
@@ -163,6 +173,12 @@ public slots:
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address);
 #endif
+
+#ifdef ENABLE_I2PSAM
+    /** Set number of I2P connections shown in the UI */
+    void setNumI2PConnections(int count);
+    void showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName);
+#endif // ENABLE_I2PSAM
 
 private slots:
 #ifdef ENABLE_WALLET
@@ -231,4 +247,4 @@ private slots:
     void onMenuSelection(QAction* action);
 };
 
-#endif // BITCOINGUI_H
+#endif // ANONCOINGUI_H

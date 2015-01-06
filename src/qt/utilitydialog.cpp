@@ -26,10 +26,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Set current copyright year
-    // ToDo: We should add the copyright for bitcoin and primecoin too...as we start to merge mine them!
+    // Set current copyright year for all the crypos we're involved in mining and algos from...
     ui->copyrightLabel->setText(tr("Copyright") + QString(" &copy; 2013-%1 ").arg(COPYRIGHT_YEAR) + tr("The Anoncoin Core developers")
-        + QString("<br>") + tr("Copyright") + QString(" &copy; 2011-%1 ").arg(COPYRIGHT_YEAR) + tr("The Litecoin Core developers"));
+        + QString("<br>") + tr("Copyright") + QString(" &copy; 2009-%1 ").arg(COPYRIGHT_YEAR) + tr("The Bitcoin Core developers")
+        + QString("<br>") + tr("Copyright") + QString(" &copy; 2011-%1 ").arg(COPYRIGHT_YEAR) + tr("The Litecoin Core developers")
+        + QString("<br>") + tr("Copyright") + QString(" &copy; 2013 ") + tr("The Primecoin developers"));
 }
 
 void AboutDialog::setModel(ClientModel *model)
@@ -72,7 +73,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent) :
         tr("Usage:") + "\n" +
         "  anoncoin-qt [" + tr("command-line options") + "]                     " + "\n";
 
-    coreOptions = QString::fromStdString(HelpMessage(HMM_BITCOIN_QT));
+    coreOptions = QString::fromStdString(HelpMessage(HMM_ANONCOIN_QT));
 
     uiOptions = tr("UI options") + ":\n" +
         "  -choosedatadir            " + tr("Choose data directory on startup (default: 0)") + "\n" +
@@ -81,7 +82,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent) :
         "  -rootcertificates=<file>  " + tr("Set SSL root certificates for payment request (default: -system-)") + "\n" +
         "  -splash                   " + tr("Show splash screen on startup (default: 1)");
 
-    ui->helpMessageLabel->setFont(GUIUtil::bitcoinAddressFont());
+    ui->helpMessageLabel->setFont(GUIUtil::anoncoinAddressFont());
 
     // Set help message text
     ui->helpMessageLabel->setText(header + "\n" + coreOptions + "\n" + uiOptions);
@@ -118,7 +119,7 @@ void HelpMessageDialog::on_okButton_accepted()
 
 
 /** "Shutdown" window */
-void ShutdownWindow::showShutdownWindow(BitcoinGUI *window)
+void ShutdownWindow::showShutdownWindow(AnoncoinGUI *window)
 {
     if (!window)
         return;

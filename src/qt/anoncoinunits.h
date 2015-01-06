@@ -1,31 +1,32 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOINUNITS_H
-#define BITCOINUNITS_H
+#ifndef ANONCOINUNITS_H
+#define ANONCOINUNITS_H
 
 #include <QAbstractListModel>
 #include <QString>
 
-/** Bitcoin unit definitions. Encapsulates parsing and formatting
+/** Anoncoin unit definitions. Encapsulates parsing and formatting
    and serves as list model for drop-down selection boxes.
 */
-class BitcoinUnits: public QAbstractListModel
+class AnoncoinUnits: public QAbstractListModel
 {
     Q_OBJECT
 
 public:
-    explicit BitcoinUnits(QObject *parent);
+    explicit AnoncoinUnits(QObject *parent);
 
-    /** Bitcoin units.
+    /** Anoncoin units.
       @note Source: https://en.bitcoin.it/wiki/Units . Please add only sensible ones
      */
     enum Unit
     {
-        BTC,
-        mBTC,
-        uBTC
+        ANC,
+        mANC,
+        uANC
     };
 
     //! @name Static API
@@ -70,8 +71,8 @@ public:
     ///@}
 
 private:
-    QList<BitcoinUnits::Unit> unitlist;
+    QList<AnoncoinUnits::Unit> unitlist;
 };
-typedef BitcoinUnits::Unit BitcoinUnit;
+typedef AnoncoinUnits::Unit AnoncoinUnit;
 
-#endif // BITCOINUNITS_H
+#endif // ANONCOINUNITS_H

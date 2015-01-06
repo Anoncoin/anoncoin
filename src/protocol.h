@@ -1,7 +1,14 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Included here in the header, we need ENABLE_I2PSAM some...
+// That is if you want I2P support enabled and declared as a new type of available service.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #ifndef __cplusplus
 # error This header can only be compiled as C++.
@@ -71,6 +78,13 @@ enum
     // collisions and other cases where nodes may be advertising a service they
     // do not actually support. Other service bits should be allocated via the
     // BIP process.
+
+// Todo: Check/consider the above new commentary.  Perhaps we should move the I2P service bit over even more.
+//       However, for compatibility with existing nodes running 0.8.5 we need to establish this position as indicating
+//       the I2P network.  Consider the possibly of requesting it's allocation via the BIP process, as mentioned above.
+#ifdef ENABLE_I2PSAM
+    NODE_I2P = (1 << 7),
+#endif
 };
 
 /** A CService with information about it as peer */

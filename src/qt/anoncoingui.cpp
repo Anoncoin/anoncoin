@@ -51,7 +51,9 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
-
+#ifdef ENABLE_I2PSAM
+#include "i2pshowaddresses.h"
+#endif // ENABLE_I2PSAM
 
 #if QT_VERSION < 0x050000
 #include <QUrl>
@@ -60,9 +62,9 @@
 #include <QUrlQuery>
 #endif
 
-const QString BitcoinGUI::DEFAULT_WALLET = "~Default";
+const QString AnoncoinGUI::DEFAULT_WALLET = "~Default";
 
-BitcoinGUI::BitcoinGUI(bool fIsTestnet, QWidget *parent) :
+AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     QMainWindow(parent),
     clientModel(0),
     walletFrame(0),
@@ -94,20 +96,20 @@ BitcoinGUI::BitcoinGUI(bool fIsTestnet, QWidget *parent) :
     if (!fIsTestnet)
     {
 #ifndef Q_OS_MAC
-        QApplication::setWindowIcon(QIcon(":icons/bitcoin"));
-        setWindowIcon(QIcon(":icons/bitcoin"));
+        QApplication::setWindowIcon(QIcon(":icons/anoncoin"));
+        setWindowIcon(QIcon(":icons/anoncoin"));
 #else
-        MacDockIconHandler::instance()->setIcon(QIcon(":icons/bitcoin"));
+        MacDockIconHandler::instance()->setIcon(QIcon(":icons/anoncoin"));
 #endif
     }
     else
     {
         windowTitle += " " + tr("[testnet]");
 #ifndef Q_OS_MAC
-        QApplication::setWindowIcon(QIcon(":icons/bitcoin_testnet"));
-        setWindowIcon(QIcon(":icons/bitcoin_testnet"));
+        QApplication::setWindowIcon(QIcon(":icons/anoncoin_testnet"));
+        setWindowIcon(QIcon(":icons/anoncoin_testnet"));
 #else
-        MacDockIconHandler::instance()->setIcon(QIcon(":icons/bitcoin_testnet"));
+        MacDockIconHandler::instance()->setIcon(QIcon(":icons/anoncoin_testnet"));
 #endif
     }
     setWindowTitle(windowTitle);
@@ -164,6 +166,18 @@ BitcoinGUI::BitcoinGUI(bool fIsTestnet, QWidget *parent) :
     labelEncryptionIcon = new QLabel();
     labelConnectionsIcon = new QLabel();
     labelBlocksIcon = new QLabel();
+#ifdef ENABLE_I2PSAM
+    labelI2PConnections = new QLabel();
+    labelI2POnly = new QLabel();
+    labelI2PGenerated = new QLabel();
+
+    frameBlocksLayout->addStretch();
+    frameBlocksLayout->addWidget(labelI2PGenerated);
+    frameBlocksLayout->addStretch();
+    frameBlocksLayout->addWidget(labelI2POnly);
+    frameBlocksLayout->addStretch();
+    frameBlocksLayout->addWidget(labelI2PConnections);
+#endif
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(unitDisplayControl);
     frameBlocksLayout->addStretch();
@@ -209,7 +223,7 @@ BitcoinGUI::BitcoinGUI(bool fIsTestnet, QWidget *parent) :
     subscribeToCoreSignals();
 }
 
-BitcoinGUI::~BitcoinGUI()
+AnoncoinGUI::~AnoncoinGUI()
 {
     // Unsubscribe from notifications from core
     unsubscribeFromCoreSignals();
@@ -223,7 +237,7 @@ BitcoinGUI::~BitcoinGUI()
 #endif
 }
 
-void BitcoinGUI::createActions(bool fIsTestnet)
+void AnoncoinGUI::createActions(bool fIsTestnet)
 {
     QActionGroup *tabGroup = new QActionGroup(this);
 
@@ -235,7 +249,7 @@ void BitcoinGUI::createActions(bool fIsTestnet)
     tabGroup->addAction(overviewAction);
 
     sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send"), this);
-    sendCoinsAction->setStatusTip(tr("Send coins to a Bitcoin address"));
+    sendCoinsAction->setStatusTip(tr("Send coins to a Anoncoin address"));
     sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
     sendCoinsAction->setCheckable(true);
     sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
@@ -271,10 +285,10 @@ void BitcoinGUI::createActions(bool fIsTestnet)
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
     if (!fIsTestnet)
-        aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About Anoncoin Core"), this);
+        aboutAction = new QAction(QIcon(":/icons/anoncoin"), tr("&About Anoncoin Core"), this);
     else
-        aboutAction = new QAction(QIcon(":/icons/bitcoin_testnet"), tr("&About Anoncoin Core"), this);
-    aboutAction->setStatusTip(tr("Show information about Bitcoin"));
+        aboutAction = new QAction(QIcon(":/icons/anoncoin_testnet"), tr("&About Anoncoin Core"), this);
+    aboutAction->setStatusTip(tr("Show information about Anoncoin"));
     aboutAction->setMenuRole(QAction::AboutRole);
 #if QT_VERSION < 0x050000
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
@@ -284,12 +298,12 @@ void BitcoinGUI::createActions(bool fIsTestnet)
     aboutQtAction->setStatusTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-    optionsAction->setStatusTip(tr("Modify configuration options for Bitcoin"));
+    optionsAction->setStatusTip(tr("Modify configuration options for Anoncoin"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
     if (!fIsTestnet)
-        toggleHideAction = new QAction(QIcon(":/icons/bitcoin"), tr("&Show / Hide"), this);
+        toggleHideAction = new QAction(QIcon(":/icons/anoncoin"), tr("&Show / Hide"), this);
     else
-        toggleHideAction = new QAction(QIcon(":/icons/bitcoin_testnet"), tr("&Show / Hide"), this);
+        toggleHideAction = new QAction(QIcon(":/icons/anoncoin_testnet"), tr("&Show / Hide"), this);
     toggleHideAction->setStatusTip(tr("Show or hide the main Window"));
 
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
@@ -300,9 +314,9 @@ void BitcoinGUI::createActions(bool fIsTestnet)
     changePassphraseAction = new QAction(QIcon(":/icons/key"), tr("&Change Passphrase..."), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
     signMessageAction = new QAction(QIcon(":/icons/edit"), tr("Sign &message..."), this);
-    signMessageAction->setStatusTip(tr("Sign messages with your Bitcoin addresses to prove you own them"));
+    signMessageAction->setStatusTip(tr("Sign messages with your Anoncoin addresses to prove you own them"));
     verifyMessageAction = new QAction(QIcon(":/icons/transaction_0"), tr("&Verify message..."), this);
-    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Bitcoin addresses"));
+    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Anoncoin addresses"));
 
     openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging and diagnostic console"));
@@ -316,7 +330,7 @@ void BitcoinGUI::createActions(bool fIsTestnet)
     openAction->setStatusTip(tr("Open a anoncoin: URI or payment request"));
 
     showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line options"), this);
-    showHelpMessageAction->setStatusTip(tr("Show the Anoncoin Core help message to get a list with possible Bitcoin command-line options"));
+    showHelpMessageAction->setStatusTip(tr("Show the Anoncoin Core help message to get a list with possible Anoncoin command-line options"));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
@@ -339,7 +353,7 @@ void BitcoinGUI::createActions(bool fIsTestnet)
 #endif
 }
 
-void BitcoinGUI::createMenuBar()
+void AnoncoinGUI::createMenuBar()
 {
 #ifdef Q_OS_MAC
     // Create a decoupled menu bar on Mac which stays even if the window is closed
@@ -384,7 +398,7 @@ void BitcoinGUI::createMenuBar()
     help->addAction(aboutQtAction);
 }
 
-void BitcoinGUI::createToolBars()
+void AnoncoinGUI::createToolBars()
 {
     if(walletFrame)
     {
@@ -398,7 +412,7 @@ void BitcoinGUI::createToolBars()
     }
 }
 
-void BitcoinGUI::setClientModel(ClientModel *clientModel)
+void AnoncoinGUI::setClientModel(ClientModel *clientModel)
 {
     this->clientModel = clientModel;
     if(clientModel)
@@ -410,6 +424,41 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
         // Keep up to date with client
         setNumConnections(clientModel->getNumConnections());
         connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
+
+#ifdef ENABLE_I2PSAM
+        setNumI2PConnections(clientModel->getNumI2PConnections());
+        connect(clientModel, SIGNAL(numI2PConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
+
+        if (clientModel->isI2POnly()) {
+            labelI2POnly->setText("I2P");
+            labelI2POnly->setToolTip(tr("Wallet is using I2P-network only!"));
+        }
+        else if (clientModel->isTorOnly()) {
+            labelI2POnly->setText("TOR");
+            labelI2POnly->setToolTip(tr("Wallet is using Tor-network only"));
+        }
+        else if (clientModel->isDarknetOnly()) {
+            labelI2POnly->setText("I&T");
+            labelI2POnly->setToolTip(tr("Wallet is using I2P and Tor networks (Darknet mode)"));
+        }
+        else if (clientModel->isBehindDarknet()) {
+            labelI2POnly->setText("ICT");
+            labelI2POnly->setToolTip(tr("Wallet is using I2P and Tor networks, also Tor as a proxy"));
+        }
+        else {
+            labelI2POnly->setText("CLR");
+            labelI2POnly->setToolTip(tr("Wallet is using mixed or non-I2P (clear) network"));
+        }
+
+        if (clientModel->isI2PAddressGenerated()) {
+            labelI2PGenerated->setText("DYN");
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a random generated I2P-address"));
+        }
+        else {
+            labelI2PGenerated->setText("STA");
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a static I2P-address"));
+        }
+#endif // ENABLE_I2PSAM
 
         setNumBlocks(clientModel->getNumBlocks());
         connect(clientModel, SIGNAL(numBlocksChanged(int)), this, SLOT(setNumBlocks(int)));
@@ -430,7 +479,7 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
 }
 
 #ifdef ENABLE_WALLET
-bool BitcoinGUI::addWallet(const QString& name, WalletModel *walletModel)
+bool AnoncoinGUI::addWallet(const QString& name, WalletModel *walletModel)
 {
     if(!walletFrame)
         return false;
@@ -438,14 +487,14 @@ bool BitcoinGUI::addWallet(const QString& name, WalletModel *walletModel)
     return walletFrame->addWallet(name, walletModel);
 }
 
-bool BitcoinGUI::setCurrentWallet(const QString& name)
+bool AnoncoinGUI::setCurrentWallet(const QString& name)
 {
     if(!walletFrame)
         return false;
     return walletFrame->setCurrentWallet(name);
 }
 
-void BitcoinGUI::removeAllWallets()
+void AnoncoinGUI::removeAllWallets()
 {
     if(!walletFrame)
         return;
@@ -454,7 +503,7 @@ void BitcoinGUI::removeAllWallets()
 }
 #endif
 
-void BitcoinGUI::setWalletActionsEnabled(bool enabled)
+void AnoncoinGUI::setWalletActionsEnabled(bool enabled)
 {
     overviewAction->setEnabled(enabled);
     sendCoinsAction->setEnabled(enabled);
@@ -470,19 +519,19 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     openAction->setEnabled(enabled);
 }
 
-void BitcoinGUI::createTrayIcon(bool fIsTestnet)
+void AnoncoinGUI::createTrayIcon(bool fIsTestnet)
 {
 #ifndef Q_OS_MAC
     trayIcon = new QSystemTrayIcon(this);
 
     if (!fIsTestnet)
     {
-        trayIcon->setToolTip(tr("Bitcoin client"));
+        trayIcon->setToolTip(tr("Anoncoin client"));
         trayIcon->setIcon(QIcon(":/icons/toolbar"));
     }
     else
     {
-        trayIcon->setToolTip(tr("Bitcoin client") + " " + tr("[testnet]"));
+        trayIcon->setToolTip(tr("Anoncoin client") + " " + tr("[testnet]"));
         trayIcon->setIcon(QIcon(":/icons/toolbar_testnet"));
     }
 
@@ -492,7 +541,7 @@ void BitcoinGUI::createTrayIcon(bool fIsTestnet)
     notificator = new Notificator(QApplication::applicationName(), trayIcon, this);
 }
 
-void BitcoinGUI::createTrayIconMenu()
+void AnoncoinGUI::createTrayIconMenu()
 {
     QMenu *trayIconMenu;
 #ifndef Q_OS_MAC
@@ -530,7 +579,7 @@ void BitcoinGUI::createTrayIconMenu()
 }
 
 #ifndef Q_OS_MAC
-void BitcoinGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
+void AnoncoinGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason == QSystemTrayIcon::Trigger)
     {
@@ -540,17 +589,20 @@ void BitcoinGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 }
 #endif
 
-void BitcoinGUI::optionsClicked()
+void AnoncoinGUI::optionsClicked()
 {
     if(!clientModel || !clientModel->getOptionsModel())
         return;
 
     OptionsDialog dlg(this);
     dlg.setModel(clientModel->getOptionsModel());
+#ifdef ENABLE_I2PSAM
+    dlg.setClientModel(clientModel);
+#endif
     dlg.exec();
 }
 
-void BitcoinGUI::aboutClicked()
+void AnoncoinGUI::aboutClicked()
 {
     if(!clientModel)
         return;
@@ -560,7 +612,7 @@ void BitcoinGUI::aboutClicked()
     dlg.exec();
 }
 
-void BitcoinGUI::showHelpMessageClicked()
+void AnoncoinGUI::showHelpMessageClicked()
 {
     HelpMessageDialog *help = new HelpMessageDialog(this);
     help->setAttribute(Qt::WA_DeleteOnClose);
@@ -568,7 +620,7 @@ void BitcoinGUI::showHelpMessageClicked()
 }
 
 #ifdef ENABLE_WALLET
-void BitcoinGUI::openClicked()
+void AnoncoinGUI::openClicked()
 {
     OpenURIDialog dlg(this);
     if(dlg.exec())
@@ -577,45 +629,55 @@ void BitcoinGUI::openClicked()
     }
 }
 
-void BitcoinGUI::gotoOverviewPage()
+void AnoncoinGUI::gotoOverviewPage()
 {
     overviewAction->setChecked(true);
     if (walletFrame) walletFrame->gotoOverviewPage();
 }
 
-void BitcoinGUI::gotoHistoryPage()
+void AnoncoinGUI::gotoHistoryPage()
 {
     historyAction->setChecked(true);
     if (walletFrame) walletFrame->gotoHistoryPage();
 }
 
-void BitcoinGUI::gotoReceiveCoinsPage()
+void AnoncoinGUI::gotoReceiveCoinsPage()
 {
     receiveCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoReceiveCoinsPage();
 }
 
-void BitcoinGUI::gotoSendCoinsPage(QString addr)
+void AnoncoinGUI::gotoSendCoinsPage(QString addr)
 {
     sendCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
 }
 
-void BitcoinGUI::gotoSignMessageTab(QString addr)
+void AnoncoinGUI::gotoSignMessageTab(QString addr)
 {
     if (walletFrame) walletFrame->gotoSignMessageTab(addr);
 }
 
-void BitcoinGUI::gotoVerifyMessageTab(QString addr)
+void AnoncoinGUI::gotoVerifyMessageTab(QString addr)
 {
     if (walletFrame) walletFrame->gotoVerifyMessageTab(addr);
 }
 #endif
 
-void BitcoinGUI::setNumConnections(int count)
+void AnoncoinGUI::setNumConnections(int count)
 {
     QString icon;
-    switch(count)
+#ifdef ENABLE_I2PSAM
+    // Real count is minus the i2p connections we're showing that in another icon
+    int realcount = count - i2pConnectCount;
+    // ToDo: Having a bug here while testing I2P onlynet and binding my port in the anoncoin.conf file to 192.168.xx.xx.
+    // The realcount is getting a negative value for awhile, if nodes are found pretty fast on startup, not sure why.
+    // Added conditional below, so the user doesn't see that at least
+    if( realcount < 0 ) realcount = 0;
+#else
+    int realcount = count;
+#endif
+    switch(realcount)
     {
     case 0: icon = ":/icons/connect_0"; break;
     case 1: case 2: case 3: icon = ":/icons/connect_1"; break;
@@ -624,10 +686,28 @@ void BitcoinGUI::setNumConnections(int count)
     default: icon = ":/icons/connect_4"; break;
     }
     labelConnectionsIcon->setPixmap(QIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Bitcoin network", "", count));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Anoncoin clearnet peers", "", realcount));
 }
 
-void BitcoinGUI::setNumBlocks(int count)
+#ifdef ENABLE_I2PSAM
+void AnoncoinGUI::setNumI2PConnections(int count)
+{
+    QString i2pIcon;
+    // See the anoncoin.qrc file for icon files below & their associated alias name
+    switch(count) {
+    case 0: i2pIcon = ":/icons/i2pconnect_0"; break;
+    case 1: case 2: i2pIcon = ":/icons/i2pconnect_1"; break;
+    case 3: case 4: i2pIcon = ":/icons/i2pconnect_2"; break;
+    case 5: case 6: i2pIcon = ":/icons/i2pconnect_3"; break;
+    default: i2pIcon = ":/icons/i2pconnect_4"; break;
+    }
+    labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", count));
+    i2pConnectCount = count;
+}
+#endif // ENABLE_I2PSAM
+
+void AnoncoinGUI::setNumBlocks(int count)
 {
     // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
     statusBar()->clearMessage();
@@ -734,9 +814,9 @@ void BitcoinGUI::setNumBlocks(int count)
     progressBar->setToolTip(tooltip);
 }
 
-void BitcoinGUI::message(const QString &title, const QString &message, unsigned int style, bool *ret)
+void AnoncoinGUI::message(const QString &title, const QString &message, unsigned int style, bool *ret)
 {
-    QString strTitle = tr("Bitcoin"); // default title
+    QString strTitle = tr("Anoncoin"); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -762,7 +842,7 @@ void BitcoinGUI::message(const QString &title, const QString &message, unsigned 
             break;
         }
     }
-    // Append title to "Bitcoin - "
+    // Append title to "Anoncoin - "
     if (!msgType.isEmpty())
         strTitle += " - " + msgType;
 
@@ -797,7 +877,7 @@ void BitcoinGUI::message(const QString &title, const QString &message, unsigned 
         notificator->notify((Notificator::Class)nNotifyIcon, strTitle, message);
 }
 
-void BitcoinGUI::changeEvent(QEvent *e)
+void AnoncoinGUI::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
 #ifndef Q_OS_MAC // Ignored on Mac
@@ -816,7 +896,7 @@ void BitcoinGUI::changeEvent(QEvent *e)
 #endif
 }
 
-void BitcoinGUI::closeEvent(QCloseEvent *event)
+void AnoncoinGUI::closeEvent(QCloseEvent *event)
 {
     if(clientModel)
     {
@@ -832,7 +912,7 @@ void BitcoinGUI::closeEvent(QCloseEvent *event)
 }
 
 #ifdef ENABLE_WALLET
-void BitcoinGUI::incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address)
+void AnoncoinGUI::incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address)
 {
     // On new transaction, make an info balloon
     message((amount)<0 ? tr("Sent transaction") : tr("Incoming transaction"),
@@ -841,20 +921,20 @@ void BitcoinGUI::incomingTransaction(const QString& date, int unit, qint64 amoun
                 "Type: %3\n"
                 "Address: %4\n")
                   .arg(date)
-                  .arg(BitcoinUnits::formatWithUnit(unit, amount, true))
+                  .arg(AnoncoinUnits::formatWithUnit(unit, amount, true))
                   .arg(type)
                   .arg(address), CClientUIInterface::MSG_INFORMATION);
 }
 #endif
 
-void BitcoinGUI::dragEnterEvent(QDragEnterEvent *event)
+void AnoncoinGUI::dragEnterEvent(QDragEnterEvent *event)
 {
     // Accept only URIs
     if(event->mimeData()->hasUrls())
         event->acceptProposedAction();
 }
 
-void BitcoinGUI::dropEvent(QDropEvent *event)
+void AnoncoinGUI::dropEvent(QDropEvent *event)
 {
     if(event->mimeData()->hasUrls())
     {
@@ -866,7 +946,7 @@ void BitcoinGUI::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
 }
 
-bool BitcoinGUI::eventFilter(QObject *object, QEvent *event)
+bool AnoncoinGUI::eventFilter(QObject *object, QEvent *event)
 {
     // Catch status tip events
     if (event->type() == QEvent::StatusTip)
@@ -879,7 +959,7 @@ bool BitcoinGUI::eventFilter(QObject *object, QEvent *event)
 }
 
 #ifdef ENABLE_WALLET
-bool BitcoinGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
+bool AnoncoinGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
 {
     // URI has to be valid
     if (walletFrame && walletFrame->handlePaymentRequest(recipient))
@@ -892,7 +972,7 @@ bool BitcoinGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
         return false;
 }
 
-void BitcoinGUI::setEncryptionStatus(int status)
+void AnoncoinGUI::setEncryptionStatus(int status)
 {
     switch(status)
     {
@@ -922,7 +1002,7 @@ void BitcoinGUI::setEncryptionStatus(int status)
 }
 #endif
 
-void BitcoinGUI::showNormalIfMinimized(bool fToggleHidden)
+void AnoncoinGUI::showNormalIfMinimized(bool fToggleHidden)
 {
     // activateWindow() (sometimes) helps with keyboard focus on Windows
     if (isHidden())
@@ -944,12 +1024,12 @@ void BitcoinGUI::showNormalIfMinimized(bool fToggleHidden)
         hide();
 }
 
-void BitcoinGUI::toggleHidden()
+void AnoncoinGUI::toggleHidden()
 {
     showNormalIfMinimized(true);
 }
 
-void BitcoinGUI::detectShutdown()
+void AnoncoinGUI::detectShutdown()
 {
     if (ShutdownRequested())
     {
@@ -959,7 +1039,7 @@ void BitcoinGUI::detectShutdown()
     }
 }
 
-static bool ThreadSafeMessageBox(BitcoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
+static bool ThreadSafeMessageBox(AnoncoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
 {
     bool modal = (style & CClientUIInterface::MODAL);
     bool ret = false;
@@ -973,16 +1053,65 @@ static bool ThreadSafeMessageBox(BitcoinGUI *gui, const std::string& message, co
     return ret;
 }
 
-void BitcoinGUI::subscribeToCoreSignals()
+#ifdef ENABLE_I2PSAM
+// ToDo: Check me
+// This code ported from 0.8.5.6 didn't work as is, had to rework (see the anoncoin.cpp file in old codebase). Removed all the printf's and msg strings,
+// they should go somewhere else (see noui.cpp for anoncoind operation), from what I (GR) could tell they would never have executed.
+// The 'guiref' value (old code) here is called 'gui', changed that.  Need to confirm this is a blockingGUI thread.....Think I've fixed this.
+// This function now returns a true/false value, that was changed here, but never crossed checked that the caller would process such a thing...
+// Ok think I got all the issues addressed and ready for testing...
+static bool ThreadSafeShowGeneratedI2PAddress(AnoncoinGUI *gui,
+                                              const std::string& caption,
+                                              const std::string& pub,
+                                              const std::string& priv,
+                                              const std::string& b32,
+                                              const std::string& configFileName)
+{
+    bool ret = false;
+    unsigned int style = CClientUIInterface::BTN_ABORT | CClientUIInterface::MSG_INFORMATION;
+    bool modal = (style & CClientUIInterface::MODAL);
+
+    QString pubkey = QString::fromStdString(pub);
+    pubkey.resize( 40 );
+    QString privkey = QString::fromStdString(priv);
+    pubkey.resize( 40 );
+
+    // http://qt-project.org/doc/qt-4.8/qmetaobject.html
+    // Invokes the member (a signal or a slot name) on the object obj. Returns true if the member could be invoked.
+    // Returns false if there is no such member or the parameters did not match.
+    // If type is Qt::BlockingQueuedConnection, the method will be invoked in the same way as for Qt::QueuedConnection,
+    // except that the current thread will block until the event is delivered. Using this connection type to communicate
+    // between objects in the same thread will lead to deadlocks....
+//    QMetaObject::invokeMethod(gui, "message",
+//                               modal ? GUIUtil::blockingGUIThreadConnection() : Qt::QueuedConnection,
+//                               Q_ARG(QString, QString::fromStdString(caption)),
+//                               pubkey,
+//                               privkey,
+//                               Q_ARG(QString, QString::fromStdString(b32)),
+//                               Q_ARG(QString, QString::fromStdString(configFileName)),
+//                               Q_ARG(unsigned int, style),
+//                               Q_ARG(bool*, &ret));
+
+    return ret;
+}
+#endif // ENABLE_I2PSAM
+
+void AnoncoinGUI::subscribeToCoreSignals()
 {
     // Connect signals to client
     uiInterface.ThreadSafeMessageBox.connect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
+#ifdef ENABLE_I2PSAM
+    uiInterface.ThreadSafeShowGeneratedI2PAddress.connect(boost::bind(ThreadSafeShowGeneratedI2PAddress, this, _1, _2, _3, _4, _5));
+#endif
 }
 
-void BitcoinGUI::unsubscribeFromCoreSignals()
+void AnoncoinGUI::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
     uiInterface.ThreadSafeMessageBox.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
+#ifdef ENABLE_I2PSAM
+    uiInterface.ThreadSafeShowGeneratedI2PAddress.disconnect(boost::bind(ThreadSafeShowGeneratedI2PAddress, this, _1, _2, _3, _4, _5));
+#endif
 }
 
 UnitDisplayStatusBarControl::UnitDisplayStatusBarControl():QLabel()
@@ -1003,9 +1132,9 @@ void UnitDisplayStatusBarControl::mousePressEvent(QMouseEvent *event)
 void UnitDisplayStatusBarControl::createContextMenu()
 {
     menu = new QMenu();
-    foreach(BitcoinUnits::Unit u, BitcoinUnits::availableUnits())
+    foreach(AnoncoinUnits::Unit u, AnoncoinUnits::availableUnits())
     {
-        QAction *menuAction = new QAction(QString(BitcoinUnits::name(u)), this);
+        QAction *menuAction = new QAction(QString(AnoncoinUnits::name(u)), this);
         menuAction->setData(QVariant(u));
         menu->addAction(menuAction);
     }
@@ -1034,7 +1163,7 @@ void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel *optionsModel)
 /** When Display Units are changed on OptionsModel it will refresh the display text of the control on the status bar */
 void UnitDisplayStatusBarControl::updateDisplayUnit(int newUnits)
 {
-    setText(BitcoinUnits::name(newUnits));
+    setText(AnoncoinUnits::name(newUnits));
 }
 
 /** Shows context menu with Display Unit options by the mouse coordinates */
@@ -1053,3 +1182,10 @@ void UnitDisplayStatusBarControl::onMenuSelection(QAction* action)
     }
 }
 
+#ifdef ENABLE_I2PSAM
+void AnoncoinGUI::showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName)
+{
+    ShowI2PAddresses i2pDialog(caption, pub, priv, b32, configFileName, this);
+    i2pDialog.exec();
+}
+#endif // ENABLE_I2PSAM

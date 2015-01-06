@@ -95,7 +95,7 @@ bool AppInit(int argc, char* argv[])
                   "  anoncoind [options] help                " + _("List commands") + "\n" +
                   "  anoncoind [options] help <command>      " + _("Get help for a command") + "\n";
 
-            strUsage += "\n" + HelpMessage(HMM_BITCOIND);
+            strUsage += "\n" + HelpMessage(HMM_ANONCOIND);
             strUsage += "\n" + HelpMessageCli(false);
 
             fprintf(stdout, "%s", strUsage.c_str());

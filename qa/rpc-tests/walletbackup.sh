@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2014 The Bitcoin Core developers
+# Copyright (c) 2013-2014 The Anoncoin Core developers
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -39,8 +40,8 @@ if [ $# -lt 1 ]; then
         exit 1
 fi
 
-BITCOIND=${1}/bitcoind
-CLI=${1}/bitcoin-cli
+ANONCOIND=${1}/anoncoind
+CLI=${1}/anoncoin-cli
 
 DIR="${BASH_SOURCE%/*}"
 SENDANDWAIT="${DIR}/send.sh"
@@ -55,7 +56,7 @@ echo "Starting nodes..."
 D4=${D}/node4
 CreateDataDir $D4 port=11030 rpcport=11031
 B4ARGS="-datadir=$D4"
-$BITCOIND $BITCOINDARGS $B4ARGS &
+$ANONCOIND $ANONCOINDARGS $B4ARGS &
 B4PID=$!
 
 # Want default keypool for 1/2/3, and
@@ -64,7 +65,7 @@ B4PID=$!
 function CreateConfDir {
   DIR=$1
   mkdir -p $DIR
-  CONF=$DIR/bitcoin.conf
+  CONF=$DIR/anoncoin.conf
   echo "regtest=1" >> $CONF
   echo "rpcuser=rt" >> $CONF
   echo "rpcpassword=rt" >> $CONF
@@ -80,17 +81,17 @@ function CreateConfDir {
 D1=${D}/node1
 CreateConfDir $D1 port=11000 rpcport=11001 addnode=127.0.0.1:11030
 B1ARGS="-datadir=$D1"
-$BITCOIND $B1ARGS &
+$ANONCOIND $B1ARGS &
 B1PID=$!
 D2=${D}/node2
 CreateConfDir $D2 port=11010 rpcport=11011 addnode=127.0.0.1:11030
 B2ARGS="-datadir=$D2"
-$BITCOIND $B2ARGS &
+$ANONCOIND $B2ARGS &
 B2PID=$!
 D3=${D}/node3
 CreateConfDir $D3 port=11020 rpcport=11021 addnode=127.0.0.1:11030 addnode=127.0.0.1:11000
 B3ARGS="-datadir=$D3"
-$BITCOIND $BITCOINDARGS $B3ARGS &
+$ANONCOIND $ANONCOINDARGS $B3ARGS &
 B3PID=$!
 
 # Wait until all nodes are at the same block number
@@ -231,11 +232,11 @@ function EraseThree {
   rm $D3/regtest/wallet.dat
 }
 function StartThree {
-  $BITCOIND $BITCOINDARGS $B1ARGS &
+  $ANONCOIND $ANONCOINDARGS $B1ARGS &
   B1PID=$!
-  $BITCOIND $BITCOINDARGS $B2ARGS &
+  $ANONCOIND $ANONCOINDARGS $B2ARGS &
   B2PID=$!
-  $BITCOIND $BITCOINDARGS $B3ARGS &
+  $ANONCOIND $ANONCOINDARGS $B3ARGS &
   B3PID=$!
 }
 

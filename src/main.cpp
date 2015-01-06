@@ -1634,7 +1634,7 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck() {
-    RenameThread("bitcoin-scriptch");
+    RenameThread("anoncoin-scriptch");
     scriptcheckqueue.Thread();
 }
 
@@ -3381,6 +3381,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         pfrom->PushMessage("verack");
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
+#ifdef ENABLE_I2PSAM
+        pfrom->SetSendStreamType(pfrom->GetSendStreamType() & (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY);
+#endif
         if (!pfrom->fInbound)
         {
             // Advertise our address
@@ -3428,6 +3431,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if (strCommand == "verack")
     {
         pfrom->SetRecvVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+#ifdef ENABLE_I2PSAM
+        pfrom->SetRecvStreamType(pfrom->GetRecvStreamType() & (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY);
+#endif
     }
 
 
@@ -3488,7 +3494,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             }
             // Do not store addresses outside our network
             if (fReachable)
+#ifdef ENABLE_I2PSAM
+            {
+                    // Here we introduce a new concept starting with protocol version 70008, the idea of not keeping any clearnet
+                    // nodes in our own copy of the peers address book....this means that once I2P is enabled, or set as the -onlynet
+                    // we're going to increasingly add only to our own interests by using and keeping track of the I2P network peers.
+                    if( !IsI2PEnabled() || addr.IsNativeI2P() )
+                        vAddrOk.push_back(addr);
+            }
+#else                                                           // Original Code
                 vAddrOk.push_back(addr);
+#endif
+
         }
         addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);
         if (vAddr.size() < 1000)

@@ -1,10 +1,16 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+#ifndef ANONCOIN_SERIALIZE_H
+#define ANONCOIN_SERIALIZE_H
 
-#ifndef BITCOIN_SERIALIZE_H
-#define BITCOIN_SERIALIZE_H
+// Many builder specific things set in the config file, here we need it.
+// If ENABLE_I2PSAM is set, we'll support a new (enum) type of serialization action.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include "allocators.h"
 
@@ -42,13 +48,16 @@ inline T& REF(const T& val)
 // Templates for serializing to anything that looks like a stream,
 // i.e. anything that supports .read(char*, int) and .write(char*, int)
 //
-
+// For Anoncoin and I2P support we implement a new primary type of serialization action SER_IPADDRONLY
 enum
 {
     // primary actions
     SER_NETWORK         = (1 << 0),
     SER_DISK            = (1 << 1),
     SER_GETHASH         = (1 << 2),
+#ifdef ENABLE_I2PSAM
+    SER_IPADDRONLY      = (1 << 18),
+#endif
 };
 
 #define IMPLEMENT_SERIALIZE(statements)    \

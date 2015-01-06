@@ -3,8 +3,8 @@
 // Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef BITCOIN_WALLETDB_H
-#define BITCOIN_WALLETDB_H
+#ifndef ANONCOIN_WALLETDB_H
+#define ANONCOIN_WALLETDB_H
 
 #include "db.h"
 #include "key.h"
@@ -135,4 +135,4 @@ public:
 
 bool BackupWallet(const CWallet& wallet, const std::string& strDest);
 
-#endif // BITCOIN_WALLETDB_H
+#endif // ANONCOIN_WALLETDB_H

@@ -4,6 +4,11 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include "rpcserver.h"
 #include "chainparams.h"
 #include "init.h"
@@ -193,7 +198,7 @@ Value setgenerate(const Array& params, bool fHelp)
             if (nHeightLast != nHeight)
             {
                 nHeightLast = nHeight;
-                GenerateBitcoins(fGenerate, pwalletMain, 1);
+                GenerateAnoncoins(fGenerate, pwalletMain, 1);
             }
             MilliSleep(1);
             {   // Don't keep cs_main locked
@@ -206,7 +211,7 @@ Value setgenerate(const Array& params, bool fHelp)
     {
         mapArgs["-gen"] = (fGenerate ? "1" : "0");
         mapArgs ["-genproclimit"] = itostr(nGenProcLimit);
-        GenerateBitcoins(fGenerate, pwalletMain, nGenProcLimit);
+        GenerateAnoncoins(fGenerate, pwalletMain, nGenProcLimit);
     }
 
     return Value::null;

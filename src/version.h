@@ -1,8 +1,9 @@
 // Copyright (c) 2012 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef BITCOIN_VERSION_H
-#define BITCOIN_VERSION_H
+#ifndef ANONCOIN_VERSION_H
+#define ANONCOIN_VERSION_H
 
 // client versioning has moved to clientversion.h/cpp
 

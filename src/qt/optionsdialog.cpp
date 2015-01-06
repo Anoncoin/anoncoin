@@ -31,6 +31,10 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     model(0),
     mapper(0),
     fProxyIpValid(true)
+#ifdef ENABLE_I2PSAM
+    , fRestartWarningDisplayed_I2P(false)
+    , tabI2P(new I2POptionsWidget()) // Add the I2P OptionsWidget tab
+#endif
 {
     ui->setupUi(this);
     GUIUtil::restoreWindowGeometry("nOptionsDialogWindow", this->size(), this);
@@ -94,7 +98,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     ui->thirdPartyTxUrls->setPlaceholderText("https://example.com/tx/%s");
 #endif
 
-    ui->unit->setModel(new BitcoinUnits(this));
+    ui->unit->setModel(new AnoncoinUnits(this));
     ui->transactionFee->setSingleStep(CTransaction::nMinTxFee);
 
     /* Widget-to-option mapper */
@@ -104,6 +108,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 
     /* setup/change UI elements when proxy IP is invalid/valid */
     connect(this, SIGNAL(proxyIpChecks(QValidatedLineEdit *, int)), this, SLOT(doProxyIpChecks(QValidatedLineEdit *, int)));
+#ifdef ENABLE_I2PSAM
+    ui->tabWidget->addTab(tabI2P, QString("I2P"));
+#endif
 }
 
 OptionsDialog::~OptionsDialog()
@@ -134,7 +141,7 @@ void OptionsDialog::setModel(OptionsModel *model)
         mapper->toFirst();
     }
 
-    /* update the display unit, to not use the default ("BTC") */
+    /* update the display unit, to not use the default ("ANC") */
     updateDisplayUnit();
 
     /* warn when one of the following settings changes by user action (placed here so init via mapper doesn't trigger them) */
@@ -149,12 +156,29 @@ void OptionsDialog::setModel(OptionsModel *model)
     /* Display */
     connect(ui->lang, SIGNAL(valueChanged()), this, SLOT(showRestartWarning()));
     connect(ui->thirdPartyTxUrls, SIGNAL(textChanged(const QString &)), this, SLOT(showRestartWarning()));
+#ifdef ENABLE_I2PSAM
+    QObject::connect(tabI2P, SIGNAL(settingsChanged()), this, SLOT(showRestartWarning_I2P()));
+#endif
 }
+
+#ifdef ENABLE_I2PSAM
+// ToDo: Double check me. Ported from v0.8.6 anoncoin code, all things related to tabI2P created here,
+//       and the associated i2poptionswidget.  Would prefer to see it simplely added as a widget tab,
+//       in the optionsdialog.ui base file, then remove i2poptionswidget.ui from the build dependancies
+//       and remove some of the code changes that were required here to upgrade to 0.9.4.
+//
+// GR Note: Needed to add this override, guess to implement the dynamic tab created for I2P configuraton
+//
+void OptionsDialog::setClientModel(ClientModel* clientModel)
+{
+    if (clientModel) tabI2P->setModel(clientModel);
+}
+#endif // ENABLE_I2PSAM
 
 void OptionsDialog::setMapper()
 {
     /* Main */
-    mapper->addMapping(ui->bitcoinAtStartup, OptionsModel::StartAtStartup);
+    mapper->addMapping(ui->anoncoinAtStartup, OptionsModel::StartAtStartup);
     mapper->addMapping(ui->threadsScriptVerif, OptionsModel::ThreadsScriptVerif);
     mapper->addMapping(ui->databaseCache, OptionsModel::DatabaseCache);
 
@@ -180,6 +204,9 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->lang, OptionsModel::Language);
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
     mapper->addMapping(ui->thirdPartyTxUrls, OptionsModel::ThirdPartyTxUrls);
+#ifdef ENABLE_I2PSAM
+    tabI2P->setMapper(*mapper);
+#endif
 }
 
 void OptionsDialog::enableOkButton()
@@ -210,10 +237,23 @@ void OptionsDialog::on_resetButton_clicked()
 
         if(btnRetVal == QMessageBox::Cancel)
             return;
-
+#ifdef ENABLE_I2PSAM
+        /* disable restart warning messages display */
+        // ToDo: Check that this overall model functionality is correct.
+        // GR Note: The code behavior here is different between 0.8.5.6 and 0.9.3, or I'm not understanding what
+        // was added and/or changed.
+        // Not sure if this fRestartWarningDisplayed_I2P flag matters give the app quits. and I didn't setup any
+        // special resetwarning flags for the lang or proxy tabs....
+        fRestartWarningDisplayed_I2P = true;
+#endif
         /* reset all options and close GUI */
         model->Reset();
         QApplication::quit();
+
+#ifdef ENABLE_I2PSAM
+        /* re-enable restart warning messages display */
+        fRestartWarningDisplayed_I2P = false;
+#endif
     }
 }
 
@@ -244,6 +284,17 @@ void OptionsDialog::showRestartWarning(bool fPersistent)
         QTimer::singleShot(10000, this, SLOT(clearStatusLabel()));
     }
 }
+
+#ifdef ENABLE_I2PSAM
+void OptionsDialog::showRestartWarning_I2P()
+{
+    if(!fRestartWarningDisplayed_I2P)
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("This setting will take effect after restarting Anoncoin."), QMessageBox::Ok);
+        fRestartWarningDisplayed_I2P = true;
+    }
+}
+#endif // ENABLE_I2PSAM
 
 void OptionsDialog::clearStatusLabel()
 {

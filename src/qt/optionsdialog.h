@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,6 +7,8 @@
 #define OPTIONSDIALOG_H
 
 #include <QDialog>
+
+#include "i2poptionswidget.h"
 
 class MonitoredDataMapper;
 class OptionsModel;
@@ -24,6 +27,7 @@ public:
     explicit OptionsDialog(QWidget *parent);
     ~OptionsDialog();
 
+    void setClientModel(ClientModel* clientModel);
     void setModel(OptionsModel *model);
     void setMapper();
 
@@ -42,6 +46,7 @@ private slots:
     void on_cancelButton_clicked();
 
     void showRestartWarning(bool fPersistent = false);
+    void showRestartWarning_I2P();
     void clearStatusLabel();
     void updateDisplayUnit();
     void doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort);
@@ -54,6 +59,9 @@ private:
     OptionsModel *model;
     MonitoredDataMapper *mapper;
     bool fProxyIpValid;
+    // Settings for the I2P options widget, operated from its own tab
+    bool fRestartWarningDisplayed_I2P;
+    I2POptionsWidget* tabI2P;
 };
 
 #endif // OPTIONSDIALOG_H

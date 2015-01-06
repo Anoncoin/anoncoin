@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,8 +12,8 @@
 // - E-mail usually won't line-break if there's no punctuation to break at.
 // - Double-clicking selects the whole number as one word if it's all alphanumeric.
 //
-#ifndef BITCOIN_BASE58_H
-#define BITCOIN_BASE58_H
+#ifndef ANONCOIN_BASE58_H
+#define ANONCOIN_BASE58_H
 
 #include "chainparams.h"
 #include "key.h"
@@ -98,17 +99,17 @@ public:
  * Script-hash-addresses have version 5 (or 196 testnet).
  * The data vector contains RIPEMD160(SHA256(cscript)), where cscript is the serialized redemption script.
  */
-class CBitcoinAddress : public CBase58Data {
+class CAnoncoinAddress : public CBase58Data {
 public:
     bool Set(const CKeyID &id);
     bool Set(const CScriptID &id);
     bool Set(const CTxDestination &dest);
     bool IsValid() const;
 
-    CBitcoinAddress() {}
-    CBitcoinAddress(const CTxDestination &dest) { Set(dest); }
-    CBitcoinAddress(const std::string& strAddress) { SetString(strAddress); }
-    CBitcoinAddress(const char* pszAddress) { SetString(pszAddress); }
+    CAnoncoinAddress() {}
+    CAnoncoinAddress(const CTxDestination &dest) { Set(dest); }
+    CAnoncoinAddress(const std::string& strAddress) { SetString(strAddress); }
+    CAnoncoinAddress(const char* pszAddress) { SetString(pszAddress); }
 
     CTxDestination Get() const;
     bool GetKeyID(CKeyID &keyID) const;
@@ -118,7 +119,7 @@ public:
 /**
  * A base58-encoded secret key
  */
-class CBitcoinSecret : public CBase58Data
+class CAnoncoinSecret : public CBase58Data
 {
 public:
     void SetKey(const CKey& vchSecret);
@@ -127,11 +128,11 @@ public:
     bool SetString(const char* pszSecret);
     bool SetString(const std::string& strSecret);
 
-    CBitcoinSecret(const CKey& vchSecret) { SetKey(vchSecret); }
-    CBitcoinSecret() {}
+    CAnoncoinSecret(const CKey& vchSecret) { SetKey(vchSecret); }
+    CAnoncoinSecret() {}
 };
 
-template<typename K, int Size, CChainParams::Base58Type Type> class CBitcoinExtKeyBase : public CBase58Data
+template<typename K, int Size, CChainParams::Base58Type Type> class CAnoncoinExtKeyBase : public CBase58Data
 {
 public:
     void SetKey(const K &key) {
@@ -146,14 +147,14 @@ public:
         return ret;
     }
 
-    CBitcoinExtKeyBase(const K &key) {
+    CAnoncoinExtKeyBase(const K &key) {
         SetKey(key);
     }
 
-    CBitcoinExtKeyBase() {}
+    CAnoncoinExtKeyBase() {}
 };
 
-typedef CBitcoinExtKeyBase<CExtKey, 74, CChainParams::EXT_SECRET_KEY> CBitcoinExtKey;
-typedef CBitcoinExtKeyBase<CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CBitcoinExtPubKey;
+typedef CAnoncoinExtKeyBase<CExtKey, 74, CChainParams::EXT_SECRET_KEY> CAnoncoinExtKey;
+typedef CAnoncoinExtKeyBase<CExtPubKey, 74, CChainParams::EXT_PUBLIC_KEY> CAnoncoinExtPubKey;
 
-#endif // BITCOIN_BASE58_H
+#endif // ANONCOIN_BASE58_H

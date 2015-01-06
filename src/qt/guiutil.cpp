@@ -81,7 +81,7 @@ QString dateTimeStr(qint64 nTime)
     return dateTimeStr(QDateTime::fromTime_t((qint32)nTime));
 }
 
-QFont bitcoinAddressFont()
+QFont anoncoinAddressFont()
 {
     QFont font("Monospace");
 #if QT_VERSION >= 0x040800
@@ -96,12 +96,12 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
 {
     parent->setFocusProxy(widget);
 
-    widget->setFont(bitcoinAddressFont());
+    widget->setFont(anoncoinAddressFont());
 #if QT_VERSION >= 0x040700
     widget->setPlaceholderText(QObject::tr("Enter a Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
 #endif
-    widget->setValidator(new BitcoinAddressEntryValidator(parent));
-    widget->setCheckValidator(new BitcoinAddressCheckValidator(parent));
+    widget->setValidator(new AnoncoinAddressEntryValidator(parent));
+    widget->setCheckValidator(new AnoncoinAddressCheckValidator(parent));
 }
 
 void setupAmountWidget(QLineEdit *widget, QWidget *parent)
@@ -113,7 +113,7 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
     widget->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 }
 
-bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
+bool parseAnoncoinURI(const QUrl &uri, SendCoinsRecipient *out)
 {
     // return if URI is not valid or is no anoncoin: URI
     if(!uri.isValid() || uri.scheme() != QString("anoncoin"))
@@ -152,7 +152,7 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
         {
             if(!i->second.isEmpty())
             {
-                if(!BitcoinUnits::parse(BitcoinUnits::BTC, i->second, &rv.amount))
+                if(!AnoncoinUnits::parse(AnoncoinUnits::ANC, i->second, &rv.amount))
                 {
                     return false;
                 }
@@ -170,7 +170,7 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     return true;
 }
 
-bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
+bool parseAnoncoinURI(QString uri, SendCoinsRecipient *out)
 {
     // Convert anoncoin:// to anoncoin:
     //
@@ -181,17 +181,17 @@ bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
         uri.replace(0, 10, "anoncoin:");
     }
     QUrl uriInstance(uri);
-    return parseBitcoinURI(uriInstance, out);
+    return parseAnoncoinURI(uriInstance, out);
 }
 
-QString formatBitcoinURI(const SendCoinsRecipient &info)
+QString formatAnoncoinURI(const SendCoinsRecipient &info)
 {
     QString ret = QString("anoncoin:%1").arg(info.address);
     int paramCount = 0;
 
     if (info.amount)
     {
-        ret += QString("?amount=%1").arg(BitcoinUnits::format(BitcoinUnits::BTC, info.amount));
+        ret += QString("?amount=%1").arg(AnoncoinUnits::format(AnoncoinUnits::ANC, info.amount));
         paramCount++;
     }
 
@@ -214,7 +214,7 @@ QString formatBitcoinURI(const SendCoinsRecipient &info)
 
 bool isDust(const QString& address, qint64 amount)
 {
-    CTxDestination dest = CBitcoinAddress(address.toStdString()).Get();
+    CTxDestination dest = CAnoncoinAddress(address.toStdString()).Get();
     CScript script; script.SetDestination(dest);
     CTxOut txOut(amount, script);
     return txOut.IsDust(CTransaction::nMinRelayTxFee);

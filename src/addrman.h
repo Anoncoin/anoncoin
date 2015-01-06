@@ -2,8 +2,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef _BITCOIN_ADDRMAN
-#define _BITCOIN_ADDRMAN 1
+#ifndef _ANONCOIN_ADDRMAN
+#define _ANONCOIN_ADDRMAN 1
 
 #include "netbase.h"
 #include "protocol.h"
@@ -119,6 +119,7 @@ public:
 //      be observable by adversaries.
 //    * Several indexes are kept for high performance. Defining DEBUG_ADDRMAN will introduce frequent (and expensive)
 //      consistency checks for the entire data structure.
+#define DEBUG_ADDRMAN
 
 // total number of buckets for tried addresses
 #define ADDRMAN_TRIED_BUCKET_COUNT 64

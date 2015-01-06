@@ -1,10 +1,18 @@
+// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+// Many builder specific things set in the config file, don't see a need for it here, still better to not forget to include it in your source files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include "i2poptionswidget.h"
 #include "ui_i2poptionswidget.h"
 
 #include "optionsmodel.h"
 #include "monitoreddatamapper.h"
 #include "i2pshowaddresses.h"
-//#include "i2psam/i2psam.h"
 #include "util.h"
 #include "clientmodel.h"
 
