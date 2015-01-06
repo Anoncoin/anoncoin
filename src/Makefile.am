@@ -161,7 +161,6 @@ libanoncoin_server_a_SOURCES = \
   alert.cpp \
   bloom.cpp \
   checkpoints.cpp \
-  i2pwrapper.cpp \
   init.cpp \
   leveldbwrapper.cpp \
   main.cpp \
@@ -176,7 +175,6 @@ libanoncoin_server_a_SOURCES = \
   rpcserver.cpp \
   txdb.cpp \
   txmempool.cpp \
-  i2psam/i2psam.cpp \
   $(JSON_H) \
   $(I2PSAM_H) \
   $(ANONCOIN_CORE_H)
@@ -227,6 +225,8 @@ libanoncoin_common_a_SOURCES = \
   protocol.cpp \
   script.cpp \
   scrypt.cpp \
+  i2pwrapper.cpp \
+  i2psam/i2psam.cpp \
   $(ANONCOIN_CORE_H)
 
 # util: shared between all executables.

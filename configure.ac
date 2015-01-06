@@ -10,7 +10,7 @@ define(_COPYRIGHT_YEAR, 2014)
 # In configure.ac, lines commented with '#' that occur after AC_INIT will appear in the resulting configure script. dnl comments will not.
 # One purpose of dnl is to discard unwanted newlines in an effort to make the configure script readable.
 # Convention here is to discard lines which begin with ## preceded only by whitespace. (Although ### comments carry through to the Makefile.in)
-AC_INIT([Anoncoin Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[info@anoncoin.net],[anoncoin])
+AC_INIT([Anoncoin Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[contact@anoncoin.net],[anoncoin])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS([src/config/anoncoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -84,6 +84,13 @@ AC_ARG_ENABLE([wallet],
   [enable wallet (default is yes)])],
   [enable_wallet=$enableval],
   [enable_wallet=yes])
+
+# Enable i2psam
+AC_ARG_ENABLE([i2psam],
+  [AS_HELP_STRING([--enable-i2psam],
+  [enable i2psam (default is yes)])],
+  [enable_i2psam=$enableval],
+  [enable_i2psam=yes])
 
 AC_ARG_WITH([miniupnpc],
   [AS_HELP_STRING([--with-miniupnpc],
@@ -695,9 +702,9 @@ AC_MSG_RESULT($build_anoncoin_utils)
 
 AC_MSG_CHECKING([whether to build libraries])
 AM_CONDITIONAL([BUILD_ANONCOIN_LIBS], [test x$build_anoncoin_libs = xyes])
-if test x$build_anoncoin_libs = xyes; then
-  AC_DEFINE(HAVE_CONSENSUS_LIB, 1, [Define this symbol if the consensus lib has been built])
-fi
+dnl if test x$build_anoncoin_libs = xyes; then
+dnl  AC_DEFINE(HAVE_CONSENSUS_LIB, 1, [Define this symbol if the consensus lib has been built])
+dnl fi
 AC_MSG_RESULT($build_anoncoin_libs)
 
 dnl sets $anoncoin_enable_qt, $anoncoin_enable_qt_test, $anoncoin_enable_qt_dbus
@@ -733,6 +740,17 @@ if test x$enable_wallet != xno; then
 else
   AC_MSG_RESULT(no)
 fi
+
+dnl enable i2psam
+AC_MSG_CHECKING([if i2psam module should be included])
+if test x$enable_i2psam != xno; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED([ENABLE_I2PSAM],[1],[Define to 1 to enable I2Psam interface functions])
+
+else
+  AC_MSG_RESULT(no)
+fi
+
 
 dnl enable upnp support
 AC_MSG_CHECKING([whether to build with support for UPnP])
@@ -824,6 +842,7 @@ AM_CONDITIONAL([TARGET_DARWIN], [test x$TARGET_OS = xdarwin])
 AM_CONDITIONAL([BUILD_DARWIN], [test x$BUILD_OS = xdarwin])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
+AM_CONDITIONAL([ENABLE_I2PSAM],[test x$enable_i2psam = xyes])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$use_tests = xyes])
 AM_CONDITIONAL([ENABLE_QT],[test x$anoncoin_enable_qt = xyes])
 AM_CONDITIONAL([ENABLE_QT_TESTS],[test x$use_tests$anoncoin_enable_qt_test = xyesyes])
