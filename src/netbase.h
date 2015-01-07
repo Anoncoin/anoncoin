@@ -24,14 +24,9 @@ extern int nConnectTimeout;
 #undef SetPort
 #endif
 
-/**
- * Specific defines needed for I2P...
- */
 #ifdef ENABLE_I2PSAM
-#define NATIVE_I2P_DESTINATION_SIZE     516
-#define NATIVE_I2P_B32ADDR_SIZE         60
-#define NATIVE_I2P_NET_STRING           "i2p"
-#endif // ENABLE_I2PSAM
+#include "i2pwrapper.h"
+#endif
 
 enum Network
 {
@@ -179,7 +174,4 @@ bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout = nCon
 bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault = 0, int nTimeout = nConnectTimeout);
 /** Return readable error string for a network error code */
 std::string NetworkErrorString(int err);
-#ifdef ENABLE_I2PSAM
-bool SetSocketOptions(SOCKET& hSocket);
-#endif
 #endif

@@ -476,6 +476,7 @@ void ParseParameters(int argc, const char* const argv[])
         if (boost::algorithm::starts_with(str, "/"))
             str = "-" + str.substr(1);
 #endif
+        // Keep in mind here, appears non-win32 builds will be case sensitive on parameter names
         if (str[0] != '-')
             break;
 
@@ -1022,7 +1023,10 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
+    {
+        // ToDo: This is where I could write a 'firstconfig'....
         return; // No anoncoin.conf file is OK
+    }
 
     set<string> setOptions;
     setOptions.insert("*");

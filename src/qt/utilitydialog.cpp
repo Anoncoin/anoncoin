@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,8 +28,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
 
     // Set current copyright year for all the crypos we're involved in mining and algos from...
     ui->copyrightLabel->setText(tr("Copyright") + QString(" &copy; 2013-%1 ").arg(COPYRIGHT_YEAR) + tr("The Anoncoin Core developers")
-        + QString("<br>") + tr("Copyright") + QString(" &copy; 2009-%1 ").arg(COPYRIGHT_YEAR) + tr("The Bitcoin Core developers")
-        + QString("<br>") + tr("Copyright") + QString(" &copy; 2011-%1 ").arg(COPYRIGHT_YEAR) + tr("The Litecoin Core developers")
+        + QString("<br>") + tr("Copyright") + QString(" &copy; 2009-%1 ").arg(2014) + tr("The Bitcoin Core developers")
+        + QString("<br>") + tr("Copyright") + QString(" &copy; 2011-%1 ").arg(2014) + tr("The Litecoin Core developers")
         + QString("<br>") + tr("Copyright") + QString(" &copy; 2013 ") + tr("The Primecoin developers"));
 }
 

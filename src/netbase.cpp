@@ -20,10 +20,6 @@
 #include "uint256.h"
 #include "util.h"
 
-#ifdef ENABLE_I2PSAM
-#include "i2pwrapper.h"
-#endif
-
 #ifndef WIN32
 #if HAVE_INET_PTON
 #include <arpa/inet.h>
@@ -114,7 +110,7 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
         //       if SetSpecial() returned false, then we check again, if this name string is a b32 i2p address (aka DNSSeed),
         //       then we make sure that this function returns false too, and right now, without executing all the rest of
         //       the code in this function, which could return I'm not sure what...true, which would account for the problem seen.
-        else if ((strName.size() == NATIVE_I2P_B32ADDR_SIZE) && (strName.substr(strName.size() - 8, 8) == ".b32.i2p"))
+        else if ( isValidI2pB32( strName ) )
             return false;                               // we're done here, a dns seed node could not be found
 #endif
     }
@@ -512,37 +508,6 @@ bool IsProxy(const CNetAddr &addr) {
     return false;
 }
 
-#ifdef ENABLE_I2PSAM
-/**
- * ToDo: GR Notes...The struggle to remove this function or figure out it's replacement in the 0.9.3 codebase went on for many hours
- *       This is a direct port of the 0.8.5.6 code, so I can move on to other issues, it is used once in net.cpp and here in this
- *       module once, and only for I2P related code.  If everything looks ok, simply remove this comment.
- */
-bool SetSocketOptions(SOCKET& hSocket)
-{
-    if (hSocket == INVALID_SOCKET)
-        return false;
-#ifdef SO_NOSIGPIPE
-    int set = 1;
-    setsockopt(hSocket, SOL_SOCKET, SO_NOSIGPIPE, (void*)&set, sizeof(int));
-#endif
-
-#ifdef WIN32
-    u_long fNonblock = 1;
-    if (ioctlsocket(hSocket, FIONBIO, &fNonblock) == SOCKET_ERROR)
-#else
-    int fFlags = fcntl(hSocket, F_GETFL, 0);
-    if (fcntl(hSocket, F_SETFL, fFlags | O_NONBLOCK) == -1)
-#endif
-    {
-        closesocket(hSocket);
-        hSocket = INVALID_SOCKET;
-        return false;
-    }
-    return true;
-}
-#endif // ENABLE_I2PSAM
-
 
 bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
 {
@@ -551,7 +516,7 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
 #ifdef ENABLE_I2PSAM
     if (addrDest.IsNativeI2P()) {
         SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2PDestination(), false/*, streamSocket*/);
-        if (SetSocketOptions(streamSocket)) {
+        if (streamSocket != INVALID_SOCKET) {
             hSocketRet = streamSocket;
             return true;
         }
@@ -632,15 +597,14 @@ static const unsigned char pchOnionCat[] = {0xFD,0x87,0xD8,0x7E,0xEB,0x43};
 bool CNetAddr::SetSpecial(const std::string &strName)
 {
 #ifdef ENABLE_I2PSAM
-    const bool isBase32Addr = (strName.size() == NATIVE_I2P_B32ADDR_SIZE) && (strName.substr(strName.size() - 8, 8) == ".b32.i2p");
+    const bool isBase32Addr = isValidI2pB32( strName );
 
-    if( isBase32Addr || ((strName.size() == NATIVE_I2P_DESTINATION_SIZE) && // Perhaps we're given a full I2P native address
-                         (strName.substr(strName.size() - 4, 4) == "AAAA")))// last 4 symbols of b64-destination must be AAAA
+    if( isBase32Addr || isValidI2pAddress( strName ) )                      // Perhaps we've been given a full I2P native address
     {                                                                       // We're given a possible valid .b32.i2p address or a native I2P destination
         std::string addr;
         if( isBase32Addr ) {
-            addr = I2PSession::Instance().namingLookup(strName);
-            if( addr.size() == 0 ) return false;                            // Not something we can use
+            addr = I2PSession::Instance().namingLookup(strName);            // This could take a very long while...
+            if( !isValidI2pAddress( addr ) ) return false;                  // Not something we can use
             // Otherwise the I2P router was able to convert it into a I2P address we can use, and it's now stored in 'addr'
         } else                                                              // It was a native I2P address
             addr = strName;                                                 // Prep for memcpy()
@@ -783,6 +747,9 @@ bool CNetAddr::IsTor() const
 #ifdef ENABLE_I2PSAM
 bool CNetAddr::IsNativeI2P() const
 {
+    // For unsigned char [] it's quicker here to just do a memory comparision .verses. conversion to a string.
+    // In order for this to work however, it's important that the memory has been cleared when this object
+    // was created.  ToDo: investigate this and confirm it will never mistakely see a valid native i2p address.
     static const unsigned char pchAAAA[] = {'A','A','A','A'};
     return (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }

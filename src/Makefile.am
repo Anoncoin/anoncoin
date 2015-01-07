@@ -225,6 +225,7 @@ libanoncoin_common_a_SOURCES = \
   protocol.cpp \
   script.cpp \
   scrypt.cpp \
+  scrypt-sse2.cpp \
   i2pwrapper.cpp \
   i2psam/i2psam.cpp \
   $(ANONCOIN_CORE_H)

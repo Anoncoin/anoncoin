@@ -49,10 +49,10 @@ public:
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
 #ifdef ENABLE_I2PSAM
-        I2PUseI2POnly,              // bool
-        I2PSAMHost,                 // QString
-        I2PSAMPort,                 // int
-        I2PSessionName,             // QString
+        eI2PUseI2POnly,             // bool
+        eI2PSAMHost,                // QString
+        eI2PSAMPort,                // int
+        eI2PSessionName,            // QString
 
         I2PInboundQuantity,         // int
         I2PInboundLength,           // int
@@ -109,6 +109,10 @@ private:
     void addOverriddenOption(const std::string &option);
 
 #ifdef ENABLE_I2PSAM
+    bool I2PUseI2POnly;
+    QString I2PSAMHost;
+    int I2PSAMPort;
+    QString I2PSessionName;
     int i2pInboundQuantity;
     int i2pInboundLength;
     int i2pInboundLengthVariance;
@@ -122,7 +126,6 @@ private:
     bool i2pOutboundAllowZeroHop;
     int i2pOutboundIPRestriction;
     int i2pOutboundPriority;
-    QString i2pOptions;
 #endif // ENABLE_I2PSAM
 
 signals:

@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -82,6 +82,7 @@ public:
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }
     virtual Network NetworkID() const = 0;
+    std::string NetworkIDString() const { return strNetworkID; }
     const vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
 #ifdef ENABLE_I2PSAM
     const vector<CDNSSeedData>& i2pDNSSeeds() const { return i2pvSeeds; }
@@ -105,6 +106,7 @@ protected:
     vector<CDNSSeedData> i2pvSeeds;
 #endif
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
+    std::string strNetworkID;
 };
 
 /**

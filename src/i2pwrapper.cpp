@@ -177,18 +177,24 @@ namespace SAM
         return sessionHolder_->getSession().getOptions();
     }
 
+    const std::string& StreamSessionAdapter::getSessionID() const
+    {
+        return sessionHolder_->getSession().getSessionID();
+    }
+
 } // namespace SAM
 
 //--------------------------------------------------------------------------------------------------
+static std::string sSession = I2P_SESSION_NAME_DEFAULT;
+static std::string sHost = SAM_DEFAULT_ADDRESS;
+static uint16_t uPort = SAM_DEFAULT_PORT;
+static std::string sDestination = SAM_GENERATE_MY_DESTINATION;
+static std::string sOptions;
 
-I2PSession::I2PSession()
-    : SAM::StreamSessionAdapter(
-          GetArg(I2P_SESSION_NAME_PARAM, I2P_SESSION_NAME_DEFAULT),
-          GetArg(I2P_SAM_HOST_PARAM, I2P_SAM_HOST_DEFAULT),
-          (uint16_t)GetArg(I2P_SAM_PORT_PARAM, I2P_SAM_PORT_DEFAULT),
-          GetArg(I2P_SAM_MY_DESTINATION_PARAM, I2P_SAM_MY_DESTINATION_DEFAULT),
-          GetArg(I2P_SAM_I2P_OPTIONS_PARAM, SAM_DEFAULT_I2P_OPTIONS))
-{}
+I2PSession::I2PSession() : SAM::StreamSessionAdapter( sSession, sHost, uPort, sDestination, sOptions )
+{
+    ::sDestination = this->getMyDestination().priv;
+}
 
 I2PSession::~I2PSession()
 {}
@@ -210,4 +216,101 @@ std::string I2PSession::GenerateB32AddressFromDestination(const std::string& des
     return result;
 }
 
+void static FormatBoolI2POptionsString( std::string& I2pOptions, const std::string& I2pSamName, const std::string& confParamName ) {
+    bool fConfigValue = GetArg( confParamName, true );
 
+    if (!I2pOptions.empty()) I2pOptions += " ";                             // seperate the parameters with <whitespace>
+    I2pOptions += I2pSamName + "=" + (fConfigValue ? "true" : "false");     // I2P router wants the words...
+}
+
+void static FormatIntI2POptionsString( std::string& I2pOptions, const std::string& I2pSamName, const std::string& confParamName ) {
+    int64_t i64ConfigValue = GetArg( confParamName, 0 );
+
+    if (!I2pOptions.empty()) I2pOptions += " ";                     // seperate the parameters with <whitespace>
+    std::ostringstream oss;
+    oss << i64ConfigValue;                                          // One way of converting a value to a string
+    I2pOptions += I2pSamName + "=" + oss.str();                     // I2P router wants the chars....
+}
+
+void static BuildI2pOptionsString( void ) {
+    std::string OptStr;
+
+    FormatIntI2POptionsString(OptStr, SAM_NAME_INBOUND_QUANTITY       , "-i2p.options.inbound.quantity" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_INBOUND_LENGTH         , "-i2p.options.inbound.length" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_INBOUND_LENGTHVARIANCE , "-i2p.options.inbound.lengthvariance" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_INBOUND_BACKUPQUANTITY , "-i2p.options.inbound.backupquantity" );
+    FormatBoolI2POptionsString(OptStr, SAM_NAME_INBOUND_ALLOWZEROHOP  , "-i2p.options.inbound.allowzerohop" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_INBOUND_IPRESTRICTION  , "-i2p.options.inbound.iprestriction" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_OUTBOUND_QUANTITY      , "-i2p.options.outbound.quantity" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_OUTBOUND_LENGTH        , "-i2p.options.outbound.length" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_OUTBOUND_LENGTHVARIANCE, "-i2p.options.outbound.lengthvariance" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_OUTBOUND_BACKUPQUANTITY, "-i2p.options.outbound.backupquantity" );
+    FormatBoolI2POptionsString(OptStr, SAM_NAME_OUTBOUND_ALLOWZEROHOP , "-i2p.options.outbound.allowzerohop" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_OUTBOUND_IPRESTRICTION , "-i2p.options.outbound.iprestriction" );
+    FormatIntI2POptionsString(OptStr, SAM_NAME_OUTBOUND_PRIORITY      , "-i2p.options.outbound.priority" );
+
+    std::string ExtrasStr = GetArg( "-i2p.options.extra", "");
+    if( ExtrasStr.size() ) {
+        if (!OptStr.empty()) OptStr += " ";                             // seperate the parameters with <whitespace>
+        OptStr += ExtrasStr;
+    }
+    sOptions = OptStr;                                                  // Keep this globally for use later in opening the session
+}
+
+// Initialize all the parameters with default values, if necessary.
+// These should not override any loaded from the anoncoin.conf file,
+// but if they are not set, then this insures that they are created with good values
+// SoftSetArg will return a bool, if you care to know if the parameter was changed or not.
+void InitializeI2pSettings( void ) {
+    SoftSetBoolArg( "-i2p.options.static", false );
+    SoftSetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
+    SoftSetArg( "-i2p.options.samport", "7656" );                   /* SAM_DEFAULT_PORT */
+    SoftSetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT );
+    SoftSetArg( "-i2p.options.inbound.quantity", "3" );             /* SAM_DEFAULT_INBOUND_QUANTITY */
+    SoftSetArg( "-i2p.options.inbound.length", "3" );               /* SAM_DEFAULT_INBOUND_LENGTH */
+    SoftSetArg( "-i2p.options.inbound.lengthvariance", "0" );       /* SAM_DEFAULT_INBOUND_LENGTHVARIANCE */
+    SoftSetArg( "-i2p.options.inbound.backupquantity", "1" );       /* SAM_DEFAULT_INBOUND_BACKUPQUANTITY */
+    SoftSetBoolArg( "-i2p.options.inbound.allowzerohop", SAM_DEFAULT_INBOUND_ALLOWZEROHOP );
+    SoftSetArg( "-i2p.options.inbound.iprestriction", "2" );        /* SAM_DEFAULT_INBOUND_IPRESTRICTION */
+    SoftSetArg( "-i2p.options.outbound.quantity", "3" );            /* SAM_DEFAULT_OUTBOUND_QUANTITY */
+    SoftSetArg( "-i2p.options.outbound.length", "3" );              /* SAM_DEFAULT_OUTBOUND_LENGTH */
+    SoftSetArg( "-i2p.options.outbound.lengthvariance", "0" );      /* SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE */
+    SoftSetArg( "-i2p.options.outbound.backupquantity", "1" );      /* SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY */
+    SoftSetBoolArg( "-i2p.options.outbound.allowzerohop", SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP );
+    SoftSetArg( "-i2p.options.outbound.iprestriction", "2" );       /* SAM_DEFAULT_OUTBOUND_IPRESTRICTION */
+    SoftSetArg( "-i2p.options.outbound.priority", "0" );            /* SAM_DEFAULT_OUTBOUND_PRIORITY */
+
+    // Setup parameters required to open a new SAM session
+    uPort = (uint16_t)GetArg( "-i2p.options.samport", SAM_DEFAULT_PORT );
+    sSession = GetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT );
+    sHost = GetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
+    // Critical to check here, if we are in dynamic destination mode, the intial session destination MUSTBE default too.
+    //  Which may not be what the user has set in the anoncoin.conf file.
+    if( GetBoolArg( "-i2p.options.static", false ) )            // GetBoolArg returns true if the .static variable is true
+        sDestination = GetArg( "-i2p.mydestination.privatekey", SAM_GENERATE_MY_DESTINATION );
+    // It's important here that sDestination be setup correctly, for soon when an initial Session object is about to be
+    // created.  When that happens, this variable is used to create the SAM session, upon which, after it's opened,
+    // the variable is updated to reflect that ACTUAL destination being used.  Whatever that value maybe,
+    // dynamically generated or statically set.  ToDo: Move sDestination into the Session class
+
+    BuildI2pOptionsString();   // Now build the I2P options string that's need to open a session
+}
+
+// This test should pass for both public and private keys, as the first part of the private key is the public key.
+bool isValidI2pAddress( const std::string& I2pAddr ) {
+    if( I2pAddr.size() < NATIVE_I2P_DESTINATION_SIZE ) return false;
+    return (I2pAddr.substr( NATIVE_I2P_DESTINATION_SIZE - 4, 4 ) == "AAAA");
+}
+
+bool isValidI2pDestination( const SAM::FullDestination& DestKeys ) {
+
+    // Perhaps we're given a I2P native public address, last 4 symbols of b64-destination must be AAAA
+    bool fPublic = ((DestKeys.pub.size() == NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.pub));
+    // ToDo: Add more checking on the private key, for now this will do...
+    bool fPrivate = ((DestKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.priv));
+    return fPublic && fPrivate;
+}
+
+bool isValidI2pB32( const std::string& B32Address ) {
+    return (B32Address.size() == NATIVE_I2P_B32ADDR_SIZE) && (B32Address.substr(B32Address.size() - 8, 8) == ".b32.i2p");
+}

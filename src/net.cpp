@@ -1353,6 +1353,8 @@ void ThreadDNSAddressSeed()
 
     int found = 0;
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
+//    LogPrintf("DNS seeds temporary disabled\n");
+//    return;
 
 #ifdef ENABLE_I2PSAM
     // If I2P is enabled, we need to process those too...
@@ -1360,22 +1362,29 @@ void ThreadDNSAddressSeed()
         LogPrintf("I2P DNS seed addresses...preferred\n");
         const vector<CDNSSeedData> &i2pvSeeds = Params().i2pDNSSeeds();
         BOOST_FOREACH(const CDNSSeedData &seed, i2pvSeeds) {
-            if (HaveNameProxy()) {
-                AddOneShot(seed.host);
-            } else {
+//            if (HaveNameProxy()) {
+//                AddOneShot(seed.host);
+//            } else {
                 vector<CNetAddr> vaddr;
                 vector<CAddress> vAdd;
                 if (LookupHost(seed.host.c_str(), vaddr)) {
-                    BOOST_FOREACH(CNetAddr& ip, vaddr) {
+                        assert( vaddr.size() == 1 );                // All this could ever be from what I could tell looking down into the lookup process
+                        CNetAddr& ip = vaddr[0];                    // Need to clean up the variable use here, if this is finalized code
+//                    BOOST_FOREACH(CNetAddr& ip, vaddr) {
                         int nOneDay = 24*3600;
-                        CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
+                        CAddress addr = CAddress(CService(ip, 0));
                         addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
                         vAdd.push_back(addr);
                         found++;
-                    }
+//                    }
+                    // Lookup is very time expensive over I2P, (and satellite).
+                    // Handle it differently here, with that in mind.
+                    // Only add it if Lookup works, we don't need to again.
+                    // Also set the flag AllowLookup false, otherwise I2PSAM goes through the same process all over again in a few millisecs, because it was true.
+                    addrman.Add(vAdd, CNetAddr(seed.name, false));
                 }
-                addrman.Add(vAdd, CNetAddr(seed.name, true));
-            }
+//              addrman.Add(vAdd, CNetAddr(seed.name, true));
+//            }
         }
     }
     // If we are I2P only, clearnet seeds will do us no good, so no point in loading them.
@@ -1854,10 +1863,11 @@ bool BindListenPort(const CService &addrBind, string& strError)
 
 #ifdef ENABLE_I2PSAM
 /**
- * Functions ported from v8.5.6 code we need for I2P functionality
+ * Functions we need for I2P functionality
  */
 std::string FormatI2PNativeFullVersion() {
-    return I2PSession::Instance().getSAMVersion();
+    // We need to NOT talk to the SAM module if I2P is unavailable
+    return IsI2PEnabled() ? I2PSession::Instance().getSAMVersion() : "?.??";
 }
 
 // GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
@@ -1880,19 +1890,21 @@ bool IsI2POnly()
     return i2pOnly;
 }
 
-// ToDo: This may need to be upgraded to support the use of '-onion' as a coin configuration option
+// If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
 bool IsDarknetOnly() {
     return IsI2POnly() || IsTorOnly() ||
-            ((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-tor") && mapArgs["-tor"] != "0")) &&
-             (mapArgs.count("-i2p") && mapArgs["-i2p"] != "0");
+            (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) &&
+              (mapArgs.count("-i2p.options.enabled") && mapArgs["-i2p.options.enabled"] != "0")
+            );
 }
 
+// Basically we override the -i2p.options.enabled flag here, if we are running -onlynet=i2p....
 bool IsI2PEnabled() {
-    return  IsI2POnly() || GetBoolArg("-i2p", false);
+    return  GetBoolArg("-i2p.options.enabled", false) || IsI2POnly();
 }
 
 bool IsBehindDarknet() {
-    return IsDarknetOnly() || (mapArgs.count("-tor") && mapArgs["-tor"] != "0");
+    return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
 }
 
 /**
@@ -1910,10 +1922,10 @@ bool BindListenNativeI2P()
 bool BindListenNativeI2P(SOCKET& hSocket)
 {
     hSocket = I2PSession::Instance().accept(false);
-    if (!SetSocketOptions(hSocket) || hSocket == INVALID_SOCKET)
-        return false;
+
+    if ( hSocket == INVALID_SOCKET ) return false;
     CService addrBind(I2PSession::Instance().getMyDestination().pub, 0);
-// ToDo: Check this code carefully.  Changed it some so it would work.  I2P onlynet means fDiscover is false.  AddLocal needs LOCAL_MANUAL or it will return false and not set
+// ToDo: Check this code carefully.  Changed it some so it would work.  I2P onlynet means fDiscover(maybe) false.  AddLocal needs LOCAL_MANUAL or it will return false and not set
 //    if (addrBind.IsRoutable() && fDiscover)
         // AddLocal(addrBind, LOCAL_BIND);
     // return true;

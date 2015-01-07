@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,76 +17,21 @@
 #include "wallet.h"
 #include "walletdb.h"
 #endif
+#ifdef ENABLE_I2PSAM
+#include "i2pwrapper.h"
+#endif
 
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QStringList>
 
-#ifdef ENABLE_I2PSAM
-#include "i2pwrapper.h"
-
-#define I2P_OPTIONS_SECTION_NAME    "I2P"
-
-class ScopeGroupHelper
-{
-public:
-    ScopeGroupHelper(QSettings& settings, const QString& groupName) : settings_(settings)
-    {
-        settings_.beginGroup(groupName);
-    }
-    ~ScopeGroupHelper()
-    {
-        settings_.endGroup();
-    }
-
-private:
-    QSettings& settings_;
-};
-
-std::string& FormatI2POptionsString(
-        std::string& options,
-        const std::string& name,
-        const std::pair<bool, std::string>& value)
-{
-    if (value.first)
-    {
-        if (!options.empty())
-            options += " ";
-        options += name + "=" + value.second;
-    }
-    return options;
-}
-
-std::string& FormatI2POptionsString(
-        std::string& options,
-        const std::string& name,
-        const std::pair<bool, bool>& value)
-{
-    if (value.first)
-    {
-        if (!options.empty())
-            options += " ";
-        options += name + "=" + (value.second ? "true" : "false");
-    }
-    return options;
-}
-
-std::string& FormatI2POptionsString(
-        std::string& options,
-        const std::string& name,
-        const std::pair<bool, int>& value)
-{
-    if (value.first)
-    {
-        if (!options.empty())
-            options += " ";
-        std::ostringstream oss;
-        oss << value.second;
-        options += name + "=" + oss.str();
-    }
-    return options;
-}
-#endif // ENABLE_I2PSAM
+// Only needed because we have a temporary readonly on the i2p settings
+#ifdef NOTYET_ENABLE_I2PSAM
+#include <QMessageBox>
+            QMessageBox::warning( NULL, "Notice - Upgrade in progress",
+                                  "Values are now for read-only purposes only",
+                                  QMessageBox::Ok, QMessageBox::Ok );
+#endif
 
 OptionsModel::OptionsModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -189,60 +134,27 @@ void OptionsModel::Init()
         addOverriddenOption("-lang");
 
     language = settings.value("language").toString();
-
 #ifdef ENABLE_I2PSAM
-    ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
+    // Initialize our options model parameters for I2P session variables, from what has already been set, primarily from the variables in anoncoin.conf
+    // ToDo: These have become read-only, yet the interface still needs to be changed.
+    I2PUseI2POnly = IsI2POnly();
+    I2PSAMHost = QString::fromStdString( GetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS ) );
+    I2PSAMPort = (int)GetArg( "-i2p.options.samport", SAM_DEFAULT_PORT );
+    I2PSessionName = QString::fromStdString( GetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT ) );
 
-    if (settings.value("useI2POnly", false).toBool())
-    {
-        mapArgs["-onlynet"] = NATIVE_I2P_NET_STRING;
-        std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        if (std::find(onlyNets.begin(), onlyNets.end(), NATIVE_I2P_NET_STRING) == onlyNets.end())
-            onlyNets.push_back(NATIVE_I2P_NET_STRING);
-    }
-
-    if (settings.contains("samhost"))
-        SoftSetArg(I2P_SAM_HOST_PARAM, settings.value("samhost").toString().toStdString());
-
-    if (settings.contains("samport"))
-        SoftSetArg(I2P_SAM_PORT_PARAM, settings.value("samport").toString().toStdString());
-
-    if (settings.contains("sessionName"))
-        SoftSetArg(I2P_SESSION_NAME_PARAM, settings.value("sessionName").toString().toStdString());
-
-    i2pInboundQuantity        = settings.value(SAM_NAME_INBOUND_QUANTITY       , SAM_DEFAULT_INBOUND_QUANTITY       ).toInt();
-    i2pInboundLength          = settings.value(SAM_NAME_INBOUND_LENGTH         , SAM_DEFAULT_INBOUND_LENGTH         ).toInt();
-    i2pInboundLengthVariance  = settings.value(SAM_NAME_INBOUND_LENGTHVARIANCE , SAM_DEFAULT_INBOUND_LENGTHVARIANCE ).toInt();
-    i2pInboundBackupQuantity  = settings.value(SAM_NAME_INBOUND_BACKUPQUANTITY , SAM_DEFAULT_INBOUND_BACKUPQUANTITY ).toInt();
-    i2pInboundAllowZeroHop    = settings.value(SAM_NAME_INBOUND_ALLOWZEROHOP   , SAM_DEFAULT_INBOUND_ALLOWZEROHOP   ).toBool();
-    i2pInboundIPRestriction   = settings.value(SAM_NAME_INBOUND_IPRESTRICTION  , SAM_DEFAULT_INBOUND_IPRESTRICTION  ).toInt();
-    i2pOutboundQuantity       = settings.value(SAM_NAME_OUTBOUND_QUANTITY      , SAM_DEFAULT_OUTBOUND_QUANTITY      ).toInt();
-    i2pOutboundLength         = settings.value(SAM_NAME_OUTBOUND_LENGTH        , SAM_DEFAULT_OUTBOUND_LENGTH        ).toInt();
-    i2pOutboundLengthVariance = settings.value(SAM_NAME_OUTBOUND_LENGTHVARIANCE, SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE).toInt();
-    i2pOutboundBackupQuantity = settings.value(SAM_NAME_OUTBOUND_BACKUPQUANTITY, SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY).toInt();
-    i2pOutboundAllowZeroHop   = settings.value(SAM_NAME_OUTBOUND_ALLOWZEROHOP  , SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP  ).toBool();
-    i2pOutboundIPRestriction  = settings.value(SAM_NAME_OUTBOUND_IPRESTRICTION , SAM_DEFAULT_OUTBOUND_IPRESTRICTION ).toInt();
-    i2pOutboundPriority       = settings.value(SAM_NAME_OUTBOUND_PRIORITY      , SAM_DEFAULT_OUTBOUND_PRIORITY      ).toInt();
-
-    std::string i2pOptionsTemp;
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_INBOUND_QUANTITY       , std::make_pair(settings.contains(SAM_NAME_INBOUND_QUANTITY       ), i2pInboundQuantity));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_INBOUND_LENGTH         , std::make_pair(settings.contains(SAM_NAME_INBOUND_LENGTH         ), i2pInboundLength));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_INBOUND_LENGTHVARIANCE , std::make_pair(settings.contains(SAM_NAME_INBOUND_LENGTHVARIANCE ), i2pInboundLengthVariance));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_INBOUND_BACKUPQUANTITY , std::make_pair(settings.contains(SAM_NAME_INBOUND_BACKUPQUANTITY ), i2pInboundBackupQuantity));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_INBOUND_ALLOWZEROHOP   , std::make_pair(settings.contains(SAM_NAME_INBOUND_ALLOWZEROHOP   ), i2pInboundAllowZeroHop));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_INBOUND_IPRESTRICTION  , std::make_pair(settings.contains(SAM_NAME_INBOUND_IPRESTRICTION  ), i2pInboundIPRestriction));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_OUTBOUND_QUANTITY      , std::make_pair(settings.contains(SAM_NAME_OUTBOUND_QUANTITY      ), i2pOutboundQuantity));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_OUTBOUND_LENGTH        , std::make_pair(settings.contains(SAM_NAME_OUTBOUND_LENGTH        ), i2pOutboundLength));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_OUTBOUND_LENGTHVARIANCE, std::make_pair(settings.contains(SAM_NAME_OUTBOUND_LENGTHVARIANCE), i2pOutboundLengthVariance));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_OUTBOUND_BACKUPQUANTITY, std::make_pair(settings.contains(SAM_NAME_OUTBOUND_BACKUPQUANTITY), i2pOutboundBackupQuantity));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_OUTBOUND_ALLOWZEROHOP  , std::make_pair(settings.contains(SAM_NAME_OUTBOUND_ALLOWZEROHOP  ), i2pOutboundAllowZeroHop));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_OUTBOUND_IPRESTRICTION , std::make_pair(settings.contains(SAM_NAME_OUTBOUND_IPRESTRICTION ), i2pOutboundIPRestriction));
-    FormatI2POptionsString(i2pOptionsTemp, SAM_NAME_OUTBOUND_PRIORITY      , std::make_pair(settings.contains(SAM_NAME_OUTBOUND_PRIORITY      ), i2pOutboundPriority));
-
-    if (!i2pOptionsTemp.empty())
-        SoftSetArg(I2P_SAM_I2P_OPTIONS_PARAM, i2pOptionsTemp);
-
-    i2pOptions = QString::fromStdString(i2pOptionsTemp);
+    i2pInboundQuantity        = (int)GetArg( "-i2p.options.inbound.quantity"        , SAM_DEFAULT_INBOUND_QUANTITY );
+    i2pInboundLength          = (int)GetArg( "-i2p.options.inbound.length"          , SAM_DEFAULT_INBOUND_LENGTH );
+    i2pInboundLengthVariance  = (int)GetArg( "-i2p.options.inbound.lengthvariance"  , SAM_DEFAULT_INBOUND_LENGTHVARIANCE );
+    i2pInboundBackupQuantity  = (int)GetArg( "-i2p.options.inbound.backupquantity"  , SAM_DEFAULT_INBOUND_BACKUPQUANTITY );
+    i2pInboundAllowZeroHop    = GetBoolArg( "-i2p.options.inbound.allowzerohop"     , SAM_DEFAULT_INBOUND_ALLOWZEROHOP );
+    i2pInboundIPRestriction   = (int)GetArg( "-i2p.options.inbound.iprestriction"   , SAM_DEFAULT_INBOUND_IPRESTRICTION );
+    i2pOutboundQuantity       = (int)GetArg( "-i2p.options.outbound.quantity"       , SAM_DEFAULT_OUTBOUND_QUANTITY );
+    i2pOutboundLength         = (int)GetArg( "-i2p.options.outbound.length"         , SAM_DEFAULT_OUTBOUND_LENGTH );
+    i2pOutboundLengthVariance = (int)GetArg( "-i2p.options.outbound.lengthvariance" , SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE );
+    i2pOutboundBackupQuantity = (int)GetArg( "-i2p.options.outbound.backupquantity" , SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY );
+    i2pOutboundAllowZeroHop   = GetBoolArg( "-i2p.options.outbound.allowzerohop"    , SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP );
+    i2pOutboundIPRestriction  = (int)GetArg( "-i2p.options.outbound.iprestriction"  , SAM_DEFAULT_OUTBOUND_IPRESTRICTION );
+    i2pOutboundPriority       = (int)GetArg( "-i2p.options.outbound.priority"       , SAM_DEFAULT_OUTBOUND_PRIORITY );
 #endif // ENABLE_I2PSAM
 }
 
@@ -324,33 +236,14 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
         case ThreadsScriptVerif:
             return settings.value("nThreadsScriptVerif");
 #ifdef ENABLE_I2PSAM
-        case I2PUseI2POnly:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            bool useI2POnly = false;
-            if (mapArgs.count("-onlynet"))
-            {
-                const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-                if (std::find(onlyNets.begin(), onlyNets.end(), NATIVE_I2P_NET_STRING) != onlyNets.end())
-                    useI2POnly = true;
-            }
-            return settings.value("useI2POnly", useI2POnly);
-        }
-        case I2PSAMHost:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            return settings.value("samhost", QString::fromStdString(GetArg(I2P_SAM_HOST_PARAM, I2P_SAM_HOST_DEFAULT)));
-        }
-        case I2PSAMPort:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            return settings.value("samport", (int)GetArg(I2P_SAM_PORT_PARAM, I2P_SAM_PORT_DEFAULT));
-        }
-        case I2PSessionName:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            return settings.value("sessionName", QString::fromStdString(GetArg(I2P_SESSION_NAME_PARAM, I2P_SESSION_NAME_DEFAULT)));
-        }
+        case eI2PUseI2POnly:
+            return QVariant( I2PUseI2POnly );
+        case eI2PSAMHost:
+            return QVariant( I2PSAMHost );
+        case eI2PSAMPort:
+            return QVariant( I2PSAMPort );
+        case eI2PSessionName:
+            return QVariant( I2PSessionName );
         case I2PInboundQuantity:
             return QVariant(i2pInboundQuantity);
         case I2PInboundLength:
@@ -489,128 +382,34 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             }
             break;
 #ifdef ENABLE_I2PSAM
-        case I2PUseI2POnly:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            settings.setValue("useI2POnly", value.toBool());
-            break;
-        }
-        case I2PSAMHost:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            settings.setValue("samhost", value.toString());
-            break;
-        }
-        case I2PSAMPort:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            settings.setValue("samport", value.toString());
-            break;
-        }
-        case I2PSessionName:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            settings.setValue("sessionName", value.toString());
-            break;
-        }
+        case eI2PUseI2POnly:
+        case eI2PSAMHost:
+        case eI2PSAMPort:
+        case eI2PSessionName:
         case I2PInboundQuantity:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pInboundQuantity = value.toInt();
-            settings.setValue(SAM_NAME_INBOUND_QUANTITY, i2pInboundQuantity);
-            break;
-        }
         case I2PInboundLength:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pInboundLength = value.toInt();
-            settings.setValue(SAM_NAME_INBOUND_LENGTH, i2pInboundLength);
-            break;
-        }
         case I2PInboundLengthVariance:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pInboundLengthVariance = value.toInt();
-            settings.setValue(SAM_NAME_INBOUND_LENGTHVARIANCE, i2pInboundLengthVariance);
-            break;
-        }
         case I2PInboundBackupQuantity:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pInboundBackupQuantity = value.toInt();
-            settings.setValue(SAM_NAME_INBOUND_BACKUPQUANTITY, i2pInboundBackupQuantity);
-            break;
-        }
         case I2PInboundAllowZeroHop:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pInboundAllowZeroHop = value.toBool();
-            settings.setValue(SAM_NAME_INBOUND_ALLOWZEROHOP, i2pInboundAllowZeroHop);
-            break;
-        }
         case I2PInboundIPRestriction:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pInboundIPRestriction = value.toInt();
-            settings.setValue(SAM_NAME_INBOUND_IPRESTRICTION, i2pInboundIPRestriction);
-            break;
-        }
         case I2POutboundQuantity:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pOutboundQuantity = value.toInt();
-            settings.setValue(SAM_NAME_OUTBOUND_QUANTITY, i2pOutboundQuantity);
-            break;
-        }
         case I2POutboundLength:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pOutboundLength = value.toInt();
-            settings.setValue(SAM_NAME_OUTBOUND_LENGTH, i2pOutboundLength);
-            break;
-        }
         case I2POutboundLengthVariance:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pOutboundLengthVariance = value.toInt();
-            settings.setValue(SAM_NAME_OUTBOUND_LENGTHVARIANCE, i2pOutboundLengthVariance);
-            break;
-        }
         case I2POutboundBackupQuantity:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pOutboundBackupQuantity = value.toInt();
-            settings.setValue(SAM_NAME_OUTBOUND_BACKUPQUANTITY, i2pOutboundBackupQuantity);
-            break;
-        }
         case I2POutboundAllowZeroHop:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pOutboundAllowZeroHop = value.toBool();
-            settings.setValue(SAM_NAME_OUTBOUND_ALLOWZEROHOP, i2pOutboundAllowZeroHop);
-            break;
-        }
         case I2POutboundIPRestriction:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pOutboundIPRestriction = value.toInt();
-            settings.setValue(SAM_NAME_OUTBOUND_IPRESTRICTION, i2pOutboundIPRestriction);
-            break;
-        }
         case I2POutboundPriority:
-        {
-            ScopeGroupHelper s(settings, I2P_OPTIONS_SECTION_NAME);
-            i2pOutboundPriority = value.toInt();
-            settings.setValue(SAM_NAME_OUTBOUND_PRIORITY, i2pOutboundPriority);
             break;
-        }
 #endif // ENABLE_I2PSAM
         default:
             break;
         }
     }
-
-    emit dataChanged(index, index);
+// ToDo: Finish fixing this so that it is readonly or removed
+#ifdef ENABLE_I2PSAM
+    if( index.row() < eI2PUseI2POnly )
+#endif
+        emit dataChanged(index, index);
 
     return successful;
 }

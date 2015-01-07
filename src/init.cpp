@@ -235,7 +235,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -maxreceivebuffer=<n>  " + _("Maximum per-connection receive buffer, <n>*1000 bytes (default: 5000)") + "\n";
     strUsage += "  -maxsendbuffer=<n>     " + _("Maximum per-connection send buffer, <n>*1000 bytes (default: 1000)") + "\n";
     strUsage += "  -onion=<ip:port>       " + _("Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: -proxy)") + "\n";
-    strUsage += "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (ipv4, ipv6 or onion)") + "\n";
+    strUsage += "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (ipv4, ipv6, onion or i2p)") + "\n";
     strUsage += "  -port=<port>           " + _("Listen for connections on <port> (default: 9333 or testnet: 19333)") + "\n";
     strUsage += "  -proxy=<ip:port>       " + _("Connect through SOCKS5 proxy") + "\n";
     strUsage += "  -seednode=<ip>         " + _("Connect to a node to retrieve peer addresses, and disconnect") + "\n";
@@ -647,9 +647,6 @@ bool AppInit2(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
 #endif
-#ifdef ENABLE_I2PSAM
-    LogPrintf("I2P module version %s\n", FormatI2PNativeFullVersion());
-#endif
     if (!fLogTimestamps)
         LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
@@ -724,45 +721,13 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     RegisterNodeSignals(GetNodeSignals());
 
-// DO NOT Put this code in, until AFTER the notification signals have been registered.
-// GR Note: Cost me allot of time figuring that out.  noui function is used if this is anoncoind, a function in anoncoingui.cpp is called for the anoncoin-qt execuable,
-// which also must have had your updated MOC files generated after any code work is done there.
-#ifdef ENABLE_I2PSAM
-    // ToDo: Ported from 0.8.5.6 code, GR Notes: Allot of code work to include this functionality in both the gui/coind output correctly I hope...
-    if( GetBoolArg("-generatei2pdestination", false) )
-    {
-        const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
-
-        bool bRetVal = uiInterface.ThreadSafeMessageBox(
-            _("Generated I2P address"),
-            generatedDest.pub,
-            CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
-
-
-//        bool bRetVal = uiInterface.ThreadSafeShowGeneratedI2PAddress(
-//            _("Generated I2P address"),
-//            generatedDest.pub,
-//            generatedDest.priv,
-//            I2PSession::GenerateB32AddressFromDestination(generatedDest.pub),
-//            GetConfigFile().string()
-//        );
-        // ToDo: Not sure?  Maybe this?
-        // Removed this is not an error, the signal will produce a messagebox on the gui later (if there is one)
-        // if (!bRetVal ) InitError(_("Error - Reporting I2P generated Destination keys"));
-        if( !bRetVal ) fRequestShutdown = true;
-        // return false;
-
-    }
-#endif // ENABLE_I2PSAM
-
     if (mapArgs.count("-onlynet")) {
         std::set<enum Network> nets;
         BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"]) {
             enum Network net = ParseNetwork(snet);
 
 #ifdef ENABLE_I2PSAM
-            if (net == NET_NATIVE_I2P)
-            {
+            if (net == NET_NATIVE_I2P) {
                 // Disable upnp, force listening and no discovery on I2P only.
 #ifdef USE_UPNP
                 SoftSetBoolArg("-upnp", false);
@@ -813,17 +778,89 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
 
 #ifdef ENABLE_I2PSAM
-    // -i2p can override both tor and proxy
-    if (!(mapArgs.count("-i2p") && mapArgs["-i2p"] == "0") || IsI2POnly())
-    {
-        // Disable on i2p per default
-#ifdef USE_UPNP
-        SoftSetBoolArg("-upnp", false);
-#endif
-        SoftSetBoolArg("-listen",true);
-        SetReachable(NET_NATIVE_I2P);
+    // At this point we really want to try and use I2P, however if the user has selected it, we may have to override the configuration
+    // file setting, and disable I2P completely, so no errors are generated or access to I2PSAM is ever attempted.
+    // Hard set override the enable flag to false.
+    if( IsLimited( NET_NATIVE_I2P ) )
+        mapArgs[ "-i2p.options.enabled" ] = "0";
+
+    // All we need to do for -generatei2pdestination, is force I2P enabled, and set a dynamic destination, execute the normal code
+    // and near the end, after a session opened (if possible), then printout the key results, and gracefully exit the program.
+    bool fGenI2pDest = GetBoolArg("-generatei2pdestination", false);
+    if( fGenI2pDest ) {                                             // Hard set these 2 values
+        mapArgs[ "-i2p.options.enabled" ] = "1";
+        mapArgs[ "-i2p.options.static" ] = "0";
     }
-#endif // ENABLE_I2PSAM
+
+    // Initialize some stuff here alittle early, so if GenI2pDest is run, they will be setup with
+    bool fValidI2pSession = false;
+    std:string myI2pBase32Key;
+    SAM::FullDestination myI2pKeys( GetArg("-i2p.mydestination.publickey", ""), GetArg("-i2p.mydestination.privatekey", ""), false /* isGenerated */ );
+    // If I2P is enabled, we have allot of work to do...
+    if( IsI2PEnabled() ) {
+        uiInterface.InitMessage(_("Connecting to the I2P Router..."));
+        InitializeI2pSettings();                            // Make sure we have all our parameters loaded into configuration space, or set to default
+        myI2pBase32Key = GetArg("-i2p.mydestination.base32key", "");            // Localize a copy of our .b32.ip2 address too...
+        // Now we can either use a static destination address, taken from anoncoin.conf values to create a Stream Session, or
+        // generate a dynamic new one and initiate an I2P session stream that way...
+        SAM::FullDestination retI2pKeys;                                        // Something we can compare our results too
+        if( GetBoolArg( "-i2p.options.static", false ) ) {      // Running static mode, if this is true, upto the user to make sure our destination has been set
+            LogPrintf( "Attempting to create an I2P Sam session.  With a static destination...\n" );
+            if( isValidI2pDestination( myI2pKeys ) ) {          // Here we check to make sure the values look right
+                retI2pKeys = I2PSession::Instance().getMyDestination();
+                if( retI2pKeys.priv == myI2pKeys.priv && retI2pKeys.pub == myI2pKeys.pub && retI2pKeys.isGenerated == false )
+                    fValidI2pSession = true;
+                else
+                  LogPrintf( "Error - Static Destination mismatch.  Result: ShutDown.\n" );
+            } else
+                LogPrintf( "Error - invalid I2P keys. Check your configuration file.  Result: ShutDown\n" );
+        } else {                                                // Generate new destination keys/address
+            LogPrintf( "Attempting to create an I2P Sam session.  With a dynamic destination...\n" );
+            retI2pKeys = I2PSession::Instance().getMyDestination();
+            if( isValidI2pDestination( retI2pKeys ) ) {
+                myI2pKeys = retI2pKeys;                             // Ok we're going with them for this session.
+                myI2pBase32Key = I2PSession::GenerateB32AddressFromDestination( myI2pKeys.pub );
+                // At this point, we really need a hardset on the configuration parameters, as whatever was there is now wrong.
+                mapArgs[ "-i2p.mydestination.privatekey" ] = myI2pKeys.priv;
+                mapArgs[ "-i2p.mydestination.publickey" ] = myI2pKeys.pub;
+                mapArgs[ "-i2p.mydestination.base32key" ] = myI2pBase32Key;
+                fValidI2pSession = true;
+            } else
+                LogPrintf( "Error - Unable to generate a valid I2P destination.  Result: ShutDown.\n" );
+        }
+        if( fValidI2pSession ) {
+            LogPrintf( "Using I2P SAM module version %s\n", FormatI2PNativeFullVersion());
+            LogPrintf( "Created a new SAM Session ID:%s, connected to Router.\n", I2PSession::Instance().getSessionID() );
+            SetReachable(NET_NATIVE_I2P);                           // It's now been proven the router is available.
+        } else {
+            SetLimited( NET_NATIVE_I2P );                           // Don't use any i2p information
+            mapArgs[ "-i2p.options.enabled" ] = "0";                // Override the option and set it false
+            if( IsI2POnly() )                                       // We're wiped out, bail and exit initialization in failure
+                return InitError( "Unable to create I2P SAM session" );
+        }
+    }
+
+    if( fGenI2pDest ) {
+        if( fValidI2pSession ) {
+            // DO NOT Put this code in, until AFTER the notification signals have been registered.
+            // noui function is used if this is anoncoind, a function in anoncoingui.cpp is called for the anoncoin-qt
+            bool bErr = uiInterface.ThreadSafeShowGeneratedI2PAddress(_("Generated an I2P destination for you."),
+                                                                         myI2pKeys.pub, myI2pKeys.priv, myI2pBase32Key,
+                                                                         GetConfigFile().string() );
+            return InitError( bErr ? _("Error - Unable to report I2P Destination.") : _("Results also written to your debug.log file"));
+            // ToDo: Not sure?  Maybe this?
+            // Removed this is not an error, the signal will produce a messagebox on the gui later (if there is one)
+            // if (!bRetVal ) InitError(_("Error - Reporting I2P generated Destination keys"));
+            // if( !bRetVal ) fRequestShutdown = true;
+            // return false;                   // Request shutdown and terminate, this works for anoncoind, but not QT
+            // ToDo: make sure that after the generation is complete, that a request shutdown follows for both anoncoind & anoncoin-qt,
+            // **********at the moment the qt version is broke and for now, we just keep going...
+            // return InitError( "Generation of I2P Destination complete." );
+        } else
+            return InitError(_("Error - Unable to Generate I2P Destination.") );
+    }   // fGenI2pDest
+#endif  // ENABLE_I2PSAM
+
 
     // see Step 2: parameter interactions for more information about these
     fNoListen = !GetBoolArg("-listen", true);

@@ -1,0 +1,8 @@
+SDKs/
+work/
+built/
+sources/
+x86_64-unknown-linux-gnu/
+i686-w64-mingw32/
+x86_64-w64-mingw32/
+config.site

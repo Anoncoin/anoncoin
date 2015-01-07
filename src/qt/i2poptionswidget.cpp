@@ -53,10 +53,10 @@ I2POptionsWidget::~I2POptionsWidget()
 
 void I2POptionsWidget::setMapper(MonitoredDataMapper& mapper)
 {
-    mapper.addMapping(ui->checkBoxUseI2POnly           , OptionsModel::I2PUseI2POnly);
-    mapper.addMapping(ui->lineEditSAMHost              , OptionsModel::I2PSAMHost);
-    mapper.addMapping(ui->spinBoxSAMPort               , OptionsModel::I2PSAMPort);
-    mapper.addMapping(ui->lineEditTunnelName           , OptionsModel::I2PSessionName);
+    mapper.addMapping(ui->checkBoxUseI2POnly           , OptionsModel::eI2PUseI2POnly);
+    mapper.addMapping(ui->lineEditSAMHost              , OptionsModel::eI2PSAMHost);
+    mapper.addMapping(ui->spinBoxSAMPort               , OptionsModel::eI2PSAMPort);
+    mapper.addMapping(ui->lineEditTunnelName           , OptionsModel::eI2PSessionName);
     mapper.addMapping(ui->spinBoxInboundQuantity       , OptionsModel::I2PInboundQuantity);
     mapper.addMapping(ui->spinBoxInboundLength         , OptionsModel::I2PInboundLength);
     mapper.addMapping(ui->spinBoxInboundLengthVariance , OptionsModel::I2PInboundLengthVariance);
@@ -69,7 +69,7 @@ void I2POptionsWidget::setMapper(MonitoredDataMapper& mapper)
     mapper.addMapping(ui->spinBoxOutboundBackupQuantity, OptionsModel::I2POutboundBackupQuantity);
     mapper.addMapping(ui->checkBoxAllowZeroHop         , OptionsModel::I2POutboundAllowZeroHop);
     mapper.addMapping(ui->spinBoxOutboundIPRestriction , OptionsModel::I2POutboundIPRestriction);
-    mapper.addMapping(ui->spinBoxOutboundPriority      , OptionsModel::I2POutboundIPRestriction);
+    mapper.addMapping(ui->spinBoxOutboundPriority      , OptionsModel::I2POutboundPriority);
 }
 
 void I2POptionsWidget::setModel(ClientModel* model)

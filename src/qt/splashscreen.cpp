@@ -38,8 +38,8 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     // define text to place
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
     QString copyrightText1   = QChar(0xA9)+QString(" 2013-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Anoncoin Core developers"));
-    QString copyrightText2   = QChar(0xA9)+QString(" 2009-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Bitcoin Core developers"));
-    QString copyrightText3   = QChar(0xA9)+QString(" 2011-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Litecoin Core developers"));
+    QString copyrightText2   = QChar(0xA9)+QString(" 2009-%1 ").arg(2014) + QString(tr("The Bitcoin Core developers"));
+    QString copyrightText3   = QChar(0xA9)+QString(" 2011-%1 ").arg(2014) + QString(tr("The Litecoin Core developers"));
     QString copyrightText4   = QChar(0xA9)+QString(" 2013 ") + QString(tr("The Primecoin developers"));
     QString testnetAddText  = QString(tr("[testnet]")); // define text to place as single text object
 

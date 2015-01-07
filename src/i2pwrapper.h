@@ -9,22 +9,10 @@
 #include "util.h"
 #include "i2psam/i2psam.h"
 
-#define I2P_NET_NAME_PARAM              "-i2p"
-
-#define I2P_SESSION_NAME_PARAM          "-i2psessionname"
 #define I2P_SESSION_NAME_DEFAULT        "Anoncoin-client"
-
-#define I2P_SAM_HOST_PARAM              "-samhost"
-#define I2P_SAM_HOST_DEFAULT            SAM_DEFAULT_ADDRESS
-
-#define I2P_SAM_PORT_PARAM              "-samport"
-#define I2P_SAM_PORT_DEFAULT            SAM_DEFAULT_PORT
-
-#define I2P_SAM_MY_DESTINATION_PARAM    "-mydestination"
-#define I2P_SAM_MY_DESTINATION_DEFAULT  SAM_GENERATE_MY_DESTINATION
-
-#define I2P_SAM_I2P_OPTIONS_PARAM       "-i2poptions"
-#define I2P_SAM_I2P_OPTIONS_DEFAULT     SAM_DEFAULT_I2P_OPTIONS
+#define NATIVE_I2P_DESTINATION_SIZE     516
+#define NATIVE_I2P_B32ADDR_SIZE         60
+#define NATIVE_I2P_NET_STRING           "i2p"
 
 namespace SAM
 {
@@ -60,6 +48,8 @@ namespace SAM
             const std::string& getSAMMaxVer() const;
             const std::string& getSAMVersion() const;
             const std::string& getOptions() const;
+            const std::string& getSessionID() const;
+
 
         private:
             class SessionHolder;
@@ -90,5 +80,11 @@ class I2PSession : private SAM::StreamSessionAdapter
         I2PSession(const I2PSession&);
         I2PSession& operator=(const I2PSession&);
 };
+
+void InitializeI2pSettings( void );
+
+bool isValidI2pAddress( const std::string& I2pAddr );
+bool isValidI2pDestination( const SAM::FullDestination& DestKeys );
+bool isValidI2pB32( const std::string& B32Address );
 
 #endif // I2PWRAPPER_H

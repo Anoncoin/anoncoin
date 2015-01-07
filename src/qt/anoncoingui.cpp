@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -696,9 +696,9 @@ void AnoncoinGUI::setNumI2PConnections(int count)
     // See the anoncoin.qrc file for icon files below & their associated alias name
     switch(count) {
     case 0: i2pIcon = ":/icons/i2pconnect_0"; break;
-    case 1: case 2: i2pIcon = ":/icons/i2pconnect_1"; break;
-    case 3: case 4: i2pIcon = ":/icons/i2pconnect_2"; break;
-    case 5: case 6: i2pIcon = ":/icons/i2pconnect_3"; break;
+    case 1: case 2: case 3: i2pIcon = ":/icons/i2pconnect_1"; break;
+    case 4: case 5: case 6: i2pIcon = ":/icons/i2pconnect_2"; break;
+    case 7: case 8: case 9: i2pIcon = ":/icons/i2pconnect_3"; break;
     default: i2pIcon = ":/icons/i2pconnect_4"; break;
     }
     labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
@@ -1068,13 +1068,22 @@ static bool ThreadSafeShowGeneratedI2PAddress(AnoncoinGUI *gui,
                                               const std::string& configFileName)
 {
     bool ret = false;
-    unsigned int style = CClientUIInterface::BTN_ABORT | CClientUIInterface::MSG_INFORMATION;
-    bool modal = (style & CClientUIInterface::MODAL);
 
-    QString pubkey = QString::fromStdString(pub);
-    pubkey.resize( 40 );
-    QString privkey = QString::fromStdString(priv);
-    pubkey.resize( 40 );
+//    ShowI2PAddresses i2pAddrDialog( QString::fromStdString(caption),
+//                                    QString::fromStdString(pub),
+//                                    QString::fromStdString(priv),
+//                                    QString::fromStdString(b32),
+//                                    QString::fromStdString(configFileName),
+//                                    gui );
+// Latest thoughts,  we need to get the clientmodel for a gui parent, and use new to create the dialog here now...
+
+//    i2pAddrDialog.show();
+    ret = true;
+//    unsigned int style = CClientUIInterface::BTN_ABORT | CClientUIInterface::MSG_INFORMATION;
+//    bool modal = (style & CClientUIInterface::MODAL);
+
+//    QString pubkey = QString::fromStdString(pub);
+//    QString privkey = QString::fromStdString(priv);
 
     // http://qt-project.org/doc/qt-4.8/qmetaobject.html
     // Invokes the member (a signal or a slot name) on the object obj. Returns true if the member could be invoked.

@@ -1,11 +1,12 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientmodel.h"
 
 #include "guiconstants.h"
+#include "peertablemodel.h"
 
 #include "alert.h"
 #include "chainparams.h"
@@ -27,11 +28,14 @@
 static const int64_t nClientStartupTime = GetTime();
 
 ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
-    QObject(parent), optionsModel(optionsModel),
+    QObject(parent),
+    optionsModel(optionsModel),
+    peerTableModel(0),
     cachedNumBlocks(0),
     cachedReindexing(0), cachedImporting(0),
     numBlocksAtStartup(-1), pollTimer(0)
 {
+    peerTableModel = new PeerTableModel(this);
     pollTimer = new QTimer(this);
     connect(pollTimer, SIGNAL(timeout()), this, SLOT(updateTimer()));
     pollTimer->start(MODEL_UPDATE_DELAY);
@@ -172,17 +176,17 @@ int ClientModel::getNumI2PConnections() const
 
 QString ClientModel::getPublicI2PKey() const
 {
-    return QString::fromStdString(I2PSession::Instance().getMyDestination().pub);
+    return IsI2PEnabled() ? QString::fromStdString(I2PSession::Instance().getMyDestination().pub) : QString( "Not Available" );
 }
 
 QString ClientModel::getPrivateI2PKey() const
 {
-    return QString::fromStdString(I2PSession::Instance().getMyDestination().priv);
+    return IsI2PEnabled() ? QString::fromStdString(I2PSession::Instance().getMyDestination().priv) : QString( "Not Available" );
 }
 
 bool ClientModel::isI2PAddressGenerated() const
 {
-    return I2PSession::Instance().getMyDestination().isGenerated;
+    return IsI2PEnabled() ? I2PSession::Instance().getMyDestination().isGenerated : false;
 }
 
 bool ClientModel::isI2POnly() const
@@ -207,12 +211,14 @@ bool ClientModel::isBehindDarknet() const
 
 QString ClientModel::getB32Address(const QString& destination) const
 {
-    return QString::fromStdString(I2PSession::GenerateB32AddressFromDestination(destination.toStdString()));
+    return  IsI2PEnabled() ? QString::fromStdString(I2PSession::GenerateB32AddressFromDestination(destination.toStdString())) : QString( "Not Available" );
 }
 
 void ClientModel::generateI2PDestination(QString& pub, QString& priv) const
 {
-    const SAM::FullDestination generatedDest = I2PSession::Instance().destGenerate();
+    SAM::FullDestination generatedDest( "Not Available", "Not Available", false );
+    if( IsI2PEnabled() )
+        generatedDest = I2PSession::Instance().destGenerate();
     pub = QString::fromStdString(generatedDest.pub);
     priv = QString::fromStdString(generatedDest.priv);
 }
@@ -243,6 +249,11 @@ QString ClientModel::getStatusBarWarnings() const
 OptionsModel *ClientModel::getOptionsModel()
 {
     return optionsModel;
+}
+
+PeerTableModel *ClientModel::getPeerTableModel()
+{
+    return peerTableModel;
 }
 
 QString ClientModel::formatFullVersion() const
