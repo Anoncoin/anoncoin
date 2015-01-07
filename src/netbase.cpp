@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -40,7 +40,12 @@ using namespace std;
 static proxyType proxyInfo[NET_MAX];
 static CService nameProxy;
 static CCriticalSection cs_proxyInfos;
-int nConnectTimeout = 5000;
+// ToDo: Further analysis from debuging i2p connections may reveil that this setting is too low.
+//       Connected peertable entries show ping times >13000ms  Changing this number's default
+//       to 4 times what Bitcoin had it set too... Or possibly add a new variable for I2p specifically,
+//       The help page may yet need to be changed to reflect this new default as well (check it)
+// int nConnectTimeout = 5000;
+int nConnectTimeout = 20000;
 bool fNameLookup = false;
 
 static const unsigned char pchIPv4[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff };

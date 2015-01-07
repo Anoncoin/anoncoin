@@ -67,7 +67,9 @@ static const int DEFAULT_SCRIPTCHECK_THREADS = 0;
 /** Number of blocks that can be requested at any given time from a single peer. */
 static const int MAX_BLOCKS_IN_TRANSIT_PER_PEER = 128;
 /** Timeout in seconds before considering a block download peer unresponsive. */
-static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 60;
+// For I2p, this could be considerably longer, up'n the value by double
+// static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 60;
+static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 120;
 
 /** Dust Soft Limit, allowed with additional fee per output */
 static const int64_t DUST_SOFT_LIMIT = 100000; // 0.001 LTC

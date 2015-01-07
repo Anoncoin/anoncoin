@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -402,12 +402,6 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
 void ThreadGetMyExternalIP()
 {
-#ifdef ENABLE_I2PSAM
-    // ToDo: check this, Seems that if we're i2p only, we should shut down the thread, as it's not needed. (GR Note: Just guessing)
-    // Bitcoin 9.99 code has completely eliminated the use of GetMyExternalIP, so take that into consideration, before spending allot of time here....
-
-    if( IsI2POnly() ) return;                   // Don't need External IP, if I2P only networking...
-#endif
     CNetAddr addrLocalHost;
     if (GetMyExternalIP(addrLocalHost))
     {
@@ -1983,6 +1977,8 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 
     // Don't use external IPv4 discovery, when -onlynet="IPv6"
+    // This should work fine as well for -onlynet="i2p" or other combinations, if NET_IPV4 is
+    // not limited at this point, we proceed normally to detect our external IP
     if (!IsLimited(NET_IPV4))
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "ext-ip", &ThreadGetMyExternalIP));
 }
