@@ -132,6 +132,9 @@ class CService : public CNetAddr
         std::string ToString() const;
         std::string ToStringPort() const;
         std::string ToStringIPPort() const;
+#ifdef ENABLE_I2PSAM
+        std::string ToStringI2pPort() const;
+#endif
         void print() const;
 
         CService(const struct in6_addr& ipv6Addr, unsigned short port);

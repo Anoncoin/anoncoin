@@ -654,7 +654,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, nFD);
     std::ostringstream strErrors;
 
-    if (!IsBehindDarknet()) InitWarning("Anoncoin is running on clearnet!\n");
+#ifdef ENABLE_I2PSAM
+    if( !GetBoolArg("-stfu", false) && !IsBehindDarknet() )
+        InitWarning("Anoncoin is running on clearnet!\n");
+#endif
 
     if (nScriptCheckThreads) {
         LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);

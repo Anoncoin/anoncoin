@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,7 +24,7 @@
 #define CLIENT_VERSION_MAJOR       0
 #define CLIENT_VERSION_MINOR       9
 #define CLIENT_VERSION_REVISION    4
-#define CLIENT_VERSION_BUILD       1
+#define CLIENT_VERSION_BUILD       2
 
 // Set to true for release, false for prerelease or test build
 #define CLIENT_VERSION_IS_RELEASE  false

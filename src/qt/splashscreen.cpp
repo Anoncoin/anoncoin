@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -38,7 +38,7 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     // define text to place
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
     QString copyrightText1   = QChar(0xA9)+QString(" 2013-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Anoncoin Core developers"));
-    QString copyrightText2   = QChar(0xA9)+QString(" 2009-%1 ").arg(2014) + QString(tr("The Bitcoin Core developers"));
+    QString copyrightText2   = QChar(0xA9)+QString(" 2009-%1 ").arg(2015) + QString(tr("The Bitcoin Core developers"));
     QString copyrightText3   = QChar(0xA9)+QString(" 2011-%1 ").arg(2014) + QString(tr("The Litecoin Core developers"));
     QString copyrightText4   = QChar(0xA9)+QString(" 2013 ") + QString(tr("The Primecoin developers"));
     QString testnetAddText  = QString(tr("[testnet]")); // define text to place as single text object

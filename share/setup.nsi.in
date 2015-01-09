@@ -10,7 +10,7 @@ SetCompressor /SOLID lzma
 !define URL https://anoncoin.net/
 
 # MUI Symbol Definitions
-!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/anoncoin.ico"
+!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/anoncoin32.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
@@ -80,7 +80,13 @@ Section -Main SEC0000
     File @abs_top_srcdir@/release/anoncoind.exe
     File @abs_top_srcdir@/release/anoncoin-cli.exe
     SetOutPath $INSTDIR\doc
-    File /r @abs_top_srcdir@/doc\*.*
+    File @abs_top_srcdir@/doc/release-notes.md
+    File @abs_top_srcdir@/doc/release-process.md
+    File @abs_top_srcdir@/doc/tor.md
+    File @abs_top_srcdir@/doc/translation_process.md
+    File @abs_top_srcdir@/doc/files.md
+    File @abs_top_srcdir@/doc/build-msw.md
+    File @abs_top_srcdir@/doc/coding.md
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd

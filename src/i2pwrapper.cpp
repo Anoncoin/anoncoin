@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Copyright (c) 2012-2013 giv
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -202,18 +202,7 @@ I2PSession::~I2PSession()
 /*static*/
 std::string I2PSession::GenerateB32AddressFromDestination(const std::string& destination)
 {
-    std::string canonicalDest = destination;
-    for (size_t pos = canonicalDest.find_first_of('-'); pos != std::string::npos; pos = canonicalDest.find_first_of('-', pos))
-        canonicalDest[pos] = '+';
-    for (size_t pos = canonicalDest.find_first_of('~'); pos != std::string::npos; pos = canonicalDest.find_first_of('~', pos))
-        canonicalDest[pos] = '/';
-    std::string rawHash = DecodeBase64(canonicalDest);
-    uint256 hash;
-    SHA256((const unsigned char*)rawHash.c_str(), rawHash.size(), (unsigned char*)&hash);
-    std::string result = EncodeBase32(hash.begin(), hash.end() - hash.begin()) + ".b32.i2p";
-    for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
-        result.erase(pos, 1);
-    return result;
+    return ::B32AddressFromDestination(destination);
 }
 
 void static FormatBoolI2POptionsString( std::string& I2pOptions, const std::string& I2pSamName, const std::string& confParamName ) {
@@ -313,4 +302,20 @@ bool isValidI2pDestination( const SAM::FullDestination& DestKeys ) {
 
 bool isValidI2pB32( const std::string& B32Address ) {
     return (B32Address.size() == NATIVE_I2P_B32ADDR_SIZE) && (B32Address.substr(B32Address.size() - 8, 8) == ".b32.i2p");
+}
+
+std::string B32AddressFromDestination(const std::string& destination)
+{
+    std::string canonicalDest = destination;
+    for (size_t pos = canonicalDest.find_first_of('-'); pos != std::string::npos; pos = canonicalDest.find_first_of('-', pos))
+        canonicalDest[pos] = '+';
+    for (size_t pos = canonicalDest.find_first_of('~'); pos != std::string::npos; pos = canonicalDest.find_first_of('~', pos))
+        canonicalDest[pos] = '/';
+    std::string rawHash = DecodeBase64(canonicalDest);
+    uint256 hash;
+    SHA256((const unsigned char*)rawHash.c_str(), rawHash.size(), (unsigned char*)&hash);
+    std::string result = EncodeBase32(hash.begin(), hash.end() - hash.begin()) + ".b32.i2p";
+    for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
+        result.erase(pos, 1);
+    return result;
 }

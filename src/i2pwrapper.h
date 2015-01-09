@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Copyright (c) 2012-2013 giv
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -86,5 +86,6 @@ void InitializeI2pSettings( void );
 bool isValidI2pAddress( const std::string& I2pAddr );
 bool isValidI2pDestination( const SAM::FullDestination& DestKeys );
 bool isValidI2pB32( const std::string& B32Address );
+std::string B32AddressFromDestination(const std::string& destination);
 
 #endif // I2PWRAPPER_H

@@ -42,8 +42,7 @@ static CService nameProxy;
 static CCriticalSection cs_proxyInfos;
 // ToDo: Further analysis from debuging i2p connections may reveil that this setting is too low.
 //       Connected peertable entries show ping times >13000ms  Changing this number's default
-//       to 4 times what Bitcoin had it set too... Or possibly add a new variable for I2p specifically,
-//       The help page may yet need to be changed to reflect this new default as well (check it)
+//       to 4 times what Bitcoin had it set too... Or possibly add a new variable for I2p specifically.
 // int nConnectTimeout = 5000;
 int nConnectTimeout = 20000;
 bool fNameLookup = false;
@@ -513,6 +512,31 @@ bool IsProxy(const CNetAddr &addr) {
     return false;
 }
 
+#ifdef ENABLE_I2PSAM
+bool static SetI2pSocketOptions(SOCKET& hSocket)
+{
+    if (hSocket == INVALID_SOCKET)
+        return false;
+#ifdef SO_NOSIGPIPE
+    int set = 1;
+    setsockopt(hSocket, SOL_SOCKET, SO_NOSIGPIPE, (void*)&set, sizeof(int));
+#endif
+
+#ifdef WIN32
+    u_long fNonblock = 1;
+    if (ioctlsocket(hSocket, FIONBIO, &fNonblock) == SOCKET_ERROR)
+#else
+    int fFlags = fcntl(hSocket, F_GETFL, 0);
+    if (fcntl(hSocket, F_SETFL, fFlags | O_NONBLOCK) == -1)
+#endif
+    {
+        closesocket(hSocket);
+        hSocket = INVALID_SOCKET;
+        return false;
+    }
+    return true;
+}
+#endif // ENABLE_I2PSAM
 
 bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
 {
@@ -521,7 +545,7 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
 #ifdef ENABLE_I2PSAM
     if (addrDest.IsNativeI2P()) {
         SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2PDestination(), false/*, streamSocket*/);
-        if (streamSocket != INVALID_SOCKET) {
+        if( SetI2pSocketOptions(streamSocket) ) {
             hSocketRet = streamSocket;
             return true;
         }
@@ -1273,13 +1297,29 @@ std::string CService::ToStringPort() const
     return strprintf("%u", port);
 }
 
+#ifdef ENABLE_I2PSAM
+std::string CService::ToStringI2pPort() const
+{
+    if( IsNativeI2P() ) {
+        // Convert native i2p addresses to b32.i2p addresses
+        // ToDo: Check and/or finish this, got interupted.
+        std::string samPort = strprintf( "%u", GetArg("-i2p.options.samport", "7656") );
+        return "[" + B32AddressFromDestination( GetI2PDestination() ) + "]:" + samPort;
+    }
+    else
+        return "Unknown address";
+}
+#endif // ENABLE_I2PSAM
+
 std::string CService::ToStringIPPort() const
 {
-    if (IsIPv4() || IsTor()) {
-        return ToStringIP() + ":" + ToStringPort();
-    } else {
-        return "[" + ToStringIP() + "]:" + ToStringPort();
-    }
+#ifdef ENABLE_I2PSAM
+    std:string PortStr = IsNativeI2P() ? GetArg("-i2p.options.samport", "7656") : ToStringPort();
+#else
+    std:string PortStr = ToStringPort();
+#endif
+    return ( IsIPv4() || IsTor() ) ? ToStringIP() + ":" + PortStr :
+                                     "[" + ToStringIP() + "]:" + PortStr;
 }
 
 std::string CService::ToString() const
