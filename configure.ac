@@ -182,6 +182,24 @@ if test "x$CXXFLAGS_overridden" = "xno"; then
 fi
 CPPFLAGS="$CPPFLAGS -DBOOST_SPIRIT_THREADSAFE -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS"
 
+AC_ARG_WITH([utils],
+  [AS_HELP_STRING([--with-utils],
+  [build anoncoin-cli anoncoin-tx (default=yes)])],
+  [build_anoncoin_utils=$withval],
+  [build_anoncoin_utils=yes])
+
+AC_ARG_WITH([libs],
+  [AS_HELP_STRING([--with-libs],
+  [build libraries (default=yes)])],
+  [build_anoncoin_libs=$withval],
+  [build_anoncoin_libs=yes])
+
+AC_ARG_WITH([daemon],
+  [AS_HELP_STRING([--with-daemon],
+  [build anoncoind daemon (default=yes)])],
+  [build_anoncoind=$withval],
+  [build_anoncoind=yes])
+
 AC_LANG_PUSH([C++])
 
 use_pkgconfig=yes
@@ -257,8 +275,12 @@ case $host in
        AC_CHECK_PROG([PORT],port, port)
        if test x$PORT = xport; then
          dnl add default macports paths
-         CPPFLAGS="$CPPFLAGS -isystem /opt/local/include -I/opt/local/include/db48"
-         LIBS="$LIBS -L/opt/local/lib -L/opt/local/lib/db48"
+         CPPFLAGS="$CPPFLAGS -isystem /opt/local/include"
+         LIBS="$LIBS -L/opt/local/lib"
+         if test -d /opt/local/include/db48; then
+           CPPFLAGS="$CPPFLAGS -I/opt/local/include/db48"
+           LIBS="$LIBS -L/opt/local/lib/db48"
+         fi
        fi
 
        AC_CHECK_PROG([BREW],brew, brew)
@@ -294,6 +316,12 @@ case $host in
            AC_PATH_TOOL([INSTALLNAMETOOL], [install_name_tool], install_name_tool)
            AC_PATH_TOOL([OTOOL], [otool], otool)
            AC_PATH_PROGS([GENISOIMAGE], [genisoimage mkisofs],genisoimage)
+
+           dnl libtool will try to strip the static lib, which is a problem for
+           dnl cross-builds because strip attempts to call a hard-coded ld,
+           dnl which may not exist in the path. Stripping the .a is not
+           dnl necessary, so just disable it.
+           old_striplib=
            ;;
        esac
      fi
@@ -434,6 +462,8 @@ AC_CHECK_HEADERS([endian.h stdio.h stdlib.h unistd.h strings.h sys/types.h sys/s
 AC_SEARCH_LIBS([getaddrinfo_a], [anl], [AC_DEFINE(HAVE_GETADDRINFO_A, 1, [Define this symbol if you have getaddrinfo_a])])
 AC_SEARCH_LIBS([inet_pton], [nsl resolv], [AC_DEFINE(HAVE_INET_PTON, 1, [Define this symbol if you have inet_pton])])
 
+AC_CHECK_DECLS([strnlen])
+
 AC_CHECK_DECLS([le32toh, le64toh, htole32, htole64, be32toh, be64toh, htobe32, htobe64],,,
 		[#if HAVE_ENDIAN_H
                  #include <endian.h>
@@ -508,6 +538,19 @@ if test x$use_upnp != xno; then
   )
 fi
 
+ANONCOIN_QT_INIT
+
+dnl sets $anoncoin_enable_qt, $anoncoin_enable_qt_test, $anoncoin_enable_qt_dbus
+ANONCOIN_QT_CONFIGURE([$use_pkgconfig], [qt4])
+
+if test x$build_anoncoin_utils$build_anoncoind$anoncoin_enable_qt$use_tests = xnononono; then
+    use_boost=no
+else
+    use_boost=yes
+fi
+
+if test x$use_boost = xyes; then
+
 dnl Check for boost libs
 dnl Anoncoin & i2pd needs libraries=chrono,date_time,filesystem,iostreams,program_options,regex,system,thread,test
 dnl GR Note: The unit_test_framework is figured out, dependant on user selection of use_tests
@@ -549,6 +592,10 @@ if test x$use_reduce_exports != xno; then
   CPPFLAGS="$TEMP_CPPFLAGS"
 fi
 
+elif test x$use_reduce_exports = xauto; then
+    use_reduce_exports=yes
+fi
+
 if test x$use_reduce_exports != xno; then
     CXXFLAGS="$CXXFLAGS $RE_CXXFLAGS"
     AX_CHECK_LINK_FLAG([[-Wl,--exclude-libs,ALL]], [RELDFLAGS="-Wl,--exclude-libs,ALL"])
@@ -560,6 +607,8 @@ if test x$use_tests = xyes; then
     AC_MSG_ERROR(hexdump is required for tests)
   fi
 
+
+  if test x$use_boost = xyes; then
 
   AX_BOOST_UNIT_TEST_FRAMEWORK
 
@@ -580,7 +629,11 @@ if test x$use_tests = xyes; then
     [AC_MSG_RESULT(no)])
   LIBS="$TEMP_LIBS"
   CPPFLAGS="$TEMP_CPPFLAGS"
+
+  fi
 fi
+
+if test x$use_boost = xyes; then
 
 BOOST_LIBS="$BOOST_LDFLAGS $BOOST_SYSTEM_LIB $BOOST_DATE_TIME_LIB $BOOST_FILESYSTEM_LIB $BOOST_PROGRAM_OPTIONS_LIB $BOOST_IOSTREAMS_LIB $BOOST_REGEX_LIB $BOOST_THREAD_LIB"
 
@@ -638,25 +691,7 @@ if test x$boost_sleep != xyes; then
   AC_MSG_ERROR(No working boost sleep implementation found.)
 fi
 
-AC_ARG_WITH([utils],
-  [AS_HELP_STRING([--with-utils],
-  [build anoncoin-cli anoncoin-tx (default=yes)])],
-  [build_anoncoin_utils=$withval],
-  [build_anoncoin_utils=yes])
-
-AC_ARG_WITH([libs],
-  [AS_HELP_STRING([--with-libs],
-  [build libraries (default=yes)])],
-  [build_anoncoin_libs=$withval],
-  [build_anoncoin_libs=yes])
-
-AC_ARG_WITH([daemon],
-  [AS_HELP_STRING([--with-daemon],
-  [build anoncoind daemon (default=yes)])],
-  [build_anoncoind=$withval],
-  [build_anoncoind=yes])
-
-ANONCOIN_QT_INIT
+fi
 
 if test x$use_pkgconfig = xyes; then
 
@@ -690,6 +725,14 @@ else
   fi
 fi
 
+CFLAGS_TEMP="$CFLAGS"
+LIBS_TEMP="$LIBS"
+CFLAGS="$CFLAGS $SSL_CFLAGS $CRYPTO_CFLAGS"
+LIBS="$LIBS $SSL_LIBS $CRYPTO_LIBS"
+AC_CHECK_HEADER([openssl/ec.h],, AC_MSG_ERROR(OpenSSL ec header missing),)
+CFLAGS="$CFLAGS_TEMP"
+LIBS="$LIBS_TEMP"
+
 ANONCOIN_QT_PATH_PROGS([PROTOC], [protoc],$protoc_bin_path)
 
 AC_MSG_CHECKING([whether to build anoncoind])
@@ -704,11 +747,9 @@ AC_MSG_CHECKING([whether to build libraries])
 AM_CONDITIONAL([BUILD_ANONCOIN_LIBS], [test x$build_anoncoin_libs = xyes])
 dnl if test x$build_anoncoin_libs = xyes; then
 dnl  AC_DEFINE(HAVE_CONSENSUS_LIB, 1, [Define this symbol if the consensus lib has been built])
+dnl  AC_CONFIG_FILES([libanoncoinconsensus.pc:libanoncoinconsensus.pc.in])
 dnl fi
 AC_MSG_RESULT($build_anoncoin_libs)
-
-dnl sets $anoncoin_enable_qt, $anoncoin_enable_qt_test, $anoncoin_enable_qt_dbus
-ANONCOIN_QT_CONFIGURE([$use_pkgconfig], [qt4])
 
 AC_LANG_POP
 
@@ -836,7 +877,7 @@ else
   AC_MSG_RESULT([no])
 fi
 
-if test x$build_anoncoin_utils$build_anoncoin_libs$build_anoncoind$anoncoin_enable_qt$use_tests = xnononono; then
+if test x$build_anoncoin_utils$build_anoncoin_libs$build_anoncoind$anoncoin_enable_qt$use_tests = xnonononono; then
   AC_MSG_ERROR([No targets! Please specify at least one of: --with-utils --with-libs --with-daemon --with-gui or --enable-tests])
 fi
 
