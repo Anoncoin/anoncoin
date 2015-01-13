@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2014 The Bitcoin Core developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -167,7 +168,7 @@ BOOST_AUTO_TEST_CASE(bignum_SetCompact)
     num.SetCompact(0x03800000);
     BOOST_CHECK_EQUAL(num.GetHex(), "0");
     BOOST_CHECK_EQUAL(num.GetCompact(), 0U);
-    
+
     num.SetCompact(0x04800000);
     BOOST_CHECK_EQUAL(num.GetHex(), "0");
     BOOST_CHECK_EQUAL(num.GetCompact(), 0U);

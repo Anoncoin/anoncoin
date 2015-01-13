@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,8 +15,6 @@
 
 #include <stdarg.h>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #ifndef WIN32
 // for posix_fallocate
 #ifdef __linux_
@@ -26,22 +25,21 @@
 
 #define _POSIX_C_SOURCE 200112L
 #include <sys/prctl.h>
-
-#endif
+#endif // __linux_
 
 #include <algorithm>
 #include <fcntl.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 
-#else
+#else  // is WIN32
 
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
 #pragma warning(disable:4804)
 #pragma warning(disable:4805)
 #pragma warning(disable:4717)
-#endif
+#endif // _MSC_VER
 
 #ifdef _WIN32_WINNT
 #undef _WIN32_WINNT
@@ -60,16 +58,18 @@
 
 #include <io.h> /* for _commit */
 #include <shlobj.h>
-#endif
+#endif // WIN32
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_lower()
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/program_options/detail/config_file.hpp>
 #include <boost/program_options/parsers.hpp>
+
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 
@@ -476,6 +476,7 @@ void ParseParameters(int argc, const char* const argv[])
         if (boost::algorithm::starts_with(str, "/"))
             str = "-" + str.substr(1);
 #endif
+        // Keep in mind here, appears non-win32 builds will be case sensitive on parameter names
         if (str[0] != '-')
             break;
 
@@ -901,56 +902,6 @@ bool WildcardMatch(const string& str, const string& mask)
     return WildcardMatch(str.c_str(), mask.c_str());
 }
 
-// Anoncoin
-// Write config file
-
-bool writeConfig(boost::filesystem::path configFile, boost::property_tree::ptree data)
-{
-    // Write file
-    try
-    {
-        write_ini(configFile.string(), data);
-    }
-    catch (boost::property_tree::info_parser::info_parser_error &e)
-    {
-        printf("Error writing config file: %s\n", e.what());
-        return false;
-    }
-    return true;
-}
-
-// Used by GUI wizard
-bool writeFirstConfig(bool i2pOnlyEnabled, bool torOnlyEnabled, bool i2pEnabled, bool torEnabled)
-{
-    using boost::property_tree::ptree;
-    ptree pt;
-
-    if (i2pOnlyEnabled)
-        pt.put("onlynet", "i2p");
-    if (torOnlyEnabled)
-    {
-        pt.put("tor", "127.0.0.1:9050");
-        pt.put("onlynet", "tor");
-    }
-    if (i2pEnabled)
-        pt.put("i2p", 1);
-    if (torEnabled)
-        pt.put("proxy", "127.0.0.1:9050");
-    unsigned char rand_pwd[32];
-    RAND_bytes(rand_pwd, 32);
-    pt.put("rpcuser", "anoncoinrpc");
-    pt.put("rpcpassword", EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32).c_str());
-    pt.put("daemon", 1);
-    pt.put("server", 1);
-
-    // Write file
-    return writeConfig(GetConfigFile().string().c_str(), pt);
-}
-
-
-
-
-
 
 static std::string FormatException(std::exception* pex, const char* pszThread)
 {
@@ -985,10 +936,10 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Bitcoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Bitcoin
-    // Mac: ~/Library/Application Support/Bitcoin
-    // Unix: ~/.bitcoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Anoncoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Anoncoin
+    // Mac: ~/Library/Application Support/Anoncoin
+    // Unix: ~/.anoncoin
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Anoncoin";
@@ -1007,8 +958,8 @@ boost::filesystem::path GetDefaultDataDir()
 #else
     // Unix
     return pathRet / ".anoncoin";
-#endif
-#endif
+#endif // MAC_OSX
+#endif // WIN32
 }
 
 static boost::filesystem::path pathCached[CChainParams::MAX_NETWORK_TYPES+1];
@@ -1072,14 +1023,17 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
-        return; // No bitcoin.conf file is OK
+    {
+        // ToDo: This is where I could write a 'firstconfig'....
+        return; // No anoncoin.conf file is OK
+    }
 
     set<string> setOptions;
     setOptions.insert("*");
 
     for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
     {
-        // Don't overwrite existing settings so command line settings override bitcoin.conf
+        // Don't overwrite existing settings so command line settings override anoncoin.conf
         string strKey = string("-") + it->string_key;
         if (mapSettingsRet.count(strKey) == 0)
         {
@@ -1328,7 +1282,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin will not work properly.");
+                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Anoncoin will not work properly.");
                     strMiscWarning = strMessage;
                     LogPrintf("*** %s\n", strMessage);
                     uiInterface.ThreadSafeMessageBox(strMessage, "", CClientUIInterface::MSG_WARNING);
@@ -1363,33 +1317,6 @@ void seed_insecure_rand(bool fDeterministic)
         } while(tmp == 0 || tmp == 0x464fffffU);
         insecure_rand_Rw = tmp;
     }
-}
-
-string FormatVersion(int nVersion)
-{
-    if (nVersion%100 == 0)
-        return strprintf("%d.%d.%d", nVersion/1000000, (nVersion/10000)%100, (nVersion/100)%100);
-    else
-        return strprintf("%d.%d.%d.%d", nVersion/1000000, (nVersion/10000)%100, (nVersion/100)%100, nVersion%100);
-}
-
-string FormatFullVersion()
-{
-    return CLIENT_BUILD;
-}
-
-// Format the subversion field according to BIP 14 spec (https://en.bitcoin.it/wiki/BIP_0014)
-std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)
-{
-    std::ostringstream ss;
-    ss << "/";
-    ss << name << ":" << FormatVersion(nClientVersion);
-    if (!comments.empty())
-        ss << "(" << boost::algorithm::join(comments, "; ") << ")";
-    ss << "/";
-    ss << "Primecoin:" << FormatVersion(PRIMECOIN_VERSION);
-    ss << "(" << CLIENT_BUILD << ")/";
-    return ss.str();
 }
 
 #ifdef WIN32
@@ -1462,6 +1389,8 @@ void RenameThread(const char* name)
 #endif
 }
 
+// ToDo: What's going on here, got a compiler error: stray ‘#’ in program, method defined twice, so deleted the dup with error.
+// GR note: Perhaps some additional thought needs to go into WIN32 environment construction, none is being provided for here.
 void SetupEnvironment()
 {
     #ifndef WIN32
@@ -1489,19 +1418,3 @@ std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)
     return ss.str();
 }
 
-void SetupEnvironment()
-{
-    +#ifndef WIN32
-    try
-    {
-	#if BOOST_FILESYSTEM_VERSION == 3
-            boost::filesystem::path::codecvt(); // Raises runtime error if current locale is invalid
-	#else				        // boost filesystem v2
-            std::locale();                      // Raises runtime error if current locale is invalid
-	#endif
-    } catch(std::runtime_error &e)
-    {
-        setenv("LC_ALL", "C", 1); // Force C locale
-    }
-    #endif
-}

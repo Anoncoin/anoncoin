@@ -1,7 +1,14 @@
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Copyright (c) 2012-2013 giv
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //--------------------------------------------------------------------------------------------------
+
+// Many builder specific things set in the config file, don't forget to include it this way in your source files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include "i2psam.h"
 
 #include <iostream>
@@ -23,16 +30,28 @@
 #define SAM_BUFSIZE         65536
 #define I2P_DESTINATION_SIZE 516
 
+// Define this, if you want more of the original standard output diagnostics
+// #define DEBUG_ON_STDOUT
+
 namespace SAM
 {
 
 static void print_error(const std::string& err)
 {
+    // ToDo: GR Note: We've got to get these std:cout errors and messages off the console, and into the coin logfile, however
+    //       my first attempt to do that, ended in failure.  Primarily because adding 'util.h' to this source causes all kinds of compile time errors
+    //       due to it's inclusion of 'compat.h' mostly, where socket stuff is also defined.  All that lost hair, over just trying to get
+    //       the LogPrintf function here in this submodule.  Added to the todo list...
+    //
+    //       After thinking about this some, the i2pwrapper is isolated from all this socket stuff, perhaps we could report to the log file from there
+    //       if we simple pipe these messages somewhere else that std::cout, and have the i2pwrapper pick them up and report them for us.  Just an idea.
+// #ifdef DEBUG_ON_STDOUT
 #ifdef WIN32
     std::cout << err << "(" << WSAGetLastError() << ")" << std::endl;
 #else
     std::cout << err << "(" << errno << ")" << std::endl;
 #endif
+// #endif // DEBUG_ON_STDOUT
 }
 
 #ifdef WIN32
@@ -65,6 +84,7 @@ Socket::Socket(const std::string& SAMHost, uint16_t SAMPort, const std::string& 
     servAddr_.sin_family = AF_INET;
     servAddr_.sin_addr.s_addr = inet_addr(SAMHost.c_str());
     servAddr_.sin_port = htons(SAMPort);
+    bootstrapI2P();
 }
 
 Socket::Socket(const sockaddr_in& addr, const std::string &minVer, const std::string& maxVer)
@@ -74,10 +94,7 @@ Socket::Socket(const sockaddr_in& addr, const std::string &minVer, const std::st
     if (instances_++ == 0)
         initWSA();
 #endif
-
-    init();
-    if (isOk())
-        handshake();
+    bootstrapI2P();
 }
 
 Socket::Socket(const Socket& rhs)
@@ -87,10 +104,7 @@ Socket::Socket(const Socket& rhs)
     if (instances_++ == 0)
         initWSA();
 #endif
-
-    init();
-    if (isOk())
-        handshake();
+    bootstrapI2P();
 }
 
 Socket::~Socket()
@@ -134,6 +148,7 @@ SOCKET Socket::release()
     return temp;
 }
 
+// If the handshake works, we're talking to a valid I2P router.
 void Socket::handshake()
 {
     this->write(Message::hello(minVer_, maxVer_));
@@ -152,7 +167,9 @@ void Socket::write(const std::string& msg)
         print_error("Failed to send data because socket is closed");
         return;
     }
+#ifdef DEBUG_ON_STDOUT
     std::cout << "Send: " << msg << std::endl;
+#endif
     ssize_t sentBytes = send(socket_, msg.c_str(), msg.length(), 0);
     if (sentBytes == SAM_SOCKET_ERROR)
     {
@@ -189,7 +206,9 @@ std::string Socket::read()
         close();
         print_error("Socket was closed");
     }
+#ifdef DEBUG_ON_STDOUT
     std::cout << "Reply: " << buffer << std::endl;
+#endif
     return std::string(buffer);
 }
 
@@ -253,7 +272,9 @@ StreamSession::StreamSession(
     , isSick_(false)
 {
     myDestination_ = createStreamSession(destination);
+#ifdef DEBUG_ON_STDOUT
     std::cout << "Created a brand new SAM session (" << sessionID_ << ")" << std::endl;
+#endif
 }
 
 StreamSession::StreamSession(StreamSession& rhs)
@@ -271,13 +292,17 @@ StreamSession::StreamSession(StreamSession& rhs)
     for(ForwardedStreamsContainer::const_iterator it = rhs.forwardedStreams_.begin(), end = rhs.forwardedStreams_.end(); it != end; ++it)
         forward(it->host, it->port, it->silent);
 
+// #ifdef DEBUG_ON_STDOUT
     std::cout << "Created a new SAM session (" << sessionID_ << ")  from another (" << rhs.sessionID_ << ")" << std::endl;
+// #endif
 }
 
 StreamSession::~StreamSession()
 {
     stopForwardingAll();
+#ifdef DEBUG_ON_STDOUT
     std::cout << "Closing SAM session (" << sessionID_ << ") ..." << std::endl;
+#endif
 }
 
 /*static*/
@@ -585,6 +610,8 @@ const std::string& StreamSession::getSAMVersion() const
 std::string Message::createSAMRequest(const char* format, ...)
 {
     char buffer[SAM_BUFSIZE];
+    // ToDo: GR note: Creating a 65K byte buffer on the stack, and then wasting the time to zero it out
+    //                before using it.  Just to send a 30 byte string?, seems really wasteful to me, time more than storage, many mSec...
     memset(buffer, 0, SAM_BUFSIZE);
 
     va_list args;

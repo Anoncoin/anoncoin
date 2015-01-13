@@ -1,9 +1,10 @@
 // Copyright (c) 2012 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BLOOM_H
-#define BITCOIN_BLOOM_H
+#ifndef ANONCOIN_BLOOM_H
+#define ANONCOIN_BLOOM_H
 
 #include "serialize.h"
 
@@ -31,11 +32,11 @@ enum bloomflags
 /**
  * BloomFilter is a probabilistic filter which SPV clients provide
  * so that we can filter the transactions we sends them.
- * 
+ *
  * This allows for significantly more efficient transaction and block downloads.
- * 
+ *
  * Because bloom filters are probabilistic, an SPV node can increase the false-
- * positive rate, making us send them transactions which aren't actually theirs, 
+ * positive rate, making us send them transactions which aren't actually theirs,
  * allowing clients to trade more bandwidth for more privacy by obfuscating which
  * keys are owned by them.
  */
@@ -89,4 +90,4 @@ public:
     void UpdateEmptyFull();
 };
 
-#endif /* BITCOIN_BLOOM_H */
+#endif /* ANONCOIN_BLOOM_H */

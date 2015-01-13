@@ -1,14 +1,23 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef CLIENTMODEL_H
 #define CLIENTMODEL_H
 
+// Many builder specific things set in the config file, for any source files where we rely on moc_xxx files being generated
+// it is best to include the anoncoin-config.h in the header file itself.  Not the .cpp src file, because otherwise any
+// conditional compilation guidelines, which rely on the build configuration, will not be present in the moc_xxx files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include <QObject>
 
 class AddressTableModel;
 class OptionsModel;
+class PeerTableModel;
 class TransactionTableModel;
 
 class CWallet;
@@ -32,7 +41,7 @@ enum NumConnections {
     CONNECTIONS_ALL  = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
-/** Model for Bitcoin network client. */
+/** Model for Anoncoin network client. */
 class ClientModel : public QObject
 {
     Q_OBJECT
@@ -42,6 +51,7 @@ public:
     ~ClientModel();
 
     OptionsModel *getOptionsModel();
+    PeerTableModel *getPeerTableModel();
 
     //! Return number of connections, default is in- and outbound (total)
     int getNumConnections(unsigned int flags = CONNECTIONS_ALL) const;
@@ -54,7 +64,7 @@ public:
     double getVerificationProgress() const;
     QDateTime getLastBlockDate() const;
 
-    //! Return network (main, testnet3, regtest)
+    //! Return network (main, testnetX, regtest)
     QString getNetworkName() const;
     //! Return true if core is doing initial block download
     bool inInitialBlockDownload() const;
@@ -69,8 +79,27 @@ public:
     QString clientName() const;
     QString formatClientStartupTime() const;
 
+#ifdef ENABLE_I2PSAM
+    /*
+     * Public functions needed for handling the I2P Config and operational settings
+     */
+    QString formatI2PNativeFullVersion() const;
+    int getNumI2PConnections() const;
+
+    QString getPublicI2PKey() const;
+    QString getPrivateI2PKey() const;
+    bool isI2PAddressGenerated() const;
+    bool isI2POnly() const;
+    bool isTorOnly() const;
+    bool isDarknetOnly() const;
+    bool isBehindDarknet() const;
+    QString getB32Address(const QString& destination) const;
+    void generateI2PDestination(QString& pub, QString& priv) const;
+#endif // ENABLE_I2PSAM
+
 private:
     OptionsModel *optionsModel;
+    PeerTableModel *peerTableModel;
 
     int cachedNumBlocks;
     bool cachedReindexing;
@@ -83,19 +112,34 @@ private:
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
 
+/**
+ * Note signal functions like this are created here in the header file, yet no source implmentation
+ * will be found in the developer code.  It's upto the build process to create moc_xx files, from which
+ * is generated sufficant information that QT runs & the linker is able to create an execuable.
+ */
 signals:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count);
     void alertsChanged(const QString &warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
-
+#ifdef ENABLE_I2PSAM
+    void numI2PConnectionsChanged(int count);               // When the I2P connection # changes, this signal is generated
+#endif
     //! Fired when a message should be reported to the user
     void message(const QString &title, const QString &message, unsigned int style);
 
+/**
+*  From: https://qt-project.org/doc/qt-5-snapshot/signalsandslots.html
+*  A slot is a function that is called in response to a particular signal. Qt's widgets have many pre-defined slots,
+*  but it is common practice to subclass widgets and add slots so that you can handle the signals that you are interested in...
+*/
 public slots:
     void updateTimer();
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
+#ifdef ENABLE_I2PSAM
+    void updateNumI2PConnections(int numI2PConnections);  // For I2P connection count updates, emit an numI2PConnectionsChanged signal
+#endif
 };
 
 #endif // CLIENTMODEL_H

@@ -1,10 +1,15 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+#ifndef ANONCOIN_NET_H
+#define ANONCOIN_NET_H
 
-#ifndef BITCOIN_NET_H
-#define BITCOIN_NET_H
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Included here in the header, we need ENABLE_I2PSAM some...
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include "bloom.h"
 #include "compat.h"
@@ -59,6 +64,10 @@ CNode* ConnectNode(CAddress addrConnect, const char *strDest = NULL);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
 bool BindListenPort(const CService &bindAddr, std::string& strError=REF(std::string()));
+#ifdef ENABLE_I2PSAM
+bool BindListenNativeI2P();
+bool BindListenNativeI2P(SOCKET& hSocket);
+#endif
 void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
@@ -104,12 +113,27 @@ bool IsReachable(const CNetAddr &addr);
 void SetReachable(enum Network net, bool fFlag = true);
 CAddress GetLocalAddress(const CNetAddr *paddrPeer = NULL);
 
+/**
+ * Specific functions we need to implement I2P functionality
+ */
+#ifdef ENABLE_I2PSAM
+std::string FormatI2PNativeFullVersion();
+bool IsDarknetOnly();
+bool IsTorOnly();
+bool IsI2POnly();
+bool IsI2PEnabled();
+bool IsBehindDarknet();
+#endif // ENABLE_I2PSAM
 
 extern bool fDiscover;
 extern uint64_t nLocalServices;
 extern uint64_t nLocalHostNonce;
 extern CAddrMan addrman;
 extern int nMaxConnections;
+
+#ifdef ENABLE_I2PSAM
+extern int nI2PNodeCount;
+#endif
 
 extern std::vector<CNode*> vNodes;
 extern CCriticalSection cs_vNodes;
@@ -283,6 +307,10 @@ public:
     bool fPingQueued;
 
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
+#ifdef ENABLE_I2PSAM
+      , nSendStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
+      , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
+#endif
     {
         nServices = 0;
         hSocket = hSocketIn;
@@ -344,6 +372,10 @@ public:
     }
 
 private:
+#ifdef ENABLE_I2PSAM
+    int nSendStreamType;
+    int nRecvStreamType;
+#endif
     // Network usage totals
     static CCriticalSection cs_totalBytesRecv;
     static CCriticalSection cs_totalBytesSent;
@@ -354,6 +386,23 @@ private:
     void operator=(const CNode&);
 
 public:
+#ifdef ENABLE_I2PSAM
+    void SetSendStreamType(int nType) {
+        nSendStreamType = nType;
+        ssSend.SetType(nSendStreamType);
+    }
+
+    void SetRecvStreamType(int nType) {
+        nRecvStreamType = nType;
+        for (std::deque<CNetMessage>::iterator it = vRecvMsg.begin(), end = vRecvMsg.end(); it != end; ++it) {
+            it->hdrbuf.SetType(nRecvStreamType);
+            it->vRecv.SetType(nRecvStreamType);
+        }
+    }
+
+    int GetSendStreamType() const { return nSendStreamType; }
+    int GetRecvStreamType() const { return nRecvStreamType; }
+#endif // ENABLE_I2PSAM
 
     NodeId GetId() const {
       return id;
@@ -736,4 +785,4 @@ public:
     bool Read(CAddrMan& addr);
 };
 
-#endif
+#endif // ANONCOIN_NET_H

@@ -1,10 +1,16 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2012 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+#ifndef ANONCOIN_UI_INTERFACE_H
+#define ANONCOIN_UI_INTERFACE_H
 
-#ifndef BITCOIN_UI_INTERFACE_H
-#define BITCOIN_UI_INTERFACE_H
+// Many builder specific things set in the config file, here we need it.
+// If ENABLE_I2PSAM is set, we'll support some more signals...
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include <stdint.h>
 #include <string>
@@ -94,6 +100,20 @@ public:
 
     /** A wallet has been loaded. */
     boost::signals2::signal<void (CWallet* wallet)> LoadWallet;
+
+    /**
+     * Required signals to support the I2P interface
+     */
+#ifdef ENABLE_I2PSAM
+    boost::signals2::signal<bool (const std::string& caption,
+                                  const std::string& pub,
+                                  const std::string& priv,
+                                  const std::string& b32,
+                                  const std::string& configFileName),
+                                  boost::signals2::last_value<bool> > ThreadSafeShowGeneratedI2PAddress;
+
+    boost::signals2::signal<void (int newNumI2PConnections)> NotifyNumI2PConnectionsChanged;
+#endif // ENABLE_I2PSAM
 };
 
 extern CClientUIInterface uiInterface;

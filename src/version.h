@@ -1,47 +1,26 @@
 // Copyright (c) 2012 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef BITCOIN_VERSION_H
-#define BITCOIN_VERSION_H
+#ifndef ANONCOIN_VERSION_H
+#define ANONCOIN_VERSION_H
 
-#include "clientversion.h"
-
-#include <string>
-
-//
-// client versioning
-//
-
-static const int CLIENT_VERSION =
-                           1000000 * CLIENT_VERSION_MAJOR
-                         +   10000 * CLIENT_VERSION_MINOR
-                         +     100 * CLIENT_VERSION_REVISION
-                         +       1 * CLIENT_VERSION_BUILD;
-
-extern const std::string CLIENT_NAME;
-extern const std::string CLIENT_BUILD;
-extern const std::string CLIENT_DATE;
-
-static const int PRIMECOIN_VERSION =
-                           1000000 * PRIMECOIN_VERSION_MAJOR
-                         +   10000 * PRIMECOIN_VERSION_MINOR
-                         +     100 * PRIMECOIN_VERSION_REVISION
-                         +       1 * PRIMECOIN_VERSION_BUILD;
-
-// I2P
-const std::string I2P_MODULE_VERSION = "0.3";
+// client versioning has moved to clientversion.h/cpp
 
 //
 // network protocol versioning
 //
 
-static const int PROTOCOL_VERSION = 70002;
+static const int PROTOCOL_VERSION = 70008;
 
 // intial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
 
 // disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION = 70002;
+// ToDo: For now we can set this to an old value (random), and try to sync
+// with the network, once a hard fork is certain and we are ready to upgrade
+// we need to set this to a value we can support.
+static const int MIN_PEER_PROTO_VERSION = 70007;
 
 // nTime field added to CAddress, starting with this version;
 // if possible, avoid requesting addresses nodes older than this

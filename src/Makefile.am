@@ -1,34 +1,96 @@
-include Makefile.include
+# Anoncoin edits as required to build 9.4 code,
+# we don't use secp256k1 nor build univalue/ crypto/ and core/ subdirectories seperately at this time.
+# We will want to as we migrate to the 0.9.99+ code though.  As much stuff as possible has simply been
+# commented out for now, make future upgrades easier when we go to those changes.
+#
+# DIST_SUBDIRS = secp256k1
+DIST_SUBDIRS=
+AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
 
-AM_CPPFLAGS += -I$(builddir)
 
-noinst_LIBRARIES = \
-  libbitcoin_server.a \
-  libbitcoin_common.a \
-  libbitcoin_cli.a
-if ENABLE_WALLET
-noinst_LIBRARIES += libbitcoin_wallet.a libbitcoin_server_wallet.a
+if EMBEDDED_LEVELDB
+LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/include
+LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/helpers/memenv
+LIBLEVELDB += $(builddir)/leveldb/libleveldb.a
+LIBMEMENV  += $(builddir)/leveldb/libmemenv.a
+
+# NOTE: This dependency is not strictly necessary, but without it make may try to build both in parallel, which breaks the LevelDB build system in a race
+$(LIBLEVELDB): $(LIBMEMENV)
+
+$(LIBLEVELDB) $(LIBMEMENV):
+	@echo "Building LevelDB ..." && $(MAKE) -C $(@D) $(@F) CXX="$(CXX)" \
+	  CC="$(CC)" PLATFORM=$(TARGET_OS) AR="$(AR)" $(LEVELDB_TARGET_FLAGS) \
+          OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
+
+if EMBEDDED_I2PSAM
+I2PSAM_CPPFLAGS += -I$(srcdir)/i2psam
+# LIBI2PSAM += $(builddir)/i2psam/i2psam.a
+
+# $(LIBI2PSAM) :
+# 	@echo "Building I2pSAM Interface ..." && $(MAKE) -C $(@D) $(@F) CXX="$(CXX)" \
+#	  CC="$(CC)" PLATFORM=$(TARGET_OS) AR="$(AR)" $(I2PSAM_TARGET_FLAGS) \
+#          OPT="$(CXXFLAGS) $(CPPFLAGS)"
+endif
+
+ANONCOIN_CONFIG_INCLUDES=-I$(builddir)/config
+ANONCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
+
+ANONCOIN_INCLUDES += -I$(I2PSAM_CPPFLAGS)
+#ANONCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
+
+LIBANONCOIN_SERVER=libanoncoin_server.a
+LIBANONCOIN_WALLET=libanoncoin_wallet.a
+LIBANONCOIN_COMMON=libanoncoin_common.a
+LIBANONCOIN_CLI=libanoncoin_cli.a
+LIBANONCOIN_UTIL=libanoncoin_util.a
+#LIBANONCOIN_CRYPTO=crypto/libanoncoin_crypto.a
+#LIBANONCOIN_UNIVALUE=univalue/libanoncoin_univalue.a
+LIBANONCOINQT=qt/libanoncoinqt.a
+#LIBSECP256K1=secp256k1/libsecp256k1.la
+
+#$(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
+#	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
+
+# Make is not made aware of per-object dependencies to avoid limiting building parallelization
+# But to build the less dependent modules first, we manually select their order here:
+noinst_LIBRARIES = \
+  libanoncoin_util.a \
+  libanoncoin_common.a \
+  libanoncoin_server.a \
+  libanoncoin_cli.a
+if ENABLE_WALLET
+ANONCOIN_INCLUDES += $(BDB_CPPFLAGS)
+noinst_LIBRARIES += libanoncoin_wallet.a
+endif
+
+#if BUILD_ANONCOIN_LIBS
+#lib_LTLIBRARIES = libanoncoinconsensus.la
+#LIBANONCOIN_CONSENSUS=libanoncoinconsensus.la
+#else
+LIBANONCOIN_CONSENSUS=
+#endif
 
 bin_PROGRAMS =
+TESTS =
 
-if BUILD_BITCOIND
-  bin_PROGRAMS += litecoind
+if BUILD_ANONCOIND
+  bin_PROGRAMS += anoncoind
 endif
 
-if BUILD_BITCOIN_CLI
-  bin_PROGRAMS += litecoin-cli litecoin-genalertkey
+if BUILD_ANONCOIN_UTILS
+#  bin_PROGRAMS += anoncoin-cli anoncoin-tx
+  bin_PROGRAMS += anoncoin-cli
 endif
 
-SUBDIRS = . $(BUILD_QT) $(BUILD_TEST)
-DIST_SUBDIRS = . qt test
 .PHONY: FORCE
-# bitcoin core #
-BITCOIN_CORE_H = \
+# anoncoin core #
+ANONCOIN_CORE_H = \
   addrman.h \
   alert.h \
   allocators.h \
-  base58.h bignum.h \
+  base58.h \
+  bignum.h \
   bloom.h \
   chainparams.h \
   checkpoints.h \
@@ -41,6 +103,7 @@ BITCOIN_CORE_H = \
   crypter.h \
   db.h \
   hash.h \
+  i2pwrapper.h \
   init.h \
   key.h \
   keystore.h \
@@ -68,8 +131,8 @@ BITCOIN_CORE_H = \
   uint256.h \
   util.h \
   version.h \
-  walletdb.h \
-  wallet.h
+  wallet.h \
+  walletdb.h
 
 JSON_H = \
   json/json_spirit.h \
@@ -82,20 +145,23 @@ JSON_H = \
   json/json_spirit_writer.h \
   json/json_spirit_writer_template.h
 
+I2PSAM_H = \
+  i2psam/i2psam.h
+
 obj/build.h: FORCE
-	@$(MKDIR_P) $(abs_top_builddir)/src/obj
+	@$(MKDIR_P) $(builddir)/obj
 	@$(top_srcdir)/share/genbuild.sh $(abs_top_builddir)/src/obj/build.h \
 	  $(abs_top_srcdir)
-version.o: obj/build.h
+libanoncoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-libbitcoin_server_a_SOURCES = \
+# server: shared between anoncoind and anoncoin-qt
+libanoncoin_server_a_CPPFLAGS = $(ANONCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
+libanoncoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
   bloom.cpp \
   checkpoints.cpp \
-  coins.cpp \
   init.cpp \
-  keystore.cpp \
   leveldbwrapper.cpp \
   main.cpp \
   miner.cpp \
@@ -110,119 +176,208 @@ libbitcoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   $(JSON_H) \
-  $(BITCOIN_CORE_H)
+  $(I2PSAM_H) \
+  $(ANONCOIN_CORE_H)
 
-libbitcoin_wallet_a_SOURCES = \
+# wallet: shared between anoncoind and anoncoin-qt, but only linked
+# when wallet enabled
+libanoncoin_wallet_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_wallet_a_SOURCES = \
   db.cpp \
   crypter.cpp \
-  wallet.cpp \
-  walletdb.cpp \
-  $(BITCOIN_CORE_H)
-
-libbitcoin_server_wallet_a_SOURCES = \
   rpcdump.cpp \
   rpcwallet.cpp \
-  $(BITCOIN_CORE_H)
+  wallet.cpp \
+  walletdb.cpp \
+  $(ANONCOIN_CORE_H)
 
-libbitcoin_common_a_SOURCES = \
-  base58.cpp \
+# crypto primitives library
+#crypto_libanoncoin_crypto_a_CPPFLAGS = $(ANONCOIN_CONFIG_INCLUDES)
+#crypto_libanoncoin_crypto_a_SOURCES = \
+#  crypto/sha1.cpp \
+#  crypto/sha2.cpp \
+#  crypto/ripemd160.cpp \
+#  crypto/common.h \
+#  crypto/sha2.h \
+#  crypto/sha1.h \
+#  crypto/ripemd160.h
+
+# univalue JSON library
+#univalue_libanoncoin_univalue_a_SOURCES = \
+#  univalue/univalue.cpp \
+#  univalue/univalue_read.cpp \
+#  univalue/univalue_write.cpp \
+#  univalue/univalue_escapes.h \
+#  univalue/univalue.h
+
+# common: shared between anoncoind, and anoncoin-qt and non-server tools
+libanoncoin_common_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_common_a_SOURCES = \
   allocators.cpp \
+  base58.cpp \
   chainparams.cpp \
+  coins.cpp \
   core.cpp \
   hash.cpp \
   key.cpp \
+  keystore.cpp \
   netbase.cpp \
   protocol.cpp \
-  rpcprotocol.cpp \
   script.cpp \
   scrypt.cpp \
+  scrypt-sse2.cpp \
+  i2pwrapper.cpp \
+  i2psam/i2psam.cpp \
+  $(ANONCOIN_CORE_H)
+
+# util: shared between all executables.
+# This library *must* be included to make sure that the glibc
+# backward-compatibility objects and their sanity checks are linked.
+libanoncoin_util_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_util_a_SOURCES = \
+  compat/glibc_sanity.cpp \
+  compat/glibcxx_sanity.cpp \
+  clientversion.cpp \
+  rpcprotocol.cpp \
   sync.cpp \
   util.cpp \
-  version.cpp \
-  $(BITCOIN_CORE_H)
+  $(ANONCOIN_CORE_H)
 
 if GLIBC_BACK_COMPAT
-libbitcoin_common_a_SOURCES += compat/glibc_compat.cpp
-libbitcoin_common_a_SOURCES += compat/glibcxx_compat.cpp
+libanoncoin_util_a_SOURCES += compat/glibc_compat.cpp
+libanoncoin_util_a_SOURCES += compat/glibcxx_compat.cpp
 endif
 
-libbitcoin_cli_a_SOURCES = \
+# cli: shared between anoncoin-cli and anoncoin-qt
+libanoncoin_cli_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_cli_a_SOURCES = \
   rpcclient.cpp \
-  $(BITCOIN_CORE_H)
+  $(ANONCOIN_CORE_H)
 
-nodist_libbitcoin_common_a_SOURCES = $(top_srcdir)/src/obj/build.h
+nodist_libanoncoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# litecoind binary #
-litecoind_LDADD = \
-  libbitcoin_server.a \
-  libbitcoin_cli.a \
-  libbitcoin_common.a \
+# anoncoind binary #
+anoncoind_LDADD = \
+  $(LIBANONCOIN_CLI) \
+  $(LIBANONCOIN_SERVER) \
+  $(LIBANONCOIN_COMMON) \
+  $(LIBANONCOIN_UTIL) \
   $(LIBLEVELDB) \
   $(LIBMEMENV)
+
 if ENABLE_WALLET
-litecoind_LDADD += libbitcoin_wallet.a libbitcoin_server_wallet.a
+anoncoind_LDADD += libanoncoin_wallet.a
 endif
-litecoind_SOURCES = bitcoind.cpp
+anoncoind_SOURCES = anoncoind.cpp
 #
 
 if TARGET_WINDOWS
-litecoind_SOURCES += bitcoind-res.rc
+anoncoind_SOURCES += anoncoind-res.rc
 endif
 
-AM_CPPFLAGS += $(BDB_CPPFLAGS)
-litecoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS)
+anoncoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
+anoncoind_CPPFLAGS = $(ANONCOIN_INCLUDES)
+anoncoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
-# litecoin-cli binary #
-litecoin_cli_LDADD = \
-  libbitcoin_cli.a \
-  libbitcoin_common.a \
-  $(BOOST_LIBS)
-litecoin_cli_SOURCES = bitcoin-cli.cpp
-
-## bitcoin-genalertkey binary #
-litecoin_genalertkey_LDADD = \
-  libbitcoin_server.a \
-  libbitcoin_cli.a \
-  libbitcoin_common.a \
+# anoncoin-cli binary #
+anoncoin_cli_LDADD = \
+  $(LIBANONCOIN_CLI) \
+  $(LIBANONCOIN_COMMON) \
+  $(LIBANONCOIN_UTIL) \
   $(BOOST_LIBS) \
   $(SSL_LIBS) \
-  $(CRYPTO_LIBS) \
-  $(LIBLEVELDB) \
-  $(LIBMEMENV)
-if ENABLE_WALLET
-litecoin_genalertkey_LDADD += libbitcoin_wallet.a $(BDB_LIBS)
-endif
+  $(CRYPTO_LIBS)
 
-litecoin_genalertkey_SOURCES = \
-  litecoin-genalertkey.cpp
+anoncoin_cli_SOURCES = \
+  anoncoin-cli.cpp
 
-litecoin_genalertkey_CPPFLAGS = $(BITCOIN_INCLUDES)
-
+anoncoin_cli_CPPFLAGS = $(ANONCOIN_INCLUDES)
 #
 
+# anoncoin-tx binary #
+#anoncoin_tx_LDADD = \
+#  $(LIBANONCOIN_UNIVALUE) \
+#  $(LIBANONCOIN_COMMON) \
+#  $(LIBANONCOIN_UTIL) \
+#  $(LIBANONCOIN_CRYPTO) \
+#  $(LIBSECP256K1) \
+#  $(BOOST_LIBS) \
+#  $(CRYPTO_LIBS)
+
+#anoncoin_tx_SOURCES = anoncoin-tx.cpp
+#anoncoin_tx_CPPFLAGS = $(ANONCOIN_INCLUDES)
+#
+#anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+
 if TARGET_WINDOWS
-litecoin_cli_SOURCES += bitcoin-cli-res.rc
+anoncoin_cli_SOURCES += anoncoin-cli-res.rc
 endif
+anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
-# NOTE: This dependency is not strictly necessary, but without it make may try to build both in parallel, which breaks the LevelDB build system in a race
-leveldb/libleveldb.a: leveldb/libmemenv.a
+#if BUILD_ANONCOIN_LIBS
+#include_HEADERS = script/anoncoinconsensus.h
+#libanoncoinconsensus_la_SOURCES = \
+#  core/transaction.cpp \
+#  crypto/sha1.cpp \
+#  crypto/sha2.cpp \
+#  crypto/ripemd160.cpp \
+#  eccryptoverify.cpp \
+#  ecwrapper.cpp \
+#  hash.cpp \
+#  pubkey.cpp \
+#  script/script.cpp \
+#  script/interpreter.cpp \
+#  script/anoncoinconsensus.cpp \
+#  uint256.cpp \
+#  utilstrencodings.cpp
 
-leveldb/%.a:
-	@echo "Building LevelDB ..." && $(MAKE) -C $(@D) $(@F) CXX="$(CXX)" \
-	  CC="$(CC)" PLATFORM=$(TARGET_OS) AR="$(AR)" $(LEVELDB_TARGET_FLAGS) \
-	  OPT="$(CXXFLAGS) $(CPPFLAGS)"
+#if GLIBC_BACK_COMPAT
+#  libanoncoinconsensus_la_SOURCES += compat/glibc_compat.cpp
+#  libanoncoinconsensus_la_SOURCES += compat/glibcxx_compat.cpp
+#endif
 
-qt/bitcoinstrings.cpp: $(libbitcoin_server_a_SOURCES) $(libbitcoin_common_a_SOURCES) $(libbitcoin_cli_a_SOURCES)
-	@test -n $(XGETTEXT) || echo "xgettext is required for updating translations"
-	@cd $(top_srcdir); XGETTEXT=$(XGETTEXT) share/qt/extract_strings_qt.py
+#libanoncoinconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)
+#libanoncoinconsensus_la_LIBADD = $(CRYPTO_LIBS)
+#libanoncoinconsensus_la_CPPFLAGS = $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_ANONCOIN_INTERNAL
+#if USE_LIBSECP256K1
+#libanoncoinconsensus_la_LIBADD += secp256k1/libsecp256k1.la
+#endif
+#endif
 
+# CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno i2psam/libi2psam.a
 CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno
 
 DISTCLEANFILES = obj/build.h
 
-EXTRA_DIST = leveldb Makefile.include
+EXTRA_DIST = leveldb
 
 clean-local:
 	-$(MAKE) -C leveldb clean
+#	-$(MAKE) -C secp256k1 clean
 	rm -f leveldb/*/*.gcno leveldb/helpers/memenv/*.gcno
+	-rm -f config.h
+
+.rc.o:
+	@test -f $(WINDRES)
+	$(AM_V_GEN) $(WINDRES) -DWINDRES_PREPROC -i $< -o $@
+
+.mm.o:
+	$(AM_V_CXX) $(OBJCXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	  $(CPPFLAGS) $(AM_CXXFLAGS) $(QT_INCLUDES) $(CXXFLAGS)  -c -o $@ $<
+
+%.pb.cc %.pb.h: %.proto
+	@test -f $(PROTOC)
+	$(AM_V_GEN) $(PROTOC) --cpp_out=$(@D) --proto_path=$(abspath $(<D) $<)
+
+if ENABLE_TESTS
+include Makefile.test.include
+endif
+
+if ENABLE_QT
+include Makefile.qt.include
+endif
+
+if ENABLE_QT_TESTS
+#include Makefile.qttest.include
+endif

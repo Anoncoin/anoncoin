@@ -1,14 +1,12 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include "bitcoin-config.h"
-#endif
-
 #include "optionsmodel.h"
+// Anoncoin-config.h has been loaded...
 
-#include "bitcoinunits.h"
+#include "anoncoinunits.h"
 #include "guiutil.h"
 
 #include "init.h"
@@ -19,10 +17,21 @@
 #include "wallet.h"
 #include "walletdb.h"
 #endif
+#ifdef ENABLE_I2PSAM
+#include "i2pwrapper.h"
+#endif
 
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QStringList>
+
+// Only needed because we have a temporary readonly on the i2p settings
+#ifdef NOTYET_ENABLE_I2PSAM
+#include <QMessageBox>
+            QMessageBox::warning( NULL, "Notice - Upgrade in progress",
+                                  "Values are now for read-only purposes only",
+                                  QMessageBox::Ok, QMessageBox::Ok );
+#endif
 
 OptionsModel::OptionsModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -56,7 +65,7 @@ void OptionsModel::Init()
 
     // Display
     if (!settings.contains("nDisplayUnit"))
-        settings.setValue("nDisplayUnit", BitcoinUnits::BTC);
+        settings.setValue("nDisplayUnit", AnoncoinUnits::ANC);
     nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
     if (!settings.contains("strThirdPartyTxUrls"))
@@ -125,6 +134,28 @@ void OptionsModel::Init()
         addOverriddenOption("-lang");
 
     language = settings.value("language").toString();
+#ifdef ENABLE_I2PSAM
+    // Initialize our options model parameters for I2P session variables, from what has already been set, primarily from the variables in anoncoin.conf
+    // ToDo: These have become read-only, yet the interface still needs to be changed.
+    I2PUseI2POnly = IsI2POnly();
+    I2PSAMHost = QString::fromStdString( GetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS ) );
+    I2PSAMPort = (int)GetArg( "-i2p.options.samport", SAM_DEFAULT_PORT );
+    I2PSessionName = QString::fromStdString( GetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT ) );
+
+    i2pInboundQuantity        = (int)GetArg( "-i2p.options.inbound.quantity"        , SAM_DEFAULT_INBOUND_QUANTITY );
+    i2pInboundLength          = (int)GetArg( "-i2p.options.inbound.length"          , SAM_DEFAULT_INBOUND_LENGTH );
+    i2pInboundLengthVariance  = (int)GetArg( "-i2p.options.inbound.lengthvariance"  , SAM_DEFAULT_INBOUND_LENGTHVARIANCE );
+    i2pInboundBackupQuantity  = (int)GetArg( "-i2p.options.inbound.backupquantity"  , SAM_DEFAULT_INBOUND_BACKUPQUANTITY );
+    i2pInboundAllowZeroHop    = GetBoolArg( "-i2p.options.inbound.allowzerohop"     , SAM_DEFAULT_INBOUND_ALLOWZEROHOP );
+    i2pInboundIPRestriction   = (int)GetArg( "-i2p.options.inbound.iprestriction"   , SAM_DEFAULT_INBOUND_IPRESTRICTION );
+    i2pOutboundQuantity       = (int)GetArg( "-i2p.options.outbound.quantity"       , SAM_DEFAULT_OUTBOUND_QUANTITY );
+    i2pOutboundLength         = (int)GetArg( "-i2p.options.outbound.length"         , SAM_DEFAULT_OUTBOUND_LENGTH );
+    i2pOutboundLengthVariance = (int)GetArg( "-i2p.options.outbound.lengthvariance" , SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE );
+    i2pOutboundBackupQuantity = (int)GetArg( "-i2p.options.outbound.backupquantity" , SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY );
+    i2pOutboundAllowZeroHop   = GetBoolArg( "-i2p.options.outbound.allowzerohop"    , SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP );
+    i2pOutboundIPRestriction  = (int)GetArg( "-i2p.options.outbound.iprestriction"  , SAM_DEFAULT_OUTBOUND_IPRESTRICTION );
+    i2pOutboundPriority       = (int)GetArg( "-i2p.options.outbound.priority"       , SAM_DEFAULT_OUTBOUND_PRIORITY );
+#endif // ENABLE_I2PSAM
 }
 
 void OptionsModel::Reset()
@@ -204,6 +235,42 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("nDatabaseCache");
         case ThreadsScriptVerif:
             return settings.value("nThreadsScriptVerif");
+#ifdef ENABLE_I2PSAM
+        case eI2PUseI2POnly:
+            return QVariant( I2PUseI2POnly );
+        case eI2PSAMHost:
+            return QVariant( I2PSAMHost );
+        case eI2PSAMPort:
+            return QVariant( I2PSAMPort );
+        case eI2PSessionName:
+            return QVariant( I2PSessionName );
+        case I2PInboundQuantity:
+            return QVariant(i2pInboundQuantity);
+        case I2PInboundLength:
+            return QVariant(i2pInboundLength);
+        case I2PInboundLengthVariance:
+            return QVariant(i2pInboundLengthVariance);
+        case I2PInboundBackupQuantity:
+            return QVariant(i2pInboundBackupQuantity);
+        case I2PInboundAllowZeroHop:
+            return QVariant(i2pInboundAllowZeroHop);
+        case I2PInboundIPRestriction:
+            return QVariant(i2pInboundIPRestriction);
+        case I2POutboundQuantity:
+            return QVariant(i2pOutboundQuantity);
+        case I2POutboundLength:
+            return QVariant(i2pOutboundLength);
+        case I2POutboundLengthVariance:
+            return QVariant(i2pOutboundLengthVariance);
+        case I2POutboundBackupQuantity:
+            return QVariant(i2pOutboundBackupQuantity);
+        case I2POutboundAllowZeroHop:
+            return QVariant(i2pOutboundAllowZeroHop);
+        case I2POutboundIPRestriction:
+            return QVariant(i2pOutboundIPRestriction);
+        case I2POutboundPriority:
+            return QVariant(i2pOutboundPriority);
+#endif // ENABLE_I2PSAM
         default:
             return QVariant();
         }
@@ -314,12 +381,35 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 setRestartRequired(true);
             }
             break;
+#ifdef ENABLE_I2PSAM
+        case eI2PUseI2POnly:
+        case eI2PSAMHost:
+        case eI2PSAMPort:
+        case eI2PSessionName:
+        case I2PInboundQuantity:
+        case I2PInboundLength:
+        case I2PInboundLengthVariance:
+        case I2PInboundBackupQuantity:
+        case I2PInboundAllowZeroHop:
+        case I2PInboundIPRestriction:
+        case I2POutboundQuantity:
+        case I2POutboundLength:
+        case I2POutboundLengthVariance:
+        case I2POutboundBackupQuantity:
+        case I2POutboundAllowZeroHop:
+        case I2POutboundIPRestriction:
+        case I2POutboundPriority:
+            break;
+#endif // ENABLE_I2PSAM
         default:
             break;
         }
     }
-
-    emit dataChanged(index, index);
+// ToDo: Finish fixing this so that it is readonly or removed
+#ifdef ENABLE_I2PSAM
+    if( index.row() < eI2PUseI2POnly )
+#endif
+        emit dataChanged(index, index);
 
     return successful;
 }

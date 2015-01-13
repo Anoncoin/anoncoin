@@ -1,10 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef _BITCOIN_COMPAT_H
-#define _BITCOIN_COMPAT_H
+#ifndef _ANONCOIN_COMPAT_H
+#define _ANONCOIN_COMPAT_H
 
 #ifdef WIN32
 #ifdef _WIN32_WINNT

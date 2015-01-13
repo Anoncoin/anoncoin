@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>593</width>
-    <height>319</height>
+    <width>619</width>
+    <height>594</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About Bitcoin Core</string>
+   <string>About Anoncoin Core</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
@@ -23,7 +23,7 @@
       </sizepolicy>
      </property>
      <property name="pixmap">
-      <pixmap resource="../bitcoin.qrc">:/images/about</pixmap>
+      <pixmap resource="../anoncoin.qrc">:/images/about</pixmap>
      </property>
     </widget>
    </item>
@@ -50,7 +50,7 @@
           <cursorShape>IBeamCursor</cursorShape>
          </property>
          <property name="text">
-          <string>&lt;b&gt;Bitcoin Core&lt;/b&gt; version</string>
+          <string>&lt;b&gt;Anoncoin Core&lt;/b&gt; version</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -91,7 +91,7 @@
         <cursorShape>IBeamCursor</cursorShape>
        </property>
        <property name="text">
-        <string notr="true">Copyright &amp;copy; 2009-YYYY The Bitcoin Core developers</string>
+        <string notr="true">Copyright &amp;copy; 2013-YYYY The Anoncoin Core developers</string>
        </property>
        <property name="textFormat">
         <enum>Qt::RichText</enum>
@@ -150,7 +150,7 @@ This product includes software developed by the OpenSSL Project for use in the O
   </layout>
  </widget>
  <resources>
-  <include location="../bitcoin.qrc"/>
+  <include location="../anoncoin.qrc"/>
  </resources>
  <connections>
   <connection>

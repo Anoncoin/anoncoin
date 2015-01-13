@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +9,7 @@
 #include <QDialog>
 #include <QObject>
 
-class BitcoinGUI;
+class AnoncoinGUI;
 class ClientModel;
 
 namespace Ui {
@@ -63,7 +64,7 @@ class ShutdownWindow : public QObject
     Q_OBJECT
 
 public:
-    static void showShutdownWindow(BitcoinGUI *window);
+    static void showShutdownWindow(AnoncoinGUI *window);
 };
 
 #endif // UTILITYDIALOG_H

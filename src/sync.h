@@ -1,10 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_SYNC_H
-#define BITCOIN_SYNC_H
+#ifndef ANONCOIN_SYNC_H
+#define ANONCOIN_SYNC_H
 
 #include "threadsafety.h"
 
@@ -21,9 +22,9 @@
 ////////////////////////////////////////////////
 
 /*
- 
- 
- 
+
+
+
 CCriticalSection mutex;
     boost::recursive_mutex mutex;
 
@@ -42,9 +43,9 @@ ENTER_CRITICAL_SECTION(mutex); // no RAII
 
 LEAVE_CRITICAL_SECTION(mutex); // no RAII
     mutex.unlock();
- 
- 
- 
+
+
+
  */
 
 

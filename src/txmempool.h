@@ -1,9 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef BITCOIN_TXMEMPOOL_H
-#define BITCOIN_TXMEMPOOL_H
+#ifndef ANONCOIN_TXMEMPOOL_H
+#define ANONCOIN_TXMEMPOOL_H
 
 #include <list>
 
@@ -110,4 +111,4 @@ public:
     bool HaveCoins(const uint256 &txid);
 };
 
-#endif /* BITCOIN_TXMEMPOOL_H */
+#endif /* ANONCOIN_TXMEMPOOL_H */

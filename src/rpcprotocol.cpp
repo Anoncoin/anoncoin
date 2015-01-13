@@ -1,10 +1,13 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "rpcprotocol.h"
 
+#include "clientversion.h"
+#include "tinyformat.h"
 #include "util.h"
 
 #include <stdint.h>
@@ -36,7 +39,7 @@ string HTTPPost(const string& strMsg, const map<string,string>& mapRequestHeader
 {
     ostringstream s;
     s << "POST / HTTP/1.1\r\n"
-      << "User-Agent: bitcoin-json-rpc/" << FormatFullVersion() << "\r\n"
+      << "User-Agent: anoncoin-json-rpc/" << FormatFullVersion() << "\r\n"
       << "Host: 127.0.0.1\r\n"
       << "Content-Type: application/json\r\n"
       << "Content-Length: " << strMsg.size() << "\r\n"
@@ -59,7 +62,7 @@ string HTTPReply(int nStatus, const string& strMsg, bool keepalive)
     if (nStatus == HTTP_UNAUTHORIZED)
         return strprintf("HTTP/1.0 401 Authorization Required\r\n"
             "Date: %s\r\n"
-            "Server: bitcoin-json-rpc/%s\r\n"
+            "Server: anoncoin-json-rpc/%s\r\n"
             "WWW-Authenticate: Basic realm=\"jsonrpc\"\r\n"
             "Content-Type: text/html\r\n"
             "Content-Length: 296\r\n"
@@ -86,7 +89,7 @@ string HTTPReply(int nStatus, const string& strMsg, bool keepalive)
             "Connection: %s\r\n"
             "Content-Length: %u\r\n"
             "Content-Type: application/json\r\n"
-            "Server: bitcoin-json-rpc/%s\r\n"
+            "Server: anoncoin-json-rpc/%s\r\n"
             "\r\n"
             "%s",
         nStatus,
@@ -96,6 +99,24 @@ string HTTPReply(int nStatus, const string& strMsg, bool keepalive)
         strMsg.size(),
         FormatFullVersion(),
         strMsg);
+}
+
+int static GetPostIndex(const vector<string>& vWords)
+{
+	if (vWords[0] == "GET" || vWords[0] == "POST")
+		return 0;
+	if (vWords[1] == "GET" || vWords[1] == "POST")
+		return 1;
+	return -1;
+}
+
+int static GetURIIndex(const vector<string>& vWords)
+{
+	if (vWords[0].size() > 0 && vWords[0][0] == '/')
+		return 0;
+	if (vWords[1].size() > 0 && vWords[1][0] == '/')
+		return 1;
+	return -1;
 }
 
 bool ReadHTTPRequestLine(std::basic_istream<char>& stream, int &proto,
@@ -111,14 +132,22 @@ bool ReadHTTPRequestLine(std::basic_istream<char>& stream, int &proto,
         return false;
 
     // HTTP methods permitted: GET, POST
-    http_method = vWords[0];
-    if (http_method != "GET" && http_method != "POST")
+    int postIndex = GetPostIndex(vWords);
+    if(postIndex < 0)
+    {
+        printf("ReadHTTPRequestLine GetPostIndex FAIL\n");
         return false;
+    }
+    http_method = vWords[postIndex];
 
+	int URIIndex = GetURIIndex(vWords);
+	if(URIIndex < 0)
+	{
+		printf("ReadHTTPRequestLine GetURIIndex FAIL\n");
+		return false;
+	}
     // HTTP URI must be an absolute path, relative to current host
-    http_uri = vWords[1];
-    if (http_uri.size() == 0 || http_uri[0] != '/')
-        return false;
+    http_uri = vWords[URIIndex];
 
     // parse proto, if present
     string strProto = "";
@@ -208,7 +237,7 @@ int ReadHTTPMessage(std::basic_istream<char>& stream, map<string,
 }
 
 //
-// JSON-RPC protocol.  Bitcoin speaks version 1.0 for maximum compatibility,
+// JSON-RPC protocol.  Anoncoin speaks version 1.0 for maximum compatibility,
 // but uses JSON-RPC 1.1/2.0 standards for parts of the 1.0 standard that were
 // unspecified (HTTP errors and contents of 'error').
 //

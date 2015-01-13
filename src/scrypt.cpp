@@ -26,8 +26,11 @@
  * This file was originally written by Colin Percival as part of the Tarsnap
  * online backup system.
  */
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 
 #include "scrypt.h"
+// Anoncoin-config.h has been loaded...
+
 #include "util.h"
 #include <stdlib.h>
 #include <stdint.h>
@@ -293,7 +296,7 @@ void (*scrypt_1024_1_1_256_sp_detected)(const char *input, char *output, char *s
 void scrypt_detect_sse2()
 {
 #if defined(USE_SSE2_ALWAYS)
-    printf("scrypt: using scrypt-sse2 as built.\n");
+    LogPrintf("scrypt: Powered by scrypt-sse2, as built.  Hardware detection disabled.\n");
 #else // USE_SSE2_ALWAYS
     // 32bit x86 Linux or Windows, detect cpuid features
     unsigned int cpuid_edx=0;
@@ -311,12 +314,12 @@ void scrypt_detect_sse2()
     if (cpuid_edx & 1<<26)
     {
         scrypt_1024_1_1_256_sp_detected = &scrypt_1024_1_1_256_sp_sse2;
-        printf("scrypt: using scrypt-sse2 as detected.\n");
+        LogPrintf("scrypt: Powered by scrypt-sse2, hardware detected.\n");
     }
     else
     {
         scrypt_1024_1_1_256_sp_detected = &scrypt_1024_1_1_256_sp_generic;
-        printf("scrypt: using scrypt-generic, SSE2 unavailable.\n");
+        LogPrintf("scrypt: Using scrypt-generic, SSE2 hardware unavailable.\n");
     }
 #endif // USE_SSE2_ALWAYS
 }

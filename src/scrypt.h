@@ -1,5 +1,17 @@
+// Copyright 2009 Colin Percival, 2011 ArtForz, 2012-2013 pooler
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 #ifndef SCRYPT_H
 #define SCRYPT_H
+
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.
+// Don't forget to include it this way in your source or header files.  GR Note: The
+// latter is now my preferred method, with a note in the source file about how the builder
+// config file has now been loaded.  We define now USE_SSE2 in the build process, so this
+// in an important attribute to now consider.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -9,12 +21,13 @@ void scrypt_1024_1_1_256(const char *input, char *output);
 void scrypt_1024_1_1_256_sp_generic(const char *input, char *output, char *scratchpad);
 
 #if defined(USE_SSE2)
-#if defined(_M_X64) || defined(__x86_64__) || defined(_M_AMD64) || (defined(MAC_OSX) && defined(__i386__))
-#define USE_SSE2_ALWAYS 1
-#define scrypt_1024_1_1_256_sp(input, output, scratchpad) scrypt_1024_1_1_256_sp_sse2((input), (output), (scratchpad))
-#else
+// GR note: Commented out, because the machine building this is not the target host, we can only allow detecting the possiblity of using that hardware.
+// #if defined(_M_X64) || defined(__x86_64__) || defined(_M_AMD64) || (defined(MAC_OSX) && defined(__i386__))
+// #define USE_SSE2_ALWAYS 1
+// #define scrypt_1024_1_1_256_sp(input, output, scratchpad) scrypt_1024_1_1_256_sp_sse2((input), (output), (scratchpad))
+// #else
 #define scrypt_1024_1_1_256_sp(input, output, scratchpad) scrypt_1024_1_1_256_sp_detected((input), (output), (scratchpad))
-#endif
+// #endif
 
 void scrypt_detect_sse2();
 void scrypt_1024_1_1_256_sp_sse2(const char *input, char *output, char *scratchpad);

@@ -1,6 +1,12 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include "splashscreen.h"
 
@@ -31,8 +37,10 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
 
     // define text to place
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightText1   = QChar(0xA9)+QString(" 2009-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Bitcoin Core developers"));
-    QString copyrightText2   = QChar(0xA9)+QString(" 2011-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Litecoin Core developers"));
+    QString copyrightText1   = QChar(0xA9)+QString(" 2013-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Anoncoin Core developers"));
+    QString copyrightText2   = QChar(0xA9)+QString(" 2009-%1 ").arg(2015) + QString(tr("The Bitcoin Core developers"));
+    QString copyrightText3   = QChar(0xA9)+QString(" 2011-%1 ").arg(2014) + QString(tr("The Litecoin Core developers"));
+    QString copyrightText4   = QChar(0xA9)+QString(" 2013 ") + QString(tr("The Primecoin developers"));
     QString testnetAddText  = QString(tr("[testnet]")); // define text to place as single text object
 
     QString font            = "Arial";
@@ -59,6 +67,8 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     pixPaint.setFont(QFont(font, 8*fontFactor));
     pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop,copyrightText1);
     pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace,copyrightText2);
+    pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace*2,copyrightText3);
+    pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace*3,copyrightText4);
 
     // draw testnet string if testnet is on
     if(isTestNet) {
@@ -94,7 +104,7 @@ static void InitMessage(SplashScreen *splash, const std::string &message)
         Q_ARG(QString, QString::fromStdString(message)),
         Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
         Q_ARG(QColor, QColor(55,55,55)));
-        
+
 }
 
 static void ShowProgress(SplashScreen *splash, const std::string &title, int nProgress)
