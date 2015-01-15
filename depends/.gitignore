@@ -1,8 +1,19 @@
+# Ignore the standard locations the builder uses to contruct and maintain your toolchain(s)
 SDKs/
 work/
 built/
 sources/
-x86_64-unknown-linux-gnu/
+
+# ...and the triplite folders it makes on your system.
+# Within each of these, share/config.site is found, an important file, 
+# when you go to use this toolchain, to build other things.
+# I'm running the last one listed...GR
+i686-unknown-linux/
 i686-w64-mingw32/
 x86_64-w64-mingw32/
-config.site
+x86_64-apple-darwin11/
+x86_64-unknown-linux-gnu/
+
+# Any logs you might save during building...
+*.log
+
