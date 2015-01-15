@@ -3,16 +3,17 @@ $(package)_version=1_57_0
 $(package)_download_path=http://sourceforge.net/projects/boost/files/boost/1.57.0
 $(package)_file_name=$(package)_$($(package)_version).tar.bz2
 $(package)_sha256_hash=910c8c022a33ccec7f088bd65d4f14b466588dda94ba2124e78b8c57db264967
-$(package)_patches=darwin_boost_atomic-1.patch darwin_boost_atomic-2.patch
+$(package)_patches=
 
 define $(package)_set_vars
 $(package)_config_opts_release=variant=release
 $(package)_config_opts_debug=variant=debug
 $(package)_config_opts=--layout=tagged --build-type=complete --user-config=user-config.jam
-# For some reason -sNO_ZLIB=1 needs to be removed from the following line for this boost version, the problem only showed up when building lib for i2pd...
-# GR Note: Think i removed my os develop files on zlib, we're going to let it use internel versions, unless there is a reason not to...
-# $(package)_config_opts+=threading=multi link=static -sNO_BZIP2=1
-$(package)_config_opts+=threading=multi link=static -sNO_BZIP2=1 -sNO_ZLIB=1
+# For some reason -sNO_ZLIB=1 needs to be removed from the following line for this boost version or because the added modules
+# needed to build for i2pd where included...
+# GR Note: Going to let it use internel version, unless there is a reason not to...
+# $(package)_config_opts+=threading=multi link=static -sNO_BZIP2=1 -sNO_ZLIB=1
+$(package)_config_opts+=threading=multi link=static -sNO_BZIP2=1
 $(package)_config_opts_linux=threadapi=pthread runtime-link=shared
 $(package)_config_opts_darwin=--toolset=darwin-4.2.1 runtime-link=shared
 $(package)_config_opts_mingw32=binary-format=pe target-os=windows threadapi=win32 runtime-link=static
@@ -29,8 +30,6 @@ $(package)_cxxflags_linux=-fPIC
 endef
 
 define $(package)_preprocess_cmds
-  patch -p2 < $($(package)_patch_dir)/darwin_boost_atomic-1.patch && \
-  patch -p2 < $($(package)_patch_dir)/darwin_boost_atomic-2.patch && \
   echo "using $(boost_toolset_$(host_os)) : : $($(package)_cxx) : <cxxflags>\"$($(package)_cxxflags) $($(package)_cppflags)\" <linkflags>\"$($(package)_ldflags)\" <archiver>\"$(boost_archiver_$(host_os))\" <striper>\"$(host_STRIP)\"  <ranlib>\"$(host_RANLIB)\" <rc>\"$(host_WINDRES)\" : ;" > user-config.jam
 endef
 
