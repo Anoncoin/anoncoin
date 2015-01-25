@@ -10,7 +10,7 @@ GZIP_ENV="-9n"
 
 if BUILD_ANONCOIN_LIBS
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libanoncoinconsensus.pc
+# pkgconfig_DATA = libanoncoinconsensus.pc
 endif
 
 ANONCOIND_BIN=$(top_builddir)/src/anoncoind$(EXEEXT)
