@@ -27,10 +27,10 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     setAutoFillBackground(true);
 
     // set reference point, paddings
-    int paddingRight            = 190;
-    int paddingRightCopyright   = 220;
-    int paddingTop              = 170;
-    int paddingCopyrightTop     = 70;
+    int paddingRight            = 210;
+    int paddingRightCopyright   = 210;
+    int paddingTop              = 155;
+    int paddingCopyrightTop     = 50;
     int titleCopyrightVSpace    = 14;
 
     float fontFactor            = 1.0;
@@ -55,8 +55,8 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     }
 
     QPainter pixPaint(&newPixmap);
-    pixPaint.setPen(QColor(100,100,100));
-    pixPaint.setFont(QFont(font, 8*fontFactor));
+    pixPaint.setPen(QColor(230,230,230));
+    pixPaint.setFont(QFont(font, 10*fontFactor));
 
     QFontMetrics fm = pixPaint.fontMetrics();
 
@@ -64,21 +64,21 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     pixPaint.drawText(newPixmap.width()-paddingRight+2,paddingTop,versionText);
 
     // draw copyright stuff
-    pixPaint.setFont(QFont(font, 8*fontFactor));
+    pixPaint.setFont(QFont(font, 10*fontFactor));
     pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop,copyrightText1);
     pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace,copyrightText2);
     pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace*2,copyrightText3);
     pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace*3,copyrightText4);
 
-    // draw testnet string if testnet is on
-    if(isTestNet) {
-        QFont boldFont = QFont(font, 10*fontFactor);
-        boldFont.setWeight(QFont::Bold);
-        pixPaint.setFont(boldFont);
-        fm = pixPaint.fontMetrics();
-        int testnetAddTextWidth  = fm.width(testnetAddText);
-        pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
-    }
+    // draw testnet string if testnet is on. This is no longer necessary as this is included in splash_testnet.png
+    //if(isTestNet) {
+    //    QFont boldFont = QFont(font, 10*fontFactor);
+    //    boldFont.setWeight(QFont::Bold);
+    //    pixPaint.setFont(boldFont);
+    //    fm = pixPaint.fontMetrics();
+    //    int testnetAddTextWidth  = fm.width(testnetAddText);
+    //    pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
+    //}
 
     pixPaint.end();
 
@@ -102,8 +102,8 @@ static void InitMessage(SplashScreen *splash, const std::string &message)
     QMetaObject::invokeMethod(splash, "showMessage",
         Qt::QueuedConnection,
         Q_ARG(QString, QString::fromStdString(message)),
-        Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
-        Q_ARG(QColor, QColor(55,55,55)));
+        Q_ARG(int, Qt::AlignBottom|Qt::AlignRight), //Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
+        Q_ARG(QColor, QColor(225,225,225)));
 
 }
 
