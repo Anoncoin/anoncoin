@@ -52,7 +52,6 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     pixPaint.setPen(QColor(250,250,250));
     pixPaint.setFont(QFont(font, 12*fontFactor));
     
-
     QFontMetrics fm = pixPaint.fontMetrics();
 
     // draw version
@@ -104,7 +103,6 @@ static void InitMessage(SplashScreen *splash, const std::string &message)
         Qt::QueuedConnection,
         Q_ARG(QString, QString::fromStdString(message_cr)),
         Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
-        //Q_ARG(int, Qt::AlignHCenter),
         Q_ARG(QColor, QColor(0,0,0)));
 }
 
