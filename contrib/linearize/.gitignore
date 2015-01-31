@@ -1,0 +1,9 @@
+# Keep your configuration files local
+# except for the one we give away, as working...
+*.cfg
+!anoncoin-sample.cfg
+
+# Data output/input files
+bootstrap*.*
+*.txt
+
