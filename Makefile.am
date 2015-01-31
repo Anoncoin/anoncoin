@@ -105,10 +105,10 @@ $(APP_DIST_DIR)/Applications:
 	@rm -f $@
 	@cd $(@D); $(LN_S) /Applications $(@F)
 
-$(APP_DIST_EXTRAS): $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Bitcoin-Qt
+$(APP_DIST_EXTRAS): $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Anoncoin-Qt
 
 $(OSX_DMG): $(APP_DIST_EXTRAS)
-	$(GENISOIMAGE) -no-cache-inodes -D -l -probe -V "Bitcoin-Qt" -no-pad -r -apple -o $@ dist
+	$(GENISOIMAGE) -no-cache-inodes -D -l -probe -V "Anoncoin-Qt" -no-pad -r -apple -o $@ dist
 
 $(APP_DIST_DIR)/.background/background.png:
 	$(MKDIR_P) $(@D)
@@ -116,7 +116,7 @@ $(APP_DIST_DIR)/.background/background.png:
 $(APP_DIST_DIR)/.DS_Store:
 	$(INSTALL) $(top_srcdir)/contrib/macdeploy/DS_Store $@
 
-$(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Bitcoin-Qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
+$(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Anoncoin-Qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
 	INSTALLNAMETOOL=$(INSTALLNAMETOOL)  OTOOL=$(OTOOL) STRIP=$(STRIP) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) -translations-dir=$(QT_TRANSLATION_DIR) -add-qt-tr $(OSX_QT_TRANSLATIONS) -verbose 2
 
 deploydir: $(APP_DIST_EXTRAS)

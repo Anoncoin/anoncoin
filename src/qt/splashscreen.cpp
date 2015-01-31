@@ -27,23 +27,17 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     setAutoFillBackground(true);
 
     // set reference point, paddings
-    int paddingRight            = 190;
-    int paddingRightCopyright   = 220;
-    int paddingTop              = 170;
-    int paddingCopyrightTop     = 70;
-    int titleCopyrightVSpace    = 14;
+    int paddingTop              = 236;
+    int paddingCopyrightTop     = 18;
 
     float fontFactor            = 1.0;
 
     // define text to place
-    QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightText1   = QChar(0xA9)+QString(" 2013-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("The Anoncoin Core developers"));
-    QString copyrightText2   = QChar(0xA9)+QString(" 2009-%1 ").arg(2015) + QString(tr("The Bitcoin Core developers"));
-    QString copyrightText3   = QChar(0xA9)+QString(" 2011-%1 ").arg(2014) + QString(tr("The Litecoin Core developers"));
-    QString copyrightText4   = QChar(0xA9)+QString(" 2013 ") + QString(tr("The Primecoin developers"));
-    QString testnetAddText  = QString(tr("[testnet]")); // define text to place as single text object
+    QString versionText     = QString("VERSION %1").arg(QString::fromStdString(FormatFullVersion()));
+    QString copyrightText1   = QChar(0xA9)+QString(" 2013-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("ANONCOIN CORE DEVELOPERS"));
+    //QString testnetAddText  = QString(tr("[testnet]")); // This string is already included in the background image
 
-    QString font            = "Arial";
+    QString font            = "Courier New";
 
     // load the bitmap for writing some text over it
     QPixmap newPixmap;
@@ -55,30 +49,27 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     }
 
     QPainter pixPaint(&newPixmap);
-    pixPaint.setPen(QColor(100,100,100));
-    pixPaint.setFont(QFont(font, 8*fontFactor));
-
+    pixPaint.setPen(QColor(250,250,250));
+    pixPaint.setFont(QFont(font, 12*fontFactor));
+    
     QFontMetrics fm = pixPaint.fontMetrics();
 
     // draw version
-    pixPaint.drawText(newPixmap.width()-paddingRight+2,paddingTop,versionText);
+    pixPaint.drawText(newPixmap.width()/2-fm.width(versionText)/2,paddingTop,versionText);
 
     // draw copyright stuff
-    pixPaint.setFont(QFont(font, 8*fontFactor));
-    pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop,copyrightText1);
-    pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace,copyrightText2);
-    pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace*2,copyrightText3);
-    pixPaint.drawText(newPixmap.width()-paddingRightCopyright,paddingTop+paddingCopyrightTop+titleCopyrightVSpace*3,copyrightText4);
+    pixPaint.setFont(QFont(font, 12*fontFactor));
+    pixPaint.drawText(newPixmap.width()/2-fm.width(copyrightText1)/2,paddingTop+paddingCopyrightTop,copyrightText1);
 
-    // draw testnet string if testnet is on
-    if(isTestNet) {
-        QFont boldFont = QFont(font, 10*fontFactor);
-        boldFont.setWeight(QFont::Bold);
-        pixPaint.setFont(boldFont);
-        fm = pixPaint.fontMetrics();
-        int testnetAddTextWidth  = fm.width(testnetAddText);
-        pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
-    }
+    // draw testnet string if testnet is on. This is no longer necessary as this is included in the background image
+    //if(isTestNet) {
+    //    QFont boldFont = QFont(font, 10*fontFactor);
+    //    boldFont.setWeight(QFont::Bold);
+    //    pixPaint.setFont(boldFont);
+    //    fm = pixPaint.fontMetrics();
+    //    int testnetAddTextWidth  = fm.width(testnetAddText);
+    //    pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
+    //}
 
     pixPaint.end();
 
@@ -99,12 +90,20 @@ void SplashScreen::slotFinish(QWidget *mainWin)
 
 static void InitMessage(SplashScreen *splash, const std::string &message)
 {
+	QFont initfont;
+	initfont.setFamily("Courier New");
+	initfont.setPixelSize(12);
+	initfont.setCapitalization(initfont.AllUppercase);
+	splash->setFont(initfont);
+
+	std::string message_cr;
+	message_cr = message + "\n";
+	
     QMetaObject::invokeMethod(splash, "showMessage",
         Qt::QueuedConnection,
-        Q_ARG(QString, QString::fromStdString(message)),
+        Q_ARG(QString, QString::fromStdString(message_cr)),
         Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
-        Q_ARG(QColor, QColor(55,55,55)));
-
+        Q_ARG(QColor, QColor(0,0,0)));
 }
 
 static void ShowProgress(SplashScreen *splash, const std::string &title, int nProgress)
