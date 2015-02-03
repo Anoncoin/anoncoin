@@ -25,12 +25,6 @@ endif
 
 if EMBEDDED_I2PSAM
 I2PSAM_CPPFLAGS += -I$(srcdir)/i2psam
-# LIBI2PSAM += $(builddir)/i2psam/i2psam.a
-
-# $(LIBI2PSAM) :
-# 	@echo "Building I2pSAM Interface ..." && $(MAKE) -C $(@D) $(@F) CXX="$(CXX)" \
-#	  CC="$(CC)" PLATFORM=$(TARGET_OS) AR="$(AR)" $(I2PSAM_TARGET_FLAGS) \
-#          OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
 
 ANONCOIN_CONFIG_INCLUDES=-I$(builddir)/config
@@ -44,10 +38,11 @@ LIBANONCOIN_WALLET=libanoncoin_wallet.a
 LIBANONCOIN_COMMON=libanoncoin_common.a
 LIBANONCOIN_CLI=libanoncoin_cli.a
 LIBANONCOIN_UTIL=libanoncoin_util.a
-#LIBANONCOIN_CRYPTO=crypto/libanoncoin_crypto.a
-#LIBANONCOIN_UNIVALUE=univalue/libanoncoin_univalue.a
+LIBANONCOIN_CRYPTO=
+LIBANONCOIN_UNIVALUE=
 LIBANONCOINQT=qt/libanoncoinqt.a
 #LIBSECP256K1=secp256k1/libsecp256k1.la
+LIBSECP256K1=
 
 #$(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 #	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
@@ -132,7 +127,8 @@ ANONCOIN_CORE_H = \
   util.h \
   version.h \
   wallet.h \
-  walletdb.h
+  walletdb.h \
+  compat/sanity.h
 
 JSON_H = \
   json/json_spirit.h \
@@ -345,8 +341,7 @@ anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 #endif
 #endif
 
-# CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno i2psam/libi2psam.a
-CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno
+CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno i2psam/libi2psam.a
 
 DISTCLEANFILES = obj/build.h
 

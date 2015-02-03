@@ -414,7 +414,7 @@ bool InitSanityCheck(void)
     return true;
 }
 
-/** Initialize bitcoin.
+/** Initialize anoncoin.
  *  @pre Parameters should be parsed and config file should be read.
  */
 bool AppInit2(boost::thread_group& threadGroup)

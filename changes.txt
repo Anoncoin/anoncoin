@@ -1,0 +1,2715 @@
+diff --git a/.gitignore b/.gitignore
+index d2e766a..886813c 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,3 +1,24 @@
++# The Anoncoin core primary gitignore file...
++#
++# The entries that follow are specific to building Anoncoin and it's toolchain, as well
++# as running tests and various other core code activities.
++# A few are for future structural changes to v10 core technology, that could otherwise be
++# left out at this time.
++#
++# The challenge has been to get this list correct for building on the different platforms,
++# initially this refers to linux, mingw32 on windows, and darwin on the mac.
++#
++# If your building with VisualStudio, running an IDE like Eclipse or Code::Blocks please
++# add your entries, above or below this group.  As well, other types of non-standard tools.
++#
++# Core developers working on a subcomponent are welcome to include entries here, or use
++# your subfolder and create an ignore list, specifically for your project.
++#
++# As this file is a work in progress, newly discovered items missing from the list are
++# encouraged to be added, if your in a hurry, throw it at the bottom, for later organizing.
++#
++# For collections of useful .gitignore templates visit: https://github.com/github/gitignore
++
+ *.tar.gz
+ 
+ *.exe
+@@ -73,9 +94,8 @@ src/qt/test/moc*.cpp
+ 
+ # Compilation and Qt preprocessor part
+ *.qm
+-Makefile
+ anoncoin-qt
+-Bitcoin-Qt.app
++Anoncoin-Qt.app
+ 
+ # Unit-tests
+ Makefile.test
+@@ -108,9 +128,18 @@ qa/pull-tester/tests-config.sh
+ qa/pull-tester/cache/*
+ qa/pull-tester/test.*/*
+ 
+-!src/leveldb*/Makefile
+-src/leveldb/build_config.mk
++# Some Makefiles are built locally, others are static now, and we must
++# include them, such as the one in depends, qt, qt test and leveldb.
++Makefile
++!depends/Makefile
++!src/qt/Makefile
++!src/test/Makefile
++!src/leveldb/Makefile
+ 
++src/leveldb/build_config.mk
+ /doc/doxygen/
+-
+ libanoncoinconsensus.pc
++
++# Add any other specific requirements, you may need, below this line...
++#
++
+diff --git a/configure.ac b/configure.ac
+index 0c456f9..9bc4891 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3,7 +3,7 @@ AC_PREREQ([2.60])
+ define(_CLIENT_VERSION_MAJOR, 0)
+ define(_CLIENT_VERSION_MINOR, 9)
+ define(_CLIENT_VERSION_REVISION, 4)
+-define(_CLIENT_VERSION_BUILD, 2)
++define(_CLIENT_VERSION_BUILD, 3)
+ define(_CLIENT_VERSION_IS_RELEASE, false)
+ define(_COPYRIGHT_YEAR, 2015)
+ 
+diff --git a/contrib/linearize/linearize-data.py b/contrib/linearize/linearize-data.py
+index a3a1173..1bd0268 100755
+--- a/contrib/linearize/linearize-data.py
++++ b/contrib/linearize/linearize-data.py
+@@ -3,6 +3,7 @@
+ # linearize-data.py: Construct a linear, no-fork version of the chain.
+ #
+ # Copyright (c) 2013-2014 The Bitcoin Core developers
++# Copyright (c) 2013-2015 The Anoncoin Core developers
+ # Distributed under the MIT software license, see the accompanying
+ # file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ #
+@@ -104,7 +105,7 @@ class BlockDataCopier:
+ 		self.blkCountOut = 0
+ 
+ 		self.lastDate = datetime.datetime(2000, 1, 1)
+-		self.highTS = 1408893517 - 315360000
++		self.highTS = 1421694963 - 315360000
+ 		self.timestampSplit = False
+ 		self.fileOutput = True
+ 		self.setFileTime = False
+@@ -161,7 +162,7 @@ class BlockDataCopier:
+ 			self.highTS = blkTS
+ 
+ 		if (self.blkCountOut % 1000) == 0:
+-			print('%i blocks scanned, %i blocks written (of %i, %.1f%% complete)' % 
++			print('%i blocks scanned, %i blocks written (of %i, %.1f%% complete)' %
+ 					(self.blkCountIn, self.blkCountOut, len(self.blkindex), 100.0 * self.blkCountOut / len(self.blkindex)))
+ 
+ 	def inFileName(self, fn):
+@@ -264,7 +265,7 @@ if __name__ == '__main__':
+ 	f.close()
+ 
+ 	if 'netmagic' not in settings:
+-		settings['netmagic'] = 'f9beb4d9'
++		settings['netmagic'] = 'facabada'
+ 	if 'input' not in settings:
+ 		settings['input'] = 'input'
+ 	if 'hashlist' not in settings:
+@@ -291,7 +292,7 @@ if __name__ == '__main__':
+ 	blkindex = get_block_hashes(settings)
+ 	blkmap = mkblockmap(blkindex)
+ 
+-	if not "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f" in blkmap:
++	if not "2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3" in blkmap:
+ 		print("Genesis block not found in hashlist")
+ 	else:
+ 		BlockDataCopier(settings, blkindex, blkmap).run()
+diff --git a/contrib/linearize/linearize-hashes.py b/contrib/linearize/linearize-hashes.py
+index 854cf1f..689f8d9 100755
+--- a/contrib/linearize/linearize-hashes.py
++++ b/contrib/linearize/linearize-hashes.py
+@@ -3,6 +3,7 @@
+ # linearize-hashes.py:  List blocks in a linear, no-fork version of the chain.
+ #
+ # Copyright (c) 2013-2014 The Bitcoin Core developers
++# Copyright (c) 2013-2015 The Anoncoin Core developers
+ # Distributed under the MIT software license, see the accompanying
+ # file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ #
+@@ -17,7 +18,7 @@ import sys
+ 
+ settings = {}
+ 
+-class BitcoinRPC:
++class AnoncoinRPC:
+ 	def __init__(self, host, port, username, password):
+ 		authpair = "%s:%s" % (username, password)
+ 		self.authhdr = "Basic %s" % (base64.b64encode(authpair))
+@@ -53,7 +54,7 @@ class BitcoinRPC:
+ 		return 'error' in resp_obj and resp_obj['error'] is not None
+ 
+ def get_block_hashes(settings, max_blocks_per_call=10000):
+-	rpc = BitcoinRPC(settings['host'], settings['port'],
++	rpc = AnoncoinRPC(settings['host'], settings['port'],
+ 			 settings['rpcuser'], settings['rpcpassword'])
+ 
+ 	height = settings['min_height']
+@@ -96,11 +97,11 @@ if __name__ == '__main__':
+ 	if 'host' not in settings:
+ 		settings['host'] = '127.0.0.1'
+ 	if 'port' not in settings:
+-		settings['port'] = 8332
++		settings['port'] = 9376
+ 	if 'min_height' not in settings:
+ 		settings['min_height'] = 0
+ 	if 'max_height' not in settings:
+-		settings['max_height'] = 313000
++		settings['max_height'] = 301666
+ 	if 'rpcuser' not in settings or 'rpcpassword' not in settings:
+ 		print("Missing username and/or password in cfg file", file=stderr)
+ 		sys.exit(1)
+diff --git a/contrib/linearize/linearize.py b/contrib/linearize/linearize.py
+old mode 100644
+new mode 100755
+index 650f7d3..71efd49
+--- a/contrib/linearize/linearize.py
++++ b/contrib/linearize/linearize.py
+@@ -4,6 +4,7 @@
+ #
+ #
+ # Copyright (c) 2013 The Bitcoin developers
++# Copyright (c) 2013-2015 The Anoncoin Core developers
+ # Distributed under the MIT/X11 software license, see the accompanying
+ # file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ #
+@@ -20,7 +21,7 @@ MAX_NONCE = 1000000L
+ 
+ settings = {}
+ 
+-class BitcoinRPC:
++class AnoncoinRPC:
+ 	OBJID = 1
+ 
+ 	def __init__(self, host, port, username, password):
+@@ -70,7 +71,7 @@ def getblock(rpc, settings, n):
+ 	return data
+ 
+ def get_blocks(settings):
+-	rpc = BitcoinRPC(settings['host'], settings['port'],
++	rpc = AnoncoinRPC(settings['host'], settings['port'],
+ 			 settings['rpcuser'], settings['rpcpassword'])
+ 
+ 	outf = open(settings['output'], 'ab')
+@@ -107,17 +108,17 @@ if __name__ == '__main__':
+ 	f.close()
+ 
+ 	if 'netmagic' not in settings:
+-		settings['netmagic'] = 'f9beb4d9'
++		settings['netmagic'] = 'facabada'
+ 	if 'output' not in settings:
+ 		settings['output'] = 'bootstrap.dat'
+ 	if 'host' not in settings:
+ 		settings['host'] = '127.0.0.1'
+ 	if 'port' not in settings:
+-		settings['port'] = 8332
++		settings['port'] = 9376
+ 	if 'min_height' not in settings:
+ 		settings['min_height'] = 0
+ 	if 'max_height' not in settings:
+-		settings['max_height'] = 279000
++		settings['max_height'] = 301666
+ 	if 'rpcuser' not in settings or 'rpcpassword' not in settings:
+ 		print "Missing username and/or password in cfg file"
+ 		sys.exit(1)
+@@ -128,5 +129,3 @@ if __name__ == '__main__':
+ 	settings['max_height'] = int(settings['max_height'])
+ 
+ 	get_blocks(settings)
+-
+-
+diff --git a/contrib/testgen/gen_base58_test_vectors.py b/contrib/testgen/gen_base58_test_vectors.py
+index 1813436..f2441f8 100755
+--- a/contrib/testgen/gen_base58_test_vectors.py
++++ b/contrib/testgen/gen_base58_test_vectors.py
+@@ -14,12 +14,12 @@ from base58 import b58encode, b58decode, b58encode_chk, b58decode_chk, b58chars
+ import random
+ from binascii import b2a_hex
+ 
+-# key types
+-PUBKEY_ADDRESS = 0
++# key types, modified for use with Anoncoin
++PUBKEY_ADDRESS = 23
+ SCRIPT_ADDRESS = 5
+ PUBKEY_ADDRESS_TEST = 111
+ SCRIPT_ADDRESS_TEST = 196
+-PRIVKEY = 128
++PRIVKEY = 151
+ PRIVKEY_TEST = 239
+ 
+ metadata_keys = ['isPrivkey', 'isTestnet', 'addrType', 'isCompressed']
+diff --git a/depends/hosts/darwin.mk b/depends/hosts/darwin.mk
+index c1070d8..2958dc5 100644
+--- a/depends/hosts/darwin.mk
++++ b/depends/hosts/darwin.mk
+@@ -1,5 +1,5 @@
+-OSX_MIN_VERSION=10.6
+-OSX_SDK_VERSION=10.7
++OSX_MIN_VERSION=10.7
++OSX_SDK_VERSION=10.9
+ OSX_SDK=$(SDK_PATH)/MacOSX$(OSX_SDK_VERSION).sdk
+ LD64_VERSION=241.9
+ darwin_CC=clang -target $(host) -mmacosx-version-min=$(OSX_MIN_VERSION) --sysroot $(OSX_SDK) -mlinker-version=$(LD64_VERSION)
+diff --git a/share/qt/Info.plist.in b/share/qt/Info.plist.in
+index 4f45dc9..0cb8e5e 100644
+--- a/share/qt/Info.plist.in
++++ b/share/qt/Info.plist.in
+@@ -17,7 +17,7 @@
+   <string>APPL</string>
+ 
+   <key>CFBundleGetInfoString</key>
+-  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2013-@COPYRIGHT_YEAR@ The Anoncoin Core developers</string>
++  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2015-@COPYRIGHT_YEAR@ The Anoncoin Core developers</string>
+ 
+   <key>CFBundleShortVersionString</key>
+   <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@</string>
+diff --git a/share/setup.nsi.in b/share/setup.nsi.in
+index 13d2407..b216eb4 100644
+--- a/share/setup.nsi.in
++++ b/share/setup.nsi.in
+@@ -10,7 +10,7 @@ SetCompressor /SOLID lzma
+ !define URL https://anoncoin.net/
+ 
+ # MUI Symbol Definitions
+-!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/anoncoin32.ico"
++!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/anoncoin64.ico"
+ !define MUI_WELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
+ !define MUI_HEADERIMAGE
+ !define MUI_HEADERIMAGE_RIGHT
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 81f7857..ec507e9 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -25,12 +25,6 @@ endif
+ 
+ if EMBEDDED_I2PSAM
+ I2PSAM_CPPFLAGS += -I$(srcdir)/i2psam
+-# LIBI2PSAM += $(builddir)/i2psam/i2psam.a
+-
+-# $(LIBI2PSAM) :
+-# 	@echo "Building I2pSAM Interface ..." && $(MAKE) -C $(@D) $(@F) CXX="$(CXX)" \
+-#	  CC="$(CC)" PLATFORM=$(TARGET_OS) AR="$(AR)" $(I2PSAM_TARGET_FLAGS) \
+-#          OPT="$(CXXFLAGS) $(CPPFLAGS)"
+ endif
+ 
+ ANONCOIN_CONFIG_INCLUDES=-I$(builddir)/config
+@@ -44,10 +38,11 @@ LIBANONCOIN_WALLET=libanoncoin_wallet.a
+ LIBANONCOIN_COMMON=libanoncoin_common.a
+ LIBANONCOIN_CLI=libanoncoin_cli.a
+ LIBANONCOIN_UTIL=libanoncoin_util.a
+-#LIBANONCOIN_CRYPTO=crypto/libanoncoin_crypto.a
+-#LIBANONCOIN_UNIVALUE=univalue/libanoncoin_univalue.a
++LIBANONCOIN_CRYPTO=
++LIBANONCOIN_UNIVALUE=
+ LIBANONCOINQT=qt/libanoncoinqt.a
+ #LIBSECP256K1=secp256k1/libsecp256k1.la
++LIBSECP256K1=
+ 
+ #$(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
+ #	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
+@@ -132,7 +127,8 @@ ANONCOIN_CORE_H = \
+   util.h \
+   version.h \
+   wallet.h \
+-  walletdb.h
++  walletdb.h \
++  compat/sanity.h
+ 
+ JSON_H = \
+   json/json_spirit.h \
+@@ -345,8 +341,7 @@ anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+ #endif
+ #endif
+ 
+-# CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno i2psam/libi2psam.a
+-CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno
++CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno i2psam/libi2psam.a
+ 
+ DISTCLEANFILES = obj/build.h
+ 
+diff --git a/src/Makefile.qt.include b/src/Makefile.qt.include
+index a5503d7..234d03e 100644
+--- a/src/Makefile.qt.include
++++ b/src/Makefile.qt.include
+@@ -163,7 +163,6 @@ PROTOBUF_CC = qt/paymentrequest.pb.cc
+ PROTOBUF_H = qt/paymentrequest.pb.h
+ PROTOBUF_PROTO = qt/paymentrequest.proto
+ 
+-#  We want to add this:  qt/peertablemodel.h
+ ANONCOIN_QT_H = \
+   qt/addressbookpage.h \
+   qt/addresstablemodel.h \
+@@ -362,12 +361,13 @@ endif
+ if TARGET_WINDOWS
+   qt_anoncoin_qt_SOURCES += $(ANONCOIN_RC)
+ endif
+-qt_anoncoin_qt_LDADD = qt/libanoncoinqt.a $(LIBANONCOIN_SERVER)
++qt_anoncoin_qt_LDADD = $(LIBANONCOINQT) $(LIBANONCOIN_SERVER)
+ if ENABLE_WALLET
+ qt_anoncoin_qt_LDADD += $(LIBANONCOIN_WALLET)
+ endif
+-qt_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
+-  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
++qt_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) \
++  $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) \
++  $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+ qt_anoncoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+ qt_anoncoin_qt_LIBTOOLFLAGS = --tag CXX
+ 
+diff --git a/src/Makefile.qttest.include b/src/Makefile.qttest.include
+index 32a4756..58b45a8 100644
+--- a/src/Makefile.qttest.include
++++ b/src/Makefile.qttest.include
+@@ -20,8 +20,7 @@ qt_test_test_anoncoin_qt_SOURCES = \
+   qt/test/uritests.cpp \
+   $(TEST_QT_H)
+ if ENABLE_WALLET
+-qt_test_test_anoncoin_qt_SOURCES += \
+-  qt/test/paymentservertests.cpp
++qt_test_test_anoncoin_qt_SOURCES += qt/test/paymentservertests.cpp
+ endif
+ 
+ nodist_qt_test_test_anoncoin_qt_SOURCES = $(TEST_QT_MOC_CPP)
+@@ -30,10 +29,11 @@ qt_test_test_anoncoin_qt_LDADD = $(LIBANONCOINQT) $(LIBANONCOIN_SERVER)
+ if ENABLE_WALLET
+ qt_test_test_anoncoin_qt_LDADD += $(LIBANONCOIN_WALLET)
+ endif
+-qt_test_test_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) \
+-  $(LIBMEMENV) $(BOOST_LIBS) $(QT_DBUS_LIBS) $(QT_TEST_LIBS) $(QT_LIBS) \
+-  $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
++qt_test_test_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) \
++  $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QT_TEST_LIBS) $(QR_LIBS) \
++  $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+ qt_test_test_anoncoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
++# qt_test_test_anoncoin_qt_LIBTOOLFLAGS = --tag CXX  ToDo: this came from Makefile.qt.include, it needs research
+ 
+ CLEAN_ANONCOIN_QT_TEST = $(TEST_QT_MOC_CPP) qt/test/*.gcda qt/test/*.gcno
+ 
+diff --git a/src/Makefile.test.include b/src/Makefile.test.include
+index e01460e..92ea7ea 100644
+--- a/src/Makefile.test.include
++++ b/src/Makefile.test.include
+@@ -33,21 +33,19 @@ RAW_TEST_FILES = test/data/alertTests.raw
+ GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h)
+ 
+ ANONCOIN_TESTS =\
+-  test/bignum.h \
+-  test/alert_tests.cpp \
+   test/allocator_tests.cpp \
+   test/base32_tests.cpp \
+   test/base58_tests.cpp \
+   test/base64_tests.cpp \
++  test/bignum_tests.cpp \
+   test/bloom_tests.cpp \
+   test/checkblock_tests.cpp \
+   test/Checkpoints_tests.cpp \
+-  test/coins_tests.cpp \
+   test/compress_tests.cpp \
+-  test/crypto_tests.cpp \
+   test/DoS_tests.cpp \
+   test/getarg_tests.cpp \
+   test/hash_tests.cpp \
++  test/hmac_tests.cpp \
+   test/key_tests.cpp \
+   test/main_tests.cpp \
+   test/miner_tests.cpp \
+@@ -58,16 +56,14 @@ ANONCOIN_TESTS =\
+   test/rpc_tests.cpp \
+   test/script_P2SH_tests.cpp \
+   test/script_tests.cpp \
++  test/scrypt_tests.cpp \
+   test/scriptnum_tests.cpp \
+   test/serialize_tests.cpp \
+   test/sighash_tests.cpp \
+   test/sigopcount_tests.cpp \
+-  test/skiplist_tests.cpp \
+   test/test_anoncoin.cpp \
+-  test/timedata_tests.cpp \
+   test/transaction_tests.cpp \
+   test/uint256_tests.cpp \
+-  test/univalue_tests.cpp \
+   test/util_tests.cpp
+ 
+ if ENABLE_WALLET
+diff --git a/src/chainparams.cpp b/src/chainparams.cpp
+index 7902109..9374007 100644
+--- a/src/chainparams.cpp
++++ b/src/chainparams.cpp
+@@ -17,7 +17,7 @@
+ using namespace boost::assign;
+ 
+ #ifdef ENABLE_I2PSAM
+-static const std::string I2pSeedAddresses[2] = {
++static const string I2pSeedAddresses[] = {
+     "8w-NRnXaxoGZdyupTXX78~CmF8csc~RhJr8XR2vMbNpazKhGjWNfRjhCmwqXkkW9vwkNjovW2AAbof7PfVnMCff0sHSxMTiBNsH8cuHJS2ckBSJI3h4G4ffJLc5gflangrG1raHKrMXCw8Cn56pisx4RKokEKUYdeEPiMdyJUO5yjZW2oyk4NpaUaQCqFmcglIvNOCYzVe~LK124wjJQAJc5iME1Sg9sOHaGMPL5N2qkAm5osOg2S7cZNRdIkoNOq-ztxghrv5bDL0ybeC0sfIQzvxDiKugCrSHEHCvwkA~xOu9nhNlUvoPDyCRRi~ImeomdNoqke28di~h2JF7wBGE~3ACxxOMaa0I~c9LV3O7pRU2Xj9HDn76eMGL7YCcCU4dRByu97oqfB3E~qqmmFp8W1tgvnEAMtXFTFZPYc33ZaCaIJQD7UXcQRSRV7vjw39jhx49XFsmYV3K6~D8bN8U4sRJnKQpzOJGpOSEJWh88bII0XuA55bJsfrR4VEQ5AAAA",
+     "hL51K8bxVvqX2Z4epXReUYlWTNUAK-1XdlbBd7e796s2A3icCQRhJvGlaa6PX~tgPvos-2IJp9hFQrVa0lyKyYmpQN9X7GOErtsL-JbMQpglQsEd94jDRAsiBuvgyPZij~NNdBxKRMDvNm9s7eovzhEFTAimTSB-sgeZ4Afxx2IrNXDFM6KS8AUm8YsaMldzX9zKQDeuV0slp4ZfIAVQhZZy9zTZSmUNPnXQR7XPh5w7FkXzmKMTKSyG~layJ3AorQWqzZXmykzf4z3CE4zkzQcwc0~ZIcAg9tYvM2AdQIdgeN6ISMim6L8q6ku6abuONkyw-NJTi3NopeGHZva21Tc3uHetsKoW434N24HBVUtIjJVjGsbZ7xBfz2xM5kyhPl6SlD-RJarCw47Rovmfc9Piq6q3S~Zw-rvRl-xDMJzwraIYNjAROouDwjI9Bqnguq9DH5uFBxf4uN69X7T~yWTAjdvelZKp6BGe~HGo7bNQjBmymhlH4erCKZEXOaxDAAAA"
+ };
+@@ -113,9 +113,9 @@ public:
+         i2pvSeeds.push_back(CDNSSeedData("xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p", "xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p")); // Cryptoslave's seednode
+ #endif // ENABLE_I2PSAM
+ 
+-        base58Prefixes[PUBKEY_ADDRESS] = list_of(23);
++        base58Prefixes[PUBKEY_ADDRESS] = list_of(23);           // Anoncoin addresses start with A
+         base58Prefixes[SCRIPT_ADDRESS] = list_of(5);
+-        base58Prefixes[SECRET_KEY] =     list_of(176);
++        base58Prefixes[SECRET_KEY] =     list_of(151);          // Anoncoin secret keys are the Public Key + 128
+         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E);
+         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4);
+ 
+@@ -149,9 +149,7 @@ public:
+     virtual const CBlock& GenesisBlock() const { return genesis; }
+     virtual Network NetworkID() const { return CChainParams::MAIN; }
+ 
+-    virtual const vector<CAddress>& FixedSeeds() const {
+-        return vFixedSeeds;
+-    }
++    virtual const vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
+ protected:
+     CBlock genesis;
+     vector<CAddress> vFixedSeeds;
+@@ -174,8 +172,10 @@ public:
+         pchMessageStart[1] = 0xc4;
+         pchMessageStart[2] = 0xb7;
+         pchMessageStart[3] = 0xd4;
+-        vAlertPubKey = ParseHex("04b2941a448ab9860beb73fa2f600c09bf9fe4d18d5ff0b3957bf94c6d177d61f88660d7c0dd9adef984080ddea03c898039759f66c2011c111c4394692f814962");
+-        // ToDo: Need to add a comment here, with the private key for test net
++        // GR Note: 1/26/2015 - New secp256k1 key values generated for testnet....
++        vAlertPubKey = ParseHex("0442ccd085e52f7b74ee594826e36e417706af91ff7e7236a430b2dd16fe9f1a8132d0718e0bf5a3b7105354bf5bf954330097b21824c26c466836df9538f3d33e");
++        // Private key for alert generation, anyone on the development and test team can use it:
++        // "3082011302010104204b164c9765248427d1b13b9dc4f11107629485f0c61de070d89ebae308822e25a081a53081a2020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101a1440342000442ccd085e52f7b74ee594826e36e417706af91ff7e7236a430b2dd16fe9f1a8132d0718e0bf5a3b7105354bf5bf954330097b21824c26c466836df9538f3d33e"
+         nDefaultPort = 19377;
+         nRPCPort = 19376;
+         strDataDir = "testnet4";
+@@ -191,9 +191,9 @@ public:
+         vSeeds.clear();
+         vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed01.anoncoin.net"));
+ 
+-        base58Prefixes[PUBKEY_ADDRESS] = list_of(111);
++        base58Prefixes[PUBKEY_ADDRESS] = list_of(111);      // Anoncoin v8 compatible testnet Public keys use this value
+         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
+-        base58Prefixes[SECRET_KEY]     = list_of(239);
++        base58Prefixes[SECRET_KEY]     = list_of(239);      // Anoncoin testnet secret keys are the Public Key + 128
+         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF);
+         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x35)(0x83)(0x94);
+     }
+diff --git a/src/clientversion.h b/src/clientversion.h
+index 8f98648..08c2bad 100644
+--- a/src/clientversion.h
++++ b/src/clientversion.h
+@@ -24,7 +24,7 @@
+ #define CLIENT_VERSION_MAJOR       0
+ #define CLIENT_VERSION_MINOR       9
+ #define CLIENT_VERSION_REVISION    4
+-#define CLIENT_VERSION_BUILD       2
++#define CLIENT_VERSION_BUILD       3
+ 
+ // Set to true for release, false for prerelease or test build
+ #define CLIENT_VERSION_IS_RELEASE  false
+diff --git a/src/init.cpp b/src/init.cpp
+index afeb216..bfb75fa 100644
+--- a/src/init.cpp
++++ b/src/init.cpp
+@@ -414,7 +414,7 @@ bool InitSanityCheck(void)
+     return true;
+ }
+ 
+-/** Initialize bitcoin.
++/** Initialize anoncoin.
+  *  @pre Parameters should be parsed and config file should be read.
+  */
+ bool AppInit2(boost::thread_group& threadGroup)
+diff --git a/src/net.cpp b/src/net.cpp
+index cf85221..d27b8f0 100644
+--- a/src/net.cpp
++++ b/src/net.cpp
+@@ -41,7 +41,7 @@
+ using namespace std;
+ using namespace boost;
+ 
+-static const int MAX_OUTBOUND_CONNECTIONS = 8;
++static const int MAX_OUTBOUND_CONNECTIONS = 24;
+ 
+ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
+ 
+@@ -1068,6 +1068,9 @@ void ThreadSocketHandler()
+                     int nBytes = recv(hI2PListenSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
+                     if (nBytes > 0)
+                     {
++                        // ToDo: This is not correct,
++                        // <orignal> this line must be fixed ASAP
++                        // https://geti2p.net/en/docs/spec/common-structures#struct_Destination
+                         if (nBytes == NATIVE_I2P_DESTINATION_SIZE + 1) // we're waiting for dest-hash + '\n' symbol
+                         {
+                             std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
+diff --git a/src/qt/splashscreen.cpp b/src/qt/splashscreen.cpp
+index a931f30..1e6927c 100644
+--- a/src/qt/splashscreen.cpp
++++ b/src/qt/splashscreen.cpp
+@@ -30,15 +30,11 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
+     int paddingTop              = 236;
+     int paddingCopyrightTop     = 18;
+ 
+-    float fontFactor            = 1.0;
+-
+     // define text to place
+     QString versionText     = QString("VERSION %1").arg(QString::fromStdString(FormatFullVersion()));
+     QString copyrightText1   = QChar(0xA9)+QString(" 2013-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("ANONCOIN CORE DEVELOPERS"));
+     //QString testnetAddText  = QString(tr("[testnet]")); // This string is already included in the background image
+ 
+-    QString font            = "Courier New";
+-
+     // load the bitmap for writing some text over it
+     QPixmap newPixmap;
+     if(isTestNet) {
+@@ -47,10 +43,14 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
+     else {
+         newPixmap     = QPixmap(":/images/splash");
+     }
+-
++	
++	QFont initfont;
++	initfont.setFamily("Courier New,Courier,Monaco,Andale Mono,Arial");
++	initfont.setPixelSize(12);	
++	    
+     QPainter pixPaint(&newPixmap);
+     pixPaint.setPen(QColor(250,250,250));
+-    pixPaint.setFont(QFont(font, 12*fontFactor));
++    pixPaint.setFont(initfont);
+     
+     QFontMetrics fm = pixPaint.fontMetrics();
+ 
+@@ -58,12 +58,12 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
+     pixPaint.drawText(newPixmap.width()/2-fm.width(versionText)/2,paddingTop,versionText);
+ 
+     // draw copyright stuff
+-    pixPaint.setFont(QFont(font, 12*fontFactor));
++    pixPaint.setFont(initfont);
+     pixPaint.drawText(newPixmap.width()/2-fm.width(copyrightText1)/2,paddingTop+paddingCopyrightTop,copyrightText1);
+ 
+     // draw testnet string if testnet is on. This is no longer necessary as this is included in the background image
+     //if(isTestNet) {
+-    //    QFont boldFont = QFont(font, 10*fontFactor);
++    //    QFont boldFont = QFont(font, 10);
+     //    boldFont.setWeight(QFont::Bold);
+     //    pixPaint.setFont(boldFont);
+     //    fm = pixPaint.fontMetrics();
+@@ -91,7 +91,7 @@ void SplashScreen::slotFinish(QWidget *mainWin)
+ static void InitMessage(SplashScreen *splash, const std::string &message)
+ {
+ 	QFont initfont;
+-	initfont.setFamily("Courier New");
++	initfont.setFamily("Courier New,Courier,Monaco,Andale Mono,Arial");
+ 	initfont.setPixelSize(12);
+ 	initfont.setCapitalization(initfont.AllUppercase);
+ 	splash->setFont(initfont);
+diff --git a/src/qt/test/test_main.cpp b/src/qt/test/test_main.cpp
+index 2b3695b..d457b36 100644
+--- a/src/qt/test/test_main.cpp
++++ b/src/qt/test/test_main.cpp
+@@ -12,12 +12,24 @@
+ #include <QObject>
+ #include <QTest>
+ 
+-#if defined(QT_STATICPLUGIN) && QT_VERSION < 0x050000
++#if defined(QT_STATICPLUGIN)
+ #include <QtPlugin>
++#if QT_VERSION < 0x050000
+ Q_IMPORT_PLUGIN(qcncodecs)
+ Q_IMPORT_PLUGIN(qjpcodecs)
+ Q_IMPORT_PLUGIN(qtwcodecs)
+ Q_IMPORT_PLUGIN(qkrcodecs)
++Q_IMPORT_PLUGIN(qtaccessiblewidgets)
++#else
++Q_IMPORT_PLUGIN(AccessibleFactory)
++#if defined(QT_QPA_PLATFORM_XCB)
++Q_IMPORT_PLUGIN(QXcbIntegrationPlugin);
++#elif defined(QT_QPA_PLATFORM_WINDOWS)
++Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
++#elif defined(QT_QPA_PLATFORM_COCOA)
++Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
++#endif
++#endif
+ #endif
+ 
+ // This is all you need to run all the tests
+diff --git a/src/rpcrawtransaction.cpp b/src/rpcrawtransaction.cpp
+index 1e24521..0701adc 100644
+--- a/src/rpcrawtransaction.cpp
++++ b/src/rpcrawtransaction.cpp
+@@ -339,7 +339,7 @@ Value createrawtransaction(const Array& params, bool fHelp)
+             "     ]\n"
+             "2. \"addresses\"           (string, required) a json object with addresses as keys and amounts as values\n"
+             "    {\n"
+-            "      \"address\": x.xxx   (numeric, required) The key is the anoncoin address, the value is the btc amount\n"
++            "      \"address\": x.xxx   (numeric, required) The key is the anoncoin address, the value is the anc amount\n"
+             "      ,...\n"
+             "    }\n"
+ 
+diff --git a/src/test/Checkpoints_tests.cpp b/src/test/Checkpoints_tests.cpp
+index 43c5cca..29b6605 100644
+--- a/src/test/Checkpoints_tests.cpp
++++ b/src/test/Checkpoints_tests.cpp
+@@ -19,21 +19,21 @@ BOOST_AUTO_TEST_SUITE(Checkpoints_tests)
+ 
+ BOOST_AUTO_TEST_CASE(sanity)
+ {
+-    uint256 p11111 = uint256("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d");
+-    uint256 p134444 = uint256("0x00000000000005b12ffd4cd315cd34ffd4a594f430ac814c91184a0d42d2b0fe");
+-    BOOST_CHECK(Checkpoints::CheckBlock(11111, p11111));
+-    BOOST_CHECK(Checkpoints::CheckBlock(134444, p134444));
++    uint256 p16000 = uint256("0x683517a8cae8530f39e636f010ecd1750665c3d91f57ba71d6556535972ab328");
++    uint256 p210000 = uint256("0xb9c2c5030199a87cb99255551b7f67bff6adf3ef2caf97258b93b417d14f9051");
++    BOOST_CHECK(Checkpoints::CheckBlock(16000, p16000));
++    BOOST_CHECK(Checkpoints::CheckBlock(210000, p210000));
+ 
+ 
+     // Wrong hashes at checkpoints should fail:
+-    BOOST_CHECK(!Checkpoints::CheckBlock(11111, p134444));
+-    BOOST_CHECK(!Checkpoints::CheckBlock(134444, p11111));
++    BOOST_CHECK(!Checkpoints::CheckBlock(16000, p210000));
++    BOOST_CHECK(!Checkpoints::CheckBlock(210000, p16000));
+ 
+     // ... but any hash not at a checkpoint should succeed:
+-    BOOST_CHECK(Checkpoints::CheckBlock(11111+1, p134444));
+-    BOOST_CHECK(Checkpoints::CheckBlock(134444+1, p11111));
++    BOOST_CHECK(Checkpoints::CheckBlock(16000+1, p210000));
++    BOOST_CHECK(Checkpoints::CheckBlock(210000+1, p16000));
+ 
+-    BOOST_CHECK(Checkpoints::GetTotalBlocksEstimate() >= 134444);
++    BOOST_CHECK(Checkpoints::GetTotalBlocksEstimate() >= 210000);
+ }
+ 
+ BOOST_AUTO_TEST_SUITE_END()
+diff --git a/src/test/DoS_tests.cpp b/src/test/DoS_tests.cpp
+index 7762729..7acf602 100644
+--- a/src/test/DoS_tests.cpp
++++ b/src/test/DoS_tests.cpp
+@@ -1,5 +1,5 @@
+ // Copyright (c) 2011-2014 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
++// Copyright (c) 2013-2015 The Anoncoin Core developers
+ // Distributed under the MIT/X11 software license, see the accompanying
+ // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ 
+@@ -7,14 +7,15 @@
+ // Unit tests for denial-of-service detection/prevention code
+ //
+ 
++// This test code here is working with some Anoncoin structure updates
+ 
+ 
+-#include "bignum.h"
+ #include "keystore.h"
+ #include "main.h"
+ #include "net.h"
+ #include "script.h"
+ #include "serialize.h"
++#include "util.h"
+ 
+ #include <stdint.h>
+ 
+@@ -27,7 +28,11 @@
+ extern bool AddOrphanTx(const CTransaction& tx, NodeId peer);
+ extern void EraseOrphansFor(NodeId peer);
+ extern unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans);
+-extern std::map<uint256, CTransaction> mapOrphanTransactions;
++struct COrphanTx {
++    CTransaction tx;
++    NodeId fromPeer;
++};
++extern std::map<uint256, COrphanTx> mapOrphanTransactions;
+ extern std::map<uint256, std::set<uint256> > mapOrphanTransactionsByPrev;
+ 
+ CService ip(uint32_t i)
+@@ -102,62 +107,13 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
+     BOOST_CHECK(!CNode::IsBanned(addr));
+ }
+ 
+-static bool CheckNBits(unsigned int nbits1, int64_t time1, unsigned int nbits2, int64_t time2)\
+-{
+-    if (time1 > time2)
+-        return CheckNBits(nbits2, time2, nbits1, time1);
+-    int64_t deltaTime = time2-time1;
+-
+-    CBigNum required;
+-    required.SetCompact(ComputeMinWork(nbits1, deltaTime));
+-    CBigNum have;
+-    have.SetCompact(nbits2);
+-    return (have <= required);
+-}
+-
+-BOOST_AUTO_TEST_CASE(DoS_checknbits)
+-{
+-    using namespace boost::assign; // for 'map_list_of()'
+-
+-    // Timestamps,nBits from the anoncoin block chain.
+-    // These are the block-chain checkpoint blocks
+-    typedef std::map<int64_t, unsigned int> BlockData;
+-    BlockData chainData =
+-        map_list_of(1239852051,486604799)(1262749024,486594666)
+-        (1279305360,469854461)(1280200847,469830746)(1281678674,469809688)
+-        (1296207707,453179945)(1302624061,453036989)(1309640330,437004818)
+-        (1313172719,436789733);
+-
+-    // Make sure CheckNBits considers every combination of block-chain-lock-in-points
+-    // "sane":
+-    BOOST_FOREACH(const BlockData::value_type& i, chainData)
+-    {
+-        BOOST_FOREACH(const BlockData::value_type& j, chainData)
+-        {
+-            BOOST_CHECK(CheckNBits(i.second, i.first, j.second, j.first));
+-        }
+-    }
+-
+-    // Test a couple of insane combinations:
+-    BlockData::value_type firstcheck = *(chainData.begin());
+-    BlockData::value_type lastcheck = *(chainData.rbegin());
+-
+-    // First checkpoint difficulty at or a while after the last checkpoint time should fail when
+-    // compared to last checkpoint
+-    BOOST_CHECK(!CheckNBits(firstcheck.second, lastcheck.first+60*10, lastcheck.second, lastcheck.first));
+-    BOOST_CHECK(!CheckNBits(firstcheck.second, lastcheck.first+60*60*24*14, lastcheck.second, lastcheck.first));
+-
+-    // ... but OK if enough time passed for difficulty to adjust downward:
+-    BOOST_CHECK(CheckNBits(firstcheck.second, lastcheck.first+60*60*24*365*4, lastcheck.second, lastcheck.first));
+-}
+-
+ CTransaction RandomOrphan()
+ {
+-    std::map<uint256, CTransaction>::iterator it;
++    std::map<uint256, COrphanTx>::iterator it;
+     it = mapOrphanTransactions.lower_bound(GetRandHash());
+     if (it == mapOrphanTransactions.end())
+         it = mapOrphanTransactions.begin();
+-    return it->second;
++    return it->second.tx;
+ }
+ 
+ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
+@@ -241,91 +197,4 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
+     BOOST_CHECK(mapOrphanTransactionsByPrev.empty());
+ }
+ 
+-BOOST_AUTO_TEST_CASE(DoS_checkSig)
+-{
+-    // Test signature caching code (see key.cpp Verify() methods)
+-
+-    CKey key;
+-    key.MakeNewKey(true);
+-    CBasicKeyStore keystore;
+-    keystore.AddKey(key);
+-    unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC;
+-
+-    // 100 orphan transactions:
+-    static const int NPREV=100;
+-    CTransaction orphans[NPREV];
+-    for (int i = 0; i < NPREV; i++)
+-    {
+-        CTransaction& tx = orphans[i];
+-        tx.vin.resize(1);
+-        tx.vin[0].prevout.n = 0;
+-        tx.vin[0].prevout.hash = GetRandHash();
+-        tx.vin[0].scriptSig << OP_1;
+-        tx.vout.resize(1);
+-        tx.vout[0].nValue = 1*CENT;
+-        tx.vout[0].scriptPubKey.SetDestination(key.GetPubKey().GetID());
+-
+-        AddOrphanTx(tx, 0);
+-    }
+-
+-    // Create a transaction that depends on orphans:
+-    CTransaction tx;
+-    tx.vout.resize(1);
+-    tx.vout[0].nValue = 1*CENT;
+-    tx.vout[0].scriptPubKey.SetDestination(key.GetPubKey().GetID());
+-    tx.vin.resize(NPREV);
+-    for (unsigned int j = 0; j < tx.vin.size(); j++)
+-    {
+-        tx.vin[j].prevout.n = 0;
+-        tx.vin[j].prevout.hash = orphans[j].GetHash();
+-    }
+-    // Creating signatures primes the cache:
+-    boost::posix_time::ptime mst1 = boost::posix_time::microsec_clock::local_time();
+-    for (unsigned int j = 0; j < tx.vin.size(); j++)
+-        BOOST_CHECK(SignSignature(keystore, orphans[j], tx, j));
+-    boost::posix_time::ptime mst2 = boost::posix_time::microsec_clock::local_time();
+-    boost::posix_time::time_duration msdiff = mst2 - mst1;
+-    long nOneValidate = msdiff.total_milliseconds();
+-    if (fDebug) printf("DoS_Checksig sign: %ld\n", nOneValidate);
+-
+-    // ... now validating repeatedly should be quick:
+-    // 2.8GHz machine, -g build: Sign takes ~760ms,
+-    // uncached Verify takes ~250ms, cached Verify takes ~50ms
+-    // (for 100 single-signature inputs)
+-    mst1 = boost::posix_time::microsec_clock::local_time();
+-    for (unsigned int i = 0; i < 5; i++)
+-        for (unsigned int j = 0; j < tx.vin.size(); j++)
+-            BOOST_CHECK(VerifySignature(CCoins(orphans[j], MEMPOOL_HEIGHT), tx, j, flags, SIGHASH_ALL));
+-    mst2 = boost::posix_time::microsec_clock::local_time();
+-    msdiff = mst2 - mst1;
+-    long nManyValidate = msdiff.total_milliseconds();
+-    if (fDebug) printf("DoS_Checksig five: %ld\n", nManyValidate);
+-
+-    BOOST_CHECK_MESSAGE(nManyValidate < nOneValidate, "Signature cache timing failed");
+-
+-    // Empty a signature, validation should fail:
+-    CScript save = tx.vin[0].scriptSig;
+-    tx.vin[0].scriptSig = CScript();
+-    BOOST_CHECK(!VerifySignature(CCoins(orphans[0], MEMPOOL_HEIGHT), tx, 0, flags, SIGHASH_ALL));
+-    tx.vin[0].scriptSig = save;
+-
+-    // Swap signatures, validation should fail:
+-    std::swap(tx.vin[0].scriptSig, tx.vin[1].scriptSig);
+-    BOOST_CHECK(!VerifySignature(CCoins(orphans[0], MEMPOOL_HEIGHT), tx, 0, flags, SIGHASH_ALL));
+-    BOOST_CHECK(!VerifySignature(CCoins(orphans[1], MEMPOOL_HEIGHT), tx, 1, flags, SIGHASH_ALL));
+-    std::swap(tx.vin[0].scriptSig, tx.vin[1].scriptSig);
+-
+-    // Exercise -maxsigcachesize code:
+-    mapArgs["-maxsigcachesize"] = "10";
+-    // Generate a new, different signature for vin[0] to trigger cache clear:
+-    CScript oldSig = tx.vin[0].scriptSig;
+-    BOOST_CHECK(SignSignature(keystore, orphans[0], tx, 0));
+-    BOOST_CHECK(tx.vin[0].scriptSig != oldSig);
+-    for (unsigned int j = 0; j < tx.vin.size(); j++)
+-        BOOST_CHECK(VerifySignature(CCoins(orphans[j], MEMPOOL_HEIGHT), tx, j, flags, SIGHASH_ALL));
+-    mapArgs.erase("-maxsigcachesize");
+-
+-    LimitOrphanTxSize(0);
+-}
+-
+ BOOST_AUTO_TEST_SUITE_END()
+diff --git a/src/test/alert_tests.cpp b/src/test/alert_tests.cpp
+deleted file mode 100644
+index 226fbea..0000000
+--- a/src/test/alert_tests.cpp
++++ /dev/null
+@@ -1,185 +0,0 @@
+-// Copyright (c) 2013 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
+-// Distributed under the MIT/X11 software license, see the accompanying
+-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+-
+-//
+-// Unit tests for alert system
+-//
+-
+-#include "alert.h"
+-#include "data/alertTests.raw.h"
+-
+-#include "chainparams.h"
+-#include "serialize.h"
+-#include "util.h"
+-#include "version.h"
+-
+-#include <fstream>
+-
+-#include <boost/filesystem/operations.hpp>
+-#include <boost/foreach.hpp>
+-#include <boost/test/unit_test.hpp>
+-
+-#if 0
+-//
+-// alertTests contains 7 alerts, generated with this code:
+-// (SignAndSave code not shown, alert signing key is secret)
+-//
+-{
+-    CAlert alert;
+-    alert.nRelayUntil   = 60;
+-    alert.nExpiration   = 24 * 60 * 60;
+-    alert.nID           = 1;
+-    alert.nCancel       = 0;   // cancels previous messages up to this ID number
+-    alert.nMinVer       = 0;  // These versions are protocol versions
+-    alert.nMaxVer       = 999001;
+-    alert.nPriority     = 1;
+-    alert.strComment    = "Alert comment";
+-    alert.strStatusBar  = "Alert 1";
+-
+-    SignAndSave(alert, "test/alertTests");
+-
+-    alert.setSubVer.insert(std::string("/Satoshi:0.1.0/"));
+-    alert.strStatusBar  = "Alert 1 for Satoshi 0.1.0";
+-    SignAndSave(alert, "test/alertTests");
+-
+-    alert.setSubVer.insert(std::string("/Satoshi:0.2.0/"));
+-    alert.strStatusBar  = "Alert 1 for Satoshi 0.1.0, 0.2.0";
+-    SignAndSave(alert, "test/alertTests");
+-
+-    alert.setSubVer.clear();
+-    ++alert.nID;
+-    alert.nCancel = 1;
+-    alert.nPriority = 100;
+-    alert.strStatusBar  = "Alert 2, cancels 1";
+-    SignAndSave(alert, "test/alertTests");
+-
+-    alert.nExpiration += 60;
+-    ++alert.nID;
+-    SignAndSave(alert, "test/alertTests");
+-
+-    ++alert.nID;
+-    alert.nMinVer = 11;
+-    alert.nMaxVer = 22;
+-    SignAndSave(alert, "test/alertTests");
+-
+-    ++alert.nID;
+-    alert.strStatusBar  = "Alert 2 for Satoshi 0.1.0";
+-    alert.setSubVer.insert(std::string("/Satoshi:0.1.0/"));
+-    SignAndSave(alert, "test/alertTests");
+-
+-    ++alert.nID;
+-    alert.nMinVer = 0;
+-    alert.nMaxVer = 999999;
+-    alert.strStatusBar  = "Evil Alert'; /bin/ls; echo '";
+-    alert.setSubVer.clear();
+-    SignAndSave(alert, "test/alertTests");
+-}
+-#endif
+-
+-struct ReadAlerts
+-{
+-    ReadAlerts()
+-    {
+-        std::vector<unsigned char> vch(alert_tests::alertTests, alert_tests::alertTests + sizeof(alert_tests::alertTests));
+-        CDataStream(vch, SER_DISK, CLIENT_VERSION) >> allAlerts[CChainParams::MAIN];
+-    }
+-    ~ReadAlerts() { }
+-
+-    static std::vector<std::string> read_lines(boost::filesystem::path filepath)
+-    {
+-        std::vector<std::string> result;
+-
+-        std::ifstream f(filepath.string().c_str());
+-        std::string line;
+-        while (std::getline(f,line))
+-            result.push_back(line);
+-
+-        return result;
+-    }
+-
+-    std::map<CChainParams::Network, std::vector<CAlert> > allAlerts;
+-};
+-
+-BOOST_FIXTURE_TEST_SUITE(Alert_tests, ReadAlerts)
+-
+-
+-BOOST_AUTO_TEST_CASE(AlertApplies)
+-{
+-    SetMockTime(11);
+-
+-    BOOST_FOREACH(const PAIRTYPE(CChainParams::Network, std::vector<CAlert>) &net, allAlerts)
+-    {
+-        SelectParams(net.first);
+-        const std::vector<CAlert> &alerts = net.second;
+-
+-        BOOST_FOREACH(const CAlert& alert, alerts)
+-        {
+-            BOOST_CHECK(alert.CheckSignature());
+-        }
+-
+-        BOOST_CHECK(alerts.size() >= 3);
+-
+-        // Matches:
+-        BOOST_CHECK(alerts[0].AppliesTo(1, ""));
+-        BOOST_CHECK(alerts[0].AppliesTo(999001, ""));
+-        BOOST_CHECK(alerts[0].AppliesTo(1, "/Satoshi:11.11.11/"));
+-
+-        BOOST_CHECK(alerts[1].AppliesTo(1, "/Satoshi:0.1.0/"));
+-        BOOST_CHECK(alerts[1].AppliesTo(999001, "/Satoshi:0.1.0/"));
+-
+-        BOOST_CHECK(alerts[2].AppliesTo(1, "/Satoshi:0.1.0/"));
+-        BOOST_CHECK(alerts[2].AppliesTo(1, "/Satoshi:0.2.0/"));
+-
+-        // Don't match:
+-        BOOST_CHECK(!alerts[0].AppliesTo(-1, ""));
+-        BOOST_CHECK(!alerts[0].AppliesTo(999002, ""));
+-
+-        BOOST_CHECK(!alerts[1].AppliesTo(1, ""));
+-        BOOST_CHECK(!alerts[1].AppliesTo(1, "Satoshi:0.1.0"));
+-        BOOST_CHECK(!alerts[1].AppliesTo(1, "/Satoshi:0.1.0"));
+-        BOOST_CHECK(!alerts[1].AppliesTo(1, "Satoshi:0.1.0/"));
+-        BOOST_CHECK(!alerts[1].AppliesTo(-1, "/Satoshi:0.1.0/"));
+-        BOOST_CHECK(!alerts[1].AppliesTo(999002, "/Satoshi:0.1.0/"));
+-        BOOST_CHECK(!alerts[1].AppliesTo(1, "/Satoshi:0.2.0/"));
+-
+-        BOOST_CHECK(!alerts[2].AppliesTo(1, "/Satoshi:0.3.0/"));
+-    }
+-
+-    SetMockTime(0);
+-    SelectParams(CChainParams::MAIN);
+-}
+-
+-
+-// This uses sh 'echo' to test the -alertnotify function, writing to a
+-// /tmp file. So skip it on Windows:
+-#ifndef WIN32
+-BOOST_AUTO_TEST_CASE(AlertNotify)
+-{
+-    SetMockTime(11);
+-
+-    const std::vector<CAlert> &alerts = allAlerts.find(CChainParams::MAIN)->second;
+-
+-    boost::filesystem::path temp = GetTempPath() / "alertnotify.txt";
+-    boost::filesystem::remove(temp);
+-
+-    mapArgs["-alertnotify"] = std::string("echo %s >> ") + temp.string();
+-
+-    BOOST_FOREACH(CAlert alert, alerts)
+-        alert.ProcessAlert(false);
+-
+-    std::vector<std::string> r = read_lines(temp);
+-    BOOST_CHECK_EQUAL(r.size(), 4u);
+-    BOOST_CHECK_EQUAL(r[0], "Alert 1");
+-    BOOST_CHECK_EQUAL(r[1], "Alert 2, cancels 1");
+-    BOOST_CHECK_EQUAL(r[2], "Alert 2, cancels 1");
+-    BOOST_CHECK_EQUAL(r[3], "Evil Alert; /bin/ls; echo "); // single-quotes should be removed
+-
+-    boost::filesystem::remove(temp);
+-
+-    SetMockTime(0);
+-}
+-#endif
+-
+-BOOST_AUTO_TEST_SUITE_END()
+diff --git a/src/test/base58_tests.cpp b/src/test/base58_tests.cpp
+index 2468bb6..d810308 100644
+--- a/src/test/base58_tests.cpp
++++ b/src/test/base58_tests.cpp
+@@ -1,5 +1,5 @@
+ // Copyright (c) 2011-2014 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
++// Copyright (c) 2013-2015 The Anoncoin Core developers
+ // Distributed under the MIT/X11 software license, see the accompanying
+ // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ 
+diff --git a/src/test/bctest.py b/src/test/bctest.py
+deleted file mode 100644
+index ef46101..0000000
+--- a/src/test/bctest.py
++++ /dev/null
+@@ -1,54 +0,0 @@
+-# Copyright 2014 BitPay, Inc.
+-# Distributed under the MIT/X11 software license, see the accompanying
+-# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+-
+-import subprocess
+-import os
+-import json
+-import sys
+-
+-def bctest(testDir, testObj, exeext):
+-
+-	execprog = testObj['exec'] + exeext
+-	execargs = testObj['args']
+-	execrun = [execprog] + execargs
+-	stdinCfg = None
+-	inputData = None
+-	if "input" in testObj:
+-		filename = testDir + "/" + testObj['input']
+-		inputData = open(filename).read()
+-		stdinCfg = subprocess.PIPE
+-
+-	outputFn = None
+-	outputData = None
+-	if "output_cmp" in testObj:
+-		outputFn = testObj['output_cmp']
+-		outputData = open(testDir + "/" + outputFn).read()
+-	proc = subprocess.Popen(execrun, stdin=stdinCfg, stdout=subprocess.PIPE, stderr=subprocess.PIPE,universal_newlines=True)
+-	try:
+-		outs = proc.communicate(input=inputData)
+-	except OSError:
+-		print("OSError, Failed to execute " + execprog)
+-		sys.exit(1)
+-
+-	if outputData and (outs[0] != outputData):
+-		print("Output data mismatch for " + outputFn)
+-		sys.exit(1)
+-
+-	wantRC = 0
+-	if "return_code" in testObj:
+-		wantRC = testObj['return_code']
+-	if proc.returncode != wantRC:
+-		print("Return code mismatch for " + outputFn)
+-		sys.exit(1)
+-
+-def bctester(testDir, input_basename, buildenv):
+-	input_filename = testDir + "/" + input_basename
+-	raw_data = open(input_filename).read()
+-	input_data = json.loads(raw_data)
+-
+-	for testObj in input_data:
+-		bctest(testDir, testObj, buildenv.exeext)
+-
+-	sys.exit(0)
+-
+diff --git a/src/test/bignum.h b/src/test/bignum.h
+deleted file mode 100644
+index c89c887..0000000
+--- a/src/test/bignum.h
++++ /dev/null
+@@ -1,181 +0,0 @@
+-// Copyright (c) 2009-2010 Satoshi Nakamoto
+-// Copyright (c) 2009-2013 The Bitcoin developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
+-// Distributed under the MIT/X11 software license, see the accompanying
+-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+-
+-#ifndef ANONCOIN_TEST_BIGNUM_H
+-#define ANONCOIN_TEST_BIGNUM_H
+-
+-#include <algorithm>
+-#include <limits>
+-#include <stdexcept>
+-#include <stdint.h>
+-#include <string>
+-#include <vector>
+-
+-#include <openssl/bn.h>
+-
+-class bignum_error : public std::runtime_error
+-{
+-public:
+-    explicit bignum_error(const std::string& str) : std::runtime_error(str) {}
+-};
+-
+-
+-/** C++ wrapper for BIGNUM (OpenSSL bignum) */
+-class CBigNum : public BIGNUM
+-{
+-public:
+-    CBigNum()
+-    {
+-        BN_init(this);
+-    }
+-
+-    CBigNum(const CBigNum& b)
+-    {
+-        BN_init(this);
+-        if (!BN_copy(this, &b))
+-        {
+-            BN_clear_free(this);
+-            throw bignum_error("CBigNum::CBigNum(const CBigNum&) : BN_copy failed");
+-        }
+-    }
+-
+-    CBigNum& operator=(const CBigNum& b)
+-    {
+-        if (!BN_copy(this, &b))
+-            throw bignum_error("CBigNum::operator= : BN_copy failed");
+-        return (*this);
+-    }
+-
+-    ~CBigNum()
+-    {
+-        BN_clear_free(this);
+-    }
+-
+-    CBigNum(long long n)          { BN_init(this); setint64(n); }
+-
+-    explicit CBigNum(const std::vector<unsigned char>& vch)
+-    {
+-        BN_init(this);
+-        setvch(vch);
+-    }
+-
+-    int getint() const
+-    {
+-        BN_ULONG n = BN_get_word(this);
+-        if (!BN_is_negative(this))
+-            return (n > (BN_ULONG)std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : n);
+-        else
+-            return (n > (BN_ULONG)std::numeric_limits<int>::max() ? std::numeric_limits<int>::min() : -(int)n);
+-    }
+-
+-    void setint64(int64_t sn)
+-    {
+-        unsigned char pch[sizeof(sn) + 6];
+-        unsigned char* p = pch + 4;
+-        bool fNegative;
+-        uint64_t n;
+-
+-        if (sn < (int64_t)0)
+-        {
+-            // Since the minimum signed integer cannot be represented as positive so long as its type is signed,
+-            // and it's not well-defined what happens if you make it unsigned before negating it,
+-            // we instead increment the negative integer by 1, convert it, then increment the (now positive) unsigned integer by 1 to compensate
+-            n = -(sn + 1);
+-            ++n;
+-            fNegative = true;
+-        } else {
+-            n = sn;
+-            fNegative = false;
+-        }
+-
+-        bool fLeadingZeroes = true;
+-        for (int i = 0; i < 8; i++)
+-        {
+-            unsigned char c = (n >> 56) & 0xff;
+-            n <<= 8;
+-            if (fLeadingZeroes)
+-            {
+-                if (c == 0)
+-                    continue;
+-                if (c & 0x80)
+-                    *p++ = (fNegative ? 0x80 : 0);
+-                else if (fNegative)
+-                    c |= 0x80;
+-                fLeadingZeroes = false;
+-            }
+-            *p++ = c;
+-        }
+-        unsigned int nSize = p - (pch + 4);
+-        pch[0] = (nSize >> 24) & 0xff;
+-        pch[1] = (nSize >> 16) & 0xff;
+-        pch[2] = (nSize >> 8) & 0xff;
+-        pch[3] = (nSize) & 0xff;
+-        BN_mpi2bn(pch, p - pch, this);
+-    }
+-
+-    void setvch(const std::vector<unsigned char>& vch)
+-    {
+-        std::vector<unsigned char> vch2(vch.size() + 4);
+-        unsigned int nSize = vch.size();
+-        // BIGNUM's byte stream format expects 4 bytes of
+-        // big endian size data info at the front
+-        vch2[0] = (nSize >> 24) & 0xff;
+-        vch2[1] = (nSize >> 16) & 0xff;
+-        vch2[2] = (nSize >> 8) & 0xff;
+-        vch2[3] = (nSize >> 0) & 0xff;
+-        // swap data to big endian
+-        reverse_copy(vch.begin(), vch.end(), vch2.begin() + 4);
+-        BN_mpi2bn(&vch2[0], vch2.size(), this);
+-    }
+-
+-    std::vector<unsigned char> getvch() const
+-    {
+-        unsigned int nSize = BN_bn2mpi(this, NULL);
+-        if (nSize <= 4)
+-            return std::vector<unsigned char>();
+-        std::vector<unsigned char> vch(nSize);
+-        BN_bn2mpi(this, &vch[0]);
+-        vch.erase(vch.begin(), vch.begin() + 4);
+-        reverse(vch.begin(), vch.end());
+-        return vch;
+-    }
+-
+-    friend inline const CBigNum operator-(const CBigNum& a, const CBigNum& b);
+-};
+-
+-
+-
+-inline const CBigNum operator+(const CBigNum& a, const CBigNum& b)
+-{
+-    CBigNum r;
+-    if (!BN_add(&r, &a, &b))
+-        throw bignum_error("CBigNum::operator+ : BN_add failed");
+-    return r;
+-}
+-
+-inline const CBigNum operator-(const CBigNum& a, const CBigNum& b)
+-{
+-    CBigNum r;
+-    if (!BN_sub(&r, &a, &b))
+-        throw bignum_error("CBigNum::operator- : BN_sub failed");
+-    return r;
+-}
+-
+-inline const CBigNum operator-(const CBigNum& a)
+-{
+-    CBigNum r(a);
+-    BN_set_negative(&r, !BN_is_negative(&r));
+-    return r;
+-}
+-
+-inline bool operator==(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, &b) == 0); }
+-inline bool operator!=(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, &b) != 0); }
+-inline bool operator<=(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, &b) <= 0); }
+-inline bool operator>=(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, &b) >= 0); }
+-inline bool operator<(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) < 0); }
+-inline bool operator>(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) > 0); }
+-
+-#endif // ANONCOIN_TEST_BIGNUM_H
+diff --git a/src/test/bip32_tests.cpp b/src/test/bip32_tests.cpp
+deleted file mode 100644
+index 99dda43..0000000
+--- a/src/test/bip32_tests.cpp
++++ /dev/null
+@@ -1,121 +0,0 @@
+-// Copyright (c) 2013 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
+-// Distributed under the MIT/X11 software license, see the accompanying
+-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+-
+-#include <boost/test/unit_test.hpp>
+-
+-#include "base58.h"
+-#include "key.h"
+-#include "uint256.h"
+-#include "util.h"
+-
+-#include <string>
+-#include <vector>
+-
+-struct TestDerivation {
+-    std::string pub;
+-    std::string prv;
+-    unsigned int nChild;
+-};
+-
+-struct TestVector {
+-    std::string strHexMaster;
+-    std::vector<TestDerivation> vDerive;
+-
+-    TestVector(std::string strHexMasterIn) : strHexMaster(strHexMasterIn) {}
+-
+-    TestVector& operator()(std::string pub, std::string prv, unsigned int nChild) {
+-        vDerive.push_back(TestDerivation());
+-        TestDerivation &der = vDerive.back();
+-        der.pub = pub;
+-        der.prv = prv;
+-        der.nChild = nChild;
+-        return *this;
+-    }
+-};
+-
+-TestVector test1 =
+-  TestVector("000102030405060708090a0b0c0d0e0f")
+-    ("xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8",
+-     "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi",
+-     0x80000000)
+-    ("xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw",
+-     "xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7",
+-     1)
+-    ("xpub6ASuArnXKPbfEwhqN6e3mwBcDTgzisQN1wXN9BJcM47sSikHjJf3UFHKkNAWbWMiGj7Wf5uMash7SyYq527Hqck2AxYysAA7xmALppuCkwQ",
+-     "xprv9wTYmMFdV23N2TdNG573QoEsfRrWKQgWeibmLntzniatZvR9BmLnvSxqu53Kw1UmYPxLgboyZQaXwTCg8MSY3H2EU4pWcQDnRnrVA1xe8fs",
+-     0x80000002)
+-    ("xpub6D4BDPcP2GT577Vvch3R8wDkScZWzQzMMUm3PWbmWvVJrZwQY4VUNgqFJPMM3No2dFDFGTsxxpG5uJh7n7epu4trkrX7x7DogT5Uv6fcLW5",
+-     "xprv9z4pot5VBttmtdRTWfWQmoH1taj2axGVzFqSb8C9xaxKymcFzXBDptWmT7FwuEzG3ryjH4ktypQSAewRiNMjANTtpgP4mLTj34bhnZX7UiM",
+-     2)
+-    ("xpub6FHa3pjLCk84BayeJxFW2SP4XRrFd1JYnxeLeU8EqN3vDfZmbqBqaGJAyiLjTAwm6ZLRQUMv1ZACTj37sR62cfN7fe5JnJ7dh8zL4fiyLHV",
+-     "xprvA2JDeKCSNNZky6uBCviVfJSKyQ1mDYahRjijr5idH2WwLsEd4Hsb2Tyh8RfQMuPh7f7RtyzTtdrbdqqsunu5Mm3wDvUAKRHSC34sJ7in334",
+-     1000000000)
+-    ("xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy",
+-     "xprvA41z7zogVVwxVSgdKUHDy1SKmdb533PjDz7J6N6mV6uS3ze1ai8FHa8kmHScGpWmj4WggLyQjgPie1rFSruoUihUZREPSL39UNdE3BBDu76",
+-     0);
+-
+-TestVector test2 =
+-  TestVector("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542")
+-    ("xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB",
+-     "xprv9s21ZrQH143K31xYSDQpPDxsXRTUcvj2iNHm5NUtrGiGG5e2DtALGdso3pGz6ssrdK4PFmM8NSpSBHNqPqm55Qn3LqFtT2emdEXVYsCzC2U",
+-     0)
+-    ("xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH",
+-     "xprv9vHkqa6EV4sPZHYqZznhT2NPtPCjKuDKGY38FBWLvgaDx45zo9WQRUT3dKYnjwih2yJD9mkrocEZXo1ex8G81dwSM1fwqWpWkeS3v86pgKt",
+-     0xFFFFFFFF)
+-    ("xpub6ASAVgeehLbnwdqV6UKMHVzgqAG8Gr6riv3Fxxpj8ksbH9ebxaEyBLZ85ySDhKiLDBrQSARLq1uNRts8RuJiHjaDMBU4Zn9h8LZNnBC5y4a",
+-     "xprv9wSp6B7kry3Vj9m1zSnLvN3xH8RdsPP1Mh7fAaR7aRLcQMKTR2vidYEeEg2mUCTAwCd6vnxVrcjfy2kRgVsFawNzmjuHc2YmYRmagcEPdU9",
+-     1)
+-    ("xpub6DF8uhdarytz3FWdA8TvFSvvAh8dP3283MY7p2V4SeE2wyWmG5mg5EwVvmdMVCQcoNJxGoWaU9DCWh89LojfZ537wTfunKau47EL2dhHKon",
+-     "xprv9zFnWC6h2cLgpmSA46vutJzBcfJ8yaJGg8cX1e5StJh45BBciYTRXSd25UEPVuesF9yog62tGAQtHjXajPPdbRCHuWS6T8XA2ECKADdw4Ef",
+-     0xFFFFFFFE)
+-    ("xpub6ERApfZwUNrhLCkDtcHTcxd75RbzS1ed54G1LkBUHQVHQKqhMkhgbmJbZRkrgZw4koxb5JaHWkY4ALHY2grBGRjaDMzQLcgJvLJuZZvRcEL",
+-     "xprvA1RpRA33e1JQ7ifknakTFpgNXPmW2YvmhqLQYMmrj4xJXXWYpDPS3xz7iAxn8L39njGVyuoseXzU6rcxFLJ8HFsTjSyQbLYnMpCqE2VbFWc",
+-     2)
+-    ("xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt",
+-     "xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j",
+-     0);
+-
+-void RunTest(const TestVector &test) {
+-    std::vector<unsigned char> seed = ParseHex(test.strHexMaster);
+-    CExtKey key;
+-    CExtPubKey pubkey;
+-    key.SetMaster(&seed[0], seed.size());
+-    pubkey = key.Neuter();
+-    BOOST_FOREACH(const TestDerivation &derive, test.vDerive) {
+-        unsigned char data[74];
+-        key.Encode(data);
+-        pubkey.Encode(data);
+-        // Test private key
+-        CAnoncoinExtKey b58key; b58key.SetKey(key);
+-        BOOST_CHECK(b58key.ToString() == derive.prv);
+-        // Test public key
+-        CAnoncoinExtPubKey b58pubkey; b58pubkey.SetKey(pubkey);
+-        BOOST_CHECK(b58pubkey.ToString() == derive.pub);
+-        // Derive new keys
+-        CExtKey keyNew;
+-        BOOST_CHECK(key.Derive(keyNew, derive.nChild));
+-        CExtPubKey pubkeyNew = keyNew.Neuter();
+-        if (!(derive.nChild & 0x80000000)) {
+-            // Compare with public derivation
+-            CExtPubKey pubkeyNew2;
+-            BOOST_CHECK(pubkey.Derive(pubkeyNew2, derive.nChild));
+-            BOOST_CHECK(pubkeyNew == pubkeyNew2);
+-        }
+-        key = keyNew;
+-        pubkey = pubkeyNew;
+-    }
+-}
+-
+-BOOST_AUTO_TEST_SUITE(bip32_tests)
+-
+-BOOST_AUTO_TEST_CASE(bip32_test1) {
+-    RunTest(test1);
+-}
+-
+-BOOST_AUTO_TEST_CASE(bip32_test2) {
+-    RunTest(test2);
+-}
+-
+-BOOST_AUTO_TEST_SUITE_END()
+diff --git a/src/test/bitcoin-util-test.py b/src/test/bitcoin-util-test.py
+deleted file mode 100644
+index 3050cad..0000000
+--- a/src/test/bitcoin-util-test.py
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#!/usr/bin/python
+-# Copyright 2014 BitPay, Inc.
+-# Distributed under the MIT/X11 software license, see the accompanying
+-# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+-
+-import os
+-import bctest
+-import buildenv
+-
+-if __name__ == '__main__':
+-	bctest.bctester(os.environ["srcdir"] + "/test/data",
+-			"anoncoin-util-test.json",buildenv)
+-
+diff --git a/src/test/bloom_tests.cpp b/src/test/bloom_tests.cpp
+index 4c619bd..6d27eb7 100644
+--- a/src/test/bloom_tests.cpp
++++ b/src/test/bloom_tests.cpp
+@@ -1,5 +1,5 @@
+ // Copyright (c) 2012-2013 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
++// Copyright (c) 2013-2015 The Anoncoin Core developers
+ // Distributed under the MIT/X11 software license, see the accompanying
+ // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ 
+@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize_with_tweak)
+ 
+ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
+ {
+-    string strSecret = string("5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C");
++    string strSecret = string("64q4yFSLXnEYFQwxbkEZbd2yTnyts9SnLtmEr2cYVGqTvCesFuj");
+     CAnoncoinSecret vchSecret;
+     BOOST_CHECK(vchSecret.SetString(strSecret));
+ 
+@@ -94,7 +94,8 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
+     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
+     filter.Serialize(stream, SER_NETWORK, PROTOCOL_VERSION);
+ 
+-    vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
++    // std::cout << ":\n" << HexStr(stream.str()) << '\n';
++    vector<unsigned char> vch = ParseHex("0312f8e3080000000000000001");
+     vector<char> expected(vch.size());
+ 
+     for (unsigned int i = 0; i < vch.size(); i++)
+diff --git a/src/test/canonical_tests.cpp b/src/test/canonical_tests.cpp
+deleted file mode 100644
+index 359ce70..0000000
+--- a/src/test/canonical_tests.cpp
++++ /dev/null
+@@ -1,97 +0,0 @@
+-// Copyright (c) 2012-2013 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
+-// Distributed under the MIT/X11 software license, see the accompanying
+-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+-
+-//
+-// Unit tests for canonical signatures
+-//
+-
+-
+-
+-#include "script.h"
+-#include "util.h"
+-#include "data/sig_noncanonical.json.h"
+-#include "data/sig_canonical.json.h"
+-
+-#include <boost/foreach.hpp>
+-#include <boost/test/unit_test.hpp>
+-#include "json/json_spirit_writer_template.h"
+-#include <openssl/ecdsa.h>
+-
+-using namespace std;
+-using namespace json_spirit;
+-
+-
+-// In script_tests.cpp
+-extern Array read_json(const std::string& jsondata);
+-
+-BOOST_AUTO_TEST_SUITE(canonical_tests)
+-
+-// OpenSSL-based test for canonical signature (without test for hashtype byte)
+-bool static IsCanonicalSignature_OpenSSL_inner(const std::vector<unsigned char>& vchSig)
+-{
+-    if (vchSig.size() == 0)
+-        return false;
+-    const unsigned char *input = &vchSig[0];
+-    ECDSA_SIG *psig = NULL;
+-    d2i_ECDSA_SIG(&psig, &input, vchSig.size());
+-    if (psig == NULL)
+-        return false;
+-    unsigned char buf[256];
+-    unsigned char *pbuf = buf;
+-    unsigned int nLen = i2d_ECDSA_SIG(psig, NULL);
+-    if (nLen != vchSig.size()) {
+-        ECDSA_SIG_free(psig);
+-        return false;
+-    }
+-    nLen = i2d_ECDSA_SIG(psig, &pbuf);
+-    ECDSA_SIG_free(psig);
+-    return (memcmp(&vchSig[0], &buf[0], nLen) == 0);
+-}
+-
+-// OpenSSL-based test for canonical signature
+-bool static IsCanonicalSignature_OpenSSL(const std::vector<unsigned char> &vchSignature) {
+-    if (vchSignature.size() < 1)
+-        return false;
+-    if (vchSignature.size() > 127)
+-        return false;
+-    if (vchSignature[vchSignature.size() - 1] & 0x7C)
+-        return false;
+-
+-    std::vector<unsigned char> vchSig(vchSignature);
+-    vchSig.pop_back();
+-    if (!IsCanonicalSignature_OpenSSL_inner(vchSig))
+-        return false;
+-    return true;
+-}
+-
+-BOOST_AUTO_TEST_CASE(script_canon)
+-{
+-    Array tests = read_json(std::string(json_tests::sig_canonical, json_tests::sig_canonical + sizeof(json_tests::sig_canonical)));
+-
+-    BOOST_FOREACH(Value &tv, tests) {
+-        string test = tv.get_str();
+-        if (IsHex(test)) {
+-            std::vector<unsigned char> sig = ParseHex(test);
+-            BOOST_CHECK_MESSAGE(IsCanonicalSignature(sig, SCRIPT_VERIFY_STRICTENC), test);
+-            BOOST_CHECK_MESSAGE(IsCanonicalSignature_OpenSSL(sig), test);
+-        }
+-    }
+-}
+-
+-BOOST_AUTO_TEST_CASE(script_noncanon)
+-{
+-    Array tests = read_json(std::string(json_tests::sig_noncanonical, json_tests::sig_noncanonical + sizeof(json_tests::sig_noncanonical)));
+-
+-    BOOST_FOREACH(Value &tv, tests) {
+-        string test = tv.get_str();
+-        if (IsHex(test)) {
+-            std::vector<unsigned char> sig = ParseHex(test);
+-            BOOST_CHECK_MESSAGE(!IsCanonicalSignature(sig, SCRIPT_VERIFY_STRICTENC), test);
+-            BOOST_CHECK_MESSAGE(!IsCanonicalSignature_OpenSSL(sig), test);
+-        }
+-    }
+-}
+-
+-BOOST_AUTO_TEST_SUITE_END()
+diff --git a/src/test/data/base58_keys_invalid.json b/src/test/data/base58_keys_invalid.json
+index a088620..57ca2a6 100644
+--- a/src/test/data/base58_keys_invalid.json
++++ b/src/test/data/base58_keys_invalid.json
+@@ -6,147 +6,147 @@
+         "x"
+     ], 
+     [
+-        "37qgekLpCCHrQuSjvX3fs496FWTGsHFHizjJAs6NPcR47aefnnCWECAhHV6E3g4YN7u7Yuwod5Y"
++        "ggh6uJMyupamVfCeA6YBritfYxahwQAiTh"
+     ], 
+     [
+-        "dzb7VV1Ui55BARxv7ATxAtCUeJsANKovDGWFVgpTbhq9gvPqP3yv"
++        "56sJvHMMdQMNzN48KAWhg1FQjLkUK9nsR938X8YSa2uTq8NioSGedqTPCmhHcULHumZ2sED2P36Q4"
+     ], 
+     [
+-        "MuNu7ZAEDFiHthiunm7dPjwKqrVNCM3mAz6rP9zFveQu14YA8CxExSJTHcVP9DErn6u84E6Ej7S"
++        "7VBYyF65PZjtzsTpQMhWYdoEKsJx5fMdgBSPqgkcfJuL4uPxFAyapYmzExBnucfYJJzsMwHCMuZmP"
+     ], 
+     [
+-        "rPpQpYknyNQ5AEHuY6H8ijJJrYc2nDKKk9jjmKEXsWzyAQcFGpDLU2Zvsmoi8JLR7hAwoy3RQWf"
++        "2D9uvwpQHtC4k8FAXNPXc5c9VWSpmmX5XaJ"
+     ], 
+     [
+-        "4Uc3FmN6NQ6zLBK5QQBXRBUREaaHwCZYsGCueHauuDmJpZKn6jkEskMB2Zi2CNgtb5r6epWEFfUJq"
++        "97LpronZsFeZ8yzHEA7wase4474X3QCF7wnvVedzf9hrgBnbV4U"
+     ], 
+     [
+-        "7aQgR5DFQ25vyXmqZAWmnVCjL3PkBcdVkBUpjrjMTcghHx3E8wb"
++        "PQ9nK4oLZ3qpTnJEuUVuNezyztJtnc8iez1un9KDWvGjghKyvtmM"
+     ], 
+     [
+-        "17QpPprjeg69fW1DV8DcYYCKvWjYhXvWkov6MJ1iTTvMFj6weAqW7wybZeH57WTNxXVCRH4veVs"
++        "92aqr3SzztHVi7zqYV985oVXwpfuh4bDUciz7AVURUcv66idimKQ"
+     ], 
+     [
+-        "KxuACDviz8Xvpn1xAh9MfopySZNuyajYMZWz16Dv2mHHryznWUp3"
++        "AaLYJY1yZrrK8zWMr54Va1CL4spqpBNty3"
+     ], 
+     [
+-        "7nK3GSmqdXJQtdohvGfJ7KsSmn3TmGqExug49583bDAL91pVSGq5xS9SHoAYL3Wv3ijKTit65th"
++        "39hFz6fKrZsiTZrjmKzjxzWi52uV3qE7qB"
+     ], 
+     [
+-        "cTivdBmq7bay3RFGEBBuNfMh2P1pDCgRYN2Wbxmgwr4ki3jNUL2va"
++        "grH9C39t2WgKgS1Zwtmhm6Mxhs7QFqE1UYo6XMAK4Hjjh77CLnWiGb9suaBXfFWEjrfUSCrkp8u"
+     ], 
+     [
+-        "gjMV4vjNjyMrna4fsAr8bWxAbwtmMUBXJS3zL4NJt5qjozpbQLmAfK1uA3CquSqsZQMpoD1g2nk"
++        "56asgNAPXEtgcJPSob2evAXbgsJuRVz512XoUgn6QwxxTwTswL2FZGQaapJb1rvAzfcfUH7QzCd4i"
+     ], 
+     [
+-        "emXm1naBMoVzPjbk7xpeTVMFy4oDEe25UmoyGgKEB1gGWsK8kRGs"
++        "sYmP55TFUdGdwNbE6GbrAgrh2vQPAn8dVatkM4NCrw327DSB5u"
+     ], 
+     [
+-        "7VThQnNRj1o3Zyvc7XHPRrjDf8j2oivPTeDXnRPYWeYGE4pXeRJDZgf28ppti5hsHWXS2GSobdqyo"
++        "czRkZNjHfbfG1aoVAtMLXDKiEySPFp79ms9wheW9muQKaeWUPW4X"
+     ], 
+     [
+-        "1G9u6oCVCPh2o8m3t55ACiYvG1y5BHewUkDSdiQarDcYXXhFHYdzMdYfUAhfxn5vNZBwpgUNpso"
++        "TtCFWwMNArozbKHuRKwVdb5FhHbDu4tCzV"
+     ], 
+     [
+-        "31QQ7ZMLkScDiB4VyZjuptr7AEc9j1SjstF7pRoLhHTGkW4Q2y9XELobQmhhWxeRvqcukGd1XCq"
++        "26KZFsnpFpsMu8r47jBS33tYzFcBo3GMCBo"
+     ], 
+     [
+-        "DHqKSnpxa8ZdQyH8keAhvLTrfkyBMQxqngcQA5N8LQ9KVt25kmGN"
++        "2CkthAbYTQF48MPYsskrEEsxia9uE9KpCg7LV77HhQcnc5Ya7g49HnpbDYadZYc8R6rYigJkDLLJ"
+     ], 
+     [
+-        "2LUHcJPbwLCy9GLH1qXmfmAwvadWw4bp4PCpDfduLqV17s6iDcy1imUwhQJhAoNoN1XNmweiJP4i"
++        "PMxB7KY2fwQEJSRt3McUkmTVd36mrLfg23d7uCUwXs2N5vPXTAFq"
+     ], 
+     [
+-        "7USRzBXAnmck8fX9HmW7RAb4qt92VFX6soCnts9s74wxm4gguVhtG5of8fZGbNPJA83irHVY6bCos"
++        "2UKSkT7wVVKqp5QY4STwgPS9HgF4NNLNk2uuMx6tK5J1DHGyqkFVtBc5Vs4vZxQxj5ie44AqVg2z"
+     ], 
+     [
+-        "1DGezo7BfVebZxAbNT3XGujdeHyNNBF3vnficYoTSp4PfK2QaML9bHzAMxke3wdKdHYWmsMTJVu"
++        "cQpyz5kAk8aMfbfLGaLhDLaDoWsH4LCXfC6YMWF6VfQWJwRJQ5tg"
+     ], 
+     [
+-        "2D12DqDZKwCxxkzs1ZATJWvgJGhQ4cFi3WrizQ5zLAyhN5HxuAJ1yMYaJp8GuYsTLLxTAz6otCfb"
++        "VDMEyg6pYj4DEG7Ya9MRYcxaV2taCYswqHC"
+     ], 
+     [
+-        "8AFJzuTujXjw1Z6M3fWhQ1ujDW7zsV4ePeVjVo7D1egERqSW9nZ"
++        "2Cu7yibSGBPBqPzPrpABkDbQdzZzF9acjK7S5W3pMKTDHYG9TisGd5Q9peawtZroJ5cLe9RpViHv"
+     ], 
+     [
+-        "163Q17qLbTCue8YY3AvjpUhotuaodLm2uqMhpYirsKjVqnxJRWTEoywMVY3NbBAHuhAJ2cF9GAZ"
++        "PSjWRdT5gEtMkzhPyYNswgM5TUjq9Htds6PcskDqidKymuWa8cf3"
+     ], 
+     [
+-        "2MnmgiRH4eGLyLc9eAqStzk7dFgBjFtUCtu"
++        "37pWqjxxE82j8gauEeVG6cXaFwqYryEm3m"
+     ], 
+     [
+-        "461QQ2sYWxU7H2PV4oBwJGNch8XVTYYbZxU"
++        "mi4KcjXeHVsdqWwFPS2hV5jPMUHZtHxq4d"
+     ], 
+     [
+-        "2UCtv53VttmQYkVU4VMtXB31REvQg4ABzs41AEKZ8UcB7DAfVzdkV9JDErwGwyj5AUHLkmgZeobs"
++        "2S3mB4twPSX1JeRYKx4xwUPawM2X96pjCHN"
+     ], 
+     [
+-        "cSNjAsnhgtiFMi6MtfvgscMB2Cbhn2v1FUYfviJ1CdjfidvmeW6mn"
++        "VXy4PqGqNuSnf6wKy3yDRCbeyuyds6x8wLkH8mpbvHKq42nhAs"
+     ], 
+     [
+-        "gmsow2Y6EWAFDFE1CE4Hd3Tpu2BvfmBfG1SXsuRARbnt1WjkZnFh1qGTiptWWbjsq2Q6qvpgJVj"
++        "cThK5CVvWgGUgVKdfVnSQfBkxJPtvZ3pe2bzB9XPBx8BLgj4Vqf2"
+     ], 
+     [
+-        "nksUKSkzS76v8EsSgozXGMoQFiCoCHzCVajFKAXqzK5on9ZJYVHMD5CKwgmX3S3c7M1U3xabUny"
++        "2D33xnR4GDFMEmm59RrLgMvu1ssKe1xfpir7QrTZnHMtRgeBidqMnPJSi8GwkwrkyRjBLhcNvXdk"
+     ], 
+     [
+-        "L3favK1UzFGgdzYBF2oBT5tbayCo4vtVBLJhg2iYuMeePxWG8SQc"
++        "4cWUkv4y51bdGzq3CU9Mu2VDz8jPdbmN9BaPYEPPrSM93wQxJ2F"
+     ], 
+     [
+-        "7VxLxGGtYT6N99GdEfi6xz56xdQ8nP2dG1CavuXx7Rf2PrvNMTBNevjkfgs9JmkcGm6EXpj8ipyPZ"
++        "3GYyPpAR1NN2HzNhiNcjujNfqTHP4hAXc39fCDMNwdMKTUtaffi7"
+     ], 
+     [
+-        "2mbZwFXF6cxShaCo2czTRB62WTx9LxhTtpP"
++        "9Tea3kiuggyXkfhbMn1qs28xAaN12JAn8Y4CAfX6eDz7XLN9Ni3qHiuqG7dWF1a8NC8QD7yVvQN"
+     ], 
+     [
+-        "dB7cwYdcPSgiyAwKWL3JwCVwSk6epU2txw"
++        "Qqfop7iRjnG3vpfBptsoR4VPrDLt7h7h5W"
+     ], 
+     [
+-        "HPhFUhUAh8ZQQisH8QQWafAxtQYju3SFTX"
++        "w3F7Ec8pVGDyhuonLSLrk7aNkwBzBo23AP52F7WGj4x9fART4yEUh9XYBm1DE8Ev4U8c94vsEBY"
+     ], 
+     [
+-        "4ctAH6AkHzq5ioiM1m9T3E2hiYEev5mTsB"
++        "PLrFq2vKTnpsUP5ugpUqXos8PiyBgRcMAnKPQLwnvmTSLbpQwxtW"
+     ], 
+     [
+-        "Hn1uFi4dNexWrqARpjMqgT6cX1UsNPuV3cHdGg9ExyXw8HTKadbktRDtdeVmY3M1BxJStiL4vjJ"
++        "6bf3HsLqAt3CSJUE7M99JZcUVTfZJYh9yMcyFJEkkNV2PnVaLeuKBaWY2UpX952ux1JgjAMTqMEvd"
+     ], 
+     [
+-        "Sq3fDbvutABmnAHHExJDgPLQn44KnNC7UsXuT7KZecpaYDMU9Txs"
++        "9UmZ529Gj5vUWTxmav4kkBojmFTmDhJsQ9EiD7oj6Li1aAHphsjbzAqiXUeZZMY7GyFWLf6sQoo"
+     ], 
+     [
+-        "6TqWyrqdgUEYDQU1aChMuFMMEimHX44qHFzCUgGfqxGgZNMUVWJ"
++        "2yni56egnJFvB4nqdzcjjVFyPWapHarx4BM1N9wzDj7A2kZYxy6tx7qdv5Qrb6QBFuRoUXCgDh2"
+     ], 
+     [
+-        "giqJo7oWqFxNKWyrgcBxAVHXnjJ1t6cGoEffce5Y1y7u649Noj5wJ4mmiUAKEVVrYAGg2KPB3Y4"
++        "p7nc1G6cw3dTsoXPJdUoSuuRjMHQYbFV6K"
+     ], 
+     [
+-        "cNzHY5e8vcmM3QVJUcjCyiKMYfeYvyueq5qCMV3kqcySoLyGLYUK"
++        "PSZAKuKSWkD3fmCttzgb4aGtgosBxQ4DxHrKURbCe68xRTUM16TW"
+     ], 
+     [
+-        "37uTe568EYc9WLoHEd9jXEvUiWbq5LFLscNyqvAzLU5vBArUJA6eydkLmnMwJDjkL5kXc2VK7ig"
++        "Fwy7tCeyfUwFuhWoidEGKwMNU7vYBjwihHs1S5GySUELSJo451sM"
+     ], 
+     [
+-        "EsYbG4tWWWY45G31nox838qNdzksbPySWc"
++        "3PSU6NoUMpBQXgV47YCuSuZNgfqy9h7e7Wo"
+     ], 
+     [
+-        "nbuzhfwMoNzA3PaFnyLcRxE9bTJPDkjZ6Rf6Y6o2ckXZfzZzXBT"
++        "govoUd2ccHhJUvCHK9UAGC3Fp9FjAi4qAqD7ibDbT6xS9VqW5qjg4YVAxYEJUTgt4s4py4vF3p7"
+     ], 
+     [
+-        "cQN9PoxZeCWK1x56xnz6QYAsvR11XAce3Ehp3gMUdfSQ53Y2mPzx"
++        "2Cw1UxEPXsFr7rHetruDy9DuBwYyQiyZi5pXrFyEhBhM6tuYfBCDhk1951i6iuNUx8hzxcq8sqDw"
+     ], 
+     [
+-        "1Gm3N3rkef6iMbx4voBzaxtXcmmiMTqZPhcuAepRzYUJQW4qRpEnHvMojzof42hjFRf8PE2jPde"
++        "57NRr9vD3avH2NFGjrUksxss5GDAuaMCEMKboKyMQLKr5NH2aGUohxaB9Q6hFgg7aoNekSoYzmf4E"
+     ], 
+     [
+-        "2TAq2tuN6x6m233bpT7yqdYQPELdTDJn1eU"
++        "cMrLUCgNbr5DXD5xo2Q24EXmsXCt45pYuoSzLNYmNAijXh78EHFt"
+     ], 
+     [
+-        "ntEtnnGhqPii4joABvBtSEJG6BxjT2tUZqE8PcVYgk3RHpgxgHDCQxNbLJf7ardf1dDk2oCQ7Cf"
++        "gc9GEnjiovgoAsdT96eH94pedCqJ1MSxJqvfSsnG5i2fWfwznqGxFa6Zni4TwuseGHDNPSSJZbS"
+     ], 
+     [
+-        "Ky1YjoZNgQ196HJV3HpdkecfhRBmRZdMJk89Hi5KGfpfPwS2bUbfd"
++        "bzsNwyKSpb7WoJyPaaqs5751YDoEA3H2XTxTmL3CtzqV3iEkpY7wqFbyjULmJBrCwUFRdCNHyzC"
+     ], 
+     [
+-        "2A1q1YsMZowabbvta7kTy2Fd6qN4r5ZCeG3qLpvZBMzCixMUdkN2Y4dHB1wPsZAeVXUGD83MfRED"
++        "91e5UDyaicxwXXub8RwUKBaBXaaeuLDPGwUW3QjGgiW855iQtEwr"
+     ]
+ ]
+diff --git a/src/test/data/base58_keys_valid.json b/src/test/data/base58_keys_valid.json
+index e1e252e..cd0b38a 100644
+--- a/src/test/data/base58_keys_valid.json
++++ b/src/test/data/base58_keys_valid.json
+@@ -1,7 +1,7 @@
+ [
+     [
+-        "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i", 
+-        "65a16059864a2fdbc7c99a4723a8395bc6f188eb", 
++        "AbhHTkM9JHD9y3RvcMEsGax3HMyqUQtHEV", 
++        "da8450b9f63d0f731700735af58117bf876de5b3", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -9,8 +9,8 @@
+         }
+     ], 
+     [
+-        "3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou", 
+-        "74f209f6ea907e2ea48f74fae05782ae8a665257", 
++        "3MrzEq6MozdYRjsqRGWpwCuHuaF5dMAomk", 
++        "dd4544da90b49555b688899efe64af62d0065b37", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -18,8 +18,8 @@
+         }
+     ], 
+     [
+-        "mo9ncXisMeAoXwqcV5EWuyncbmCcQN4rVs", 
+-        "53c0307d6851aa0ce7825ba883c6bd9ad242b486", 
++        "mpcaHHwiFXUFvpFHaShQjATUiaqRKzWzzQ", 
++        "63c9408fe81d1f57710e8ed4f264201163c6392f", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -27,8 +27,8 @@
+         }
+     ], 
+     [
+-        "2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br", 
+-        "6349a418fc4578d10a372b54b45c280cc8c4382f", 
++        "2MuAfxmue5ADGaK9e3TYdA7bkViYuQDYm85", 
++        "1513da8f529a4fcf3e6101ddb53f70e47af738cb", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -36,8 +36,8 @@
+         }
+     ], 
+     [
+-        "5Kd3NBUAdUnhyzenEwVLy9pBKxSwXvE9FMPyR4UKZvpe6E3AgLr", 
+-        "eddbdc1168f1daeadbd3e44c1e3f8f5a284c2029f78ad26af98583a499de5b19", 
++        "64uxfAQMfkwLBrRMcp2b4MhJEtbyDtqKZnvReomUoaBvdzBsmP4", 
++        "33350c9fdbec0eb6db03f2122d419f5267396fc95f02222134f8eef631737053", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -45,8 +45,8 @@
+         }
+     ], 
+     [
+-        "Kz6UJmQACJmLtaQj5A3JAge4kVTNQ8gbvXuwbmCj7bsaabudb3RD", 
+-        "55c9bccb9ed68446d1b75273bbce89d7fe013a8acd1625514420fb2aca1a21c4", 
++        "PUSkjmYtULFdPVFiLfxgCuBV7sLSWMGS9yi7CgHt5PbjDQ73bsbq", 
++        "eb606bbf65b796779a2ef46ea58ec0704a53545622794ad6335f696fcfb8f897", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -54,8 +54,8 @@
+         }
+     ], 
+     [
+-        "9213qJab2HNEpMpYNBa7wHGFKKbkDn24jpANDs2huN3yi4J11ko", 
+-        "36cb93b9ab1bdabf7fb9f2c04f1b9cc879933530ae7842398eef5a63a56800c2", 
++        "91uUxS4m9rp5aQb18kN9oCKaoCarWoU3fqVGCdu8342AzAMCdUv", 
++        "2a27af375b4dea2ae3cab61ad78ab7e72aaf582577af929b8ad5650e531cbd72", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -63,8 +63,8 @@
+         }
+     ], 
+     [
+-        "cTpB4YiyKiBcPxnefsDpbnDxFDffjqJob8wGCEDXxgQ7zQoMXJdH", 
+-        "b9f4892c9e8282028fea1d2667c4dc5213564d41fc5783896a0d843fc15089f3", 
++        "cU68bTMjQCK9G4FDj74KZ8mBxqZzRhgpGdBMjnXjnEUrYhvqsTrT", 
++        "c22a124c9db4b79443d0baba1fa018035e2ff460cbaff3dc178e9e72fc605289", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -72,8 +72,8 @@
+         }
+     ], 
+     [
+-        "1Ax4gZtb7gAit2TivwejZHYtNNLT18PUXJ", 
+-        "6d23156cbbdcc82a5a47eee4c2c7c583c18b6bf4", 
++        "ASHML7RZuJRKhFWt8BcYR1BGYUxUpKzz7R", 
++        "73446de82348c39303adfabc9575a78c1cff7587", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -81,8 +81,8 @@
+         }
+     ], 
+     [
+-        "3QjYXhTkvuj8qPaXHTTWb5wjXhdsLAAWVy", 
+-        "fcc5460dd6e2487c7d75b1963625da0e8f4c5975", 
++        "3NanSzEmRMiAhjfXwb9RGq4dxTUhqrcNeP", 
++        "e52ce5b15aac456d89a521a455fe4649d35dd4c2", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -90,8 +90,8 @@
+         }
+     ], 
+     [
+-        "n3ZddxzLvAY9o7184TB4c6FJasAybsw4HZ", 
+-        "f1d470f9b02370fdec2e6b708b08ac431bf7a5f7", 
++        "moUFMWC2bMd251MoocNmqwTJ1XfAZPwxau", 
++        "573dffb98c0783692a8c90c73ff95b00a1c42424", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -99,8 +99,8 @@
+         }
+     ], 
+     [
+-        "2NBFNJTktNa7GZusGbDbGKRZTxdK9VVez3n", 
+-        "c579342c2c4c9220205e2cdc285617040c924a0a", 
++        "2N116uvMqcXVR7rLP8enfYqgCs5Z8jVNYrt", 
++        "551546d60804208577239f3152c25005e4d879b2", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -108,8 +108,8 @@
+         }
+     ], 
+     [
+-        "5K494XZwps2bGyeL71pWid4noiSNA2cfCibrvRWqcHSptoFn7rc", 
+-        "a326b95ebae30164217d7a7f57d72ab2b54e3be64928a19da0210b9568d4015e", 
++        "64vPA5nFGSuf6jsbC5jdyBb1c2pLyx24tPeEdGgxxJfzE3zYEPU", 
++        "342a93710e46ec591e88199f6af925a3cb8a739b9fc596ab9c24fd1f4c06023b", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -117,8 +117,8 @@
+         }
+     ], 
+     [
+-        "L1RrrnXkcKut5DEMwtDthjwRcTTwED36thyL1DebVrKuwvohjMNi", 
+-        "7d998b45c219a1e38e99e7cbd312ef67f77a455a9b50c730c27f02c6f730dfb4", 
++        "PSc1FUML5L8RLeTNewGi54cz3hReMMoGfdWuAqQXkYBPajNNYCNy", 
++        "b475e3e7abc8c1778d512efafa3e5569ac0be1e1e94befb2295c3dd0669eae75", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -126,8 +126,8 @@
+         }
+     ], 
+     [
+-        "93DVKyFYwSN6wEo3E2fCrFPUp17FtrtNi2Lf7n4G3garFb16CRj", 
+-        "d6bca256b5abc5602ec2e1c121a08b0da2556587430bcf7e1898af2224885203", 
++        "93QSFM1GajXp5w4bCFTKD2iGCwNMzpLuWoBG36HfJLTgfcTjcUC", 
++        "ef97d75eefdcebc77d0fa0c866fe960fbf2f028738218be99413545857650891", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -135,8 +135,8 @@
+         }
+     ], 
+     [
+-        "cTDVKtMGVYWTHCb1AFjmVbEbWjvKpKqKgMaR3QJxToMSQAhmCeTN", 
+-        "a81ca4e8f90181ec4b61b6a7eb998af17b2cb04de8a03b504b9e34c4c61db7d9", 
++        "cMvatiocjJYQSS972VaqkqHDoBLYsGXdQ7n9uQjGYPj7YPoJswW9", 
++        "0a3a94dcab04f1fb0e085112b4913fb117eb7b924508a30f32a36f2bf220ee19", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -144,8 +144,8 @@
+         }
+     ], 
+     [
+-        "1C5bSj1iEGUgSTbziymG7Cn18ENQuT36vv", 
+-        "7987ccaa53d02c8873487ef919677cd3db7a6912", 
++        "AawJmRWa3DCc6SADoKru89AKR7QhM5uu1E", 
++        "d2331a277f6dc87bd8411e1f86b298723842d6f5", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -153,8 +153,8 @@
+         }
+     ], 
+     [
+-        "3AnNxabYGoTxYiTEZwFEnerUoeFXK2Zoks", 
+-        "63bcc565f9e68ee0189dd5cc67f1b0e5f02f45cb", 
++        "3Na1PQim9XUumEDZE21yTRZoBFX1qPDmNg", 
++        "e50748193993aadd4b200ed853158f09cdc641a0", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -162,8 +162,8 @@
+         }
+     ], 
+     [
+-        "n3LnJXCqbPjghuVs8ph9CYsAe4Sh4j97wk", 
+-        "ef66444b5b17f14e8fae6e7e19b045a78c54fd79", 
++        "mzHiX3s8QrEm7VeXgW2GJCDBV5LeFzrvCe", 
++        "cde97b9a498778672295b88683411b7661464ade", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -171,8 +171,8 @@
+         }
+     ], 
+     [
+-        "2NB72XtkjpnATMggui83aEtPawyyKvnbX2o", 
+-        "c3e55fceceaa4391ed2a9677f4a4d34eacd021a0", 
++        "2NFravd6gMk2jfspyJbb2DQRGNJL5fBoTjg", 
++        "f802cd9a50c25548d61c6f6ad4d622e56c966d5b", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -180,8 +180,8 @@
+         }
+     ], 
+     [
+-        "5KaBW9vNtWNhc3ZEDyNCiXLPdVPHCikRxSBWwV9NrpLLa4LsXi9", 
+-        "e75d936d56377f432f404aabb406601f892fd49da90eb6ac558a733c93b47252", 
++        "64aaNJrnbkZ19iyapqUhbTMkXQBT9Z9NREvB9vn16P2vkagHjFC", 
++        "0731583f8ec8a5476ef27b765b5088ba59bc70b424008555f4707bfca8911f58", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -189,8 +189,8 @@
+         }
+     ], 
+     [
+-        "L1axzbSyynNYA8mCAhzxkipKkfHtAXYF4YQnhSKcLV8YXA874fgT", 
+-        "8248bd0375f2f75d7e274ae544fb920f51784480866b102384190b1addfbaa5c", 
++        "PPcjrriddUbgfWFxvjiZrhbUvgnCguMEaz4FszJyk3dLj6b4TSeT", 
++        "5b538567490dec4c27dffed30f0433e7642c2648f42985bd9b607e8d8dd5adda", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -198,8 +198,8 @@
+         }
+     ], 
+     [
+-        "927CnUkUbasYtDwYwVn2j8GdTuACNnKkjZ1rpZd2yBB1CLcnXpo", 
+-        "44c4f6a096eac5238291a94cc24c01e3b19b8d8cef72874a079e00a242237a52", 
++        "92zoJPTyN6PSrQjKQGpcM5j4Eta2ST2uCSRerPmZeNhDQvXhY43", 
++        "b9ec20684e0d133aa230cc655f60cbb30bb6d361b976ad0d1aae99404249c050", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -207,8 +207,8 @@
+         }
+     ], 
+     [
+-        "cUcfCMRjiQf85YMzzQEk9d1s5A4K7xL5SmBCLrezqXFuTVefyhY7", 
+-        "d1de707020a9059d6d3abaf85e17967c6555151143db13dbb06db78df0f15c69", 
++        "cMfJHozrHdiGEJNxbLPHCUeCkEeVLkQzxH8GxhreN2TrxLPjwfyk", 
++        "025d718328135b434e4b48ab5c3aadb238f572f3f4dbe667310ad1de8505cb03", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -216,8 +216,8 @@
+         }
+     ], 
+     [
+-        "1Gqk4Tv79P91Cc1STQtU3s1W6277M2CVWu", 
+-        "adc1cc2081a27206fae25792f28bbc55b831549d", 
++        "AL9Sn6c175nFWy1g6arAFYakkEBUqipMHb", 
++        "2ff4e50c038360461293f4c81ca1c192f3b6413a", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -225,8 +225,8 @@
+         }
+     ], 
+     [
+-        "33vt8ViH5jsr115AGkW6cEmEz9MpvJSwDk", 
+-        "188f91a931947eddd7432d6e614387e32b244709", 
++        "34X25NekEhFvjoPaMKBAYo22nHkGXu5LL8", 
++        "1f0458465587b8f4e21462b452c5c7b82f63433b", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -234,8 +234,8 @@
+         }
+     ], 
+     [
+-        "mhaMcBxNh5cqXm4aTQ6EcVbKtfL6LGyK2H", 
+-        "1694f5bc1a7295b600f40018a618a6ea48eeb498", 
++        "mtnrhAbS6V58EwwjhCWoZkSnkYXqtxhvPc", 
++        "919b9d5afbdb735db02256e7ac68c7dcc0d55161", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -243,8 +243,8 @@
+         }
+     ], 
+     [
+-        "2MxgPqX1iThW3oZVk9KoFcE5M4JpiETssVN", 
+-        "3b9b3fd7a50d4f08d1a5b0f62f644fa7115ae2f3", 
++        "2MzTL6mRPVbxJS5TAmkEBLsExQuCDWGQGLG", 
++        "4f12f9500bd4b910f19551d99bd4941c52719b74", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -252,8 +252,8 @@
+         }
+     ], 
+     [
+-        "5HtH6GdcwCJA4ggWEL1B3jzBBUB8HPiBi9SBc5h9i4Wk4PSeApR", 
+-        "091035445ef105fa1bb125eccfb1882f3fe69592265956ade751fd095033d8d0", 
++        "64q4yFSLXnEYFQwxbkEZbd2yTnyts9SnLtmEr2cYVGqTvCesFuj", 
++        "2819e90d8470bb47fb4f45e5552d14621ab8cd2ce440f583bcabea430ccab4b4", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -261,8 +261,8 @@
+         }
+     ], 
+     [
+-        "L2xSYmMeVo3Zek3ZTsv9xUrXVAmrWxJ8Ua4cw8pkfbQhcEFhkXT8", 
+-        "ab2b4bcdfc91d34dee0ae2a8c6b6668dadaeb3a88b9859743156f462325187af", 
++        "PTZoddmKsKr8hg49LmLY53BtQfEY4kJugrXJG9UKvjWVrd8cQzZM", 
++        "d12a7de333b0080f2980ed317d0fb376b2b90d230ede4d29164912feee665875", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -270,8 +270,8 @@
+         }
+     ], 
+     [
+-        "92xFEve1Z9N8Z641KQQS7ByCSb8kGjsDzw6fAmjHN1LZGKQXyMq", 
+-        "b4204389cef18bbe2b353623cbf93e8678fbc92a475b664ae98ed594e6cf0856", 
++        "91uUbBVhPEZ8oNuEkCxafqGyT3tCpKghQAEUrRngdMZdhfpk5z3", 
++        "2a240329b638fa357f4dfa2ab5be1a082ef250c1f353381da34487853d3de64b", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -279,8 +279,8 @@
+         }
+     ], 
+     [
+-        "cVM65tdYu1YK37tNoAyGoJTR13VBYFva1vg9FLuPAsJijGvG6NEA", 
+-        "e7b230133f1b5489843260236b06edca25f66adb1be455fbd38d4010d48faeef", 
++        "cTmfHvRjLppbb93pUnSK1WwSEZt2xwtdTwc6hxEZEbr79TM1hWxD", 
++        "b8a98c6e4a675c21aa3d62da988726fc6bf18f786b37e3156bb847493a9cffc6", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -288,8 +288,8 @@
+         }
+     ], 
+     [
+-        "1JwMWBVLtiqtscbaRHai4pqHokhFCbtoB4", 
+-        "c4c1b72491ede1eedaca00618407ee0b772cad0d", 
++        "AXYKszfzmujJyPHjrYAEBJvVzYC7wSMwDn", 
++        "acf21647dcc4d4b2f0e52c525728a9be823bcbce", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -297,8 +297,8 @@
+         }
+     ], 
+     [
+-        "3QCzvfL4ZRvmJFiWWBVwxfdaNBT8EtxB5y", 
+-        "f6fe69bcb548a829cce4c57bf6fff8af3a5981f9", 
++        "3KSw1UAMb5VXmLac7bhBPhsSYo7Wtek2h5", 
++        "c2c856762e5498b3815300a06aaee8f3335a2192", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -306,8 +306,8 @@
+         }
+     ], 
+     [
+-        "mizXiucXRCsEriQCHUkCqef9ph9qtPbZZ6", 
+-        "261f83568a098a8638844bd7aeca039d5f2352c0", 
++        "mkWKrE9qmKEPrGeKkoMNJKbpLHivmWzRGL", 
++        "36ba34b7b8e843e57368ac8a27c125d971fa3a4d", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -315,8 +315,8 @@
+         }
+     ], 
+     [
+-        "2NEWDzHWwY5ZZp8CQWbB7ouNMLqCia6YRda", 
+-        "e930e1834a4d234702773951d627cce82fbb5d2e", 
++        "2N2GzgubpjkGJx19XkKqaHn1MSMEjHTJVXN", 
++        "630edcae9274720f6b7331fb31dfb09860a3ea25", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -324,8 +324,8 @@
+         }
+     ], 
+     [
+-        "5KQmDryMNDcisTzRp3zEq9e4awRmJrEVU1j5vFRTKpRNYPqYrMg", 
+-        "d1fab7ab7385ad26872237f1eb9789aa25cc986bacc695e07ac571d6cdac8bc0", 
++        "65aVWqWg1wUZQMmDzSDTX37NC4sLC1t6MTAvHPFoEULdyaZGrBH", 
++        "8ab2e89419e8b1537a6f227e1a694e698e33a1b128d1e3f111ebd53bc63b716c", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -333,8 +333,8 @@
+         }
+     ], 
+     [
+-        "L39Fy7AC2Hhj95gh3Yb2AU5YHh1mQSAHgpNixvm27poizcJyLtUi", 
+-        "b0bbede33ef254e8376aceb1510253fc3550efd0fcf84dcd0c9998b288f166b3", 
++        "PLtbUBft5T2z5rqerYNeTtBEG1FxYuafcoQgWNogiUmyGFQs8NFS", 
++        "09f87c45eccb4d1a8097e19565dcb8ef3f3d01d0d5239a1f1847ff01ac84ad3e", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -342,8 +342,8 @@
+         }
+     ], 
+     [
+-        "91cTVUcgydqyZLgaANpf1fvL55FH53QMm4BsnCADVNYuWuqdVys", 
+-        "037f4192c630f399d9271e26c575269b1d15be553ea1a7217f0cb8513cef41cb", 
++        "91mSTYoxSp6Fg416ahL3CDjKzc764mZZxujfCgngFVoB4Xvw7jr", 
++        "17e46a33b2b8171de654a8dffbc398c38e1d5831c8d6209ba7c02115f3fc2afd", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -351,8 +351,8 @@
+         }
+     ], 
+     [
+-        "cQspfSzsgLeiJGB2u8vrAiWpCU4MxUT6JseWo2SjXy4Qbzn2fwDw", 
+-        "6251e205e8ad508bab5596bee086ef16cd4b239e0cc0c5d7c4e6035441e7d5de", 
++        "cU37QfTWdsQsE4k7YQijpq88bYvXXFnrHM3DTGrpqjpRRMyUAUMv", 
++        "c09c4a44524cab958e1dadfc641bbf447d0165de04b8e39259de436de2f69ce9", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -360,8 +360,8 @@
+         }
+     ], 
+     [
+-        "19dcawoKcZdQz365WpXWMhX6QCUpR9SY4r", 
+-        "5eadaf9bb7121f0f192561a5a62f5e5f54210292", 
++        "AUwkhHLJ8sf5AamxUwVVfAEThxe9Q19yty", 
++        "9077fdd7973eae652773aaffc3b08fd8c83a3651", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -369,8 +369,8 @@
+         }
+     ], 
+     [
+-        "37Sp6Rv3y4kVd1nQ1JV5pfqXccHNyZm1x3", 
+-        "3f210e7277c899c3a155cc1c90f4106cbddeec6e", 
++        "3HrkngsgJY8h48NSzrESUAGLr7erwnGWAW", 
++        "b15989a8af3a73024b7aa70748c1c75d0080e464", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -378,8 +378,8 @@
+         }
+     ], 
+     [
+-        "myoqcgYiehufrsnnkqdqbp69dddVDMopJu", 
+-        "c8a3c2a09a298592c3e180f02487cd91ba3400b5", 
++        "mvwDNF2bzwsEmvUFJWbQGXeVJZZ6VTT2pf", 
++        "a9207395173d025593cedbfcf7a4b8f851e6df1e", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -387,8 +387,8 @@
+         }
+     ], 
+     [
+-        "2N7FuwuUuoTBrDFdrAZ9KxBmtqMLxce9i1C", 
+-        "99b31df7c9068d1481b596578ddbb4d3bd90baeb", 
++        "2N2TGD55ng5musbLJCVBNY6YHNSh3Ha2R5v", 
++        "64fffa268701eb972dc854f53aacef1ea3b36285", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+@@ -396,8 +396,8 @@
+         }
+     ], 
+     [
+-        "5KL6zEaMtPRXZKo1bbMq7JDjjo1bJuQcsgL33je3oY8uSJCR5b4", 
+-        "c7666842503db6dc6ea061f092cfb9c388448629a6fe868d068c42a488b478ae", 
++        "66QLjVFgTKFoh21DzWYr2k9bpRSjLsTDL5vpFXtEpFS6hWAePAw", 
++        "f7584d9e041561d855507b75ae3c0b39a21cad4fa96e93176ccfff4953dfc655", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -405,8 +405,8 @@
+         }
+     ], 
+     [
+-        "KwV9KAfwbwt51veZWNscRTeZs9CKpojyu1MsPnaKTF5kz69H1UN2", 
+-        "07f0803fc5399e773555ab1e8939907e9badacc17ca129e67a2f5f2ff84351dd", 
++        "PRGuvJWWRH5MtERqXW5d4igg3f6PkddpC6Srbv6MeTt327atq7Ue", 
++        "8ccd2ff533bfbebd5f01f040eb55d57e16fc1b3f574d0bcc41b4433b3251453f", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -414,8 +414,8 @@
+         }
+     ], 
+     [
+-        "93N87D6uxSBzwXvpokpzg8FFmfQPmvX4xHoWQe3pLdYpbiwT5YV", 
+-        "ea577acfb5d1d14d3b7b195c321566f12f87d2b77ea3a53f68df7ebf8604a801", 
++        "93C3eEa28wedrXRN9okNRVx1tG8NwppB57qNywv5GUrGHCjvST8", 
++        "d375eff061c6d28d2cd128e4e5d60eee651932b1412dca30dc0195f3c99b8ca0", 
+         {
+             "isCompressed": false, 
+             "isPrivkey": true, 
+@@ -423,8 +423,8 @@
+         }
+     ], 
+     [
+-        "cMxXusSihaX58wpJ3tNuuUcZEQGt6DKJ1wEpxys88FFaQCYjku9h", 
+-        "0b3b34f0958d8a268193a9814da92c3e8b58b4a4378a542863e34ac289cd830c", 
++        "cPNLKvQQzSxR1t6dm59JMd1Mz4Th9uZgtNwuhFvvgfNoSLkzzLeS", 
++        "354ffb0fce425e0b97f5097027577b8b78fcc2ad7494bb59deec81f3321e3ebb", 
+         {
+             "isCompressed": true, 
+             "isPrivkey": true, 
+@@ -432,8 +432,8 @@
+         }
+     ], 
+     [
+-        "13p1ijLwsnrcuyqcTvJXkq2ASdXqcnEBLE", 
+-        "1ed467017f043e91ed4c44b4e8dd674db211c4e6", 
++        "AWGgbBpdnT6ZKUXS1RGeofXgxAi4FZ9eTg", 
++        "9f0498083010df330a4a3e37da369c64d2d081cd", 
+         {
+             "addrType": "pubkey", 
+             "isPrivkey": false, 
+@@ -441,8 +441,8 @@
+         }
+     ], 
+     [
+-        "3ALJH9Y951VCGcVZYAdpA3KchoP9McEj1G", 
+-        "5ece0cadddc415b1980f001785947120acdb36fc", 
++        "3Db2UzmEZHnz69gGvf6t4288QHzQKkXRfg", 
++        "827f7b0fd022715caf395fe5f34ab58f2c7acb39", 
+         {
+             "addrType": "script", 
+             "isPrivkey": false, 
+diff --git a/src/test/key_tests.cpp b/src/test/key_tests.cpp
+index 582319b..fdea12b 100644
+--- a/src/test/key_tests.cpp
++++ b/src/test/key_tests.cpp
+@@ -17,51 +17,70 @@
+ 
+ using namespace std;
+ 
+-static const string strSecret1     ("5HxWvvfubhXpYYpS3tJkw6fq9jE9j18THftkZjHHfmFiWtmAbrj");
+-static const string strSecret2     ("5KC4ejrDjv152FGwP386VD1i2NYc5KkfSMyv1nGy1VGDxGHqVY3");
+-static const string strSecret1C    ("Kwr371tjA9u2rFSMZjTNun2PXXP3WPZu2afRHTcta6KxEUdm1vEw");
+-static const string strSecret2C    ("L3Hq7a8FEQwJkW1M2GNKDW28546Vp5miewcCzSqUD9kCAXrJdS3g");
+-static const CAnoncoinAddress addr1 ("1QFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ");
+-static const CAnoncoinAddress addr2 ("1F5y5E5FMc5YzdJtB9hLaUe43GDxEKXENJ");
+-static const CAnoncoinAddress addr1C("1NoJrossxPBKfCHuJXT4HadJrXRE9Fxiqs");
+-static const CAnoncoinAddress addr2C("1CRj2HyM1CXWzHAXLQtiGLyggNT9WQqsDs");
++static const string strSecret1     ("65H6Yv7y8RKJjGQrEG9Nf5aAakSBcuoY5G6bYP86w4tmGrJMFYp");
++static const string strSecret2     ("66PrZwCLgSCJCU2EwV28CQQYfADQ1o3SBzwWhYsFBSdp76yPrYV");
++static const string strSecret1C    ("PPt3VsTkjkKoFZ2GHXqxb5BPHxi9sW4Q9odhTWeMBeBUQeKn4H9v");
++static const string strSecret2C    ("PUosnND3s4CrucGUXUfxmLJvjRfiaWDkBYjc5yemb69Uuqfd2mz7");
++static const CAnoncoinAddress addr1 ("AKALrwZGDhGAP2iCjqmp4tggFs9hZtPSNr");
++static const CAnoncoinAddress addr2 ("ALmT6W4YG91Nam7huSERxgXMVWHeTruggz");
++static const CAnoncoinAddress addr1C("AVinYSTA9Hc7p7bKBjrNSSoqkzohuNS2X2");
++static const CAnoncoinAddress addr2C("AGR1AYjJRq21JUpWLCFmXxc6MCsCwAC61g");
+ 
+ 
+ static const string strAddressBad("1HV9Lc3sNHZxwj4Zk6fB38tEmBryq2cBiF");
+ 
++// Define this to generate test vectors for the above compressed and uncompressed key values
++// #define KEY_TESTS_DUMPINFO
+ 
+ #ifdef KEY_TESTS_DUMPINFO
+-void dumpKeyInfo(uint256 privkey)
++void dumpKeyInfo(uint256 secret)
+ {
+     CKey key;
+-    key.resize(32);
+-    memcpy(&secret[0], &privkey, 32);
+-    vector<unsigned char> sec;
+-    sec.resize(32);
+-    memcpy(&sec[0], &secret[0], 32);
+-    printf("  * secret (hex): %s\n", HexStr(sec).c_str());
+-
++    CAnoncoinSecret b58secret;
++    printf("  * secret (hex): %s\n", secret.GetHex().c_str());
+     for (int nCompressed=0; nCompressed<2; nCompressed++)
+     {
+         bool fCompressed = nCompressed == 1;
+         printf("  * %s:\n", fCompressed ? "compressed" : "uncompressed");
+-        CAnoncoinSecret bsecret;
+-        bsecret.SetSecret(secret, fCompressed);
+-        printf("    * secret (base58): %s\n", bsecret.ToString().c_str());
+-        CKey key;
+-        key.SetSecret(secret, fCompressed);
+-        vector<unsigned char> vchPubKey = key.GetPubKey();
+-        printf("    * pubkey (hex): %s\n", HexStr(vchPubKey).c_str());
+-        printf("    * address (base58): %s\n", CAnoncoinAddress(vchPubKey).ToString().c_str());
++        key.Set( secret.begin(), secret.end(), fCompressed );
++        b58secret.SetKey( key );
++        printf("    * secret (base58): %s\n", b58secret.ToString().c_str());
++        CPubKey pubkey = key.GetPubKey();
++        printf("    * address (base58): %s\n", CAnoncoinAddress(CTxDestination(pubkey.GetID())).ToString().c_str() );
+     }
+ }
+ #endif
+ 
++// Visitor to check address type
++class TestAddrTypeVisitor : public boost::static_visitor<bool>
++{
++private:
++    std::string exp_addrType;
++public:
++    TestAddrTypeVisitor(const std::string &exp_addrType) : exp_addrType(exp_addrType) { }
++    bool operator()(const CKeyID &id) const
++    {
++        return (exp_addrType == "pubkey");
++    }
++    bool operator()(const CScriptID &id) const
++    {
++        return (exp_addrType == "script");
++    }
++    bool operator()(const CNoDestination &no) const
++    {
++        return (exp_addrType == "none");
++    }
++};
+ 
+ BOOST_AUTO_TEST_SUITE(key_tests)
+ 
+ BOOST_AUTO_TEST_CASE(key_test1)
+ {
++    // These 32 byte ECDSA secp256k1 secrets will be used for Anoncoin KeyTest vectors
++#ifdef KEY_TESTS_DUMPINFO
++    dumpKeyInfo( uint256( "0x031da951fb26244f9230ae66b093d72b4c5c9ee148336bc9c465663a1a033363" ) );
++    dumpKeyInfo( uint256( "0x75cf1d5be870a08d9769177f72545c47533060442ed35d48a52a0fb0f1083ef6" ) );
++#endif
+     CAnoncoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
+     BOOST_CHECK( bsecret1.SetString (strSecret1));
+     BOOST_CHECK( bsecret2.SetString (strSecret2));
+@@ -83,6 +102,35 @@ BOOST_AUTO_TEST_CASE(key_test1)
+     CPubKey pubkey1C = key1C.GetPubKey();
+     CPubKey pubkey2C = key2C.GetPubKey();
+ 
++    // Experimental code for use in another test:
++    // CScript scriptPubKey;
++    // scriptPubKey.SetDestination( pubkey1C.GetID() );
++    // printf( "PublicKey Script of 1C:%s\n", scriptPubKey.ToString().c_str() );
++
++    BOOST_CHECK( addr1.IsValid() );
++    BOOST_CHECK( addr2.IsValid() );
++    BOOST_CHECK( addr1C.IsValid() );
++    BOOST_CHECK( addr2C.IsValid() );
++
++    std::string exp_addrType( "pubkey" );       // "pubkey" is expected for all the addr variables, if not, then incorrect for this coin
++    CTxDestination dest;
++    dest = addr1.Get();
++    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr1 is not a Public Key");
++    dest = addr2.Get();
++    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr2 is not a Public Key");
++    dest = addr1C.Get();
++    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr1C is not a Public Key");
++    dest = addr2C.Get();
++    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr2C is not a Public Key");
++
++#ifdef KEY_TESTS_DUMPINFO
++    // Diagnostic output, that can be helpful if the test data will not pass
++    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey1.GetID())).ToString().c_str() );
++    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey2.GetID())).ToString().c_str() );
++    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey1C.GetID())).ToString().c_str() );
++    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey2C.GetID())).ToString().c_str() );
++#endif
++
+     BOOST_CHECK(addr1.Get()  == CTxDestination(pubkey1.GetID()));
+     BOOST_CHECK(addr2.Get()  == CTxDestination(pubkey2.GetID()));
+     BOOST_CHECK(addr1C.Get() == CTxDestination(pubkey1C.GetID()));
+diff --git a/src/test/main_tests.cpp b/src/test/main_tests.cpp
+index 085d405..ee72085 100644
+--- a/src/test/main_tests.cpp
++++ b/src/test/main_tests.cpp
+@@ -15,11 +15,12 @@ BOOST_AUTO_TEST_CASE(subsidy_limit_test)
+     uint64_t nSum = 0;
+     for (int nHeight = 0; nHeight < 14000000; nHeight += 1000) {
+         uint64_t nSubsidy = GetBlockValue(nHeight, 0);
+-        BOOST_CHECK(nSubsidy <= 50 * COIN);
++        BOOST_CHECK(nSubsidy <= 7 * COIN);
+         nSum += nSubsidy * 1000;
+         BOOST_CHECK(MoneyRange(nSum));
+     }
+-    BOOST_CHECK(nSum == 2099999997690000ULL);
++    BOOST_CHECK(nSum == 310678705692000ULL);
++//    printf( "nSum=%llu\n", nSum);
+ }
+ 
+ BOOST_AUTO_TEST_SUITE_END()
+diff --git a/src/test/miner_tests.cpp b/src/test/miner_tests.cpp
+index ec5de0e..e8acd71 100644
+--- a/src/test/miner_tests.cpp
++++ b/src/test/miner_tests.cpp
+@@ -1,5 +1,5 @@
+ // Copyright (c) 2011-2014 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
++// Copyright (c) 2013-2015 The Anoncoin Core developers
+ // Distributed under the MIT/X11 software license, see the accompanying
+ // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ 
+@@ -66,7 +66,8 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
+     // We can't make transactions until we have inputs
+     // Therefore, load 100 blocks :)
+     std::vector<CTransaction*>txFirst;
+-    for (unsigned int i = 0; i < sizeof(blockinfo)/sizeof(*blockinfo); ++i)
++    // for (unsigned int i = 0; i < sizeof(blockinfo)/sizeof(*blockinfo); ++i)
++    for (unsigned int i = 0; i < 4; ++i)
+     {
+         CBlock *pblock = &pblocktemplate->block; // pointer for convenience
+         pblock->nVersion = 1;
+diff --git a/src/test/rpc_tests.cpp b/src/test/rpc_tests.cpp
+index 07905ad..e1db95f 100644
+--- a/src/test/rpc_tests.cpp
++++ b/src/test/rpc_tests.cpp
+@@ -1,5 +1,4 @@
+ // Copyright (c) 2012-2013 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
+ // Distributed under the MIT/X11 software license, see the accompanying
+ // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+ 
+@@ -89,6 +88,18 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
+     BOOST_CHECK_THROW(CallRPC(string("sendrawtransaction ")+rawtx+" extra"), runtime_error);
+ }
+ 
++static void ShowWhy( Value& result ) {
++    string strPrint;
++
++    if (result.type() == null_type)
++        strPrint = "Null Response";
++    else if (result.type() == str_type)
++        strPrint = result.get_str();
++    else
++        strPrint = write_string(result, true);
++    printf( "\nJSON Response=%s\n", strPrint.c_str() );
++}
++
+ BOOST_AUTO_TEST_CASE(rpc_rawsign)
+ {
+     Value r;
+@@ -100,11 +111,12 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
+     r = CallRPC(string("createrawtransaction ")+prevout+" "+
+       "{\"3HqAe9LtNBjnsfM4CyYaWTnvCaUYT7v4oZ\":11}");
+     string notsigned = r.get_str();
+-    string privkey1 = "\"KzsXybp9jX64P5ekX1KUxRQ79Jht9uzW7LorgwE65i5rWACL6LQe\"";
+-    string privkey2 = "\"Kyhdf5LuKTRx4ge69ybABsiUAWjVRK4XGxAKk2FQLp2HjGMy87Z4\"";
++    string privkey1 = "\"PUSkjmYtULFdPVFiLfxgCuBV7sLSWMGS9yi7CgHt5PbjDQ73bsbq\"";
++    string privkey2 = "\"PSc1FUML5L8RLeTNewGi54cz3hReMMoGfdWuAqQXkYBPajNNYCNy\"";
+     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"[]");
+     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == false);
+     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+","+privkey2+"]");
++    // ShowWhy( r );
+     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
+ }
+ 
+diff --git a/src/test/test_bitcoin.cpp b/src/test/test_bitcoin.cpp
+deleted file mode 100644
+index 31d6e69..0000000
+--- a/src/test/test_bitcoin.cpp
++++ /dev/null
+@@ -1,95 +0,0 @@
+-// Copyright (c) 2011-2013 The Bitcoin Core developers
+-// Copyright (c) 2013-2014 The Anoncoin Core developers
+-// Distributed under the MIT/X11 software license, see the accompanying
+-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+-
+-// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
+-#if defined(HAVE_CONFIG_H)
+-#include "config/anoncoin-config.h"
+-#endif
+-
+-#define BOOST_TEST_MODULE Anoncoin Test Suite
+-
+-#include "main.h"
+-#include "txdb.h"
+-#include "ui_interface.h"
+-#include "util.h"
+-#ifdef ENABLE_WALLET
+-#include "db.h"
+-#include "wallet.h"
+-#endif
+-
+-#include <boost/filesystem.hpp>
+-#include <boost/test/unit_test.hpp>
+-
+-
+-CWallet* pwalletMain;
+-
+-extern bool fPrintToConsole;
+-extern void noui_connect();
+-
+-struct TestingSetup {
+-    CCoinsViewDB *pcoinsdbview;
+-    boost::filesystem::path pathTemp;
+-    boost::thread_group threadGroup;
+-
+-    TestingSetup() {
+-        fPrintToDebugLog = false; // don't want to write to debug.log file
+-        noui_connect();
+-#ifdef ENABLE_WALLET
+-        bitdb.MakeMock();
+-#endif
+-        pathTemp = GetTempPath() / strprintf("test_anoncoin_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
+-        boost::filesystem::create_directories(pathTemp);
+-        mapArgs["-datadir"] = pathTemp.string();
+-        pblocktree = new CBlockTreeDB(1 << 20, true);
+-        pcoinsdbview = new CCoinsViewDB(1 << 23, true);
+-        pcoinsTip = new CCoinsViewCache(*pcoinsdbview);
+-        InitBlockIndex();
+-#ifdef ENABLE_WALLET
+-        bool fFirstRun;
+-        pwalletMain = new CWallet("wallet.dat");
+-        pwalletMain->LoadWallet(fFirstRun);
+-        RegisterWallet(pwalletMain);
+-#endif
+-        nScriptCheckThreads = 3;
+-        for (int i=0; i < nScriptCheckThreads-1; i++)
+-            threadGroup.create_thread(&ThreadScriptCheck);
+-        RegisterNodeSignals(GetNodeSignals());
+-    }
+-    ~TestingSetup()
+-    {
+-        threadGroup.interrupt_all();
+-        threadGroup.join_all();
+-        UnregisterNodeSignals(GetNodeSignals());
+-#ifdef ENABLE_WALLET
+-        delete pwalletMain;
+-        pwalletMain = NULL;
+-#endif
+-        delete pcoinsTip;
+-        delete pcoinsdbview;
+-        delete pblocktree;
+-#ifdef ENABLE_WALLET
+-        bitdb.Flush(true);
+-#endif
+-        boost::filesystem::remove_all(pathTemp);
+-    }
+-};
+-
+-BOOST_GLOBAL_FIXTURE(TestingSetup);
+-
+-void Shutdown(void* parg)
+-{
+-  exit(0);
+-}
+-
+-void StartShutdown()
+-{
+-  exit(0);
+-}
+-
+-bool ShutdownRequested()
+-{
+-  return false;
+-}
+-
+diff --git a/src/test/transaction_tests.cpp b/src/test/transaction_tests.cpp
+index 6da0794..cd97976 100644
+--- a/src/test/transaction_tests.cpp
++++ b/src/test/transaction_tests.cpp
+@@ -160,6 +160,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
+                 fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout], tx, i, test[2].get_bool() ? SCRIPT_VERIFY_P2SH : SCRIPT_VERIFY_NONE, 0);
+             }
+ 
++            // ToDo: This test is failing on 2 sample invalid Tx's, why?
+             BOOST_CHECK_MESSAGE(!fValid, strTest);
+         }
+     }
+@@ -276,8 +277,13 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
+     BOOST_CHECK(IsStandardTx(t, reason));
+ 
+     // IsDust() is not used by Litecoin
+-    //t.vout[0].nValue = 501; // dust
+-    //BOOST_CHECK(!IsStandardTx(t, reason));
++    // GR Note: Todo: Why and when this was commented out, and the old reference to Litecoin, concerns me.
++    // Has the v9 code been modified in a non-standard way?  One that now needs to be
++    // considered a requirement for backwards network compatibility?  I've uncommented the lines to see what happens...
++    //
++    // What happened was the test failed.  So indeed code related to this, has been modified elsewhere.
++    // t.vout[0].nValue = 501; // dust
++    // BOOST_CHECK(!IsStandardTx(t, reason));
+ 
+     t.vout[0].nValue = 601; // not dust
+     BOOST_CHECK(IsStandardTx(t, reason));

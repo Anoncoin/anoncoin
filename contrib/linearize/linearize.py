@@ -4,6 +4,7 @@
 #
 #
 # Copyright (c) 2013 The Bitcoin developers
+# Copyright (c) 2013-2015 The Anoncoin Core developers
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #
@@ -20,7 +21,7 @@ MAX_NONCE = 1000000L
 
 settings = {}
 
-class BitcoinRPC:
+class AnoncoinRPC:
 	OBJID = 1
 
 	def __init__(self, host, port, username, password):
@@ -70,7 +71,7 @@ def getblock(rpc, settings, n):
 	return data
 
 def get_blocks(settings):
-	rpc = BitcoinRPC(settings['host'], settings['port'],
+	rpc = AnoncoinRPC(settings['host'], settings['port'],
 			 settings['rpcuser'], settings['rpcpassword'])
 
 	outf = open(settings['output'], 'ab')
@@ -107,17 +108,17 @@ if __name__ == '__main__':
 	f.close()
 
 	if 'netmagic' not in settings:
-		settings['netmagic'] = 'f9beb4d9'
+		settings['netmagic'] = 'facabada'
 	if 'output' not in settings:
 		settings['output'] = 'bootstrap.dat'
 	if 'host' not in settings:
 		settings['host'] = '127.0.0.1'
 	if 'port' not in settings:
-		settings['port'] = 8332
+		settings['port'] = 9376
 	if 'min_height' not in settings:
 		settings['min_height'] = 0
 	if 'max_height' not in settings:
-		settings['max_height'] = 279000
+		settings['max_height'] = 301666
 	if 'rpcuser' not in settings or 'rpcpassword' not in settings:
 		print "Missing username and/or password in cfg file"
 		sys.exit(1)
@@ -128,5 +129,3 @@ if __name__ == '__main__':
 	settings['max_height'] = int(settings['max_height'])
 
 	get_blocks(settings)
-
-

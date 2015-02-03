@@ -20,8 +20,7 @@ qt_test_test_anoncoin_qt_SOURCES = \
   qt/test/uritests.cpp \
   $(TEST_QT_H)
 if ENABLE_WALLET
-qt_test_test_anoncoin_qt_SOURCES += \
-  qt/test/paymentservertests.cpp
+qt_test_test_anoncoin_qt_SOURCES += qt/test/paymentservertests.cpp
 endif
 
 nodist_qt_test_test_anoncoin_qt_SOURCES = $(TEST_QT_MOC_CPP)
@@ -30,10 +29,11 @@ qt_test_test_anoncoin_qt_LDADD = $(LIBANONCOINQT) $(LIBANONCOIN_SERVER)
 if ENABLE_WALLET
 qt_test_test_anoncoin_qt_LDADD += $(LIBANONCOIN_WALLET)
 endif
-qt_test_test_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) \
-  $(LIBMEMENV) $(BOOST_LIBS) $(QT_DBUS_LIBS) $(QT_TEST_LIBS) $(QT_LIBS) \
-  $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+qt_test_test_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) \
+  $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QT_TEST_LIBS) $(QR_LIBS) \
+  $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
 qt_test_test_anoncoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# qt_test_test_anoncoin_qt_LIBTOOLFLAGS = --tag CXX  ToDo: this came from Makefile.qt.include, it needs research
 
 CLEAN_ANONCOIN_QT_TEST = $(TEST_QT_MOC_CPP) qt/test/*.gcda qt/test/*.gcno
 

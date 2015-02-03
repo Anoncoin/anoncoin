@@ -163,7 +163,6 @@ PROTOBUF_CC = qt/paymentrequest.pb.cc
 PROTOBUF_H = qt/paymentrequest.pb.h
 PROTOBUF_PROTO = qt/paymentrequest.proto
 
-#  We want to add this:  qt/peertablemodel.h
 ANONCOIN_QT_H = \
   qt/addressbookpage.h \
   qt/addresstablemodel.h \
@@ -362,12 +361,13 @@ endif
 if TARGET_WINDOWS
   qt_anoncoin_qt_SOURCES += $(ANONCOIN_RC)
 endif
-qt_anoncoin_qt_LDADD = qt/libanoncoinqt.a $(LIBANONCOIN_SERVER)
+qt_anoncoin_qt_LDADD = $(LIBANONCOINQT) $(LIBANONCOIN_SERVER)
 if ENABLE_WALLET
 qt_anoncoin_qt_LDADD += $(LIBANONCOIN_WALLET)
 endif
-qt_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
-  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+qt_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) \
+  $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) \
+  $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
 qt_anoncoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 qt_anoncoin_qt_LIBTOOLFLAGS = --tag CXX
 
