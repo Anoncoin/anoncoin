@@ -17,51 +17,70 @@
 
 using namespace std;
 
-static const string strSecret1     ("5HxWvvfubhXpYYpS3tJkw6fq9jE9j18THftkZjHHfmFiWtmAbrj");
-static const string strSecret2     ("5KC4ejrDjv152FGwP386VD1i2NYc5KkfSMyv1nGy1VGDxGHqVY3");
-static const string strSecret1C    ("Kwr371tjA9u2rFSMZjTNun2PXXP3WPZu2afRHTcta6KxEUdm1vEw");
-static const string strSecret2C    ("L3Hq7a8FEQwJkW1M2GNKDW28546Vp5miewcCzSqUD9kCAXrJdS3g");
-static const CAnoncoinAddress addr1 ("1QFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ");
-static const CAnoncoinAddress addr2 ("1F5y5E5FMc5YzdJtB9hLaUe43GDxEKXENJ");
-static const CAnoncoinAddress addr1C("1NoJrossxPBKfCHuJXT4HadJrXRE9Fxiqs");
-static const CAnoncoinAddress addr2C("1CRj2HyM1CXWzHAXLQtiGLyggNT9WQqsDs");
+static const string strSecret1     ("65H6Yv7y8RKJjGQrEG9Nf5aAakSBcuoY5G6bYP86w4tmGrJMFYp");
+static const string strSecret2     ("66PrZwCLgSCJCU2EwV28CQQYfADQ1o3SBzwWhYsFBSdp76yPrYV");
+static const string strSecret1C    ("PPt3VsTkjkKoFZ2GHXqxb5BPHxi9sW4Q9odhTWeMBeBUQeKn4H9v");
+static const string strSecret2C    ("PUosnND3s4CrucGUXUfxmLJvjRfiaWDkBYjc5yemb69Uuqfd2mz7");
+static const CAnoncoinAddress addr1 ("AKALrwZGDhGAP2iCjqmp4tggFs9hZtPSNr");
+static const CAnoncoinAddress addr2 ("ALmT6W4YG91Nam7huSERxgXMVWHeTruggz");
+static const CAnoncoinAddress addr1C("AVinYSTA9Hc7p7bKBjrNSSoqkzohuNS2X2");
+static const CAnoncoinAddress addr2C("AGR1AYjJRq21JUpWLCFmXxc6MCsCwAC61g");
 
 
 static const string strAddressBad("1HV9Lc3sNHZxwj4Zk6fB38tEmBryq2cBiF");
 
+// Define this to generate test vectors for the above compressed and uncompressed key values
+// #define KEY_TESTS_DUMPINFO
 
 #ifdef KEY_TESTS_DUMPINFO
-void dumpKeyInfo(uint256 privkey)
+void dumpKeyInfo(uint256 secret)
 {
     CKey key;
-    key.resize(32);
-    memcpy(&secret[0], &privkey, 32);
-    vector<unsigned char> sec;
-    sec.resize(32);
-    memcpy(&sec[0], &secret[0], 32);
-    printf("  * secret (hex): %s\n", HexStr(sec).c_str());
-
+    CAnoncoinSecret b58secret;
+    printf("  * secret (hex): %s\n", secret.GetHex().c_str());
     for (int nCompressed=0; nCompressed<2; nCompressed++)
     {
         bool fCompressed = nCompressed == 1;
         printf("  * %s:\n", fCompressed ? "compressed" : "uncompressed");
-        CAnoncoinSecret bsecret;
-        bsecret.SetSecret(secret, fCompressed);
-        printf("    * secret (base58): %s\n", bsecret.ToString().c_str());
-        CKey key;
-        key.SetSecret(secret, fCompressed);
-        vector<unsigned char> vchPubKey = key.GetPubKey();
-        printf("    * pubkey (hex): %s\n", HexStr(vchPubKey).c_str());
-        printf("    * address (base58): %s\n", CAnoncoinAddress(vchPubKey).ToString().c_str());
+        key.Set( secret.begin(), secret.end(), fCompressed );
+        b58secret.SetKey( key );
+        printf("    * secret (base58): %s\n", b58secret.ToString().c_str());
+        CPubKey pubkey = key.GetPubKey();
+        printf("    * address (base58): %s\n", CAnoncoinAddress(CTxDestination(pubkey.GetID())).ToString().c_str() );
     }
 }
 #endif
 
+// Visitor to check address type
+class TestAddrTypeVisitor : public boost::static_visitor<bool>
+{
+private:
+    std::string exp_addrType;
+public:
+    TestAddrTypeVisitor(const std::string &exp_addrType) : exp_addrType(exp_addrType) { }
+    bool operator()(const CKeyID &id) const
+    {
+        return (exp_addrType == "pubkey");
+    }
+    bool operator()(const CScriptID &id) const
+    {
+        return (exp_addrType == "script");
+    }
+    bool operator()(const CNoDestination &no) const
+    {
+        return (exp_addrType == "none");
+    }
+};
 
 BOOST_AUTO_TEST_SUITE(key_tests)
 
 BOOST_AUTO_TEST_CASE(key_test1)
 {
+    // These 32 byte ECDSA secp256k1 secrets will be used for Anoncoin KeyTest vectors
+#ifdef KEY_TESTS_DUMPINFO
+    dumpKeyInfo( uint256( "0x031da951fb26244f9230ae66b093d72b4c5c9ee148336bc9c465663a1a033363" ) );
+    dumpKeyInfo( uint256( "0x75cf1d5be870a08d9769177f72545c47533060442ed35d48a52a0fb0f1083ef6" ) );
+#endif
     CAnoncoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
     BOOST_CHECK( bsecret1.SetString (strSecret1));
     BOOST_CHECK( bsecret2.SetString (strSecret2));
@@ -82,6 +101,35 @@ BOOST_AUTO_TEST_CASE(key_test1)
     CPubKey pubkey2  = key2. GetPubKey();
     CPubKey pubkey1C = key1C.GetPubKey();
     CPubKey pubkey2C = key2C.GetPubKey();
+
+    // Experimental code for use in another test:
+    // CScript scriptPubKey;
+    // scriptPubKey.SetDestination( pubkey1C.GetID() );
+    // printf( "PublicKey Script of 1C:%s\n", scriptPubKey.ToString().c_str() );
+
+    BOOST_CHECK( addr1.IsValid() );
+    BOOST_CHECK( addr2.IsValid() );
+    BOOST_CHECK( addr1C.IsValid() );
+    BOOST_CHECK( addr2C.IsValid() );
+
+    std::string exp_addrType( "pubkey" );       // "pubkey" is expected for all the addr variables, if not, then incorrect for this coin
+    CTxDestination dest;
+    dest = addr1.Get();
+    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr1 is not a Public Key");
+    dest = addr2.Get();
+    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr2 is not a Public Key");
+    dest = addr1C.Get();
+    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr1C is not a Public Key");
+    dest = addr2C.Get();
+    BOOST_CHECK_MESSAGE(boost::apply_visitor(TestAddrTypeVisitor(exp_addrType), dest), "addr2C is not a Public Key");
+
+#ifdef KEY_TESTS_DUMPINFO
+    // Diagnostic output, that can be helpful if the test data will not pass
+    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey1.GetID())).ToString().c_str() );
+    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey2.GetID())).ToString().c_str() );
+    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey1C.GetID())).ToString().c_str() );
+    printf(":%s:\n", CAnoncoinAddress(CTxDestination(pubkey2C.GetID())).ToString().c_str() );
+#endif
 
     BOOST_CHECK(addr1.Get()  == CTxDestination(pubkey1.GetID()));
     BOOST_CHECK(addr2.Get()  == CTxDestination(pubkey2.GetID()));

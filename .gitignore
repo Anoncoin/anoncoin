@@ -1,3 +1,24 @@
+# The Anoncoin core primary gitignore file...
+#
+# The entries that follow are specific to building Anoncoin and it's toolchain, as well
+# as running tests and various other core code activities.
+# A few are for future structural changes to v10 core technology, that could otherwise be
+# left out at this time.
+#
+# The challenge has been to get this list correct for building on the different platforms,
+# initially this refers to linux, mingw32 on windows, and darwin on the mac.
+#
+# If your building with VisualStudio, running an IDE like Eclipse or Code::Blocks please
+# add your entries, above or below this group.  As well, other types of non-standard tools.
+#
+# Core developers working on a subcomponent are welcome to include entries here, or use
+# your subfolder and create an ignore list, specifically for your project.
+#
+# As this file is a work in progress, newly discovered items missing from the list are
+# encouraged to be added, if your in a hurry, throw it at the bottom, for later organizing.
+#
+# For collections of useful .gitignore templates visit: https://github.com/github/gitignore
+
 *.tar.gz
 
 *.exe
@@ -73,9 +94,8 @@ src/qt/test/moc*.cpp
 
 # Compilation and Qt preprocessor part
 *.qm
-Makefile
 anoncoin-qt
-Bitcoin-Qt.app
+Anoncoin-Qt.app
 
 # Unit-tests
 Makefile.test
@@ -108,9 +128,18 @@ qa/pull-tester/tests-config.sh
 qa/pull-tester/cache/*
 qa/pull-tester/test.*/*
 
-!src/leveldb*/Makefile
+# Some Makefiles are built locally, others are static now, and we must
+# include them, such as the one in depends, qt, qt test and leveldb.
+Makefile
+!depends/Makefile
+!src/qt/Makefile
+!src/test/Makefile
+!src/leveldb/Makefile
+
 src/leveldb/build_config.mk
-
 /doc/doxygen/
-
 libanoncoinconsensus.pc
+
+# Add any other specific requirements, you may need, below this line...
+#
+

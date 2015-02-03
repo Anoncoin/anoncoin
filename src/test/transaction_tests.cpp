@@ -160,6 +160,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                 fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout], tx, i, test[2].get_bool() ? SCRIPT_VERIFY_P2SH : SCRIPT_VERIFY_NONE, 0);
             }
 
+            // ToDo: This test is failing on 2 sample invalid Tx's, why?
             BOOST_CHECK_MESSAGE(!fValid, strTest);
         }
     }
@@ -276,8 +277,13 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     BOOST_CHECK(IsStandardTx(t, reason));
 
     // IsDust() is not used by Litecoin
-    //t.vout[0].nValue = 501; // dust
-    //BOOST_CHECK(!IsStandardTx(t, reason));
+    // GR Note: Todo: Why and when this was commented out, and the old reference to Litecoin, concerns me.
+    // Has the v9 code been modified in a non-standard way?  One that now needs to be
+    // considered a requirement for backwards network compatibility?  I've uncommented the lines to see what happens...
+    //
+    // What happened was the test failed.  So indeed code related to this, has been modified elsewhere.
+    // t.vout[0].nValue = 501; // dust
+    // BOOST_CHECK(!IsStandardTx(t, reason));
 
     t.vout[0].nValue = 601; // not dust
     BOOST_CHECK(IsStandardTx(t, reason));

@@ -41,7 +41,7 @@
 using namespace std;
 using namespace boost;
 
-static const int MAX_OUTBOUND_CONNECTIONS = 8;
+static const int MAX_OUTBOUND_CONNECTIONS = 24;
 
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
 
@@ -1068,6 +1068,9 @@ void ThreadSocketHandler()
                     int nBytes = recv(hI2PListenSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
                     if (nBytes > 0)
                     {
+                        // ToDo: This is not correct,
+                        // <orignal> this line must be fixed ASAP
+                        // https://geti2p.net/en/docs/spec/common-structures#struct_Destination
                         if (nBytes == NATIVE_I2P_DESTINATION_SIZE + 1) // we're waiting for dest-hash + '\n' symbol
                         {
                             std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);

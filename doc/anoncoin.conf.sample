@@ -1,0 +1,77 @@
+#anoncoin.conf.sample
+#
+#rpcallowip=192.168.xx.xx
+rpcport=9376
+rpcuser=youruser
+rpcpassword=yoursecret
+
+# If you've an I2P Router warmed up, switch to a more secure peer network, by setting the following:
+#onlynet=i2p
+
+# Sometimes we only have old clearnet as an option...
+#onlynet=ipv4
+
+# Enable and disable Server functions, if running anoncoind the daemon option is most often best to...
+# server=0
+server=1
+daemon=1
+
+# As of 2/2/15, we working on the code involved in this section, leave it disabled.
+gen=0
+
+
+# Default binds often connect to your loopback adapter 127.0.0.1, and never allow any inbound connections,
+# perhaps despite your best efforts at configuring a local network to allow them.  If your behind a router
+# and have setup port forwarding properly, setting this bind value can solve your last remaining hurdle, 
+# to getting inbound peers connected.  Specifically telling this software to 'bind' with a static
+# ip address, one you will have assigned this node on your local network.
+# Assuming a local net of 192.168.... fill in the .xx.xx below with your values:
+#bind=192.168.xx.xx
+
+# Set the number of peers higher...
+#maxconnections=89
+
+# Tired of the Clearnet warning on startup?
+#stfu=1
+
+# ...or better yet, switch to I2P!!!
+
+# The following new values are needed to run anoncoin i2p modes of operation.
+#
+# If you have generated a static I2P Destination, set the private key here:  
+[i2p.mydestination]
+# privatekey=kvGu5BRTohvsGsNqkQW5glv.....
+# publickey=kvGu5BRTohvsGsNqkQW5glv....1RXwMAAPlL3mYVAAAA
+# base32key=ntmn7mwa6tpm7beaz35cljhggdl75537ixt4nno2i47kllcrkhpa.b32.i2p
+
+[i2p.options]
+enabled=1
+#static=1
+samhost=127.0.0.1
+samport=7656
+sessionname=Anoncoin-client
+extra=
+# The optoin 'extra' above sends whatever string is given, as added text to initialize the i2p sam session
+#
+# GR Note: - Working on implementing these next two.
+# want to convert the i2p addresses to base32 representation. Options for the debug.log output and/or the display
+#b32addrlogs=1
+#b32addrdisplay=1
+
+[i2p.options.inbound]
+quantity=3
+length=3
+lengthvariance=0
+backupquantity=1
+allowzerohop=1
+iprestriction=2
+
+[i2p.options.outbound]
+quantity=3
+length=3
+lengthvariance=0
+backupquantity=1
+allowzerohop=1
+iprestriction=2
+priority=0
+

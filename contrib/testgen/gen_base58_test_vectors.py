@@ -14,12 +14,12 @@ from base58 import b58encode, b58decode, b58encode_chk, b58decode_chk, b58chars
 import random
 from binascii import b2a_hex
 
-# key types
-PUBKEY_ADDRESS = 0
+# key types, modified for use with Anoncoin
+PUBKEY_ADDRESS = 23
 SCRIPT_ADDRESS = 5
 PUBKEY_ADDRESS_TEST = 111
 SCRIPT_ADDRESS_TEST = 196
-PRIVKEY = 128
+PRIVKEY = 151
 PRIVKEY_TEST = 239
 
 metadata_keys = ['isPrivkey', 'isTestnet', 'addrType', 'isCompressed']

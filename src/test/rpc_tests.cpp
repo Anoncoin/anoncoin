@@ -1,5 +1,4 @@
 // Copyright (c) 2012-2013 The Bitcoin Core developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -89,6 +88,18 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
     BOOST_CHECK_THROW(CallRPC(string("sendrawtransaction ")+rawtx+" extra"), runtime_error);
 }
 
+static void ShowWhy( Value& result ) {
+    string strPrint;
+
+    if (result.type() == null_type)
+        strPrint = "Null Response";
+    else if (result.type() == str_type)
+        strPrint = result.get_str();
+    else
+        strPrint = write_string(result, true);
+    printf( "\nJSON Response=%s\n", strPrint.c_str() );
+}
+
 BOOST_AUTO_TEST_CASE(rpc_rawsign)
 {
     Value r;
@@ -100,11 +111,12 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
     r = CallRPC(string("createrawtransaction ")+prevout+" "+
       "{\"3HqAe9LtNBjnsfM4CyYaWTnvCaUYT7v4oZ\":11}");
     string notsigned = r.get_str();
-    string privkey1 = "\"KzsXybp9jX64P5ekX1KUxRQ79Jht9uzW7LorgwE65i5rWACL6LQe\"";
-    string privkey2 = "\"Kyhdf5LuKTRx4ge69ybABsiUAWjVRK4XGxAKk2FQLp2HjGMy87Z4\"";
+    string privkey1 = "\"PUSkjmYtULFdPVFiLfxgCuBV7sLSWMGS9yi7CgHt5PbjDQ73bsbq\"";
+    string privkey2 = "\"PSc1FUML5L8RLeTNewGi54cz3hReMMoGfdWuAqQXkYBPajNNYCNy\"";
     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"[]");
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == false);
     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+","+privkey2+"]");
+    // ShowWhy( r );
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
 }
 
