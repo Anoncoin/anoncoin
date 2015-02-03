@@ -70,7 +70,7 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     //    int testnetAddTextWidth  = fm.width(testnetAddText);
     //    pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
     //}
-
+	
     pixPaint.end();
 
     this->setPixmap(newPixmap);
