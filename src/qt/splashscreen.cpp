@@ -30,14 +30,10 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     int paddingTop              = 236;
     int paddingCopyrightTop     = 18;
 
-    float fontFactor            = 1.0;
-
     // define text to place
     QString versionText     = QString("VERSION %1").arg(QString::fromStdString(FormatFullVersion()));
     QString copyrightText1   = QChar(0xA9)+QString(" 2013-%1 ").arg(COPYRIGHT_YEAR) + QString(tr("ANONCOIN CORE DEVELOPERS"));
     //QString testnetAddText  = QString(tr("[testnet]")); // This string is already included in the background image
-
-    QString font            = "Courier New";
 
     // load the bitmap for writing some text over it
     QPixmap newPixmap;
@@ -47,10 +43,14 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     else {
         newPixmap     = QPixmap(":/images/splash");
     }
-
+	
+	QFont initfont;
+	initfont.setFamily("Courier New,Courier,Monaco,Andale Mono,Arial");
+	initfont.setPixelSize(12);	
+	    
     QPainter pixPaint(&newPixmap);
     pixPaint.setPen(QColor(250,250,250));
-    pixPaint.setFont(QFont(font, 12*fontFactor));
+    pixPaint.setFont(initfont);
     
     QFontMetrics fm = pixPaint.fontMetrics();
 
@@ -58,19 +58,19 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     pixPaint.drawText(newPixmap.width()/2-fm.width(versionText)/2,paddingTop,versionText);
 
     // draw copyright stuff
-    pixPaint.setFont(QFont(font, 12*fontFactor));
+    pixPaint.setFont(initfont);
     pixPaint.drawText(newPixmap.width()/2-fm.width(copyrightText1)/2,paddingTop+paddingCopyrightTop,copyrightText1);
 
     // draw testnet string if testnet is on. This is no longer necessary as this is included in the background image
     //if(isTestNet) {
-    //    QFont boldFont = QFont(font, 10*fontFactor);
+    //    QFont boldFont = QFont(font, 10);
     //    boldFont.setWeight(QFont::Bold);
     //    pixPaint.setFont(boldFont);
     //    fm = pixPaint.fontMetrics();
     //    int testnetAddTextWidth  = fm.width(testnetAddText);
     //    pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
     //}
-
+	
     pixPaint.end();
 
     this->setPixmap(newPixmap);
@@ -91,7 +91,7 @@ void SplashScreen::slotFinish(QWidget *mainWin)
 static void InitMessage(SplashScreen *splash, const std::string &message)
 {
 	QFont initfont;
-	initfont.setFamily("Courier New");
+	initfont.setFamily("Courier New,Courier,Monaco,Andale Mono,Arial");
 	initfont.setPixelSize(12);
 	initfont.setCapitalization(initfont.AllUppercase);
 	splash->setFont(initfont);
