@@ -29,10 +29,10 @@
   <string>????</string>
 
   <key>CFBundleExecutable</key>
-  <string>Anoncoin-Qt</string>
+  <string>Anoncoin</string>
 
   <key>CFBundleIdentifier</key>
-  <string>org.anoncoindotnet.Anoncoin-Qt</string>
+  <string>org.anoncoindotnet.Anoncoin</string>
 
   <key>CFBundleURLTypes</key>
   <array>

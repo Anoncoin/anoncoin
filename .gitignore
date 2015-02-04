@@ -95,7 +95,7 @@ src/qt/test/moc*.cpp
 # Compilation and Qt preprocessor part
 *.qm
 anoncoin-qt
-Anoncoin-Qt.app
+Anoncoin.app
 
 # Unit-tests
 Makefile.test
