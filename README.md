@@ -23,3 +23,5 @@ Anoncoin website: [anoncoin.net](https://anoncoin.net/)<br />
 Anoncoin wiki: [wiki.anoncoin.net](https://wiki.anoncoin.net/)<br />
 email: [contact@anoncoin.net](mailto:contact@anoncoin.net)<br />
 IRC: #anoncoin (I2P: localhost port 6668 / Freenode: irc.freenode.net port 6667)
+Twitter: [AnoncoinNews](https://twitter.com/AnoncoinNews), [AnoncoinProject](https://twitter.com/AnoncoinProject)
+Reddit: [www.reddit.com/r/Anoncoin/](http://www.reddit.com/r/Anoncoin/)
