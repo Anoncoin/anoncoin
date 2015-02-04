@@ -50,7 +50,7 @@ static const int MAX_PAYMENT_REQUEST_SIZE = 50000; // bytes
 
 #define QAPP_ORG_NAME "Anoncoin"
 #define QAPP_ORG_DOMAIN "anoncoin.net"
-#define QAPP_APP_NAME_DEFAULT "Anoncoin-Qt"
-#define QAPP_APP_NAME_TESTNET "Anoncoin-Qt-testnet"
+#define QAPP_APP_NAME_DEFAULT "Anoncoin"
+#define QAPP_APP_NAME_TESTNET "Anoncoin-testnet"
 
 #endif // GUICONSTANTS_H
