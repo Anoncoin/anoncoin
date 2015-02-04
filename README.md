@@ -23,7 +23,7 @@ Feature branches are created when there are major new features being
 worked on by several people. The develop branch should be used with extreme caution.
 
 ##For more info##
-[Anoncoin website](https://anoncoin.net/)<br />
-[Anoncoin wiki](https://wiki.anoncoin.net/)<br />
-[email](mailto:contact@anoncoin.net)<br />
-IRC channel: #anoncoin
+Anoncoin website [anoncoin.net](https://anoncoin.net/)<br />
+Anoncoin wiki [wiki.anoncoin.net](https://wiki.anoncoin.net/)<br />
+email [contact@anoncoin.net](mailto:contact@anoncoin.net)<br />
+IRC channel: #anoncoin (I2P: localhost port 6668 / Freenode: irc.freenode.net port 6667)
