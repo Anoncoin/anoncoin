@@ -18,7 +18,7 @@ Developers work in their own trees, then submit pull requests when
 they think their feature or bug fix is ready. The master branch is regularly built and tested, but is not guaranteed to be completely stable. Tags are regularly created to indicate new official, stable release versions of Anoncoin. Feature branches are created when there are major new features being
 worked on by several people. The develop branch should be used with extreme caution.
 
-##For more info##
+##For more information##
 Anoncoin website: [anoncoin.net](https://anoncoin.net/)<br />
 Anoncoin wiki: [wiki.anoncoin.net](https://wiki.anoncoin.net/)<br />
 email: [contact@anoncoin.net](mailto:contact@anoncoin.net)<br />
