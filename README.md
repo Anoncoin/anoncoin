@@ -24,7 +24,12 @@ If all the required dependencies have already been built, compiling Anoncoin fro
     make
     make deploy  (OSX only)
     
-Detailed platform-specific build instructions can be found in doc/README.md and doc/build-*.md
+Detailed platform-specific instructions can be found in 
+
+- [doc/README.md](doc/README.md)
+- [doc/build-osx.md](doc/build-osx.md)
+- [doc/build-osx.md](doc/build-msw.md)
+- [doc/build-osx.md](doc/build-unix.md)
     
 Development process
 -------------------
