@@ -139,7 +139,8 @@ public:
         // As of 12/26/2014, there are NO entries from above clearnet pnSeed array, only using I2P for fixed seeding...
         for (unsigned int i = 0; i < ARRAYLEN( I2pSeedAddresses ); i++ ) {
             const int64_t nOneWeek = 7*24*60*60;
-            CAddress addr( CService(I2pSeedAddresses[i]) );
+            CService aServiceSeed( I2pSeedAddresses[i] );
+            CAddress addr( aServiceSeed );
             addr.nTime = GetTime() - GetRand(nOneWeek) - nOneWeek;
             vFixedSeeds.push_back(addr);
         }
