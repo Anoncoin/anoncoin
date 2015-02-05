@@ -28,8 +28,8 @@ Detailed platform-specific instructions can be found in
 
 - [doc/README.md](doc/README.md)
 - [doc/build-osx.md](doc/build-osx.md)
-- [doc/build-osx.md](doc/build-msw.md)
-- [doc/build-osx.md](doc/build-unix.md)
+- [doc/build-msw.md](doc/build-msw.md)
+- [doc/build-unix.md](doc/build-unix.md)
     
 Development process
 -------------------
