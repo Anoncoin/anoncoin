@@ -1,4 +1,5 @@
-Deterministic OSX Dmg Notes.
+Making a deterministic OSX dmg disk image.
+==========================================
 
 Working OSX DMG's are created in Linux by combining a recent clang,
 the Apple's binutils (ld, ar, etc), and DMG authoring tools.
