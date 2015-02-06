@@ -1,0 +1,16 @@
+<map id="src/addrman.cpp" name="src/addrman.cpp">
+<area shape="rect" id="node2" href="$addrman_8h.html" title="addrman.h" alt="" coords="2058,80,2143,107"/>
+<area shape="rect" id="node10" href="$serialize_8h.html" title="serialize.h" alt="" coords="607,319,690,345"/>
+<area shape="rect" id="node47" href="$hash_8h.html" title="hash.h" alt="" coords="296,237,359,263"/>
+<area shape="rect" id="node3" href="$netbase_8h.html" title="netbase.h" alt="" coords="2125,237,2205,263"/>
+<area shape="rect" id="node28" href="$protocol_8h.html" title="protocol.h" alt="" coords="2247,155,2327,181"/>
+<area shape="rect" id="node32" href="$sync_8h.html" title="sync.h" alt="" coords="2796,155,2856,181"/>
+<area shape="rect" id="node37" href="$util_8h.html" title="util.h" alt="" coords="1518,237,1569,263"/>
+<area shape="rect" id="node4" href="$compat_8h.html" title="compat.h" alt="" coords="1898,319,1975,345"/>
+<area shape="rect" id="node11" href="$allocators_8h.html" title="allocators.h" alt="" coords="599,401,690,427"/>
+<area shape="rect" id="node29" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="2233,237,2342,263"/>
+<area shape="rect" id="node30" href="$uint256_8h.html" title="uint256.h" alt="" coords="2354,319,2431,345"/>
+<area shape="rect" id="node33" href="$threadsafety_8h.html" title="threadsafety.h" alt="" coords="2927,237,3034,263"/>
+<area shape="rect" id="node38" href="$tinyformat_8h.html" title="tinyformat.h" alt="" coords="1629,319,1721,345"/>
+<area shape="rect" id="node48" href="$version_8h.html" title="version.h" alt="" coords="283,319,359,345"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="PaymentServer::receivedPaymentRequest" name="PaymentServer::receivedPaymentRequest">
+<area shape="rect" id="node2" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="277,67,497,93"/>
+<area shape="rect" id="node8" href="$class_payment_server.html#a5b8e2e6380142fb7ad631400bcfc6f28" title="PaymentServer::netRequest\lFinished" alt="" coords="293,129,482,170"/>
+<area shape="rect" id="node3" href="$class_payment_server.html#af795e3c318556c833792e530b279efc9" title="PaymentServer::eventFilter" alt="" coords="579,56,763,83"/>
+<area shape="rect" id="node4" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="867,132,1037,159"/>
+<area shape="rect" id="node6" href="$class_payment_server.html#a6ee6e29e1255605582459463d195a651" title="PaymentServer::handleURIConnection" alt="" coords="545,5,797,32"/>
+<area shape="rect" id="node5" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="1107,125,1259,166"/>
+<area shape="rect" id="node7" href="$class_payment_server.html#a4a66f55c11f4757b121179d5d6988ab2" title="PaymentServer::PaymentServer" alt="" coords="845,5,1059,32"/>
+<area shape="rect" id="node9" href="$class_payment_server.html#a2f94f2c3e12d03199870e17008535302" title="PaymentServer::initNetManager" alt="" coords="565,157,777,184"/>
+</map>

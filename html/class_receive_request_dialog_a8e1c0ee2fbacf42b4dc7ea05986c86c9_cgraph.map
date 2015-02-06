@@ -1,0 +1,11 @@
+<map id="ReceiveRequestDialog::update" name="ReceiveRequestDialog::update">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#a87288c8a7c8e7ca91358dfba17fd402b" title="GUIUtil::formatAnoncoinURI" alt="" coords="218,31,407,57"/>
+<area shape="rect" id="node7" href="$namespace_g_u_i_util.html#a2d4b7f2c11ebc4b97af10bc20d19b1b2" title="GUIUtil::HtmlEscape" alt="" coords="241,81,385,108"/>
+<area shape="rect" id="node8" href="$class_anoncoin_units.html#a07b2ad9cac3728231143e4d78c059e14" title="Format as string (with unit) " alt="" coords="211,132,415,159"/>
+<area shape="rect" id="node10" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="214,183,411,209"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="463,56,616,83"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="677,5,819,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="673,56,823,83"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="664,107,832,133"/>
+<area shape="rect" id="node9" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="465,132,614,159"/>
+</map>

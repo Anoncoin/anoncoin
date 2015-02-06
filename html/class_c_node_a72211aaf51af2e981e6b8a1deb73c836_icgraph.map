@@ -1,0 +1,8 @@
+<map id="CNode::GetRefCount" name="CNode::GetRefCount">
+<area shape="rect" id="node2" href="$net_8cpp.html#aa1111c12121e039bbd8eedb556e4514a" title="Main Thread that handling socket&#39;s &amp; their housekeeping... " alt="" coords="203,31,355,57"/>
+<area shape="rect" id="node3" href="$net_8h.html#a9396d8054e8f74959e9391871aaddde0" title="StartNode" alt="" coords="403,31,485,57"/>
+<area shape="rect" id="node4" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="533,31,604,57"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="700,5,764,32"/>
+<area shape="rect" id="node7" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="652,56,812,83"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="860,5,911,32"/>
+</map>

@@ -1,0 +1,30 @@
+<map id="CBigNum::getuint256" name="CBigNum::getuint256">
+<area shape="rect" id="node2" href="$main_8h.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="208,165,335,192"/>
+<area shape="rect" id="node13" href="$main2_8cpp.html#a20a76dbc6ac5b8a6e0aaef85522b1069" title="Check whether a block hash satisfies the proof&#45;of&#45;work requirement specified by nBits. " alt="" coords="203,266,340,293"/>
+<area shape="rect" id="node29" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="945,444,1068,470"/>
+<area shape="rect" id="node3" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="388,165,484,192"/>
+<area shape="rect" id="node12" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="709,38,814,65"/>
+<area shape="rect" id="node4" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="533,165,635,192"/>
+<area shape="rect" id="node5" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="684,165,839,192"/>
+<area shape="rect" id="node11" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="715,114,807,141"/>
+<area shape="rect" id="node6" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="955,38,1058,65"/>
+<area shape="rect" id="node7" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1203,114,1273,141"/>
+<area shape="rect" id="node8" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1397,89,1461,116"/>
+<area shape="rect" id="node10" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1349,140,1509,166"/>
+<area shape="rect" id="node9" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1557,89,1608,116"/>
+<area shape="rect" id="node14" href="$main_8h.html#a2dc350346749b7da7f4b40c114ee5147" title="ReadBlockFromDisk" alt="" coords="689,241,833,268"/>
+<area shape="rect" id="node26" href="$main_8h.html#afbaa5058f820d623e6a36f39da4fe484" title="CheckBlock" alt="" coords="390,292,482,318"/>
+<area shape="rect" id="node15" href="$main_8h.html#a74cc9659a06d35436a25b7ae56a15bcb" title="Retrieve a transaction (from memory pool, or from disk, if possible) " alt="" coords="950,342,1063,369"/>
+<area shape="rect" id="node17" href="$main_8h.html#a445ff051f3b0038c0b19b7e1156c9f95" title="ReadBlockFromDisk" alt="" coords="935,292,1079,318"/>
+<area shape="rect" id="node18" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="969,393,1044,420"/>
+<area shape="rect" id="node20" href="$main_8h.html#aac88c75e65aa0dee60e4332dbcc16120" title="Print the loaded block tree. " alt="" coords="952,89,1061,116"/>
+<area shape="rect" id="node21" href="$rpcblockchain_8cpp.html#a63608cf1bb275120194c3b4e070af3d7" title="getblock" alt="" coords="971,190,1043,217"/>
+<area shape="rect" id="node22" href="$class_c_wallet.html#a979a17e80e4897ed1f4ae9a4be7c493c" title="CWallet::ScanForWalletTransactions" alt="" coords="887,241,1127,268"/>
+<area shape="rect" id="node16" href="$rpcrawtransaction_8cpp.html#a12e1b8a05d99d1544e5343c2282cc55a" title="getrawtransaction" alt="" coords="1175,342,1301,369"/>
+<area shape="rect" id="node19" href="$rpcblockchain_8cpp.html#a0b1dd8862fc7292c243ad9489f96a3c8" title="verifychain" alt="" coords="1195,393,1281,420"/>
+<area shape="rect" id="node23" href="$rpcdump_8cpp.html#a3a6fdb974fce01220a895393d444e981" title="importprivkey" alt="" coords="1187,292,1289,318"/>
+<area shape="rect" id="node24" href="$rpcdump_8cpp.html#a457bc572859c8265c72a0afd1a6db56c" title="importaddress" alt="" coords="1185,190,1291,217"/>
+<area shape="rect" id="node25" href="$rpcdump_8cpp.html#a2566d5c9dd1938b74e70398cdb3ac5c1" title="importwallet" alt="" coords="1191,241,1285,268"/>
+<area shape="rect" id="node27" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="532,342,636,369"/>
+<area shape="rect" id="node28" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="701,393,822,420"/>
+</map>

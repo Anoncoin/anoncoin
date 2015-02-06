@@ -1,0 +1,6 @@
+<map id="RecentRequestsTableModel::addNewRequest" name="RecentRequestsTableModel::addNewRequest">
+<area shape="rect" id="node2" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="252,5,433,47"/>
+<area shape="rect" id="node4" href="$class_recent_requests_table_model.html#ab3ef691b8c34e6d6e5ae0bdf7953a360" title="RecentRequestsTableModel\l::RecentRequestsTableModel" alt="" coords="244,71,441,112"/>
+<area shape="rect" id="node5" href="$class_recent_requests_table_model.html#aad0b9435284ed1f4b67852b34d7694a9" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="247,136,438,177"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="489,5,632,47"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="GUIUtil::saveWindowGeometry" name="GUIUtil::saveWindowGeometry">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#a752f8f9713a04608b050d9596910c6c5" title="AnoncoinGUI::~AnoncoinGUI" alt="" coords="265,5,461,32"/>
+<area shape="rect" id="node3" href="$class_options_dialog.html#afe1e5729e15ddf1c9e6f5b9cb6157c57" title="OptionsDialog::~OptionsDialog" alt="" coords="260,56,465,83"/>
+<area shape="rect" id="node4" href="$class_r_p_c_console.html#af069a33d262cba428ec5c1390dd5acff" title="RPCConsole::~RPCConsole" alt="" coords="267,107,458,133"/>
+<area shape="rect" id="node5" href="$class_help_message_dialog.html#a5393c6af4412e0fcab05b0824cb0ef18" title="HelpMessageDialog::\l~HelpMessageDialog" alt="" coords="288,158,437,199"/>
+</map>

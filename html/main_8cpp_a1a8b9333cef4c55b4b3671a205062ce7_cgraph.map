@@ -1,0 +1,51 @@
+<map id="AcceptBlock" name="AcceptBlock">
+<area shape="rect" id="node2" href="$class_c_block_header.html#ae1165e54882d364b030fb33673d64dbd" title="CBlockHeader::GetHash" alt="" coords="426,317,594,343"/>
+<area shape="rect" id="node4" href="$class_c_validation_state.html#a88ff08b67f7f44bb3c7f7053bb1ee6fc" title="CValidationState::Invalid" alt="" coords="427,215,593,242"/>
+<area shape="rect" id="node5" href="$class_c_validation_state.html#a3c6786d00da8d1c5df25b4c3876409e8" title="CValidationState::DoS" alt="" coords="694,190,849,217"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1657,114,1725,141"/>
+<area shape="rect" id="node7" href="$main_8h.html#a5ab312a838f427dd7a13b999fe21a52e" title="GetNextWorkRequired" alt="" coords="171,1818,327,1845"/>
+<area shape="rect" id="node8" href="$chainparams_8h.html#abc8c1af875107f5eac0f327bd3b8363d" title="TestNet" alt="" coords="475,2037,545,2063"/>
+<area shape="rect" id="node11" href="$class_c_block_header.html#a2972ebc9d970b4b12434876263c4c2b5" title="CBlockHeader::GetBlockTime" alt="" coords="149,1869,348,1895"/>
+<area shape="rect" id="node12" href="$class_c_block_index.html#abffb24cc73329a3dce024403ba770b4a" title="CBlockIndex::GetMedianTimePast" alt="" coords="919,1219,1144,1246"/>
+<area shape="rect" id="node14" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="211,1109,287,1135"/>
+<area shape="rect" id="node15" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="1233,925,1345,951"/>
+<area shape="rect" id="node17" href="$namespace_checkpoints.html#a4d9e42c5e5659730fc98113a94e2c84c" title="Checkpoints::CheckBlock" alt="" coords="945,63,1118,90"/>
+<area shape="rect" id="node19" href="$namespace_checkpoints.html#ad91375160e77c30d6e6ccbfe1c682195" title="Checkpoints::GetLastCheckpoint" alt="" coords="923,114,1139,141"/>
+<area shape="rect" id="node20" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="711,1337,831,1363"/>
+<area shape="rect" id="node21" href="$main_8cpp.html#a92fa926dca5dee9f673536d85f067ee7" title="FindBlockPos" alt="" coords="197,1717,301,1743"/>
+<area shape="rect" id="node24" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="752,1641,791,1667"/>
+<area shape="rect" id="node29" href="$class_c_validation_state.html#a6788cb521cf538ac80413a1c6c3da5e8" title="CValidationState::Abort" alt="" coords="430,1514,590,1541"/>
+<area shape="rect" id="node32" href="$main_8cpp.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="185,1387,312,1414"/>
+<area shape="rect" id="node35" href="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0" title="Checkpoints::GetTotalBlocks\lEstimate" alt="" coords="1192,259,1385,300"/>
+<area shape="rect" id="node36" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="1243,595,1335,622"/>
+<area shape="rect" id="node38" href="$main_8cpp.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="185,738,312,765"/>
+<area shape="rect" id="node43" href="$class_c_block_index.html#ab843ef9b8b0a0193ec3a5c24738e484f" title="CBlockIndex::GetBlockHash" alt="" coords="677,519,866,546"/>
+<area shape="rect" id="node49" href="$class_c_node.html#a7cef2333aa8776127a7e7fcab659eb6a" title="CNode::PushInventory" alt="" coords="171,2003,327,2030"/>
+<area shape="rect" id="node3" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="745,317,798,343"/>
+<area shape="rect" id="node9" href="$chainparams_8h.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="737,2011,805,2038"/>
+<area shape="rect" id="node10" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="680,2062,863,2089"/>
+<area shape="rect" id="node13" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="1195,1143,1383,1170"/>
+<area shape="rect" id="node16" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="447,1210,573,1237"/>
+<area shape="rect" id="node18" href="$namespace_checkpoints.html#a63e87603e80d739b1aefa062f9bd337e" title="Checkpoints::Checkpoints" alt="" coords="1433,114,1609,141"/>
+<area shape="rect" id="node22" href="$class_c_block_tree_d_b.html#a6f951198dc53fbe9194626ff82638656" title="CBlockTreeDB::ReadBlockFileInfo" alt="" coords="397,1818,623,1845"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#a7d4a97e049394047743b48c0cd0f0791" title="Check whether enough disk space is available for an incoming block. " alt="" coords="448,1666,572,1693"/>
+<area shape="rect" id="node25" href="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097" title="Open a block file (blk?????.dat) " alt="" coords="455,1565,565,1591"/>
+<area shape="rect" id="node26" href="$util_8cpp.html#a91c763bffc49cf7ed8d45cc44870e55c" title="AllocateFileRange" alt="" coords="445,1869,575,1895"/>
+<area shape="rect" id="node27" href="$class_c_validation_state.html#abf67ad56f62df5679d47c289684c554c" title="CValidationState::Error" alt="" coords="692,1793,851,1819"/>
+<area shape="rect" id="node28" href="$class_c_block_tree_d_b.html#ae248032ee1f1303dea54a0b36ad84755" title="CBlockTreeDB::WriteBlock\lFileInfo" alt="" coords="419,1971,601,2012"/>
+<area shape="rect" id="node31" href="$class_c_block_tree_d_b.html#ae1f4ea54edf05a056d2da00ea90a9394" title="CBlockTreeDB::WriteLastBlockFile" alt="" coords="396,1767,624,1794"/>
+<area shape="rect" id="node30" href="$main_8h.html#a796d22b033e4a9628490e5ffa3fac4fa" title="Abort with a message. " alt="" coords="729,1514,814,1541"/>
+<area shape="rect" id="node33" href="$class_c_auto_file.html#a883a261f0d7d0320f72152ff2167fd24" title="CAutoFile::GetSerializeSize" alt="" coords="417,1362,603,1389"/>
+<area shape="rect" id="node34" href="$main_8cpp.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="953,823,1109,850"/>
+<area shape="rect" id="node37" href="$util_8cpp.html#a7572b77c2a5191de8d40d4050322ab84" title="FileCommit" alt="" coords="465,1463,555,1490"/>
+<area shape="rect" id="node39" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="963,722,1100,749"/>
+<area shape="rect" id="node40" href="$class_c_block_index.html#a915646e337c4b50b994c51d7ce1f681e" title="CBlockIndex::GetBlockWork" alt="" coords="937,925,1126,951"/>
+<area shape="rect" id="node41" href="$class_c_big_num.html#ad17ff84ee557ca5ad4b854e14d08099f" title="CBigNum::getuint256" alt="" coords="435,586,585,613"/>
+<area shape="rect" id="node42" href="$class_c_block_tree_d_b.html#a608a04a08445d95e477cb66889c679d0" title="CBlockTreeDB::WriteBlock\lIndex" alt="" coords="419,520,601,561"/>
+<area shape="rect" id="node44" href="$main_8cpp.html#a63b860cc82a0a2dfb90c96ddc09dfecc" title="Find the best known block, and make it the tip of the block chain. " alt="" coords="445,738,575,765"/>
+<area shape="rect" id="node45" href="$main_8cpp.html#a730d390bfb0df0e54a5c2ddb901e748a" title="CheckForkWarningConditions" alt="" coords="672,823,871,850"/>
+<area shape="rect" id="node46" href="$class_c_block.html#adcac010752a4dc7e6b942246a3549f0e" title="CBlock::GetTxHash" alt="" coords="441,637,579,663"/>
+<area shape="rect" id="node47" href="$main_8cpp.html#a0577f78a333e075d3bbb64c0741b5080" title="CheckForkWarningConditions\lOnNewFork" alt="" coords="411,891,609,932"/>
+<area shape="rect" id="node48" href="$class_c_level_d_b_wrapper.html#a639fbfd6652941a1ab570c202197a32a" title="CLevelDBWrapper::Flush" alt="" coords="423,687,597,714"/>
+<area shape="rect" id="node50" href="$classmruset.html#abf122b956abffbf3ce190c80d215660c" title="mruset::count" alt="" coords="459,2087,561,2114"/>
+</map>

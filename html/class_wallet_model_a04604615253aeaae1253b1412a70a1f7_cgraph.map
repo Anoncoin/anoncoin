@@ -1,0 +1,5 @@
+<map id="WalletModel::validateAddress" name="WalletModel::validateAddress">
+<area shape="rect" id="node2" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="251,31,435,57"/>
+<area shape="rect" id="node3" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="548,5,616,32"/>
+<area shape="rect" id="node4" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="483,56,681,83"/>
+</map>

@@ -1,0 +1,23 @@
+<map id="CMerkleTx::IsInMainChain" name="CMerkleTx::IsInMainChain">
+<area shape="rect" id="node2" href="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4" title="TransactionDesc::toHTML" alt="" coords="232,143,409,170"/>
+<area shape="rect" id="node14" href="$class_transaction_record.html#a5ad1d1af4bec5b15a624b7a451e8cdbf" title="Decompose CWallet transaction to model transaction records. " alt="" coords="249,71,392,112"/>
+<area shape="rect" id="node19" href="$class_transaction_record.html#a9b643dd885a790ae511705a1446556be" title="Update status from core wallet tx. " alt="" coords="249,197,392,239"/>
+<area shape="rect" id="node3" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="457,136,605,177"/>
+<area shape="rect" id="node4" href="$class_transaction_table_model.html#a416d0751ab9a95ecd87d3f7bed4f0b06" title="TransactionTableModel\l::data" alt="" coords="684,136,845,177"/>
+<area shape="rect" id="node5" href="$class_transaction_table_model.html#aaaf3cea9a5373fff771ce81d2f26de6e" title="TransactionTableModel\l::index" alt="" coords="957,136,1118,177"/>
+<area shape="rect" id="node6" href="$class_transaction_table_model.html#a5899d9eda6465bfb16d2846b6459567e" title="TransactionTableModel\l::updateConfirmations" alt="" coords="1237,135,1399,176"/>
+<area shape="rect" id="node9" href="$class_transaction_table_model.html#a8b73ff7d72ec2dd69790bc61bbe8575e" title="TransactionTableModel\l::updateDisplayUnit" alt="" coords="1237,68,1399,109"/>
+<area shape="rect" id="node11" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="1199,201,1437,227"/>
+<area shape="rect" id="node7" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="1493,135,1665,176"/>
+<area shape="rect" id="node8" href="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1" title="WalletModel::WalletModel" alt="" coords="1720,142,1896,169"/>
+<area shape="rect" id="node10" href="$class_transaction_table_model.html#a6c10b7cab9804eee6df9e049a978dc62" title="TransactionTableModel\l::TransactionTableModel" alt="" coords="1494,68,1663,109"/>
+<area shape="rect" id="node12" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1485,201,1672,227"/>
+<area shape="rect" id="node13" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1726,201,1890,227"/>
+<area shape="rect" id="node15" href="$class_transaction_table_priv.html#a1f81da5d7cfb2aac03a5e18e6bc91792" title="TransactionTablePriv\l::refreshWallet" alt="" coords="691,5,839,47"/>
+<area shape="rect" id="node16" href="$class_transaction_table_priv.html#a27eb6d3e1f7717dd2cad80c5ce48f404" title="TransactionTablePriv\l::updateWallet" alt="" coords="457,71,605,112"/>
+<area shape="rect" id="node17" href="$class_transaction_table_model.html#abb93b1812f27622f67aed0302bc90ee6" title="TransactionTableModel\l::updateTransaction" alt="" coords="684,71,845,112"/>
+<area shape="rect" id="node18" href="$class_wallet_model.html#ad63ff7c16477dc5795c95b56593f2e9f" title="WalletModel::updateTransaction" alt="" coords="931,78,1144,105"/>
+<area shape="rect" id="node20" href="$class_transaction_table_priv.html#ac692aa6aa7820e80accc971c70e0fae5" title="TransactionTablePriv\l::index" alt="" coords="457,201,605,243"/>
+<area shape="rect" id="node21" href="$class_transaction_view.html#abe5793b86a4ea6f80a6d822ee878e646" title="TransactionView::contextualMenu" alt="" coords="653,253,876,279"/>
+<area shape="rect" id="node22" href="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f" title="TransactionView::TransactionView" alt="" coords="924,253,1151,279"/>
+</map>

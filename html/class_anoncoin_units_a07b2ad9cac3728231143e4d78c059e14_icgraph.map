@@ -1,0 +1,51 @@
+<map id="AnoncoinUnits::formatWithUnit" name="AnoncoinUnits::formatWithUnit">
+<area shape="rect" id="node2" href="$class_coin_control_dialog.html#a4fc60e89b097952ff22dc0f9c58c87d9" title="CoinControlDialog::\lupdateLabels" alt="" coords="299,189,436,230"/>
+<area shape="rect" id="node13" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="1888,129,2035,170"/>
+<area shape="rect" id="node25" href="$class_tx_view_delegate.html#affeec94c01339a5eeb31b648c41baf02" title="TxViewDelegate::paint" alt="" coords="289,499,445,525"/>
+<area shape="rect" id="node26" href="$class_overview_page.html#a2d7f91310a24a1612a9e1182e7b8788f" title="OverviewPage::setBalance" alt="" coords="276,600,459,627"/>
+<area shape="rect" id="node29" href="$class_payment_server.html#abe96a7c90755b8e1975e380b5a8228bd" title="PaymentServer::processPayment\lRequest" alt="" coords="257,673,477,714"/>
+<area shape="rect" id="node38" href="$class_receive_request_dialog.html#a8e1c0ee2fbacf42b4dc7ea05986c86c9" title="ReceiveRequestDialog\l::update" alt="" coords="289,797,446,838"/>
+<area shape="rect" id="node43" href="$class_send_coins_dialog.html#aa30d6c807c69320433f490fe6047383b" title="SendCoinsDialog::setBalance" alt="" coords="538,528,737,555"/>
+<area shape="rect" id="node45" href="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4" title="TransactionDesc::toHTML" alt="" coords="279,899,456,925"/>
+<area shape="rect" id="node3" href="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a" title="CoinControlDialog::\lsetModel" alt="" coords="569,189,706,230"/>
+<area shape="rect" id="node6" href="$class_coin_control_dialog.html#ae106a71c5b87ac8bea8c52e7c4f4a129" title="CoinControlDialog::\lbuttonSelectAllClicked" alt="" coords="560,123,715,165"/>
+<area shape="rect" id="node8" href="$class_coin_control_dialog.html#ac3c37dabd83f71d9c96bf5567fe85234" title="CoinControlDialog::\lviewItemChanged" alt="" coords="569,58,706,99"/>
+<area shape="rect" id="node9" href="$class_send_coins_dialog.html#ae4f429aabcaf309aa314b90049be2a74" title="SendCoinsDialog::coinControl\lUpdateLabels" alt="" coords="537,254,737,295"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49" title="SendCoinsDialog::coinControl\lButtonClicked" alt="" coords="823,130,1023,171"/>
+<area shape="rect" id="node5" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="1629,70,1826,111"/>
+<area shape="rect" id="node7" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="855,61,992,102"/>
+<area shape="rect" id="node10" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="1111,481,1297,508"/>
+<area shape="rect" id="node14" href="$class_send_coins_dialog.html#a3d680a76b967641115c6ff2fa83fb62a" title="SendCoinsDialog::addEntry" alt="" coords="1111,196,1297,223"/>
+<area shape="rect" id="node23" href="$class_send_coins_dialog.html#a3b834c739f7d02d8086a2bf58525c5f0" title="SendCoinsDialog::updateTabs\lAndLabels" alt="" coords="822,247,1025,289"/>
+<area shape="rect" id="node24" href="$class_send_coins_dialog.html#af13ddd00abec4f060632d887b5e838a3" title="SendCoinsDialog::coinControl\lFeatureChanged" alt="" coords="823,415,1023,457"/>
+<area shape="rect" id="node11" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1369,532,1556,559"/>
+<area shape="rect" id="node12" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1645,532,1809,559"/>
+<area shape="rect" id="node15" href="$class_send_coins_dialog.html#a127bddff45f49ff5e6e263efe218ae26" title="SendCoinsDialog::clear" alt="" coords="1382,196,1543,223"/>
+<area shape="rect" id="node18" href="$class_send_coins_dialog.html#aabd82a79bd2358493f36425f1d62136b" title="SendCoinsDialog::removeEntry" alt="" coords="1359,95,1567,121"/>
+<area shape="rect" id="node19" href="$class_send_coins_dialog.html#a920b2dbf121ca3cfac2adc56e96295f8" title="SendCoinsDialog::setAddress" alt="" coords="1363,247,1562,273"/>
+<area shape="rect" id="node21" href="$class_send_coins_dialog.html#a4440d15ced5d217baaad33a17d56b409" title="SendCoinsDialog::pasteEntry" alt="" coords="1365,297,1561,324"/>
+<area shape="rect" id="node16" href="$class_send_coins_dialog.html#a4879553d77d29f522ac92ac04580f4ad" title="SendCoinsDialog::reject" alt="" coords="1645,187,1810,213"/>
+<area shape="rect" id="node17" href="$class_send_coins_dialog.html#af2185c3d29e43d37c30669f0def46060" title="SendCoinsDialog::accept" alt="" coords="1641,136,1813,163"/>
+<area shape="rect" id="node20" href="$class_wallet_view.html#a2a70c2b00b097dd7b83b6915bb037ea3" title="Switch to send coins page. " alt="" coords="1619,237,1836,264"/>
+<area shape="rect" id="node22" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="1615,289,1840,330"/>
+<area shape="rect" id="node27" href="$class_overview_page.html#a2ed52a3a87e9c74fee38fa873c9bc71f" title="OverviewPage::setWalletModel" alt="" coords="820,583,1027,609"/>
+<area shape="rect" id="node28" href="$class_overview_page.html#a03f19b9afd9af4b72d9bba7b0c7cf900" title="OverviewPage::updateDisplayUnit" alt="" coords="525,579,749,605"/>
+<area shape="rect" id="node30" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="527,680,747,707"/>
+<area shape="rect" id="node36" href="$class_payment_server.html#a5b8e2e6380142fb7ad631400bcfc6f28" title="PaymentServer::netRequest\lFinished" alt="" coords="543,731,732,773"/>
+<area shape="rect" id="node31" href="$class_payment_server.html#af795e3c318556c833792e530b279efc9" title="PaymentServer::eventFilter" alt="" coords="831,633,1015,660"/>
+<area shape="rect" id="node32" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="1119,760,1289,787"/>
+<area shape="rect" id="node34" href="$class_payment_server.html#a6ee6e29e1255605582459463d195a651" title="PaymentServer::handleURIConnection" alt="" coords="797,684,1049,711"/>
+<area shape="rect" id="node33" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="1387,753,1539,794"/>
+<area shape="rect" id="node35" href="$class_payment_server.html#a4a66f55c11f4757b121179d5d6988ab2" title="PaymentServer::PaymentServer" alt="" coords="1097,684,1311,711"/>
+<area shape="rect" id="node37" href="$class_payment_server.html#a2f94f2c3e12d03199870e17008535302" title="PaymentServer::initNetManager" alt="" coords="817,785,1029,812"/>
+<area shape="rect" id="node39" href="$class_receive_request_dialog.html#ad57b3bf409346660842360836fd8569d" title="ReceiveRequestDialog\l::setModel" alt="" coords="559,862,716,903"/>
+<area shape="rect" id="node42" href="$class_receive_request_dialog.html#a43344270ef71e68ad9c7a931cc0ca9ed" title="ReceiveRequestDialog\l::setInfo" alt="" coords="559,797,716,838"/>
+<area shape="rect" id="node40" href="$class_receive_coins_dialog.html#a5eabd6106c8e3b275305b84c0303f314" title="ReceiveCoinsDialog\l::on_recentRequestsView\l_doubleClicked" alt="" coords="837,840,1010,896"/>
+<area shape="rect" id="node41" href="$class_receive_coins_dialog.html#a56df78045de75af55f4c4045ad4b7fcd" title="ReceiveCoinsDialog\l::on_showRequestButton\l_clicked" alt="" coords="1119,840,1289,896"/>
+<area shape="rect" id="node44" href="$class_send_coins_dialog.html#a74815ad8502b126200b6fd2e59e9f042" title="SendCoinsDialog::updateDisplayUnit" alt="" coords="803,481,1043,508"/>
+<area shape="rect" id="node46" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="563,927,711,969"/>
+<area shape="rect" id="node47" href="$class_transaction_table_model.html#a416d0751ab9a95ecd87d3f7bed4f0b06" title="TransactionTableModel\l::data" alt="" coords="843,927,1004,969"/>
+<area shape="rect" id="node48" href="$class_transaction_table_model.html#aaaf3cea9a5373fff771ce81d2f26de6e" title="TransactionTableModel\l::index" alt="" coords="1123,927,1285,969"/>
+<area shape="rect" id="node49" href="$class_transaction_table_model.html#a5899d9eda6465bfb16d2846b6459567e" title="TransactionTableModel\l::updateConfirmations" alt="" coords="1382,894,1543,935"/>
+<area shape="rect" id="node50" href="$class_transaction_table_model.html#a8b73ff7d72ec2dd69790bc61bbe8575e" title="TransactionTableModel\l::updateDisplayUnit" alt="" coords="1382,959,1543,1001"/>
+</map>

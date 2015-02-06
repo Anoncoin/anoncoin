@@ -1,0 +1,8 @@
+<map id="ReceiveRequestDialog::on_btnCopyURI_clicked" name="ReceiveRequestDialog::on_btnCopyURI_clicked">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07" title="GUIUtil::setClipboard" alt="" coords="247,5,393,32"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#a87288c8a7c8e7ca91358dfba17fd402b" title="GUIUtil::formatAnoncoinURI" alt="" coords="225,56,415,83"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="463,56,616,83"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="677,5,819,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="673,56,823,83"/>
+<area shape="rect" id="node7" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="664,107,832,133"/>
+</map>

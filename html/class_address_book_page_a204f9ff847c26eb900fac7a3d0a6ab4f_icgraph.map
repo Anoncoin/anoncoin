@@ -1,0 +1,7 @@
+<map id="AddressBookPage::getReturnValue" name="AddressBookPage::getReturnValue">
+<area shape="rect" id="node2" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="258,5,439,47"/>
+<area shape="rect" id="node4" href="$class_send_coins_entry.html#ac661741d286d9f3db32f78bd22125cb0" title="SendCoinsEntry::on\l_addressBookButton_clicked" alt="" coords="252,71,445,112"/>
+<area shape="rect" id="node5" href="$class_sign_verify_message_dialog.html#a792a3bd647958c8ae74286c5ab3cf205" title="SignVerifyMessageDialog\l::on_addressBookButton\l_SM_clicked" alt="" coords="261,137,436,193"/>
+<area shape="rect" id="node6" href="$class_sign_verify_message_dialog.html#a90ceb00084c68da5e9c481ba0841d976" title="SignVerifyMessageDialog\l::on_addressBookButton\l_VM_clicked" alt="" coords="261,217,436,273"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="493,5,636,47"/>
+</map>

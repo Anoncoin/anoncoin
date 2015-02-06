@@ -1,0 +1,41 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$_benchmark_8cpp.html#a270b3d0914e20b5c58ab92bc2823c1d1" title="Test_RunAllTests" alt="" coords="104,233,231,260"/>
+<area shape="rect" id="node3" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="341,5,409,32"/>
+<area shape="rect" id="node4" href="$_benchmark_8cpp.html#abea6adf7c4f25b79783331a450f41e26" title="GetTestModulus" alt="" coords="551,132,671,159"/>
+<area shape="rect" id="node5" href="$_benchmark_8cpp.html#a48226d1e1fcd18e30f9ddfbad107150f" title="LogTestResult" alt="" coords="321,107,429,133"/>
+<area shape="rect" id="node6" href="$_benchmark_8cpp.html#a412b49834222050972c1f0f14e793646" title="Test_GenRSAModulus" alt="" coords="296,157,455,184"/>
+<area shape="rect" id="node7" href="$_benchmark_8cpp.html#a8a015b45c383fc7458a6317780a6c1bf" title="Test_CalcParamSizes" alt="" coords="299,56,452,83"/>
+<area shape="rect" id="node9" href="$_benchmark_8cpp.html#a6047d42efd0ce75ebd8486a5604c31a8" title="Test_GenerateGroupParams" alt="" coords="279,259,472,285"/>
+<area shape="rect" id="node22" href="$_benchmark_8cpp.html#a11ed377b48c45c1a71fb9fead2494516" title="Test_ParamGen" alt="" coords="315,351,435,377"/>
+<area shape="rect" id="node26" href="$_benchmark_8cpp.html#a5ff6a5df003f416b1260dfdbfd7693be" title="Test_MintCoin" alt="" coords="557,553,665,580"/>
+<area shape="rect" id="node27" href="$_benchmark_8cpp.html#a8223c6bd6d6bbaa0b3973dca9eaebd65" title="Test_Accumulator" alt="" coords="311,844,440,871"/>
+<area shape="rect" id="node32" href="$_benchmark_8cpp.html#ad4c256613fa000fd3d3ec247021a6522" title="Test_MintAndSpend" alt="" coords="304,604,447,631"/>
+<area shape="rect" id="node8" href="$namespacelibzerocoin.html#af84d8d406285f665c4e8c60443a57c97" title="Calculate field/group parameter sizes based on a security level. " alt="" coords="520,49,703,90"/>
+<area shape="rect" id="node10" href="$namespacelibzerocoin.html#a104c1a4d313174893b0de7595bfa7baa" title="Deterministically compute a set of group parameters using NIST procedures. " alt="" coords="526,234,697,275"/>
+<area shape="rect" id="node17" href="$classlibzerocoin_1_1_integer_group_params.html#a2cdf226388cc4594b1df1572af5e8e1d" title="libzerocoin::IntegerGroup\lParams::g" alt="" coords="765,417,937,458"/>
+<area shape="rect" id="node21" href="$namespacelibzerocoin.html#a42d9c5db1be9bd308b0729f8018bfb62" title="Format a seed string by hashing several values. " alt="" coords="1275,183,1453,209"/>
+<area shape="rect" id="node11" href="$namespacelibzerocoin.html#a133fd00db4441ee2c63f1c6be324c867" title="Deterministically compute a group description using NIST procedures. " alt="" coords="759,234,942,275"/>
+<area shape="rect" id="node18" href="$namespacelibzerocoin.html#a75a628181a2a566d229108b51bf0cf57" title="Deterministically compute a generator for a given group. " alt="" coords="1273,591,1455,633"/>
+<area shape="rect" id="node20" href="$classlibzerocoin_1_1_integer_group_params.html#a5e7c9d164b62a40be2a791e6f015f755" title="libzerocoin::IntegerGroup\lParams::h" alt="" coords="765,299,937,341"/>
+<area shape="rect" id="node12" href="$namespacelibzerocoin.html#a1393d4b16af3b390446af86aea45c7ae" title="Deterministically compute a random prime number. " alt="" coords="1013,234,1209,275"/>
+<area shape="rect" id="node13" href="$namespacelibzerocoin.html#a7ce8281b4f89cff21bd6ce8fc3088585" title="libzerocoin::generateInteger\lFromSeed" alt="" coords="1271,299,1457,341"/>
+<area shape="rect" id="node16" href="$namespacelibzerocoin.html#aeda115c7208be9405f951779ec131494" title="Determines whether a uint32_t is a prime through trial division. " alt="" coords="1279,234,1449,275"/>
+<area shape="rect" id="node14" href="$namespacelibzerocoin.html#a2ab9735f14a3fdcdf18e0fd410a6e701" title="libzerocoin::calculateHash" alt="" coords="1535,439,1713,465"/>
+<area shape="rect" id="node15" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="1791,628,1949,655"/>
+<area shape="rect" id="node19" href="$namespacelibzerocoin.html#a49d954a2ad7e4abe50ae454c900d915a" title="Format a seed string by hashing several values. " alt="" coords="1505,603,1743,629"/>
+<area shape="rect" id="node23" href="$class_timer.html#adcc2a315e6a05332a9f6eeef3fad706b" title="Timer::start" alt="" coords="806,584,895,611"/>
+<area shape="rect" id="node24" href="$class_timer.html#a2e08b7392107f224dc5bbc8e1dcfa124" title="Timer::stop" alt="" coords="806,483,895,509"/>
+<area shape="rect" id="node25" href="$class_timer.html#a5c57119ca6ae8138b1b4b576685b4ab5" title="Timer::duration" alt="" coords="795,533,907,560"/>
+<area shape="rect" id="node28" href="$classlibzerocoin_1_1_private_coin.html#a11f0047e01af467bba8d9fde58f88798" title="libzerocoin::PrivateCoin\l::getPublicCoin" alt="" coords="530,771,693,813"/>
+<area shape="rect" id="node29" href="$classlibzerocoin_1_1_accumulator.html#ab50983cc6294ddfa7e23a85a75f5fc2e" title="Get the accumulator result. " alt="" coords="1027,895,1194,937"/>
+<area shape="rect" id="node30" href="$classlibzerocoin_1_1_accumulator_witness.html#a479f3a94be8a7976eefb6a9b86840b1a" title="libzerocoin::Accumulator\lWitness::getValue" alt="" coords="528,954,695,995"/>
+<area shape="rect" id="node31" href="$classlibzerocoin_1_1_accumulator_witness.html#a62539f46936225e0af0cdb072c3e04dc" title="Checks that this is a witness to the accumulation of coin. " alt="" coords="528,837,695,878"/>
+<area shape="rect" id="node33" href="$classlibzerocoin_1_1_coin_spend.html#a9048dabc1be9ef65aeefb41e92e2f53c" title="libzerocoin::CoinSpend\l::Verify" alt="" coords="532,706,691,747"/>
+<area shape="rect" id="node34" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a846cfaed719d7d1513e899f4af124948" title="Verifies the proof. " alt="" coords="751,766,951,807"/>
+<area shape="rect" id="node36" href="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#a65468d15a28daaa82e6d6275459c95ab" title="Verifies that a commitment c is accumulated in accumulated a. " alt="" coords="763,831,939,873"/>
+<area shape="rect" id="node37" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#a570a8d439385cc3b18701c4a252ff104" title="Verifies the Signature of knowledge. " alt="" coords="751,635,951,677"/>
+<area shape="rect" id="node40" href="$classlibzerocoin_1_1_accumulator.html#aa12b4aae357d55d3f4c3ba75856a6071" title="libzerocoin::Accumulator\l::getDenomination" alt="" coords="767,701,934,742"/>
+<area shape="rect" id="node35" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a928e409111b60d5fe222ea1559a9cb73" title="libzerocoin::CommitmentProof\lOfKnowledge::calculateChallenge" alt="" coords="1513,725,1735,766"/>
+<area shape="rect" id="node38" href="$namespacelibzerocoin.html#a860d36a6fac4250ebf4c5dad71602091" title="Deterministically derives coin commitment group generators g &amp; h from a serial number (and group modu..." alt="" coords="1013,591,1209,633"/>
+<area shape="rect" id="node39" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#acff43e9b20208f24d0dfa870fc5a78c2" title="libzerocoin::SerialNumber\lSignatureOfKnowledge::challenge\lCalculation" alt="" coords="999,511,1223,567"/>
+</map>

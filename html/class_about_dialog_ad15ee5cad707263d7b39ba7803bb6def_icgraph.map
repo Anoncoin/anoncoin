@@ -1,0 +1,5 @@
+<map id="AboutDialog::setModel" name="AboutDialog::setModel">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#a27b91ac353f3729cf916384e77476423" title="Show about dialog. " alt="" coords="209,5,395,32"/>
+<area shape="rect" id="node3" href="$class_anoncoin_g_u_i.html#a8aa41c17fd6005652003d93330dbf7fb" title="Create the main UI actions. " alt="" coords="443,5,632,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_g_u_i.html#a82d1cf09f42a7c169b3e9c8d3e54a3d0" title="AnoncoinGUI::AnoncoinGUI" alt="" coords="680,5,868,32"/>
+</map>

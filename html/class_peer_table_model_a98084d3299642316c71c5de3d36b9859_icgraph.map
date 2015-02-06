@@ -1,0 +1,11 @@
+<map id="PeerTableModel::getNodeStats" name="PeerTableModel::getNodeStats">
+<area shape="rect" id="node2" href="$class_r_p_c_console.html#a2487fa6a90cddcbb17ae4bb13ecc5359" title="Handle selection of peer in peers list. " alt="" coords="282,21,467,47"/>
+<area shape="rect" id="node10" href="$class_r_p_c_console.html#af952ebc6484c8f7d1262fa0bceed41bf" title="Handle updated peer information. " alt="" coords="261,71,488,98"/>
+<area shape="rect" id="node3" href="$class_r_p_c_console.html#a355349a33664a07628e9ca22a60f5fa7" title="RPCConsole::setClientModel" alt="" coords="536,46,731,73"/>
+<area shape="rect" id="node4" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="779,46,976,73"/>
+<area shape="rect" id="node5" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="1024,5,1167,47"/>
+<area shape="rect" id="node7" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="1024,71,1167,112"/>
+<area shape="rect" id="node6" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1261,13,1311,39"/>
+<area shape="rect" id="node8" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="1215,71,1357,112"/>
+<area shape="rect" id="node9" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="1405,71,1556,112"/>
+</map>

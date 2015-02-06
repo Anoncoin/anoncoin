@@ -1,0 +1,5 @@
+<map id="CWalletDB::ReadPool" name="CWalletDB::ReadPool">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a9921854840668a1856998f041177dd2b" title="CWallet::ReserveKeyFromKeyPool" alt="" coords="207,5,436,32"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#afb9667058b54ae153b0897684ddb9f20" title="CWallet::GetAllReserveKeys" alt="" coords="225,56,417,83"/>
+<area shape="rect" id="node4" href="$rpcdump_8cpp.html#a831ddf746d4f2500ba6f6c07f63445cd" title="dumpwallet" alt="" coords="484,56,573,83"/>
+</map>

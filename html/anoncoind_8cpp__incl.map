@@ -1,0 +1,23 @@
+<map id="src/anoncoind.cpp" name="src/anoncoind.cpp">
+<area shape="rect" id="node2" href="$rpcserver_8h.html" title="rpcserver.h" alt="" coords="831,475,921,502"/>
+<area shape="rect" id="node18" href="$rpcclient_8h.html" title="rpcclient.h" alt="" coords="305,557,388,584"/>
+<area shape="rect" id="node19" href="$init_8h.html" title="init.h" alt="" coords="1092,169,1143,196"/>
+<area shape="rect" id="node20" href="$main_8h.html" title="main.h" alt="" coords="2814,87,2877,114"/>
+<area shape="rect" id="node31" href="$util_8h.html" title="util.h" alt="" coords="2236,475,2287,502"/>
+<area shape="rect" id="node46" href="$noui_8h.html" title="noui.h" alt="" coords="2901,87,2960,114"/>
+<area shape="rect" id="node47" href="$ui__interface_8h.html" title="ui_interface.h" alt="" coords="1222,393,1325,420"/>
+<area shape="rect" id="node3" href="$uint256_8h.html" title="uint256.h" alt="" coords="3193,557,3271,584"/>
+<area shape="rect" id="node9" href="$rpcprotocol_8h.html" title="rpcprotocol.h" alt="" coords="715,557,813,584"/>
+<area shape="rect" id="node21" href="$bignum_8h.html" title="bignum.h" alt="" coords="3324,475,3401,502"/>
+<area shape="rect" id="node26" href="$clientversion_8h.html" title="clientversion.h" alt="" coords="3295,557,3401,584"/>
+<area shape="rect" id="node27" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="3389,393,3499,420"/>
+<area shape="rect" id="node28" href="$coins_8h.html" title="coins.h" alt="" coords="2992,244,3056,271"/>
+<area shape="rect" id="node29" href="$core_8h.html" title="core.h" alt="" coords="2919,319,2977,345"/>
+<area shape="rect" id="node30" href="$script_8h.html" title="script.h" alt="" coords="2558,393,2623,420"/>
+<area shape="rect" id="node42" href="$net_8h.html" title="net.h" alt="" coords="2482,393,2534,420"/>
+<area shape="rect" id="node43" href="$sync_8h.html" title="sync.h" alt="" coords="2733,475,2793,502"/>
+<area shape="rect" id="node45" href="$txmempool_8h.html" title="txmempool.h" alt="" coords="2753,169,2852,196"/>
+<area shape="rect" id="node22" href="$serialize_8h.html" title="serialize.h" alt="" coords="3036,557,3119,584"/>
+<area shape="rect" id="node32" href="$compat_8h.html" title="compat.h" alt="" coords="1445,557,1523,584"/>
+<area shape="rect" id="node34" href="$tinyformat_8h.html" title="tinyformat.h" alt="" coords="2131,557,2223,584"/>
+</map>

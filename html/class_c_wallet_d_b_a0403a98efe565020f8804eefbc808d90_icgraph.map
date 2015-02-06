@@ -1,0 +1,14 @@
+<map id="CWalletDB::EraseDestData" name="CWalletDB::EraseDestData">
+<area shape="rect" id="node2" href="$class_c_wallet.html#ac6542da8493cbb958068b7a01c05b631" title="CWallet::DelAddressBook" alt="" coords="239,78,415,105"/>
+<area shape="rect" id="node5" href="$class_c_wallet.html#a9a03cf9972842588178387839f0ded3c" title="Erases a destination data tuple in the store and on disk. " alt="" coords="243,135,410,162"/>
+<area shape="rect" id="node3" href="$class_address_table_model.html#a5c6bd467fd1fc499d126fe2b7380ce5c" title="AddressTableModel::\lsetData" alt="" coords="478,5,626,47"/>
+<area shape="rect" id="node4" href="$class_address_table_model.html#a682e6e3374d65543e49769906c8916e5" title="AddressTableModel::\lremoveRows" alt="" coords="478,71,626,112"/>
+<area shape="rect" id="node6" href="$class_wallet_model.html#a88d44bc0994c1701386f63b1f266637f" title="WalletModel::saveReceive\lRequest" alt="" coords="463,136,641,177"/>
+<area shape="rect" id="node7" href="$class_recent_requests_table_model.html#a63504be44ff9d33d5c508f6303622e5a" title="RecentRequestsTableModel\l::removeRows" alt="" coords="689,85,880,127"/>
+<area shape="rect" id="node9" href="$class_recent_requests_table_model.html#ae9866ffd5aed0f041437996410928edd" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="689,187,880,228"/>
+<area shape="rect" id="node8" href="$class_receive_coins_dialog.html#a0cd8bb4c63c4b9bd3b27d9a4d6e08cfb" title="ReceiveCoinsDialog\l::on_removeRequestButton\l_clicked" alt="" coords="935,59,1119,115"/>
+<area shape="rect" id="node10" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="936,140,1117,181"/>
+<area shape="rect" id="node12" href="$class_recent_requests_table_model.html#ab3ef691b8c34e6d6e5ae0bdf7953a360" title="RecentRequestsTableModel\l::RecentRequestsTableModel" alt="" coords="928,205,1125,247"/>
+<area shape="rect" id="node13" href="$class_recent_requests_table_model.html#aad0b9435284ed1f4b67852b34d7694a9" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="931,271,1122,312"/>
+<area shape="rect" id="node11" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="1173,140,1316,181"/>
+</map>

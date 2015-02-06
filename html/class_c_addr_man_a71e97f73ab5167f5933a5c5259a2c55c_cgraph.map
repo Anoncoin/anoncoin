@@ -1,0 +1,11 @@
+<map id="CAddrMan::IMPLEMENT_SERIALIZE" name="CAddrMan::IMPLEMENT_SERIALIZE">
+<area shape="rect" id="node2" href="$class_c_addr_info.html#ae53c2174bdbc070bb1777cfabecaddda" title="CAddrInfo::GetNewBucket" alt="" coords="226,81,405,108"/>
+<area shape="rect" id="node10" href="$class_c_addr_info.html#a3732720a8d657d1dc8163e896cc480b4" title="CAddrInfo::GetTriedBucket" alt="" coords="224,132,407,159"/>
+<area shape="rect" id="node3" href="$class_c_net_addr.html#af196f306433562cb088dc83fd314a267" title="CNetAddr::GetGroup" alt="" coords="455,31,601,57"/>
+<area shape="rect" id="node7" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="501,81,555,108"/>
+<area shape="rect" id="node8" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="457,132,599,159"/>
+<area shape="rect" id="node9" href="$class_c_data_stream.html#a1c22182691412ed9e0a30b719d388f31" title="CDataStream::end" alt="" coords="462,183,594,209"/>
+<area shape="rect" id="node4" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="649,5,721,32"/>
+<area shape="rect" id="node6" href="$net_8cpp.html#a16fa1bd4d34c4c29c90903fc3cdf7517" title="check whether a given address is potentially local " alt="" coords="653,56,717,83"/>
+<area shape="rect" id="node5" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="769,5,853,32"/>
+</map>

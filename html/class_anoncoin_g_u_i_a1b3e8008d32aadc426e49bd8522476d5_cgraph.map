@@ -1,0 +1,5 @@
+<map id="AnoncoinGUI::toggleHidden" name="AnoncoinGUI::toggleHidden">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#a4c87902dc6d0585e0c06f31c54e03223" title="Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHid..." alt="" coords="240,5,431,47"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#a0b7266e2b8e7de5f5fd1c7ddb9e5b637" title="GUIUtil::isObscured" alt="" coords="479,13,619,39"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#ab2e7ef0aa9a1ad3f86d67a3f596b6fc4" title="GUIUtil::checkPoint" alt="" coords="667,13,804,39"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="src/protocol.h" name="src/protocol.h">
+<area shape="rect" id="node2" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="2381,80,2491,107"/>
+<area shape="rect" id="node4" href="$serialize_8h.html" title="serialize.h" alt="" coords="1831,229,1913,256"/>
+<area shape="rect" id="node22" href="$uint256_8h.html" title="uint256.h" alt="" coords="2567,229,2644,256"/>
+<area shape="rect" id="node27" href="$netbase_8h.html" title="netbase.h" alt="" coords="1832,155,1912,181"/>
+<area shape="rect" id="node3" href="$bignum_8h.html" title="bignum.h" alt="" coords="2248,155,2325,181"/>
+<area shape="rect" id="node24" href="$version_8h.html" title="version.h" alt="" coords="2415,229,2491,256"/>
+<area shape="rect" id="node5" href="$allocators_8h.html" title="allocators.h" alt="" coords="1616,311,1707,338"/>
+<area shape="rect" id="node28" href="$compat_8h.html" title="compat.h" alt="" coords="616,229,693,256"/>
+</map>

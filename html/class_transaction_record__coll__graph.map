@@ -1,0 +1,5 @@
+<map id="TransactionRecord" name="TransactionRecord">
+<area shape="rect" id="node2" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="24,81,89,108"/>
+<area shape="rect" id="node3" href="$classbase__uint.html" title="Base class without constructors for uint256 and uint160. " alt="" coords="5,5,108,32"/>
+<area shape="rect" id="node4" href="$class_transaction_status.html" title="UI model for transaction status. " alt="" coords="113,81,243,108"/>
+</map>

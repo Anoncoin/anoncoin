@@ -1,0 +1,4 @@
+<map id="SendCoinsDialog::handlePaymentRequest" name="SendCoinsDialog::handlePaymentRequest">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="279,5,467,47"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="515,5,712,47"/>
+</map>

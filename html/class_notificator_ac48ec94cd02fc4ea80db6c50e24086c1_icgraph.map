@@ -1,0 +1,10 @@
+<map id="Notificator::notifySystray" name="Notificator::notifySystray">
+<area shape="rect" id="node2" href="$class_notificator.html#ae08e1e7e85ddc4690f307649021f7fdc" title="Show notification message. " alt="" coords="219,46,340,73"/>
+<area shape="rect" id="node3" href="$class_anoncoin_g_u_i.html#acad2df2e1c6e25865af8d8cd2f70960b" title="Notify the user of an event from the core network or transaction handling code. " alt="" coords="388,46,551,73"/>
+<area shape="rect" id="node4" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="599,46,796,73"/>
+<area shape="rect" id="node5" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="844,5,987,47"/>
+<area shape="rect" id="node7" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="844,71,987,112"/>
+<area shape="rect" id="node6" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1081,13,1131,39"/>
+<area shape="rect" id="node8" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="1035,71,1177,112"/>
+<area shape="rect" id="node9" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="1225,71,1376,112"/>
+</map>

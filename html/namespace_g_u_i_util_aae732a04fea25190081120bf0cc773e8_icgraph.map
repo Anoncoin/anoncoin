@@ -1,0 +1,34 @@
+<map id="GUIUtil::dateTimeStr" name="GUIUtil::dateTimeStr">
+<area shape="rect" id="node2" href="$class_coin_control_dialog.html#aadea33050e5c1efd5eae8d2fcfa721f9" title="CoinControlDialog::\lupdateView" alt="" coords="225,71,363,112"/>
+<area shape="rect" id="node9" href="$namespace_g_u_i_util.html#ad182b65c8060da6b6c99b8574820084d" title="GUIUtil::dateTimeStr" alt="" coords="221,137,367,163"/>
+<area shape="rect" id="node10" href="$class_tx_view_delegate.html#affeec94c01339a5eeb31b648c41baf02" title="TxViewDelegate::paint" alt="" coords="216,187,372,214"/>
+<area shape="rect" id="node11" href="$class_recent_requests_table_model.html#a899a483b2d6fd33a034d2781c5d638b7" title="RecentRequestsTableModel\l::data" alt="" coords="199,239,389,280"/>
+<area shape="rect" id="node18" href="$class_transaction_desc.html#afcd4db6bf3a341cafe06a57ec31b7531" title="TransactionDesc::FormatTx\lStatus" alt="" coords="201,304,387,345"/>
+<area shape="rect" id="node19" href="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4" title="TransactionDesc::toHTML" alt="" coords="444,355,621,382"/>
+<area shape="rect" id="node31" href="$class_transaction_table_model.html#aac6d477a653da15d63cbdf5d6aaba463" title="TransactionTableModel\l::formatTxStatus" alt="" coords="452,413,613,455"/>
+<area shape="rect" id="node33" href="$class_transaction_table_model.html#a78dc7fc1522f909b8982cbc0db267a35" title="TransactionTableModel\l::formatTxDate" alt="" coords="213,472,375,513"/>
+<area shape="rect" id="node3" href="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a" title="CoinControlDialog::\lsetModel" alt="" coords="464,5,601,47"/>
+<area shape="rect" id="node6" href="$class_coin_control_dialog.html#a1990d478f3ffba666c358a4f1bd395ec" title="CoinControlDialog::\lradioTreeMode" alt="" coords="464,71,601,112"/>
+<area shape="rect" id="node8" href="$class_coin_control_dialog.html#a775c6d290cb63667a434b09072094533" title="CoinControlDialog::\lradioListMode" alt="" coords="464,136,601,177"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49" title="SendCoinsDialog::coinControl\lButtonClicked" alt="" coords="676,5,876,47"/>
+<area shape="rect" id="node5" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="924,5,1121,47"/>
+<area shape="rect" id="node7" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="707,79,845,120"/>
+<area shape="rect" id="node12" href="$class_receive_coins_dialog.html#adcf53aced7dfa041a55278b4807a20a2" title="ReceiveCoinsDialog\l::copyColumnToClipboard" alt="" coords="445,213,621,255"/>
+<area shape="rect" id="node17" href="$class_recent_requests_table_model.html#aad0b9435284ed1f4b67852b34d7694a9" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="437,279,628,320"/>
+<area shape="rect" id="node13" href="$class_receive_coins_dialog.html#abdd69012e01da1d61b0bf622f9e156b1" title="ReceiveCoinsDialog\l::copyLabel" alt="" coords="705,148,847,189"/>
+<area shape="rect" id="node15" href="$class_receive_coins_dialog.html#a99b4d3cbb14744e8b3eff41f83413cb7" title="ReceiveCoinsDialog\l::copyMessage" alt="" coords="705,213,847,255"/>
+<area shape="rect" id="node16" href="$class_receive_coins_dialog.html#a3f8309dfaa944576bae760ba33222463" title="ReceiveCoinsDialog\l::copyAmount" alt="" coords="705,279,847,320"/>
+<area shape="rect" id="node14" href="$class_receive_coins_dialog.html#a0c982b94b7f23da8f208d09904352f89" title="ReceiveCoinsDialog\l::ReceiveCoinsDialog" alt="" coords="948,213,1097,255"/>
+<area shape="rect" id="node20" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="702,348,850,389"/>
+<area shape="rect" id="node21" href="$class_transaction_table_model.html#a416d0751ab9a95ecd87d3f7bed4f0b06" title="TransactionTableModel\l::data" alt="" coords="942,413,1103,455"/>
+<area shape="rect" id="node22" href="$class_transaction_table_model.html#aaaf3cea9a5373fff771ce81d2f26de6e" title="TransactionTableModel\l::index" alt="" coords="1169,413,1331,455"/>
+<area shape="rect" id="node23" href="$class_transaction_table_model.html#a5899d9eda6465bfb16d2846b6459567e" title="TransactionTableModel\l::updateConfirmations" alt="" coords="1417,348,1579,389"/>
+<area shape="rect" id="node26" href="$class_transaction_table_model.html#a8b73ff7d72ec2dd69790bc61bbe8575e" title="TransactionTableModel\l::updateDisplayUnit" alt="" coords="1417,413,1579,455"/>
+<area shape="rect" id="node28" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="1379,479,1617,506"/>
+<area shape="rect" id="node24" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="1673,348,1845,389"/>
+<area shape="rect" id="node25" href="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1" title="WalletModel::WalletModel" alt="" coords="1900,355,2076,382"/>
+<area shape="rect" id="node27" href="$class_transaction_table_model.html#a6c10b7cab9804eee6df9e049a978dc62" title="TransactionTableModel\l::TransactionTableModel" alt="" coords="1674,413,1843,455"/>
+<area shape="rect" id="node29" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1665,479,1852,506"/>
+<area shape="rect" id="node30" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1906,479,2070,506"/>
+<area shape="rect" id="node32" href="$class_transaction_table_model.html#a55917dc63edf980cf6f81ed17fbb9bca" title="TransactionTableModel\l::formatTooltip" alt="" coords="695,413,857,455"/>
+</map>

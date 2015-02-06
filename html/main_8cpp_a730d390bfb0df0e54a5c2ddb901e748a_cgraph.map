@@ -1,0 +1,16 @@
+<map id="CheckForkWarningConditions" name="CheckForkWarningConditions">
+<area shape="rect" id="node2" href="$main_8cpp.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="269,135,425,161"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="530,5,642,32"/>
+<area shape="rect" id="node7" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="540,224,632,251"/>
+<area shape="rect" id="node10" href="$class_c_block_index.html#a915646e337c4b50b994c51d7ce1f681e" title="CBlockIndex::GetBlockWork" alt="" coords="252,261,441,288"/>
+<area shape="rect" id="node12" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="315,312,379,339"/>
+<area shape="rect" id="node13" href="$util_8cpp.html#adf94c00a5ac719c92a2f1bb2f8b2167f" title="runCommand" alt="" coords="295,363,398,389"/>
+<area shape="rect" id="node14" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="278,413,415,440"/>
+<area shape="rect" id="node4" href="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0" title="Checkpoints::GetTotalBlocks\lEstimate" alt="" coords="489,57,683,98"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="549,123,623,149"/>
+<area shape="rect" id="node9" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="492,173,680,200"/>
+<area shape="rect" id="node5" href="$namespace_checkpoints.html#a63e87603e80d739b1aefa062f9bd337e" title="Checkpoints::Checkpoints" alt="" coords="731,64,907,91"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="955,64,1023,91"/>
+<area shape="rect" id="node11" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="506,275,666,301"/>
+<area shape="rect" id="node15" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="520,413,652,440"/>
+</map>

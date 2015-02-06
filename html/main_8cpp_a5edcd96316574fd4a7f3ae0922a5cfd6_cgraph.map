@@ -1,0 +1,9 @@
+<map id="IsInitialBlockDownload" name="IsInitialBlockDownload">
+<area shape="rect" id="node2" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="250,5,362,32"/>
+<area shape="rect" id="node3" href="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0" title="Checkpoints::GetTotalBlocks\lEstimate" alt="" coords="209,57,403,98"/>
+<area shape="rect" id="node6" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="260,123,352,149"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="269,173,343,200"/>
+<area shape="rect" id="node8" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="212,224,400,251"/>
+<area shape="rect" id="node4" href="$namespace_checkpoints.html#a63e87603e80d739b1aefa062f9bd337e" title="Checkpoints::Checkpoints" alt="" coords="451,64,627,91"/>
+<area shape="rect" id="node5" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="675,64,743,91"/>
+</map>

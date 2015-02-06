@@ -1,0 +1,8 @@
+<map id="AnoncoinGUI::setNumBlocks" name="AnoncoinGUI::setNumBlocks">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="247,46,444,73"/>
+<area shape="rect" id="node3" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="492,5,635,47"/>
+<area shape="rect" id="node5" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="492,71,635,112"/>
+<area shape="rect" id="node4" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="729,13,779,39"/>
+<area shape="rect" id="node6" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="683,71,825,112"/>
+<area shape="rect" id="node7" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="873,71,1024,112"/>
+</map>

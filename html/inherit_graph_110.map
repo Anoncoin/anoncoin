@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_c_unsigned_alert.html" title="Alerts are for notifying old versions if they become too obsolete and need to upgrade. " alt="" coords="5,5,121,32"/>
+<area shape="rect" id="node2" href="$class_c_alert.html" title="An alert is a combination of a serialized CUnsignedAlert and a signature. " alt="" coords="169,5,228,32"/>
+</map>

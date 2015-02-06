@@ -1,0 +1,9 @@
+<map id="GUIUtil::TableViewLastColumnResizingFixer::disconnectViewHeadersSignals" name="GUIUtil::TableViewLastColumnResizingFixer::disconnectViewHeadersSignals">
+<area shape="rect" id="node2" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a31422ff98c30c95c01dba5bbb8ccbcae" title="GUIUtil::TableViewLastColumn\lResizingFixer::on_sectionResized" alt="" coords="307,129,529,171"/>
+<area shape="rect" id="node8" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a93f3b32cf06688099875a1c9d2df57f2" title="GUIUtil::TableViewLastColumn\lResizingFixer::on_geometriesChanged" alt="" coords="1175,5,1427,47"/>
+<area shape="rect" id="node3" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ac5622cca5767d788033fff5d54629d7f" title="GUIUtil::TableViewLastColumn\lResizingFixer::adjustTableColumnsWidth" alt="" coords="577,253,843,295"/>
+<area shape="rect" id="node4" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a284107daa657b2d34a196b886538c02c" title="GUIUtil::TableViewLastColumn\lResizingFixer::resizeColumn" alt="" coords="1481,64,1686,105"/>
+<area shape="rect" id="node5" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ad0c6ff117107634ae8d37f056d27e711" title="GUIUtil::TableViewLastColumn\lResizingFixer::getAvailableWidth\lForColumn" alt="" coords="1475,187,1692,243"/>
+<area shape="rect" id="node6" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a9abbf570cbaad95acfd772ddf712cbbb" title="GUIUtil::TableViewLastColumn\lResizingFixer::getColumnsWidth" alt="" coords="1740,195,1956,236"/>
+<area shape="rect" id="node7" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ab01fe3dbf021a9306ec74afda41d6f45" title="GUIUtil::TableViewLastColumn\lResizingFixer::connectViewHeaders\lSignals" alt="" coords="891,122,1127,178"/>
+</map>

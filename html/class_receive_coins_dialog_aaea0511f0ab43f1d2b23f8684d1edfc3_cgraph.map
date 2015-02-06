@@ -1,0 +1,8 @@
+<map id="ReceiveCoinsDialog::clear" name="ReceiveCoinsDialog::clear">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html#a2fbc8a8cb0a623e6e773a0913bf5a828" title="Make field empty and ready for new input. " alt="" coords="196,5,348,47"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#a19eca7743c5326eee821bb8c0af234bb" title="ReceiveCoinsDialog\l::updateDisplayUnit" alt="" coords="201,71,343,112"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="396,19,600,46"/>
+<area shape="rect" id="node5" href="$class_anoncoin_amount_field.html#a44252e1921be1026e68adfbdc99d5ca4" title="Change unit used to display amount. " alt="" coords="422,71,574,112"/>
+<area shape="rect" id="node7" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="399,137,597,163"/>
+<area shape="rect" id="node6" href="$class_q_value_combo_box.html#af192c68c0c82f33000d8c1be8c013d2d" title="QValueComboBox::setValue" alt="" coords="648,78,840,105"/>
+</map>

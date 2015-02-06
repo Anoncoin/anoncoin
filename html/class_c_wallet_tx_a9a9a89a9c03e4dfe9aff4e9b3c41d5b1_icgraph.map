@@ -1,0 +1,13 @@
+<map id="CWalletTx::GetImmatureWatchOnlyCredit" name="CWalletTx::GetImmatureWatchOnlyCredit">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a2454a9b5d34e4831eff3a16f9a160598" title="CWallet::GetImmatureWatch\lOnlyBalance" alt="" coords="260,49,452,90"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#a5a22c7d3d92428d53cdf7cbd78113929" title="WalletModel::getWatchImmature\lBalance" alt="" coords="500,49,716,90"/>
+<area shape="rect" id="node4" href="$class_overview_page.html#a2ed52a3a87e9c74fee38fa873c9bc71f" title="OverviewPage::setWalletModel" alt="" coords="764,5,971,32"/>
+<area shape="rect" id="node7" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="774,56,961,83"/>
+<area shape="rect" id="node8" href="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d" title="WalletModel::checkBalance\lChanged" alt="" coords="775,107,960,149"/>
+<area shape="rect" id="node5" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1019,17,1205,44"/>
+<area shape="rect" id="node6" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1259,17,1423,44"/>
+<area shape="rect" id="node9" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="1026,94,1198,135"/>
+<area shape="rect" id="node11" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="1029,160,1195,187"/>
+<area shape="rect" id="node10" href="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1" title="WalletModel::WalletModel" alt="" coords="1253,101,1429,128"/>
+<area shape="rect" id="node12" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="1268,153,1415,194"/>
+</map>

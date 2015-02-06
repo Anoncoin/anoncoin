@@ -1,0 +1,5 @@
+<map id="OptionsModel::getProxySettings" name="OptionsModel::getProxySettings">
+<area shape="rect" id="node2" href="$class_payment_server.html#a2f94f2c3e12d03199870e17008535302" title="PaymentServer::initNetManager" alt="" coords="265,13,477,39"/>
+<area shape="rect" id="node3" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="525,13,696,39"/>
+<area shape="rect" id="node4" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="744,5,896,47"/>
+</map>

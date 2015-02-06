@@ -1,0 +1,7 @@
+<map id="PaymentServer::freeCertStore" name="PaymentServer::freeCertStore">
+<area shape="rect" id="node2" href="$class_payment_server.html#a7371f1dd4896d83274f8784b42f288eb" title="PaymentServer::LoadRootCAs" alt="" coords="255,46,459,73"/>
+<area shape="rect" id="node3" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="511,5,654,47"/>
+<area shape="rect" id="node6" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="507,71,659,112"/>
+<area shape="rect" id="node4" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="707,5,849,47"/>
+<area shape="rect" id="node5" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="897,5,1048,47"/>
+</map>

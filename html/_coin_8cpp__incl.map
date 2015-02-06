@@ -1,0 +1,18 @@
+<map id="src/zerocoin/Coin.cpp" name="src/zerocoin/Coin.cpp">
+<area shape="rect" id="node3" href="$_zerocoin_8h.html" title="Exceptions and constants for Zerocoin. " alt="" coords="1040,80,1125,107"/>
+<area shape="rect" id="node4" href="$serialize_8h.html" title="serialize.h" alt="" coords="1022,453,1105,480"/>
+<area shape="rect" id="node22" href="$bignum_8h.html" title="bignum.h" alt="" coords="517,379,594,405"/>
+<area shape="rect" id="node27" href="$hash_8h.html" title="hash.h" alt="" coords="151,379,214,405"/>
+<area shape="rect" id="node30" href="$_params_8h.html" title="Parameter classes for Zerocoin. " alt="" coords="862,379,940,405"/>
+<area shape="rect" id="node31" href="$_coin_8h.html" title="PublicCoin and PrivateCoin classes for the Zerocoin library. " alt="" coords="702,304,762,331"/>
+<area shape="rect" id="node32" href="$_commitment_8h.html" title="Commitment and CommitmentProof classes for the Zerocoin library. " alt="" coords="938,304,1048,331"/>
+<area shape="rect" id="node33" href="$_accumulator_8h.html" title="Accumulator and AccumulatorWitness classes for the Zerocoin library. " alt="" coords="570,304,677,331"/>
+<area shape="rect" id="node34" href="$_accumulator_proof_of_knowledge_8h.html" title="AccumulatorProofOfKnowledge class for the Zerocoin library. " alt="" coords="1040,229,1258,256"/>
+<area shape="rect" id="node35" href="$_coin_spend_8h.html" title="CoinSpend class for the Zerocoin library. " alt="" coords="826,155,925,181"/>
+<area shape="rect" id="node36" href="$_serial_number_signature_of_knowledge_8h.html" title="SerialNumberSignatureOfKnowledge class for the Zerocoin library. " alt="" coords="307,229,559,256"/>
+<area shape="rect" id="node40" href="$_param_generation_8h.html" title="Parameter generation routines for Zerocoin. " alt="" coords="1170,155,1309,181"/>
+<area shape="rect" id="node5" href="$allocators_8h.html" title="allocators.h" alt="" coords="1018,535,1109,562"/>
+<area shape="rect" id="node23" href="$uint256_8h.html" title="uint256.h" alt="" coords="629,453,706,480"/>
+<area shape="rect" id="node25" href="$version_8h.html" title="version.h" alt="" coords="355,453,431,480"/>
+<area shape="rect" id="node39" href="$_spend_meta_data_8h.html" title="SpendMetaData class for the Zerocoin library. " alt="" coords="619,379,748,405"/>
+</map>

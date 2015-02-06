@@ -1,0 +1,7 @@
+<map id="CWalletTx::RelayWalletTransaction" name="CWalletTx::RelayWalletTransaction">
+<area shape="rect" id="node2" href="$class_c_wallet.html#aef8d6e5b4701ca3a64486c4232acc3fa" title="CWallet::ResendWalletTransactions" alt="" coords="285,5,521,32"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#ac30e619488120651a6753195b77f3ad8" title="CWallet::CommitTransaction" alt="" coords="307,56,499,83"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="569,31,735,57"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="610,81,694,108"/>
+<area shape="rect" id="node5" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="783,23,929,65"/>
+</map>

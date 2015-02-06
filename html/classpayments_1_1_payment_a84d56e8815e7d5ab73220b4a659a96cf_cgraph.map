@@ -1,0 +1,10 @@
+<map id="payments::Payment::MergePartialFromCodedStream" name="payments::Payment::MergePartialFromCodedStream">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment.html#aa35512a4f7aaff611ca1d272b1a219a8" title="payments::Payment::\lmutable_merchant_data" alt="" coords="273,5,439,47"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment.html#a8fc8dd96734700dce2670146e691f7f7" title="payments::Payment::\ladd_transactions" alt="" coords="283,71,429,112"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment.html#aadb24119a35292ab26f98d1d5a4eef8b" title="payments::Payment::\ladd_refund_to" alt="" coords="283,136,429,177"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment.html#ab99b55ec51980fb9f1f3f18064eda20e" title="payments::Payment::\lmutable_memo" alt="" coords="283,201,429,243"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment.html#adf7663d6eead276ed5a9d3a15e5fc44e" title="payments::Payment::memo" alt="" coords="264,267,448,294"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment.html#a51ffab88d861e5e99355b99dac5667c7" title="payments::Payment::\lmutable_unknown_fields" alt="" coords="271,319,441,360"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment.html#a2e2e674f9faf3b6fa99295ddf31302e8" title="payments::Payment::\lset_has_merchant_data" alt="" coords="496,5,661,47"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment.html#a9ab6415778f3ddd1cb1f22633f155ce0" title="payments::Payment::\lset_has_memo" alt="" coords="505,201,652,243"/>
+</map>

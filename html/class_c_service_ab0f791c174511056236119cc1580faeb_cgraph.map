@@ -1,0 +1,8 @@
+<map id="CService::GetSockAddr" name="CService::GetSockAddr">
+<area shape="rect" id="node2" href="$class_c_net_addr.html#a16ff4478f02f06f5a9a038a24d5da2f9" title="CNetAddr::IsIPv4" alt="" coords="231,5,357,32"/>
+<area shape="rect" id="node3" href="$class_c_net_addr.html#aa2e2c78db01a6a27d6a2740f2ba43e90" title="CNetAddr::GetInAddr" alt="" coords="219,56,369,83"/>
+<area shape="rect" id="node6" href="$class_c_net_addr.html#a0edb022cd6a186de8099799415409d57" title="CNetAddr::IsIPv6" alt="" coords="231,107,357,133"/>
+<area shape="rect" id="node7" href="$class_c_net_addr.html#add7811be50f5fe60c4fa65b461dea98c" title="CNetAddr::GetIn6Addr" alt="" coords="216,157,372,184"/>
+<area shape="rect" id="node4" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="420,107,492,133"/>
+<area shape="rect" id="node5" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="540,107,624,133"/>
+</map>

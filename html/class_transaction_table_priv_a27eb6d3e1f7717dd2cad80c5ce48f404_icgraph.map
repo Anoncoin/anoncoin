@@ -1,0 +1,4 @@
+<map id="TransactionTablePriv::updateWallet" name="TransactionTablePriv::updateWallet">
+<area shape="rect" id="node2" href="$class_transaction_table_model.html#abb93b1812f27622f67aed0302bc90ee6" title="TransactionTableModel\l::updateTransaction" alt="" coords="201,5,363,47"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#ad63ff7c16477dc5795c95b56593f2e9f" title="WalletModel::updateTransaction" alt="" coords="411,13,624,39"/>
+</map>

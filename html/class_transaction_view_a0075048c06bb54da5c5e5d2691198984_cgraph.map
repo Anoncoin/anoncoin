@@ -1,0 +1,8 @@
+<map id="TransactionView::changedAmount" name="TransactionView::changedAmount">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="259,31,409,57"/>
+<area shape="rect" id="node5" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="232,81,436,108"/>
+<area shape="rect" id="node6" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="235,132,433,159"/>
+<area shape="rect" id="node7" href="$class_transaction_filter_proxy.html#a29cab9594d2fb21bef96b6fa3e0d4e25" title="TransactionFilterProxy\l::setMinAmount" alt="" coords="256,183,412,225"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="497,5,639,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="484,56,652,83"/>
+</map>

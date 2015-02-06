@@ -1,0 +1,15 @@
+<map id="OptionsDialog" name="OptionsDialog">
+<area shape="rect" id="node3" href="$class_monitored_data_mapper.html" title="Data to Widget mapper that watches for edits and notifies listeners when a field is edited..." alt="" coords="957,109,1112,136"/>
+<area shape="rect" id="node5" href="$class_ui_1_1_options_dialog.html" title="Ui::OptionsDialog" alt="" coords="972,160,1097,187"/>
+<area shape="rect" id="node6" href="$class_ui___options_dialog.html" title="Ui_OptionsDialog" alt="" coords="670,133,795,160"/>
+<area shape="rect" id="node7" href="$class_q_validated_line_edit.html" title="Line edit that can be marked as &quot;invalid&quot; to show input validation feedback. " alt="" coords="373,5,509,32"/>
+<area shape="rect" id="node9" href="$class_anoncoin_amount_field.html" title="Widget for entering anoncoin amounts. " alt="" coords="365,133,517,160"/>
+<area shape="rect" id="node13" href="$class_i2_p_options_widget.html" title="I2POptionsWidget" alt="" coords="970,227,1099,253"/>
+<area shape="rect" id="node11" href="$class_q_value_combo_box.html" title="QValueComboBox" alt="" coords="157,89,289,116"/>
+<area shape="rect" id="node14" href="$class_client_model.html" title="Model for Anoncoin network client. " alt="" coords="687,372,779,399"/>
+<area shape="rect" id="node16" href="$class_peer_table_model.html" title="Qt model providing information about connected peers, similar to the &quot;getpeerinfo&quot; RPC call..." alt="" coords="975,443,1095,469"/>
+<area shape="rect" id="node18" href="$class_peer_table_priv.html" title="PeerTablePriv" alt="" coords="679,516,786,543"/>
+<area shape="rect" id="node19" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="389,299,493,325"/>
+<area shape="rect" id="node21" href="$class_ui_1_1_i2_p_options_widget.html" title="Ui::I2POptionsWidget" alt="" coords="658,235,807,261"/>
+<area shape="rect" id="node22" href="$class_ui___i2_p_options_widget.html" title="Ui_I2POptionsWidget" alt="" coords="367,235,516,261"/>
+</map>

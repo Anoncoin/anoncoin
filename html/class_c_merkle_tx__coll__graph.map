@@ -1,0 +1,5 @@
+<map id="CMerkleTx" name="CMerkleTx">
+<area shape="rect" id="node2" href="$class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ..." alt="" coords="5,81,107,108"/>
+<area shape="rect" id="node3" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="131,81,197,108"/>
+<area shape="rect" id="node4" href="$classbase__uint.html" title="Base class without constructors for uint256 and uint160. " alt="" coords="113,5,215,32"/>
+</map>

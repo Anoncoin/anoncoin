@@ -1,0 +1,6 @@
+<map id="Ui_SendCoinsDialog::setupUi" name="Ui_SendCoinsDialog::setupUi">
+<area shape="rect" id="node2" href="$class_q_validated_line_edit.html#af0a2d32e9d2fb08c5069852cf4bfc860" title="QValidatedLineEdit\l::setEnabled" alt="" coords="203,5,339,47"/>
+<area shape="rect" id="node5" href="$class_ui___send_coins_dialog.html#a940725b8e67b79262d72b02cb615c725" title="Ui_SendCoinsDialog\l::retranslateUi" alt="" coords="199,71,344,112"/>
+<area shape="rect" id="node3" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="576,5,712,47"/>
+<area shape="rect" id="node4" href="$class_q_validated_line_edit.html#aa5b5196dc6215f088bc138ac4dbc3e28" title="QValidatedLineEdit\l::checkValidity" alt="" coords="392,35,528,76"/>
+</map>

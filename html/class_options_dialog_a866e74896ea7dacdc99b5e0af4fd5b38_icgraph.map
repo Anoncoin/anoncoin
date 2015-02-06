@@ -1,0 +1,6 @@
+<map id="OptionsDialog::showRestartWarning" name="OptionsDialog::showRestartWarning">
+<area shape="rect" id="node2" href="$class_options_dialog.html#a11e902a52cb7472497d14e70cd9399d9" title="OptionsDialog::setModel" alt="" coords="240,13,407,39"/>
+<area shape="rect" id="node3" href="$class_anoncoin_g_u_i.html#a1afb9a47588132239cfba7be0adc2542" title="Show configuration dialog. " alt="" coords="455,13,651,39"/>
+<area shape="rect" id="node4" href="$class_anoncoin_g_u_i.html#a8aa41c17fd6005652003d93330dbf7fb" title="Create the main UI actions. " alt="" coords="699,13,888,39"/>
+<area shape="rect" id="node5" href="$class_anoncoin_g_u_i.html#a82d1cf09f42a7c169b3e9c8d3e54a3d0" title="AnoncoinGUI::AnoncoinGUI" alt="" coords="936,13,1124,39"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="payments::Payment::add_transactions" name="payments::Payment::add_transactions">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment.html#a84d56e8815e7d5ab73220b4a659a96cf" title="payments::Payment::\lMergePartialFromCodedStream" alt="" coords="210,5,421,47"/>
+<area shape="rect" id="node3" href="$class_payment_server.html#ab846f9e8778e5cc878b644133e8628f1" title="PaymentServer::fetchPaymentACK" alt="" coords="200,71,431,98"/>
+</map>

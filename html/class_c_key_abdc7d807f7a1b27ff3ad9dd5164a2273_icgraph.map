@@ -1,0 +1,6 @@
+<map id="CKey::IsCompressed" name="CKey::IsCompressed">
+<area shape="rect" id="node2" href="$class_c_anoncoin_secret.html#a416871f8f1e323f16e7bc5b1a18a3f62" title="CAnoncoinSecret::SetKey" alt="" coords="201,15,377,42"/>
+<area shape="rect" id="node4" href="$class_c_key.html#abb0091d4390dcece3c56ea4c1fdd6036" title="CKey::Derive" alt="" coords="239,67,339,94"/>
+<area shape="rect" id="node3" href="$class_c_anoncoin_secret.html#a3ed7780e589f6bc4d507e29cebc38c98" title="CAnoncoinSecret::CAnoncoin\lSecret" alt="" coords="425,5,624,47"/>
+<area shape="rect" id="node5" href="$struct_c_ext_key.html#a2fa3a39434ae09efbbd4058d1d081aa2" title="CExtKey::Derive" alt="" coords="465,71,585,98"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="ComputeMinWork" name="ComputeMinWork">
+<area shape="rect" id="node2" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="247,5,315,32"/>
+<area shape="rect" id="node3" href="$class_c_chain_params.html#a7f014cb46cd3b6e39db91e4a8b998235" title="CChainParams::ProofOfWork\lLimit" alt="" coords="183,57,380,98"/>
+<area shape="rect" id="node4" href="$chainparams_8h.html#abc8c1af875107f5eac0f327bd3b8363d" title="TestNet" alt="" coords="247,123,316,149"/>
+<area shape="rect" id="node7" href="$class_c_big_num.html#a26b88c1b29f347219907979ff2028bdc" title="CBigNum::GetCompact" alt="" coords="201,173,362,200"/>
+<area shape="rect" id="node8" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="201,224,361,251"/>
+<area shape="rect" id="node5" href="$chainparams_8h.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="485,97,553,124"/>
+<area shape="rect" id="node6" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="428,148,611,175"/>
+</map>

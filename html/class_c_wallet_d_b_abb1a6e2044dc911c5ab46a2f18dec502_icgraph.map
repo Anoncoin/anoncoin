@@ -1,0 +1,7 @@
+<map id="CWalletDB::ZapWalletTx" name="CWalletDB::ZapWalletTx">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a990b51be353f28ed9f0e3b8d192b874f" title="CWallet::ZapWalletTx" alt="" coords="223,31,373,57"/>
+<area shape="rect" id="node3" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="421,31,492,57"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="588,5,652,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="540,56,700,83"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="748,5,799,32"/>
+</map>

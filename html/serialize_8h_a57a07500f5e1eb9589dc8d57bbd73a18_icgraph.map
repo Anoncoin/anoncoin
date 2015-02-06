@@ -1,0 +1,8 @@
+<map id="Serialize" name="Serialize">
+<area shape="rect" id="node2" href="$class_c_tx_in_undo.html#a37cebff3e836226b36e51d91e7cc2739" title="CTxInUndo::Serialize" alt="" coords="138,5,286,32"/>
+<area shape="rect" id="node3" href="$class_c_hash_writer.html#a6551aed7315be5ba750680df18562f3a" title="CHashWriter::operator\&lt;\&lt;" alt="" coords="127,56,297,83"/>
+<area shape="rect" id="node4" href="$serialize_8h.html#aafb4b2795cb998fdcf76b19a959a1ae1" title="Serialize_impl" alt="" coords="159,107,265,133"/>
+<area shape="rect" id="node5" href="$serialize_8h.html#a4abc2780ddc1498c4a390f1fb88cfea8" title="Serialize" alt="" coords="175,157,249,184"/>
+<area shape="rect" id="node6" href="$serialize_8h.html#a776251b2973c5c9242ac3478ac1512a5" title="SerReadWrite" alt="" coords="159,208,265,235"/>
+<area shape="rect" id="node7" href="$class_c_auto_file.html#a8e194596d1f8f64059247724b25df82c" title="CAutoFile::operator\&lt;\&lt;" alt="" coords="135,259,289,285"/>
+</map>

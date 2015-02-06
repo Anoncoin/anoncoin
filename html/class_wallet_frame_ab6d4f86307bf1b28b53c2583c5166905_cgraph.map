@@ -1,0 +1,6 @@
+<map id="WalletFrame::setCurrentWallet" name="WalletFrame::setCurrentWallet">
+<area shape="rect" id="node2" href="$class_wallet_view.html#ad348f2ed9f843ef9125ca416307c7412" title="Re&#45;emit encryption status signal. " alt="" coords="257,5,456,47"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#acfb62be638267bbf1bf498fb6501c31d" title="WalletModel::getEncryption\lStatus" alt="" coords="504,5,688,47"/>
+<area shape="rect" id="node4" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="971,13,1161,39"/>
+<area shape="rect" id="node5" href="$class_c_crypto_key_store.html#a1c3ebef555fd13676d67509b95820fcf" title="CCryptoKeyStore::IsLocked" alt="" coords="736,38,923,65"/>
+</map>

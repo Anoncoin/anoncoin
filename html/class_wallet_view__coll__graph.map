@@ -1,0 +1,36 @@
+<map id="WalletView" name="WalletView">
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html" title="Dialog for requesting payment of anoncoins. " alt="" coords="1977,168,2120,195"/>
+<area shape="rect" id="node43" href="$class_send_coins_dialog.html" title="Dialog for sending anoncoins. " alt="" coords="1986,275,2111,301"/>
+<area shape="rect" id="node5" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html" title="Makes a QTableView last column feel as if it was being resized from its left border. " alt="" coords="1532,309,1737,350"/>
+<area shape="rect" id="node42" href="$class_transaction_view.html" title="Widget showing the transaction list for a wallet, including a filter row. " alt="" coords="1989,383,2109,409"/>
+<area shape="rect" id="node13" href="$class_wallet_model.html" title="Interface to Anoncoin wallet from Qt view code. " alt="" coords="1587,823,1683,849"/>
+<area shape="rect" id="node32" href="$class_client_model.html" title="Model for Anoncoin network client. " alt="" coords="1589,724,1681,751"/>
+<area shape="rect" id="node7" href="$class_ui_1_1_receive_coins_dialog.html" title="Ui::ReceiveCoinsDialog" alt="" coords="1553,13,1716,40"/>
+<area shape="rect" id="node8" href="$class_ui___receive_coins_dialog.html" title="Ui_ReceiveCoinsDialog" alt="" coords="1220,24,1383,51"/>
+<area shape="rect" id="node9" href="$class_anoncoin_amount_field.html" title="Widget for entering anoncoin amounts. " alt="" coords="855,28,1007,55"/>
+<area shape="rect" id="node35" href="$class_overview_page.html" title="Overview (&quot;home&quot;) page widget. " alt="" coords="1994,580,2103,607"/>
+<area shape="rect" id="node11" href="$class_q_value_combo_box.html" title="QValueComboBox" alt="" coords="649,28,781,55"/>
+<area shape="rect" id="node14" href="$class_transaction_table_model.html" title="UI model for the transaction table of a wallet. " alt="" coords="1968,1228,2129,1255"/>
+<area shape="rect" id="node27" href="$class_address_table_model.html" title="Qt model of the address book in the core. " alt="" coords="1979,1093,2119,1120"/>
+<area shape="rect" id="node29" href="$class_recent_requests_table_model.html" title="Model for list of recently generated payment requests / anoncoin: URIs. " alt="" coords="1953,836,2144,863"/>
+<area shape="rect" id="node16" href="$class_transaction_table_priv.html" title="TransactionTablePriv" alt="" coords="2304,1273,2452,1300"/>
+<area shape="rect" id="node33" href="$class_peer_table_model.html" title="Qt model providing information about connected peers, similar to the &quot;getpeerinfo&quot; RPC call..." alt="" coords="1241,793,1361,820"/>
+<area shape="rect" id="node17" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="1267,1272,1336,1299"/>
+<area shape="rect" id="node28" href="$class_address_table_priv.html" title="AddressTablePriv" alt="" coords="2315,1133,2441,1160"/>
+<area shape="rect" id="node18" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="868,1241,993,1268"/>
+<area shape="rect" id="node19" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="656,1240,775,1267"/>
+<area shape="rect" id="node20" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="507,1240,594,1267"/>
+<area shape="rect" id="node23" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="871,1393,991,1420"/>
+<area shape="rect" id="node24" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="891,1191,970,1217"/>
+<area shape="rect" id="node25" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="887,1343,974,1369"/>
+<area shape="rect" id="node26" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="690,1353,741,1380"/>
+<area shape="rect" id="node30" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="1249,881,1353,908"/>
+<area shape="rect" id="node34" href="$class_peer_table_priv.html" title="PeerTablePriv" alt="" coords="877,793,984,820"/>
+<area shape="rect" id="node36" href="$class_transaction_filter_proxy.html" title="Filter the transaction list according to pre&#45;specified rules. " alt="" coords="1557,389,1713,416"/>
+<area shape="rect" id="node38" href="$class_ui_1_1_overview_page.html" title="Ui::OverviewPage" alt="" coords="1570,613,1699,640"/>
+<area shape="rect" id="node39" href="$class_ui___overview_page.html" title="Ui_OverviewPage" alt="" coords="1237,613,1366,640"/>
+<area shape="rect" id="node40" href="$class_tx_view_delegate.html" title="TxViewDelegate" alt="" coords="1575,473,1694,500"/>
+<area shape="rect" id="node44" href="$class_ui_1_1_send_coins_dialog.html" title="Ui::SendCoinsDialog" alt="" coords="1562,123,1707,149"/>
+<area shape="rect" id="node45" href="$class_ui___send_coins_dialog.html" title="Ui_SendCoinsDialog" alt="" coords="1229,123,1374,149"/>
+<area shape="rect" id="node46" href="$class_q_validated_line_edit.html" title="Line edit that can be marked as &quot;invalid&quot; to show input validation feedback. " alt="" coords="863,123,999,149"/>
+</map>

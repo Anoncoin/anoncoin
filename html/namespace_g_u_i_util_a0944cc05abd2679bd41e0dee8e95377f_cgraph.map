@@ -1,0 +1,6 @@
+<map id="GUIUtil::parseAnoncoinURI" name="GUIUtil::parseAnoncoinURI">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#a80503cefefdc17af8e975682342066c4" title="GUIUtil::parseAnoncoinURI" alt="" coords="237,31,421,57"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="469,31,619,57"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="679,5,822,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="667,56,835,83"/>
+</map>

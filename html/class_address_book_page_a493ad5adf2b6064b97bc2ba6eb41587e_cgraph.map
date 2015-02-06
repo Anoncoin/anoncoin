@@ -1,0 +1,13 @@
+<map id="AddressBookPage::AddressBookPage" name="AddressBookPage::AddressBookPage">
+<area shape="rect" id="node2" href="$class_ui___address_book_page.html#a4ded4cab0f58e965f264a0d805f5fe36" title="Ui_AddressBookPage\l::setupUi" alt="" coords="283,5,435,47"/>
+<area shape="rect" id="node4" href="$class_address_book_page.html#a392fa7dfb663a7e3ad1313dffd1123b9" title="Copy address of currently selected address entry to clipboard. " alt="" coords="282,71,437,112"/>
+<area shape="rect" id="node7" href="$class_address_book_page.html#a13592aacb4316283b51c1b03a10ef190" title="Copy label of currently selected address entry to clipboard (no button) " alt="" coords="250,136,469,177"/>
+<area shape="rect" id="node8" href="$class_address_book_page.html#a00b9dc5da59d39ae90af3ff41f8d9b76" title="Edit currently selected address entry (no button) " alt="" coords="252,202,467,229"/>
+<area shape="rect" id="node11" href="$class_address_book_page.html#a5885065a8fea6eb69572789e3e782bd0" title="Delete currently selected address entry. " alt="" coords="278,253,441,295"/>
+<area shape="rect" id="node12" href="$class_address_book_page.html#a720ae688d56255e6d38ee5af28533639" title="Spawn contextual menu (right mouse menu) for address book entry. " alt="" coords="243,319,476,346"/>
+<area shape="rect" id="node3" href="$class_ui___address_book_page.html#a68fa33d1c4429df76a63367fc9af2b76" title="Ui_AddressBookPage\l::retranslateUi" alt="" coords="528,5,680,47"/>
+<area shape="rect" id="node5" href="$namespace_g_u_i_util.html#ae231227ad96528c828e1c846f253f642" title="Copy a field of the currently selected entry of a view to the clipboard. " alt="" coords="524,111,684,138"/>
+<area shape="rect" id="node6" href="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07" title="GUIUtil::setClipboard" alt="" coords="732,111,879,138"/>
+<area shape="rect" id="node9" href="$class_edit_address_dialog.html#a57d26af2c34bd45c06596e9b3fc9a446" title="EditAddressDialog::\lsetModel" alt="" coords="535,163,673,204"/>
+<area shape="rect" id="node10" href="$class_edit_address_dialog.html#a45d90d6f757fb4b20788710c8533036b" title="EditAddressDialog::\lloadRow" alt="" coords="535,228,673,269"/>
+</map>

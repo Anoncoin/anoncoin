@@ -1,0 +1,15 @@
+<map id="SAM::Socket::isOk" name="SAM::Socket::isOk">
+<area shape="rect" id="node2" href="$class_s_a_m_1_1_socket.html#a06437196adb5bc7b8df6c1819053b3b1" title="SAM::Socket::bootstrapI2P" alt="" coords="589,39,772,65"/>
+<area shape="rect" id="node4" href="$class_s_a_m_1_1_socket.html#ae19e83b3127dc1560f164a05b1acd763" title="SAM::Socket::write" alt="" coords="187,191,321,217"/>
+<area shape="rect" id="node6" href="$class_s_a_m_1_1_stream_session.html#ac9a46b7b8759fe46ff128982f983a62b" title="SAM::StreamSession\l::rawRequest" alt="" coords="381,90,530,131"/>
+<area shape="rect" id="node13" href="$class_s_a_m_1_1_stream_session.html#aedf1136f5004f4c2c32a00a2da1f2d58" title="SAM::StreamSession\l::destGenerate" alt="" coords="381,207,530,249"/>
+<area shape="rect" id="node14" href="$class_s_a_m_1_1_socket.html#a3455043c16c8ca5c64855e6ea3ff15e1" title="SAM::Socket::read" alt="" coords="187,140,321,167"/>
+<area shape="rect" id="node3" href="$class_s_a_m_1_1_socket.html#ab1373984617b43dc2108491181de49b3" title="SAM::Socket::Socket" alt="" coords="825,5,972,32"/>
+<area shape="rect" id="node5" href="$class_s_a_m_1_1_socket.html#acca2e69487ef3f865275d2d5fd1fbca1" title="SAM::Socket::handshake" alt="" coords="369,156,541,183"/>
+<area shape="rect" id="node7" href="$class_s_a_m_1_1_stream_session.html#a4dbdcff8b70973f5746777ab55319ffc" title="SAM::StreamSession\l::request" alt="" coords="606,155,755,197"/>
+<area shape="rect" id="node8" href="$class_s_a_m_1_1_stream_session.html#ae76b79240acb94a98ef5ccacb44f537a" title="SAM::StreamSession\l::createStreamSession" alt="" coords="820,253,977,294"/>
+<area shape="rect" id="node9" href="$class_s_a_m_1_1_stream_session.html#ac04d26e34abfffca6030d33317235c1a" title="SAM::StreamSession\l::namingLookup" alt="" coords="824,318,973,359"/>
+<area shape="rect" id="node10" href="$class_s_a_m_1_1_stream_session.html#a9474b137168e5f3e38a96a0b7e58f230" title="SAM::StreamSession\l::accept" alt="" coords="824,57,973,98"/>
+<area shape="rect" id="node11" href="$class_s_a_m_1_1_stream_session.html#a551ef7338e1387f0f2ae023777296704" title="SAM::StreamSession\l::connect" alt="" coords="824,122,973,163"/>
+<area shape="rect" id="node12" href="$class_s_a_m_1_1_stream_session.html#af91905ca845614cc9f49f8ea7537a452" title="SAM::StreamSession\l::forward" alt="" coords="824,187,973,229"/>
+</map>

@@ -1,0 +1,16 @@
+<map id="CWallet::GetBalance" name="CWallet::GetBalance">
+<area shape="rect" id="node2" href="$class_c_wallet_tx.html#af2eff3b849af124cdf869fc03f587972" title="CWalletTx::IsTrusted" alt="" coords="227,107,373,133"/>
+<area shape="rect" id="node12" href="$class_c_wallet_tx.html#a4faffd750f4b5a37402bad042428bfcb" title="CWalletTx::GetAvailableCredit" alt="" coords="199,208,401,235"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="486,31,562,57"/>
+<area shape="rect" id="node8" href="$class_c_wallet.html#abdffee587c00bc1ebea53ea26f3efa61" title="CWallet::GetWalletTx" alt="" coords="449,81,599,108"/>
+<area shape="rect" id="node9" href="$class_c_wallet.html#ab7cc8fd8859fecc6ed768dacb5642c5e" title="CWallet::IsMine" alt="" coords="466,132,582,159"/>
+<area shape="rect" id="node4" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="653,5,765,32"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="647,56,772,83"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="863,31,937,57"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="845,81,955,108"/>
+<area shape="rect" id="node10" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="679,157,740,184"/>
+<area shape="rect" id="node11" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="820,157,980,184"/>
+<area shape="rect" id="node13" href="$class_c_wallet.html#a7d77e683a0f10403fe2b67385895d497" title="CWallet::IsSpent" alt="" coords="463,183,585,209"/>
+<area shape="rect" id="node14" href="$class_c_wallet.html#a9ec15c32442fcceb95425d8b36492544" title="CWallet::GetCredit" alt="" coords="457,233,591,260"/>
+<area shape="rect" id="node15" href="$core_8h.html#ad1d9a769fa327ea042e0c9fadeb4836b" title="MoneyRange" alt="" coords="659,259,760,285"/>
+</map>

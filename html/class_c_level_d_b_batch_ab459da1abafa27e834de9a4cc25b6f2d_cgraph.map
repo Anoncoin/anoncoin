@@ -1,0 +1,6 @@
+<map id="CLevelDBBatch::Write" name="CLevelDBBatch::Write">
+<area shape="rect" id="node2" href="$class_c_data_stream.html#a5542e71bd7af2ab7cd7be0f381d39cb5" title="CDataStream::reserve" alt="" coords="235,5,390,32"/>
+<area shape="rect" id="node3" href="$class_c_data_stream.html#aaf2b9e953793ce5a4fc438a7ecb00dc2" title="CDataStream::GetSerializeSize" alt="" coords="208,56,417,83"/>
+<area shape="rect" id="node5" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="246,107,379,133"/>
+<area shape="rect" id="node4" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="465,56,585,83"/>
+</map>

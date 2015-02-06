@@ -1,0 +1,12 @@
+<map id="AddressBookPage::selectionChanged" name="AddressBookPage::selectionChanged">
+<area shape="rect" id="node2" href="$class_address_book_page.html#a1282cda9cb0300ee04c472ec4c9949f3" title="AddressBookPage::setModel" alt="" coords="245,191,439,218"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="514,5,695,47"/>
+<area shape="rect" id="node5" href="$class_send_coins_entry.html#ac661741d286d9f3db32f78bd22125cb0" title="SendCoinsEntry::on\l_addressBookButton_clicked" alt="" coords="508,71,701,112"/>
+<area shape="rect" id="node6" href="$class_sign_verify_message_dialog.html#a792a3bd647958c8ae74286c5ab3cf205" title="SignVerifyMessageDialog\l::on_addressBookButton\l_SM_clicked" alt="" coords="517,137,692,193"/>
+<area shape="rect" id="node7" href="$class_sign_verify_message_dialog.html#a90ceb00084c68da5e9c481ba0841d976" title="SignVerifyMessageDialog\l::on_addressBookButton\l_VM_clicked" alt="" coords="517,217,692,273"/>
+<area shape="rect" id="node8" href="$class_wallet_view.html#a6f0d012c18ea2df7336c852abe2a50d0" title="Show used sending addresses. " alt="" coords="487,297,723,323"/>
+<area shape="rect" id="node10" href="$class_wallet_view.html#accb5d9e2789c62e03ad1723518d31c02" title="Show used receiving addresses. " alt="" coords="513,349,696,391"/>
+<area shape="rect" id="node4" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="795,5,938,47"/>
+<area shape="rect" id="node9" href="$class_wallet_frame.html#a7f697d220e7ea40d6e4d6e6c5e9ef3b4" title="Show used sending addresses. " alt="" coords="775,287,958,328"/>
+<area shape="rect" id="node11" href="$class_wallet_frame.html#a9273a0b98cf7ec9fc344658c38a4a0a3" title="Show used receiving addresses. " alt="" coords="771,352,963,393"/>
+</map>

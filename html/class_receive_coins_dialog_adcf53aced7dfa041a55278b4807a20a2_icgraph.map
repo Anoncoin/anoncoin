@@ -1,0 +1,6 @@
+<map id="ReceiveCoinsDialog::copyColumnToClipboard" name="ReceiveCoinsDialog::copyColumnToClipboard">
+<area shape="rect" id="node2" href="$class_receive_coins_dialog.html#abdd69012e01da1d61b0bf622f9e156b1" title="ReceiveCoinsDialog\l::copyLabel" alt="" coords="229,5,372,47"/>
+<area shape="rect" id="node4" href="$class_receive_coins_dialog.html#a99b4d3cbb14744e8b3eff41f83413cb7" title="ReceiveCoinsDialog\l::copyMessage" alt="" coords="229,71,372,112"/>
+<area shape="rect" id="node5" href="$class_receive_coins_dialog.html#a3f8309dfaa944576bae760ba33222463" title="ReceiveCoinsDialog\l::copyAmount" alt="" coords="229,136,372,177"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#a0c982b94b7f23da8f208d09904352f89" title="ReceiveCoinsDialog\l::ReceiveCoinsDialog" alt="" coords="420,71,569,112"/>
+</map>

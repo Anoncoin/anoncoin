@@ -1,0 +1,51 @@
+<map id="CDataStream::reserve" name="CDataStream::reserve">
+<area shape="rect" id="node2" href="$class_c_d_b.html#adfd2c079df629d5f7cac0ca923ffd698" title="CDB::Read" alt="" coords="251,15,341,41"/>
+<area shape="rect" id="node4" href="$class_c_d_b.html#a7fb5b4fa36e57e17287f2c1c762bd708" title="CDB::Write" alt="" coords="252,195,340,221"/>
+<area shape="rect" id="node7" href="$class_c_d_b.html#a3f7e1ba9dd41de3fb1525d789405a6c3" title="CDB::Erase" alt="" coords="250,144,342,171"/>
+<area shape="rect" id="node8" href="$class_c_d_b.html#a5f7d7854dcbcec1b1f85bc6a0008563e" title="CDB::Exists" alt="" coords="249,75,343,101"/>
+<area shape="rect" id="node9" href="$class_c_level_d_b_batch.html#ab459da1abafa27e834de9a4cc25b6f2d" title="CLevelDBBatch::Write" alt="" coords="219,333,373,360"/>
+<area shape="rect" id="node28" href="$class_c_level_d_b_batch.html#a22bf093d560b4ce3333e8f4a947faa7f" title="CLevelDBBatch::Erase" alt="" coords="217,245,375,272"/>
+<area shape="rect" id="node30" href="$class_c_level_d_b_wrapper.html#aa3451a451298c7f8a66986ccd95474e2" title="CLevelDBWrapper::Read" alt="" coords="462,657,634,684"/>
+<area shape="rect" id="node41" href="$class_c_level_d_b_wrapper.html#a916e029b612f3bb0e3110742121e73eb" title="CLevelDBWrapper::Exists" alt="" coords="208,708,384,735"/>
+<area shape="rect" id="node44" href="$net_8h.html#abe329205a15b55df86608f5f1964bdb1" title="RelayTransaction" alt="" coords="233,885,359,912"/>
+<area shape="rect" id="node3" href="$class_c_d_b.html#a16f591e27f41397570018c1fae084025" title="CDB::ReadVersion" alt="" coords="481,5,615,32"/>
+<area shape="rect" id="node5" href="$class_c_d_b.html#aa3e63c0921af4c6fc92def1ba14500f1" title="CDB::WriteVersion" alt="" coords="481,107,615,133"/>
+<area shape="rect" id="node6" href="$class_c_d_b.html#a913f57290431ac54c92bd2e034571291" title="CDB::CDB" alt="" coords="792,68,877,95"/>
+<area shape="rect" id="node10" href="$class_c_level_d_b_wrapper.html#a740caa1aefbafc888838ea7f70dc31f4" title="CLevelDBWrapper::Write" alt="" coords="462,333,634,360"/>
+<area shape="rect" id="node27" href="$class_c_block_tree_d_b.html#a1e03745f9675ad352a1483a0aa7ef308" title="CBlockTreeDB::WriteTxIndex" alt="" coords="450,483,646,509"/>
+<area shape="rect" id="node11" href="$class_c_block_tree_d_b.html#a608a04a08445d95e477cb66889c679d0" title="CBlockTreeDB::WriteBlock\lIndex" alt="" coords="744,297,925,338"/>
+<area shape="rect" id="node20" href="$class_c_block_tree_d_b.html#ae4512620e5a65258449b8c9ba38f74b5" title="CBlockTreeDB::WriteBestInvalidWork" alt="" coords="712,480,957,507"/>
+<area shape="rect" id="node21" href="$class_c_block_tree_d_b.html#ae248032ee1f1303dea54a0b36ad84755" title="CBlockTreeDB::WriteBlock\lFileInfo" alt="" coords="744,414,925,455"/>
+<area shape="rect" id="node24" href="$class_c_block_tree_d_b.html#ae1f4ea54edf05a056d2da00ea90a9394" title="CBlockTreeDB::WriteLastBlockFile" alt="" coords="721,363,949,389"/>
+<area shape="rect" id="node25" href="$class_c_block_tree_d_b.html#a8fa5d150b98f4fd1aa8cf503eddfccef" title="CBlockTreeDB::WriteReindexing" alt="" coords="1229,203,1445,229"/>
+<area shape="rect" id="node26" href="$class_c_block_tree_d_b.html#af2f65b70ac5d8a198d4f29a7e909c08a" title="CBlockTreeDB::WriteFlag" alt="" coords="1006,249,1181,276"/>
+<area shape="rect" id="node12" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="1285,480,1389,507"/>
+<area shape="rect" id="node16" href="$main_8h.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="1030,303,1157,329"/>
+<area shape="rect" id="node13" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="1517,480,1591,507"/>
+<area shape="rect" id="node15" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="1493,429,1615,456"/>
+<area shape="rect" id="node14" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1663,321,1733,348"/>
+<area shape="rect" id="node17" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="1289,379,1385,405"/>
+<area shape="rect" id="node18" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="1285,303,1390,329"/>
+<area shape="rect" id="node19" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="1503,296,1605,323"/>
+<area shape="rect" id="node22" href="$main_8cpp.html#a92fa926dca5dee9f673536d85f067ee7" title="FindBlockPos" alt="" coords="1041,404,1145,431"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#a16dd07301ce5269712d7936840c0217f" title="FindUndoPos" alt="" coords="1042,505,1145,532"/>
+<area shape="rect" id="node29" href="$class_c_level_d_b_wrapper.html#a9f67e2880ba191fdc9439ba34e315d72" title="CLevelDBWrapper::Erase" alt="" coords="1005,144,1181,171"/>
+<area shape="rect" id="node31" href="$class_c_coins_view_d_b.html#a6abb3db74d1ec815b2cb8a8672b848bb" title="CCoinsViewDB::GetCoins" alt="" coords="747,835,923,861"/>
+<area shape="rect" id="node32" href="$class_c_coins_view_d_b.html#a5a4569b8b1675539eedf1bf14a9c7fc0" title="CCoinsViewDB::GetBestBlock" alt="" coords="734,632,935,659"/>
+<area shape="rect" id="node34" href="$class_c_block_tree_d_b.html#a6f951198dc53fbe9194626ff82638656" title="CBlockTreeDB::ReadBlockFileInfo" alt="" coords="722,531,947,557"/>
+<area shape="rect" id="node36" href="$class_c_block_tree_d_b.html#adb1276fe2f0e0c4c106660948c581711" title="CBlockTreeDB::ReadLastBlockFile" alt="" coords="720,683,949,709"/>
+<area shape="rect" id="node37" href="$class_c_block_tree_d_b.html#a74383427266d627e84c2d0c8e21e03c7" title="CBlockTreeDB::ReadTxIndex" alt="" coords="736,733,933,760"/>
+<area shape="rect" id="node40" href="$class_c_block_tree_d_b.html#acd779c4653fd9a87fffe95d53ce7c6d3" title="CBlockTreeDB::ReadFlag" alt="" coords="747,784,923,811"/>
+<area shape="rect" id="node33" href="$class_c_coins_view_d_b.html#abf52d3ea526344e4b4ba9e4c08e60178" title="CCoinsViewDB::GetStats" alt="" coords="1007,632,1179,659"/>
+<area shape="rect" id="node35" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="1260,429,1415,456"/>
+<area shape="rect" id="node38" href="$main_8h.html#a74cc9659a06d35436a25b7ae56a15bcb" title="Retrieve a transaction (from memory pool, or from disk, if possible) " alt="" coords="1037,733,1150,760"/>
+<area shape="rect" id="node39" href="$rpcrawtransaction_8cpp.html#a12e1b8a05d99d1544e5343c2282cc55a" title="getrawtransaction" alt="" coords="1274,733,1401,760"/>
+<area shape="rect" id="node42" href="$class_c_coins_view_d_b.html#aff808ef194c5d137bc268757bea4e326" title="CCoinsViewDB::HaveCoins" alt="" coords="455,759,641,785"/>
+<area shape="rect" id="node43" href="$class_c_block_tree_d_b.html#a1abf6fc392048428aa24a12b7942824b" title="CBlockTreeDB::ReadReindexing" alt="" coords="440,708,656,735"/>
+<area shape="rect" id="node45" href="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e" title="sendrawtransaction" alt="" coords="479,936,617,963"/>
+<area shape="rect" id="node46" href="$class_c_wallet_tx.html#a261596523b49778e83a821ecbbb36727" title="CWalletTx::RelayWalletTransaction" alt="" coords="432,885,664,912"/>
+<area shape="rect" id="node47" href="$class_c_wallet.html#aef8d6e5b4701ca3a64486c4232acc3fa" title="CWallet::ResendWalletTransactions" alt="" coords="717,936,953,963"/>
+<area shape="rect" id="node48" href="$class_c_wallet.html#ac30e619488120651a6753195b77f3ad8" title="CWallet::CommitTransaction" alt="" coords="739,885,931,912"/>
+<area shape="rect" id="node49" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="1011,911,1176,937"/>
+<area shape="rect" id="node50" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="1051,860,1135,887"/>
+</map>

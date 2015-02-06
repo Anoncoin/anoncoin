@@ -1,0 +1,5 @@
+<map id="CRegTestParams" name="CRegTestParams">
+<area shape="rect" id="node2" href="$class_c_test_net_params.html" title="CTestNetParams" alt="" coords="7,155,131,181"/>
+<area shape="rect" id="node3" href="$class_c_main_params.html" title="CMainParams" alt="" coords="16,80,123,107"/>
+<area shape="rect" id="node4" href="$class_c_chain_params.html" title="CChainParams defines various tweakable parameters of a given instance of the Anoncoin system..." alt="" coords="13,5,125,32"/>
+</map>

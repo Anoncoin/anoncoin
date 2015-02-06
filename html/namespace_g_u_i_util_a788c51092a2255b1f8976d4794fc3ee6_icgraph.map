@@ -1,0 +1,8 @@
+<map id="GUIUtil::getSaveFileName" name="GUIUtil::getSaveFileName">
+<area shape="rect" id="node2" href="$class_address_book_page.html#a4f1d34f71ac7d4f64d4ba6bc87ee0525" title="Export button clicked. " alt="" coords="259,5,414,47"/>
+<area shape="rect" id="node3" href="$class_q_r_image_widget.html#a957f368bcd679206f0376931d4a58182" title="QRImageWidget::saveImage" alt="" coords="240,71,433,98"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a5983022ff1e5395f87de3c5728eff8da" title="TransactionView::exportClicked" alt="" coords="232,122,441,149"/>
+<area shape="rect" id="node6" href="$class_wallet_view.html#a9800d793b552076b4207276d9e08c8b6" title="Backup the wallet. " alt="" coords="249,173,425,199"/>
+<area shape="rect" id="node4" href="$class_q_r_image_widget.html#a6e4e5dbe06f17431e053d484e1f54ba9" title="QRImageWidget::QRImageWidget" alt="" coords="489,71,716,98"/>
+<area shape="rect" id="node7" href="$class_wallet_frame.html#a76aa3543635fedea052661a4cd44b81d" title="Backup the wallet. " alt="" coords="510,173,695,199"/>
+</map>

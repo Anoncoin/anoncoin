@@ -1,0 +1,9 @@
+<map id="GetP2SHSigOpCount" name="GetP2SHSigOpCount">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="227,5,404,32"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html#a37d3513128780891955d8cc5621f4123" title="CCoinsViewCache::GetOutputFor" alt="" coords="204,56,427,83"/>
+<area shape="rect" id="node7" href="$class_c_script.html#acba6d6d35776de4ce3a632446f44805f" title="CScript::IsPayToScriptHash" alt="" coords="222,107,409,133"/>
+<area shape="rect" id="node8" href="$class_c_script.html#ad4a8173c235111e93a8171b1f8d00ce8" title="CScript::GetSigOpCount" alt="" coords="232,157,399,184"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="475,31,671,57"/>
+<area shape="rect" id="node6" href="$class_c_coins.html#a69bdcbac02e1644cb02b2645068777b5" title="CCoins::IsAvailable" alt="" coords="504,81,641,108"/>
+<area shape="rect" id="node5" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="719,31,876,57"/>
+</map>

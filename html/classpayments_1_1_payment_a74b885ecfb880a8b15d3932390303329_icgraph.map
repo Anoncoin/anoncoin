@@ -1,0 +1,5 @@
+<map id="payments::Payment::MergeFrom" name="payments::Payment::MergeFrom">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment.html#a7d01d554e81a09a3733462dbd65e3a74" title="payments::Payment::\lPayment" alt="" coords="200,5,347,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment.html#a5036760f7c0826218232ce0de195ae0b" title="payments::Payment::\lCopyFrom" alt="" coords="200,71,347,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment.html#a8e5bbe83ae3320215fff8293bd10340b" title="payments::Payment::\loperator=" alt="" coords="395,71,541,112"/>
+</map>

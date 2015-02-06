@@ -1,0 +1,5 @@
+<map id="payments::PaymentDetails::set_allocated_memo" name="payments::PaymentDetails::set_allocated_memo">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_details.html#a1077fc97293b37aa6c3311ffd4c76ebe" title="payments::PaymentDetails\l::set_has_memo" alt="" coords="233,5,413,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#a978562af43036ce6590a157d0f39e58b" title="payments::PaymentDetails\l::memo" alt="" coords="233,71,413,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_details.html#a430950093cab57c33f2d11605ec0d286" title="payments::PaymentDetails\l::clear_has_memo" alt="" coords="233,136,413,177"/>
+</map>

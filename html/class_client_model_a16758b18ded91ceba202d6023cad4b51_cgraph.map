@@ -1,0 +1,13 @@
+<map id="ClientModel::updateAlert" name="ClientModel::updateAlert">
+<area shape="rect" id="node2" href="$classbase__uint.html#ade1a897fac931f28f54998c92c797228" title="base_uint::SetHex" alt="" coords="245,5,375,32"/>
+<area shape="rect" id="node4" href="$class_c_alert.html#aa37df9d177a6841ec5fa1e611c42b968" title="CAlert::getAlertByHash" alt="" coords="231,56,389,83"/>
+<area shape="rect" id="node5" href="$class_c_alert.html#ae7e110993e592a1a4f99379ab4fcfa08" title="CAlert::IsNull" alt="" coords="260,107,360,133"/>
+<area shape="rect" id="node6" href="$class_client_model.html#ae44eb0943b8528d5a0b22d063e5cc95c" title="Return warnings to be displayed in status bar. " alt="" coords="221,158,399,199"/>
+<area shape="rect" id="node3" href="$uint256_8h.html#aa59e8a8c5a39cb5041f93bb95dd02119" title="HexDigit" alt="" coords="461,5,533,32"/>
+<area shape="rect" id="node7" href="$main_8cpp.html#a70b1d1b79f1c760e65c960713b87b732" title="GetWarnings" alt="" coords="447,165,547,192"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="621,115,712,141"/>
+<area shape="rect" id="node10" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="647,165,686,192"/>
+<area shape="rect" id="node11" href="$class_c_alert.html#a0a7fab6a971781904afb3e4a0ee29e12" title="CAlert::AppliesToMe" alt="" coords="595,216,739,243"/>
+<area shape="rect" id="node9" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="831,115,875,141"/>
+<area shape="rect" id="node12" href="$clientversion_8cpp.html#a7e6809cdbfc7f83b46f83caea740894d" title="Format the subversion field according to BIP 14 spec (https://github.com/bitcoin/bips/blob/master/bip..." alt="" coords="787,216,920,243"/>
+</map>

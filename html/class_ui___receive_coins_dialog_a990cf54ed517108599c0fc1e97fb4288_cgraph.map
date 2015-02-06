@@ -1,0 +1,4 @@
+<map id="Ui_ReceiveCoinsDialog::setupUi" name="Ui_ReceiveCoinsDialog::setupUi">
+<area shape="rect" id="node2" href="$class_ui___receive_coins_dialog.html#ab8ec986ddacb3e597797189ff26a3de2" title="Ui_ReceiveCoinsDialog\l::retranslateUi" alt="" coords="216,5,379,47"/>
+<area shape="rect" id="node3" href="$class_anoncoin_amount_field.html#a2d8609eead093e27b4e2d07f12b56815" title="AnoncoinAmountField\l::setText" alt="" coords="427,5,579,47"/>
+</map>

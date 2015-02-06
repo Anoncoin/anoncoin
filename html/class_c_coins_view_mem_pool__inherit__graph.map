@@ -1,0 +1,4 @@
+<map id="CCoinsViewMemPool" name="CCoinsViewMemPool">
+<area shape="rect" id="node2" href="$class_c_coins_view_backed.html" title="CCoinsView backed by another CCoinsView. " alt="" coords="11,80,150,107"/>
+<area shape="rect" id="node3" href="$class_c_coins_view.html" title="Abstract view on the open txout dataset. " alt="" coords="33,5,128,32"/>
+</map>

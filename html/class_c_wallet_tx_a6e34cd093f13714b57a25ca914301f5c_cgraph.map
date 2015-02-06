@@ -1,0 +1,7 @@
+<map id="CWalletTx::GetAvailableWatchOnlyCredit" name="CWalletTx::GetAvailableWatchOnlyCredit">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a7d77e683a0f10403fe2b67385895d497" title="CWallet::IsSpent" alt="" coords="263,5,385,32"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#a9ec15c32442fcceb95425d8b36492544" title="CWallet::GetCredit" alt="" coords="257,107,391,133"/>
+<area shape="rect" id="node4" href="$core_8h.html#ad1d9a769fa327ea042e0c9fadeb4836b" title="MoneyRange" alt="" coords="439,56,540,83"/>
+<area shape="rect" id="node5" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="459,131,520,157"/>
+<area shape="rect" id="node6" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="588,131,748,157"/>
+</map>

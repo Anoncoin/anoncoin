@@ -1,0 +1,6 @@
+<map id="OptionsModel::setData" name="OptionsModel::setData">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#a82afe76b9469d777217438a25ab7f95e" title="GUIUtil::SetStartOnSystem\lStartup" alt="" coords="218,5,401,47"/>
+<area shape="rect" id="node3" href="$net_8cpp.html#a93e4e6fbe288b6e882e697918695f88e" title="MapPort" alt="" coords="273,71,345,98"/>
+<area shape="rect" id="node4" href="$class_options_model.html#af25171526a18c4746132ff199e0b1d71" title="OptionsModel::setRestart\lRequired" alt="" coords="223,123,395,164"/>
+<area shape="rect" id="node5" href="$class_options_model.html#a42efacc748130848acc20247a7ed4617" title="Updates current unit in memory, settings and emits displayUnitChanged(newUnit) signal. " alt="" coords="211,189,408,215"/>
+</map>

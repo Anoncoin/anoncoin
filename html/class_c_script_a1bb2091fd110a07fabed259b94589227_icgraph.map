@@ -1,0 +1,5 @@
+<map id="CScript::SetMultisig" name="CScript::SetMultisig">
+<area shape="rect" id="node2" href="$rpcwallet_8cpp.html#aa9b91e060b2d18fffb3b57a679441e68" title="_createmultisig_redeemScript" alt="" coords="192,31,391,57"/>
+<area shape="rect" id="node3" href="$rpcmisc_8cpp.html#a10f145bcadd06025abb3b065e2fa7a84" title="createmultisig" alt="" coords="455,5,559,32"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a01e8a83cbd4209f10c71719383d7ca2d" title="addmultisigaddress" alt="" coords="439,56,576,83"/>
+</map>

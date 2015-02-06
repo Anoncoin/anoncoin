@@ -1,0 +1,8 @@
+<map id="WalletView::message" name="WalletView::message">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a015da635646a47196bbcd819f7e01e7c" title="WalletView::WalletView" alt="" coords="218,5,379,32"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a99d6a88bea0aef8db23e249c7ffb24d0" title="WalletView::setAnoncoinGUI" alt="" coords="203,56,395,83"/>
+<area shape="rect" id="node5" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="205,107,392,133"/>
+<area shape="rect" id="node6" href="$class_wallet_view.html#a9800d793b552076b4207276d9e08c8b6" title="Backup the wallet. " alt="" coords="211,157,387,184"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="453,81,617,108"/>
+<area shape="rect" id="node7" href="$class_wallet_frame.html#a76aa3543635fedea052661a4cd44b81d" title="Backup the wallet. " alt="" coords="443,157,628,184"/>
+</map>

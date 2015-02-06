@@ -1,0 +1,51 @@
+<map id="ThreadOpenConnections" name="ThreadOpenConnections">
+<area shape="rect" id="node2" href="$net_8cpp.html#aa19cb8e6cf23a990e585f2bbf9ece276" title="OpenNetworkConnection" alt="" coords="243,659,413,685"/>
+<area shape="rect" id="node3" href="$net_8cpp.html#a16fa1bd4d34c4c29c90903fc3cdf7517" title="check whether a given address is potentially local " alt="" coords="1241,1039,1305,1065"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="1005,912,1078,939"/>
+<area shape="rect" id="node16" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="750,988,875,1015"/>
+<area shape="rect" id="node21" href="$class_c_net_addr.html#a52a1b506f07e5450057e12a8b5a7fbcd" title="CNetAddr::IsValid" alt="" coords="1209,68,1337,95"/>
+<area shape="rect" id="node28" href="$class_c_service.html#a49df6ecaf59be814632c4d7755f26637" title="CService::GetPort" alt="" coords="1208,195,1337,221"/>
+<area shape="rect" id="node29" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="779,836,847,863"/>
+<area shape="rect" id="node36" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="289,1089,367,1116"/>
+<area shape="rect" id="node37" href="$class_c_addr_man.html#a15b8e72f55344b6fbd1bc1bda3cdc5bc" title="CAddrMan::size" alt="" coords="269,1140,387,1167"/>
+<area shape="rect" id="node38" href="$class_c_addr_man.html#a03fcc7109b5f014760dc50a81f68c5ec" title="CAddrMan::Add" alt="" coords="269,1039,387,1065"/>
+<area shape="rect" id="node43" href="$class_c_net_addr.html#af196f306433562cb088dc83fd314a267" title="CNetAddr::GetGroup" alt="" coords="968,1343,1115,1369"/>
+<area shape="rect" id="node47" href="$class_c_addr_man.html#a6aa6708d0ee55dba9ec6cefc9811c8e3" title="CAddrMan::Select" alt="" coords="263,1191,393,1217"/>
+<area shape="rect" id="node49" href="$net_8cpp.html#a96eb2fba6d80870802ac787b6ada4beb" title="IsLimited" alt="" coords="290,1393,366,1420"/>
+<area shape="rect" id="node50" href="$class_c_chain_params.html#afdb7793273cdb87cc5fd75450eb2258b" title="CChainParams::GetDefaultPort" alt="" coords="224,1444,432,1471"/>
+<area shape="rect" id="node4" href="$net_8cpp.html#a66a7371d8e724cac0b4495169cdf2859" title="FindNode" alt="" coords="773,279,853,305"/>
+<area shape="rect" id="node5" href="$class_c_node.html#aefa8b81afa53b4c6635dc4c6c024211a" title="CNode::IsBanned" alt="" coords="511,785,638,812"/>
+<area shape="rect" id="node7" href="$net_8cpp.html#a50fb6e457be5579fb51d3a2827b1cba5" title="ConnectNode" alt="" coords="523,557,627,584"/>
+<area shape="rect" id="node34" href="$class_c_semaphore_grant.html#ab3e6f84f304703abc52517b0c8de26cf" title="CSemaphoreGrant::MoveTo" alt="" coords="480,355,669,381"/>
+<area shape="rect" id="node8" href="$class_c_node.html#afb65ed679f7bda59aab89e0f5afae292" title="CNode::AddRef" alt="" coords="755,481,871,508"/>
+<area shape="rect" id="node9" href="$class_c_service.html#a336f9848fe9364e260c76499be0351a5" title="CService::ToString" alt="" coords="746,532,879,559"/>
+<area shape="rect" id="node18" href="$netbase_8cpp.html#a8d8d8eefd45d180c361e37dc293b6def" title="ConnectSocketByName" alt="" coords="731,329,895,356"/>
+<area shape="rect" id="node23" href="$netbase_8cpp.html#a805b21dc07ab1574acaa657b4c0fd9e9" title="ConnectSocket" alt="" coords="985,363,1097,389"/>
+<area shape="rect" id="node30" href="$class_c_addr_man.html#afcddc2573121065177dc981cea710789" title="CAddrMan::Attempt" alt="" coords="743,684,882,711"/>
+<area shape="rect" id="node33" href="$netbase_8cpp.html#a8ddb7d8d6e5b5cfabfdeea132f556977" title="Return readable error string for a network error code. " alt="" coords="745,380,881,407"/>
+<area shape="rect" id="node10" href="$class_c_service.html#a39b82301356b0dfc2a92befc727b77be" title="CService::ToStringIPPort" alt="" coords="956,532,1127,559"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="1241,667,1305,693"/>
+<area shape="rect" id="node12" href="$class_c_service.html#a1e0f0b98239a9097044695a9e439bb46" title="CService::ToStringPort" alt="" coords="1193,515,1352,541"/>
+<area shape="rect" id="node13" href="$class_c_net_addr.html#a16ff4478f02f06f5a9a038a24d5da2f9" title="CNetAddr::IsIPv4" alt="" coords="1210,565,1335,592"/>
+<area shape="rect" id="node14" href="$class_c_net_addr.html#a3fba9e0b18f531c0ed15794a30e8165d" title="CNetAddr::IsTor" alt="" coords="1213,616,1332,643"/>
+<area shape="rect" id="node15" href="$class_c_net_addr.html#a7ec845c27b63853fb0db08a4d154266f" title="CNetAddr::ToStringIP" alt="" coords="1197,464,1348,491"/>
+<area shape="rect" id="node17" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="987,988,1096,1015"/>
+<area shape="rect" id="node19" href="$netbase_8cpp.html#a1b1ce2ba1ffe40785e65ec3ad5a20e79" title="SplitHostPort" alt="" coords="991,312,1091,339"/>
+<area shape="rect" id="node20" href="$netbase_8cpp.html#a426fafd989b57880762556c2ff0c9d2f" title="GetNameProxy" alt="" coords="985,144,1098,171"/>
+<area shape="rect" id="node22" href="$netbase_8cpp.html#a4a0df7ebe15572508e61c38406e49732" title="HaveNameProxy" alt="" coords="980,93,1103,120"/>
+<area shape="rect" id="node24" href="$class_i2_p_session.html#a0b2a285f34224a7fdc8ffcb0d1f6d48e" title="I2PSession::Instance" alt="" coords="1199,413,1346,440"/>
+<area shape="rect" id="node25" href="$class_s_a_m_1_1_stream_session_adapter.html#a983b84796d46f00aee1e4b7c4f6f421f" title="SAM::StreamSessionAdapter\l::connect" alt="" coords="1175,246,1371,287"/>
+<area shape="rect" id="node26" href="$netbase_8cpp.html#a4e67b39fc1769663260d791d2f4d049d" title="GetProxy" alt="" coords="1234,312,1311,339"/>
+<area shape="rect" id="node27" href="$class_c_net_addr.html#a34a4760424f5c51998fc3baf82ccb5c8" title="CNetAddr::GetNetwork" alt="" coords="1193,363,1352,389"/>
+<area shape="rect" id="node31" href="$class_c_addr_man.html#a0c2677ae50ce0d680f0105b285d1f5d0" title="CAddrMan::Check" alt="" coords="976,1089,1107,1116"/>
+<area shape="rect" id="node32" href="$class_c_addr_man.html#ab1a1bfa8b435ef139570c88de1a5245f" title="CAddrMan::Attempt_" alt="" coords="968,684,1115,711"/>
+<area shape="rect" id="node35" href="$class_c_semaphore_grant.html#a8d985eeace74e037baeb39bd2d586576" title="CSemaphoreGrant::Release" alt="" coords="717,228,908,255"/>
+<area shape="rect" id="node39" href="$class_c_addr_man.html#a9dd6df8b1904548a86054d19d4a90724" title="CAddrMan::Add_" alt="" coords="513,1039,637,1065"/>
+<area shape="rect" id="node46" href="$class_c_net_addr.html#aae906cecdba331389f249a64693895b6" title="CNetAddr::ToString" alt="" coords="505,1089,644,1116"/>
+<area shape="rect" id="node40" href="$class_c_net_addr.html#a35131b2792434d1c9a860c583b610ab6" title="CNetAddr::IsRoutable" alt="" coords="965,1039,1117,1065"/>
+<area shape="rect" id="node41" href="$util_8cpp.html#a0e44e088732172da6662db2d5e37d4b2" title="GetRandInt" alt="" coords="767,1191,858,1217"/>
+<area shape="rect" id="node42" href="$class_c_addr_info.html#ae53c2174bdbc070bb1777cfabecaddda" title="CAddrInfo::GetNewBucket" alt="" coords="723,1140,902,1167"/>
+<area shape="rect" id="node44" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1237,1343,1309,1369"/>
+<area shape="rect" id="node45" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1419,1343,1503,1369"/>
+<area shape="rect" id="node48" href="$class_c_addr_man.html#acd799cecb73e466d1369e6e2f23d3a8d" title="CAddrMan::Select_" alt="" coords="506,1191,643,1217"/>
+</map>

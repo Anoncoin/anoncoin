@@ -1,0 +1,6 @@
+<map id="WalletView::incomingTransaction" name="WalletView::incomingTransaction">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a99d6a88bea0aef8db23e249c7ffb24d0" title="WalletView::setAnoncoinGUI" alt="" coords="559,5,751,32"/>
+<area shape="rect" id="node4" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="272,56,511,83"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="799,31,963,57"/>
+<area shape="rect" id="node5" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="561,56,748,83"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="BackupWallet" name="BackupWallet">
+<area shape="rect" id="node2" href="$class_wallet_model.html#aa316c19ef41f26ea89f194ab253d3206" title="WalletModel::backupWallet" alt="" coords="157,5,340,32"/>
+<area shape="rect" id="node5" href="$rpcwallet_8cpp.html#a7813bcc93d80c6c4ad0ae846f80cff3e" title="backupwallet" alt="" coords="199,56,298,83"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a9800d793b552076b4207276d9e08c8b6" title="Backup the wallet. " alt="" coords="388,5,564,32"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#a76aa3543635fedea052661a4cd44b81d" title="Backup the wallet. " alt="" coords="612,5,797,32"/>
+</map>

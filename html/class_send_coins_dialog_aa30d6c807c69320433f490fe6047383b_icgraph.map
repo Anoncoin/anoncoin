@@ -1,0 +1,6 @@
+<map id="SendCoinsDialog::setBalance" name="SendCoinsDialog::setBalance">
+<area shape="rect" id="node2" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="540,5,727,32"/>
+<area shape="rect" id="node5" href="$class_send_coins_dialog.html#a74815ad8502b126200b6fd2e59e9f042" title="SendCoinsDialog::updateDisplayUnit" alt="" coords="252,31,492,57"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="775,5,961,32"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1009,5,1173,32"/>
+</map>

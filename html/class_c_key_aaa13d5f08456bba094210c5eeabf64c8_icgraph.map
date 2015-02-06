@@ -1,0 +1,21 @@
+<map id="CKey::Set" name="CKey::Set">
+<area shape="rect" id="node2" href="$class_c_anoncoin_secret.html#a16c3276335a1d71493bfd83742bbda50" title="CAnoncoinSecret::GetKey" alt="" coords="136,81,313,108"/>
+<area shape="rect" id="node6" href="$class_c_crypto_key_store.html#a81bd70e18aa75f566526620a74f9cd88" title="CCryptoKeyStore::Unlock" alt="" coords="138,208,311,235"/>
+<area shape="rect" id="node14" href="$class_c_crypto_key_store.html#a58cfb3c490318ef82de8fc9be6637269" title="CCryptoKeyStore::GetKey" alt="" coords="136,305,313,332"/>
+<area shape="rect" id="node19" href="$struct_c_ext_key.html#a8cd6ecafdd649082601d7eebbec79688" title="CExtKey::SetMaster" alt="" coords="153,356,296,383"/>
+<area shape="rect" id="node20" href="$struct_c_ext_key.html#a9720e119745472336b6729e19f0819dd" title="CExtKey::Decode" alt="" coords="161,407,288,433"/>
+<area shape="rect" id="node3" href="$rpcdump_8cpp.html#a3a6fdb974fce01220a895393d444e981" title="importprivkey" alt="" coords="426,5,527,32"/>
+<area shape="rect" id="node4" href="$rpcdump_8cpp.html#a2566d5c9dd1938b74e70398cdb3ac5c1" title="importwallet" alt="" coords="430,56,523,83"/>
+<area shape="rect" id="node5" href="$rpcrawtransaction_8cpp.html#aa0d151e35c0ad5ec82df451a833aeadb" title="signrawtransaction" alt="" coords="410,107,543,133"/>
+<area shape="rect" id="node7" href="$class_c_wallet.html#a002c61a2b74f2c46063340c568e6cc1b" title="CWallet::Unlock" alt="" coords="418,157,535,184"/>
+<area shape="rect" id="node11" href="$class_c_wallet.html#a4abcec3066e7c462f4564c159fc15031" title="CWallet::ChangeWalletPassphrase" alt="" coords="361,208,592,235"/>
+<area shape="rect" id="node8" href="$class_wallet_model.html#a6d7ebdcf0d28d058c658eb44a6c4a6c6" title="WalletModel::setWalletLocked" alt="" coords="649,107,849,133"/>
+<area shape="rect" id="node10" href="$rpcwallet_8cpp.html#a733f7c70e7c18783935e6de9643c0086" title="walletpassphrase" alt="" coords="686,157,811,184"/>
+<area shape="rect" id="node9" href="$class_ask_passphrase_dialog.html#ac2f176af3693b73870d26ef0bfc6cbb9" title="AskPassphraseDialog\l::accept" alt="" coords="905,150,1057,191"/>
+<area shape="rect" id="node12" href="$class_wallet_model.html#a67ebff3f267b5c9973c0465184c085a4" title="WalletModel::changePassphrase" alt="" coords="640,208,857,235"/>
+<area shape="rect" id="node13" href="$rpcwallet_8cpp.html#a84ad884957e24688433be32a9ca70933" title="walletpassphrasechange" alt="" coords="664,259,833,285"/>
+<area shape="rect" id="node15" href="$class_sign_verify_message_dialog.html#a2ef91b4ace68d63ab1c1d3cc6c13b5f9" title="SignVerifyMessageDialog\l::on_signMessageButton\l_SM_clicked" alt="" coords="389,259,564,315"/>
+<area shape="rect" id="node16" href="$rpcdump_8cpp.html#a4010fb238298e15c540d3e5ecd60f858" title="dumpprivkey" alt="" coords="428,339,525,365"/>
+<area shape="rect" id="node17" href="$rpcdump_8cpp.html#a831ddf746d4f2500ba6f6c07f63445cd" title="dumpwallet" alt="" coords="432,389,521,416"/>
+<area shape="rect" id="node18" href="$rpcwallet_8cpp.html#a315b42a2c859c4b50a54c1b05984928c" title="signmessage" alt="" coords="427,440,527,467"/>
+</map>

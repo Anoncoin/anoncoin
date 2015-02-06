@@ -1,0 +1,6 @@
+<map id="SocketSendData" name="SocketSendData">
+<area shape="rect" id="node2" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="245,5,319,32"/>
+<area shape="rect" id="node3" href="$class_c_node.html#a945c993a84eaa9d6bca18284befaccbe" title="CNode::RecordBytesSent" alt="" coords="195,56,369,83"/>
+<area shape="rect" id="node4" href="$netbase_8cpp.html#a8ddb7d8d6e5b5cfabfdeea132f556977" title="Return readable error string for a network error code. " alt="" coords="214,107,350,133"/>
+<area shape="rect" id="node5" href="$class_c_node.html#a63a6091a0b0fc0987d9436e1ec708423" title="CNode::CloseSocketDisconnect" alt="" coords="176,157,388,184"/>
+</map>

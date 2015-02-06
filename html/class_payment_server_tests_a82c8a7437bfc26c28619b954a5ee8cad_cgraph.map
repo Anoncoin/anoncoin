@@ -1,0 +1,51 @@
+<map id="PaymentServerTests::paymentServerTests" name="PaymentServerTests::paymentServerTests">
+<area shape="rect" id="node2" href="$paymentservertests_8cpp.html#a51299643398eddd102daecb76399078e" title="parse_b64der_cert" alt="" coords="241,169,374,196"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a224a1ec4dc69c9463abf0e8ae767af0d" title="DecodeBase64" alt="" coords="511,169,624,196"/>
+<area shape="rect" id="node4" href="$class_payment_server.html#a7371f1dd4896d83274f8784b42f288eb" title="PaymentServer::LoadRootCAs" alt="" coords="205,271,409,297"/>
+<area shape="rect" id="node7" href="$class_payment_server.html#a468fb163f5172c8428c434631aeb4132" title="PaymentServer::setOptions\lModel" alt="" coords="215,322,400,363"/>
+<area shape="rect" id="node8" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="222,388,393,415"/>
+<area shape="rect" id="node25" href="$class_payment_request_plus.html#ae5d361b6e34549a83f3cb7885b20b120" title="PaymentRequestPlus\l::getMerchant" alt="" coords="1280,755,1431,797"/>
+<area shape="rect" id="node5" href="$class_payment_server.html#af11d0f7f06d94bc3b713ee6fac9af921" title="PaymentServer::freeCertStore" alt="" coords="467,220,668,247"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="535,271,599,297"/>
+<area shape="rect" id="node9" href="$class_payment_server.html#a2f94f2c3e12d03199870e17008535302" title="PaymentServer::initNetManager" alt="" coords="461,321,673,348"/>
+<area shape="rect" id="node43" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="457,409,677,436"/>
+<area shape="rect" id="node10" href="$class_options_model.html#ae7c7840b9a004e838ad73438d4df08ac" title="OptionsModel::getProxySettings" alt="" coords="725,81,937,108"/>
+<area shape="rect" id="node16" href="$class_payment_server.html#a5b8e2e6380142fb7ad631400bcfc6f28" title="PaymentServer::netRequest\lFinished" alt="" coords="737,314,926,355"/>
+<area shape="rect" id="node42" href="$class_payment_server.html#aa773cdbc021130ad3d2c7687a561de96" title="PaymentServer::reportSsl\lErrors" alt="" coords="744,183,919,225"/>
+<area shape="rect" id="node11" href="$netbase_8cpp.html#a4e67b39fc1769663260d791d2f4d049d" title="GetProxy" alt="" coords="1057,5,1134,32"/>
+<area shape="rect" id="node12" href="$class_c_net_addr.html#a7ec845c27b63853fb0db08a4d154266f" title="CNetAddr::ToStringIP" alt="" coords="1020,56,1171,83"/>
+<area shape="rect" id="node15" href="$class_c_service.html#a49df6ecaf59be814632c4d7755f26637" title="CService::GetPort" alt="" coords="1031,107,1160,133"/>
+<area shape="rect" id="node13" href="$util_8cpp.html#a71aa75e646de8a10971f887bc71d9a75" title="EncodeBase32" alt="" coords="1299,5,1411,32"/>
+<area shape="rect" id="node14" href="$class_c_service.html#ab0f791c174511056236119cc1580faeb" title="CService::GetSockAddr" alt="" coords="1274,56,1437,83"/>
+<area shape="rect" id="node17" href="$class_payment_request_plus.html#aaa495c136209bac976cc195705a6c509" title="PaymentRequestPlus\l::parse" alt="" coords="1020,219,1171,261"/>
+<area shape="rect" id="node21" href="$class_payment_server.html#abe96a7c90755b8e1975e380b5a8228bd" title="PaymentServer::processPayment\lRequest" alt="" coords="985,474,1205,515"/>
+<area shape="rect" id="node22" href="$namespace_g_u_i_util.html#a2d4b7f2c11ebc4b97af10bc20d19b1b2" title="GUIUtil::HtmlEscape" alt="" coords="1283,304,1427,331"/>
+<area shape="rect" id="node41" href="$classpayments_1_1_payment_a_c_k.html#af5473059f2e5d45e26ee2605f0d7ce97" title="payments::PaymentACK\l::memo" alt="" coords="1012,285,1179,326"/>
+<area shape="rect" id="node18" href="$classpayments_1_1_payment_request.html#ae3325b49f6423d3c761233e6a942e7ee" title="payments::PaymentRequest\l::payment_details_version" alt="" coords="1261,107,1450,149"/>
+<area shape="rect" id="node19" href="$classpayments_1_1_payment_request.html#a409c3294565d64b32604eec63343a097" title="payments::PaymentRequest\l::serialized_payment_details" alt="" coords="1260,173,1451,214"/>
+<area shape="rect" id="node20" href="$classpayments_1_1_payment_request.html#a222f0b2cebe5bef9bbdd27e41b41ab4c" title="payments::PaymentRequest\l::Clear" alt="" coords="1261,238,1450,279"/>
+<area shape="rect" id="node23" href="$class_payment_request_plus.html#a7c8897087763a5add91d9fdee059a126" title="PaymentRequestPlus\l::getDetails" alt="" coords="1280,457,1431,498"/>
+<area shape="rect" id="node24" href="$classpayments_1_1_payment_details.html#a978562af43036ce6590a157d0f39e58b" title="payments::PaymentDetails\l::memo" alt="" coords="1265,522,1445,563"/>
+<area shape="rect" id="node35" href="$class_payment_request_plus.html#a30ec9429606dfdcb7c818c2f443db872" title="PaymentRequestPlus\l::getPayTo" alt="" coords="1280,587,1431,629"/>
+<area shape="rect" id="node37" href="$script_8cpp.html#a951f7e601746ae076afdf3169ecca2fc" title="ExtractDestination" alt="" coords="1290,653,1421,680"/>
+<area shape="rect" id="node38" href="$class_c_tx_out.html#a89bf5bc4987ccd09e9a675d980e18602" title="CTxOut::IsDust" alt="" coords="1299,704,1412,731"/>
+<area shape="rect" id="node39" href="$class_anoncoin_units.html#a07b2ad9cac3728231143e4d78c059e14" title="Format as string (with unit) " alt="" coords="1253,355,1457,381"/>
+<area shape="rect" id="node40" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="1257,405,1454,432"/>
+<area shape="rect" id="node26" href="$class_payment_request_plus.html#a62ae278689d852e4a73cdef627763944" title="PaymentRequestPlus\l::IsInitialized" alt="" coords="1525,591,1675,633"/>
+<area shape="rect" id="node28" href="$classpayments_1_1_payment_request.html#a42d70acf5e751d9304f1e4246587b648" title="payments::PaymentRequest\l::pki_type" alt="" coords="1505,657,1695,698"/>
+<area shape="rect" id="node29" href="$classpayments_1_1_payment_request.html#ac8f305ba3185f34458c9abe869119c6a" title="payments::PaymentRequest\l::pki_data" alt="" coords="1505,722,1695,763"/>
+<area shape="rect" id="node30" href="$classpayments_1_1_x509_certificates.html#a2e492800721141b6c29b7ef46a9cfe0e" title="payments::X509Certificates\l::certificate_size" alt="" coords="1507,787,1693,829"/>
+<area shape="rect" id="node31" href="$classpayments_1_1_x509_certificates.html#ab887f34700ccaaa31eb80da5a0cd7a90" title="payments::X509Certificates\l::certificate" alt="" coords="1507,853,1693,894"/>
+<area shape="rect" id="node32" href="$classpayments_1_1_payment_request.html#ad2a94a64caa232f0ae773d91f7bd2d09" title="payments::PaymentRequest\l::set_signature" alt="" coords="1505,918,1695,959"/>
+<area shape="rect" id="node34" href="$classpayments_1_1_payment_request.html#a55eab9735c9b7675d42eef66336958fc" title="payments::PaymentRequest\l::signature" alt="" coords="1505,983,1695,1025"/>
+<area shape="rect" id="node27" href="$classpayments_1_1_payment_request.html#a823854558ba54ec4b6258d9132affc15" title="payments::PaymentRequest\l::IsInitialized" alt="" coords="1743,591,1932,633"/>
+<area shape="rect" id="node33" href="$classpayments_1_1_payment_request.html#ac0b591920a592f6e1ad3d4bb2f0f2043" title="payments::PaymentRequest\l::set_has_signature" alt="" coords="1743,918,1932,959"/>
+<area shape="rect" id="node36" href="$classpayments_1_1_payment_details.html#adafb0db0ce50e68c794846568be749ee" title="payments::PaymentDetails\l::outputs_size" alt="" coords="1510,526,1690,567"/>
+<area shape="rect" id="node44" href="$paymentserver_8cpp.html#ae18a9d596738426e7cdfca8f31f797de" title="ANONCOIN_IPC_PREFIX" alt="" coords="742,380,921,407"/>
+<area shape="rect" id="node45" href="$class_payment_server.html#ae9024ad31d8530c68b9f8516a88d7f02" title="PaymentServer::fetchRequest" alt="" coords="731,431,931,457"/>
+<area shape="rect" id="node46" href="$namespace_g_u_i_util.html#a80503cefefdc17af8e975682342066c4" title="GUIUtil::parseAnoncoinURI" alt="" coords="739,621,923,648"/>
+<area shape="rect" id="node50" href="$class_payment_server.html#a84ae26ac4b8d46abd97484890793f528" title="PaymentServer::readPayment\lRequest" alt="" coords="731,249,931,290"/>
+<area shape="rect" id="node47" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="1021,821,1170,848"/>
+<area shape="rect" id="node48" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="1284,872,1427,899"/>
+<area shape="rect" id="node49" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="1271,821,1439,848"/>
+</map>

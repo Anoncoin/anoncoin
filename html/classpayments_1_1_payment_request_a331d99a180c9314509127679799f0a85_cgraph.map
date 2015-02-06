@@ -1,0 +1,5 @@
+<map id="payments::PaymentRequest::set_allocated_signature" name="payments::PaymentRequest::set_allocated_signature">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#ac0b591920a592f6e1ad3d4bb2f0f2043" title="payments::PaymentRequest\l::set_has_signature" alt="" coords="243,5,432,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a55eab9735c9b7675d42eef66336958fc" title="payments::PaymentRequest\l::signature" alt="" coords="243,71,432,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#ac44ecead97550a6122a24e02cf392d5b" title="payments::PaymentRequest\l::clear_has_signature" alt="" coords="243,136,432,177"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="CCoinsViewDB::BatchWrite" name="CCoinsViewDB::BatchWrite">
+<area shape="rect" id="node2" href="$class_c_level_d_b_wrapper.html#a820484c9e427f9e3400396e750acf4b8" title="CLevelDBWrapper::WriteBatch" alt="" coords="239,5,444,32"/>
+<area shape="rect" id="node3" href="$leveldbwrapper_8cpp.html#aea36eb5fddb6266b14ea8cb15e183486" title="HandleError" alt="" coords="492,5,585,32"/>
+</map>

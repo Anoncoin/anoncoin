@@ -1,0 +1,8 @@
+<map id="PaymentServer::readPaymentRequest" name="PaymentServer::readPaymentRequest">
+<area shape="rect" id="node2" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="253,56,473,83"/>
+<area shape="rect" id="node3" href="$class_payment_server.html#af795e3c318556c833792e530b279efc9" title="PaymentServer::eventFilter" alt="" coords="555,5,739,32"/>
+<area shape="rect" id="node4" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="562,56,733,83"/>
+<area shape="rect" id="node6" href="$class_payment_server.html#a6ee6e29e1255605582459463d195a651" title="PaymentServer::handleURIConnection" alt="" coords="521,108,773,135"/>
+<area shape="rect" id="node5" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="852,46,1004,87"/>
+<area shape="rect" id="node7" href="$class_payment_server.html#a4a66f55c11f4757b121179d5d6988ab2" title="PaymentServer::PaymentServer" alt="" coords="821,112,1035,139"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="CoinControlDialog::setModel" name="CoinControlDialog::setModel">
+<area shape="rect" id="node2" href="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49" title="SendCoinsDialog::coinControl\lButtonClicked" alt="" coords="191,5,391,47"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="439,5,636,47"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="Unserialize" name="Unserialize">
+<area shape="rect" id="node2" href="$class_c_tx_in_undo.html#a0a2b82f03edad7ad85a66e63e4552af9" title="CTxInUndo::Unserialize" alt="" coords="148,5,311,32"/>
+<area shape="rect" id="node3" href="$serialize_8h.html#ac81185ca595a48045a6808b69bf2eb0e" title="Unserialize_impl" alt="" coords="169,56,289,83"/>
+<area shape="rect" id="node4" href="$serialize_8h.html#aef8c207825b645e4156ab2a371101f3a" title="Unserialize" alt="" coords="185,107,273,133"/>
+<area shape="rect" id="node5" href="$serialize_8h.html#a3f746e0ed1975fa9447ef30050218aa9" title="SerReadWrite" alt="" coords="177,157,282,184"/>
+<area shape="rect" id="node6" href="$class_c_data_stream.html#ac80cfc65569416f8c23e328edb4cadae" title="CDataStream::operator\&gt;\&gt;" alt="" coords="141,208,317,235"/>
+<area shape="rect" id="node7" href="$class_c_auto_file.html#ae6826219322626d2ac8229e022c41dd7" title="CAutoFile::operator\&gt;\&gt;" alt="" coords="153,259,306,285"/>
+<area shape="rect" id="node8" href="$class_c_buffered_file.html#ab570d5f1a173a41100e7b42b4aacbbc5" title="CBufferedFile::operator\&gt;\&gt;" alt="" coords="141,309,317,336"/>
+</map>

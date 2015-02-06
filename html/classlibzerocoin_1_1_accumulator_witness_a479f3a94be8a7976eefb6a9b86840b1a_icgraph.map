@@ -1,0 +1,6 @@
+<map id="libzerocoin::AccumulatorWitness::getValue" name="libzerocoin::AccumulatorWitness::getValue">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#acce987e79e2498918495c3a7e8873810" title="Generates a proof that a commitment to a coin c was accumulated. " alt="" coords="220,5,436,61"/>
+<area shape="rect" id="node3" href="$_benchmark_8cpp.html#a8223c6bd6d6bbaa0b3973dca9eaebd65" title="Test_Accumulator" alt="" coords="263,85,393,112"/>
+<area shape="rect" id="node4" href="$_benchmark_8cpp.html#a270b3d0914e20b5c58ab92bc2823c1d1" title="Test_RunAllTests" alt="" coords="484,85,611,112"/>
+<area shape="rect" id="node5" href="$_benchmark_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="659,85,709,112"/>
+</map>

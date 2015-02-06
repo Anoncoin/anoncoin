@@ -1,0 +1,5 @@
+<map id="CWalletDB::ErasePurpose" name="CWalletDB::ErasePurpose">
+<area shape="rect" id="node2" href="$class_c_wallet.html#ac6542da8493cbb958068b7a01c05b631" title="CWallet::DelAddressBook" alt="" coords="232,46,408,73"/>
+<area shape="rect" id="node3" href="$class_address_table_model.html#a5c6bd467fd1fc499d126fe2b7380ce5c" title="AddressTableModel::\lsetData" alt="" coords="456,5,604,47"/>
+<area shape="rect" id="node4" href="$class_address_table_model.html#a682e6e3374d65543e49769906c8916e5" title="AddressTableModel::\lremoveRows" alt="" coords="456,71,604,112"/>
+</map>

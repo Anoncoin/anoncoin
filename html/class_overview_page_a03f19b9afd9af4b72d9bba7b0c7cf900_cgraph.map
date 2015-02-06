@@ -1,0 +1,11 @@
+<map id="OverviewPage::updateDisplayUnit" name="OverviewPage::updateDisplayUnit">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="508,31,712,57"/>
+<area shape="rect" id="node3" href="$class_overview_page.html#a2d7f91310a24a1612a9e1182e7b8788f" title="OverviewPage::setBalance" alt="" coords="277,81,460,108"/>
+<area shape="rect" id="node4" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="511,132,709,159"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#a07b2ad9cac3728231143e4d78c059e14" title="Format as string (with unit) " alt="" coords="508,81,712,108"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="760,56,913,83"/>
+<area shape="rect" id="node10" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="762,107,911,133"/>
+<area shape="rect" id="node7" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="974,5,1117,32"/>
+<area shape="rect" id="node8" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="971,56,1120,83"/>
+<area shape="rect" id="node9" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="961,107,1129,133"/>
+</map>

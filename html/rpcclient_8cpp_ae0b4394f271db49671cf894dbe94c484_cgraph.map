@@ -1,0 +1,24 @@
+<map id="CallRPC" name="CallRPC">
+<area shape="rect" id="node2" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="183,5,222,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a7d86fadf98dfaba55f80b9be0ab0f978" title="GetConfigFile" alt="" coords="151,107,255,133"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="364,56,428,83"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="571,157,639,184"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="351,528,441,555"/>
+<area shape="rect" id="node13" href="$class_s_s_l_i_o_stream_device.html#acdded14a6c79e263989ebf8aea392405" title="SSLIOStreamDevice::\lconnect" alt="" coords="127,259,279,301"/>
+<area shape="rect" id="node14" href="$util_8h.html#a565b3ea015b133d01dc52b4ec6e45f07" title="itostr" alt="" coords="177,325,228,352"/>
+<area shape="rect" id="node15" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="163,376,242,403"/>
+<area shape="rect" id="node16" href="$util_8cpp.html#a5e074135870a6fdfae4ac02047bc0432" title="EncodeBase64" alt="" coords="147,427,259,453"/>
+<area shape="rect" id="node17" href="$rpcprotocol_8cpp.html#ab409c39d9d803bb50fecd4f0ff9970a4" title="JSONRPCRequest" alt="" coords="135,477,271,504"/>
+<area shape="rect" id="node18" href="$rpcprotocol_8cpp.html#af2d91e7026366657a021311ecc188262" title="HTTPPost" alt="" coords="161,208,245,235"/>
+<area shape="rect" id="node21" href="$rpcprotocol_8cpp.html#af615c564cc7794d255e5adfacade4066" title="ReadHTTPStatus" alt="" coords="333,629,459,656"/>
+<area shape="rect" id="node22" href="$rpcprotocol_8cpp.html#a89f5b5f255f9edaac6e48fc81273cab9" title="ReadHTTPMessage" alt="" coords="131,579,274,605"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="351,107,441,133"/>
+<area shape="rect" id="node7" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="513,5,696,32"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="539,56,670,83"/>
+<area shape="rect" id="node10" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="522,107,687,133"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="744,56,879,83"/>
+<area shape="rect" id="node12" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="583,579,627,605"/>
+<area shape="rect" id="node19" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="331,208,461,235"/>
+<area shape="rect" id="node20" href="$clientversion_8cpp.html#aff087070aeaa72e85b2d1a6192af8af5" title="CLIENT_BUILD" alt="" coords="547,208,663,235"/>
+<area shape="rect" id="node23" href="$rpcprotocol_8cpp.html#adfa1ef30dd1e00dcbecff15e1161e369" title="ReadHTTPHeaders" alt="" coords="327,579,465,605"/>
+</map>

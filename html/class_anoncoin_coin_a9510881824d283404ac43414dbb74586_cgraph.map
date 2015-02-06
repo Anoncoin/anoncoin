@@ -1,0 +1,51 @@
+<map id="AnoncoinCoin::initialize" name="AnoncoinCoin::initialize">
+<area shape="rect" id="node2" href="$init_8cpp.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="282,1145,353,1172"/>
+<area shape="rect" id="node49" href="$rpcserver_8cpp.html#abbdd9938022ac36af7f0a436038d700d" title="StartDummyRPCThread" alt="" coords="234,1196,401,1223"/>
+<area shape="rect" id="node50" href="$class_anoncoin_coin.html#a19cc3b8135a5d63b023cb1f033277f55" title="Pass fatal exception message to UI thread. " alt="" coords="213,1247,421,1289"/>
+<area shape="rect" id="node3" href="$init_8cpp.html#ad59c5cbbe3bdf4fa36f3b7480da8d6ba" title="HandleSIGTERM" alt="" coords="519,5,645,32"/>
+<area shape="rect" id="node4" href="$init_8cpp.html#a70b23efd8d46bc8c627e5c241f0d7716" title="HandleSIGHUP" alt="" coords="524,56,640,83"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#acb3060cad083d342898b6055e43692ae" title="Set a boolean argument if it doesn&#39;t already have a value. " alt="" coords="750,132,863,159"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="761,233,852,260"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="775,436,839,463"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#a756a5c49a4bb607d16d9842f8f3ede4f" title="RaiseFileDescriptorLimit" alt="" coords="499,715,665,741"/>
+<area shape="rect" id="node9" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="563,765,601,792"/>
+<area shape="rect" id="node10" href="$class_c_tx_mem_pool.html#a1c0edb1fd5f0b02ddac46a6a97dcfd53" title="CTxMemPool::setSanityCheck" alt="" coords="481,816,683,843"/>
+<area shape="rect" id="node11" href="$chainparams_8h.html#aba971b509a44ee33c984ffad170e4c9f" title="RegTest" alt="" coords="546,867,618,893"/>
+<area shape="rect" id="node12" href="$util_8cpp.html#a246cad058037a1517dfa0a19cc76e53e" title="ParseMoney" alt="" coords="533,917,631,944"/>
+<area shape="rect" id="node13" href="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11" title="Sanity checks Ensure that Anoncoin is running in a usable environment with all necessary library supp..." alt="" coords="525,968,639,995"/>
+<area shape="rect" id="node14" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="762,613,851,640"/>
+<area shape="rect" id="node15" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="919,588,1049,615"/>
+<area shape="rect" id="node16" href="$util_8cpp.html#a37fca7e305fe0caa306b23fdb37f88e2" title="ShrinkDebugFile" alt="" coords="522,664,642,691"/>
+<area shape="rect" id="node17" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="517,1019,647,1045"/>
+<area shape="rect" id="node18" href="$util_8cpp.html#a749bc6776c8ec72d7c5e4dea56aee415" title="DateTimeStrFormat" alt="" coords="513,1069,651,1096"/>
+<area shape="rect" id="node19" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="770,1145,843,1172"/>
+<area shape="rect" id="node20" href="$main_8cpp.html#a8b6fddfd4e56e9c3e73c5dc0cf4de80c" title="Run an instance of the script checking thread. " alt="" coords="514,1221,650,1248"/>
+<area shape="rect" id="node21" href="$class_c_d_b_env.html#aaaef61cd032e25144c06e405fb7f93cf" title="CDBEnv::Open" alt="" coords="525,208,639,235"/>
+<area shape="rect" id="node22" href="$class_c_wallet_d_b.html#a3ebeb12f37d9c66512e2bc2903a6854a" title="CWalletDB::Recover" alt="" coords="510,1171,654,1197"/>
+<area shape="rect" id="node23" href="$class_c_d_b_env.html#a9d04604da4ad6f063e150b34d5df392d" title="CDBEnv::Verify" alt="" coords="525,1272,639,1299"/>
+<area shape="rect" id="node24" href="$main_8cpp.html#ab02615ff65f91d69f8d786ec900baa8a" title="Register with a network node to receive its signals. " alt="" coords="509,1323,655,1349"/>
+<area shape="rect" id="node25" href="$net_8cpp.html#a475f2fc7d8f5cd7511db253cae8fe28a" title="GetNodeSignals" alt="" coords="523,1373,641,1400"/>
+<area shape="rect" id="node26" href="$netbase_8cpp.html#a1d5be927f8f03e9fdb405a278374cb8d" title="ParseNetwork" alt="" coords="529,1424,635,1451"/>
+<area shape="rect" id="node27" href="$net_8cpp.html#a2f6d62a9d456bf38003df3815b707f46" title="Make a particular network entirely off&#45;limits (no automatic connects to it) " alt="" coords="539,1475,625,1501"/>
+<area shape="rect" id="node28" href="$class_c_net_addr.html#a52a1b506f07e5450057e12a8b5a7fbcd" title="CNetAddr::IsValid" alt="" coords="743,1576,871,1603"/>
+<area shape="rect" id="node29" href="$net_8cpp.html#a96eb2fba6d80870802ac787b6ada4beb" title="IsLimited" alt="" coords="769,1703,845,1729"/>
+<area shape="rect" id="node30" href="$netbase_8cpp.html#a3b85c9f702a45e80d9b6bfbe78c4bf12" title="SetProxy" alt="" coords="544,1576,620,1603"/>
+<area shape="rect" id="node31" href="$netbase_8cpp.html#a5f78099167609daf40193a0717f96f87" title="SetNameProxy" alt="" coords="526,1627,638,1653"/>
+<area shape="rect" id="node32" href="$net_8cpp.html#a89098b55df7d627a7a3c7f367cae24e6" title="SetReachable" alt="" coords="754,1765,859,1792"/>
+<area shape="rect" id="node33" href="$i2pwrapper_8cpp.html#abe20e174a9aa7c6ff216ea880df16333" title="InitializeI2pSettings" alt="" coords="513,157,651,184"/>
+<area shape="rect" id="node34" href="$i2pwrapper_8cpp.html#a67c5ce552a71de17d2a47e9fdd199176" title="isValidI2pDestination" alt="" coords="509,1829,655,1856"/>
+<area shape="rect" id="node35" href="$class_i2_p_session.html#a0b2a285f34224a7fdc8ffcb0d1f6d48e" title="I2PSession::Instance" alt="" coords="509,1880,655,1907"/>
+<area shape="rect" id="node36" href="$class_s_a_m_1_1_stream_session_adapter.html#a80d5e268298b1970dbb1119df2bc76d5" title="SAM::StreamSessionAdapter\l::getMyDestination" alt="" coords="484,1931,680,1973"/>
+<area shape="rect" id="node37" href="$class_i2_p_session.html#a4daa60a1a5767f354ebc5af8cabc4691" title="I2PSession::GenerateB32Address\lFromDestination" alt="" coords="469,1997,695,2038"/>
+<area shape="rect" id="node38" href="$util_8cpp.html#a7d86fadf98dfaba55f80b9be0ab0f978" title="GetConfigFile" alt="" coords="530,512,634,539"/>
+<area shape="rect" id="node39" href="$netbase_8cpp.html#a56a2f4bcb9fb77b5efe358f804f642cc" title="Lookup" alt="" coords="549,2063,615,2089"/>
+<area shape="rect" id="node40" href="$net_8cpp.html#af6d341a24d761a509fca026458cf2f72" title="GetListenPort" alt="" coords="530,461,634,488"/>
+<area shape="rect" id="node41" href="$net_8cpp.html#abb92a02eecc581e8927c8a6e31968645" title="AddLocal" alt="" coords="543,1728,621,1755"/>
+<area shape="rect" id="node42" href="$net_8cpp.html#a5230a9dcbf8f7663e386b358f8d2fdc8" title="AddOneShot" alt="" coords="533,2113,631,2140"/>
+<area shape="rect" id="node43" href="$util_8h.html#a139d0fe6387b9e230a9b8bb12d9b43b9" title="GetTimeMillis" alt="" coords="531,2164,633,2191"/>
+<area shape="rect" id="node44" href="$main_8cpp.html#ac98b87e479f71b7be2b990a10c4ebc2d" title="Unload database information. " alt="" coords="517,2215,647,2241"/>
+<area shape="rect" id="node45" href="$class_c_block_tree_d_b.html#a8fa5d150b98f4fd1aa8cf503eddfccef" title="CBlockTreeDB::WriteReindexing" alt="" coords="474,2265,690,2292"/>
+<area shape="rect" id="node46" href="$main_8cpp.html#a4ef97794a0ba7a9181ec0ef2aa88491b" title="Load the block tree and coins database from disk. " alt="" coords="523,2316,641,2343"/>
+<area shape="rect" id="node47" href="$class_c_chain.html#a1eee0372da596a8fc68369e480adc2f1" title="Returns the index entry for the genesis block of this chain, or NULL if none. " alt="" coords="745,335,868,361"/>
+<area shape="rect" id="node48" href="$main_8cpp.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="529,309,635,336"/>
+</map>

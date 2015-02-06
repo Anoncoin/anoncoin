@@ -1,0 +1,4 @@
+<map id="ReceiveRequestDialog::setModel" name="ReceiveRequestDialog::setModel">
+<area shape="rect" id="node2" href="$class_receive_coins_dialog.html#a5eabd6106c8e3b275305b84c0303f314" title="ReceiveCoinsDialog\l::on_recentRequestsView\l_doubleClicked" alt="" coords="211,5,384,61"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#a56df78045de75af55f4c4045ad4b7fcd" title="ReceiveCoinsDialog\l::on_showRequestButton\l_clicked" alt="" coords="432,5,603,61"/>
+</map>

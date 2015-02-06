@@ -1,0 +1,9 @@
+<map id="SAM::StreamSession::destGenerate" name="SAM::StreamSession::destGenerate">
+<area shape="rect" id="node2" href="$class_s_a_m_1_1_socket.html#a1455a6eec384bbdeda6382f33b49843b" title="SAM::Socket::isOk" alt="" coords="502,33,635,60"/>
+<area shape="rect" id="node3" href="$class_s_a_m_1_1_socket.html#ae19e83b3127dc1560f164a05b1acd763" title="SAM::Socket::write" alt="" coords="235,84,370,110"/>
+<area shape="rect" id="node5" href="$class_s_a_m_1_1_message.html#a6c454eb827a3ba8d5b6cb842b5ff23b7" title="SAM::Message::destGenerate" alt="" coords="203,134,403,161"/>
+<area shape="rect" id="node7" href="$class_s_a_m_1_1_socket.html#a3455043c16c8ca5c64855e6ea3ff15e1" title="SAM::Socket::read" alt="" coords="236,33,369,60"/>
+<area shape="rect" id="node8" href="$class_s_a_m_1_1_message.html#a134481a97dd531c7e5e11aeff965ea6c" title="SAM::Message::getValue" alt="" coords="217,185,389,212"/>
+<area shape="rect" id="node4" href="$class_s_a_m_1_1_socket.html#a4255f1f63449dfc32d012089ea73f5e7" title="SAM::Socket::close" alt="" coords="500,84,637,110"/>
+<area shape="rect" id="node6" href="$class_s_a_m_1_1_message.html#a2e50d96be91972360cdeed02071ec8b3" title="SAM::Message::createSAMRequest" alt="" coords="451,134,687,161"/>
+</map>

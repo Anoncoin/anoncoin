@@ -1,0 +1,9 @@
+<map id="GUIUtil::boostPathToQString" name="GUIUtil::boostPathToQString">
+<area shape="rect" id="node2" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="951,33,1001,59"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#aad169e3227e7a851db52a08bfb30391c" title="GUIUtil::openDebugLogfile" alt="" coords="256,33,436,59"/>
+<area shape="rect" id="node5" href="$class_intro.html#aad225845533fc7f451648dc7c9643e6a" title="Determine default data directory for operating system. " alt="" coords="247,117,445,143"/>
+<area shape="rect" id="node4" href="$class_r_p_c_console.html#adf26672994effc0bf948e8d83e1a8cb3" title="open the debug.log from the current datadir " alt="" coords="493,25,691,67"/>
+<area shape="rect" id="node6" href="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b" title="Intro::setDataDirectory" alt="" coords="514,142,670,169"/>
+<area shape="rect" id="node7" href="$class_intro.html#aa0af6d1fb6bc00c5517064dbef20bdc2" title="Determine data directory. " alt="" coords="740,91,901,118"/>
+<area shape="rect" id="node8" href="$class_intro.html#ae4cefbcd5e61f62cb2a59f38bc2ae52f" title="Intro::on_dataDirDefault\l_clicked" alt="" coords="739,164,903,205"/>
+</map>

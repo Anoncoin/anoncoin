@@ -1,0 +1,12 @@
+<map id="FindBlockPos" name="FindBlockPos">
+<area shape="rect" id="node2" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="157,56,253,83"/>
+<area shape="rect" id="node11" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="477,107,582,133"/>
+<area shape="rect" id="node3" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="301,56,404,83"/>
+<area shape="rect" id="node4" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="452,5,607,32"/>
+<area shape="rect" id="node10" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="483,56,575,83"/>
+<area shape="rect" id="node5" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="655,56,757,83"/>
+<area shape="rect" id="node6" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="805,81,876,108"/>
+<area shape="rect" id="node7" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="972,56,1036,83"/>
+<area shape="rect" id="node9" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="924,107,1084,133"/>
+<area shape="rect" id="node8" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1132,56,1183,83"/>
+</map>

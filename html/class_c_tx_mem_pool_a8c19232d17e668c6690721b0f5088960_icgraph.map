@@ -1,0 +1,6 @@
+<map id="CTxMemPool::lookup" name="CTxMemPool::lookup">
+<area shape="rect" id="node2" href="$main_8h.html#a74cc9659a06d35436a25b7ae56a15bcb" title="Retrieve a transaction (from memory pool, or from disk, if possible) " alt="" coords="225,5,339,32"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_mem_pool.html#a7623c5056394280eebe8f8e81b7185ec" title="CCoinsViewMemPool::\lGetCoins" alt="" coords="203,57,361,98"/>
+<area shape="rect" id="node3" href="$rpcrawtransaction_8cpp.html#a12e1b8a05d99d1544e5343c2282cc55a" title="getrawtransaction" alt="" coords="409,5,536,32"/>
+<area shape="rect" id="node5" href="$rpcblockchain_8cpp.html#a1982f7877ed6e83102671c67c4ec6450" title="gettxout" alt="" coords="438,64,507,91"/>
+</map>

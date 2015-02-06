@@ -1,0 +1,7 @@
+<map id="CWallet::ReacceptWalletTransactions" name="CWallet::ReacceptWalletTransactions">
+<area shape="rect" id="node2" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="317,31,387,57"/>
+<area shape="rect" id="node6" href="$rpcdump_8cpp.html#a457bc572859c8265c72a0afd1a6db56c" title="importaddress" alt="" coords="299,81,405,108"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="501,5,565,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="453,56,613,83"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="661,5,712,32"/>
+</map>

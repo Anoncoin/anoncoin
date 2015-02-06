@@ -1,0 +1,51 @@
+<map id="AnoncoinCoin::shutdown" name="AnoncoinCoin::shutdown">
+<area shape="rect" id="node2" href="$init_8cpp.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9" title="Shutdown" alt="" coords="286,401,367,428"/>
+<area shape="rect" id="node50" href="$class_anoncoin_coin.html#a19cc3b8135a5d63b023cb1f033277f55" title="Pass fatal exception message to UI thread. " alt="" coords="223,645,431,686"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a85fc1244e0bd3c91ee7a1c05ed10ebbb" title="RenameThread" alt="" coords="527,259,641,285"/>
+<area shape="rect" id="node4" href="$class_c_tx_mem_pool.html#a3039b67e5eebaa3ff830261c192816f2" title="CTxMemPool::AddTransactions\lUpdated" alt="" coords="479,310,689,351"/>
+<area shape="rect" id="node5" href="$rpcserver_8cpp.html#af5be6ec7b71359ed4111f1a5ed93b893" title="StopRPCThreads" alt="" coords="521,376,647,403"/>
+<area shape="rect" id="node6" href="$rpcmining_8cpp.html#ae7370e6af93e26e0c967cda6a63fe3a9" title="ShutdownRPCMining" alt="" coords="509,427,659,453"/>
+<area shape="rect" id="node7" href="$class_c_d_b_env.html#a09c5850b88919553a8db416ce288ff1a" title="CDBEnv::Flush" alt="" coords="527,604,641,631"/>
+<area shape="rect" id="node12" href="$miner_8h.html#a5f800ae833006ec26f0e5371f253347a" title="Run the miner threads. " alt="" coords="514,737,654,764"/>
+<area shape="rect" id="node13" href="$net_8cpp.html#ac9110488f45c160d58f3c7ab7197bcea" title="StopNode" alt="" coords="543,687,625,713"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#a3ef0cc6e9d9d6435ee2a5569244d6ebd" title="Unregister a network node. " alt="" coords="753,464,911,491"/>
+<area shape="rect" id="node40" href="$net_8cpp.html#a475f2fc7d8f5cd7511db253cae8fe28a" title="GetNodeSignals" alt="" coords="525,788,643,815"/>
+<area shape="rect" id="node41" href="$class_c_wallet.html#a1697a92171b4359f49b38aed643cf92b" title="CWallet::SetBestChain" alt="" coords="505,5,663,32"/>
+<area shape="rect" id="node43" href="$class_c_chain.html#a3f7e9ed312ad1cadd266a9529586ade6" title="Return a CBlockLocator that refers to a block in this chain (by default the tip). ..." alt="" coords="514,107,654,133"/>
+<area shape="rect" id="node45" href="$class_c_level_d_b_wrapper.html#a639fbfd6652941a1ab570c202197a32a" title="CLevelDBWrapper::Flush" alt="" coords="497,56,671,83"/>
+<area shape="rect" id="node46" href="$class_c_coins_view_cache.html#ac9888d4feaa46666d03871cd7cd1c01d" title="CCoinsViewCache::Flush" alt="" coords="497,157,671,184"/>
+<area shape="rect" id="node48" href="$util_8cpp.html#a91d2f3eb3a1bb92ab4eb1bd4b713a99e" title="GetPidFile" alt="" coords="1014,565,1098,592"/>
+<area shape="rect" id="node49" href="$main_8cpp.html#ad0b02f9e3ff8997319581ce5021d4244" title="Unregister all wallets from core. " alt="" coords="513,208,655,235"/>
+<area shape="rect" id="node8" href="$util_8h.html#a139d0fe6387b9e230a9b8bb12d9b43b9" title="GetTimeMillis" alt="" coords="1005,692,1107,719"/>
+<area shape="rect" id="node9" href="$class_c_d_b_env.html#ac53fd53afdd1e0881b8ffbb11a89b556" title="CDBEnv::CloseDb" alt="" coords="766,565,898,592"/>
+<area shape="rect" id="node10" href="$class_c_d_b_env.html#a0bf3b64c05bf0d7f0a7dbaa9a072c0bc" title="CDBEnv::Close" alt="" coords="775,616,889,643"/>
+<area shape="rect" id="node11" href="$class_c_d_b_env.html#a5179ad1064b9f78d6d320c6e036217e2" title="CDBEnv::EnvShutdown" alt="" coords="975,616,1137,643"/>
+<area shape="rect" id="node14" href="$net_8cpp.html#a93e4e6fbe288b6e882e697918695f88e" title="MapPort" alt="" coords="796,717,868,744"/>
+<area shape="rect" id="node15" href="$class_c_semaphore.html#af6a956f6c191e824485fd3af6db39318" title="CSemaphore::post" alt="" coords="765,768,899,795"/>
+<area shape="rect" id="node16" href="$net_8cpp.html#ab8b5323f5ef61499582a5a6e53b49b6e" title="DumpAddresses" alt="" coords="772,819,892,845"/>
+<area shape="rect" id="node17" href="$class_c_addr_d_b.html#aaec90dba59cd69a2f25bc5630a1dde39" title="CAddrDB::Write" alt="" coords="997,819,1115,845"/>
+<area shape="rect" id="node22" href="$class_c_addr_man.html#a15b8e72f55344b6fbd1bc1bda3cdc5bc" title="CAddrMan::size" alt="" coords="997,768,1115,795"/>
+<area shape="rect" id="node18" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1487,756,1555,783"/>
+<area shape="rect" id="node19" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="1247,667,1301,693"/>
+<area shape="rect" id="node20" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="1203,717,1345,744"/>
+<area shape="rect" id="node21" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="1229,819,1319,845"/>
+<area shape="rect" id="node24" href="$main_8cpp.html#a196f9318f02448b85b28d612698934fd" title="Process protocol messages received from a given node. " alt="" coords="991,515,1121,541"/>
+<area shape="rect" id="node33" href="$main_8cpp.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3" title="Send queued protocol messages to be sent to a give node. " alt="" coords="999,211,1113,237"/>
+<area shape="rect" id="node25" href="$net_8h.html#a13f289d6233bd32b78a38793f76bdccb" title="SendBufferSize" alt="" coords="1217,565,1331,592"/>
+<area shape="rect" id="node27" href="$class_c_net_message.html#a440150fa0e6a84699780048baca55da8" title="CNetMessage::complete" alt="" coords="1190,363,1358,389"/>
+<area shape="rect" id="node28" href="$class_c_message_header.html#a21f5760d034d4a040b00d6c34e927be0" title="CMessageHeader::IsValid" alt="" coords="1185,515,1363,541"/>
+<area shape="rect" id="node29" href="$class_c_message_header.html#a71f022e98bff1acd65be4b75ce4cc038" title="CMessageHeader::GetCommand" alt="" coords="1411,489,1631,516"/>
+<area shape="rect" id="node30" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1238,413,1310,440"/>
+<area shape="rect" id="node31" href="$class_c_node.html#a204fda3d33404cb37698c085b1583ab2" title="CNode::PushMessage" alt="" coords="1196,312,1352,339"/>
+<area shape="rect" id="node32" href="$util_8cpp.html#a477231880f761159de1567ad6fb98fac" title="PrintExceptionContinue" alt="" coords="1193,869,1355,896"/>
+<area shape="rect" id="node26" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="1489,641,1553,668"/>
+<area shape="rect" id="node34" href="$util_8h.html#a0c5a06b50cd805b1923552114494c029" title="GetTimeMicros" alt="" coords="1218,8,1330,35"/>
+<area shape="rect" id="node35" href="$main_8cpp.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="1196,211,1352,237"/>
+<area shape="rect" id="node36" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="1484,135,1557,161"/>
+<area shape="rect" id="node37" href="$classmruset.html#ac7a85b54646e9d9d1962ce7f30b2a1fc" title="mruset::clear" alt="" coords="1225,109,1323,136"/>
+<area shape="rect" id="node38" href="$net_8cpp.html#a66f5f0bc1dad5cfe429157d5637a93dc" title="GetLocalAddress" alt="" coords="1212,160,1336,187"/>
+<area shape="rect" id="node39" href="$class_c_net_addr.html#a35131b2792434d1c9a860c583b610ab6" title="CNetAddr::IsRoutable" alt="" coords="1198,261,1350,288"/>
+<area shape="rect" id="node42" href="$class_c_wallet_d_b.html#a5660d366fee16ab81f3e7d3a97892486" title="CWalletDB::WriteBestBlock" alt="" coords="739,5,925,32"/>
+<area shape="rect" id="node44" href="$class_c_block_index.html#ab843ef9b8b0a0193ec3a5c24738e484f" title="CBlockIndex::GetBlockHash" alt="" coords="737,107,927,133"/>
+<area shape="rect" id="node47" href="$class_c_coins_view.html#a4e787e72d48e148aadd6f1b94400e6bb" title="CCoinsView::BatchWrite" alt="" coords="749,157,915,184"/>
+</map>

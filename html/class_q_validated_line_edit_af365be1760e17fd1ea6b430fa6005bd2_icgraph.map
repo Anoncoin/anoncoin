@@ -1,0 +1,7 @@
+<map id="QValidatedLineEdit::setCheckValidator" name="QValidatedLineEdit::setCheckValidator">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#aeb3b902c0536bdb9c2def3d3e465aeba" title="GUIUtil::setupAddressWidget" alt="" coords="191,111,387,138"/>
+<area shape="rect" id="node3" href="$class_edit_address_dialog.html#a625792e82d332070d6009898febc3afa" title="EditAddressDialog::\lEditAddressDialog" alt="" coords="464,5,603,47"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="435,71,632,112"/>
+<area shape="rect" id="node5" href="$class_send_coins_entry.html#a1c385963cf2dd2eb618720908988d037" title="SendCoinsEntry::SendCoins\lEntry" alt="" coords="438,136,629,177"/>
+<area shape="rect" id="node6" href="$class_sign_verify_message_dialog.html#a04d74fa38e87dc6213237567a6528f28" title="SignVerifyMessageDialog\l::SignVerifyMessageDialog" alt="" coords="442,201,625,243"/>
+</map>

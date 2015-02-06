@@ -1,0 +1,5 @@
+<map id="ClientModel::inInitialBlockDownload" name="ClientModel::inInitialBlockDownload">
+<area shape="rect" id="node2" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="227,13,465,39"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="513,13,700,39"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="748,13,912,39"/>
+</map>

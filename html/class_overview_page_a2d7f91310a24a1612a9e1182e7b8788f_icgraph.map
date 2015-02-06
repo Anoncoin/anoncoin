@@ -1,0 +1,6 @@
+<map id="OverviewPage::setBalance" name="OverviewPage::setBalance">
+<area shape="rect" id="node2" href="$class_overview_page.html#a2ed52a3a87e9c74fee38fa873c9bc71f" title="OverviewPage::setWalletModel" alt="" coords="508,5,715,32"/>
+<area shape="rect" id="node5" href="$class_overview_page.html#a03f19b9afd9af4b72d9bba7b0c7cf900" title="OverviewPage::updateDisplayUnit" alt="" coords="236,31,460,57"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="763,5,949,32"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="997,5,1161,32"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="ECC_InitSanityCheck" name="ECC_InitSanityCheck">
+<area shape="rect" id="node2" href="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11" title="Sanity checks Ensure that Anoncoin is running in a usable environment with all necessary library supp..." alt="" coords="204,31,319,57"/>
+<area shape="rect" id="node3" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="367,31,437,57"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="533,5,597,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="485,56,645,83"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="693,5,744,32"/>
+</map>

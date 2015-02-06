@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classbase__uint.html" title="Base class without constructors for uint256 and uint160. " alt="" coords="5,56,137,83"/>
+<area shape="rect" id="node2" href="$classuint160.html" title="160&#45;bit unsigned integer " alt="" coords="185,31,251,57"/>
+<area shape="rect" id="node5" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="185,81,251,108"/>
+<area shape="rect" id="node3" href="$class_c_key_i_d.html" title="A reference to a CKey: the Hash160 of its serialized public key. " alt="" coords="304,5,372,32"/>
+<area shape="rect" id="node4" href="$class_c_script_i_d.html" title="A reference to a CScript: the Hash160 of its serialization (see script.h) " alt="" coords="299,56,377,83"/>
+</map>

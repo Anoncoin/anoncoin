@@ -1,0 +1,30 @@
+<map id="GetMyExternalIP" name="GetMyExternalIP">
+<area shape="rect" id="node2" href="$class_c_net_addr.html#a52a1b506f07e5450057e12a8b5a7fbcd" title="CNetAddr::IsValid" alt="" coords="367,5,495,32"/>
+<area shape="rect" id="node3" href="$net_8cpp.html#a23ad330fb37fb9d5b1d6ab43f33b1443" title="GetMyExternalIP2" alt="" coords="176,233,307,260"/>
+<area shape="rect" id="node4" href="$netbase_8cpp.html#a805b21dc07ab1574acaa657b4c0fd9e9" title="ConnectSocket" alt="" coords="375,233,487,260"/>
+<area shape="rect" id="node19" href="$class_c_service.html#a336f9848fe9364e260c76499be0351a5" title="CService::ToString" alt="" coords="364,343,497,369"/>
+<area shape="rect" id="node24" href="$net_8cpp.html#a1974b789f25e8ac412052f627488e0ad" title="RecvLine" alt="" coords="392,477,469,504"/>
+<area shape="rect" id="node27" href="$class_c_net_addr.html#a35131b2792434d1c9a860c583b610ab6" title="CNetAddr::IsRoutable" alt="" coords="355,553,507,580"/>
+<area shape="rect" id="node29" href="$class_c_net_addr.html#a1c6087345e5ca07a151451cd6deb974f" title="CNetAddr::SetIP" alt="" coords="1027,61,1147,88"/>
+<area shape="rect" id="node5" href="$class_i2_p_session.html#a0b2a285f34224a7fdc8ffcb0d1f6d48e" title="I2PSession::Instance" alt="" coords="579,309,726,336"/>
+<area shape="rect" id="node6" href="$class_s_a_m_1_1_stream_session_adapter.html#a983b84796d46f00aee1e4b7c4f6f421f" title="SAM::StreamSessionAdapter\l::connect" alt="" coords="555,361,751,402"/>
+<area shape="rect" id="node7" href="$netbase_8cpp.html#a4e67b39fc1769663260d791d2f4d049d" title="GetProxy" alt="" coords="614,107,691,133"/>
+<area shape="rect" id="node8" href="$class_c_net_addr.html#a34a4760424f5c51998fc3baf82ccb5c8" title="CNetAddr::GetNetwork" alt="" coords="573,157,732,184"/>
+<area shape="rect" id="node9" href="$class_c_net_addr.html#a7ec845c27b63853fb0db08a4d154266f" title="CNetAddr::ToStringIP" alt="" coords="803,241,953,268"/>
+<area shape="rect" id="node18" href="$class_c_service.html#a49df6ecaf59be814632c4d7755f26637" title="CService::GetPort" alt="" coords="588,259,717,285"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#a71aa75e646de8a10971f887bc71d9a75" title="EncodeBase32" alt="" coords="1031,281,1143,308"/>
+<area shape="rect" id="node11" href="$class_c_service.html#ab0f791c174511056236119cc1580faeb" title="CService::GetSockAddr" alt="" coords="1005,231,1168,257"/>
+<area shape="rect" id="node12" href="$class_c_net_addr.html#a16ff4478f02f06f5a9a038a24d5da2f9" title="CNetAddr::IsIPv4" alt="" coords="1231,327,1357,353"/>
+<area shape="rect" id="node13" href="$class_c_net_addr.html#aa2e2c78db01a6a27d6a2740f2ba43e90" title="CNetAddr::GetInAddr" alt="" coords="1219,209,1369,236"/>
+<area shape="rect" id="node16" href="$class_c_net_addr.html#a0edb022cd6a186de8099799415409d57" title="CNetAddr::IsIPv6" alt="" coords="1231,260,1357,287"/>
+<area shape="rect" id="node17" href="$class_c_net_addr.html#add7811be50f5fe60c4fa65b461dea98c" title="CNetAddr::GetIn6Addr" alt="" coords="1216,159,1372,185"/>
+<area shape="rect" id="node14" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1420,159,1492,185"/>
+<area shape="rect" id="node15" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1540,159,1624,185"/>
+<area shape="rect" id="node20" href="$class_c_service.html#a39b82301356b0dfc2a92befc727b77be" title="CService::ToStringIPPort" alt="" coords="567,427,738,453"/>
+<area shape="rect" id="node21" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="846,427,910,453"/>
+<area shape="rect" id="node22" href="$class_c_service.html#a1e0f0b98239a9097044695a9e439bb46" title="CService::ToStringPort" alt="" coords="799,477,957,504"/>
+<area shape="rect" id="node23" href="$class_c_net_addr.html#a3fba9e0b18f531c0ed15794a30e8165d" title="CNetAddr::IsTor" alt="" coords="819,325,937,352"/>
+<area shape="rect" id="node25" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="613,477,692,504"/>
+<area shape="rect" id="node26" href="$netbase_8cpp.html#a8ddb7d8d6e5b5cfabfdeea132f556977" title="Return readable error string for a network error code. " alt="" coords="585,528,721,555"/>
+<area shape="rect" id="node28" href="$net_8cpp.html#a16fa1bd4d34c4c29c90903fc3cdf7517" title="check whether a given address is potentially local " alt="" coords="621,579,685,605"/>
+</map>

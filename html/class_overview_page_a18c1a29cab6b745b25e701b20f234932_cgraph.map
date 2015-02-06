@@ -1,0 +1,6 @@
+<map id="OverviewPage::OverviewPage" name="OverviewPage::OverviewPage">
+<area shape="rect" id="node2" href="$class_ui___overview_page.html#a9841e4b87092210f086d09ec106fde77" title="Ui_OverviewPage::setupUi" alt="" coords="278,5,459,32"/>
+<area shape="rect" id="node4" href="$class_overview_page.html#a8de10507bde89116a691ed61e7e52507" title="OverviewPage::handleTransaction\lClicked" alt="" coords="256,57,481,98"/>
+<area shape="rect" id="node5" href="$class_overview_page.html#ac96ea713a074e706b4b6eadaadeca9d1" title="OverviewPage::showOutOfSync\lWarning" alt="" coords="263,122,475,163"/>
+<area shape="rect" id="node3" href="$class_ui___overview_page.html#ace60e02e872c97647e9e0ddb9acbd249" title="Ui_OverviewPage::retranslateUi" alt="" coords="529,5,741,32"/>
+</map>

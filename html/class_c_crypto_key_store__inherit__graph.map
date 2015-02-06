@@ -1,0 +1,5 @@
+<map id="CCryptoKeyStore" name="CCryptoKeyStore">
+<area shape="rect" id="node4" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="33,229,103,256"/>
+<area shape="rect" id="node2" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="9,80,127,107"/>
+<area shape="rect" id="node3" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="25,5,111,32"/>
+</map>

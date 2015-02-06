@@ -1,0 +1,7 @@
+<map id="payments::PaymentDetails::set_has_merchant_data" name="payments::PaymentDetails::set_has_merchant_data">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_details.html#a1ae05d9db54fa8d186ab94324adf1bf1" title="payments::PaymentDetails\l::set_merchant_data" alt="" coords="245,5,425,47"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_details.html#a3b0e0a6df52b070f96f5bad2a6c52440" title="payments::PaymentDetails\l::mutable_merchant_data" alt="" coords="245,71,425,112"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_details.html#a231f3e5e6f882d334d48a38d96d921c7" title="payments::PaymentDetails\l::set_allocated_merchant_data" alt="" coords="233,136,437,177"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#a4eeba6a02bd9b15645f0447ff211a2c2" title="payments::PaymentDetails\l::MergeFrom" alt="" coords="505,5,685,47"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_details.html#a02041f288b52f004c61e49365ca33e6c" title="payments::PaymentDetails\l::MergePartialFromCodedStream" alt="" coords="485,71,704,112"/>
+</map>

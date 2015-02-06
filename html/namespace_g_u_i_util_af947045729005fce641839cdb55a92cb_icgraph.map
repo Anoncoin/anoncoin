@@ -1,0 +1,4 @@
+<map id="GUIUtil::isDust" name="GUIUtil::isDust">
+<area shape="rect" id="node2" href="$class_send_coins_entry.html#ab77df95fe77e9a001190cd4dabe0dfec" title="SendCoinsEntry::validate" alt="" coords="163,13,335,39"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="383,5,529,47"/>
+</map>

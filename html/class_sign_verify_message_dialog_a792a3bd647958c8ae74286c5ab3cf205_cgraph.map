@@ -1,0 +1,12 @@
+<map id="SignVerifyMessageDialog::on_addressBookButton_SM_clicked" name="SignVerifyMessageDialog::on_addressBookButton_SM_clicked">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a89ed202e2dbc04aaa70d72872b95b351" title="WalletModel::getAddressTable\lModel" alt="" coords="228,5,432,47"/>
+<area shape="rect" id="node3" href="$class_address_book_page.html#a1282cda9cb0300ee04c472ec4c9949f3" title="AddressBookPage::setModel" alt="" coords="233,71,427,98"/>
+<area shape="rect" id="node10" href="$class_sign_verify_message_dialog.html#a5fc13a7072e3667c91d7e984da09eac2" title="SignVerifyMessageDialog\l::setAddress_SM" alt="" coords="243,123,417,164"/>
+<area shape="rect" id="node11" href="$class_address_book_page.html#a204f9ff847c26eb900fac7a3d0a6ab4f" title="AddressBookPage::getReturn\lValue" alt="" coords="231,188,429,229"/>
+<area shape="rect" id="node4" href="$class_address_book_page.html#a9df2b5984c8b4ab2c4b5eade1aab8f3e" title="Set button states based on selected tab and selection. " alt="" coords="485,32,677,73"/>
+<area shape="rect" id="node5" href="$class_address_book_page.html#ab62ba5d31e2d64c4d901da58d6b32a59" title="New entry/entries were added to address table. " alt="" coords="480,97,681,139"/>
+<area shape="rect" id="node6" href="$class_address_table_model.html#a84f095bae13574410fceba53f8184abc" title="AddressTableModel::\lindex" alt="" coords="729,97,877,139"/>
+<area shape="rect" id="node7" href="$class_address_table_model.html#a5ff6e3e2dab8b80428c4f59c4f1bc95a" title="AddressTableModel::data" alt="" coords="925,79,1099,106"/>
+<area shape="rect" id="node9" href="$class_address_table_priv.html#af311eb7d0189a74a508d7ad0f563f307" title="AddressTablePriv::index" alt="" coords="929,130,1095,157"/>
+<area shape="rect" id="node8" href="$namespace_g_u_i_util.html#ad284d2b3b4732d897cf6f1d751065e98" title="GUIUtil::anoncoinAddressFont" alt="" coords="1147,79,1349,106"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="payments::PaymentDetails::MergePartialFromCodedStream" name="payments::PaymentDetails::MergePartialFromCodedStream">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_details.html#a576789855cbbec21bef52b1cfd660434" title="payments::PaymentDetails\l::mutable_network" alt="" coords="272,5,452,47"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_details.html#a9f117e48e544ab304d9a32b75ffb971e" title="payments::PaymentDetails\l::network" alt="" coords="272,71,452,112"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_details.html#a70a778e011a1235b45295272d0cc765d" title="payments::PaymentDetails\l::add_outputs" alt="" coords="272,136,452,177"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_details.html#aefb3bb511454bde7ebc4664937dd0338" title="payments::PaymentDetails\l::set_has_time" alt="" coords="272,201,452,243"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment_details.html#ac8c20b4c5f83856c7c765046d80fe53e" title="payments::PaymentDetails\l::set_has_expires" alt="" coords="272,267,452,308"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment_details.html#aa7da4aa802d8e6a129510c73d3857e98" title="payments::PaymentDetails\l::mutable_memo" alt="" coords="272,332,452,373"/>
+<area shape="rect" id="node10" href="$classpayments_1_1_payment_details.html#a978562af43036ce6590a157d0f39e58b" title="payments::PaymentDetails\l::memo" alt="" coords="272,397,452,439"/>
+<area shape="rect" id="node11" href="$classpayments_1_1_payment_details.html#a9d8b1eee3ff974b8a78a90468336c5de" title="payments::PaymentDetails\l::mutable_payment_url" alt="" coords="272,463,452,504"/>
+<area shape="rect" id="node13" href="$classpayments_1_1_payment_details.html#abf568d7f349cf822d99e69d1424c5099" title="payments::PaymentDetails\l::payment_url" alt="" coords="272,528,452,569"/>
+<area shape="rect" id="node14" href="$classpayments_1_1_payment_details.html#a3b0e0a6df52b070f96f5bad2a6c52440" title="payments::PaymentDetails\l::mutable_merchant_data" alt="" coords="272,593,452,635"/>
+<area shape="rect" id="node16" href="$classpayments_1_1_payment_details.html#a5d58007a4d15c0c696680e01a090aded" title="payments::PaymentDetails\l::mutable_unknown_fields" alt="" coords="272,659,452,700"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#a3fe505084621c1c0e24bb5056bf17c65" title="payments::PaymentDetails\l::set_has_network" alt="" coords="500,5,680,47"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment_details.html#a1077fc97293b37aa6c3311ffd4c76ebe" title="payments::PaymentDetails\l::set_has_memo" alt="" coords="500,332,680,373"/>
+<area shape="rect" id="node12" href="$classpayments_1_1_payment_details.html#ab566f44ee9f9a7961dbe8f430602e539" title="payments::PaymentDetails\l::set_has_payment_url" alt="" coords="500,463,680,504"/>
+<area shape="rect" id="node15" href="$classpayments_1_1_payment_details.html#aafc5a72900efac1dd7d43cc188ddd46b" title="payments::PaymentDetails\l::set_has_merchant_data" alt="" coords="500,593,680,635"/>
+</map>

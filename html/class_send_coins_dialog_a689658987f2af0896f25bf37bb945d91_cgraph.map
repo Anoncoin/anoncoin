@@ -1,0 +1,4 @@
+<map id="SendCoinsDialog::setupTabChain" name="SendCoinsDialog::setupTabChain">
+<area shape="rect" id="node2" href="$class_send_coins_entry.html#aa431a0bf53174b3a012fe224e472bc13" title="Set up the tab chain manually, as Qt messes up the tab chain by default in some cases (issue https://..." alt="" coords="241,5,423,47"/>
+<area shape="rect" id="node3" href="$class_anoncoin_amount_field.html#a60f0158e3040a7def415231681d5a20f" title="Qt messes up the tab chain by default in some cases (issue https://bugreports.qt&#45;project.org/browse/QTBUG&#45;10907), in these cases we have to set it up manually. " alt="" coords="471,5,623,47"/>
+</map>

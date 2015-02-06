@@ -1,0 +1,3 @@
+<map id="DecodeBase58" name="DecodeBase58">
+<area shape="rect" id="node2" href="$base58_8cpp.html#a0f74d1d6e7e982cad4b0e538acea4538" title="Decode a base58&#45;encoded string (psz) into a byte vector (vchRet). " alt="" coords="167,5,280,32"/>
+</map>

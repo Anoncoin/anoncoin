@@ -1,0 +1,7 @@
+<map id="RPCConsole::updateNodeDetail" name="RPCConsole::updateNodeDetail">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#ac0c0a23fbbfefc827220eebcacc3ee63" title="GUIUtil::formatServicesStr" alt="" coords="269,5,447,32"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#aaf51686c47c77ad81c51d115d150e867" title="GUIUtil::formatDurationStr" alt="" coords="269,56,447,83"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="321,107,395,133"/>
+<area shape="rect" id="node5" href="$class_r_p_c_console.html#afa45a6e142193405038015a31f9e132b" title="RPCConsole::FormatBytes" alt="" coords="267,157,449,184"/>
+<area shape="rect" id="node6" href="$namespace_g_u_i_util.html#a432bcee36e242a968c9149fadfba44fa" title="GUIUtil::formatPingTime" alt="" coords="275,208,441,235"/>
+</map>

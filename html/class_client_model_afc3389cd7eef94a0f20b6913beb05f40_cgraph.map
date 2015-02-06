@@ -1,0 +1,10 @@
+<map id="ClientModel::inInitialBlockDownload" name="ClientModel::inInitialBlockDownload">
+<area shape="rect" id="node2" href="$main_8cpp.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="227,123,383,149"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="471,5,583,32"/>
+<area shape="rect" id="node4" href="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0" title="Checkpoints::GetTotalBlocks\lEstimate" alt="" coords="431,57,624,98"/>
+<area shape="rect" id="node7" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="481,123,573,149"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="491,173,564,200"/>
+<area shape="rect" id="node9" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="433,224,621,251"/>
+<area shape="rect" id="node5" href="$namespace_checkpoints.html#a63e87603e80d739b1aefa062f9bd337e" title="Checkpoints::Checkpoints" alt="" coords="672,64,848,91"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="896,64,964,91"/>
+</map>

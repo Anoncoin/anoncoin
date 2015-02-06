@@ -1,0 +1,11 @@
+<map id="CWalletTx::IsTrusted" name="CWalletTx::IsTrusted">
+<area shape="rect" id="node2" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="237,43,313,69"/>
+<area shape="rect" id="node7" href="$class_c_wallet.html#abdffee587c00bc1ebea53ea26f3efa61" title="CWallet::GetWalletTx" alt="" coords="200,93,349,120"/>
+<area shape="rect" id="node8" href="$class_c_wallet.html#ab7cc8fd8859fecc6ed768dacb5642c5e" title="CWallet::IsMine" alt="" coords="217,144,333,171"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="404,5,516,32"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="397,56,523,83"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="614,24,687,51"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="596,75,705,101"/>
+<area shape="rect" id="node9" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="429,144,491,171"/>
+<area shape="rect" id="node10" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="571,144,731,171"/>
+</map>

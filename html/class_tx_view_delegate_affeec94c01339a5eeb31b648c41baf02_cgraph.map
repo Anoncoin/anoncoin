@@ -1,0 +1,9 @@
+<map id="TxViewDelegate::paint" name="TxViewDelegate::paint">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#a07b2ad9cac3728231143e4d78c059e14" title="Format as string (with unit) " alt="" coords="209,81,413,108"/>
+<area shape="rect" id="node8" href="$namespace_g_u_i_util.html#aae732a04fea25190081120bf0cc773e8" title="GUIUtil::dateTimeStr" alt="" coords="239,132,384,159"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="461,56,615,83"/>
+<area shape="rect" id="node7" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="463,107,613,133"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="675,5,818,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="672,56,821,83"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="663,107,831,133"/>
+</map>

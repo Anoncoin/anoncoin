@@ -1,0 +1,19 @@
+<map id="WalletModel::getEncryptionStatus" name="WalletModel::getEncryptionStatus">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a89180a13e5b0c2ca7732164b9dec3806" title="WalletModel::updateStatus" alt="" coords="246,108,427,135"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#ae98eaede9493625ce778a0a873b3d124" title="WalletModel::requestUnlock" alt="" coords="243,159,431,185"/>
+<area shape="rect" id="node11" href="$class_wallet_view.html#ad348f2ed9f843ef9125ca416307c7412" title="Re&#45;emit encryption status signal. " alt="" coords="237,231,436,273"/>
+<area shape="rect" id="node17" href="$class_wallet_view.html#ac258d549f0e55ad4f84b9d21848faf02" title="Ask for passphrase to unlock wallet temporarily. " alt="" coords="251,319,422,345"/>
+<area shape="rect" id="node4" href="$class_address_table_model.html#aa72edd2a093a6e9318639d69d3a23488" title="AddressTableModel::\laddRow" alt="" coords="512,86,660,127"/>
+<area shape="rect" id="node9" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="513,151,659,193"/>
+<area shape="rect" id="node10" href="$class_sign_verify_message_dialog.html#a2ef91b4ace68d63ab1c1d3cc6c13b5f9" title="SignVerifyMessageDialog\l::on_signMessageButton\l_SM_clicked" alt="" coords="499,5,673,61"/>
+<area shape="rect" id="node5" href="$class_edit_address_dialog.html#a8494a551799cd1f4c253e557424c206c" title="EditAddressDialog::\lsaveCurrentRow" alt="" coords="759,54,898,95"/>
+<area shape="rect" id="node7" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="738,119,919,161"/>
+<area shape="rect" id="node6" href="$class_edit_address_dialog.html#ac52b71129806bccf6533d0e9441393b6" title="EditAddressDialog::\laccept" alt="" coords="971,54,1110,95"/>
+<area shape="rect" id="node8" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="969,119,1112,161"/>
+<area shape="rect" id="node12" href="$class_wallet_frame.html#ab6d4f86307bf1b28b53c2583c5166905" title="WalletFrame::setCurrentWallet" alt="" coords="484,268,688,295"/>
+<area shape="rect" id="node13" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="493,319,679,345"/>
+<area shape="rect" id="node15" href="$class_wallet_view.html#a164c3de8fc69ef6f39fb7c15e4bda553" title="Encrypt the wallet. " alt="" coords="498,217,674,244"/>
+<area shape="rect" id="node14" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="747,319,911,345"/>
+<area shape="rect" id="node16" href="$class_wallet_frame.html#a8a9a419ba3e249f29fe321f2d789b761" title="Encrypt the wallet. " alt="" coords="736,217,921,244"/>
+<area shape="rect" id="node18" href="$class_wallet_frame.html#a31b6e87c87b383ef53225b6c2b37f057" title="Ask for passphrase to unlock wallet temporarily. " alt="" coords="496,369,676,396"/>
+</map>

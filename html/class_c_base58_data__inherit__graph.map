@@ -1,0 +1,5 @@
+<map id="CBase58Data" name="CBase58Data">
+<area shape="rect" id="node2" href="$class_c_anoncoin_address.html" title="base58&#45;encoded Anoncoin addresses. " alt="" coords="5,87,141,114"/>
+<area shape="rect" id="node3" href="$class_c_anoncoin_ext_key_base.html" title="CAnoncoinExtKeyBase\l\&lt; K, Size, Type \&gt;" alt="" coords="165,80,325,121"/>
+<area shape="rect" id="node4" href="$class_c_anoncoin_secret.html" title="A base58&#45;encoded secret key. " alt="" coords="349,87,475,114"/>
+</map>

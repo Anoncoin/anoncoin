@@ -1,0 +1,13 @@
+<map id="payments::PaymentRequest::MergePartialFromCodedStream" name="payments::PaymentRequest::MergePartialFromCodedStream">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#abd6f1e456467e38884b4d0d6dc434119" title="payments::PaymentRequest\l::set_has_payment_details\l_version" alt="" coords="277,5,466,61"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#ac83862adc455f9f68722a07e90405afc" title="payments::PaymentRequest\l::mutable_pki_type" alt="" coords="277,86,466,127"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#a42d70acf5e751d9304f1e4246587b648" title="payments::PaymentRequest\l::pki_type" alt="" coords="277,151,466,193"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_request.html#afebb5c733b99977adddcaf1f3b9b91da" title="payments::PaymentRequest\l::mutable_pki_data" alt="" coords="277,217,466,258"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment_request.html#a43c849ca183fd9a7406b16ad0e2a1744" title="payments::PaymentRequest\l::mutable_serialized_payment\l_details" alt="" coords="272,283,471,339"/>
+<area shape="rect" id="node10" href="$classpayments_1_1_payment_request.html#a48e626694a658e4245b09ec6670c772f" title="payments::PaymentRequest\l::mutable_signature" alt="" coords="277,363,466,405"/>
+<area shape="rect" id="node12" href="$classpayments_1_1_payment_request.html#a0685727be1f02889f11f825436cac5b3" title="payments::PaymentRequest\l::mutable_unknown_fields" alt="" coords="277,429,466,470"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a432c5a68aa7c1cbdde824a18ebdc39d8" title="payments::PaymentRequest\l::set_has_pki_type" alt="" coords="523,86,713,127"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment_request.html#a0f26da3af5170c9cd373111efad0bed7" title="payments::PaymentRequest\l::set_has_pki_data" alt="" coords="523,217,713,258"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment_request.html#a95d30d61b6f7986baecbd1b69cee2225" title="payments::PaymentRequest\l::set_has_serialized_payment\l_details" alt="" coords="519,283,717,339"/>
+<area shape="rect" id="node11" href="$classpayments_1_1_payment_request.html#ac0b591920a592f6e1ad3d4bb2f0f2043" title="payments::PaymentRequest\l::set_has_signature" alt="" coords="523,363,713,405"/>
+</map>

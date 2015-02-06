@@ -1,0 +1,11 @@
+<map id="GetP2SHSigOpCount" name="GetP2SHSigOpCount">
+<area shape="rect" id="node2" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="204,81,308,108"/>
+<area shape="rect" id="node9" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="356,132,477,159"/>
+<area shape="rect" id="node3" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="379,81,454,108"/>
+<area shape="rect" id="node4" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="551,31,622,57"/>
+<area shape="rect" id="node8" href="$rpcblockchain_8cpp.html#a0b1dd8862fc7292c243ad9489f96a3c8" title="verifychain" alt="" coords="544,81,629,108"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="744,5,808,32"/>
+<area shape="rect" id="node7" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="696,56,856,83"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="904,5,955,32"/>
+<area shape="rect" id="node10" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="525,132,648,159"/>
+</map>

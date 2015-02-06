@@ -1,0 +1,21 @@
+<map id="CCoinsViewCache::HaveInputs" name="CCoinsViewCache::HaveInputs">
+<area shape="rect" id="node2" href="$main_8h.html#a1032f75235456abfa96b63e34e7ee2cc" title="(try to) add transaction to memory pool " alt="" coords="405,157,559,184"/>
+<area shape="rect" id="node15" href="$main_8h.html#ad6c3cc142639d843f2475501fc20d75b" title="CheckInputs" alt="" coords="261,259,357,285"/>
+<area shape="rect" id="node16" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="430,208,534,235"/>
+<area shape="rect" id="node19" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="659,259,780,285"/>
+<area shape="rect" id="node3" href="$class_c_merkle_tx.html#a032705bde1c536cd1b14f01f914e12f0" title="CMerkleTx::AcceptToMemoryPool" alt="" coords="607,107,832,133"/>
+<area shape="rect" id="node14" href="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e" title="sendrawtransaction" alt="" coords="651,157,788,184"/>
+<area shape="rect" id="node4" href="$class_c_wallet.html#a796c23450c8482e10e0c75ae5c1fa8ed" title="CWallet::ReacceptWalletTransactions" alt="" coords="880,107,1125,133"/>
+<area shape="rect" id="node10" href="$class_c_wallet.html#ac30e619488120651a6753195b77f3ad8" title="CWallet::CommitTransaction" alt="" coords="907,56,1099,83"/>
+<area shape="rect" id="node5" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1221,157,1291,184"/>
+<area shape="rect" id="node9" href="$rpcdump_8cpp.html#a457bc572859c8265c72a0afd1a6db56c" title="importaddress" alt="" coords="1203,107,1309,133"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1435,136,1499,163"/>
+<area shape="rect" id="node8" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1387,187,1547,213"/>
+<area shape="rect" id="node7" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1595,136,1645,163"/>
+<area shape="rect" id="node11" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="1173,56,1339,83"/>
+<area shape="rect" id="node13" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="1214,5,1298,32"/>
+<area shape="rect" id="node12" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="1393,49,1540,90"/>
+<area shape="rect" id="node17" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="682,208,757,235"/>
+<area shape="rect" id="node18" href="$rpcblockchain_8cpp.html#a0b1dd8862fc7292c243ad9489f96a3c8" title="verifychain" alt="" coords="960,208,1045,235"/>
+<area shape="rect" id="node20" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="941,259,1064,285"/>
+</map>

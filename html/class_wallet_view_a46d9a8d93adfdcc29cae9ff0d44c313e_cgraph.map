@@ -1,0 +1,11 @@
+<map id="WalletView::setClientModel" name="WalletView::setClientModel">
+<area shape="rect" id="node2" href="$class_overview_page.html#a5d2610ab2b9c58e3b5f67c05f984e097" title="OverviewPage::setClientModel" alt="" coords="237,35,441,61"/>
+<area shape="rect" id="node3" href="$class_overview_page.html#a3f92603780b678f506929dc736e7cd1d" title="OverviewPage::updateAlerts" alt="" coords="489,5,680,32"/>
+<area shape="rect" id="node4" href="$class_client_model.html#ae44eb0943b8528d5a0b22d063e5cc95c" title="Return warnings to be displayed in status bar. " alt="" coords="496,57,673,98"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a70b1d1b79f1c760e65c960713b87b732" title="GetWarnings" alt="" coords="728,64,828,91"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="903,13,993,40"/>
+<area shape="rect" id="node8" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="929,64,967,91"/>
+<area shape="rect" id="node9" href="$class_c_alert.html#a0a7fab6a971781904afb3e4a0ee29e12" title="CAlert::AppliesToMe" alt="" coords="876,115,1020,141"/>
+<area shape="rect" id="node7" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="1113,13,1157,40"/>
+<area shape="rect" id="node10" href="$clientversion_8cpp.html#a7e6809cdbfc7f83b46f83caea740894d" title="Format the subversion field according to BIP 14 spec (https://github.com/bitcoin/bips/blob/master/bip..." alt="" coords="1068,115,1201,141"/>
+</map>

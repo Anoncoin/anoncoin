@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$class_anoncoin_address_check_validator.html" title="Anoncoin address widget validator, checks for a valid anoncoin address. " alt="" coords="139,5,356,32"/>
+<area shape="rect" id="node3" href="$class_anoncoin_address_entry_validator.html" title="Base58 entry widget validator, checks for valid characters and removes some whitespace. " alt="" coords="142,56,353,83"/>
+</map>

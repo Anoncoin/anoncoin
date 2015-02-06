@@ -1,0 +1,11 @@
+<map id="WalletFrame::currentWalletView" name="WalletFrame::currentWalletView">
+<area shape="rect" id="node2" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="288,5,485,47"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#a386b4f2e20af7d13a688662cd3f9e1fc" title="Show Sign/Verify Message dialog and switch to sign message tab. " alt="" coords="269,71,504,98"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#af5cce5026575d013cb9d6933ebe7aa98" title="Show Sign/Verify Message dialog and switch to verify message tab. " alt="" coords="265,122,508,149"/>
+<area shape="rect" id="node5" href="$class_wallet_frame.html#a8a9a419ba3e249f29fe321f2d789b761" title="Encrypt the wallet. " alt="" coords="294,173,479,199"/>
+<area shape="rect" id="node6" href="$class_wallet_frame.html#a76aa3543635fedea052661a4cd44b81d" title="Backup the wallet. " alt="" coords="294,223,479,250"/>
+<area shape="rect" id="node7" href="$class_wallet_frame.html#a0a4026a734acdc0f5fbd5f775c167443" title="Change encrypted wallet passphrase. " alt="" coords="277,274,496,301"/>
+<area shape="rect" id="node8" href="$class_wallet_frame.html#a31b6e87c87b383ef53225b6c2b37f057" title="Ask for passphrase to unlock wallet temporarily. " alt="" coords="297,325,477,351"/>
+<area shape="rect" id="node9" href="$class_wallet_frame.html#a7f697d220e7ea40d6e4d6e6c5e9ef3b4" title="Show used sending addresses. " alt="" coords="295,376,478,417"/>
+<area shape="rect" id="node10" href="$class_wallet_frame.html#a9273a0b98cf7ec9fc344658c38a4a0a3" title="Show used receiving addresses. " alt="" coords="291,441,483,483"/>
+</map>

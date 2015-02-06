@@ -1,0 +1,5 @@
+<map id="secure_allocator::deallocate" name="secure_allocator::deallocate">
+<area shape="rect" id="node2" href="$class_locked_page_manager.html#ac9b1d42d240dba4714a35fff970b6dde" title="LockedPageManager::\lInstance" alt="" coords="253,5,409,47"/>
+<area shape="rect" id="node4" href="$class_locked_page_manager_base.html#a34bcf7b9120295ed178fe9545ed229af" title="LockedPageManagerBase\l::UnlockRange" alt="" coords="241,71,420,112"/>
+<area shape="rect" id="node3" href="$class_locked_page_manager.html#a3933ba60669b1c1b0ef03222637257e7" title="LockedPageManager::\lCreateInstance" alt="" coords="468,5,624,47"/>
+</map>

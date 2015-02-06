@@ -1,0 +1,6 @@
+<map id="OptionsDialog::setOkButtonState" name="OptionsDialog::setOkButtonState">
+<area shape="rect" id="node2" href="$class_options_dialog.html#a8828179d8f32f304e47392210eb18046" title="OptionsDialog::enableOkButton" alt="" coords="240,5,449,32"/>
+<area shape="rect" id="node5" href="$class_options_dialog.html#afc1563fdbe4599311b617533dd8af0a9" title="OptionsDialog::disableOk\lButton" alt="" coords="259,57,431,98"/>
+<area shape="rect" id="node3" href="$class_options_dialog.html#ad0881b054b041e080a7cca8a0601651e" title="OptionsDialog::doProxyIp\lChecks" alt="" coords="497,27,671,69"/>
+<area shape="rect" id="node4" href="$class_options_dialog.html#a8131b615e29560144ffb368b9b07060a" title="OptionsDialog::OptionsDialog" alt="" coords="719,35,916,61"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="CWallet::SendMoneyToDestination" name="CWallet::SendMoneyToDestination">
+<area shape="rect" id="node2" href="$rpcwallet_8cpp.html#a134064858f9cfa4775a6ae34cac2b133" title="sendtoaddress" alt="" coords="283,5,392,32"/>
+<area shape="rect" id="node3" href="$rpcwallet_8cpp.html#a845eaefd9ec7752b1145c183205524d0" title="sendfrom" alt="" coords="299,56,376,83"/>
+</map>

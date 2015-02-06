@@ -1,0 +1,38 @@
+<map id="AreInputsStandard" name="AreInputsStandard">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="209,31,387,57"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html#a37d3513128780891955d8cc5621f4123" title="CCoinsViewCache::GetOutputFor" alt="" coords="187,81,409,108"/>
+<area shape="rect" id="node7" href="$script_8cpp.html#a6ee6be50bff44464e905680c6fcee6dc" title="Solver" alt="" coords="268,183,328,209"/>
+<area shape="rect" id="node16" href="$script_8cpp.html#ab4cc63204abc3a5d815fedbfbfe0e5c2" title="ScriptSigArgsExpected" alt="" coords="219,563,377,589"/>
+<area shape="rect" id="node17" href="$script_8cpp.html#a06faacc17cea79366513c22361475a5a" title="EvalScript" alt="" coords="257,512,339,539"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="457,5,653,32"/>
+<area shape="rect" id="node6" href="$class_c_coins.html#a69bdcbac02e1644cb02b2645068777b5" title="CCoins::IsAvailable" alt="" coords="487,56,624,83"/>
+<area shape="rect" id="node5" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="701,5,859,32"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="510,107,601,133"/>
+<area shape="rect" id="node10" href="$class_c_script.html#acba6d6d35776de4ce3a632446f44805f" title="CScript::IsPayToScriptHash" alt="" coords="462,157,649,184"/>
+<area shape="rect" id="node11" href="$class_c_script.html#a94635ed93d8d244ec3acfa83f9ecfe5f" title="CScript::GetOp" alt="" coords="724,323,836,349"/>
+<area shape="rect" id="node15" href="$class_c_script.html#a7f975fca06b3e9a17da8ba23c7647e2e" title="CScript::DecodeOP_N" alt="" coords="477,259,633,285"/>
+<area shape="rect" id="node9" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="758,107,802,133"/>
+<area shape="rect" id="node12" href="$class_c_script.html#a93ec95275ccce9b701c8f53c57cd7975" title="CScript::GetOp2" alt="" coords="926,335,1046,361"/>
+<area shape="rect" id="node13" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1132,373,1204,400"/>
+<area shape="rect" id="node14" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1293,373,1377,400"/>
+<area shape="rect" id="node18" href="$class_c_script_num.html#aaa803c18a86acc8b928054f052dcc4c4" title="CScriptNum::getvch" alt="" coords="485,461,625,488"/>
+<area shape="rect" id="node20" href="$script_8cpp.html#a43bc2157638b796f2e3144963e00db34" title="CastToBool" alt="" coords="509,512,601,539"/>
+<area shape="rect" id="node21" href="$class_c_script_num.html#ab58edf8d8c555acbcac9e1ff9827a8da" title="CScriptNum::getint" alt="" coords="489,563,622,589"/>
+<area shape="rect" id="node22" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="517,613,593,640"/>
+<area shape="rect" id="node23" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="529,664,582,691"/>
+<area shape="rect" id="node24" href="$class_c_script.html#aad6e9f84fe8aa2d27a979f1bc2732463" title="CScript::FindAndDelete" alt="" coords="475,360,636,387"/>
+<area shape="rect" id="node25" href="$script_8cpp.html#a7b6e748dfd1084bd73c419c2d56f1851" title="IsCanonicalSignature" alt="" coords="481,715,630,741"/>
+<area shape="rect" id="node26" href="$script_8cpp.html#ae17e42711ec8ca00ede6ee7e53ddcba6" title="IsCanonicalPubKey" alt="" coords="486,765,625,792"/>
+<area shape="rect" id="node27" href="$script_8cpp.html#af1a7eb0123f11ad1154249f4a4c1a9d1" title="CheckSig" alt="" coords="516,816,595,843"/>
+<area shape="rect" id="node19" href="$class_c_script_num.html#a2e2c60f2646f03b5cec8d92a6d31b1e8" title="CScriptNum::serialize" alt="" coords="705,461,855,488"/>
+<area shape="rect" id="node28" href="$class_c_pub_key.html#aad6f369d7972f2244466ca6db900c2a4" title="CPubKey::IsValid" alt="" coords="923,740,1049,767"/>
+<area shape="rect" id="node31" href="$script_8cpp.html#a746fd004a62173bb42801259780a3336" title="SignatureHash" alt="" coords="725,816,835,843"/>
+<area shape="rect" id="node33" href="$class_c_signature_cache.html#a9c1dbf6b015d35145f058ace43eac107" title="CSignatureCache::Get" alt="" coords="702,867,858,893"/>
+<area shape="rect" id="node34" href="$class_c_pub_key.html#ab4047c7ce31b72591d8108a2563cd21b" title="CPubKey::Verify" alt="" coords="720,765,840,792"/>
+<area shape="rect" id="node35" href="$class_c_signature_cache.html#ac2e63052c7b13f73fa0f6f4624e29c07" title="CSignatureCache::Set" alt="" coords="703,917,857,944"/>
+<area shape="rect" id="node29" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="1113,740,1223,767"/>
+<area shape="rect" id="node30" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="1271,740,1400,767"/>
+<area shape="rect" id="node32" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="907,816,1065,843"/>
+<area shape="rect" id="node36" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="954,892,1018,919"/>
+<area shape="rect" id="node37" href="$util_8cpp.html#af3aedae75efabb170337a497457f7ecf" title="GetRandHash" alt="" coords="933,943,1039,969"/>
+</map>

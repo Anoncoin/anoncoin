@@ -1,0 +1,4 @@
+<map id="payments::Output::Clear" name="payments::Output::Clear">
+<area shape="rect" id="node2" href="$classpayments_1_1_output.html#a4040a4efb093903b08bfc2b7c0153d52" title="payments::Output::CopyFrom" alt="" coords="220,5,417,32"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_output.html#ae2d323845ba269a349ffec6b1a96d8b4" title="payments::Output::operator=" alt="" coords="465,5,657,32"/>
+</map>

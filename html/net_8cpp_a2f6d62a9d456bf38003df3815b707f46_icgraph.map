@@ -1,0 +1,6 @@
+<map id="SetLimited" name="SetLimited">
+<area shape="rect" id="node2" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="139,31,209,57"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="305,5,369,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="257,56,417,83"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="465,5,516,32"/>
+</map>

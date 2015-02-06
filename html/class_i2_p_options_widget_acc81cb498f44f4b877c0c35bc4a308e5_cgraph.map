@@ -1,0 +1,14 @@
+<map id="I2POptionsWidget::I2POptionsWidget" name="I2POptionsWidget::I2POptionsWidget">
+<area shape="rect" id="node2" href="$class_ui___i2_p_options_widget.html#af3cac75b6df23bedb8fa77e3e14f8183" title="Ui_I2POptionsWidget\l::setupUi" alt="" coords="289,5,438,47"/>
+<area shape="rect" id="node4" href="$class_i2_p_options_widget.html#a9301a421b488f52a973120a6ec7e6cdb" title="I2POptionsWidget::ShowCurrent\lI2PAddress" alt="" coords="256,71,471,112"/>
+<area shape="rect" id="node13" href="$class_i2_p_options_widget.html#a732cd043c78d5097da97feee94789a16" title="I2POptionsWidget::Generate\lNewI2PAddress" alt="" coords="267,136,459,177"/>
+<area shape="rect" id="node3" href="$class_ui___i2_p_options_widget.html#af2c1ad3e6f9cee894f8b5f92f7b74bf2" title="Ui_I2POptionsWidget\l::retranslateUi" alt="" coords="519,5,668,47"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a7d86fadf98dfaba55f80b9be0ab0f978" title="GetConfigFile" alt="" coords="541,110,645,137"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="729,85,793,111"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="716,135,805,162"/>
+<area shape="rect" id="node8" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="911,59,979,86"/>
+<area shape="rect" id="node9" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="853,110,1036,137"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="879,161,1010,187"/>
+<area shape="rect" id="node12" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="862,211,1027,238"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="1084,161,1219,187"/>
+</map>

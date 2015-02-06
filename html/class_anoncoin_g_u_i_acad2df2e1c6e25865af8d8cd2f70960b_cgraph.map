@@ -1,0 +1,7 @@
+<map id="AnoncoinGUI::message" name="AnoncoinGUI::message">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#a4c87902dc6d0585e0c06f31c54e03223" title="Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHid..." alt="" coords="216,5,407,47"/>
+<area shape="rect" id="node5" href="$class_notificator.html#ae08e1e7e85ddc4690f307649021f7fdc" title="Show notification message. " alt="" coords="251,71,372,98"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#a0b7266e2b8e7de5f5fd1c7ddb9e5b637" title="GUIUtil::isObscured" alt="" coords="467,13,607,39"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#ab2e7ef0aa9a1ad3f86d67a3f596b6fc4" title="GUIUtil::checkPoint" alt="" coords="668,13,805,39"/>
+<area shape="rect" id="node6" href="$class_notificator.html#ac48ec94cd02fc4ea80db6c50e24086c1" title="Notificator::notifySystray" alt="" coords="455,71,620,98"/>
+</map>

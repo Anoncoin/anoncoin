@@ -1,0 +1,4 @@
+<map id="CWallet::GetDebit" name="CWallet::GetDebit">
+<area shape="rect" id="node2" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="183,29,244,56"/>
+<area shape="rect" id="node3" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="292,29,452,56"/>
+</map>

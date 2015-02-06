@@ -1,0 +1,27 @@
+<map id="src/auxpow.h" name="src/auxpow.h">
+<area shape="rect" id="node2" href="$main_8h.html" title="main.h" alt="" coords="1738,80,1801,107"/>
+<area shape="rect" id="node3" href="$bignum_8h.html" title="bignum.h" alt="" coords="1809,543,1887,569"/>
+<area shape="rect" id="node16" href="$uint256_8h.html" title="uint256.h" alt="" coords="2304,617,2381,644"/>
+<area shape="rect" id="node21" href="$clientversion_8h.html" title="clientversion.h" alt="" coords="723,617,829,644"/>
+<area shape="rect" id="node22" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="1621,461,1731,487"/>
+<area shape="rect" id="node23" href="$coins_8h.html" title="coins.h" alt="" coords="2024,229,2088,256"/>
+<area shape="rect" id="node24" href="$core_8h.html" title="core.h" alt="" coords="2509,304,2568,331"/>
+<area shape="rect" id="node25" href="$script_8h.html" title="script.h" alt="" coords="2087,379,2153,405"/>
+<area shape="rect" id="node35" href="$net_8h.html" title="net.h" alt="" coords="943,304,995,331"/>
+<area shape="rect" id="node42" href="$sync_8h.html" title="sync.h" alt="" coords="2899,379,2959,405"/>
+<area shape="rect" id="node49" href="$txmempool_8h.html" title="txmempool.h" alt="" coords="2128,155,2227,181"/>
+<area shape="rect" id="node4" href="$serialize_8h.html" title="serialize.h" alt="" coords="1363,617,1445,644"/>
+<area shape="rect" id="node18" href="$version_8h.html" title="version.h" alt="" coords="1673,617,1749,644"/>
+<area shape="rect" id="node5" href="$allocators_8h.html" title="allocators.h" alt="" coords="2280,692,2371,719"/>
+<area shape="rect" id="node34" href="$scrypt_8h.html" title="scrypt.h" alt="" coords="2795,543,2864,569"/>
+<area shape="rect" id="node26" href="$key_8h.html" title="key.h" alt="" coords="2061,461,2115,487"/>
+<area shape="rect" id="node28" href="$util_8h.html" title="util.h" alt="" coords="944,543,995,569"/>
+<area shape="rect" id="node27" href="$hash_8h.html" title="hash.h" alt="" coords="1653,543,1715,569"/>
+<area shape="rect" id="node29" href="$compat_8h.html" title="compat.h" alt="" coords="520,617,597,644"/>
+<area shape="rect" id="node36" href="$bloom_8h.html" title="bloom.h" alt="" coords="1123,543,1192,569"/>
+<area shape="rect" id="node37" href="$limitedmap_8h.html" title="limitedmap.h" alt="" coords="297,617,394,644"/>
+<area shape="rect" id="node38" href="$mruset_8h.html" title="mruset.h" alt="" coords="433,379,506,405"/>
+<area shape="rect" id="node40" href="$netbase_8h.html" title="netbase.h" alt="" coords="1019,543,1099,569"/>
+<area shape="rect" id="node41" href="$protocol_8h.html" title="protocol.h" alt="" coords="1189,379,1269,405"/>
+<area shape="rect" id="node43" href="$threadsafety_8h.html" title="threadsafety.h" alt="" coords="2795,461,2901,487"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="GetWarnings" name="GetWarnings">
+<area shape="rect" id="node2" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="180,5,271,32"/>
+<area shape="rect" id="node4" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="206,56,245,83"/>
+<area shape="rect" id="node5" href="$class_c_alert.html#a0a7fab6a971781904afb3e4a0ee29e12" title="CAlert::AppliesToMe" alt="" coords="153,107,297,133"/>
+<area shape="rect" id="node3" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="390,5,434,32"/>
+<area shape="rect" id="node6" href="$clientversion_8cpp.html#a7e6809cdbfc7f83b46f83caea740894d" title="Format the subversion field according to BIP 14 spec (https://github.com/bitcoin/bips/blob/master/bip..." alt="" coords="345,107,479,133"/>
+</map>

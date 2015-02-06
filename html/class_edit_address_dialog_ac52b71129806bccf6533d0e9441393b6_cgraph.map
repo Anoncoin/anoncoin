@@ -1,0 +1,23 @@
+<map id="EditAddressDialog::accept" name="EditAddressDialog::accept">
+<area shape="rect" id="node2" href="$class_edit_address_dialog.html#a8494a551799cd1f4c253e557424c206c" title="EditAddressDialog::\lsaveCurrentRow" alt="" coords="197,139,335,181"/>
+<area shape="rect" id="node22" href="$class_address_table_model.html#a4bd9d9835681e87c320f486eeae42968" title="AddressTableModel::\lgetEditStatus" alt="" coords="192,205,340,246"/>
+<area shape="rect" id="node3" href="$class_address_table_model.html#aa72edd2a093a6e9318639d69d3a23488" title="AddressTableModel::\laddRow" alt="" coords="388,139,536,181"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a04604615253aeaae1253b1412a70a1f7" title="WalletModel::validateAddress" alt="" coords="584,45,781,72"/>
+<area shape="rect" id="node8" href="$class_c_wallet.html#a18549ec5c472c003afc4794daeb9adfd" title="CWallet::GetKeyFromPool" alt="" coords="593,96,772,123"/>
+<area shape="rect" id="node9" href="$class_wallet_model.html#ae98eaede9493625ce778a0a873b3d124" title="WalletModel::requestUnlock" alt="" coords="589,147,777,173"/>
+<area shape="rect" id="node13" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="623,197,743,224"/>
+<area shape="rect" id="node17" href="$class_c_wallet.html#a53e5528d7005608594e73f500bc5bb8f" title="CWallet::SetAddressBook" alt="" coords="595,331,771,357"/>
+<area shape="rect" id="node5" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="829,45,1013,72"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1127,5,1195,32"/>
+<area shape="rect" id="node7" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="1061,56,1260,83"/>
+<area shape="rect" id="node10" href="$class_wallet_model.html#acfb62be638267bbf1bf498fb6501c31d" title="WalletModel::getEncryption\lStatus" alt="" coords="829,114,1013,155"/>
+<area shape="rect" id="node11" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="1308,136,1499,163"/>
+<area shape="rect" id="node12" href="$class_c_crypto_key_store.html#a1c3ebef555fd13676d67509b95820fcf" title="CCryptoKeyStore::IsLocked" alt="" coords="1067,161,1254,188"/>
+<area shape="rect" id="node14" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="883,180,959,207"/>
+<area shape="rect" id="node15" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="867,231,976,257"/>
+<area shape="rect" id="node16" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="1096,231,1225,257"/>
+<area shape="rect" id="node18" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="891,305,952,332"/>
+<area shape="rect" id="node20" href="$class_c_wallet_d_b.html#a8d4e8d73b977dc62c137bd3543c278bf" title="CWalletDB::WritePurpose" alt="" coords="833,356,1009,383"/>
+<area shape="rect" id="node21" href="$class_c_wallet_d_b.html#ad1b3bce77e9dd6ddd8c668a469c38f0a" title="CWalletDB::WriteName" alt="" coords="841,407,1002,433"/>
+<area shape="rect" id="node19" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="1081,305,1241,332"/>
+</map>

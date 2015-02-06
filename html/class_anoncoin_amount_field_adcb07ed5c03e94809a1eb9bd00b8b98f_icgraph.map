@@ -1,0 +1,11 @@
+<map id="AnoncoinAmountField::setValue" name="AnoncoinAmountField::setValue">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html#a57a80569ce0ee2a8aee65d040a559dd4" title="AnoncoinAmountField\l::unitChanged" alt="" coords="218,71,370,112"/>
+<area shape="rect" id="node6" href="$class_send_coins_entry.html#a513dd22231d0d7c2550c5533e9518cf5" title="SendCoinsEntry::setValue" alt="" coords="205,137,383,163"/>
+<area shape="rect" id="node3" href="$class_anoncoin_amount_field.html#a4b2c8c4c44291ec9e60bc0a85b645e5f" title="AnoncoinAmountField\l::AnoncoinAmountField" alt="" coords="449,5,609,47"/>
+<area shape="rect" id="node4" href="$class_anoncoin_amount_field.html#a168a4f11d296a1a9b17dc164f5f5f11e" title="Set single step in satoshis. " alt="" coords="453,71,605,112"/>
+<area shape="rect" id="node5" href="$class_options_dialog.html#a8131b615e29560144ffb368b9b07060a" title="OptionsDialog::OptionsDialog" alt="" coords="689,78,886,105"/>
+<area shape="rect" id="node7" href="$class_send_coins_dialog.html#a4440d15ced5d217baaad33a17d56b409" title="SendCoinsDialog::pasteEntry" alt="" coords="431,137,627,163"/>
+<area shape="rect" id="node8" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="675,129,900,171"/>
+<area shape="rect" id="node9" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="948,129,1136,171"/>
+<area shape="rect" id="node10" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="1184,129,1381,171"/>
+</map>

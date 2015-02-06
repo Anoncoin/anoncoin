@@ -1,0 +1,13 @@
+<map id="IncrementExtraNonceWithAux" name="IncrementExtraNonceWithAux">
+<area shape="rect" id="node2" href="$class_c_block_index.html#abffb24cc73329a3dce024403ba770b4a" title="CBlockIndex::GetMedianTimePast" alt="" coords="253,5,479,32"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="303,56,429,83"/>
+<area shape="rect" id="node7" href="$auxpow_8cpp.html#a78f6988ed422a8fd0577c02fd01f0da2" title="MakeCoinbaseWithAux" alt="" coords="286,107,446,133"/>
+<area shape="rect" id="node8" href="$class_c_block.html#a930d742dbdcd7c78159d3f93431d2d3e" title="CBlock::BuildMerkleTree" alt="" coords="281,157,451,184"/>
+<area shape="rect" id="node3" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="527,5,715,32"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="584,56,657,83"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="566,107,675,133"/>
+<area shape="rect" id="node9" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="540,157,701,184"/>
+<area shape="rect" id="node12" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="594,208,647,235"/>
+<area shape="rect" id="node10" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="763,157,867,184"/>
+<area shape="rect" id="node11" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="915,157,1073,184"/>
+</map>

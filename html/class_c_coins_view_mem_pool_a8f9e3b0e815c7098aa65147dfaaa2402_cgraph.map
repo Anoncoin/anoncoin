@@ -1,0 +1,4 @@
+<map id="CCoinsViewMemPool::HaveCoins" name="CCoinsViewMemPool::HaveCoins">
+<area shape="rect" id="node2" href="$class_c_tx_mem_pool.html#adba06e79be4a1a092dd2db8290733be7" title="CTxMemPool::exists" alt="" coords="223,5,367,32"/>
+<area shape="rect" id="node3" href="$class_c_coins_view.html#a946fb289182377c3b9c4cc557e9f7d9c" title="CCoinsView::HaveCoins" alt="" coords="212,56,379,83"/>
+</map>

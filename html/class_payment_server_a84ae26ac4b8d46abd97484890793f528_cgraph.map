@@ -1,0 +1,11 @@
+<map id="PaymentServer::readPaymentRequest" name="PaymentServer::readPaymentRequest">
+<area shape="rect" id="node2" href="$class_payment_request_plus.html#aaa495c136209bac976cc195705a6c509" title="PaymentRequestPlus\l::parse" alt="" coords="253,79,404,120"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#ae3325b49f6423d3c761233e6a942e7ee" title="payments::PaymentRequest\l::payment_details_version" alt="" coords="453,13,642,55"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a409c3294565d64b32604eec63343a097" title="payments::PaymentRequest\l::serialized_payment_details" alt="" coords="452,79,643,120"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#a222f0b2cebe5bef9bbdd27e41b41ab4c" title="payments::PaymentRequest\l::Clear" alt="" coords="453,144,642,185"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_request.html#a468d0df13c43608b8df88dff36a89cb5" title="payments::PaymentRequest\l::has_pki_type" alt="" coords="691,5,880,47"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment_request.html#ac0c246fd8bc59b43274866909e2f7d0e" title="payments::PaymentRequest\l::has_pki_data" alt="" coords="691,71,880,112"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment_request.html#a2ca7d37905f9d20151a760381a6047d0" title="payments::PaymentRequest\l::has_serialized_payment\l_details" alt="" coords="691,137,880,193"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment_request.html#a0121113b95563ae0541c9ba54949d925" title="payments::PaymentRequest\l::has_signature" alt="" coords="691,217,880,259"/>
+<area shape="rect" id="node10" href="$classpayments_1_1_payment_request.html#a0685727be1f02889f11f825436cac5b3" title="payments::PaymentRequest\l::mutable_unknown_fields" alt="" coords="691,283,880,324"/>
+</map>

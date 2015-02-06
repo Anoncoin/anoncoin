@@ -1,0 +1,6 @@
+<map id="CSemaphoreGrant::CSemaphoreGrant" name="CSemaphoreGrant::CSemaphoreGrant">
+<area shape="rect" id="node2" href="$class_c_semaphore_grant.html#a9952d9ea087ced803c099f69992ebb1d" title="CSemaphoreGrant::TryAcquire" alt="" coords="273,5,479,32"/>
+<area shape="rect" id="node4" href="$class_c_semaphore_grant.html#ac52976968379ea8e2470cfba877c3e89" title="CSemaphoreGrant::Acquire" alt="" coords="283,56,469,83"/>
+<area shape="rect" id="node3" href="$class_c_semaphore.html#abb8a07e6cac29dc72f044cd536a9f9e5" title="CSemaphore::try_wait" alt="" coords="527,5,680,32"/>
+<area shape="rect" id="node5" href="$class_c_semaphore.html#a1c108bd981fe68527ec8ef5e7b0d116c" title="CSemaphore::wait" alt="" coords="537,56,669,83"/>
+</map>

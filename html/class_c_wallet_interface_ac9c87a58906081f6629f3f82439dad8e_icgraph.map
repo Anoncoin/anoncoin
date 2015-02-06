@@ -1,0 +1,8 @@
+<map id="CWalletInterface::SetBestChain" name="CWalletInterface::SetBestChain">
+<area shape="rect" id="node2" href="$main_8h.html#aa6b7f220759fb53f10c65654bbf61317" title="Register a wallet to receive updates from core. " alt="" coords="233,31,343,57"/>
+<area shape="rect" id="node7" href="$main_8h.html#aa60561b6923955deeaad6fdab74a3aee" title="Unregister a wallet from core. " alt="" coords="228,81,348,108"/>
+<area shape="rect" id="node3" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="396,31,467,57"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="563,5,627,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="515,56,675,83"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="723,5,773,32"/>
+</map>

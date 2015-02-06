@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$class_address_table_model.html" title="Qt model of the address book in the core. " alt="" coords="229,5,369,32"/>
+<area shape="rect" id="node3" href="$class_peer_table_model.html" title="Qt model providing information about connected peers, similar to the &quot;getpeerinfo&quot; RPC call..." alt="" coords="239,56,359,83"/>
+<area shape="rect" id="node4" href="$class_recent_requests_table_model.html" title="Model for list of recently generated payment requests / anoncoin: URIs. " alt="" coords="204,107,395,133"/>
+<area shape="rect" id="node5" href="$class_transaction_table_model.html" title="UI model for the transaction table of a wallet. " alt="" coords="219,157,380,184"/>
+</map>

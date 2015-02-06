@@ -1,0 +1,8 @@
+<map id="libzerocoin::AccumulatorWitness" name="libzerocoin::AccumulatorWitness">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_params.html" title="libzerocoin::Params" alt="" coords="795,85,934,112"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_integer_group_params.html" title="libzerocoin::IntegerGroup\lParams" alt="" coords="5,55,177,97"/>
+<area shape="rect" id="node4" href="$classlibzerocoin_1_1_accumulator_and_proof_params.html" title="libzerocoin::Accumulator\lAndProofParams" alt="" coords="426,90,593,131"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_accumulator.html" title="Implementation of the RSA&#45;based accumulator. " alt="" coords="781,136,948,163"/>
+<area shape="rect" id="node6" href="$classlibzerocoin_1_1_coin_denomination.html" title="libzerocoin::CoinDenomination" alt="" coords="408,165,611,192"/>
+<area shape="rect" id="node7" href="$classlibzerocoin_1_1_public_coin.html" title="A Public coin is the part of a coin that is published to the network and what is handled by other cli..." alt="" coords="786,187,943,213"/>
+</map>

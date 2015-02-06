@@ -1,0 +1,15 @@
+<map id="OptionsDialog::setModel" name="OptionsDialog::setModel">
+<area shape="rect" id="node2" href="$class_options_model.html#a75c15f2cb96ee8efe7b9e756e5c8e69c" title="OptionsModel::isRestartRequired" alt="" coords="221,5,440,32"/>
+<area shape="rect" id="node3" href="$class_options_dialog.html#a866e74896ea7dacdc99b5e0af4fd5b38" title="OptionsDialog::showRestart\lWarning" alt="" coords="237,57,424,98"/>
+<area shape="rect" id="node5" href="$class_options_model.html#ac5d555492fa4d6bba68d00e798efca50" title="OptionsModel::getOverridden\lByCommandLine" alt="" coords="233,122,429,163"/>
+<area shape="rect" id="node6" href="$class_options_dialog.html#ae18a7ab3042a669403504e86ab2f8a77" title="OptionsDialog::updateDisplayUnit" alt="" coords="220,188,441,215"/>
+<area shape="rect" id="node10" href="$class_options_dialog.html#a2088ec5bbb90ec27675f441e750e55b8" title="OptionsDialog::setMapper" alt="" coords="243,239,419,265"/>
+<area shape="rect" id="node14" href="$class_options_dialog.html#aff6642b6705586870232e0e86b8b7346" title="OptionsDialog::showRestart\lWarning_I2P" alt="" coords="237,290,424,331"/>
+<area shape="rect" id="node4" href="$class_options_dialog.html#acd07b7058fd097bea5beb5cdd6fc1ad9" title="OptionsDialog::clearStatus\lLabel" alt="" coords="499,57,679,98"/>
+<area shape="rect" id="node7" href="$class_anoncoin_amount_field.html#a44252e1921be1026e68adfbdc99d5ca4" title="Change unit used to display amount. " alt="" coords="513,122,665,163"/>
+<area shape="rect" id="node9" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="491,188,688,215"/>
+<area shape="rect" id="node8" href="$class_q_value_combo_box.html#af192c68c0c82f33000d8c1be8c013d2d" title="QValueComboBox::setValue" alt="" coords="737,129,929,156"/>
+<area shape="rect" id="node11" href="$class_monitored_data_mapper.html#a5ddfc6ef4e955211948c7b24994dfd7e" title="MonitoredDataMapper\l::addMapping" alt="" coords="756,257,911,298"/>
+<area shape="rect" id="node13" href="$class_i2_p_options_widget.html#ae87e45f309b5a3abd782f3b6020eac4f" title="I2POptionsWidget::setMapper" alt="" coords="489,289,689,316"/>
+<area shape="rect" id="node12" href="$class_monitored_data_mapper.html#a1ed42b9f6daf2711ac7fe49e5e2c79ed" title="MonitoredDataMapper\l::addChangeMonitor" alt="" coords="977,257,1132,298"/>
+</map>

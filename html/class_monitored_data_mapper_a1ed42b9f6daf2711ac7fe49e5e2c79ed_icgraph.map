@@ -1,0 +1,9 @@
+<map id="MonitoredDataMapper::addChangeMonitor" name="MonitoredDataMapper::addChangeMonitor">
+<area shape="rect" id="node2" href="$class_monitored_data_mapper.html#a5ddfc6ef4e955211948c7b24994dfd7e" title="MonitoredDataMapper\l::addMapping" alt="" coords="208,23,363,65"/>
+<area shape="rect" id="node3" href="$class_i2_p_options_widget.html#ae87e45f309b5a3abd782f3b6020eac4f" title="I2POptionsWidget::setMapper" alt="" coords="411,5,611,32"/>
+<area shape="rect" id="node4" href="$class_options_dialog.html#a2088ec5bbb90ec27675f441e750e55b8" title="OptionsDialog::setMapper" alt="" coords="659,31,835,57"/>
+<area shape="rect" id="node5" href="$class_options_dialog.html#a11e902a52cb7472497d14e70cd9399d9" title="OptionsDialog::setModel" alt="" coords="883,31,1049,57"/>
+<area shape="rect" id="node6" href="$class_anoncoin_g_u_i.html#a1afb9a47588132239cfba7be0adc2542" title="Show configuration dialog. " alt="" coords="1097,31,1293,57"/>
+<area shape="rect" id="node7" href="$class_anoncoin_g_u_i.html#a8aa41c17fd6005652003d93330dbf7fb" title="Create the main UI actions. " alt="" coords="1341,31,1531,57"/>
+<area shape="rect" id="node8" href="$class_anoncoin_g_u_i.html#a82d1cf09f42a7c169b3e9c8d3e54a3d0" title="AnoncoinGUI::AnoncoinGUI" alt="" coords="1579,31,1767,57"/>
+</map>

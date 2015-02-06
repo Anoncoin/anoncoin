@@ -1,0 +1,25 @@
+<map id="getaccountaddress" name="getaccountaddress">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="211,55,328,81"/>
+<area shape="rect" id="node3" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="207,105,332,132"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a3039648e370837eb1e7b4dc669f3ef0f" title="AccountFromValue" alt="" coords="201,156,337,183"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#a9f40a730390f78ad6e2c32d0ec9bf1ef" title="GetAccountAddress" alt="" coords="199,207,339,233"/>
+<area shape="rect" id="node21" href="$class_c_base58_data.html#a9a47b10dadff15b8d6a6d0e63ce3ae32" title="CBase58Data::ToString" alt="" coords="188,333,351,360"/>
+<area shape="rect" id="node5" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="430,29,546,56"/>
+<area shape="rect" id="node7" href="$class_c_wallet_d_b.html#afa8d9d374072629b360adb49b9bdd584" title="CWalletDB::ReadAccount" alt="" coords="401,181,575,208"/>
+<area shape="rect" id="node9" href="$class_c_pub_key.html#aad6f369d7972f2244466ca6db900c2a4" title="CPubKey::IsValid" alt="" coords="425,283,551,309"/>
+<area shape="rect" id="node12" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="849,131,1009,157"/>
+<area shape="rect" id="node13" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="428,333,548,360"/>
+<area shape="rect" id="node15" href="$class_c_wallet.html#a18549ec5c472c003afc4794daeb9adfd" title="CWallet::GetKeyFromPool" alt="" coords="399,384,577,411"/>
+<area shape="rect" id="node16" href="$class_c_wallet.html#a53e5528d7005608594e73f500bc5bb8f" title="CWallet::SetAddressBook" alt="" coords="400,80,576,107"/>
+<area shape="rect" id="node20" href="$class_c_wallet_d_b.html#afef640a4990f74fd5af7178c99415cf3" title="CWalletDB::WriteAccount" alt="" coords="401,131,575,157"/>
+<area shape="rect" id="node8" href="$class_c_account.html#ac63a4127fd899a21a5916a86588e809a" title="CAccount::SetNull" alt="" coords="648,181,779,208"/>
+<area shape="rect" id="node10" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="659,283,768,309"/>
+<area shape="rect" id="node11" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="865,283,994,309"/>
+<area shape="rect" id="node14" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="675,333,751,360"/>
+<area shape="rect" id="node17" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="683,29,744,56"/>
+<area shape="rect" id="node18" href="$class_c_wallet_d_b.html#a8d4e8d73b977dc62c137bd3543c278bf" title="CWalletDB::WritePurpose" alt="" coords="625,80,801,107"/>
+<area shape="rect" id="node19" href="$class_c_wallet_d_b.html#ad1b3bce77e9dd6ddd8c668a469c38f0a" title="CWalletDB::WriteName" alt="" coords="633,131,794,157"/>
+<area shape="rect" id="node22" href="$base58_8cpp.html#ace9a5807ee51604f33044339f073ec76" title="Encode a byte vector into a base58&#45;encoded string, including checksum. " alt="" coords="413,435,563,461"/>
+<area shape="rect" id="node23" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="687,460,740,487"/>
+<area shape="rect" id="node24" href="$base58_8cpp.html#a8d6f0e9d5df175b4966dcede31dc90ad" title="Encode a byte sequence as a base58&#45;encoded string. " alt="" coords="657,409,769,436"/>
+</map>

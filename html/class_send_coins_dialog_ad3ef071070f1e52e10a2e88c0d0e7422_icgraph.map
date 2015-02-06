@@ -1,0 +1,7 @@
+<map id="SendCoinsDialog::message" name="SendCoinsDialog::message">
+<area shape="rect" id="node2" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="240,5,465,47"/>
+<area shape="rect" id="node5" href="$class_send_coins_dialog.html#a349fff162bb43ec63e56e8f7db203a66" title="SendCoinsDialog::process\lSendCoinsReturn" alt="" coords="263,71,442,112"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="513,5,701,47"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="749,5,947,47"/>
+<area shape="rect" id="node6" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="534,71,681,112"/>
+</map>

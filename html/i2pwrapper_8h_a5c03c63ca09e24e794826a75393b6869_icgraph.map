@@ -1,0 +1,7 @@
+<map id="B32AddressFromDestination" name="B32AddressFromDestination">
+<area shape="rect" id="node2" href="$class_i2_p_session.html#a4daa60a1a5767f354ebc5af8cabc4691" title="I2PSession::GenerateB32Address\lFromDestination" alt="" coords="245,23,471,65"/>
+<area shape="rect" id="node3" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="519,31,589,57"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="685,5,749,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="637,56,797,83"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="845,5,896,32"/>
+</map>

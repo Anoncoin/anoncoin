@@ -1,0 +1,11 @@
+<map id="CAnoncoinAddress::GetKeyID" name="CAnoncoinAddress::GetKeyID">
+<area shape="rect" id="node2" href="$class_send_coins_dialog.html#a1f419f2381bce2ae9b4a7bd140f25a4e" title="SendCoinsDialog::coinControl\lChangeEdited" alt="" coords="255,21,455,63"/>
+<area shape="rect" id="node5" href="$rpcdump_8cpp.html#a4010fb238298e15c540d3e5ecd60f858" title="dumpprivkey" alt="" coords="306,87,403,114"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#aa9b91e060b2d18fffb3b57a679441e68" title="_createmultisig_redeemScript" alt="" coords="255,138,454,165"/>
+<area shape="rect" id="node9" href="$rpcmisc_8cpp.html#ad8fce781dfd9dfd4866bba2a4589141a" title="verifymessage" alt="" coords="301,189,409,215"/>
+<area shape="rect" id="node10" href="$rpcwallet_8cpp.html#a315b42a2c859c4b50a54c1b05984928c" title="signmessage" alt="" coords="305,239,405,266"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="751,5,948,47"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a21224b0dedf14f7a6c05174bff9dea65" title="SendCoinsDialog::coinControl\lChangeChecked" alt="" coords="503,35,703,76"/>
+<area shape="rect" id="node7" href="$rpcmisc_8cpp.html#a10f145bcadd06025abb3b065e2fa7a84" title="createmultisig" alt="" coords="551,126,655,153"/>
+<area shape="rect" id="node8" href="$rpcwallet_8cpp.html#a01e8a83cbd4209f10c71719383d7ca2d" title="addmultisigaddress" alt="" coords="534,177,671,203"/>
+</map>

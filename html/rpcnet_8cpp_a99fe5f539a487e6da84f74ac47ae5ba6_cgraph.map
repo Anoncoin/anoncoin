@@ -1,0 +1,10 @@
+<map id="makekeypair" name="makekeypair">
+<area shape="rect" id="node2" href="$class_c_key.html#a9d12ed9d297e4286250fd7ea6b59e1a5" title="CKey::MakeNewKey" alt="" coords="151,5,295,32"/>
+<area shape="rect" id="node4" href="$class_c_key.html#ae4b61da6ec62f676fe6362ac5fc26aca" title="CKey::GetPubKey" alt="" coords="157,56,288,83"/>
+<area shape="rect" id="node5" href="$util_8h.html#ace13a819ca4e98c22847d26b3b357e75" title="HexStr" alt="" coords="191,107,254,133"/>
+<area shape="rect" id="node6" href="$class_c_pub_key.html#add9987e0d25aff11181f5ad70413994b" title="CPubKey::begin" alt="" coords="163,157,282,184"/>
+<area shape="rect" id="node7" href="$class_c_pub_key.html#aa559d2a4f2cbdec84c02a4adc18fa657" title="CPubKey::end" alt="" coords="169,208,277,235"/>
+<area shape="rect" id="node3" href="$class_c_key.html#acec869bc75fa8f4d619ab025d367a97c" title="CKey::Check" alt="" coords="347,5,447,32"/>
+<area shape="rect" id="node8" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="343,208,452,235"/>
+<area shape="rect" id="node9" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="500,208,629,235"/>
+</map>

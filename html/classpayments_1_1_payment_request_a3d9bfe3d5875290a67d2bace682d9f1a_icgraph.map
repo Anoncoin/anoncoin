@@ -1,0 +1,5 @@
+<map id="payments::PaymentRequest::clear_has_serialized_payment_details" name="payments::PaymentRequest::clear_has_serialized_payment_details">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#ad6c68572f2caa60d38f8cab7b9b7f4e4" title="payments::PaymentRequest\l::clear_serialized_payment\l_details" alt="" coords="246,5,435,61"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a4141196cda746466110f7d57d6413ba1" title="payments::PaymentRequest\l::release_serialized_payment\l_details" alt="" coords="243,85,439,141"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a3df864da964d7b63264ee89b79087547" title="payments::PaymentRequest\l::set_allocated_serialized\l_payment_details" alt="" coords="246,165,435,221"/>
+</map>

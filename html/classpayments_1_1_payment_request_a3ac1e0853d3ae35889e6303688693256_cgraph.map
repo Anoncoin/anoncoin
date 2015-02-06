@@ -1,0 +1,5 @@
+<map id="payments::PaymentRequest::set_allocated_pki_data" name="payments::PaymentRequest::set_allocated_pki_data">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#a0f26da3af5170c9cd373111efad0bed7" title="payments::PaymentRequest\l::set_has_pki_data" alt="" coords="243,5,432,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#ac8f305ba3185f34458c9abe869119c6a" title="payments::PaymentRequest\l::pki_data" alt="" coords="243,71,432,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a49cba281761f7b9b811cdb692004e2f1" title="payments::PaymentRequest\l::clear_has_pki_data" alt="" coords="243,136,432,177"/>
+</map>

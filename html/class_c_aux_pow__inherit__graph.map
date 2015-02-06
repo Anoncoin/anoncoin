@@ -1,0 +1,4 @@
+<map id="CAuxPow" name="CAuxPow">
+<area shape="rect" id="node2" href="$class_c_merkle_tx.html" title="A transaction with a merkle branch linking it to the block chain. " alt="" coords="13,80,99,107"/>
+<area shape="rect" id="node3" href="$class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ..." alt="" coords="5,5,107,32"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="ReceiveCoinsDialog::copyLabel" name="ReceiveCoinsDialog::copyLabel">
+<area shape="rect" id="node2" href="$class_receive_coins_dialog.html#adcf53aced7dfa041a55278b4807a20a2" title="ReceiveCoinsDialog\l::copyColumnToClipboard" alt="" coords="196,64,372,105"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f" title="WalletModel::getRecentRequests\lTableModel" alt="" coords="420,5,640,47"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07" title="GUIUtil::setClipboard" alt="" coords="457,71,603,98"/>
+<area shape="rect" id="node5" href="$class_recent_requests_table_model.html#a899a483b2d6fd33a034d2781c5d638b7" title="RecentRequestsTableModel\l::data" alt="" coords="435,123,625,164"/>
+<area shape="rect" id="node6" href="$namespace_g_u_i_util.html#aae732a04fea25190081120bf0cc773e8" title="GUIUtil::dateTimeStr" alt="" coords="717,54,863,81"/>
+<area shape="rect" id="node7" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="713,105,867,131"/>
+<area shape="rect" id="node11" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="688,155,892,182"/>
+<area shape="rect" id="node12" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="691,206,889,233"/>
+<area shape="rect" id="node8" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="953,54,1095,81"/>
+<area shape="rect" id="node9" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="949,105,1099,131"/>
+<area shape="rect" id="node10" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="940,155,1108,182"/>
+</map>

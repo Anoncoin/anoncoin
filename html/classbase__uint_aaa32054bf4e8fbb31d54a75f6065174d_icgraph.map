@@ -1,0 +1,9 @@
+<map id="base_uint::begin" name="base_uint::begin">
+<area shape="rect" id="node2" href="$class_c_bloom_filter.html#a7b4d06836a811a7282fb60f0697b2e1c" title="CBloomFilter::contains" alt="" coords="191,5,347,32"/>
+<area shape="rect" id="node3" href="$i2pwrapper_8h.html#a5c03c63ca09e24e794826a75393b6869" title="B32AddressFromDestination" alt="" coords="173,56,365,83"/>
+<area shape="rect" id="node4" href="$class_i2_p_session.html#a4daa60a1a5767f354ebc5af8cabc4691" title="I2PSession::GenerateB32Address\lFromDestination" alt="" coords="413,49,639,90"/>
+<area shape="rect" id="node5" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="687,56,757,83"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="853,31,917,57"/>
+<area shape="rect" id="node8" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="805,81,965,108"/>
+<area shape="rect" id="node7" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1013,31,1064,57"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="CAddress" name="CAddress">
+<area shape="rect" id="node4" href="$class_c_addr_info.html" title="Extended statistics about a CAddress. " alt="" coords="5,229,88,256"/>
+<area shape="rect" id="node2" href="$class_c_service.html" title="A combination of a network address (CNetAddr) and a (TCP) port. " alt="" coords="9,80,85,107"/>
+<area shape="rect" id="node3" href="$class_c_net_addr.html" title="IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) " alt="" coords="7,5,87,32"/>
+</map>

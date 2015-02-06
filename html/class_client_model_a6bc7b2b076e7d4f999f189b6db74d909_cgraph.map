@@ -1,0 +1,4 @@
+<map id="ClientModel::getNumBlocksAtStartup" name="ClientModel::getNumBlocksAtStartup">
+<area shape="rect" id="node2" href="$class_client_model.html#a9c298b0c2eb9c8e9ff18c6ff37725b0a" title="ClientModel::getNumBlocks" alt="" coords="239,13,424,39"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="472,13,584,39"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="TransactionView::resizeEvent" name="TransactionView::resizeEvent">
+<area shape="rect" id="node2" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a89971ed347cf9d25e02cfb7d9c7e3ca6" title="GUIUtil::TableViewLastColumn\lResizingFixer::stretchColumnWidth" alt="" coords="251,315,481,357"/>
+<area shape="rect" id="node3" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ae36cd142d60656073928ba6bd05a6661" title="GUIUtil::TableViewLastColumn\lResizingFixer::disconnectViewHeaders\lSignals" alt="" coords="529,229,783,285"/>
+<area shape="rect" id="node6" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a284107daa657b2d34a196b886538c02c" title="GUIUtil::TableViewLastColumn\lResizingFixer::resizeColumn" alt="" coords="2005,313,2210,354"/>
+<area shape="rect" id="node7" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ad0c6ff117107634ae8d37f056d27e711" title="GUIUtil::TableViewLastColumn\lResizingFixer::getAvailableWidth\lForColumn" alt="" coords="1999,79,2216,135"/>
+<area shape="rect" id="node9" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ab01fe3dbf021a9306ec74afda41d6f45" title="GUIUtil::TableViewLastColumn\lResizingFixer::connectViewHeaders\lSignals" alt="" coords="1415,219,1651,275"/>
+<area shape="rect" id="node4" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a31422ff98c30c95c01dba5bbb8ccbcae" title="GUIUtil::TableViewLastColumn\lResizingFixer::on_sectionResized" alt="" coords="831,237,1053,278"/>
+<area shape="rect" id="node10" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a93f3b32cf06688099875a1c9d2df57f2" title="GUIUtil::TableViewLastColumn\lResizingFixer::on_geometriesChanged" alt="" coords="1699,189,1951,230"/>
+<area shape="rect" id="node5" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ac5622cca5767d788033fff5d54629d7f" title="GUIUtil::TableViewLastColumn\lResizingFixer::adjustTableColumnsWidth" alt="" coords="1101,334,1367,375"/>
+<area shape="rect" id="node8" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a9abbf570cbaad95acfd772ddf712cbbb" title="GUIUtil::TableViewLastColumn\lResizingFixer::getColumnsWidth" alt="" coords="2264,189,2480,230"/>
+</map>

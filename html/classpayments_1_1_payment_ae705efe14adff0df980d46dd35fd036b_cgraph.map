@@ -1,0 +1,5 @@
+<map id="payments::Payment::Clear" name="payments::Payment::Clear">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment.html#aa3701100f4d4a3c80e265c3a53e04939" title="payments::Payment::\lhas_merchant_data" alt="" coords="211,5,358,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment.html#a8852f9537d84d2ed4809d1571e9e0005" title="payments::Payment::\lhas_memo" alt="" coords="211,71,358,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment.html#a51ffab88d861e5e99355b99dac5667c7" title="payments::Payment::\lmutable_unknown_fields" alt="" coords="200,136,369,177"/>
+</map>

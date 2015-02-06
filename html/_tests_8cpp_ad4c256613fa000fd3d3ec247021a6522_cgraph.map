@@ -1,0 +1,18 @@
+<map id="Test_MintAndSpend" name="Test_MintAndSpend">
+<area shape="rect" id="node2" href="$_tests_8cpp.html#a5ff6a5df003f416b1260dfdbfd7693be" title="Test_MintCoin" alt="" coords="221,69,329,95"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_private_coin.html#a11f0047e01af467bba8d9fde58f88798" title="libzerocoin::PrivateCoin\l::getPublicCoin" alt="" coords="421,5,584,47"/>
+<area shape="rect" id="node4" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="436,71,569,98"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_coin_spend.html#a9048dabc1be9ef65aeefb41e92e2f53c" title="libzerocoin::CoinSpend\l::Verify" alt="" coords="196,180,355,221"/>
+<area shape="rect" id="node17" href="$classlibzerocoin_1_1_coin_spend.html#a5e01eaa6d2671008bccde190a3c935d9" title="Returns the serial number of the coin spend by this proof. " alt="" coords="196,245,355,287"/>
+<area shape="rect" id="node6" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a846cfaed719d7d1513e899f4af124948" title="Verifies the proof. " alt="" coords="403,123,603,164"/>
+<area shape="rect" id="node9" href="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#a65468d15a28daaa82e6d6275459c95ab" title="Verifies that a commitment c is accumulated in accumulated a. " alt="" coords="415,188,591,229"/>
+<area shape="rect" id="node11" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#a570a8d439385cc3b18701c4a252ff104" title="Verifies the Signature of knowledge. " alt="" coords="403,253,603,295"/>
+<area shape="rect" id="node16" href="$classlibzerocoin_1_1_accumulator.html#aa12b4aae357d55d3f4c3ba75856a6071" title="libzerocoin::Accumulator\l::getDenomination" alt="" coords="419,319,586,360"/>
+<area shape="rect" id="node7" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a928e409111b60d5fe222ea1559a9cb73" title="libzerocoin::CommitmentProof\lOfKnowledge::calculateChallenge" alt="" coords="923,73,1145,115"/>
+<area shape="rect" id="node8" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="1479,198,1637,225"/>
+<area shape="rect" id="node10" href="$classlibzerocoin_1_1_accumulator.html#ab50983cc6294ddfa7e23a85a75f5fc2e" title="Get the accumulator result. " alt="" coords="679,191,846,232"/>
+<area shape="rect" id="node12" href="$namespacelibzerocoin.html#a860d36a6fac4250ebf4c5dad71602091" title="Deterministically derives coin commitment group generators g &amp; h from a serial number (and group modu..." alt="" coords="665,308,861,349"/>
+<area shape="rect" id="node15" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#acff43e9b20208f24d0dfa870fc5a78c2" title="libzerocoin::SerialNumber\lSignatureOfKnowledge::challenge\lCalculation" alt="" coords="651,374,875,430"/>
+<area shape="rect" id="node13" href="$namespacelibzerocoin.html#a75a628181a2a566d229108b51bf0cf57" title="Deterministically compute a generator for a given group. " alt="" coords="943,308,1125,349"/>
+<area shape="rect" id="node14" href="$namespacelibzerocoin.html#a49d954a2ad7e4abe50ae454c900d915a" title="Format a seed string by hashing several values. " alt="" coords="1193,311,1431,338"/>
+</map>

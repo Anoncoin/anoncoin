@@ -1,0 +1,6 @@
+<map id="IsFinalTx" name="IsFinalTx">
+<area shape="rect" id="node2" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="136,5,248,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="129,56,255,83"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="321,31,394,57"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="303,81,412,108"/>
+</map>

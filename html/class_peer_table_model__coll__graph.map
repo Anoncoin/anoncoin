@@ -1,0 +1,5 @@
+<map id="PeerTableModel" name="PeerTableModel">
+<area shape="rect" id="node4" href="$class_client_model.html" title="Model for Anoncoin network client. " alt="" coords="129,184,221,211"/>
+<area shape="rect" id="node3" href="$class_peer_table_priv.html" title="PeerTablePriv" alt="" coords="441,5,547,32"/>
+<area shape="rect" id="node6" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="101,95,205,121"/>
+</map>

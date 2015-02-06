@@ -1,0 +1,16 @@
+<map id="ConnectSocket" name="ConnectSocket">
+<area shape="rect" id="node2" href="$class_i2_p_session.html#a0b2a285f34224a7fdc8ffcb0d1f6d48e" title="I2PSession::Instance" alt="" coords="190,5,337,32"/>
+<area shape="rect" id="node3" href="$class_s_a_m_1_1_stream_session_adapter.html#a983b84796d46f00aee1e4b7c4f6f421f" title="SAM::StreamSessionAdapter\l::connect" alt="" coords="165,57,361,98"/>
+<area shape="rect" id="node4" href="$netbase_8cpp.html#a4e67b39fc1769663260d791d2f4d049d" title="GetProxy" alt="" coords="225,123,302,149"/>
+<area shape="rect" id="node5" href="$class_c_net_addr.html#a34a4760424f5c51998fc3baf82ccb5c8" title="CNetAddr::GetNetwork" alt="" coords="184,173,343,200"/>
+<area shape="rect" id="node6" href="$class_c_net_addr.html#a7ec845c27b63853fb0db08a4d154266f" title="CNetAddr::ToStringIP" alt="" coords="188,224,339,251"/>
+<area shape="rect" id="node15" href="$class_c_service.html#a49df6ecaf59be814632c4d7755f26637" title="CService::GetPort" alt="" coords="199,275,328,301"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a71aa75e646de8a10971f887bc71d9a75" title="EncodeBase32" alt="" coords="435,199,547,225"/>
+<area shape="rect" id="node8" href="$class_c_service.html#ab0f791c174511056236119cc1580faeb" title="CService::GetSockAddr" alt="" coords="409,249,572,276"/>
+<area shape="rect" id="node9" href="$class_c_net_addr.html#a16ff4478f02f06f5a9a038a24d5da2f9" title="CNetAddr::IsIPv4" alt="" coords="635,173,761,200"/>
+<area shape="rect" id="node10" href="$class_c_net_addr.html#aa2e2c78db01a6a27d6a2740f2ba43e90" title="CNetAddr::GetInAddr" alt="" coords="623,224,773,251"/>
+<area shape="rect" id="node13" href="$class_c_net_addr.html#a0edb022cd6a186de8099799415409d57" title="CNetAddr::IsIPv6" alt="" coords="635,275,761,301"/>
+<area shape="rect" id="node14" href="$class_c_net_addr.html#add7811be50f5fe60c4fa65b461dea98c" title="CNetAddr::GetIn6Addr" alt="" coords="620,325,776,352"/>
+<area shape="rect" id="node11" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="824,275,896,301"/>
+<area shape="rect" id="node12" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="944,275,1028,301"/>
+</map>

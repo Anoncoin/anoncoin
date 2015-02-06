@@ -1,0 +1,7 @@
+<map id="getnettotals" name="getnettotals">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="178,5,295,32"/>
+<area shape="rect" id="node3" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="174,56,299,83"/>
+<area shape="rect" id="node4" href="$class_c_node.html#a1988b63b48fdc9b72014bdf9588b0168" title="CNode::GetTotalBytesRecv" alt="" coords="144,107,329,133"/>
+<area shape="rect" id="node5" href="$class_c_node.html#af318a64e7ddad50d1e1b6fc123a5f0b9" title="CNode::GetTotalBytesSent" alt="" coords="145,157,328,184"/>
+<area shape="rect" id="node6" href="$util_8h.html#a139d0fe6387b9e230a9b8bb12d9b43b9" title="GetTimeMillis" alt="" coords="185,208,288,235"/>
+</map>

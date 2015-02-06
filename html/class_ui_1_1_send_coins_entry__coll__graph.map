@@ -1,0 +1,6 @@
+<map id="Ui::SendCoinsEntry" name="Ui::SendCoinsEntry">
+<area shape="rect" id="node2" href="$class_ui___send_coins_entry.html" title="Ui_SendCoinsEntry" alt="" coords="161,289,299,316"/>
+<area shape="rect" id="node3" href="$class_anoncoin_amount_field.html" title="Widget for entering anoncoin amounts. " alt="" coords="65,171,217,197"/>
+<area shape="rect" id="node5" href="$class_q_value_combo_box.html" title="QValueComboBox" alt="" coords="103,81,235,108"/>
+<area shape="rect" id="node7" href="$class_q_validated_line_edit.html" title="Line edit that can be marked as &quot;invalid&quot; to show input validation feedback. " alt="" coords="241,171,377,197"/>
+</map>

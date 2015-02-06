@@ -1,0 +1,5 @@
+<map id="CTxOutCompressor::CTxOutCompressor" name="CTxOutCompressor::CTxOutCompressor">
+<area shape="rect" id="node2" href="$class_c_tx_in_undo.html#a6f992d64f9d4ee6299cbd3305e4fd90f" title="CTxInUndo::GetSerializeSize" alt="" coords="247,5,443,32"/>
+<area shape="rect" id="node3" href="$class_c_tx_in_undo.html#a37cebff3e836226b36e51d91e7cc2739" title="CTxInUndo::Serialize" alt="" coords="271,56,419,83"/>
+<area shape="rect" id="node4" href="$class_c_tx_in_undo.html#a0a2b82f03edad7ad85a66e63e4552af9" title="CTxInUndo::Unserialize" alt="" coords="263,107,426,133"/>
+</map>

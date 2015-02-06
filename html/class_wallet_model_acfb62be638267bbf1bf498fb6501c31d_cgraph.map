@@ -1,0 +1,4 @@
+<map id="WalletModel::getEncryptionStatus" name="WalletModel::getEncryptionStatus">
+<area shape="rect" id="node2" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="472,13,663,39"/>
+<area shape="rect" id="node3" href="$class_c_crypto_key_store.html#a1c3ebef555fd13676d67509b95820fcf" title="CCryptoKeyStore::IsLocked" alt="" coords="237,38,424,65"/>
+</map>

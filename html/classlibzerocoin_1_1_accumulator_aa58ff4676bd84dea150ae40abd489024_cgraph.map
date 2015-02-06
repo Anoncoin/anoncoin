@@ -1,0 +1,6 @@
+<map id="libzerocoin::Accumulator::accumulate" name="libzerocoin::Accumulator::accumulate">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_public_coin.html#a22942fd7f06975c98ea0a87dc86cd654" title="libzerocoin::PublicCoin\l::getDenomination" alt="" coords="243,5,400,47"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_coin_denomination.html#a9440207e6932dc26bba8cfb2d66a8d3e" title="libzerocoin::CoinDenomination\l::getValue" alt="" coords="220,71,423,112"/>
+<area shape="rect" id="node4" href="$classlibzerocoin_1_1_public_coin.html#a922faf6b42eb84049660305623463e81" title="Checks that a coin prime and in the appropriate range given the parameters. " alt="" coords="243,136,400,177"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_public_coin.html#a6be47c86e07f35e6871eb45f8a621fb7" title="libzerocoin::PublicCoin\l::getValue" alt="" coords="243,201,400,243"/>
+</map>

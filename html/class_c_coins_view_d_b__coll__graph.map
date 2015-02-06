@@ -1,0 +1,4 @@
+<map id="CCoinsViewDB" name="CCoinsViewDB">
+<area shape="rect" id="node2" href="$class_c_coins_view.html" title="Abstract view on the open txout dataset. " alt="" coords="5,5,100,32"/>
+<area shape="rect" id="node3" href="$class_c_level_d_b_wrapper.html" title="CLevelDBWrapper" alt="" coords="125,5,258,32"/>
+</map>

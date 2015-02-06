@@ -1,0 +1,10 @@
+<map id="AnoncoinAmountField::setValid" name="AnoncoinAmountField::setValid">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html#ae0766727d1352a21980231772200c0ad" title="Perform input validation, mark field as invalid if entered value is not valid. " alt="" coords="205,5,357,47"/>
+<area shape="rect" id="node3" href="$class_send_coins_entry.html#ab77df95fe77e9a001190cd4dabe0dfec" title="SendCoinsEntry::validate" alt="" coords="405,42,577,69"/>
+<area shape="rect" id="node5" href="$class_anoncoin_amount_field.html#a4432a1ceb1445fcf35b5bc3054f88c38" title="Intercept focus&#45;in event and &#39;,&#39; key presses. " alt="" coords="205,123,357,164"/>
+<area shape="rect" id="node6" href="$class_anoncoin_amount_field.html#a57a80569ce0ee2a8aee65d040a559dd4" title="AnoncoinAmountField\l::unitChanged" alt="" coords="205,188,357,229"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="651,35,797,76"/>
+<area shape="rect" id="node7" href="$class_anoncoin_amount_field.html#a4b2c8c4c44291ec9e60bc0a85b645e5f" title="AnoncoinAmountField\l::AnoncoinAmountField" alt="" coords="411,155,571,196"/>
+<area shape="rect" id="node8" href="$class_anoncoin_amount_field.html#a168a4f11d296a1a9b17dc164f5f5f11e" title="Set single step in satoshis. " alt="" coords="415,220,567,261"/>
+<area shape="rect" id="node9" href="$class_options_dialog.html#a8131b615e29560144ffb368b9b07060a" title="OptionsDialog::OptionsDialog" alt="" coords="625,227,823,254"/>
+</map>

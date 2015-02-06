@@ -1,0 +1,4 @@
+<map id="payments::Payment::set_merchant_data" name="payments::Payment::set_merchant_data">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment.html#add8835f7e95ca2804b395b98fbea2e80" title="payments::Payment::\lMergeFrom" alt="" coords="242,5,389,47"/>
+<area shape="rect" id="node3" href="$class_payment_server.html#ab846f9e8778e5cc878b644133e8628f1" title="PaymentServer::fetchPaymentACK" alt="" coords="200,71,431,98"/>
+</map>

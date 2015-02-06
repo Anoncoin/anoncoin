@@ -1,0 +1,33 @@
+<map id="GetTransaction" name="GetTransaction">
+<area shape="rect" id="node2" href="$class_c_tx_mem_pool.html#a8c19232d17e668c6690721b0f5088960" title="CTxMemPool::lookup" alt="" coords="191,56,340,83"/>
+<area shape="rect" id="node3" href="$class_c_block_tree_d_b.html#a74383427266d627e84c2d0c8e21e03c7" title="CBlockTreeDB::ReadTxIndex" alt="" coords="167,107,364,133"/>
+<area shape="rect" id="node10" href="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097" title="Open a block file (blk?????.dat) " alt="" coords="456,309,565,336"/>
+<area shape="rect" id="node19" href="$class_c_block_header.html#ae1165e54882d364b030fb33673d64dbd" title="CBlockHeader::GetHash" alt="" coords="181,157,349,184"/>
+<area shape="rect" id="node21" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="185,208,346,235"/>
+<area shape="rect" id="node24" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="167,259,363,285"/>
+<area shape="rect" id="node26" href="$main_8cpp.html#a2dc350346749b7da7f4b40c114ee5147" title="ReadBlockFromDisk" alt="" coords="193,360,337,387"/>
+<area shape="rect" id="node32" href="$class_c_block_index.html#ab843ef9b8b0a0193ec3a5c24738e484f" title="CBlockIndex::GetBlockHash" alt="" coords="171,411,360,437"/>
+<area shape="rect" id="node4" href="$class_c_level_d_b_wrapper.html#aa3451a451298c7f8a66986ccd95474e2" title="CLevelDBWrapper::Read" alt="" coords="425,107,597,133"/>
+<area shape="rect" id="node5" href="$class_c_data_stream.html#a5542e71bd7af2ab7cd7be0f381d39cb5" title="CDataStream::reserve" alt="" coords="685,107,839,133"/>
+<area shape="rect" id="node6" href="$class_c_data_stream.html#aaf2b9e953793ce5a4fc438a7ecb00dc2" title="CDataStream::GetSerializeSize" alt="" coords="657,157,867,184"/>
+<area shape="rect" id="node8" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="695,5,829,32"/>
+<area shape="rect" id="node9" href="$leveldbwrapper_8h.html#aea36eb5fddb6266b14ea8cb15e183486" title="HandleError" alt="" coords="715,56,809,83"/>
+<area shape="rect" id="node7" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="931,157,1051,184"/>
+<area shape="rect" id="node11" href="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635" title="OpenDiskFile" alt="" coords="711,309,813,336"/>
+<area shape="rect" id="node12" href="$struct_c_disk_block_pos.html#a924f2805b274345afce890b27a0934d9" title="CDiskBlockPos::IsNull" alt="" coords="915,284,1068,311"/>
+<area shape="rect" id="node13" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="947,335,1036,361"/>
+<area shape="rect" id="node14" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1173,411,1241,437"/>
+<area shape="rect" id="node15" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="1116,309,1299,336"/>
+<area shape="rect" id="node16" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="1142,360,1273,387"/>
+<area shape="rect" id="node18" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="1125,259,1290,285"/>
+<area shape="rect" id="node17" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="1347,360,1481,387"/>
+<area shape="rect" id="node20" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="484,157,537,184"/>
+<area shape="rect" id="node22" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="459,208,563,235"/>
+<area shape="rect" id="node23" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="683,208,841,235"/>
+<area shape="rect" id="node25" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="432,259,589,285"/>
+<area shape="rect" id="node27" href="$main_8h.html#a20a76dbc6ac5b8a6e0aaef85522b1069" title="Check whether a block hash satisfies the proof&#45;of&#45;work requirement specified by nBits. " alt="" coords="442,436,579,463"/>
+<area shape="rect" id="node30" href="$class_c_block_header.html#ace82f72f060caa4fd96759b4ff99a25e" title="CBlockHeader::GetPoWHash" alt="" coords="412,360,609,387"/>
+<area shape="rect" id="node28" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="682,461,842,488"/>
+<area shape="rect" id="node29" href="$class_c_big_num.html#ad17ff84ee557ca5ad4b854e14d08099f" title="CBigNum::getuint256" alt="" coords="687,512,837,539"/>
+<area shape="rect" id="node31" href="$scrypt_8cpp.html#a7cf6198bde926ddbc13d1dd80530969f" title="scrypt_1024_1_1_256" alt="" coords="685,360,839,387"/>
+</map>

@@ -1,0 +1,51 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$util_8cpp.html#a9ed616020f4ef9b1a261b222bbec78e2" title="SetupEnvironment" alt="" coords="168,5,300,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a4cfc6f116964c12bc24442828c2da007" title="ParseParameters" alt="" coords="171,56,297,83"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#a237c8b9496346a799ebd00a16e29b297" title="Qt event filter that intercepts ToolTipChange events, and replaces the tooltip with a rich text repre..." alt="" coords="151,107,317,133"/>
+<area shape="rect" id="node5" href="$rpcserver_8cpp.html#a64b7a85139e261640892b6ac1a2a23aa" title="help" alt="" coords="211,157,257,184"/>
+<area shape="rect" id="node7" href="$class_help_message_dialog.html#ac0078c816ad197f6d27352c9591f3c34" title="HelpMessageDialog::\lshowOrPrint" alt="" coords="159,209,309,250"/>
+<area shape="rect" id="node9" href="$class_intro.html#aa0af6d1fb6bc00c5517064dbef20bdc2" title="Determine data directory. " alt="" coords="153,781,315,808"/>
+<area shape="rect" id="node12" href="$namespace_g_u_i_util.html#a8bbd2bea6cbc55658e8496603d1fd564" title="GUIUtil::boostPathToQString" alt="" coords="965,807,1159,833"/>
+<area shape="rect" id="node16" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="480,984,571,1011"/>
+<area shape="rect" id="node21" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="757,401,847,428"/>
+<area shape="rect" id="node22" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1028,313,1096,340"/>
+<area shape="rect" id="node23" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="971,516,1153,543"/>
+<area shape="rect" id="node25" href="$util_8cpp.html#a7d86fadf98dfaba55f80b9be0ab0f978" title="GetConfigFile" alt="" coords="473,477,577,504"/>
+<area shape="rect" id="node26" href="$util_8cpp.html#a27ba417174a3ee63cb8ee1abb279a668" title="ReadConfigFile" alt="" coords="177,477,291,504"/>
+<area shape="rect" id="node28" href="$util_8cpp.html#a0d6ff48497c7bc3b3bb34f85da84dba4" title="GetQtStyleFile" alt="" coords="471,376,580,403"/>
+<area shape="rect" id="node29" href="$chainparams_8cpp.html#a8b1e95814ad8f7fbcd9dead5cae3783d" title="Looks for &#45;regtest or &#45;testnet and then calls SelectParams as appropriate. " alt="" coords="123,959,345,985"/>
+<area shape="rect" id="node31" href="$class_payment_server.html#a5ed254902d978ed1e482055754d0f4a4" title="PaymentServer::ipcParseCommandLine" alt="" coords="104,1009,364,1036"/>
+<area shape="rect" id="node37" href="$class_payment_server.html#a1cc71c8771bce09eac09f342a4d48220" title="PaymentServer::ipcSendCommandLine" alt="" coords="106,1060,362,1087"/>
+<area shape="rect" id="node38" href="$anoncoin_8cpp.html#a1ed8f80e9c52d5867b2b1d22c0099a10" title="DebugMessageHandler" alt="" coords="153,1111,315,1137"/>
+<area shape="rect" id="node39" href="$class_anoncoin_application.html#a9557da17943f67a5065ef12869ed9cdf" title="Create options model. " alt="" coords="159,1162,309,1203"/>
+<area shape="rect" id="node40" href="$class_anoncoin_application.html#a36ea57d196e90a9775ba7f439e671d46" title="Create splash screen. " alt="" coords="159,1227,309,1269"/>
+<area shape="rect" id="node41" href="$class_anoncoin_application.html#a0fe2cbc81afeef8193a5443e84ca8390" title="Create main window. " alt="" coords="163,1293,305,1334"/>
+<area shape="rect" id="node42" href="$class_anoncoin_application.html#ad55455b98a0c2df7fb23e96ac108899c" title="Request core initialization. " alt="" coords="163,1358,305,1399"/>
+<area shape="rect" id="node43" href="$class_anoncoin_application.html#a9b2fdcc098ded369467dc67b65c5ea30" title="Get window identifier of QMainWindow (AnoncoinGUI) " alt="" coords="163,1423,305,1465"/>
+<area shape="rect" id="node44" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="163,1489,305,1530"/>
+<area shape="rect" id="node48" href="$util_8cpp.html#a477231880f761159de1567ad6fb98fac" title="PrintExceptionContinue" alt="" coords="153,1555,315,1581"/>
+<area shape="rect" id="node49" href="$class_anoncoin_application.html#a30ced094a4342baf2ff8eab0a2e1d073" title="Handle runaway exceptions. Shows a message box with the problem and quits the program. " alt="" coords="142,1606,326,1647"/>
+<area shape="rect" id="node50" href="$class_anoncoin_application.html#ab52129dee7a9c88fa64d7551ba850fdc" title="Get process return value. " alt="" coords="163,1671,305,1713"/>
+<area shape="rect" id="node6" href="$class_c_r_p_c_table.html#a220ae5b4ce013c79d097bfe96a94e2f0" title="Note: This interface may still be subject to change. " alt="" coords="463,157,588,184"/>
+<area shape="rect" id="node8" href="$class_help_message_dialog.html#aca63e190e624f6fc6208196345d9c23f" title="HelpMessageDialog::\lprintToConsole" alt="" coords="451,209,600,250"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="770,477,834,504"/>
+<area shape="rect" id="node11" href="$class_intro.html#aad225845533fc7f451648dc7c9643e6a" title="Determine default data directory for operating system. " alt="" coords="703,731,901,757"/>
+<area shape="rect" id="node14" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="1207,807,1341,833"/>
+<area shape="rect" id="node15" href="$namespace_g_u_i_util.html#a23e76d4663b416f0d59f0a8fe89b018c" title="GUIUtil::qstringToBoostPath" alt="" coords="431,629,620,656"/>
+<area shape="rect" id="node18" href="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b" title="Intro::setDataDirectory" alt="" coords="447,731,603,757"/>
+<area shape="rect" id="node19" href="$class_intro.html#adb031cec261524a5ef561eb75f099f90" title="Intro::getDataDirectory" alt="" coords="447,781,603,808"/>
+<area shape="rect" id="node20" href="$util_8cpp.html#a9d94ca9f7c1496626992d1873e3f69df" title="Set an argument if it doesn&#39;t already have a value. " alt="" coords="482,832,569,859"/>
+<area shape="rect" id="node13" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="997,731,1127,757"/>
+<area shape="rect" id="node17" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="780,984,824,1011"/>
+<area shape="rect" id="node24" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="979,401,1145,428"/>
+<area shape="rect" id="node27" href="$util_8cpp.html#abfb50dfe077aced7591f2aba601f605d" title="ClearDatadirCache" alt="" coords="457,427,593,453"/>
+<area shape="rect" id="node30" href="$chainparams_8cpp.html#ad1af61cf4a31ae487837d1b09b0e125c" title="Sets the params returned by Params() to those for the given network. " alt="" coords="473,1035,578,1061"/>
+<area shape="rect" id="node32" href="$paymentserver_8cpp.html#ae18a9d596738426e7cdfca8f31f797de" title="ANONCOIN_IPC_PREFIX" alt="" coords="436,1085,615,1112"/>
+<area shape="rect" id="node33" href="$namespace_g_u_i_util.html#a80503cefefdc17af8e975682342066c4" title="GUIUtil::parseAnoncoinURI" alt="" coords="433,1136,617,1163"/>
+<area shape="rect" id="node35" href="$class_payment_request_plus.html#a7c8897087763a5add91d9fdee059a126" title="PaymentRequestPlus\l::getDetails" alt="" coords="450,1187,601,1229"/>
+<area shape="rect" id="node36" href="$classpayments_1_1_payment_details.html#a9f117e48e544ab304d9a32b75ffb971e" title="payments::PaymentDetails\l::network" alt="" coords="435,1253,615,1294"/>
+<area shape="rect" id="node34" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="727,1136,877,1163"/>
+<area shape="rect" id="node45" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="427,1467,624,1493"/>
+<area shape="rect" id="node47" href="$class_shutdown_window.html#a7b4d793b7e171087481bcd3384e754c3" title="&quot;Shutdown&quot; window " alt="" coords="412,1518,639,1559"/>
+<area shape="rect" id="node46" href="$class_anoncoin_g_u_i.html#a8e42c1b5f78aeab21118e07265874abe" title="Create system tray menu (or setup the dock menu) " alt="" coords="687,1467,917,1493"/>
+</map>

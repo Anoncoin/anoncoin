@@ -1,0 +1,8 @@
+<map id="GUIUtil::formatAnoncoinURI" name="GUIUtil::formatAnoncoinURI">
+<area shape="rect" id="node2" href="$class_receive_request_dialog.html#a8e1c0ee2fbacf42b4dc7ea05986c86c9" title="ReceiveRequestDialog\l::update" alt="" coords="250,37,407,79"/>
+<area shape="rect" id="node7" href="$class_receive_request_dialog.html#aa1287ed7ecc2a35f3dbf0e9938f4b096" title="ReceiveRequestDialog\l::on_btnCopyURI_clicked" alt="" coords="243,103,415,144"/>
+<area shape="rect" id="node3" href="$class_receive_request_dialog.html#ad57b3bf409346660842360836fd8569d" title="ReceiveRequestDialog\l::setModel" alt="" coords="463,5,620,47"/>
+<area shape="rect" id="node6" href="$class_receive_request_dialog.html#a43344270ef71e68ad9c7a931cc0ca9ed" title="ReceiveRequestDialog\l::setInfo" alt="" coords="463,71,620,112"/>
+<area shape="rect" id="node4" href="$class_receive_coins_dialog.html#a5eabd6106c8e3b275305b84c0303f314" title="ReceiveCoinsDialog\l::on_recentRequestsView\l_doubleClicked" alt="" coords="668,31,841,87"/>
+<area shape="rect" id="node5" href="$class_receive_coins_dialog.html#a56df78045de75af55f4c4045ad4b7fcd" title="ReceiveCoinsDialog\l::on_showRequestButton\l_clicked" alt="" coords="889,31,1060,87"/>
+</map>

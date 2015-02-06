@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="5,5,92,32"/>
+<area shape="rect" id="node2" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="140,5,259,32"/>
+<area shape="rect" id="node3" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="307,5,432,32"/>
+<area shape="rect" id="node4" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="480,31,549,57"/>
+<area shape="rect" id="node5" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="309,56,429,83"/>
+</map>

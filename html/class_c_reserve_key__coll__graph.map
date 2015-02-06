@@ -1,0 +1,10 @@
+<map id="CReserveKey" name="CReserveKey">
+<area shape="rect" id="node2" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="5,337,84,364"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="177,427,246,453"/>
+<area shape="rect" id="node4" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="215,337,341,364"/>
+<area shape="rect" id="node5" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="261,261,380,288"/>
+<area shape="rect" id="node6" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="231,185,317,212"/>
+<area shape="rect" id="node9" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="365,337,485,364"/>
+<area shape="rect" id="node10" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="509,337,596,364"/>
+<area shape="rect" id="node11" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="527,261,578,288"/>
+</map>

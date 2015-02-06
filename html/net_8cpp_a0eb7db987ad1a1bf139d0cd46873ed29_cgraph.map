@@ -1,0 +1,4 @@
+<map id="IsReachable" name="IsReachable">
+<area shape="rect" id="node2" href="$class_c_net_addr.html#a34a4760424f5c51998fc3baf82ccb5c8" title="CNetAddr::GetNetwork" alt="" coords="149,5,308,32"/>
+<area shape="rect" id="node3" href="$net_8cpp.html#af6de8e47b01a96206402ddef734114f2" title="check whether a given network is one we can probably connect to " alt="" coords="181,56,277,83"/>
+</map>

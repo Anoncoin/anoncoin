@@ -1,0 +1,51 @@
+<map id="CPubKey::IsCompressed" name="CPubKey::IsCompressed">
+<area shape="rect" id="node2" href="$class_c_crypto_key_store.html#a81bd70e18aa75f566526620a74f9cd88" title="CCryptoKeyStore::Unlock" alt="" coords="227,107,401,133"/>
+<area shape="rect" id="node10" href="$class_c_crypto_key_store.html#a58cfb3c490318ef82de8fc9be6637269" title="CCryptoKeyStore::GetKey" alt="" coords="225,259,403,285"/>
+<area shape="rect" id="node15" href="$class_c_key.html#a141751588f8bfe5f1b6fc27f4e64b63f" title="CKey::Load" alt="" coords="268,389,360,416"/>
+<area shape="rect" id="node24" href="$class_c_pub_key.html#a2ea04a941b3b07ab037bc79abb1373a6" title="CPubKey::VerifyCompact" alt="" coords="227,440,401,467"/>
+<area shape="rect" id="node25" href="$class_coin_control_dialog.html#a4fc60e89b097952ff22dc0f9c58c87d9" title="CoinControlDialog::\lupdateLabels" alt="" coords="245,513,383,554"/>
+<area shape="rect" id="node48" href="$class_coin_control_dialog.html#aadea33050e5c1efd5eae8d2fcfa721f9" title="CoinControlDialog::\lupdateView" alt="" coords="245,675,383,717"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#a002c61a2b74f2c46063340c568e6cc1b" title="CWallet::Unlock" alt="" coords="507,56,625,83"/>
+<area shape="rect" id="node7" href="$class_c_wallet.html#a4abcec3066e7c462f4564c159fc15031" title="CWallet::ChangeWalletPassphrase" alt="" coords="451,107,681,133"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a6d7ebdcf0d28d058c658eb44a6c4a6c6" title="WalletModel::setWalletLocked" alt="" coords="738,5,938,32"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#a733f7c70e7c18783935e6de9643c0086" title="walletpassphrase" alt="" coords="775,56,901,83"/>
+<area shape="rect" id="node5" href="$class_ask_passphrase_dialog.html#ac2f176af3693b73870d26ef0bfc6cbb9" title="AskPassphraseDialog\l::accept" alt="" coords="1012,63,1164,105"/>
+<area shape="rect" id="node8" href="$class_wallet_model.html#a67ebff3f267b5c9973c0465184c085a4" title="WalletModel::changePassphrase" alt="" coords="729,157,947,184"/>
+<area shape="rect" id="node9" href="$rpcwallet_8cpp.html#a84ad884957e24688433be32a9ca70933" title="walletpassphrasechange" alt="" coords="753,107,923,133"/>
+<area shape="rect" id="node11" href="$class_sign_verify_message_dialog.html#a2ef91b4ace68d63ab1c1d3cc6c13b5f9" title="SignVerifyMessageDialog\l::on_signMessageButton\l_SM_clicked" alt="" coords="479,309,653,365"/>
+<area shape="rect" id="node12" href="$rpcdump_8cpp.html#a4010fb238298e15c540d3e5ecd60f858" title="dumpprivkey" alt="" coords="517,157,615,184"/>
+<area shape="rect" id="node13" href="$rpcdump_8cpp.html#a831ddf746d4f2500ba6f6c07f63445cd" title="dumpwallet" alt="" coords="521,208,611,235"/>
+<area shape="rect" id="node14" href="$rpcwallet_8cpp.html#a315b42a2c859c4b50a54c1b05984928c" title="signmessage" alt="" coords="516,259,616,285"/>
+<area shape="rect" id="node16" href="$walletdb_8cpp.html#ad1f171cf096f5479805a06fc20480343" title="ReadKeyValue" alt="" coords="511,389,621,416"/>
+<area shape="rect" id="node17" href="$class_c_wallet_d_b.html#a14f26e53502d1a60dd2b034f830acf03" title="CWalletDB::LoadWallet" alt="" coords="757,221,919,248"/>
+<area shape="rect" id="node22" href="$class_c_wallet_d_b.html#a3ebeb12f37d9c66512e2bc2903a6854a" title="CWalletDB::Recover" alt="" coords="766,287,910,313"/>
+<area shape="rect" id="node18" href="$class_c_wallet.html#a5d7b244b8ed0cbe24233ee0b6ca3cae0" title="CWallet::LoadWallet" alt="" coords="1017,193,1159,220"/>
+<area shape="rect" id="node19" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1298,211,1369,237"/>
+<area shape="rect" id="node20" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1566,236,1630,263"/>
+<area shape="rect" id="node21" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1518,185,1678,212"/>
+<area shape="rect" id="node23" href="$class_c_wallet_d_b.html#a44388f1c3ee63191dcb78b1001e9390c" title="CWalletDB::Recover" alt="" coords="1016,244,1160,271"/>
+<area shape="rect" id="node26" href="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a" title="CoinControlDialog::\lsetModel" alt="" coords="497,643,635,685"/>
+<area shape="rect" id="node29" href="$class_coin_control_dialog.html#ae106a71c5b87ac8bea8c52e7c4f4a129" title="CoinControlDialog::\lbuttonSelectAllClicked" alt="" coords="489,578,643,619"/>
+<area shape="rect" id="node31" href="$class_coin_control_dialog.html#ac3c37dabd83f71d9c96bf5567fe85234" title="CoinControlDialog::\lviewItemChanged" alt="" coords="497,513,635,554"/>
+<area shape="rect" id="node32" href="$class_send_coins_dialog.html#ae4f429aabcaf309aa314b90049be2a74" title="SendCoinsDialog::coinControl\lUpdateLabels" alt="" coords="466,447,666,489"/>
+<area shape="rect" id="node27" href="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49" title="SendCoinsDialog::coinControl\lButtonClicked" alt="" coords="738,591,938,633"/>
+<area shape="rect" id="node28" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="1499,506,1697,547"/>
+<area shape="rect" id="node30" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="769,709,907,750"/>
+<area shape="rect" id="node33" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="995,345,1181,372"/>
+<area shape="rect" id="node36" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="1759,523,1905,565"/>
+<area shape="rect" id="node37" href="$class_send_coins_dialog.html#a3d680a76b967641115c6ff2fa83fb62a" title="SendCoinsDialog::addEntry" alt="" coords="995,455,1181,481"/>
+<area shape="rect" id="node46" href="$class_send_coins_dialog.html#a3b834c739f7d02d8086a2bf58525c5f0" title="SendCoinsDialog::updateTabs\lAndLabels" alt="" coords="737,506,939,547"/>
+<area shape="rect" id="node47" href="$class_send_coins_dialog.html#af13ddd00abec4f060632d887b5e838a3" title="SendCoinsDialog::coinControl\lFeatureChanged" alt="" coords="738,389,938,430"/>
+<area shape="rect" id="node34" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1240,303,1427,329"/>
+<area shape="rect" id="node35" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1516,303,1680,329"/>
+<area shape="rect" id="node38" href="$class_send_coins_dialog.html#a127bddff45f49ff5e6e263efe218ae26" title="SendCoinsDialog::clear" alt="" coords="1253,404,1414,431"/>
+<area shape="rect" id="node41" href="$class_send_coins_dialog.html#aabd82a79bd2358493f36425f1d62136b" title="SendCoinsDialog::removeEntry" alt="" coords="1229,505,1437,532"/>
+<area shape="rect" id="node42" href="$class_send_coins_dialog.html#a920b2dbf121ca3cfac2adc56e96295f8" title="SendCoinsDialog::setAddress" alt="" coords="1234,353,1433,380"/>
+<area shape="rect" id="node44" href="$class_send_coins_dialog.html#a4440d15ced5d217baaad33a17d56b409" title="SendCoinsDialog::pasteEntry" alt="" coords="1235,556,1431,583"/>
+<area shape="rect" id="node39" href="$class_send_coins_dialog.html#a4879553d77d29f522ac92ac04580f4ad" title="SendCoinsDialog::reject" alt="" coords="1515,455,1681,481"/>
+<area shape="rect" id="node40" href="$class_send_coins_dialog.html#af2185c3d29e43d37c30669f0def46060" title="SendCoinsDialog::accept" alt="" coords="1512,404,1684,431"/>
+<area shape="rect" id="node43" href="$class_wallet_view.html#a2a70c2b00b097dd7b83b6915bb037ea3" title="Switch to send coins page. " alt="" coords="1489,353,1707,380"/>
+<area shape="rect" id="node45" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="1485,571,1711,613"/>
+<area shape="rect" id="node49" href="$class_coin_control_dialog.html#a1990d478f3ffba666c358a4f1bd395ec" title="CoinControlDialog::\lradioTreeMode" alt="" coords="497,709,635,750"/>
+<area shape="rect" id="node50" href="$class_coin_control_dialog.html#a775c6d290cb63667a434b09072094533" title="CoinControlDialog::\lradioListMode" alt="" coords="497,774,635,815"/>
+</map>

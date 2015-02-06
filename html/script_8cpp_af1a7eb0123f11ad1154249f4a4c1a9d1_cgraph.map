@@ -1,0 +1,12 @@
+<map id="CheckSig" name="CheckSig">
+<area shape="rect" id="node2" href="$class_c_pub_key.html#aad6f369d7972f2244466ca6db900c2a4" title="CPubKey::IsValid" alt="" coords="353,93,478,120"/>
+<area shape="rect" id="node5" href="$script_8cpp.html#a746fd004a62173bb42801259780a3336" title="SignatureHash" alt="" coords="155,5,265,32"/>
+<area shape="rect" id="node7" href="$class_c_signature_cache.html#a9c1dbf6b015d35145f058ace43eac107" title="CSignatureCache::Get" alt="" coords="132,107,288,133"/>
+<area shape="rect" id="node8" href="$class_c_pub_key.html#ab4047c7ce31b72591d8108a2563cd21b" title="CPubKey::Verify" alt="" coords="150,157,270,184"/>
+<area shape="rect" id="node9" href="$class_c_signature_cache.html#ac2e63052c7b13f73fa0f6f4624e29c07" title="CSignatureCache::Set" alt="" coords="133,208,287,235"/>
+<area shape="rect" id="node3" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="543,93,652,120"/>
+<area shape="rect" id="node4" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="700,93,829,120"/>
+<area shape="rect" id="node6" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="336,5,495,32"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="383,183,447,209"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#af3aedae75efabb170337a497457f7ecf" title="GetRandHash" alt="" coords="362,233,469,260"/>
+</map>

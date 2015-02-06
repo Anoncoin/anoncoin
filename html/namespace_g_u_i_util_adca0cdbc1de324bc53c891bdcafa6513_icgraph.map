@@ -1,0 +1,5 @@
+<map id="GUIUtil::GetStartOnSystemStartup" name="GUIUtil::GetStartOnSystemStartup">
+<area shape="rect" id="node2" href="$class_options_model.html#ab952b1946cf3a4c76706ec796a3e629b" title="OptionsModel::Reset" alt="" coords="237,13,384,39"/>
+<area shape="rect" id="node4" href="$class_options_model.html#a56d6c626e3315792c31f44754b2c8d73" title="OptionsModel::data" alt="" coords="242,63,379,90"/>
+<area shape="rect" id="node3" href="$class_options_dialog.html#ab59345e0ce3db1d2cfb4ce50d39fb653" title="OptionsDialog::on_resetButton\l_clicked" alt="" coords="432,5,636,47"/>
+</map>

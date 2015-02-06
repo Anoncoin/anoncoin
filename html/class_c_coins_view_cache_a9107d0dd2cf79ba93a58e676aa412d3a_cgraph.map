@@ -1,0 +1,9 @@
+<map id="CCoinsViewCache::HaveInputs" name="CCoinsViewCache::HaveInputs">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="275,5,453,32"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html#af10ddad5ca973d5e5f684b5d1c711560" title="CCoinsViewCache::HaveCoins" alt="" coords="261,56,467,83"/>
+<area shape="rect" id="node7" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="521,107,717,133"/>
+<area shape="rect" id="node8" href="$class_c_coins.html#a69bdcbac02e1644cb02b2645068777b5" title="CCoins::IsAvailable" alt="" coords="295,157,433,184"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_cache.html#ab0c3981b4eabc6f11bb58a0a3fe3e82d" title="CCoinsViewCache::FetchCoins" alt="" coords="515,56,723,83"/>
+<area shape="rect" id="node5" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="771,107,928,133"/>
+<area shape="rect" id="node6" href="$class_c_coins.html#a9581324a74e9500b3d2cad472c0a830f" title="CCoins::swap" alt="" coords="797,56,901,83"/>
+</map>

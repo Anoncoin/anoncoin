@@ -1,0 +1,4 @@
+<map id="CNode::SetRecvVersion" name="CNode::SetRecvVersion">
+<area shape="rect" id="node2" href="$class_c_net_message.html#a63b9f2351d5e92126cacacd51d9e16b6" title="CNetMessage::SetVersion" alt="" coords="220,5,399,32"/>
+<area shape="rect" id="node3" href="$class_c_data_stream.html#a267d1315f3f9e9bcf9e7168beaa240c4" title="CDataStream::SetVersion" alt="" coords="447,5,623,32"/>
+</map>

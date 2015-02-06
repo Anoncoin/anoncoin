@@ -1,0 +1,8 @@
+<map id="CCoinsViewDB::GetCoins" name="CCoinsViewDB::GetCoins">
+<area shape="rect" id="node2" href="$class_c_level_d_b_wrapper.html#aa3451a451298c7f8a66986ccd95474e2" title="CLevelDBWrapper::Read" alt="" coords="229,81,401,108"/>
+<area shape="rect" id="node3" href="$class_c_data_stream.html#a5542e71bd7af2ab7cd7be0f381d39cb5" title="CDataStream::reserve" alt="" coords="477,5,631,32"/>
+<area shape="rect" id="node4" href="$class_c_data_stream.html#aaf2b9e953793ce5a4fc438a7ecb00dc2" title="CDataStream::GetSerializeSize" alt="" coords="449,56,659,83"/>
+<area shape="rect" id="node6" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="487,107,621,133"/>
+<area shape="rect" id="node7" href="$leveldbwrapper_8h.html#aea36eb5fddb6266b14ea8cb15e183486" title="HandleError" alt="" coords="507,157,601,184"/>
+<area shape="rect" id="node5" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="707,56,827,83"/>
+</map>

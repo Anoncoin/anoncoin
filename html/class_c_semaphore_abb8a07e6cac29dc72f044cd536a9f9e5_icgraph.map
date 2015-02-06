@@ -1,0 +1,4 @@
+<map id="CSemaphore::try_wait" name="CSemaphore::try_wait">
+<area shape="rect" id="node2" href="$class_c_semaphore_grant.html#a9952d9ea087ced803c099f69992ebb1d" title="CSemaphoreGrant::TryAcquire" alt="" coords="207,13,412,39"/>
+<area shape="rect" id="node3" href="$class_c_semaphore_grant.html#a5998c457c7c223a8257166161d12b355" title="CSemaphoreGrant::CSemaphore\lGrant" alt="" coords="460,5,680,47"/>
+</map>

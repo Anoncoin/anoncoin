@@ -1,0 +1,6 @@
+<map id="AnoncoinAmountField::text" name="AnoncoinAmountField::text">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html#ae0766727d1352a21980231772200c0ad" title="Perform input validation, mark field as invalid if entered value is not valid. " alt="" coords="205,5,357,47"/>
+<area shape="rect" id="node5" href="$class_anoncoin_amount_field.html#a90dac4b003496dcb510858d50e29ec90" title="AnoncoinAmountField\l::value" alt="" coords="205,71,357,112"/>
+<area shape="rect" id="node3" href="$class_send_coins_entry.html#ab77df95fe77e9a001190cd4dabe0dfec" title="SendCoinsEntry::validate" alt="" coords="405,13,577,39"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="625,5,772,47"/>
+</map>

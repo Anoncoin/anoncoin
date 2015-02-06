@@ -1,0 +1,6 @@
+<map id="SignVerifyMessageDialog::setAddress_SM" name="SignVerifyMessageDialog::setAddress_SM">
+<area shape="rect" id="node2" href="$class_sign_verify_message_dialog.html#a792a3bd647958c8ae74286c5ab3cf205" title="SignVerifyMessageDialog\l::on_addressBookButton\l_SM_clicked" alt="" coords="253,5,428,61"/>
+<area shape="rect" id="node3" href="$class_sign_verify_message_dialog.html#a4f09a92302537a095c34371a77de113e" title="SignVerifyMessageDialog\l::on_pasteButton_SM_clicked" alt="" coords="241,86,440,127"/>
+<area shape="rect" id="node4" href="$class_wallet_view.html#a6443ddcb872a1743a61102a3dcd2d560" title="Show Sign/Verify Message dialog and switch to sign message tab. " alt="" coords="228,152,453,179"/>
+<area shape="rect" id="node5" href="$class_wallet_frame.html#a386b4f2e20af7d13a688662cd3f9e1fc" title="Show Sign/Verify Message dialog and switch to sign message tab. " alt="" coords="501,152,736,179"/>
+</map>

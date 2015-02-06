@@ -1,0 +1,10 @@
+<map id="PaymentServer::ipcParseCommandLine" name="PaymentServer::ipcParseCommandLine">
+<area shape="rect" id="node2" href="$paymentserver_8cpp.html#ae18a9d596738426e7cdfca8f31f797de" title="ANONCOIN_IPC_PREFIX" alt="" coords="316,5,495,32"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#a80503cefefdc17af8e975682342066c4" title="GUIUtil::parseAnoncoinURI" alt="" coords="313,56,497,83"/>
+<area shape="rect" id="node7" href="$chainparams_8cpp.html#ad1af61cf4a31ae487837d1b09b0e125c" title="Sets the params returned by Params() to those for the given network. " alt="" coords="353,107,458,133"/>
+<area shape="rect" id="node8" href="$class_payment_request_plus.html#a7c8897087763a5add91d9fdee059a126" title="PaymentRequestPlus\l::getDetails" alt="" coords="330,158,481,199"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment_details.html#a9f117e48e544ab304d9a32b75ffb971e" title="payments::PaymentDetails\l::network" alt="" coords="315,223,495,265"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="545,56,695,83"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="755,31,898,57"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="743,81,911,108"/>
+</map>

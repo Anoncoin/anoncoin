@@ -1,0 +1,8 @@
+<map id="AnoncoinAmountField::validate" name="AnoncoinAmountField::validate">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="224,31,373,57"/>
+<area shape="rect" id="node5" href="$class_anoncoin_amount_field.html#ac11ebe3fdc76e730bf43a1ee46e5ca8c" title="AnoncoinAmountField\l::text" alt="" coords="223,82,375,123"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#a110ee106f3eae40f4edc0a0bc5ad41b5" title="Max amount per unit. " alt="" coords="205,148,392,175"/>
+<area shape="rect" id="node7" href="$class_anoncoin_amount_field.html#ad3c794ea41c9fca0cbbb2aad5a1fdaff" title="Mark current value as invalid in UI. " alt="" coords="223,199,375,241"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="453,5,595,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="440,56,608,83"/>
+</map>

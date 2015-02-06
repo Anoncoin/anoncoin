@@ -1,0 +1,6 @@
+<map id="CWallet::SetAddressBook" name="CWallet::SetAddressBook">
+<area shape="rect" id="node2" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="287,29,348,56"/>
+<area shape="rect" id="node4" href="$class_c_wallet_d_b.html#a8d4e8d73b977dc62c137bd3543c278bf" title="CWalletDB::WritePurpose" alt="" coords="229,80,405,107"/>
+<area shape="rect" id="node5" href="$class_c_wallet_d_b.html#ad1b3bce77e9dd6ddd8c668a469c38f0a" title="CWalletDB::WriteName" alt="" coords="237,131,398,157"/>
+<area shape="rect" id="node3" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="453,29,613,56"/>
+</map>

@@ -1,0 +1,36 @@
+<map id="GUIUtil::HtmlEscape" name="GUIUtil::HtmlEscape">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#ad6086df566cf2cb7f699a24e099dc59c" title="GUIUtil::HtmlEscape" alt="" coords="235,29,379,56"/>
+<area shape="rect" id="node3" href="$class_g_u_i_util_1_1_tool_tip_to_rich_text_filter.html#a5f4450d8b203f009a8bdc67d6d3f388c" title="GUIUtil::ToolTipToRichText\lFilter::eventFilter" alt="" coords="215,81,400,122"/>
+<area shape="rect" id="node4" href="$class_payment_server.html#abe96a7c90755b8e1975e380b5a8228bd" title="PaymentServer::processPayment\lRequest" alt="" coords="197,146,417,187"/>
+<area shape="rect" id="node11" href="$class_payment_server.html#a5b8e2e6380142fb7ad631400bcfc6f28" title="PaymentServer::netRequest\lFinished" alt="" coords="481,139,670,181"/>
+<area shape="rect" id="node13" href="$class_receive_request_dialog.html#a8e1c0ee2fbacf42b4dc7ea05986c86c9" title="ReceiveRequestDialog\l::update" alt="" coords="229,263,386,305"/>
+<area shape="rect" id="node18" href="$class_r_p_c_console.html#ad7a93a587a78b0080a930bd325460b20" title="RPCConsole::message" alt="" coords="227,343,387,369"/>
+<area shape="rect" id="node23" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="234,394,381,435"/>
+<area shape="rect" id="node24" href="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4" title="TransactionDesc::toHTML" alt="" coords="219,485,396,512"/>
+<area shape="rect" id="node5" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="465,77,685,104"/>
+<area shape="rect" id="node6" href="$class_payment_server.html#af795e3c318556c833792e530b279efc9" title="PaymentServer::eventFilter" alt="" coords="767,56,951,83"/>
+<area shape="rect" id="node7" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="1055,132,1225,159"/>
+<area shape="rect" id="node9" href="$class_payment_server.html#a6ee6e29e1255605582459463d195a651" title="PaymentServer::handleURIConnection" alt="" coords="733,5,985,32"/>
+<area shape="rect" id="node8" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="1338,125,1490,166"/>
+<area shape="rect" id="node10" href="$class_payment_server.html#a4a66f55c11f4757b121179d5d6988ab2" title="PaymentServer::PaymentServer" alt="" coords="1033,5,1247,32"/>
+<area shape="rect" id="node12" href="$class_payment_server.html#a2f94f2c3e12d03199870e17008535302" title="PaymentServer::initNetManager" alt="" coords="753,157,965,184"/>
+<area shape="rect" id="node14" href="$class_receive_request_dialog.html#ad57b3bf409346660842360836fd8569d" title="ReceiveRequestDialog\l::setModel" alt="" coords="497,205,654,246"/>
+<area shape="rect" id="node17" href="$class_receive_request_dialog.html#a43344270ef71e68ad9c7a931cc0ca9ed" title="ReceiveRequestDialog\l::setInfo" alt="" coords="497,270,654,311"/>
+<area shape="rect" id="node15" href="$class_receive_coins_dialog.html#a5eabd6106c8e3b275305b84c0303f314" title="ReceiveCoinsDialog\l::on_recentRequestsView\l_doubleClicked" alt="" coords="773,241,946,297"/>
+<area shape="rect" id="node16" href="$class_receive_coins_dialog.html#a56df78045de75af55f4c4045ad4b7fcd" title="ReceiveCoinsDialog\l::on_showRequestButton\l_clicked" alt="" coords="1055,241,1225,297"/>
+<area shape="rect" id="node19" href="$class_r_p_c_console.html#aad0fc48b238137c8f6d322b2a484c81a" title="RPCConsole::clear" alt="" coords="507,452,643,479"/>
+<area shape="rect" id="node21" href="$class_r_p_c_console.html#a2ab27700348f83acaee6ceb7c22225f8" title="RPCConsole::on_lineEdit\l_returnPressed" alt="" coords="489,335,661,377"/>
+<area shape="rect" id="node22" href="$class_r_p_c_console.html#ac6250045ef6f8bd5e5fece3e478e141d" title="RPCConsole::startExecutor" alt="" coords="483,401,668,428"/>
+<area shape="rect" id="node20" href="$class_r_p_c_console.html#aeac546e68f8c2cafa79a0294dd78f2ad" title="RPCConsole::RPCConsole" alt="" coords="767,427,951,453"/>
+<area shape="rect" id="node25" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="501,503,649,545"/>
+<area shape="rect" id="node26" href="$class_transaction_table_model.html#a416d0751ab9a95ecd87d3f7bed4f0b06" title="TransactionTableModel\l::data" alt="" coords="779,503,940,545"/>
+<area shape="rect" id="node27" href="$class_transaction_table_model.html#aaaf3cea9a5373fff771ce81d2f26de6e" title="TransactionTableModel\l::index" alt="" coords="1059,503,1221,545"/>
+<area shape="rect" id="node28" href="$class_transaction_table_model.html#a5899d9eda6465bfb16d2846b6459567e" title="TransactionTableModel\l::updateConfirmations" alt="" coords="1333,503,1495,545"/>
+<area shape="rect" id="node31" href="$class_transaction_table_model.html#a8b73ff7d72ec2dd69790bc61bbe8575e" title="TransactionTableModel\l::updateDisplayUnit" alt="" coords="1333,569,1495,610"/>
+<area shape="rect" id="node33" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="1295,452,1533,479"/>
+<area shape="rect" id="node29" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="1589,503,1761,545"/>
+<area shape="rect" id="node30" href="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1" title="WalletModel::WalletModel" alt="" coords="1816,511,1992,537"/>
+<area shape="rect" id="node32" href="$class_transaction_table_model.html#a6c10b7cab9804eee6df9e049a978dc62" title="TransactionTableModel\l::TransactionTableModel" alt="" coords="1590,569,1759,610"/>
+<area shape="rect" id="node34" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1581,452,1768,479"/>
+<area shape="rect" id="node35" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1822,452,1986,479"/>
+</map>

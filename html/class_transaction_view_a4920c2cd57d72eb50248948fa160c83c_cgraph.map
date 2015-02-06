@@ -1,0 +1,7 @@
+<map id="TransactionView::setModel" name="TransactionView::setModel">
+<area shape="rect" id="node2" href="$class_wallet_model.html#afe9f7d149f1e8335033c69dab1dc277d" title="WalletModel::getTransaction\lTableModel" alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="237,71,441,98"/>
+<area shape="rect" id="node4" href="$class_options_model.html#a6cb6057025ce07b7dbc24761ffb6b493" title="OptionsModel::getThirdParty\lTxUrls" alt="" coords="243,123,435,164"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a4f0b28d3a8557d6f490f250bf74b7d5d" title="TransactionView::updateWatch\lOnlyColumn" alt="" coords="236,188,443,229"/>
+<area shape="rect" id="node6" href="$class_wallet_model.html#aab93d19f9d98e3b984e81fd961ce35db" title="WalletModel::haveWatchOnly" alt="" coords="241,254,438,281"/>
+</map>

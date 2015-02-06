@@ -1,0 +1,51 @@
+<map id="VerifyDB" name="VerifyDB">
+<area shape="rect" id="node2" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="195,249,287,275"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="185,299,297,326"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#a2dc350346749b7da7f4b40c114ee5147" title="ReadBlockFromDisk" alt="" coords="431,111,575,138"/>
+<area shape="rect" id="node9" href="$class_c_block_index.html#ab843ef9b8b0a0193ec3a5c24738e484f" title="CBlockIndex::GetBlockHash" alt="" coords="408,1546,597,1573"/>
+<area shape="rect" id="node10" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="686,770,823,797"/>
+<area shape="rect" id="node12" href="$main_8cpp.html#a4c59314f4b6dced5b5e637031e9fd879" title="CheckBlock" alt="" coords="457,401,549,427"/>
+<area shape="rect" id="node24" href="$class_c_block_index.html#a62654ef291abc44d2e32db9a8d85b7d1" title="CBlockIndex::GetUndoPos" alt="" coords="413,1597,593,1623"/>
+<area shape="rect" id="node25" href="$struct_c_disk_block_pos.html#a924f2805b274345afce890b27a0934d9" title="CDiskBlockPos::IsNull" alt="" coords="426,1714,579,1741"/>
+<area shape="rect" id="node26" href="$class_c_coins_view_cache.html#a072b2b4bf526e823bda07b79a90cf34f" title="CCoinsViewCache::GetCacheSize" alt="" coords="128,1815,355,1842"/>
+<area shape="rect" id="node27" href="$main_8cpp.html#a72f0e90b9c644b88895abe11924e3202" title="Functions for validating blocks and updating the block tree. " alt="" coords="181,1765,301,1791"/>
+<area shape="rect" id="node35" href="$class_c_chain.html#acd3c27582e3d60b93363fda5d9f3775a" title="Find the successor of a block in this chain, or NULL if the given index is not found or is the tip..." alt="" coords="191,1993,292,2019"/>
+<area shape="rect" id="node37" href="$main_8cpp.html#a1beeeb138ebc8e3c3298b9429abb78d6" title="ConnectBlock" alt="" coords="189,1065,293,1091"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097" title="Open a block file (blk?????.dat) " alt="" coords="700,61,809,87"/>
+<area shape="rect" id="node6" href="$main_8h.html#a20a76dbc6ac5b8a6e0aaef85522b1069" title="Check whether a block hash satisfies the proof&#45;of&#45;work requirement specified by nBits. " alt="" coords="686,111,823,138"/>
+<area shape="rect" id="node8" href="$class_c_block_header.html#ace82f72f060caa4fd96759b4ff99a25e" title="CBlockHeader::GetPoWHash" alt="" coords="656,213,853,239"/>
+<area shape="rect" id="node7" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="975,61,1043,87"/>
+<area shape="rect" id="node11" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="943,770,1075,797"/>
+<area shape="rect" id="node13" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="949,365,1069,391"/>
+<area shape="rect" id="node14" href="$class_c_validation_state.html#a3c6786d00da8d1c5df25b4c3876409e8" title="CValidationState::DoS" alt="" coords="932,618,1087,645"/>
+<area shape="rect" id="node15" href="$class_c_block_header.html#a2972ebc9d970b4b12434876263c4c2b5" title="CBlockHeader::GetBlockTime" alt="" coords="655,263,854,290"/>
+<area shape="rect" id="node16" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="692,314,817,341"/>
+<area shape="rect" id="node17" href="$class_c_validation_state.html#a88ff08b67f7f44bb3c7f7053bb1ee6fc" title="CValidationState::Invalid" alt="" coords="671,719,838,746"/>
+<area shape="rect" id="node18" href="$main_8cpp.html#a3d8c4ba3a0c2b7a05cab21c95a886fbe" title="CheckTransaction" alt="" coords="690,415,819,442"/>
+<area shape="rect" id="node20" href="$class_c_block.html#a930d742dbdcd7c78159d3f93431d2d3e" title="CBlock::BuildMerkleTree" alt="" coords="670,517,839,543"/>
+<area shape="rect" id="node22" href="$class_c_block.html#adcac010752a4dc7e6b942246a3549f0e" title="CBlock::GetTxHash" alt="" coords="685,567,824,594"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#ad2eaf4f8542c12ea9ee1183609cc6d1a" title="Count ECDSA signature operations the old&#45;fashioned (pre&#45;0.6) way. " alt="" coords="675,669,834,695"/>
+<area shape="rect" id="node19" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="921,1242,1098,1269"/>
+<area shape="rect" id="node21" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="929,922,1090,949"/>
+<area shape="rect" id="node28" href="$class_c_coins_view_cache.html#a2c578c50e6d146c90f386c755814e6c6" title="CCoinsViewCache::GetBest\lBlock" alt="" coords="660,1075,849,1116"/>
+<area shape="rect" id="node29" href="$class_c_coins_view_cache.html#af10ddad5ca973d5e5f684b5d1c711560" title="CCoinsViewCache::HaveCoins" alt="" coords="907,1546,1112,1573"/>
+<area shape="rect" id="node30" href="$class_c_coins_view_cache.html#a6b9b4355ee342b60d7e52f8b01e84833" title="CCoinsViewCache::SetCoins" alt="" coords="657,1731,852,1758"/>
+<area shape="rect" id="node31" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="911,1445,1107,1471"/>
+<area shape="rect" id="node32" href="$class_c_coins.html#af28a2e44f0b41c3a4a6366607b4b8f81" title="CCoins::IsPruned" alt="" coords="439,2069,566,2095"/>
+<area shape="rect" id="node33" href="$class_c_coins.html#a69bdcbac02e1644cb02b2645068777b5" title="CCoins::IsAvailable" alt="" coords="941,1807,1078,1834"/>
+<area shape="rect" id="node34" href="$class_c_coins_view_cache.html#abf0b7cbac125d8c5bcfb2a04d29f2389" title="CCoinsViewCache::SetBest\lBlock" alt="" coords="409,1648,596,1689"/>
+<area shape="rect" id="node36" href="$class_c_chain.html#a1ab1fe2932227af222699c64847e838b" title="Efficiently check whether a block is present in this chain. " alt="" coords="439,2119,566,2146"/>
+<area shape="rect" id="node38" href="$class_c_block_header.html#ae1165e54882d364b030fb33673d64dbd" title="CBlockHeader::GetHash" alt="" coords="419,502,587,529"/>
+<area shape="rect" id="node39" href="$class_c_chain_params.html#a40411665bb7ca75a8758d33594901e91" title="CChainParams::HashGenesis\lBlock" alt="" coords="403,655,603,696"/>
+<area shape="rect" id="node40" href="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0" title="Checkpoints::GetTotalBlocks\lEstimate" alt="" coords="406,720,599,761"/>
+<area shape="rect" id="node41" href="$util_8h.html#a0c5a06b50cd805b1923552114494c029" title="GetTimeMicros" alt="" coords="447,786,559,813"/>
+<area shape="rect" id="node42" href="$class_c_block_index.html#ae2b58426ae9365dce6cfacc5d0c92e44" title="CBlockIndex::GetBlockPos" alt="" coords="412,837,593,863"/>
+<area shape="rect" id="node43" href="$serialize_8h.html#a404beecbf8d7aec8d2cdac3cbb71e808" title="GetSizeOfCompactSize" alt="" coords="421,1191,584,1218"/>
+<area shape="rect" id="node44" href="$class_c_coins_view_cache.html#a9107d0dd2cf79ba93a58e676aa412d3a" title="CCoinsViewCache::HaveInputs" alt="" coords="651,1394,859,1421"/>
+<area shape="rect" id="node45" href="$main_8cpp.html#abc5832fe7ae73111ebca2eae086c0bdd" title="Count ECDSA signature operations in pay&#45;to&#45;script&#45;hash inputs. " alt="" coords="679,1141,830,1167"/>
+<area shape="rect" id="node46" href="$class_c_coins_view_cache.html#a76b66754d945148d012051baa5417351" title="Amount of anoncoins coming in to a transaction Note that lightweight clients may not know anything be..." alt="" coords="651,1242,858,1269"/>
+<area shape="rect" id="node47" href="$class_c_transaction.html#ac55950c7f9d437e5cd11a88af39b6deb" title="CTransaction::GetValueOut" alt="" coords="662,821,847,847"/>
+<area shape="rect" id="node48" href="$main_8cpp.html#a1e43713fcbc92328acf8b999517812a7" title="CheckInputs" alt="" coords="455,989,551,1015"/>
+<area shape="rect" id="node49" href="$class_c_check_queue_control.html#aa11e8248c91b0758b39132db4090ff8d" title="CCheckQueueControl::Add" alt="" coords="411,1242,595,1269"/>
+<area shape="rect" id="node50" href="$main_8cpp.html#ad99b217e1e3e23f55bfe98a1b9d725fe" title="UpdateCoins" alt="" coords="453,1445,552,1471"/>
+</map>

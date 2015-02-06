@@ -1,0 +1,6 @@
+<map id="EditAddressDialog::loadRow" name="EditAddressDialog::loadRow">
+<area shape="rect" id="node2" href="$class_address_book_page.html#a00b9dc5da59d39ae90af3ff41f8d9b76" title="Edit currently selected address entry (no button) " alt="" coords="192,15,407,42"/>
+<area shape="rect" id="node4" href="$class_transaction_view.html#a18817639384e53f94fc1ad956d7263d9" title="TransactionView::editLabel" alt="" coords="208,67,391,94"/>
+<area shape="rect" id="node3" href="$class_address_book_page.html#a493ad5adf2b6064b97bc2ba6eb41587e" title="AddressBookPage::Address\lBookPage" alt="" coords="473,5,663,47"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f" title="TransactionView::TransactionView" alt="" coords="455,71,681,98"/>
+</map>

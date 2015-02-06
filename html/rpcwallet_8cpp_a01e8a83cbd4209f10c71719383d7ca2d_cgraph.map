@@ -1,0 +1,40 @@
+<map id="addmultisigaddress" name="addmultisigaddress">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="231,132,349,159"/>
+<area shape="rect" id="node3" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="227,183,353,209"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a3039648e370837eb1e7b4dc669f3ef0f" title="AccountFromValue" alt="" coords="222,233,358,260"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#aa9b91e060b2d18fffb3b57a679441e68" title="_createmultisig_redeemScript" alt="" coords="191,284,389,311"/>
+<area shape="rect" id="node26" href="$class_c_script.html#a59fd961e1b74202a0951a077b576c0ba" title="CScript::GetID" alt="" coords="728,461,836,488"/>
+<area shape="rect" id="node28" href="$class_c_wallet.html#ad7edacad1c926bc4b7fe0dc1be95ce31" title="CWallet::AddCScript" alt="" coords="218,487,362,513"/>
+<area shape="rect" id="node31" href="$class_c_wallet.html#a53e5528d7005608594e73f500bc5bb8f" title="CWallet::SetAddressBook" alt="" coords="202,663,378,689"/>
+<area shape="rect" id="node36" href="$class_c_base58_data.html#a9a47b10dadff15b8d6a6d0e63ce3ae32" title="CBase58Data::ToString" alt="" coords="209,764,371,791"/>
+<area shape="rect" id="node5" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="480,5,596,32"/>
+<area shape="rect" id="node7" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="690,5,874,32"/>
+<area shape="rect" id="node10" href="$class_c_anoncoin_address.html#ac94ac53d282f9f96f5dd5a4abef8e2b2" title="CAnoncoinAddress::GetKeyID" alt="" coords="437,107,639,133"/>
+<area shape="rect" id="node13" href="$class_c_crypto_key_store.html#abd897aff07ec5679235b14cb4485dc37" title="CCryptoKeyStore::GetPubKey" alt="" coords="437,157,639,184"/>
+<area shape="rect" id="node18" href="$class_c_pub_key.html#a2533ec5fc9a1c3d2ef39d0faa3ad6cdd" title="CPubKey::IsFullyValid" alt="" coords="461,208,615,235"/>
+<area shape="rect" id="node22" href="$util_8cpp.html#aa4e3553d2b2fe693c106f4296685f75c" title="IsHex" alt="" coords="510,259,566,285"/>
+<area shape="rect" id="node24" href="$util_8cpp.html#abea395175fbc4a788ed0f0a41710b8a7" title="ParseHex" alt="" coords="498,309,578,336"/>
+<area shape="rect" id="node25" href="$class_c_script.html#a1bb2091fd110a07fabed259b94589227" title="CScript::SetMultisig" alt="" coords="469,360,607,387"/>
+<area shape="rect" id="node8" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="991,56,1059,83"/>
+<area shape="rect" id="node9" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="925,5,1124,32"/>
+<area shape="rect" id="node11" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="746,107,818,133"/>
+<area shape="rect" id="node12" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="983,107,1067,133"/>
+<area shape="rect" id="node14" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="687,157,877,184"/>
+<area shape="rect" id="node15" href="$class_c_key_store.html#aba866c1e71c129e7ac2d5d1e5223c8a5" title="CKeyStore::GetPubKey" alt="" coords="701,208,863,235"/>
+<area shape="rect" id="node16" href="$class_c_key_store.html#a2dffca468fef2e5da2e42a7c983d968a" title="CKeyStore::GetKey" alt="" coords="955,157,1094,184"/>
+<area shape="rect" id="node17" href="$class_c_key.html#ae4b61da6ec62f676fe6362ac5fc26aca" title="CKey::GetPubKey" alt="" coords="959,208,1090,235"/>
+<area shape="rect" id="node19" href="$class_c_pub_key.html#aad6f369d7972f2244466ca6db900c2a4" title="CPubKey::IsValid" alt="" coords="719,259,845,285"/>
+<area shape="rect" id="node20" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="970,259,1079,285"/>
+<area shape="rect" id="node21" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="1172,259,1301,285"/>
+<area shape="rect" id="node23" href="$uint256_8h.html#aa59e8a8c5a39cb5041f93bb95dd02119" title="HexDigit" alt="" coords="746,309,818,336"/>
+<area shape="rect" id="node27" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="987,487,1063,513"/>
+<area shape="rect" id="node29" href="$class_c_basic_key_store.html#a56249ce3540398999cd397eeb662e836" title="CBasicKeyStore::AddCScript" alt="" coords="441,461,635,488"/>
+<area shape="rect" id="node30" href="$class_c_wallet_d_b.html#a8c69e48e2305775898658e0a4f4616c9" title="CWalletDB::WriteCScript" alt="" coords="453,563,623,589"/>
+<area shape="rect" id="node32" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="507,637,569,664"/>
+<area shape="rect" id="node34" href="$class_c_wallet_d_b.html#a8d4e8d73b977dc62c137bd3543c278bf" title="CWalletDB::WritePurpose" alt="" coords="450,688,626,715"/>
+<area shape="rect" id="node35" href="$class_c_wallet_d_b.html#ad1b3bce77e9dd6ddd8c668a469c38f0a" title="CWalletDB::WriteName" alt="" coords="457,739,619,765"/>
+<area shape="rect" id="node33" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="702,637,862,664"/>
+<area shape="rect" id="node37" href="$base58_8cpp.html#ace9a5807ee51604f33044339f073ec76" title="Encode a byte vector into a base58&#45;encoded string, including checksum. " alt="" coords="463,789,613,816"/>
+<area shape="rect" id="node38" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="755,764,809,791"/>
+<area shape="rect" id="node39" href="$base58_8cpp.html#a8d6f0e9d5df175b4966dcede31dc90ad" title="Encode a byte sequence as a base58&#45;encoded string. " alt="" coords="726,815,838,841"/>
+</map>

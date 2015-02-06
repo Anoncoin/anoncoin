@@ -1,0 +1,9 @@
+<map id="REF" name="REF">
+<area shape="rect" id="node2" href="$class_c_coins.html#a74ddd9230570c084ea56feaf4b9d7e06" title="CCoins::GetSerializeSize" alt="" coords="113,5,285,32"/>
+<area shape="rect" id="node3" href="$class_c_coins.html#a0932a94966083092cbceabec1ef65d73" title="CCoins::Serialize" alt="" coords="137,56,261,83"/>
+<area shape="rect" id="node4" href="$class_c_coins.html#adaa98cb6d8da3a4d573cd799ddd11051" title="CCoins::Unserialize" alt="" coords="130,107,269,133"/>
+<area shape="rect" id="node5" href="$class_c_tx_in_undo.html#a6f992d64f9d4ee6299cbd3305e4fd90f" title="CTxInUndo::GetSerializeSize" alt="" coords="101,157,297,184"/>
+<area shape="rect" id="node6" href="$class_c_tx_in_undo.html#a37cebff3e836226b36e51d91e7cc2739" title="CTxInUndo::Serialize" alt="" coords="125,208,273,235"/>
+<area shape="rect" id="node7" href="$class_c_tx_in_undo.html#a0a2b82f03edad7ad85a66e63e4552af9" title="CTxInUndo::Unserialize" alt="" coords="118,259,281,285"/>
+<area shape="rect" id="node8" href="$class_c_script_compressor.html#a016fa6e3d2735d95fcf773271da073d5" title="CScriptCompressor::\lUnserialize" alt="" coords="127,310,272,351"/>
+</map>

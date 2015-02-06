@@ -1,0 +1,24 @@
+<map id="WalletModel::getBalance" name="WalletModel::getBalance">
+<area shape="rect" id="node2" href="$class_c_wallet.html#acf326816b2cf812e23b408b12854236b" title="CWallet::AvailableCoins" alt="" coords="223,327,387,354"/>
+<area shape="rect" id="node19" href="$class_c_wallet.html#a077694e4421644296378d9b3ef68af8a" title="CWallet::GetBalance" alt="" coords="232,175,377,202"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="737,302,813,328"/>
+<area shape="rect" id="node8" href="$class_c_wallet_tx.html#af2eff3b849af124cdf869fc03f587972" title="CWalletTx::IsTrusted" alt="" coords="470,175,617,202"/>
+<area shape="rect" id="node11" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="929,124,991,151"/>
+<area shape="rect" id="node13" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="455,428,632,455"/>
+<area shape="rect" id="node14" href="$class_c_merkle_tx.html#a8bd25cf06de6a443d0925ec8ba66c949" title="CMerkleTx::GetBlocksToMaturity" alt="" coords="435,479,652,506"/>
+<area shape="rect" id="node15" href="$class_c_merkle_tx.html#a1db61eaa33fcb975115116ecf85d0c6c" title="CMerkleTx::GetDepthInMain\lChain" alt="" coords="448,530,639,572"/>
+<area shape="rect" id="node17" href="$class_c_coin_control.html#a8c8b06e183e7a30c646bdec793b30e89" title="CCoinControl::HasSelected" alt="" coords="451,276,636,303"/>
+<area shape="rect" id="node18" href="$class_c_coin_control.html#a8cbb071e0eb4ff34ba0209b3708c8142" title="CCoinControl::IsSelected" alt="" coords="457,378,629,404"/>
+<area shape="rect" id="node4" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="904,276,1016,303"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="897,327,1023,354"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="1114,302,1187,328"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="1096,352,1205,379"/>
+<area shape="rect" id="node9" href="$class_c_wallet.html#abdffee587c00bc1ebea53ea26f3efa61" title="CWallet::GetWalletTx" alt="" coords="700,175,849,202"/>
+<area shape="rect" id="node10" href="$class_c_wallet.html#ab7cc8fd8859fecc6ed768dacb5642c5e" title="CWallet::IsMine" alt="" coords="717,124,833,151"/>
+<area shape="rect" id="node12" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="1071,124,1231,151"/>
+<area shape="rect" id="node16" href="$class_c_tx_mem_pool.html#adba06e79be4a1a092dd2db8290733be7" title="CTxMemPool::exists" alt="" coords="703,538,847,564"/>
+<area shape="rect" id="node20" href="$class_c_wallet_tx.html#a4faffd750f4b5a37402bad042428bfcb" title="CWalletTx::GetAvailableCredit" alt="" coords="442,48,645,75"/>
+<area shape="rect" id="node21" href="$class_c_wallet.html#a7d77e683a0f10403fe2b67385895d497" title="CWallet::IsSpent" alt="" coords="714,23,835,50"/>
+<area shape="rect" id="node22" href="$class_c_wallet.html#a9ec15c32442fcceb95425d8b36492544" title="CWallet::GetCredit" alt="" coords="708,74,841,100"/>
+<area shape="rect" id="node23" href="$core_8h.html#ad1d9a769fa327ea042e0c9fadeb4836b" title="MoneyRange" alt="" coords="909,11,1011,38"/>
+</map>

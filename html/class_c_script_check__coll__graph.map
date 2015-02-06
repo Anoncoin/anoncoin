@@ -1,0 +1,4 @@
+<map id="CScriptCheck" name="CScriptCheck">
+<area shape="rect" id="node2" href="$class_c_script.html" title="Serialized script, used inside transaction inputs and outputs. " alt="" coords="47,96,113,123"/>
+<area shape="rect" id="node4" href="$class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ..." alt="" coords="143,96,244,123"/>
+</map>

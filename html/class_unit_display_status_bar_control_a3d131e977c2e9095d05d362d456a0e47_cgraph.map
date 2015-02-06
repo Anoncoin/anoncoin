@@ -1,0 +1,7 @@
+<map id="UnitDisplayStatusBarControl::createContextMenu" name="UnitDisplayStatusBarControl::createContextMenu">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#a1bb6101ca39bc95a54d4401f40d5f151" title="Get list of units, for drop&#45;down box. " alt="" coords="255,5,423,47"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="265,71,414,98"/>
+<area shape="rect" id="node4" href="$class_unit_display_status_bar_control.html#a8989bed2d30e0e376046356adc216a12" title="Tells underlying optionsModel to update its current display unit. " alt="" coords="244,123,435,164"/>
+<area shape="rect" id="node6" href="$class_unit_display_status_bar_control.html#ae9eeb30020311515b4b8d85a460fb596" title="Shows context menu with Display Unit options by the mouse coordinates. " alt="" coords="244,188,435,229"/>
+<area shape="rect" id="node5" href="$class_options_model.html#a42efacc748130848acc20247a7ed4617" title="Updates current unit in memory, settings and emits displayUnitChanged(newUnit) signal. " alt="" coords="483,130,680,157"/>
+</map>

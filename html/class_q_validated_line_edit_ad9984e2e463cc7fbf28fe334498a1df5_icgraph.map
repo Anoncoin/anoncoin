@@ -1,0 +1,38 @@
+<map id="QValidatedLineEdit::setValid" name="QValidatedLineEdit::setValid">
+<area shape="rect" id="node2" href="$class_open_u_r_i_dialog.html#a3c0c5b376623e9570cc17e23778c239c" title="OpenURIDialog::accept" alt="" coords="196,5,359,32"/>
+<area shape="rect" id="node3" href="$class_options_dialog.html#ad0881b054b041e080a7cca8a0601651e" title="OptionsDialog::doProxyIp\lChecks" alt="" coords="424,355,597,397"/>
+<area shape="rect" id="node5" href="$class_q_validated_line_edit.html#a914d4efae9ac7c74faa3a4a82d26fec3" title="QValidatedLineEdit\l::focusInEvent" alt="" coords="209,133,345,174"/>
+<area shape="rect" id="node6" href="$class_q_validated_line_edit.html#a28eb0f6ea6011d33b53bb73cd8af1843" title="QValidatedLineEdit\l::markValid" alt="" coords="209,198,345,239"/>
+<area shape="rect" id="node8" href="$class_q_validated_line_edit.html#aee2a648f6f4904f21e55871afbddefa9" title="QValidatedLineEdit\l::clear" alt="" coords="209,263,345,305"/>
+<area shape="rect" id="node29" href="$class_q_validated_line_edit.html#af0a2d32e9d2fb08c5069852cf4bfc860" title="QValidatedLineEdit\l::setEnabled" alt="" coords="443,486,579,527"/>
+<area shape="rect" id="node33" href="$class_q_validated_line_edit.html#aa5b5196dc6215f088bc138ac4dbc3e28" title="QValidatedLineEdit\l::checkValidity" alt="" coords="209,381,345,422"/>
+<area shape="rect" id="node35" href="$class_send_coins_entry.html#ab77df95fe77e9a001190cd4dabe0dfec" title="SendCoinsEntry::validate" alt="" coords="911,63,1083,89"/>
+<area shape="rect" id="node36" href="$class_sign_verify_message_dialog.html#a2ef91b4ace68d63ab1c1d3cc6c13b5f9" title="SignVerifyMessageDialog\l::on_signMessageButton\l_SM_clicked" alt="" coords="190,497,365,553"/>
+<area shape="rect" id="node37" href="$class_sign_verify_message_dialog.html#ae37dec200b27f23c409221511447ae1e" title="SignVerifyMessageDialog\l::on_verifyMessageButton\l_VM_clicked" alt="" coords="189,577,365,633"/>
+<area shape="rect" id="node4" href="$class_options_dialog.html#a8131b615e29560144ffb368b9b07060a" title="OptionsDialog::OptionsDialog" alt="" coords="657,368,855,395"/>
+<area shape="rect" id="node7" href="$class_q_validated_line_edit.html#a542bbdf8df060026a4b43f76a000193c" title="QValidatedLineEdit\l::QValidatedLineEdit" alt="" coords="439,107,583,149"/>
+<area shape="rect" id="node9" href="$class_send_coins_entry.html#abff66fcd456c82144e7a2c410f5082ac" title="SendCoinsEntry::clear" alt="" coords="433,239,588,265"/>
+<area shape="rect" id="node27" href="$class_sign_verify_message_dialog.html#ade1eae783f4153f1ccc02258518b279a" title="SignVerifyMessageDialog\l::on_clearButton_SM_clicked" alt="" coords="413,290,608,331"/>
+<area shape="rect" id="node28" href="$class_sign_verify_message_dialog.html#a170c047ba1befbe9ef8f370b22b68b55" title="SignVerifyMessageDialog\l::on_clearButton_VM_clicked" alt="" coords="413,173,608,214"/>
+<area shape="rect" id="node10" href="$class_send_coins_dialog.html#a3d680a76b967641115c6ff2fa83fb62a" title="SendCoinsDialog::addEntry" alt="" coords="905,277,1090,304"/>
+<area shape="rect" id="node23" href="$class_send_coins_entry.html#a831f8f9a63acd77b7d66d5393e12310b" title="SendCoinsEntry::setModel" alt="" coords="666,227,846,253"/>
+<area shape="rect" id="node11" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="1409,407,1606,449"/>
+<area shape="rect" id="node12" href="$class_send_coins_dialog.html#a127bddff45f49ff5e6e263efe218ae26" title="SendCoinsDialog::clear" alt="" coords="1162,277,1323,304"/>
+<area shape="rect" id="node16" href="$class_send_coins_dialog.html#aabd82a79bd2358493f36425f1d62136b" title="SendCoinsDialog::removeEntry" alt="" coords="1139,379,1347,405"/>
+<area shape="rect" id="node17" href="$class_send_coins_dialog.html#a920b2dbf121ca3cfac2adc56e96295f8" title="SendCoinsDialog::setAddress" alt="" coords="1143,173,1342,200"/>
+<area shape="rect" id="node19" href="$class_send_coins_dialog.html#a4440d15ced5d217baaad33a17d56b409" title="SendCoinsDialog::pasteEntry" alt="" coords="1145,227,1341,253"/>
+<area shape="rect" id="node13" href="$class_send_coins_dialog.html#a4879553d77d29f522ac92ac04580f4ad" title="SendCoinsDialog::reject" alt="" coords="1425,340,1590,367"/>
+<area shape="rect" id="node14" href="$class_send_coins_dialog.html#af2185c3d29e43d37c30669f0def46060" title="SendCoinsDialog::accept" alt="" coords="1421,223,1593,249"/>
+<area shape="rect" id="node15" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="1689,135,1835,177"/>
+<area shape="rect" id="node18" href="$class_wallet_view.html#a2a70c2b00b097dd7b83b6915bb037ea3" title="Switch to send coins page. " alt="" coords="1399,172,1616,199"/>
+<area shape="rect" id="node20" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="1395,274,1620,315"/>
+<area shape="rect" id="node21" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="1668,274,1856,315"/>
+<area shape="rect" id="node22" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="1904,274,2101,315"/>
+<area shape="rect" id="node24" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="904,176,1091,203"/>
+<area shape="rect" id="node25" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1149,121,1336,148"/>
+<area shape="rect" id="node26" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1425,121,1589,148"/>
+<area shape="rect" id="node30" href="$class_edit_address_dialog.html#a625792e82d332070d6009898febc3afa" title="EditAddressDialog::\lEditAddressDialog" alt="" coords="687,546,825,587"/>
+<area shape="rect" id="node31" href="$class_ui___send_coins_dialog.html#aaf674222f4b6a1733df33b04781a8563" title="Ui_SendCoinsDialog\l::setupUi" alt="" coords="925,422,1070,463"/>
+<area shape="rect" id="node32" href="$class_send_coins_dialog.html#a21224b0dedf14f7a6c05174bff9dea65" title="SendCoinsDialog::coinControl\lChangeChecked" alt="" coords="656,481,856,522"/>
+<area shape="rect" id="node34" href="$class_q_validated_line_edit.html#a842e76d50efaa98a9eb1fa0343132503" title="QValidatedLineEdit\l::focusOutEvent" alt="" coords="443,421,579,462"/>
+</map>

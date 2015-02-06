@@ -1,0 +1,9 @@
+<map id="CLevelDBBatch::Erase" name="CLevelDBBatch::Erase">
+<area shape="rect" id="node2" href="$class_c_level_d_b_wrapper.html#a9f67e2880ba191fdc9439ba34e315d72" title="CLevelDBWrapper::Erase" alt="" coords="212,31,388,57"/>
+<area shape="rect" id="node3" href="$class_c_block_tree_d_b.html#a8fa5d150b98f4fd1aa8cf503eddfccef" title="CBlockTreeDB::WriteReindexing" alt="" coords="436,31,652,57"/>
+<area shape="rect" id="node4" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="700,5,803,32"/>
+<area shape="rect" id="node5" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="851,31,921,57"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1017,5,1081,32"/>
+<area shape="rect" id="node8" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="969,56,1129,83"/>
+<area shape="rect" id="node7" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1177,5,1228,32"/>
+</map>

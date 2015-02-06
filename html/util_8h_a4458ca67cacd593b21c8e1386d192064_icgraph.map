@@ -1,0 +1,51 @@
+<map id="TryCreateDirectory" name="TryCreateDirectory">
+<area shape="rect" id="node2" href="$class_c_d_b_env.html#aaaef61cd032e25144c06e405fb7f93cf" title="CDBEnv::Open" alt="" coords="531,228,644,254"/>
+<area shape="rect" id="node8" href="$class_c_level_d_b_wrapper.html#ae796b1190c072df6275e0ada4d187943" title="CLevelDBWrapper::CLevelDBWrapper" alt="" coords="188,177,440,204"/>
+<area shape="rect" id="node9" href="$class_intro.html#aa0af6d1fb6bc00c5517064dbef20bdc2" title="Determine data directory. " alt="" coords="989,102,1151,129"/>
+<area shape="rect" id="node11" href="$util_8h.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="249,581,379,608"/>
+<area shape="rect" id="node3" href="$class_c_d_b.html#a913f57290431ac54c92bd2e034571291" title="CDB::CDB" alt="" coords="782,228,867,254"/>
+<area shape="rect" id="node4" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1817,993,1888,1020"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1989,354,2053,381"/>
+<area shape="rect" id="node7" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1941,993,2101,1020"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="2149,354,2200,381"/>
+<area shape="rect" id="node10" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1301,481,1352,508"/>
+<area shape="rect" id="node12" href="$class_intro.html#aad225845533fc7f451648dc7c9643e6a" title="Determine default data directory for operating system. " alt="" coords="488,50,687,77"/>
+<area shape="rect" id="node15" href="$util_8h.html#a0d247b470b387d7cd3f039bd26166007" title="GetDataDir" alt="" coords="543,829,632,856"/>
+<area shape="rect" id="node13" href="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b" title="Intro::setDataDirectory" alt="" coords="747,25,903,52"/>
+<area shape="rect" id="node14" href="$class_intro.html#ae4cefbcd5e61f62cb2a59f38bc2ae52f" title="Intro::on_dataDirDefault\l_clicked" alt="" coords="988,14,1152,55"/>
+<area shape="rect" id="node16" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="1653,1297,1755,1324"/>
+<area shape="rect" id="node17" href="$main_8h.html#a6df609da0bad1550cbb2cdc781ad2904" title="Check whether enough disk space is available for an incoming block. " alt="" coords="1008,1196,1132,1222"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635" title="OpenDiskFile" alt="" coords="773,1272,876,1298"/>
+<area shape="rect" id="node29" href="$class_c_addr_d_b.html#af8c039f1904b1892c5a14e484a5b31a7" title="CAddrDB::CAddrDB" alt="" coords="753,1221,896,1248"/>
+<area shape="rect" id="node30" href="$class_c_addr_d_b.html#aaec90dba59cd69a2f25bc5630a1dde39" title="CAddrDB::Write" alt="" coords="1268,380,1385,406"/>
+<area shape="rect" id="node35" href="$namespace_g_u_i_util.html#aad169e3227e7a851db52a08bfb30391c" title="GUIUtil::openDebugLogfile" alt="" coords="735,1445,915,1472"/>
+<area shape="rect" id="node37" href="$rpcserver_8h.html#af4d692a884c24c4abe2fc3f2b165542d" title="StartRPCThreads" alt="" coords="1007,917,1133,944"/>
+<area shape="rect" id="node38" href="$util_8h.html#afd4c3002b2797c0560adddb6af3ca1da" title="LogPrintStr" alt="" coords="780,481,869,508"/>
+<area shape="rect" id="node39" href="$util_8h.html#a7d86fadf98dfaba55f80b9be0ab0f978" title="GetConfigFile" alt="" coords="773,773,877,800"/>
+<area shape="rect" id="node45" href="$util_8h.html#a0d6ff48497c7bc3b3bb34f85da84dba4" title="GetQtStyleFile" alt="" coords="770,430,879,457"/>
+<area shape="rect" id="node46" href="$util_8h.html#a91d2f3eb3a1bb92ab4eb1bd4b713a99e" title="GetPidFile" alt="" coords="1662,253,1746,280"/>
+<area shape="rect" id="node47" href="$util_8h.html#a37fca7e305fe0caa306b23fdb37f88e2" title="ShrinkDebugFile" alt="" coords="1644,968,1764,994"/>
+<area shape="rect" id="node48" href="$walletdb_8cpp.html#a273c3692765c732c5f724cec93e6b62f" title="BackupWallet" alt="" coords="773,968,877,994"/>
+<area shape="rect" id="node18" href="$main_8cpp.html#a92fa926dca5dee9f673536d85f067ee7" title="FindBlockPos" alt="" coords="1275,1221,1379,1248"/>
+<area shape="rect" id="node21" href="$main_8cpp.html#a16dd07301ce5269712d7936840c0217f" title="FindUndoPos" alt="" coords="1275,1373,1378,1400"/>
+<area shape="rect" id="node19" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="1488,1272,1584,1298"/>
+<area shape="rect" id="node20" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="1483,1221,1589,1248"/>
+<area shape="rect" id="node22" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="1484,1373,1588,1400"/>
+<area shape="rect" id="node24" href="$main_8h.html#a531eb79ff695289ac9a4f8daf292273c" title="Open a block file (blk?????.dat) " alt="" coords="1015,1246,1125,1273"/>
+<area shape="rect" id="node28" href="$main_8h.html#addac9f89d64c9e26d36d1481da35877e" title="Open an undo file (rev?????.dat) " alt="" coords="1016,1314,1124,1341"/>
+<area shape="rect" id="node25" href="$main_8h.html#a74cc9659a06d35436a25b7ae56a15bcb" title="Retrieve a transaction (from memory pool, or from disk, if possible) " alt="" coords="1479,1170,1593,1197"/>
+<area shape="rect" id="node26" href="$main_8h.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="1263,1272,1390,1298"/>
+<area shape="rect" id="node27" href="$main_8h.html#a2dc350346749b7da7f4b40c114ee5147" title="ReadBlockFromDisk" alt="" coords="1255,1120,1399,1146"/>
+<area shape="rect" id="node31" href="$net_8cpp.html#ab8b5323f5ef61499582a5a6e53b49b6e" title="DumpAddresses" alt="" coords="1476,380,1596,406"/>
+<area shape="rect" id="node32" href="$net_8h.html#a9396d8054e8f74959e9391871aaddde0" title="StartNode" alt="" coords="1663,442,1745,469"/>
+<area shape="rect" id="node33" href="$net_8h.html#ac9110488f45c160d58f3c7ab7197bcea" title="StopNode" alt="" coords="1663,304,1745,330"/>
+<area shape="rect" id="node34" href="$init_8h.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9" title="Shutdown" alt="" coords="1812,304,1893,330"/>
+<area shape="rect" id="node36" href="$class_r_p_c_console.html#adf26672994effc0bf948e8d83e1a8cb3" title="open the debug.log from the current datadir " alt="" coords="971,1442,1169,1483"/>
+<area shape="rect" id="node40" href="$class_i2_p_options_widget.html#a9301a421b488f52a973120a6ec7e6cdb" title="I2POptionsWidget::ShowCurrent\lI2PAddress" alt="" coords="963,735,1177,776"/>
+<area shape="rect" id="node42" href="$class_i2_p_options_widget.html#a732cd043c78d5097da97feee94789a16" title="I2POptionsWidget::Generate\lNewI2PAddress" alt="" coords="974,800,1166,842"/>
+<area shape="rect" id="node43" href="$rpcclient_8cpp.html#ae0b4394f271db49671cf894dbe94c484" title="CallRPC" alt="" coords="1033,684,1107,710"/>
+<area shape="rect" id="node44" href="$util_8cpp.html#a27ba417174a3ee63cb8ee1abb279a668" title="ReadConfigFile" alt="" coords="1013,582,1127,609"/>
+<area shape="rect" id="node41" href="$class_i2_p_options_widget.html#acc81cb498f44f4b877c0c35bc4a308e5" title="I2POptionsWidget::I2POptions\lWidget" alt="" coords="1225,767,1428,808"/>
+<area shape="rect" id="node49" href="$class_wallet_model.html#aa316c19ef41f26ea89f194ab253d3206" title="WalletModel::backupWallet" alt="" coords="979,1018,1161,1045"/>
+<area shape="rect" id="node50" href="$rpcwallet_8cpp.html#a7813bcc93d80c6c4ad0ae846f80cff3e" title="backupwallet" alt="" coords="1021,968,1119,994"/>
+</map>

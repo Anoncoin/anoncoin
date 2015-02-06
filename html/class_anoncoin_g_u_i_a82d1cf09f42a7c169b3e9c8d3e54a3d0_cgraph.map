@@ -1,0 +1,45 @@
+<map id="AnoncoinGUI::AnoncoinGUI" name="AnoncoinGUI::AnoncoinGUI">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#a9fd50f13c602e4e01b0d1d70d54ee89a" title="Restore window size and position. " alt="" coords="241,5,461,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="306,56,397,83"/>
+<area shape="rect" id="node5" href="$class_mac_dock_icon_handler.html#afd3ef7126d0b6ef02eaf85e5455fe6f4" title="MacDockIconHandler\l::instance" alt="" coords="277,107,426,149"/>
+<area shape="rect" id="node9" href="$class_mac_dock_icon_handler.html#a537f8eb3c9752089e3e2e0e30011a65b" title="MacDockIconHandler\l::setIcon" alt="" coords="277,173,426,214"/>
+<area shape="rect" id="node10" href="$class_anoncoin_g_u_i.html#a8aa41c17fd6005652003d93330dbf7fb" title="Create the main UI actions. " alt="" coords="257,239,446,265"/>
+<area shape="rect" id="node40" href="$class_anoncoin_g_u_i.html#ac5fd213cf86058c9fd615c9d28c41eae" title="Create the menu bar and sub&#45;menus. " alt="" coords="520,429,720,456"/>
+<area shape="rect" id="node41" href="$class_anoncoin_g_u_i.html#ab36cdd37a183f57e7831fc44a9e63b69" title="Create the toolbars. " alt="" coords="252,340,451,367"/>
+<area shape="rect" id="node42" href="$class_anoncoin_g_u_i.html#aa06466321e55822e586d81062188097e" title="Create system tray icon and notification. " alt="" coords="253,391,450,417"/>
+<area shape="rect" id="node43" href="$class_anoncoin_g_u_i.html#acd92ec3c512c49f69c4a8a15d27d595d" title="Enable or disable all wallet&#45;related actions. " alt="" coords="248,442,455,483"/>
+<area shape="rect" id="node44" href="$class_anoncoin_g_u_i.html#a85e8652ef6833110f1592834ffbed50c" title="Connect core signals to GUI client. " alt="" coords="261,507,442,549"/>
+<area shape="rect" id="node4" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="598,39,642,65"/>
+<area shape="rect" id="node6" href="$class_mac_dock_icon_handler.html#ab44913b8dabec96186b74bc6f6896c46" title="MacDockIconHandler\l::MacDockIconHandler" alt="" coords="541,90,699,131"/>
+<area shape="rect" id="node7" href="$class_mac_dock_icon_handler.html#a4d2d18c7d56286ea745e349497941293" title="MacDockIconHandler\l::setMainWindow" alt="" coords="804,31,953,73"/>
+<area shape="rect" id="node8" href="$macdockiconhandler_8mm.html#a97dcb4b8c1bda1b1e4a29fd1c36b6c47" title="qt_mac_set_dock_menu" alt="" coords="795,97,962,124"/>
+<area shape="rect" id="node11" href="$class_anoncoin_g_u_i.html#a4c87902dc6d0585e0c06f31c54e03223" title="Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHid..." alt="" coords="783,149,974,190"/>
+<area shape="rect" id="node14" href="$class_anoncoin_g_u_i.html#a27b91ac353f3729cf916384e77476423" title="Show about dialog. " alt="" coords="527,257,713,284"/>
+<area shape="rect" id="node19" href="$class_anoncoin_g_u_i.html#a1afb9a47588132239cfba7be0adc2542" title="Show configuration dialog. " alt="" coords="522,312,718,339"/>
+<area shape="rect" id="node36" href="$class_anoncoin_g_u_i.html#a1b3e8008d32aadc426e49bd8522476d5" title="Simply calls showNormalIfMinimized(true) for use in SLOT() macro. " alt="" coords="527,207,713,233"/>
+<area shape="rect" id="node37" href="$class_anoncoin_g_u_i.html#a5a4f11b0283b29da8dcec7824aa790a1" title="Show help message dialog. " alt="" coords="509,363,731,405"/>
+<area shape="rect" id="node12" href="$namespace_g_u_i_util.html#a0b7266e2b8e7de5f5fd1c7ddb9e5b637" title="GUIUtil::isObscured" alt="" coords="1067,91,1207,117"/>
+<area shape="rect" id="node13" href="$namespace_g_u_i_util.html#ab2e7ef0aa9a1ad3f86d67a3f596b6fc4" title="GUIUtil::checkPoint" alt="" coords="1327,91,1465,117"/>
+<area shape="rect" id="node15" href="$class_about_dialog.html#ad15ee5cad707263d7b39ba7803bb6def" title="AboutDialog::setModel" alt="" coords="801,215,957,241"/>
+<area shape="rect" id="node16" href="$class_client_model.html#a1c93d11fd03ef9aabf9b694e73698710" title="ClientModel::formatFullVersion" alt="" coords="1035,141,1239,168"/>
+<area shape="rect" id="node17" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="1331,141,1461,168"/>
+<area shape="rect" id="node18" href="$clientversion_8cpp.html#aff087070aeaa72e85b2d1a6192af8af5" title="CLIENT_BUILD" alt="" coords="1582,141,1698,168"/>
+<area shape="rect" id="node20" href="$class_client_model.html#ae8da1e2eabfbbcc49a7eed821908bdb6" title="ClientModel::getOptionsModel" alt="" coords="779,265,979,292"/>
+<area shape="rect" id="node21" href="$class_options_dialog.html#a11e902a52cb7472497d14e70cd9399d9" title="OptionsDialog::setModel" alt="" coords="795,316,962,343"/>
+<area shape="rect" id="node35" href="$class_options_dialog.html#a3095ea8201725abc6187265ec56e48e6" title="OptionsDialog::setClient\lModel" alt="" coords="796,367,961,409"/>
+<area shape="rect" id="node22" href="$class_options_model.html#a75c15f2cb96ee8efe7b9e756e5c8e69c" title="OptionsModel::isRestartRequired" alt="" coords="1028,192,1247,219"/>
+<area shape="rect" id="node23" href="$class_options_dialog.html#a866e74896ea7dacdc99b5e0af4fd5b38" title="OptionsDialog::showRestart\lWarning" alt="" coords="1044,243,1231,285"/>
+<area shape="rect" id="node25" href="$class_options_model.html#ac5d555492fa4d6bba68d00e798efca50" title="OptionsModel::getOverridden\lByCommandLine" alt="" coords="1039,309,1235,350"/>
+<area shape="rect" id="node26" href="$class_options_dialog.html#ae18a7ab3042a669403504e86ab2f8a77" title="OptionsDialog::updateDisplayUnit" alt="" coords="1027,375,1248,401"/>
+<area shape="rect" id="node30" href="$class_options_dialog.html#a2088ec5bbb90ec27675f441e750e55b8" title="OptionsDialog::setMapper" alt="" coords="1049,425,1225,452"/>
+<area shape="rect" id="node34" href="$class_options_dialog.html#aff6642b6705586870232e0e86b8b7346" title="OptionsDialog::showRestart\lWarning_I2P" alt="" coords="1044,477,1231,518"/>
+<area shape="rect" id="node24" href="$class_options_dialog.html#acd07b7058fd097bea5beb5cdd6fc1ad9" title="OptionsDialog::clearStatus\lLabel" alt="" coords="1306,243,1486,285"/>
+<area shape="rect" id="node27" href="$class_anoncoin_amount_field.html#a44252e1921be1026e68adfbdc99d5ca4" title="Change unit used to display amount. " alt="" coords="1320,309,1472,350"/>
+<area shape="rect" id="node29" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="1297,375,1495,401"/>
+<area shape="rect" id="node28" href="$class_q_value_combo_box.html#af192c68c0c82f33000d8c1be8c013d2d" title="QValueComboBox::setValue" alt="" coords="1544,316,1736,343"/>
+<area shape="rect" id="node31" href="$class_monitored_data_mapper.html#a5ddfc6ef4e955211948c7b24994dfd7e" title="MonitoredDataMapper\l::addMapping" alt="" coords="1563,443,1717,485"/>
+<area shape="rect" id="node33" href="$class_i2_p_options_widget.html#ae87e45f309b5a3abd782f3b6020eac4f" title="I2POptionsWidget::setMapper" alt="" coords="1296,476,1496,503"/>
+<area shape="rect" id="node32" href="$class_monitored_data_mapper.html#a1ed42b9f6daf2711ac7fe49e5e2c79ed" title="MonitoredDataMapper\l::addChangeMonitor" alt="" coords="1784,443,1939,485"/>
+<area shape="rect" id="node38" href="$rpcserver_8cpp.html#a64b7a85139e261640892b6ac1a2a23aa" title="help" alt="" coords="855,433,902,460"/>
+<area shape="rect" id="node39" href="$class_c_r_p_c_table.html#a220ae5b4ce013c79d097bfe96a94e2f0" title="Note: This interface may still be subject to change. " alt="" coords="1075,543,1200,569"/>
+</map>

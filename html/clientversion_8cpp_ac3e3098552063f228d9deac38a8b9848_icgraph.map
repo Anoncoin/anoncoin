@@ -1,0 +1,27 @@
+<map id="FormatFullVersion" name="FormatFullVersion">
+<area shape="rect" id="node2" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="987,53,1051,80"/>
+<area shape="rect" id="node4" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="251,94,321,121"/>
+<area shape="rect" id="node6" href="$class_client_model.html#a1c93d11fd03ef9aabf9b694e73698710" title="ClientModel::formatFullVersion" alt="" coords="184,313,388,340"/>
+<area shape="rect" id="node18" href="$class_splash_screen.html#a0bd5b5c18e2a37a219bdedb6b2fab011" title="SplashScreen::SplashScreen" alt="" coords="188,196,384,222"/>
+<area shape="rect" id="node19" href="$class_help_message_dialog.html#a7a3d90a39f3f4aad69764773540c7aba" title="&quot;Help message&quot; dialog box " alt="" coords="211,247,361,288"/>
+<area shape="rect" id="node20" href="$rpcprotocol_8cpp.html#af2d91e7026366657a021311ecc188262" title="HTTPPost" alt="" coords="244,145,328,172"/>
+<area shape="rect" id="node24" href="$rpcprotocol_8cpp.html#afa39f57077df4d88ad60373f58d793e1" title="HTTPReply" alt="" coords="241,364,331,390"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1230,53,1281,80"/>
+<area shape="rect" id="node5" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="453,104,613,130"/>
+<area shape="rect" id="node7" href="$class_r_p_c_console.html#a355349a33664a07628e9ca22a60f5fa7" title="RPCConsole::setClientModel" alt="" coords="436,258,631,285"/>
+<area shape="rect" id="node14" href="$class_about_dialog.html#ad15ee5cad707263d7b39ba7803bb6def" title="AboutDialog::setModel" alt="" coords="455,313,611,340"/>
+<area shape="rect" id="node8" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="679,257,876,284"/>
+<area shape="rect" id="node9" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="947,250,1090,291"/>
+<area shape="rect" id="node11" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="947,184,1090,226"/>
+<area shape="rect" id="node10" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1230,257,1281,284"/>
+<area shape="rect" id="node12" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="1184,184,1327,226"/>
+<area shape="rect" id="node13" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="1397,184,1548,226"/>
+<area shape="rect" id="node15" href="$class_anoncoin_g_u_i.html#a27b91ac353f3729cf916384e77476423" title="Show about dialog. " alt="" coords="685,314,870,341"/>
+<area shape="rect" id="node16" href="$class_anoncoin_g_u_i.html#a8aa41c17fd6005652003d93330dbf7fb" title="Create the main UI actions. " alt="" coords="924,316,1113,342"/>
+<area shape="rect" id="node17" href="$class_anoncoin_g_u_i.html#a82d1cf09f42a7c169b3e9c8d3e54a3d0" title="AnoncoinGUI::AnoncoinGUI" alt="" coords="1161,316,1349,342"/>
+<area shape="rect" id="node21" href="$rpcclient_8cpp.html#ae0b4394f271db49671cf894dbe94c484" title="CallRPC" alt="" coords="497,154,570,181"/>
+<area shape="rect" id="node22" href="$rpcclient_8h.html#a4ee23259648a971c9c05aeff8b545a6d" title="CommandLineRPC" alt="" coords="709,124,846,150"/>
+<area shape="rect" id="node23" href="$anoncoin-cli_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="993,124,1044,150"/>
+<area shape="rect" id="node25" href="$rpcserver_8cpp.html#a01dbd901fe882171ef907f64ce31db00" title="ErrorReply" alt="" coords="491,364,576,390"/>
+<area shape="rect" id="node26" href="$rpcserver_8cpp.html#adda5af922ba2f27c9f6219394d3c4f4c" title="ServiceConnection" alt="" coords="711,388,844,414"/>
+</map>

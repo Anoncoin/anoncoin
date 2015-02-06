@@ -1,0 +1,4 @@
+<map id="MacNotificationHandler::hasUserNotificationCenterSupport" name="MacNotificationHandler::hasUserNotificationCenterSupport">
+<area shape="rect" id="node2" href="$class_mac_notification_handler.html#abeb9b3a7c81397499fbb7e1d24610cd9" title="shows a 10.8+ UserNotification in the UserNotificationCenter " alt="" coords="285,5,445,47"/>
+<area shape="rect" id="node3" href="$class_notificator.html#ac98c8b73d4e06ea85e9f58426c5c935d" title="Create a new notificator. " alt="" coords="291,71,440,98"/>
+</map>

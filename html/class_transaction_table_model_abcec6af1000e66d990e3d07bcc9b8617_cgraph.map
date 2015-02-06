@@ -1,0 +1,8 @@
+<map id="TransactionTableModel::formatTxAmount" name="TransactionTableModel::formatTxAmount">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="240,56,393,83"/>
+<area shape="rect" id="node6" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="215,107,419,133"/>
+<area shape="rect" id="node7" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="218,157,415,184"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="479,5,622,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="476,56,625,83"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="467,107,635,133"/>
+</map>

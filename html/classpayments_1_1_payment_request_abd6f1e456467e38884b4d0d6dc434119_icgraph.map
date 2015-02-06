@@ -1,0 +1,5 @@
+<map id="payments::PaymentRequest::set_has_payment_details_version" name="payments::PaymentRequest::set_has_payment_details_version">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#aabe016dfb6e01d1ac87ff0a3ff2deba3" title="payments::PaymentRequest\l::MergePartialFromCodedStream" alt="" coords="243,5,461,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a0e436cae3e764a061183ff83ea6dc4fa" title="payments::PaymentRequest\l::set_payment_details_version" alt="" coords="251,71,453,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a8be69c1b0e111e8c772670ce2dbf16eb" title="payments::PaymentRequest\l::MergeFrom" alt="" coords="509,71,699,112"/>
+</map>

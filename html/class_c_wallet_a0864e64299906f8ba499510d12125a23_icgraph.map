@@ -1,0 +1,10 @@
+<map id="CWallet::IsChange" name="CWallet::IsChange">
+<area shape="rect" id="node2" href="$class_wallet_model.html#aadf8de5a584594abdb299b463bd7578f" title="WalletModel::listCoins" alt="" coords="187,78,340,105"/>
+<area shape="rect" id="node3" href="$class_coin_control_dialog.html#aadea33050e5c1efd5eae8d2fcfa721f9" title="CoinControlDialog::\lupdateView" alt="" coords="388,71,525,112"/>
+<area shape="rect" id="node4" href="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a" title="CoinControlDialog::\lsetModel" alt="" coords="573,5,711,47"/>
+<area shape="rect" id="node7" href="$class_coin_control_dialog.html#a1990d478f3ffba666c358a4f1bd395ec" title="CoinControlDialog::\lradioTreeMode" alt="" coords="573,71,711,112"/>
+<area shape="rect" id="node9" href="$class_coin_control_dialog.html#a775c6d290cb63667a434b09072094533" title="CoinControlDialog::\lradioListMode" alt="" coords="573,136,711,177"/>
+<area shape="rect" id="node5" href="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49" title="SendCoinsDialog::coinControl\lButtonClicked" alt="" coords="759,5,959,47"/>
+<area shape="rect" id="node6" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="1007,5,1204,47"/>
+<area shape="rect" id="node8" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="790,103,927,144"/>
+</map>

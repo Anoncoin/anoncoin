@@ -1,0 +1,7 @@
+<map id="CChain::SetTip" name="CChain::SetTip">
+<area shape="rect" id="node2" href="$main_8h.html#ac98b87e479f71b7be2b990a10c4ebc2d" title="Unload database information. " alt="" coords="165,31,295,57"/>
+<area shape="rect" id="node3" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="343,31,413,57"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="509,5,573,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="461,56,621,83"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="669,5,720,32"/>
+</map>

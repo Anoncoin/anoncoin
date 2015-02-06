@@ -1,0 +1,5 @@
+<map id="CCoinControl::UnSelectAll" name="CCoinControl::UnSelectAll">
+<area shape="rect" id="node2" href="$class_coin_control_dialog.html#ae106a71c5b87ac8bea8c52e7c4f4a129" title="CoinControlDialog::\lbuttonSelectAllClicked" alt="" coords="232,5,387,47"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="236,71,383,112"/>
+<area shape="rect" id="node3" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="435,5,572,47"/>
+</map>

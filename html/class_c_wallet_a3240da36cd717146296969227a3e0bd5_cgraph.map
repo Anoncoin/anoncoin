@@ -1,0 +1,27 @@
+<map id="CWallet::AddKeyPubKey" name="CWallet::AddKeyPubKey">
+<area shape="rect" id="node2" href="$class_c_crypto_key_store.html#a340109b8673267676a34664a76ed3274" title="CCryptoKeyStore::AddKeyPubKey" alt="" coords="223,208,449,235"/>
+<area shape="rect" id="node5" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="812,309,932,336"/>
+<area shape="rect" id="node22" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="256,461,416,488"/>
+<area shape="rect" id="node23" href="$class_c_wallet_d_b.html#a7ebef5e0c7f604aa2159ba96d527e3a2" title="CWalletDB::WriteKey" alt="" coords="536,461,685,488"/>
+<area shape="rect" id="node26" href="$class_c_key.html#ab38813e7091f658612dfb14f17c9e317" title="CKey::GetPrivKey" alt="" coords="271,512,401,539"/>
+<area shape="rect" id="node3" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="777,56,967,83"/>
+<area shape="rect" id="node4" href="$class_c_basic_key_store.html#acc2e33f319de88e88f86b0dc79bdcb65" title="CBasicKeyStore::AddKeyPubKey" alt="" coords="501,309,721,336"/>
+<area shape="rect" id="node9" href="$class_c_crypto_key_store.html#a1c3ebef555fd13676d67509b95820fcf" title="CCryptoKeyStore::IsLocked" alt="" coords="517,157,704,184"/>
+<area shape="rect" id="node10" href="$class_c_key.html#aabd29e0d5faf30032cc8519a1ce62a5a" title="CKey::begin" alt="" coords="563,107,658,133"/>
+<area shape="rect" id="node11" href="$class_c_key.html#a651d1e10b4085da5e4c4a764f3a384df" title="CKey::end" alt="" coords="569,5,653,32"/>
+<area shape="rect" id="node13" href="$crypter_8cpp.html#a4fa4e3134d2b6e4913b9ce6369820697" title="EncryptSecret" alt="" coords="558,208,663,235"/>
+<area shape="rect" id="node18" href="$class_c_pub_key.html#a85b5eaf92b26cb4a230586050285c3f4" title="CPubKey::GetHash" alt="" coords="541,411,680,437"/>
+<area shape="rect" id="node20" href="$class_c_crypto_key_store.html#a9f4d2df95008205b2b9784c5f0e8e12b" title="CCryptoKeyStore::AddCryptedKey" alt="" coords="497,259,724,285"/>
+<area shape="rect" id="node6" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="1037,309,1113,336"/>
+<area shape="rect" id="node7" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="1020,411,1129,437"/>
+<area shape="rect" id="node8" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="1177,411,1307,437"/>
+<area shape="rect" id="node12" href="$class_c_key.html#a6329a38926a8af8112d06da96afbfe39" title="CKey::size" alt="" coords="829,5,915,32"/>
+<area shape="rect" id="node14" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1039,157,1111,184"/>
+<area shape="rect" id="node16" href="$class_c_crypter.html#a0d948dd4796e2420e1dd9c1ddbf7974e" title="CCrypter::SetKey" alt="" coords="809,107,935,133"/>
+<area shape="rect" id="node17" href="$class_c_crypter.html#a124fcd3021569a660ce2daa3391c8ea4" title="CCrypter::Encrypt" alt="" coords="808,157,936,184"/>
+<area shape="rect" id="node15" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1200,157,1284,184"/>
+<area shape="rect" id="node19" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="845,411,899,437"/>
+<area shape="rect" id="node21" href="$class_c_crypto_key_store.html#af202f587051735be5a39344d9e333720" title="CCryptoKeyStore::SetCrypted" alt="" coords="772,259,972,285"/>
+<area shape="rect" id="node24" href="$class_c_pub_key.html#add9987e0d25aff11181f5ad70413994b" title="CPubKey::begin" alt="" coords="813,512,931,539"/>
+<area shape="rect" id="node25" href="$class_c_pub_key.html#aa559d2a4f2cbdec84c02a4adc18fa657" title="CPubKey::end" alt="" coords="818,461,926,488"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="libzerocoin::Accumulator::getValue" name="libzerocoin::Accumulator::getValue">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_accumulator_witness.html#a479f3a94be8a7976eefb6a9b86840b1a" title="libzerocoin::Accumulator\lWitness::getValue" alt="" coords="225,19,391,61"/>
+<area shape="rect" id="node4" href="$_benchmark_8cpp.html#a8223c6bd6d6bbaa0b3973dca9eaebd65" title="Test_Accumulator" alt="" coords="487,85,617,112"/>
+<area shape="rect" id="node7" href="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#a65468d15a28daaa82e6d6275459c95ab" title="Verifies that a commitment c is accumulated in accumulated a. " alt="" coords="220,137,396,178"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#acce987e79e2498918495c3a7e8873810" title="Generates a proof that a commitment to a coin c was accumulated. " alt="" coords="444,5,660,61"/>
+<area shape="rect" id="node5" href="$_benchmark_8cpp.html#a270b3d0914e20b5c58ab92bc2823c1d1" title="Test_RunAllTests" alt="" coords="899,111,1025,137"/>
+<area shape="rect" id="node6" href="$_benchmark_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="1073,111,1124,137"/>
+<area shape="rect" id="node8" href="$classlibzerocoin_1_1_coin_spend.html#a9048dabc1be9ef65aeefb41e92e2f53c" title="libzerocoin::CoinSpend\l::Verify" alt="" coords="473,137,631,178"/>
+<area shape="rect" id="node9" href="$_benchmark_8cpp.html#ad4c256613fa000fd3d3ec247021a6522" title="Test_MintAndSpend" alt="" coords="708,136,851,163"/>
+<area shape="rect" id="node10" href="$_tutorial_8cpp.html#a297c1339eda300b5818bf669440b3a7d" title="ZerocoinTutorial" alt="" coords="720,187,839,213"/>
+<area shape="rect" id="node11" href="$_tutorial_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="937,187,987,213"/>
+</map>

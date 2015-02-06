@@ -1,0 +1,11 @@
+<map id="libzerocoin::IntegerGroupParams::g" name="libzerocoin::IntegerGroupParams::g">
+<area shape="rect" id="node2" href="$_benchmark_8cpp.html#a6047d42efd0ce75ebd8486a5604c31a8" title="Test_GenerateGroupParams" alt="" coords="446,18,639,44"/>
+<area shape="rect" id="node5" href="$namespacelibzerocoin.html#a79bc1bd9eb84296b37954117a6ef0631" title="libzerocoin::CalculateParams" alt="" coords="445,106,640,132"/>
+<area shape="rect" id="node7" href="$namespacelibzerocoin.html#a104c1a4d313174893b0de7595bfa7baa" title="Deterministically compute a set of group parameters using NIST procedures. " alt="" coords="226,40,397,81"/>
+<area shape="rect" id="node8" href="$namespacelibzerocoin.html#abca1c7f212a8431710b4e7b9a9c5df8e" title="Deterministically compute a set of group parameters with a specified order. " alt="" coords="226,157,397,198"/>
+<area shape="rect" id="node9" href="$classlibzerocoin_1_1_integer_group_params.html#a86cc0324101d00d6968600474227b4f0" title="Generates a random group element. " alt="" coords="225,222,397,264"/>
+<area shape="rect" id="node10" href="$classlibzerocoin_1_1_integer_group_params.html#ac952376d29b5040fd90d3c861a1fe808" title="libzerocoin::IntegerGroup\lParams::g" alt="" coords="225,288,397,329"/>
+<area shape="rect" id="node3" href="$_benchmark_8cpp.html#a270b3d0914e20b5c58ab92bc2823c1d1" title="Test_RunAllTests" alt="" coords="694,18,821,44"/>
+<area shape="rect" id="node4" href="$_benchmark_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="875,18,925,44"/>
+<area shape="rect" id="node6" href="$classlibzerocoin_1_1_params.html#a05f71867ba477a3439e13e94890c3159" title="Construct a set of Zerocoin parameters from a modulus &quot;N&quot;. " alt="" coords="688,98,827,140"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="ClientModel::getLastBlockDate" name="ClientModel::getLastBlockDate">
+<area shape="rect" id="node2" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="305,5,397,32"/>
+<area shape="rect" id="node3" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="257,56,445,83"/>
+<area shape="rect" id="node4" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="317,107,385,133"/>
+</map>

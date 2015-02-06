@@ -1,0 +1,12 @@
+<map id="WalletModel::backupWallet" name="WalletModel::backupWallet">
+<area shape="rect" id="node2" href="$walletdb_8cpp.html#a273c3692765c732c5f724cec93e6b62f" title="BackupWallet" alt="" coords="236,81,340,108"/>
+<area shape="rect" id="node3" href="$class_c_d_b_env.html#ac53fd53afdd1e0881b8ffbb11a89b556" title="CDBEnv::CloseDb" alt="" coords="409,5,541,32"/>
+<area shape="rect" id="node4" href="$class_c_d_b_env.html#aaf4c0dd43825ee2441eaa4177bef137b" title="CDBEnv::CheckpointLSN" alt="" coords="388,56,561,83"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="430,107,519,133"/>
+<area shape="rect" id="node11" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="435,157,514,184"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="667,31,735,57"/>
+<area shape="rect" id="node7" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="609,81,792,108"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="635,132,766,159"/>
+<area shape="rect" id="node10" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="618,183,783,209"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="840,132,975,159"/>
+</map>

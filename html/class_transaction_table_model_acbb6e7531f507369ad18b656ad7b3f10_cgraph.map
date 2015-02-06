@@ -1,0 +1,7 @@
+<map id="TransactionTableModel::updateAmountColumnTitle" name="TransactionTableModel::updateAmountColumnTitle">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#a55e8d311dcb304d3935c6f94db63544b" title="Gets title for amount column including current display unit if optionsModel reference available */..." alt="" coords="252,23,432,65"/>
+<area shape="rect" id="node5" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="240,89,444,116"/>
+<area shape="rect" id="node6" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="243,140,441,167"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="495,5,638,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="492,56,641,83"/>
+</map>

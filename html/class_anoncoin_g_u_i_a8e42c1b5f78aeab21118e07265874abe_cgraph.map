@@ -1,0 +1,8 @@
+<map id="AnoncoinGUI::createTrayIconMenu" name="AnoncoinGUI::createTrayIconMenu">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#af7f83198c1e3a09007333a54add093df" title="Handle tray icon clicked. " alt="" coords="284,5,495,32"/>
+<area shape="rect" id="node3" href="$class_mac_dock_icon_handler.html#afd3ef7126d0b6ef02eaf85e5455fe6f4" title="MacDockIconHandler\l::instance" alt="" coords="315,57,464,98"/>
+<area shape="rect" id="node5" href="$class_mac_dock_icon_handler.html#a4d2d18c7d56286ea745e349497941293" title="MacDockIconHandler\l::setMainWindow" alt="" coords="757,115,906,157"/>
+<area shape="rect" id="node7" href="$class_mac_dock_icon_handler.html#a8aff3dc6410687e432f8d9314eba0ab9" title="MacDockIconHandler\l::dockMenu" alt="" coords="315,174,464,215"/>
+<area shape="rect" id="node4" href="$class_mac_dock_icon_handler.html#ab44913b8dabec96186b74bc6f6896c46" title="MacDockIconHandler\l::MacDockIconHandler" alt="" coords="543,57,700,98"/>
+<area shape="rect" id="node6" href="$macdockiconhandler_8mm.html#a97dcb4b8c1bda1b1e4a29fd1c36b6c47" title="qt_mac_set_dock_menu" alt="" coords="748,64,915,91"/>
+</map>

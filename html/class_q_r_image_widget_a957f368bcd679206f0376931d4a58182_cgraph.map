@@ -1,0 +1,4 @@
+<map id="QRImageWidget::saveImage" name="QRImageWidget::saveImage">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#a788c51092a2255b1f8976d4794fc3ee6" title="Get save filename, mimics QFileDialog::getSaveFileName, except that it appends a default suffix when ..." alt="" coords="259,5,437,32"/>
+<area shape="rect" id="node3" href="$class_q_r_image_widget.html#a717edd656c51439324a2d73e1ac694ad" title="QRImageWidget::exportImage" alt="" coords="247,56,449,83"/>
+</map>

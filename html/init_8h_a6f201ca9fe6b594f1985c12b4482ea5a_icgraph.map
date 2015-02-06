@@ -1,0 +1,7 @@
+<map id="ShutdownRequested" name="ShutdownRequested">
+<area shape="rect" id="node2" href="$anoncoind_8cpp.html#ab68baad9d16aab4c1dcdda691a8bf18f" title="DetectShutdownThread" alt="" coords="219,5,382,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_g_u_i.html#a746d41b58eb668133b975be051898b4b" title="called by a timer to check if fRequestShutdown has been set " alt="" coords="199,56,403,83"/>
+<area shape="rect" id="node6" href="$rpcserver_8cpp.html#adda5af922ba2f27c9f6219394d3c4f4c" title="ServiceConnection" alt="" coords="234,107,367,133"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="451,5,515,32"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="563,5,613,32"/>
+</map>

@@ -1,0 +1,35 @@
+<map id="RPCConsole::setClientModel" name="RPCConsole::setClientModel">
+<area shape="rect" id="node2" href="$class_traffic_graph_widget.html#a8f627aaf6171695d94a0e83b239fe1ac" title="TrafficGraphWidget\l::setClientModel" alt="" coords="293,59,430,100"/>
+<area shape="rect" id="node3" href="$class_client_model.html#a175c96ffc4d793777316e36c501a7f94" title="ClientModel::getTotalBytesRecv" alt="" coords="527,41,739,68"/>
+<area shape="rect" id="node5" href="$class_client_model.html#a4229224bf8a2df52e44438a449da6ba3" title="ClientModel::getTotalBytesSent" alt="" coords="528,108,737,134"/>
+<area shape="rect" id="node7" href="$class_r_p_c_console.html#aa4546cb7812dd35704de8bf09a6ceb60" title="Set number of connections shown in the UI. " alt="" coords="248,226,475,253"/>
+<area shape="rect" id="node8" href="$class_client_model.html#ab893445b458943e3112770b026195067" title="Return number of connections, default is in&#45; and outbound (total) " alt="" coords="523,201,743,228"/>
+<area shape="rect" id="node9" href="$class_r_p_c_console.html#a98b7e85774a91d77c3b01276bd41bc51" title="Set number of blocks shown in the UI. " alt="" coords="265,277,457,304"/>
+<area shape="rect" id="node13" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="851,328,919,354"/>
+<area shape="rect" id="node14" href="$class_client_model.html#a9c298b0c2eb9c8e9ff18c6ff37725b0a" title="ClientModel::getNumBlocks" alt="" coords="269,378,454,405"/>
+<area shape="rect" id="node16" href="$class_r_p_c_console.html#a41bc6977fc2aab06f408da81dfd2034f" title="update traffic statistics " alt="" coords="541,430,725,471"/>
+<area shape="rect" id="node18" href="$class_client_model.html#a643fc112ce94f50ac7187ecdf3c75360" title="ClientModel::getPeerTable\lModel" alt="" coords="543,495,723,536"/>
+<area shape="rect" id="node19" href="$class_r_p_c_console.html#a2487fa6a90cddcbb17ae4bb13ecc5359" title="Handle selection of peer in peers list. " alt="" coords="269,530,454,557"/>
+<area shape="rect" id="node27" href="$class_r_p_c_console.html#af952ebc6484c8f7d1262fa0bceed41bf" title="Handle updated peer information. " alt="" coords="248,581,475,608"/>
+<area shape="rect" id="node29" href="$class_client_model.html#a1c93d11fd03ef9aabf9b694e73698710" title="ClientModel::formatFullVersion" alt="" coords="259,632,463,658"/>
+<area shape="rect" id="node32" href="$class_client_model.html#a6c7619b3dbe33ce32456ec1f7a17f454" title="ClientModel::clientName" alt="" coords="278,682,445,709"/>
+<area shape="rect" id="node33" href="$class_client_model.html#a8b7886e6acbb255dab6cbc297bb67a22" title="ClientModel::formatBuildDate" alt="" coords="263,733,459,760"/>
+<area shape="rect" id="node34" href="$class_client_model.html#a9a6238dec8eb12b7d742ce1879a92ec8" title="ClientModel::formatClient\lStartupTime" alt="" coords="275,784,447,826"/>
+<area shape="rect" id="node4" href="$class_c_node.html#a1988b63b48fdc9b72014bdf9588b0168" title="CNode::GetTotalBytesRecv" alt="" coords="792,41,977,68"/>
+<area shape="rect" id="node6" href="$class_c_node.html#af318a64e7ddad50d1e1b6fc123a5f0b9" title="CNode::GetTotalBytesSent" alt="" coords="793,108,976,134"/>
+<area shape="rect" id="node10" href="$class_client_model.html#a3dd65362947749364c48ff53a37820db" title="ClientModel::getLastBlockDate" alt="" coords="531,277,735,304"/>
+<area shape="rect" id="node11" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="839,226,931,253"/>
+<area shape="rect" id="node12" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="791,277,979,304"/>
+<area shape="rect" id="node15" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="577,378,689,405"/>
+<area shape="rect" id="node17" href="$class_r_p_c_console.html#afa45a6e142193405038015a31f9e132b" title="RPCConsole::FormatBytes" alt="" coords="793,433,976,460"/>
+<area shape="rect" id="node20" href="$class_peer_table_model.html#a98084d3299642316c71c5de3d36b9859" title="PeerTableModel::getNodeStats" alt="" coords="529,612,737,638"/>
+<area shape="rect" id="node22" href="$class_r_p_c_console.html#a0bd7e2be4a07bcf4f8b20eb1881dacbb" title="show detailed information on ui about selected node " alt="" coords="526,561,739,588"/>
+<area shape="rect" id="node21" href="$class_peer_table_priv.html#a58c817cce967ddd5ae4bad622bfaecb4" title="PeerTablePriv::index" alt="" coords="812,686,957,713"/>
+<area shape="rect" id="node23" href="$namespace_g_u_i_util.html#ac0c0a23fbbfefc827220eebcacc3ee63" title="GUIUtil::formatServicesStr" alt="" coords="795,484,974,510"/>
+<area shape="rect" id="node24" href="$namespace_g_u_i_util.html#aaf51686c47c77ad81c51d115d150e867" title="GUIUtil::formatDurationStr" alt="" coords="796,534,973,561"/>
+<area shape="rect" id="node25" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="848,585,921,612"/>
+<area shape="rect" id="node26" href="$namespace_g_u_i_util.html#a432bcee36e242a968c9149fadfba44fa" title="GUIUtil::formatPingTime" alt="" coords="801,636,968,662"/>
+<area shape="rect" id="node28" href="$class_peer_table_model.html#aa735d366015dafba4c5d79dfb76abe49" title="PeerTableModel::getRowBy\lNodeId" alt="" coords="539,663,727,704"/>
+<area shape="rect" id="node30" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="567,732,698,758"/>
+<area shape="rect" id="node31" href="$clientversion_8cpp.html#aff087070aeaa72e85b2d1a6192af8af5" title="CLIENT_BUILD" alt="" coords="827,737,943,764"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="TransactionView::chooseDate" name="TransactionView::chooseDate">
+<area shape="rect" id="node2" href="$class_transaction_filter_proxy.html#ad57cc552db9ce70bb4e8e1c12909992d" title="TransactionFilterProxy\l::setDateRange" alt="" coords="493,5,649,47"/>
+<area shape="rect" id="node3" href="$class_transaction_view.html#ab9000969ec2cc3617b9c06caf33e747a" title="TransactionView::dateRange\lChanged" alt="" coords="252,35,445,76"/>
+</map>

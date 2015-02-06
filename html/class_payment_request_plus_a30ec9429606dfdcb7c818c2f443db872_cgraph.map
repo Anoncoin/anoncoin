@@ -1,0 +1,6 @@
+<map id="PaymentRequestPlus::getPayTo" name="PaymentRequestPlus::getPayTo">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_details.html#adafb0db0ce50e68c794846568be749ee" title="payments::PaymentDetails\l::outputs_size" alt="" coords="204,5,384,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#a540d66687ea7828186b4385c99c860a3" title="payments::PaymentDetails\l::outputs" alt="" coords="204,71,384,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_output.html#a44907aa137316a13171e889983ecf451" title="payments::Output::script" alt="" coords="211,137,377,163"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_output.html#a4f93c42c8c50eaf997789c3835280618" title="payments::Output::amount" alt="" coords="205,187,383,214"/>
+</map>

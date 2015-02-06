@@ -1,0 +1,6 @@
+<map id="CBlockIndex::GetMedianTime" name="CBlockIndex::GetMedianTime">
+<area shape="rect" id="node2" href="$class_c_chain.html#acd3c27582e3d60b93363fda5d9f3775a" title="Find the successor of a block in this chain, or NULL if the given index is not found or is the tip..." alt="" coords="314,5,415,32"/>
+<area shape="rect" id="node4" href="$class_c_block_index.html#abffb24cc73329a3dce024403ba770b4a" title="CBlockIndex::GetMedianTimePast" alt="" coords="252,56,477,83"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a1ab1fe2932227af222699c64847e838b" title="Efficiently check whether a block is present in this chain. " alt="" coords="556,5,683,32"/>
+<area shape="rect" id="node5" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="525,56,713,83"/>
+</map>

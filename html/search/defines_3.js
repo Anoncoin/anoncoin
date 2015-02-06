@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['client_5fversion_5fbuild',['CLIENT_VERSION_BUILD',['../clientversion_8h.html#a8a7e28feadfc7a119b9f297be002fd64',1,'CLIENT_VERSION_BUILD():&#160;clientversion.h'],['../anoncoin-config_8h.html#a8a7e28feadfc7a119b9f297be002fd64',1,'CLIENT_VERSION_BUILD():&#160;anoncoin-config.h']]],
+  ['client_5fversion_5fis_5frelease',['CLIENT_VERSION_IS_RELEASE',['../clientversion_8h.html#a025f9205720e2c4c155eefb01fd150ba',1,'CLIENT_VERSION_IS_RELEASE():&#160;clientversion.h'],['../anoncoin-config_8h.html#a025f9205720e2c4c155eefb01fd150ba',1,'CLIENT_VERSION_IS_RELEASE():&#160;anoncoin-config.h']]],
+  ['client_5fversion_5fmajor',['CLIENT_VERSION_MAJOR',['../clientversion_8h.html#a92b90ffd16d51295dadb88ea95065f87',1,'CLIENT_VERSION_MAJOR():&#160;clientversion.h'],['../anoncoin-config_8h.html#a92b90ffd16d51295dadb88ea95065f87',1,'CLIENT_VERSION_MAJOR():&#160;anoncoin-config.h']]],
+  ['client_5fversion_5fminor',['CLIENT_VERSION_MINOR',['../clientversion_8h.html#aaaf4067cdc86f257a46b57889ff3f847',1,'CLIENT_VERSION_MINOR():&#160;clientversion.h'],['../anoncoin-config_8h.html#aaaf4067cdc86f257a46b57889ff3f847',1,'CLIENT_VERSION_MINOR():&#160;anoncoin-config.h']]],
+  ['client_5fversion_5frevision',['CLIENT_VERSION_REVISION',['../clientversion_8h.html#a0e7f62bdcc6c191960438fb0f75a5cba',1,'CLIENT_VERSION_REVISION():&#160;clientversion.h'],['../anoncoin-config_8h.html#a0e7f62bdcc6c191960438fb0f75a5cba',1,'CLIENT_VERSION_REVISION():&#160;anoncoin-config.h']]],
+  ['client_5fversion_5fsuffix',['CLIENT_VERSION_SUFFIX',['../clientversion_8cpp.html#a944126b3065ff46718b597a4d533ec40',1,'clientversion.cpp']]],
+  ['closesocket',['closesocket',['../compat_8h.html#a5a3eb971b466278ada4f7f87399a537c',1,'closesocket():&#160;compat.h'],['../i2psam_8cpp.html#afdbb9d84bd17efd2ae7290e664992c48',1,'closesocket():&#160;i2psam.cpp']]],
+  ['coins_5fto_5faccumulate',['COINS_TO_ACCUMULATE',['../_tutorial_8cpp.html#a98e1f50083d1b24ac8d5781de4bb14e9',1,'Tutorial.cpp']]],
+  ['color_5fbareaddress',['COLOR_BAREADDRESS',['../guiconstants_8h.html#ac80a1fc3ebdfd766bdfca02b1564901a',1,'guiconstants.h']]],
+  ['color_5fblack',['COLOR_BLACK',['../guiconstants_8h.html#aba2a7fe77a7501e5844370eec0185207',1,'guiconstants.h']]],
+  ['color_5fnegative',['COLOR_NEGATIVE',['../guiconstants_8h.html#ab6dd490a1fad1e7a1b19b8379a4a155b',1,'guiconstants.h']]],
+  ['color_5fstr_5fgreen',['COLOR_STR_GREEN',['../_benchmark_8cpp.html#a80219767671614cba3275442af7a9f3a',1,'COLOR_STR_GREEN():&#160;Benchmark.cpp'],['../_tests_8cpp.html#a80219767671614cba3275442af7a9f3a',1,'COLOR_STR_GREEN():&#160;Tests.cpp']]],
+  ['color_5fstr_5fnormal',['COLOR_STR_NORMAL',['../_benchmark_8cpp.html#a8b326f9630681b18fa5be1c8cd8fc978',1,'COLOR_STR_NORMAL():&#160;Benchmark.cpp'],['../_tests_8cpp.html#a8b326f9630681b18fa5be1c8cd8fc978',1,'COLOR_STR_NORMAL():&#160;Tests.cpp']]],
+  ['color_5fstr_5fred',['COLOR_STR_RED',['../_benchmark_8cpp.html#a9bd88654c6111122880e7a6ffe4d3b8d',1,'COLOR_STR_RED():&#160;Benchmark.cpp'],['../_tests_8cpp.html#a9bd88654c6111122880e7a6ffe4d3b8d',1,'COLOR_STR_RED():&#160;Tests.cpp']]],
+  ['color_5ftx_5fstatus_5foffline',['COLOR_TX_STATUS_OFFLINE',['../guiconstants_8h.html#a63c2f5fd5f1780fb3a77e6fdd9f33427',1,'guiconstants.h']]],
+  ['color_5ftx_5fstatus_5fopenuntildate',['COLOR_TX_STATUS_OPENUNTILDATE',['../guiconstants_8h.html#a4828579cf1a85e087452ef6d828bf175',1,'guiconstants.h']]],
+  ['color_5funconfirmed',['COLOR_UNCONFIRMED',['../guiconstants_8h.html#a3a7798e924111d2de3ca86ab4dbec5bf',1,'guiconstants.h']]],
+  ['commitment_5fequality_5fchallenge_5fsize',['COMMITMENT_EQUALITY_CHALLENGE_SIZE',['../_commitment_8h.html#a112c6d1acc085e4b715fa8e6dd5d867e',1,'Commitment.h']]],
+  ['commitment_5fequality_5fsecmargin',['COMMITMENT_EQUALITY_SECMARGIN',['../_commitment_8h.html#a5b6cf2fcf97bd5a91039e6c5e2e1fac0',1,'Commitment.h']]],
+  ['copyright_5fstr',['COPYRIGHT_STR',['../clientversion_8h.html#a6d4a3f810dce4e8120aab61b143868b9',1,'clientversion.h']]],
+  ['copyright_5fyear',['COPYRIGHT_YEAR',['../clientversion_8h.html#a5a3262b73772541f8d42a66de97909ed',1,'COPYRIGHT_YEAR():&#160;clientversion.h'],['../anoncoin-config_8h.html#a5a3262b73772541f8d42a66de97909ed',1,'COPYRIGHT_YEAR():&#160;anoncoin-config.h']]]
+];

@@ -1,0 +1,5 @@
+<map id="CCoinsViewBacked" name="CCoinsViewBacked">
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html" title="CCoinsView that adds a memory cache for transactions to another CCoinsView. " alt="" coords="5,155,139,181"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_mem_pool.html" title="CCoinsView that brings transactions from a memorypool into view. " alt="" coords="163,155,314,181"/>
+<area shape="rect" id="node2" href="$class_c_coins_view.html" title="Abstract view on the open txout dataset. " alt="" coords="107,5,202,32"/>
+</map>

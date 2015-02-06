@@ -1,0 +1,5 @@
+<map id="payments::PaymentDetails::set_allocated_merchant_data" name="payments::PaymentDetails::set_allocated_merchant_data">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_details.html#aafc5a72900efac1dd7d43cc188ddd46b" title="payments::PaymentDetails\l::set_has_merchant_data" alt="" coords="259,5,439,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#ab38d62eca2f03cf3a9ade74790c269b2" title="payments::PaymentDetails\l::merchant_data" alt="" coords="259,71,439,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_details.html#ab1cbbd7d0cc72f21195a185ceb4e3a6a" title="payments::PaymentDetails\l::clear_has_merchant_data" alt="" coords="257,136,441,177"/>
+</map>

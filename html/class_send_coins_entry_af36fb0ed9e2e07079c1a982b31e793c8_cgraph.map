@@ -1,0 +1,4 @@
+<map id="SendCoinsEntry::getValue" name="SendCoinsEntry::getValue">
+<area shape="rect" id="node2" href="$class_payment_request_plus.html#a62ae278689d852e4a73cdef627763944" title="PaymentRequestPlus\l::IsInitialized" alt="" coords="232,5,383,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a823854558ba54ec4b6258d9132affc15" title="payments::PaymentRequest\l::IsInitialized" alt="" coords="431,5,620,47"/>
+</map>

@@ -1,0 +1,32 @@
+<map id="Checkpoints::GetTotalBlocksEstimate" name="Checkpoints::GetTotalBlocksEstimate">
+<area shape="rect" id="node2" href="$main_8h.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="247,200,403,227"/>
+<area shape="rect" id="node4" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="1253,255,1349,281"/>
+<area shape="rect" id="node28" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="273,411,377,437"/>
+<area shape="rect" id="node3" href="$main_8h.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="1014,153,1141,180"/>
+<area shape="rect" id="node14" href="$main_8cpp.html#a730d390bfb0df0e54a5c2ddb901e748a" title="CheckForkWarningConditions" alt="" coords="451,200,649,227"/>
+<area shape="rect" id="node17" href="$main_8h.html#a63b860cc82a0a2dfb90c96ddc09dfecc" title="Find the best known block, and make it the tip of the block chain. " alt="" coords="751,309,882,336"/>
+<area shape="rect" id="node18" href="$main_8h.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3" title="Send queued protocol messages to be sent to a give node. " alt="" coords="1605,24,1718,51"/>
+<area shape="rect" id="node23" href="$class_client_model.html#afc3389cd7eef94a0f20b6913beb05f40" title="Return true if core is doing initial block download. " alt="" coords="463,75,637,117"/>
+<area shape="rect" id="node27" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="755,411,878,437"/>
+<area shape="rect" id="node13" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="1431,157,1536,184"/>
+<area shape="rect" id="node5" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="1432,255,1535,281"/>
+<area shape="rect" id="node6" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="1584,208,1739,235"/>
+<area shape="rect" id="node12" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="1615,259,1707,285"/>
+<area shape="rect" id="node7" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="1815,157,1917,184"/>
+<area shape="rect" id="node8" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1999,151,2069,177"/>
+<area shape="rect" id="node9" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="2175,88,2239,115"/>
+<area shape="rect" id="node11" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="2127,151,2287,177"/>
+<area shape="rect" id="node10" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="2340,88,2391,115"/>
+<area shape="rect" id="node15" href="$main_8cpp.html#a0577f78a333e075d3bbb64c0741b5080" title="CheckForkWarningConditions\lOnNewFork" alt="" coords="717,243,916,285"/>
+<area shape="rect" id="node16" href="$main_8h.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="1014,251,1141,277"/>
+<area shape="rect" id="node19" href="$main_8h.html#ab02615ff65f91d69f8d786ec900baa8a" title="Register with a network node to receive its signals. " alt="" coords="1793,56,1939,83"/>
+<area shape="rect" id="node20" href="$main_8h.html#a3ef0cc6e9d9d6435ee2a5569244d6ebd" title="Unregister a network node. " alt="" coords="1787,5,1945,32"/>
+<area shape="rect" id="node21" href="$init_8h.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9" title="Shutdown" alt="" coords="1993,12,2075,39"/>
+<area shape="rect" id="node22" href="$class_anoncoin_coin.html#ac33fbca9335d356d9d6102a0122f2a5b" title="AnoncoinCoin::shutdown" alt="" coords="2123,12,2292,39"/>
+<area shape="rect" id="node24" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="697,83,936,109"/>
+<area shape="rect" id="node25" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="984,83,1171,109"/>
+<area shape="rect" id="node26" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1219,83,1383,109"/>
+<area shape="rect" id="node29" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="513,461,587,488"/>
+<area shape="rect" id="node31" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="489,411,611,437"/>
+<area shape="rect" id="node30" href="$rpcblockchain_8cpp.html#a0b1dd8862fc7292c243ad9489f96a3c8" title="verifychain" alt="" coords="774,461,859,488"/>
+</map>

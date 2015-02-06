@@ -1,0 +1,11 @@
+<map id="libzerocoin::SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge" name="libzerocoin::SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge">
+<area shape="rect" id="node2" href="$namespacelibzerocoin.html#a860d36a6fac4250ebf4c5dad71602091" title="Deterministically derives coin commitment group generators g &amp; h from a serial number (and group modu..." alt="" coords="315,5,511,47"/>
+<area shape="rect" id="node5" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="1089,45,1248,71"/>
+<area shape="rect" id="node6" href="$classlibzerocoin_1_1_private_coin.html#a5055163af4a2122ef95ea645f7805e52" title="libzerocoin::PrivateCoin\l::getSerialNumber" alt="" coords="332,123,495,164"/>
+<area shape="rect" id="node7" href="$classlibzerocoin_1_1_commitment.html#a8579660978e970e236554c5bf33005fc" title="libzerocoin::Commitment\l::getCommitmentValue" alt="" coords="329,188,498,229"/>
+<area shape="rect" id="node8" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#acff43e9b20208f24d0dfa870fc5a78c2" title="libzerocoin::SerialNumber\lSignatureOfKnowledge::challenge\lCalculation" alt="" coords="301,254,525,310"/>
+<area shape="rect" id="node9" href="$classlibzerocoin_1_1_private_coin.html#acf6809ff62ac9b5fd0dff1119f9d9261" title="libzerocoin::PrivateCoin\l::getRandomness" alt="" coords="332,335,495,376"/>
+<area shape="rect" id="node10" href="$classlibzerocoin_1_1_commitment.html#a976c7f3a0d40f80fb1bba33e837f8e7d" title="libzerocoin::Commitment\l::getRandomness" alt="" coords="329,400,498,441"/>
+<area shape="rect" id="node3" href="$namespacelibzerocoin.html#a75a628181a2a566d229108b51bf0cf57" title="Deterministically compute a generator for a given group. " alt="" coords="573,5,756,47"/>
+<area shape="rect" id="node4" href="$namespacelibzerocoin.html#a49d954a2ad7e4abe50ae454c900d915a" title="Format a seed string by hashing several values. " alt="" coords="804,17,1041,43"/>
+</map>

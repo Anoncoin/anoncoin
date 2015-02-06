@@ -1,0 +1,8 @@
+<map id="src/checkpoints.h" name="src/checkpoints.h">
+<area shape="rect" id="node2" href="$checkpoints_8cpp.html" title="src/checkpoints.cpp" alt="" coords="5,80,144,107"/>
+<area shape="rect" id="node3" href="$init_8cpp.html" title="src/init.cpp" alt="" coords="168,80,253,107"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="278,80,375,107"/>
+<area shape="rect" id="node5" href="$clientmodel_8cpp.html" title="src/qt/clientmodel.cpp" alt="" coords="399,80,550,107"/>
+<area shape="rect" id="node6" href="$rpcblockchain_8cpp.html" title="src/rpcblockchain.cpp" alt="" coords="574,80,725,107"/>
+<area shape="rect" id="node7" href="$wallet_8cpp.html" title="src/wallet.cpp" alt="" coords="749,80,851,107"/>
+</map>

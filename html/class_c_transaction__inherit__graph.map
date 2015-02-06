@@ -1,0 +1,5 @@
+<map id="CTransaction" name="CTransaction">
+<area shape="rect" id="node2" href="$class_c_merkle_tx.html" title="A transaction with a merkle branch linking it to the block chain. " alt="" coords="55,80,142,107"/>
+<area shape="rect" id="node3" href="$class_c_aux_pow.html" title="CAuxPow" alt="" coords="5,155,85,181"/>
+<area shape="rect" id="node4" href="$class_c_wallet_tx.html" title="A transaction with a bunch of additional info that only the owner cares about. " alt="" coords="110,155,194,181"/>
+</map>

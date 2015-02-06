@@ -1,0 +1,5 @@
+<map id="payments::Output::set_has_amount" name="payments::Output::set_has_amount">
+<area shape="rect" id="node2" href="$classpayments_1_1_output.html#a5eff22651b1f00aeaf4313c0c3ca1d62" title="payments::Output::MergePartial\lFromCodedStream" alt="" coords="205,5,416,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_output.html#ad00849b23719073439f91973fa7a2146" title="payments::Output::set\l_amount" alt="" coords="235,71,387,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_output.html#af202416ff7c832a97ada570047e7e7cf" title="payments::Output::MergeFrom" alt="" coords="464,78,668,105"/>
+</map>

@@ -1,0 +1,51 @@
+<map id="GetTime" name="GetTime">
+<area shape="rect" id="node2" href="$class_c_main_params.html#ab7dfebf3c4dd5cc0ebdfabe1111056d6" title="CMainParams::CMainParams" alt="" coords="145,5,344,32"/>
+<area shape="rect" id="node3" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1412,731,1483,757"/>
+<area shape="rect" id="node6" href="$main_8h.html#a1032f75235456abfa96b63e34e7ee2cc" title="(try to) add transaction to memory pool " alt="" coords="168,157,321,184"/>
+<area shape="rect" id="node9" href="$main_8h.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="167,325,323,352"/>
+<area shape="rect" id="node13" href="$main_8h.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3" title="Send queued protocol messages to be sent to a give node. " alt="" coords="467,427,581,453"/>
+<area shape="rect" id="node17" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="463,477,585,504"/>
+<area shape="rect" id="node18" href="$net_8h.html#a718dfaec68eabf5a2a3ebb476bf4fe67" title="ConnectNode" alt="" coords="472,680,576,707"/>
+<area shape="rect" id="node20" href="$net_8cpp.html#a3b4720330e61127963a43df26b80f804" title="ThreadOpenConnections" alt="" coords="905,731,1075,757"/>
+<area shape="rect" id="node23" href="$class_c_node.html#a4dbfe4f6c1fd162aaa905e4bd201d536" title="CNode::PushVersion" alt="" coords="451,832,597,859"/>
+<area shape="rect" id="node24" href="$class_c_node.html#a51556705550511146245b9fb2fec09c1" title="CNode::CNode" alt="" coords="715,857,827,884"/>
+<area shape="rect" id="node25" href="$class_c_node.html#aefa8b81afa53b4c6635dc4c6c024211a" title="CNode::IsBanned" alt="" coords="181,629,308,656"/>
+<area shape="rect" id="node26" href="$net_8cpp.html#aa1111c12121e039bbd8eedb556e4514a" title="Main Thread that handling socket&#39;s &amp; their housekeeping... " alt="" coords="448,579,600,605"/>
+<area shape="rect" id="node27" href="$class_c_node.html#a7d5dd8d7531bfbe069092be583569956" title="CNode::Ban" alt="" coords="197,427,292,453"/>
+<area shape="rect" id="node28" href="$net_8h.html#aff6b7f2f213ce1e8d3aea65c41c99cb8" title="SocketSendData" alt="" coords="183,528,306,555"/>
+<area shape="rect" id="node30" href="$net_8cpp.html#ab2d8883b5524ec7b80d3b9535e73a3ed" title="Process DNS seed data from chainparams. " alt="" coords="904,992,1076,1019"/>
+<area shape="rect" id="node31" href="$net_8h.html#aa7eea5ebcc85b5a7a0ae3716608bfffe" title="RelayTransaction" alt="" coords="182,933,307,960"/>
+<area shape="rect" id="node32" href="$class_r_p_c_console.html#a0bd7e2be4a07bcf4f8b20eb1881dacbb" title="show detailed information on ui about selected node " alt="" coords="138,984,351,1011"/>
+<area shape="rect" id="node35" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="132,1035,357,1077"/>
+<area shape="rect" id="node37" href="$rpcdump_8cpp.html#a831ddf746d4f2500ba6f6c07f63445cd" title="dumpwallet" alt="" coords="200,1101,289,1128"/>
+<area shape="rect" id="node38" href="$rpcwallet_8cpp.html#a733f7c70e7c18783935e6de9643c0086" title="walletpassphrase" alt="" coords="182,1152,307,1179"/>
+<area shape="rect" id="node39" href="$util_8h.html#a786af12a87491f8dc24351d93b9833b6" title="RandAddSeedPerfmon" alt="" coords="165,1355,324,1381"/>
+<area shape="rect" id="node40" href="$class_c_wallet.html#a061fe7f54f80ec40f856b3e6365c2f4a" title="CWallet::GenerateNewKey" alt="" coords="433,1279,615,1305"/>
+<area shape="rect" id="node41" href="$util_8h.html#afd4c3002b2797c0560adddb6af3ca1da" title="LogPrintStr" alt="" coords="200,1304,289,1331"/>
+<area shape="rect" id="node42" href="$util_8h.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="182,731,307,757"/>
+<area shape="rect" id="node43" href="$util_8h.html#ad8af089fc8835e11c7d77f6b473fccae" title="AddTimeData" alt="" coords="193,1405,297,1432"/>
+<area shape="rect" id="node44" href="$class_c_wallet.html#a979a17e80e4897ed1f4ae9a4be7c493c" title="CWallet::ScanForWalletTransactions" alt="" coords="1124,1424,1364,1451"/>
+<area shape="rect" id="node45" href="$class_c_wallet.html#aef8d6e5b4701ca3a64486c4232acc3fa" title="CWallet::ResendWalletTransactions" alt="" coords="127,1507,363,1533"/>
+<area shape="rect" id="node46" href="$class_c_wallet.html#a2555a9442e58b3c5593fef21f1b39d2d" title="CWallet::GetOldestKeyPoolTime" alt="" coords="137,1557,353,1584"/>
+<area shape="rect" id="node47" href="$class_c_key_pool.html#ab1f33489faff7a7e1edbd61a5a18f604" title="CKeyPool::CKeyPool" alt="" coords="171,1608,319,1635"/>
+<area shape="rect" id="node48" href="$class_c_wallet_key.html#aa2603825b543b1d5153f31482139a6b2" title="CWalletKey::CWalletKey" alt="" coords="160,1659,329,1685"/>
+<area shape="rect" id="node49" href="$walletdb_8cpp.html#a571e13707ba159c7c047875764ae5e2b" title="ThreadFlushWalletDB" alt="" coords="169,1709,321,1736"/>
+<area shape="rect" id="node50" href="$class_c_wallet_d_b.html#a3ebeb12f37d9c66512e2bc2903a6854a" title="CWalletDB::Recover" alt="" coords="918,1697,1062,1724"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1579,705,1643,732"/>
+<area shape="rect" id="node5" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1531,756,1691,783"/>
+<area shape="rect" id="node7" href="$class_c_merkle_tx.html#a032705bde1c536cd1b14f01f914e12f0" title="CMerkleTx::AcceptToMemoryPool" alt="" coords="411,157,637,184"/>
+<area shape="rect" id="node8" href="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e" title="sendrawtransaction" alt="" coords="455,107,593,133"/>
+<area shape="rect" id="node10" href="$main_8h.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="461,376,587,403"/>
+<area shape="rect" id="node11" href="$main_8cpp.html#a730d390bfb0df0e54a5c2ddb901e748a" title="CheckForkWarningConditions" alt="" coords="425,208,623,235"/>
+<area shape="rect" id="node12" href="$main_8h.html#a63b860cc82a0a2dfb90c96ddc09dfecc" title="Find the best known block, and make it the tip of the block chain. " alt="" coords="925,317,1055,344"/>
+<area shape="rect" id="node16" href="$class_client_model.html#afc3389cd7eef94a0f20b6913beb05f40" title="Return true if core is doing initial block download. " alt="" coords="437,310,611,351"/>
+<area shape="rect" id="node14" href="$main_8h.html#ab02615ff65f91d69f8d786ec900baa8a" title="Register with a network node to receive its signals. " alt="" coords="1171,553,1317,580"/>
+<area shape="rect" id="node15" href="$main_8h.html#a3ef0cc6e9d9d6435ee2a5569244d6ebd" title="Unregister a network node. " alt="" coords="691,477,850,504"/>
+<area shape="rect" id="node19" href="$net_8cpp.html#aa19cb8e6cf23a990e585f2bbf9ece276" title="OpenNetworkConnection" alt="" coords="685,629,856,656"/>
+<area shape="rect" id="node22" href="$rpcnet_8cpp.html#ab455bfd729ba34d3bb55b716e62405a3" title="addnode" alt="" coords="734,680,807,707"/>
+<area shape="rect" id="node21" href="$net_8h.html#a9396d8054e8f74959e9391871aaddde0" title="StartNode" alt="" coords="1203,731,1285,757"/>
+<area shape="rect" id="node29" href="$class_c_node.html#af8d4b8c0f883afffcb62d906c31b2cdf" title="CNode::EndMessage" alt="" coords="449,528,599,555"/>
+<area shape="rect" id="node33" href="$class_r_p_c_console.html#a2487fa6a90cddcbb17ae4bb13ecc5359" title="Handle selection of peer in peers list. " alt="" coords="431,984,617,1011"/>
+<area shape="rect" id="node34" href="$class_r_p_c_console.html#af952ebc6484c8f7d1262fa0bceed41bf" title="Handle updated peer information. " alt="" coords="411,933,637,960"/>
+<area shape="rect" id="node36" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="430,1035,618,1077"/>
+</map>

@@ -1,0 +1,15 @@
+<map id="AnoncoinAmountField::setText" name="AnoncoinAmountField::setText">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html#adcb07ed5c03e94809a1eb9bd00b8b98f" title="AnoncoinAmountField\l::setValue" alt="" coords="211,129,363,171"/>
+<area shape="rect" id="node3" href="$class_anoncoin_amount_field.html#a57a80569ce0ee2a8aee65d040a559dd4" title="AnoncoinAmountField\l::unitChanged" alt="" coords="429,71,581,112"/>
+<area shape="rect" id="node12" href="$class_ui___receive_coins_dialog.html#ab8ec986ddacb3e597797189ff26a3de2" title="Ui_ReceiveCoinsDialog\l::retranslateUi" alt="" coords="205,195,368,236"/>
+<area shape="rect" id="node7" href="$class_send_coins_entry.html#a513dd22231d0d7c2550c5533e9518cf5" title="SendCoinsEntry::setValue" alt="" coords="416,137,593,163"/>
+<area shape="rect" id="node4" href="$class_anoncoin_amount_field.html#a4b2c8c4c44291ec9e60bc0a85b645e5f" title="AnoncoinAmountField\l::AnoncoinAmountField" alt="" coords="659,5,819,47"/>
+<area shape="rect" id="node5" href="$class_anoncoin_amount_field.html#a168a4f11d296a1a9b17dc164f5f5f11e" title="Set single step in satoshis. " alt="" coords="663,71,815,112"/>
+<area shape="rect" id="node6" href="$class_options_dialog.html#a8131b615e29560144ffb368b9b07060a" title="OptionsDialog::OptionsDialog" alt="" coords="899,78,1097,105"/>
+<area shape="rect" id="node8" href="$class_send_coins_dialog.html#a4440d15ced5d217baaad33a17d56b409" title="SendCoinsDialog::pasteEntry" alt="" coords="641,137,837,163"/>
+<area shape="rect" id="node9" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="885,129,1111,171"/>
+<area shape="rect" id="node10" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="1159,129,1347,171"/>
+<area shape="rect" id="node11" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="1395,129,1592,171"/>
+<area shape="rect" id="node13" href="$class_ui___receive_coins_dialog.html#a990cf54ed517108599c0fc1e97fb4288" title="Ui_ReceiveCoinsDialog\l::setupUi" alt="" coords="423,195,586,236"/>
+<area shape="rect" id="node14" href="$class_receive_coins_dialog.html#a0c982b94b7f23da8f208d09904352f89" title="ReceiveCoinsDialog\l::ReceiveCoinsDialog" alt="" coords="665,195,814,236"/>
+</map>

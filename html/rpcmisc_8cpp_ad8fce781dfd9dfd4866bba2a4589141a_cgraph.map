@@ -1,0 +1,18 @@
+<map id="verifymessage" name="verifymessage">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="203,5,321,32"/>
+<area shape="rect" id="node3" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="199,56,325,83"/>
+<area shape="rect" id="node4" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="411,132,595,159"/>
+<area shape="rect" id="node7" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="204,157,320,184"/>
+<area shape="rect" id="node8" href="$class_c_anoncoin_address.html#ac94ac53d282f9f96f5dd5a4abef8e2b2" title="CAnoncoinAddress::GetKeyID" alt="" coords="161,208,363,235"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a224a1ec4dc69c9463abf0e8ae767af0d" title="DecodeBase64" alt="" coords="205,259,319,285"/>
+<area shape="rect" id="node12" href="$class_c_pub_key.html#a169505e735a02db385486b0affeb565c" title="CPubKey::RecoverCompact" alt="" coords="167,309,357,336"/>
+<area shape="rect" id="node13" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="183,360,341,387"/>
+<area shape="rect" id="node14" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="202,411,322,437"/>
+<area shape="rect" id="node5" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="708,183,776,209"/>
+<area shape="rect" id="node6" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="643,132,841,159"/>
+<area shape="rect" id="node9" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="467,233,539,260"/>
+<area shape="rect" id="node10" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="700,233,784,260"/>
+<area shape="rect" id="node15" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="465,385,541,412"/>
+<area shape="rect" id="node16" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="448,436,557,463"/>
+<area shape="rect" id="node17" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="677,436,807,463"/>
+</map>

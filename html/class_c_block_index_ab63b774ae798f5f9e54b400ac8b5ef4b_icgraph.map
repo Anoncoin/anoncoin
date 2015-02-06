@@ -1,0 +1,46 @@
+<map id="CBlockIndex::GetBlockTime" name="CBlockIndex::GetBlockTime">
+<area shape="rect" id="node2" href="$main_8h.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="276,215,432,241"/>
+<area shape="rect" id="node28" href="$class_c_block_index.html#abffb24cc73329a3dce024403ba770b4a" title="CBlockIndex::GetMedianTimePast" alt="" coords="241,588,467,615"/>
+<area shape="rect" id="node33" href="$class_client_model.html#a3dd65362947749364c48ff53a37820db" title="ClientModel::getLastBlockDate" alt="" coords="252,715,456,741"/>
+<area shape="rect" id="node43" href="$rpcmining_8cpp.html#a0727ff0776708e62ed17b0ddc184d50e" title="GetNetworkHashPS" alt="" coords="283,791,425,817"/>
+<area shape="rect" id="node3" href="$main_8h.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="1085,157,1211,184"/>
+<area shape="rect" id="node14" href="$main_8cpp.html#a730d390bfb0df0e54a5c2ddb901e748a" title="CheckForkWarningConditions" alt="" coords="515,215,714,241"/>
+<area shape="rect" id="node17" href="$main_8h.html#a63b860cc82a0a2dfb90c96ddc09dfecc" title="Find the best known block, and make it the tip of the block chain. " alt="" coords="817,309,947,336"/>
+<area shape="rect" id="node18" href="$main_8h.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3" title="Send queued protocol messages to be sent to a give node. " alt="" coords="1718,24,1831,51"/>
+<area shape="rect" id="node23" href="$class_client_model.html#afc3389cd7eef94a0f20b6913beb05f40" title="Return true if core is doing initial block download. " alt="" coords="528,75,701,117"/>
+<area shape="rect" id="node27" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="1087,487,1209,513"/>
+<area shape="rect" id="node4" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="1329,259,1425,285"/>
+<area shape="rect" id="node13" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="1525,157,1631,184"/>
+<area shape="rect" id="node5" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="1527,259,1629,285"/>
+<area shape="rect" id="node6" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="1697,208,1852,235"/>
+<area shape="rect" id="node12" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="1729,259,1821,285"/>
+<area shape="rect" id="node7" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="1928,157,2031,184"/>
+<area shape="rect" id="node8" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="2112,107,2183,133"/>
+<area shape="rect" id="node9" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="2289,56,2353,83"/>
+<area shape="rect" id="node11" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="2241,107,2401,133"/>
+<area shape="rect" id="node10" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="2453,56,2504,83"/>
+<area shape="rect" id="node15" href="$main_8cpp.html#a0577f78a333e075d3bbb64c0741b5080" title="CheckForkWarningConditions\lOnNewFork" alt="" coords="783,193,981,234"/>
+<area shape="rect" id="node16" href="$main_8h.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="1085,259,1211,285"/>
+<area shape="rect" id="node19" href="$main_8h.html#ab02615ff65f91d69f8d786ec900baa8a" title="Register with a network node to receive its signals. " alt="" coords="1906,56,2053,83"/>
+<area shape="rect" id="node20" href="$main_8h.html#a3ef0cc6e9d9d6435ee2a5569244d6ebd" title="Unregister a network node. " alt="" coords="1900,5,2059,32"/>
+<area shape="rect" id="node21" href="$init_8h.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9" title="Shutdown" alt="" coords="2107,5,2188,32"/>
+<area shape="rect" id="node22" href="$class_anoncoin_coin.html#ac33fbca9335d356d9d6102a0122f2a5b" title="AnoncoinCoin::shutdown" alt="" coords="2236,5,2405,32"/>
+<area shape="rect" id="node24" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="763,83,1001,109"/>
+<area shape="rect" id="node25" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1055,83,1241,109"/>
+<area shape="rect" id="node26" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1295,83,1459,109"/>
+<area shape="rect" id="node29" href="$auxpow_8cpp.html#aaf95cc33e661586e686eebdae7c937f6" title="IncrementExtraNonceWithAux" alt="" coords="515,664,715,691"/>
+<area shape="rect" id="node30" href="$main_8h.html#a9fbb6d657c8c96746115ed93c32a6e0b" title="UpdateTime" alt="" coords="567,512,662,539"/>
+<area shape="rect" id="node32" href="$class_c_block_index.html#af5655bbac76509ae8840dcbfccd9787c" title="CBlockIndex::GetMedianTime" alt="" coords="515,613,714,640"/>
+<area shape="rect" id="node31" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="821,512,943,539"/>
+<area shape="rect" id="node34" href="$class_anoncoin_g_u_i.html#a65993507b442bd334614ea6eb46dec91" title="Set number of blocks shown in the UI. " alt="" coords="785,715,979,741"/>
+<area shape="rect" id="node41" href="$class_r_p_c_console.html#a98b7e85774a91d77c3b01276bd41bc51" title="Set number of blocks shown in the UI. " alt="" coords="519,765,711,792"/>
+<area shape="rect" id="node35" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="1049,740,1247,767"/>
+<area shape="rect" id="node36" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="1305,699,1448,741"/>
+<area shape="rect" id="node38" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="1305,765,1448,806"/>
+<area shape="rect" id="node37" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1553,707,1603,733"/>
+<area shape="rect" id="node39" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="1507,765,1649,806"/>
+<area shape="rect" id="node40" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="1699,765,1850,806"/>
+<area shape="rect" id="node42" href="$class_r_p_c_console.html#a355349a33664a07628e9ca22a60f5fa7" title="RPCConsole::setClientModel" alt="" coords="785,765,979,792"/>
+<area shape="rect" id="node44" href="$rpcmining_8cpp.html#a6ccd12b4cf085555ab3528ad6661e75f" title="getnetworkhashps" alt="" coords="549,816,680,843"/>
+<area shape="rect" id="node45" href="$rpcmining_8cpp.html#a89c187faff7322c7d15134d13570ca1e" title="getmininginfo" alt="" coords="831,816,933,843"/>
+</map>

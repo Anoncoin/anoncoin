@@ -1,0 +1,10 @@
+<map id="ANONCOIN_IPC_PREFIX" name="ANONCOIN_IPC_PREFIX">
+<area shape="rect" id="node2" href="$class_payment_server.html#a5ed254902d978ed1e482055754d0f4a4" title="PaymentServer::ipcParseCommandLine" alt="" coords="232,19,492,45"/>
+<area shape="rect" id="node4" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="252,95,472,121"/>
+<area shape="rect" id="node3" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="641,5,691,32"/>
+<area shape="rect" id="node5" href="$class_payment_server.html#af795e3c318556c833792e530b279efc9" title="PaymentServer::eventFilter" alt="" coords="574,56,758,83"/>
+<area shape="rect" id="node6" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="581,107,751,133"/>
+<area shape="rect" id="node8" href="$class_payment_server.html#a6ee6e29e1255605582459463d195a651" title="PaymentServer::handleURIConnection" alt="" coords="540,159,792,185"/>
+<area shape="rect" id="node7" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="871,97,1023,138"/>
+<area shape="rect" id="node9" href="$class_payment_server.html#a4a66f55c11f4757b121179d5d6988ab2" title="PaymentServer::PaymentServer" alt="" coords="840,163,1053,189"/>
+</map>

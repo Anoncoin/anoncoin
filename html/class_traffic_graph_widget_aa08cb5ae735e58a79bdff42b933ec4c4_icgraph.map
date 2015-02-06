@@ -1,0 +1,5 @@
+<map id="TrafficGraphWidget::setGraphRangeMins" name="TrafficGraphWidget::setGraphRangeMins">
+<area shape="rect" id="node2" href="$class_r_p_c_console.html#a465807980e78650ce2238a298bab4400" title="RPCConsole::setTrafficGraph\lRange" alt="" coords="205,27,404,69"/>
+<area shape="rect" id="node3" href="$class_r_p_c_console.html#aeac546e68f8c2cafa79a0294dd78f2ad" title="RPCConsole::RPCConsole" alt="" coords="471,5,655,32"/>
+<area shape="rect" id="node4" href="$class_r_p_c_console.html#a9eab099b48f3135fb4a98591fd48e88b" title="change the time range of the network traffic graph " alt="" coords="452,57,675,98"/>
+</map>

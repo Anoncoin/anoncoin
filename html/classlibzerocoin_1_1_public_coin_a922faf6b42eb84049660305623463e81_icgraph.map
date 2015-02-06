@@ -1,0 +1,9 @@
+<map id="libzerocoin::PublicCoin::validate" name="libzerocoin::PublicCoin::validate">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_accumulator.html#aa58ff4676bd84dea150ae40abd489024" title="Accumulate a coin into the accumulator. " alt="" coords="211,5,377,47"/>
+<area shape="rect" id="node4" href="$_tests_8cpp.html#a33d4a4646f8a95e32762c6fe6532ae4a" title="Test_InvalidCoin" alt="" coords="233,71,355,98"/>
+<area shape="rect" id="node7" href="$_tutorial_8cpp.html#a297c1339eda300b5818bf669440b3a7d" title="ZerocoinTutorial" alt="" coords="235,122,353,149"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_accumulator.html#a03bec513778240e9ddfcd2103524fd33" title="Used to set the accumulator value. " alt="" coords="425,5,592,47"/>
+<area shape="rect" id="node5" href="$_tests_8cpp.html#af61e520c81d1ffba1bccdb7dfd1c0a21" title="Test_RunAllTests" alt="" coords="445,71,572,98"/>
+<area shape="rect" id="node6" href="$_tests_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="640,71,691,98"/>
+<area shape="rect" id="node8" href="$_tutorial_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="483,122,534,149"/>
+</map>

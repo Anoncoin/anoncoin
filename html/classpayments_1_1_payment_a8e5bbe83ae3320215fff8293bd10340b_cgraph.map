@@ -1,0 +1,8 @@
+<map id="payments::Payment::operator=" name="payments::Payment::operator=">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment.html#a5036760f7c0826218232ce0de195ae0b" title="payments::Payment::\lCopyFrom" alt="" coords="200,104,347,145"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment.html#ae705efe14adff0df980d46dd35fd036b" title="payments::Payment::\lClear" alt="" coords="395,71,541,112"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment.html#a74b885ecfb880a8b15d3932390303329" title="payments::Payment::\lMergeFrom" alt="" coords="395,136,541,177"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment.html#aa3701100f4d4a3c80e265c3a53e04939" title="payments::Payment::\lhas_merchant_data" alt="" coords="601,5,747,47"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment.html#a8852f9537d84d2ed4809d1571e9e0005" title="payments::Payment::\lhas_memo" alt="" coords="601,71,747,112"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment.html#a51ffab88d861e5e99355b99dac5667c7" title="payments::Payment::\lmutable_unknown_fields" alt="" coords="589,136,759,177"/>
+</map>

@@ -1,0 +1,51 @@
+<map id="MoneyRange" name="MoneyRange">
+<area shape="rect" id="node2" href="$class_c_transaction.html#ac55950c7f9d437e5cd11a88af39b6deb" title="CTransaction::GetValueOut" alt="" coords="155,476,340,503"/>
+<area shape="rect" id="node6" href="$main_8h.html#ad6c3cc142639d843f2475501fc20d75b" title="CheckInputs" alt="" coords="443,273,539,300"/>
+<area shape="rect" id="node19" href="$main_8h.html#a3d8c4ba3a0c2b7a05cab21c95a886fbe" title="CheckTransaction" alt="" coords="183,185,312,212"/>
+<area shape="rect" id="node25" href="$main_8h.html#a95215e52b78d3270b416dc7b83a306fe" title="GetMinFee" alt="" coords="203,535,291,561"/>
+<area shape="rect" id="node31" href="$rpcserver_8cpp.html#a24a3c6bbc75f2c852a8e7a00df4b2970" title="AmountFromValue" alt="" coords="181,1208,314,1235"/>
+<area shape="rect" id="node38" href="$class_c_wallet.html#a9ec15c32442fcceb95425d8b36492544" title="CWallet::GetCredit" alt="" coords="181,897,314,924"/>
+<area shape="rect" id="node41" href="$class_c_wallet_tx.html#a4faffd750f4b5a37402bad042428bfcb" title="CWalletTx::GetAvailableCredit" alt="" coords="390,1015,593,1041"/>
+<area shape="rect" id="node45" href="$class_c_wallet_tx.html#a6e34cd093f13714b57a25ca914301f5c" title="CWalletTx::GetAvailableWatch\lOnlyCredit" alt="" coords="389,1066,593,1107"/>
+<area shape="rect" id="node48" href="$class_c_wallet.html#acca24496f54521dfb8ca457748d44518" title="CWallet::GetChange" alt="" coords="175,821,319,848"/>
+<area shape="rect" id="node50" href="$class_c_wallet.html#a1edc640d916d6c03d96547d94e787ce7" title="CWallet::GetDebit" alt="" coords="183,1259,312,1285"/>
+<area shape="rect" id="node3" href="$main_8h.html#a1032f75235456abfa96b63e34e7ee2cc" title="(try to) add transaction to memory pool " alt="" coords="677,360,830,387"/>
+<area shape="rect" id="node7" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="701,208,805,235"/>
+<area shape="rect" id="node9" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="964,259,1085,285"/>
+<area shape="rect" id="node11" href="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4" title="TransactionDesc::toHTML" alt="" coords="665,841,842,868"/>
+<area shape="rect" id="node13" href="$class_transaction_record.html#a9f5db4465fa5fdcc3f9af525096bcdb9" title="TransactionRecord::\ldecomposeTransaction" alt="" coords="673,775,833,817"/>
+<area shape="rect" id="node16" href="$rpcwallet_8cpp.html#a845c15a1402787fcf2cc021111ea89f5" title="gettransaction" alt="" coords="701,724,806,751"/>
+<area shape="rect" id="node17" href="$class_c_tx_mem_pool_entry.html#aa419a2eb4c9f1097e6e692bb8e60ebde" title="CTxMemPoolEntry::GetPriority" alt="" coords="389,476,593,503"/>
+<area shape="rect" id="node4" href="$class_c_merkle_tx.html#a032705bde1c536cd1b14f01f914e12f0" title="CMerkleTx::AcceptToMemoryPool" alt="" coords="912,335,1137,361"/>
+<area shape="rect" id="node5" href="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e" title="sendrawtransaction" alt="" coords="956,385,1093,412"/>
+<area shape="rect" id="node8" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="987,157,1062,184"/>
+<area shape="rect" id="node10" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="1185,259,1308,285"/>
+<area shape="rect" id="node12" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="951,841,1099,882"/>
+<area shape="rect" id="node14" href="$class_transaction_table_priv.html#a1f81da5d7cfb2aac03a5e18e6bc91792" title="TransactionTablePriv\l::refreshWallet" alt="" coords="951,710,1099,751"/>
+<area shape="rect" id="node15" href="$class_transaction_table_priv.html#a27eb6d3e1f7717dd2cad80c5ce48f404" title="TransactionTablePriv\l::updateWallet" alt="" coords="951,775,1099,817"/>
+<area shape="rect" id="node18" href="$rpcblockchain_8cpp.html#a6ba5d2c76833bd2f10be0e95ded53037" title="getrawmempool" alt="" coords="695,411,812,437"/>
+<area shape="rect" id="node20" href="$main_8h.html#afbaa5058f820d623e6a36f39da4fe484" title="CheckBlock" alt="" coords="445,121,537,148"/>
+<area shape="rect" id="node22" href="$walletdb_8cpp.html#ad1f171cf096f5479805a06fc20480343" title="ReadKeyValue" alt="" coords="436,56,547,83"/>
+<area shape="rect" id="node21" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="702,157,805,184"/>
+<area shape="rect" id="node23" href="$class_c_wallet_d_b.html#a14f26e53502d1a60dd2b034f830acf03" title="CWalletDB::LoadWallet" alt="" coords="673,5,834,32"/>
+<area shape="rect" id="node24" href="$class_c_wallet_d_b.html#a3ebeb12f37d9c66512e2bc2903a6854a" title="CWalletDB::Recover" alt="" coords="681,56,825,83"/>
+<area shape="rect" id="node26" href="$class_coin_control_dialog.html#a4fc60e89b097952ff22dc0f9c58c87d9" title="CoinControlDialog::\lupdateLabels" alt="" coords="423,527,560,569"/>
+<area shape="rect" id="node27" href="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a" title="CoinControlDialog::\lsetModel" alt="" coords="685,527,822,569"/>
+<area shape="rect" id="node28" href="$class_coin_control_dialog.html#ae106a71c5b87ac8bea8c52e7c4f4a129" title="CoinControlDialog::\lbuttonSelectAllClicked" alt="" coords="676,593,831,634"/>
+<area shape="rect" id="node29" href="$class_coin_control_dialog.html#ac3c37dabd83f71d9c96bf5567fe85234" title="CoinControlDialog::\lviewItemChanged" alt="" coords="685,658,822,699"/>
+<area shape="rect" id="node30" href="$class_send_coins_dialog.html#ae4f429aabcaf309aa314b90049be2a74" title="SendCoinsDialog::coinControl\lUpdateLabels" alt="" coords="653,462,853,503"/>
+<area shape="rect" id="node32" href="$rpcrawtransaction_8cpp.html#a7924d2aa3d68d890b82773445e0d949e" title="createrawtransaction" alt="" coords="419,1233,564,1260"/>
+<area shape="rect" id="node33" href="$rpcwallet_8cpp.html#a134064858f9cfa4775a6ae34cac2b133" title="sendtoaddress" alt="" coords="437,1284,546,1311"/>
+<area shape="rect" id="node34" href="$rpcwallet_8cpp.html#a7dcb5aa63b46944bc4874719c8e1db15" title="movecmd" alt="" coords="451,1335,531,1361"/>
+<area shape="rect" id="node35" href="$rpcwallet_8cpp.html#a845eaefd9ec7752b1145c183205524d0" title="sendfrom" alt="" coords="453,1385,530,1412"/>
+<area shape="rect" id="node36" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="449,1132,533,1159"/>
+<area shape="rect" id="node37" href="$rpcwallet_8cpp.html#a68e2fb93e252e5b3a97dd629815a9159" title="settxfee" alt="" coords="457,1183,526,1209"/>
+<area shape="rect" id="node39" href="$class_c_wallet_tx.html#a370bfa4e49ce68015740b0e675133e1d" title="CWalletTx::GetCredit" alt="" coords="417,695,565,721"/>
+<area shape="rect" id="node40" href="$class_c_wallet_tx.html#a0359562531c6ce0835dc84ae03b51108" title="CWalletTx::GetImmatureCredit" alt="" coords="389,847,593,873"/>
+<area shape="rect" id="node44" href="$class_c_wallet_tx.html#a9a9a89a9c03e4dfe9aff4e9b3c41d5b1" title="CWalletTx::GetImmatureWatch\lOnlyCredit" alt="" coords="388,949,595,990"/>
+<area shape="rect" id="node42" href="$class_c_wallet.html#a077694e4421644296378d9b3ef68af8a" title="CWallet::GetBalance" alt="" coords="681,1015,826,1041"/>
+<area shape="rect" id="node43" href="$class_c_wallet.html#a2b3585d31f7cda63b851db30b9b11fb4" title="CWallet::GetUnconfirmedBalance" alt="" coords="643,964,864,991"/>
+<area shape="rect" id="node46" href="$class_c_wallet.html#a39068cc4073715f7e6614aeb72f0872e" title="CWallet::GetWatchOnlyBalance" alt="" coords="648,1132,859,1159"/>
+<area shape="rect" id="node47" href="$class_c_wallet.html#a1c8d440c03e118feda5e6dd01adc0f18" title="CWallet::GetUnconfirmedWatch\lOnlyBalance" alt="" coords="648,1066,859,1107"/>
+<area shape="rect" id="node49" href="$class_c_wallet_tx.html#ad326ed38cbb0dcb7d7dc4840c1279c39" title="CWalletTx::GetChange" alt="" coords="412,796,571,823"/>
+</map>

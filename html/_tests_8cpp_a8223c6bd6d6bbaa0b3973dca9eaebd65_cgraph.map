@@ -1,0 +1,6 @@
+<map id="Test_Accumulator" name="Test_Accumulator">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_private_coin.html#a11f0047e01af467bba8d9fde58f88798" title="libzerocoin::PrivateCoin\l::getPublicCoin" alt="" coords="185,5,347,47"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_accumulator.html#ab50983cc6294ddfa7e23a85a75f5fc2e" title="Get the accumulator result. " alt="" coords="397,93,564,135"/>
+<area shape="rect" id="node4" href="$classlibzerocoin_1_1_accumulator_witness.html#a479f3a94be8a7976eefb6a9b86840b1a" title="libzerocoin::Accumulator\lWitness::getValue" alt="" coords="183,123,349,164"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_accumulator_witness.html#a62539f46936225e0af0cdb072c3e04dc" title="Checks that this is a witness to the accumulation of coin. " alt="" coords="183,188,349,229"/>
+</map>

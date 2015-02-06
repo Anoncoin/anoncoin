@@ -1,0 +1,6 @@
+<map id="HelpMessage" name="HelpMessage">
+<area shape="rect" id="node2" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="190,5,229,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="164,56,255,83"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a3293aaba439017a99a494cbf39fb5681" title="FormatMoney" alt="" coords="157,107,261,133"/>
+<area shape="rect" id="node4" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="309,56,353,83"/>
+</map>

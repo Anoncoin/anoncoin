@@ -1,0 +1,12 @@
+<map id="CCoinsViewDB::GetStats" name="CCoinsViewDB::GetStats">
+<area shape="rect" id="node2" href="$class_c_level_d_b_wrapper.html#a5f43d01a8a6b26464b875d190e002d74" title="CLevelDBWrapper::NewIterator" alt="" coords="225,31,435,57"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_d_b.html#a5a4569b8b1675539eedf1bf14a9c7fc0" title="CCoinsViewDB::GetBestBlock" alt="" coords="229,81,431,108"/>
+<area shape="rect" id="node10" href="$class_c_tx_out.html#aeaa6b16e0c4caee54196cf8eb0f127f3" title="CTxOut::IsNull" alt="" coords="275,132,385,159"/>
+<area shape="rect" id="node11" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="251,183,409,209"/>
+<area shape="rect" id="node4" href="$class_c_level_d_b_wrapper.html#aa3451a451298c7f8a66986ccd95474e2" title="CLevelDBWrapper::Read" alt="" coords="483,81,655,108"/>
+<area shape="rect" id="node5" href="$class_c_data_stream.html#a5542e71bd7af2ab7cd7be0f381d39cb5" title="CDataStream::reserve" alt="" coords="730,5,885,32"/>
+<area shape="rect" id="node6" href="$class_c_data_stream.html#aaf2b9e953793ce5a4fc438a7ecb00dc2" title="CDataStream::GetSerializeSize" alt="" coords="703,56,912,83"/>
+<area shape="rect" id="node8" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="741,107,874,133"/>
+<area shape="rect" id="node9" href="$leveldbwrapper_8h.html#aea36eb5fddb6266b14ea8cb15e183486" title="HandleError" alt="" coords="761,157,854,184"/>
+<area shape="rect" id="node7" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="960,56,1080,83"/>
+</map>

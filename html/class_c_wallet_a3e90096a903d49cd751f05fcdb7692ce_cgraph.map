@@ -1,0 +1,9 @@
+<map id="CWallet::AddCryptedKey" name="CWallet::AddCryptedKey">
+<area shape="rect" id="node2" href="$class_c_crypto_key_store.html#a9f4d2df95008205b2b9784c5f0e8e12b" title="CCryptoKeyStore::AddCryptedKey" alt="" coords="223,5,449,32"/>
+<area shape="rect" id="node4" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="537,56,657,83"/>
+<area shape="rect" id="node8" href="$class_c_wallet_d_b.html#a914fb53d1731daf9b486f164dd325210" title="CWalletDB::WriteCryptedKey" alt="" coords="238,107,434,133"/>
+<area shape="rect" id="node3" href="$class_c_crypto_key_store.html#af202f587051735be5a39344d9e333720" title="CCryptoKeyStore::SetCrypted" alt="" coords="497,5,697,32"/>
+<area shape="rect" id="node5" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="762,31,838,57"/>
+<area shape="rect" id="node6" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="745,81,855,108"/>
+<area shape="rect" id="node7" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="903,81,1032,108"/>
+</map>

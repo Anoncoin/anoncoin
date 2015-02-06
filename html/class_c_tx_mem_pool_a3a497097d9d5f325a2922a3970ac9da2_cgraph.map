@@ -1,0 +1,5 @@
+<map id="CTxMemPool::remove" name="CTxMemPool::remove">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="208,5,369,32"/>
+<area shape="rect" id="node3" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="417,5,521,32"/>
+<area shape="rect" id="node4" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="569,5,728,32"/>
+</map>

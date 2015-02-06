@@ -1,0 +1,13 @@
+<map id="src/protocol.cpp" name="src/protocol.cpp">
+<area shape="rect" id="node2" href="$protocol_8h.html" title="protocol.h" alt="" coords="391,80,471,107"/>
+<area shape="rect" id="node39" href="$util_8h.html" title="util.h" alt="" coords="2235,229,2285,256"/>
+<area shape="rect" id="node3" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="376,155,485,181"/>
+<area shape="rect" id="node5" href="$serialize_8h.html" title="serialize.h" alt="" coords="823,304,905,331"/>
+<area shape="rect" id="node20" href="$uint256_8h.html" title="uint256.h" alt="" coords="93,304,171,331"/>
+<area shape="rect" id="node25" href="$netbase_8h.html" title="netbase.h" alt="" coords="657,229,737,256"/>
+<area shape="rect" id="node4" href="$bignum_8h.html" title="bignum.h" alt="" coords="392,229,469,256"/>
+<area shape="rect" id="node22" href="$version_8h.html" title="version.h" alt="" coords="195,304,271,331"/>
+<area shape="rect" id="node6" href="$allocators_8h.html" title="allocators.h" alt="" coords="1128,386,1219,413"/>
+<area shape="rect" id="node26" href="$compat_8h.html" title="compat.h" alt="" coords="2044,304,2121,331"/>
+<area shape="rect" id="node40" href="$tinyformat_8h.html" title="tinyformat.h" alt="" coords="3213,304,3305,331"/>
+</map>

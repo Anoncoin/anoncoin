@@ -1,0 +1,22 @@
+<map id="ReceiveCoinsDialog" name="ReceiveCoinsDialog">
+<area shape="rect" id="node3" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html" title="Makes a QTableView last column feel as if it was being resized from its left border. " alt="" coords="1473,118,1679,159"/>
+<area shape="rect" id="node11" href="$class_wallet_model.html" title="Interface to Anoncoin wallet from Qt view code. " alt="" coords="1528,275,1624,301"/>
+<area shape="rect" id="node5" href="$class_ui_1_1_receive_coins_dialog.html" title="Ui::ReceiveCoinsDialog" alt="" coords="1495,56,1657,83"/>
+<area shape="rect" id="node6" href="$class_ui___receive_coins_dialog.html" title="Ui_ReceiveCoinsDialog" alt="" coords="1179,56,1341,83"/>
+<area shape="rect" id="node7" href="$class_anoncoin_amount_field.html" title="Widget for entering anoncoin amounts. " alt="" coords="855,56,1007,83"/>
+<area shape="rect" id="node9" href="$class_q_value_combo_box.html" title="QValueComboBox" alt="" coords="649,29,781,56"/>
+<area shape="rect" id="node12" href="$class_transaction_table_model.html" title="UI model for the transaction table of a wallet. " alt="" coords="1909,443,2071,469"/>
+<area shape="rect" id="node25" href="$class_address_table_model.html" title="Qt model of the address book in the core. " alt="" coords="1920,563,2060,589"/>
+<area shape="rect" id="node27" href="$class_recent_requests_table_model.html" title="Model for list of recently generated payment requests / anoncoin: URIs. " alt="" coords="1895,229,2085,256"/>
+<area shape="rect" id="node14" href="$class_transaction_table_priv.html" title="TransactionTablePriv" alt="" coords="2176,488,2324,515"/>
+<area shape="rect" id="node15" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="1225,561,1295,588"/>
+<area shape="rect" id="node26" href="$class_address_table_priv.html" title="AddressTablePriv" alt="" coords="2187,657,2313,684"/>
+<area shape="rect" id="node16" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="868,612,993,639"/>
+<area shape="rect" id="node17" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="656,612,775,639"/>
+<area shape="rect" id="node18" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="507,612,594,639"/>
+<area shape="rect" id="node21" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="871,460,991,487"/>
+<area shape="rect" id="node22" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="891,511,970,537"/>
+<area shape="rect" id="node23" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="887,561,974,588"/>
+<area shape="rect" id="node24" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="690,561,741,588"/>
+<area shape="rect" id="node28" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="1208,275,1312,301"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="CInv::print" name="CInv::print">
+<area shape="rect" id="node2" href="$class_c_inv.html#a87a826a842d549c2747ced0c1a90bc18" title="CInv::ToString" alt="" coords="136,31,243,57"/>
+<area shape="rect" id="node3" href="$class_c_inv.html#a393dc4726f105b25090a6ee4952e71b5" title="CInv::GetCommand" alt="" coords="291,5,431,32"/>
+<area shape="rect" id="node5" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="292,56,429,83"/>
+<area shape="rect" id="node4" href="$class_c_inv.html#a9259d1e8d828c6b6ea729d36d16cd84f" title="CInv::IsKnownType" alt="" coords="479,5,616,32"/>
+<area shape="rect" id="node6" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="481,56,613,83"/>
+</map>

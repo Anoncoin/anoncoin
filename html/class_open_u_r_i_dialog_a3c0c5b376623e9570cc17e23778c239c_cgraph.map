@@ -1,0 +1,8 @@
+<map id="OpenURIDialog::accept" name="OpenURIDialog::accept">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#a80503cefefdc17af8e975682342066c4" title="GUIUtil::parseAnoncoinURI" alt="" coords="216,31,400,57"/>
+<area shape="rect" id="node6" href="$class_open_u_r_i_dialog.html#a38f9f110ae47996eff920171aea9400b" title="OpenURIDialog::getURI" alt="" coords="226,81,390,108"/>
+<area shape="rect" id="node7" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="240,133,376,174"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="448,31,597,57"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="658,5,801,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="645,56,813,83"/>
+</map>

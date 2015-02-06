@@ -1,0 +1,10 @@
+<map id="EncodeBase64" name="EncodeBase64">
+<area shape="rect" id="node2" href="$class_sign_verify_message_dialog.html#a2ef91b4ace68d63ab1c1d3cc6c13b5f9" title="SignVerifyMessageDialog\l::on_signMessageButton\l_SM_clicked" alt="" coords="165,5,340,61"/>
+<area shape="rect" id="node3" href="$rpcclient_8cpp.html#ae0b4394f271db49671cf894dbe94c484" title="CallRPC" alt="" coords="216,85,289,112"/>
+<area shape="rect" id="node8" href="$rpcwallet_8cpp.html#a315b42a2c859c4b50a54c1b05984928c" title="signmessage" alt="" coords="203,136,303,163"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#a01c144e3a6e8de1ea8481bd7c69fef07" title="EncodeBase64" alt="" coords="197,187,309,213"/>
+<area shape="rect" id="node4" href="$rpcclient_8h.html#a4ee23259648a971c9c05aeff8b545a6d" title="CommandLineRPC" alt="" coords="388,85,525,112"/>
+<area shape="rect" id="node5" href="$anoncoin-cli_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="580,60,631,87"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="573,111,637,137"/>
+<area shape="rect" id="node7" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="685,111,736,137"/>
+</map>

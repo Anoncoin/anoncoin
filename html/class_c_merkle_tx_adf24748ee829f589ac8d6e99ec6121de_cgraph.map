@@ -1,0 +1,7 @@
+<map id="CMerkleTx::IsInMainChain" name="CMerkleTx::IsInMainChain">
+<area shape="rect" id="node2" href="$class_c_merkle_tx.html#a650229fec7fe661aa7a137902bc745a3" title="CMerkleTx::GetDepthInMain\lChainINTERNAL" alt="" coords="232,49,423,90"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a1ab1fe2932227af222699c64847e838b" title="Efficiently check whether a block is present in this chain. " alt="" coords="503,5,630,32"/>
+<area shape="rect" id="node4" href="$class_c_block.html#a81684cf96f6fb6731c869865b80d1ccd" title="CBlock::CheckMerkleBranch" alt="" coords="471,56,663,83"/>
+<area shape="rect" id="node6" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="511,107,623,133"/>
+<area shape="rect" id="node5" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="711,56,764,83"/>
+</map>

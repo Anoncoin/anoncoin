@@ -1,0 +1,7 @@
+<map id="payments::PaymentDetails::Clear" name="payments::PaymentDetails::Clear">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_details.html#a37753487290845bfa96db5d9a1b682e4" title="payments::PaymentDetails\l::has_network" alt="" coords="233,5,413,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#a5761b562e4f230a0c6970d572049c2a7" title="payments::PaymentDetails\l::has_memo" alt="" coords="233,71,413,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_details.html#a3ae4b2d07c7e300ff7df1fba6861d17e" title="payments::PaymentDetails\l::has_payment_url" alt="" coords="233,136,413,177"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_details.html#a12744e044be922a0e243b87d2fadf2d9" title="payments::PaymentDetails\l::has_merchant_data" alt="" coords="233,201,413,243"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_details.html#a5d58007a4d15c0c696680e01a090aded" title="payments::PaymentDetails\l::mutable_unknown_fields" alt="" coords="233,267,413,308"/>
+</map>

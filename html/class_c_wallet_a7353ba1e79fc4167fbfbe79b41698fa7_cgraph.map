@@ -1,0 +1,5 @@
+<map id="CWallet::NewKeyPool" name="CWallet::NewKeyPool">
+<area shape="rect" id="node2" href="$class_c_wallet_d_b.html#ac78d839fbda5164c4134ab67911139ca" title="CWalletDB::ErasePool" alt="" coords="205,5,361,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="251,56,315,83"/>
+<area shape="rect" id="node4" href="$class_c_wallet_d_b.html#ad43630ad28a68c3e8b1a633f09aa0964" title="CWalletDB::WritePool" alt="" coords="207,107,359,133"/>
+</map>

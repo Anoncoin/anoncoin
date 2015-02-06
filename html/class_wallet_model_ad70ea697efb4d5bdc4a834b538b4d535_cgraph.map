@@ -1,0 +1,9 @@
+<map id="WalletModel::updateAddressBook" name="WalletModel::updateAddressBook">
+<area shape="rect" id="node2" href="$class_address_table_model.html#aa2f39463431a15741ed4d78ef592dfe5" title="AddressTableModel::\lupdateEntry" alt="" coords="276,23,424,65"/>
+<area shape="rect" id="node3" href="$class_address_table_priv.html#a6f4b10febc3055afde7200c0dbc8ccef" title="AddressTablePriv::update\lEntry" alt="" coords="472,23,648,65"/>
+<area shape="rect" id="node4" href="$class_address_table_model.html#a42cbcc82a8752c4af3b75fd62e8c7a40" title="Notify listeners that data changed. " alt="" coords="696,23,844,65"/>
+<area shape="rect" id="node5" href="$class_address_table_model.html#a84f095bae13574410fceba53f8184abc" title="AddressTableModel::\lindex" alt="" coords="892,23,1040,65"/>
+<area shape="rect" id="node6" href="$class_address_table_model.html#a5ff6e3e2dab8b80428c4f59c4f1bc95a" title="AddressTableModel::data" alt="" coords="1088,5,1261,32"/>
+<area shape="rect" id="node8" href="$class_address_table_priv.html#af311eb7d0189a74a508d7ad0f563f307" title="AddressTablePriv::index" alt="" coords="1091,56,1258,83"/>
+<area shape="rect" id="node7" href="$namespace_g_u_i_util.html#ad284d2b3b4732d897cf6f1d751065e98" title="GUIUtil::anoncoinAddressFont" alt="" coords="1309,5,1512,32"/>
+</map>

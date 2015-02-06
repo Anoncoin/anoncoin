@@ -1,0 +1,7 @@
+<map id="ReadCompactSize" name="ReadCompactSize">
+<area shape="rect" id="node2" href="$class_c_pub_key.html#a1cfd8e3c711f5298eecdacd5979f6e6c" title="CPubKey::Unserialize" alt="" coords="197,5,349,32"/>
+<area shape="rect" id="node3" href="$class_limited_string.html#a21ec9b742da8f8ff7b9a8b89131f943b" title="LimitedString::Unserialize" alt="" coords="187,56,360,83"/>
+<area shape="rect" id="node4" href="$serialize_8h.html#aa688c53c27044d715917e33769b4f415" title="Unserialize" alt="" coords="229,107,317,133"/>
+<area shape="rect" id="node5" href="$serialize_8h.html#ae8594814bba47036e603e447fbfd79ac" title="Unserialize_impl" alt="" coords="213,157,333,184"/>
+<area shape="rect" id="node6" href="$serialize_8h.html#aefdf63d8c997767d3e3535a54f35025c" title="Unserialize" alt="" coords="408,157,496,184"/>
+</map>

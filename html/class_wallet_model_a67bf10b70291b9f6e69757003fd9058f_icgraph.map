@@ -1,0 +1,27 @@
+<map id="WalletModel::isSpent" name="WalletModel::isSpent">
+<area shape="rect" id="node2" href="$class_coin_control_dialog.html#a4fc60e89b097952ff22dc0f9c58c87d9" title="CoinControlDialog::\lupdateLabels" alt="" coords="200,104,337,145"/>
+<area shape="rect" id="node3" href="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a" title="CoinControlDialog::\lsetModel" alt="" coords="417,136,554,177"/>
+<area shape="rect" id="node6" href="$class_coin_control_dialog.html#ae106a71c5b87ac8bea8c52e7c4f4a129" title="CoinControlDialog::\lbuttonSelectAllClicked" alt="" coords="408,5,563,47"/>
+<area shape="rect" id="node8" href="$class_coin_control_dialog.html#ac3c37dabd83f71d9c96bf5567fe85234" title="CoinControlDialog::\lviewItemChanged" alt="" coords="417,71,554,112"/>
+<area shape="rect" id="node9" href="$class_send_coins_dialog.html#ae4f429aabcaf309aa314b90049be2a74" title="SendCoinsDialog::coinControl\lUpdateLabels" alt="" coords="385,232,585,273"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49" title="SendCoinsDialog::coinControl\lButtonClicked" alt="" coords="635,117,835,159"/>
+<area shape="rect" id="node5" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="1389,189,1586,231"/>
+<area shape="rect" id="node7" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="666,29,803,71"/>
+<area shape="rect" id="node10" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="884,433,1071,459"/>
+<area shape="rect" id="node13" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="1669,172,1815,213"/>
+<area shape="rect" id="node14" href="$class_send_coins_dialog.html#a3d680a76b967641115c6ff2fa83fb62a" title="SendCoinsDialog::addEntry" alt="" coords="885,281,1070,307"/>
+<area shape="rect" id="node25" href="$class_send_coins_dialog.html#a3b834c739f7d02d8086a2bf58525c5f0" title="SendCoinsDialog::updateTabs\lAndLabels" alt="" coords="633,291,836,332"/>
+<area shape="rect" id="node26" href="$class_send_coins_dialog.html#af13ddd00abec4f060632d887b5e838a3" title="SendCoinsDialog::coinControl\lFeatureChanged" alt="" coords="635,421,835,463"/>
+<area shape="rect" id="node11" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1129,466,1316,493"/>
+<area shape="rect" id="node12" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1405,474,1569,501"/>
+<area shape="rect" id="node15" href="$class_send_coins_dialog.html#a127bddff45f49ff5e6e263efe218ae26" title="SendCoinsDialog::clear" alt="" coords="1142,306,1303,333"/>
+<area shape="rect" id="node18" href="$class_send_coins_dialog.html#aabd82a79bd2358493f36425f1d62136b" title="SendCoinsDialog::removeEntry" alt="" coords="1119,205,1327,231"/>
+<area shape="rect" id="node19" href="$class_send_coins_dialog.html#a920b2dbf121ca3cfac2adc56e96295f8" title="SendCoinsDialog::setAddress" alt="" coords="1123,357,1322,383"/>
+<area shape="rect" id="node21" href="$class_send_coins_dialog.html#a4440d15ced5d217baaad33a17d56b409" title="SendCoinsDialog::pasteEntry" alt="" coords="1125,407,1321,434"/>
+<area shape="rect" id="node16" href="$class_send_coins_dialog.html#a4879553d77d29f522ac92ac04580f4ad" title="SendCoinsDialog::reject" alt="" coords="1405,306,1570,333"/>
+<area shape="rect" id="node17" href="$class_send_coins_dialog.html#af2185c3d29e43d37c30669f0def46060" title="SendCoinsDialog::accept" alt="" coords="1401,255,1573,282"/>
+<area shape="rect" id="node20" href="$class_wallet_view.html#a2a70c2b00b097dd7b83b6915bb037ea3" title="Switch to send coins page. " alt="" coords="1379,357,1596,383"/>
+<area shape="rect" id="node22" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="1375,408,1600,449"/>
+<area shape="rect" id="node23" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="1648,408,1836,449"/>
+<area shape="rect" id="node24" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="1884,408,2081,449"/>
+</map>

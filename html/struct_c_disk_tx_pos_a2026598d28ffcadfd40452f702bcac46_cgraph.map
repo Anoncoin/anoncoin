@@ -1,0 +1,4 @@
+<map id="CDiskTxPos::CDiskTxPos" name="CDiskTxPos::CDiskTxPos">
+<area shape="rect" id="node2" href="$struct_c_disk_tx_pos.html#a22eb47d077f9c355373772eb42853fcf" title="CDiskTxPos::SetNull" alt="" coords="229,5,375,32"/>
+<area shape="rect" id="node3" href="$struct_c_disk_block_pos.html#a0a6ba113219a456472081ee6d6b20a72" title="CDiskBlockPos::SetNull" alt="" coords="423,5,587,32"/>
+</map>

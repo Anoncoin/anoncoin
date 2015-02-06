@@ -1,0 +1,5 @@
+<map id="CWallet::ChangeWalletPassphrase" name="CWallet::ChangeWalletPassphrase">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a67ebff3f267b5c9973c0465184c085a4" title="WalletModel::changePassphrase" alt="" coords="284,13,501,39"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a84ad884957e24688433be32a9ca70933" title="walletpassphrasechange" alt="" coords="308,63,477,90"/>
+<area shape="rect" id="node3" href="$class_ask_passphrase_dialog.html#ac2f176af3693b73870d26ef0bfc6cbb9" title="AskPassphraseDialog\l::accept" alt="" coords="549,5,701,47"/>
+</map>

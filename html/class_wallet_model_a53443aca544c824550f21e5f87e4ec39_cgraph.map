@@ -1,0 +1,51 @@
+<map id="WalletModel::sendCoins" name="WalletModel::sendCoins">
+<area shape="rect" id="node2" href="$class_wallet_model_transaction.html#a1db8f14976edf56a7678d9f7b390c0c5" title="WalletModelTransaction\l::getTransaction" alt="" coords="232,5,397,47"/>
+<area shape="rect" id="node3" href="$class_wallet_model_transaction.html#a477180740c53bbbaed217faec2ccb8fa" title="WalletModelTransaction\l::getRecipients" alt="" coords="232,71,397,112"/>
+<area shape="rect" id="node4" href="$class_payment_request_plus.html#a62ae278689d852e4a73cdef627763944" title="PaymentRequestPlus\l::IsInitialized" alt="" coords="239,136,390,177"/>
+<area shape="rect" id="node6" href="$class_payment_request_plus.html#a34fc7e19696c6ff858c1ebb9c83eb0b0" title="PaymentRequestPlus\l::SerializeToString" alt="" coords="239,201,390,243"/>
+<area shape="rect" id="node7" href="$class_wallet_model_transaction.html#a58835446dab9397f823106d4a6ba6812" title="WalletModelTransaction\l::getPossibleKeyChange" alt="" coords="231,267,399,308"/>
+<area shape="rect" id="node8" href="$class_c_wallet.html#ac30e619488120651a6753195b77f3ad8" title="CWallet::CommitTransaction" alt="" coords="219,333,411,359"/>
+<area shape="rect" id="node25" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="248,383,381,410"/>
+<area shape="rect" id="node26" href="$class_c_anoncoin_address.html#a046d3fc0d98fdb1093a1d41e32adf43f" title="CAnoncoinAddress::Get" alt="" coords="493,485,659,511"/>
+<area shape="rect" id="node31" href="$class_c_wallet.html#a53e5528d7005608594e73f500bc5bb8f" title="CWallet::SetAddressBook" alt="" coords="227,574,403,601"/>
+<area shape="rect" id="node36" href="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d" title="WalletModel::checkBalance\lChanged" alt="" coords="222,861,407,903"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#a823854558ba54ec4b6258d9132affc15" title="payments::PaymentRequest\l::IsInitialized" alt="" coords="481,89,671,131"/>
+<area shape="rect" id="node9" href="$class_c_transaction.html#ae5fde44ffb46045dd48bd9cfff9492b6" title="CTransaction::ToString" alt="" coords="773,155,931,182"/>
+<area shape="rect" id="node10" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="1029,155,1191,182"/>
+<area shape="rect" id="node13" href="$class_c_reserve_key.html#a493d06f41ca9571f2a42c8581a3952d8" title="CReserveKey::KeepKey" alt="" coords="493,257,659,283"/>
+<area shape="rect" id="node14" href="$class_c_wallet_tx.html#ab0ee7347584bff886dc24b9f63ff023c" title="CWalletTx::BindWallet" alt="" coords="499,307,653,334"/>
+<area shape="rect" id="node15" href="$class_c_merkle_tx.html#a032705bde1c536cd1b14f01f914e12f0" title="CMerkleTx::AcceptToMemoryPool" alt="" coords="463,358,689,385"/>
+<area shape="rect" id="node23" href="$class_c_wallet_tx.html#a261596523b49778e83a821ecbbb36727" title="CWalletTx::RelayWalletTransaction" alt="" coords="460,409,692,435"/>
+<area shape="rect" id="node11" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="1294,155,1398,182"/>
+<area shape="rect" id="node12" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="1483,155,1641,182"/>
+<area shape="rect" id="node16" href="$main_8cpp.html#a5e7eefd8461806eea094ed03d34bd4d8" title="(try to) add transaction to memory pool " alt="" coords="775,283,929,310"/>
+<area shape="rect" id="node17" href="$main_8cpp.html#a3d8c4ba3a0c2b7a05cab21c95a886fbe" title="CheckTransaction" alt="" coords="1045,307,1175,334"/>
+<area shape="rect" id="node18" href="$class_c_validation_state.html#a3c6786d00da8d1c5df25b4c3876409e8" title="CValidationState::DoS" alt="" coords="1269,282,1423,309"/>
+<area shape="rect" id="node19" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="1257,358,1435,385"/>
+<area shape="rect" id="node20" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1076,459,1144,486"/>
+<area shape="rect" id="node21" href="$main_8cpp.html#acd163a09d0e4384ebe85dead57730dd7" title="IsStandardTx" alt="" coords="1059,206,1161,233"/>
+<area shape="rect" id="node22" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="1041,409,1179,435"/>
+<area shape="rect" id="node24" href="$net_8cpp.html#abe329205a15b55df86608f5f1964bdb1" title="RelayTransaction" alt="" coords="789,409,915,435"/>
+<area shape="rect" id="node27" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="760,510,944,537"/>
+<area shape="rect" id="node29" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="816,561,888,587"/>
+<area shape="rect" id="node28" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="1011,510,1209,537"/>
+<area shape="rect" id="node30" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1068,561,1152,587"/>
+<area shape="rect" id="node32" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="1079,686,1141,713"/>
+<area shape="rect" id="node34" href="$class_c_wallet_d_b.html#a8d4e8d73b977dc62c137bd3543c278bf" title="CWalletDB::WritePurpose" alt="" coords="488,549,664,575"/>
+<area shape="rect" id="node35" href="$class_c_wallet_d_b.html#ad1b3bce77e9dd6ddd8c668a469c38f0a" title="CWalletDB::WriteName" alt="" coords="495,599,657,626"/>
+<area shape="rect" id="node33" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="1266,686,1426,713"/>
+<area shape="rect" id="node37" href="$class_wallet_model.html#a4edb2c8ed20331803bebdfa028372ea1" title="WalletModel::getBalance" alt="" coords="491,713,661,739"/>
+<area shape="rect" id="node40" href="$class_wallet_model.html#a003568663b99fc775244acac214f62ef" title="WalletModel::getUnconfirmed\lBalance" alt="" coords="477,895,675,936"/>
+<area shape="rect" id="node42" href="$class_wallet_model.html#abcdf7afaa43c42510a4ec0eead0a1f47" title="WalletModel::getImmature\lBalance" alt="" coords="487,960,665,1001"/>
+<area shape="rect" id="node44" href="$class_wallet_model.html#aab93d19f9d98e3b984e81fd961ce35db" title="WalletModel::haveWatchOnly" alt="" coords="477,1026,675,1053"/>
+<area shape="rect" id="node45" href="$class_wallet_model.html#aaf5c6210cc8ead78be9e6e4e45c244c4" title="WalletModel::getWatchBalance" alt="" coords="473,1077,679,1103"/>
+<area shape="rect" id="node47" href="$class_wallet_model.html#abc134f63b276b9f66900a8d0a69a06ad" title="WalletModel::getWatchUnconfirmed\lBalance" alt="" coords="459,764,693,805"/>
+<area shape="rect" id="node49" href="$class_wallet_model.html#a5a22c7d3d92428d53cdf7cbd78113929" title="WalletModel::getWatchImmature\lBalance" alt="" coords="468,829,684,871"/>
+<area shape="rect" id="node38" href="$class_c_wallet.html#acf326816b2cf812e23b408b12854236b" title="CWallet::AvailableCoins" alt="" coords="770,611,934,638"/>
+<area shape="rect" id="node39" href="$class_c_wallet.html#a077694e4421644296378d9b3ef68af8a" title="CWallet::GetBalance" alt="" coords="779,713,925,739"/>
+<area shape="rect" id="node41" href="$class_c_wallet.html#a2b3585d31f7cda63b851db30b9b11fb4" title="CWallet::GetUnconfirmedBalance" alt="" coords="741,902,963,929"/>
+<area shape="rect" id="node43" href="$class_c_wallet.html#abff561cab638ddce9cc87bf8c9c2a55f" title="CWallet::GetImmatureBalance" alt="" coords="751,967,953,994"/>
+<area shape="rect" id="node46" href="$class_c_wallet.html#a39068cc4073715f7e6614aeb72f0872e" title="CWallet::GetWatchOnlyBalance" alt="" coords="747,1077,957,1103"/>
+<area shape="rect" id="node48" href="$class_c_wallet.html#a1c8d440c03e118feda5e6dd01adc0f18" title="CWallet::GetUnconfirmedWatch\lOnlyBalance" alt="" coords="747,764,957,805"/>
+<area shape="rect" id="node50" href="$class_c_wallet.html#a2454a9b5d34e4831eff3a16f9a160598" title="CWallet::GetImmatureWatch\lOnlyBalance" alt="" coords="756,829,948,871"/>
+</map>

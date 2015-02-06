@@ -1,0 +1,4 @@
+<map id="CoinControlDialog::showMenu" name="CoinControlDialog::showMenu">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a7712ac646004fe66c0bcafd0122c4ede" title="WalletModel::isLockedCoin" alt="" coords="191,13,373,39"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#ab85a2574c33ca0f19da06b065d7f1eb5" title="CWallet::IsLockedCoin" alt="" coords="421,13,579,39"/>
+</map>

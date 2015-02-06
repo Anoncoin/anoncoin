@@ -1,0 +1,20 @@
+<map id="IsStandardTx" name="IsStandardTx">
+<area shape="rect" id="node2" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="217,56,293,83"/>
+<area shape="rect" id="node3" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="409,5,521,32"/>
+<area shape="rect" id="node7" href="$class_c_script.html#a0a29e513d962967c4351828780ab4d9f" title="CScript::IsPushOnly" alt="" coords="184,107,325,133"/>
+<area shape="rect" id="node8" href="$class_c_script.html#afb9f817abc9674ab0278b0eb32d10c39" title="CScript::HasCanonicalPushes" alt="" coords="155,157,355,184"/>
+<area shape="rect" id="node9" href="$script_8cpp.html#abb2b48ecfd43dcb01e25d9d4c333a340" title="IsStandard" alt="" coords="211,208,298,235"/>
+<area shape="rect" id="node19" href="$class_c_tx_out.html#a89bf5bc4987ccd09e9a675d980e18602" title="CTxOut::IsDust" alt="" coords="198,259,311,285"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="403,56,528,83"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="633,5,706,32"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="615,56,724,83"/>
+<area shape="rect" id="node10" href="$script_8cpp.html#a6ee6be50bff44464e905680c6fcee6dc" title="Solver" alt="" coords="435,208,495,235"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="624,132,715,159"/>
+<area shape="rect" id="node13" href="$class_c_script.html#acba6d6d35776de4ce3a632446f44805f" title="CScript::IsPayToScriptHash" alt="" coords="576,183,763,209"/>
+<area shape="rect" id="node14" href="$class_c_script.html#a94635ed93d8d244ec3acfa83f9ecfe5f" title="CScript::GetOp" alt="" coords="613,233,725,260"/>
+<area shape="rect" id="node18" href="$class_c_script.html#a7f975fca06b3e9a17da8ba23c7647e2e" title="CScript::DecodeOP_N" alt="" coords="591,284,747,311"/>
+<area shape="rect" id="node12" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="849,132,893,159"/>
+<area shape="rect" id="node15" href="$class_c_script.html#a93ec95275ccce9b701c8f53c57cd7975" title="CScript::GetOp2" alt="" coords="811,233,931,260"/>
+<area shape="rect" id="node16" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="979,233,1051,260"/>
+<area shape="rect" id="node17" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1099,233,1183,260"/>
+</map>

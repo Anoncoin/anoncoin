@@ -1,0 +1,3 @@
+<map id="CBlock" name="CBlock">
+<area shape="rect" id="node2" href="$class_c_block_header.html" title="Nodes collect new transactions into a block, hash them into a hash tree, and scan through nonce value..." alt="" coords="5,5,113,32"/>
+</map>

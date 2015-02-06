@@ -1,0 +1,20 @@
+<map id="src/qt/walletview.cpp" name="src/qt/walletview.cpp">
+<area shape="rect" id="node2" href="$walletview_8h.html" title="walletview.h" alt="" coords="20,80,113,107"/>
+<area shape="rect" id="node4" href="$addressbookpage_8h.html" title="addressbookpage.h" alt="" coords="524,80,663,107"/>
+<area shape="rect" id="node6" href="$askpassphrasedialog_8h.html" title="askpassphrasedialog.h" alt="" coords="138,80,297,107"/>
+<area shape="rect" id="node7" href="$anoncoingui_8h.html" title="anoncoingui.h" alt="" coords="893,80,998,107"/>
+<area shape="rect" id="node14" href="$clientmodel_8h.html" title="clientmodel.h" alt="" coords="1954,229,2054,256"/>
+<area shape="rect" id="node16" href="$guiutil_8h.html" title="guiutil.h" alt="" coords="1554,155,1622,181"/>
+<area shape="rect" id="node24" href="$optionsmodel_8h.html" title="optionsmodel.h" alt="" coords="1795,80,1907,107"/>
+<area shape="rect" id="node26" href="$overviewpage_8h.html" title="overviewpage.h" alt="" coords="1603,80,1719,107"/>
+<area shape="rect" id="node28" href="$receivecoinsdialog_8h.html" title="receivecoinsdialog.h" alt="" coords="1189,80,1331,107"/>
+<area shape="rect" id="node32" href="$sendcoinsdialog_8h.html" title="sendcoinsdialog.h" alt="" coords="687,80,817,107"/>
+<area shape="rect" id="node33" href="$walletmodel_8h.html" title="walletmodel.h" alt="" coords="387,155,491,181"/>
+<area shape="rect" id="node38" href="$signverifymessagedialog_8h.html" title="signverifymessagedialog.h" alt="" coords="321,80,500,107"/>
+<area shape="rect" id="node39" href="$transactiontablemodel_8h.html" title="transactiontablemodel.h" alt="" coords="1931,80,2095,107"/>
+<area shape="rect" id="node42" href="$transactionview_8h.html" title="transactionview.h" alt="" coords="1453,80,1579,107"/>
+<area shape="rect" id="node43" href="$ui__interface_8h.html" title="ui_interface.h" alt="" coords="2119,80,2222,107"/>
+<area shape="rect" id="node34" href="$paymentrequestplus_8h.html" title="paymentrequestplus.h" alt="" coords="387,229,541,256"/>
+<area shape="rect" id="node35" href="$walletmodeltransaction_8h.html" title="walletmodeltransaction.h" alt="" coords="731,229,901,256"/>
+<area shape="rect" id="node36" href="$allocators_8h.html" title="allocators.h" alt="" coords="565,229,656,256"/>
+</map>

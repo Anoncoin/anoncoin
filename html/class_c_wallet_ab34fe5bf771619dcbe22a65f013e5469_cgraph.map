@@ -1,0 +1,15 @@
+<map id="CWallet::EncryptWallet" name="CWallet::EncryptWallet">
+<area shape="rect" id="node2" href="$util_8cpp.html#a786af12a87491f8dc24351d93b9833b6" title="RandAddSeedPerfmon" alt="" coords="246,31,405,57"/>
+<area shape="rect" id="node6" href="$util_8h.html#a139d0fe6387b9e230a9b8bb12d9b43b9" title="GetTimeMillis" alt="" coords="274,81,377,108"/>
+<area shape="rect" id="node7" href="$class_c_crypter.html#a5368279e4a1549d3c1d15d8aa2179708" title="CCrypter::SetKeyFromPassphrase" alt="" coords="212,132,439,159"/>
+<area shape="rect" id="node8" href="$class_c_crypter.html#a124fcd3021569a660ce2daa3391c8ea4" title="CCrypter::Encrypt" alt="" coords="261,183,389,209"/>
+<area shape="rect" id="node9" href="$class_c_d_b.html#acfb8a373edb9c4cfab780fb7578b277e" title="CDB::Rewrite" alt="" coords="274,233,377,260"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#ab699fbdf803610a4e2060fd87787f7e0" title="RandAddSeed" alt="" coords="519,5,628,32"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="537,56,610,83"/>
+<area shape="rect" id="node4" href="$util_8h.html#acd4d9988b9bb3f31fddf72a34b2bc37f" title="GetPerformanceCounter" alt="" coords="708,5,875,32"/>
+<area shape="rect" id="node10" href="$class_c_d_b_env.html#ac53fd53afdd1e0881b8ffbb11a89b556" title="CDBEnv::CloseDb" alt="" coords="507,132,639,159"/>
+<area shape="rect" id="node11" href="$class_c_d_b_env.html#aaf4c0dd43825ee2441eaa4177bef137b" title="CDBEnv::CheckpointLSN" alt="" coords="487,183,660,209"/>
+<area shape="rect" id="node12" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="507,233,640,260"/>
+<area shape="rect" id="node13" href="$class_c_data_stream.html#ade6ed9a3a481e333900e6496707b9692" title="CDataStream::clear" alt="" coords="504,284,643,311"/>
+<area shape="rect" id="node14" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="534,335,613,361"/>
+</map>

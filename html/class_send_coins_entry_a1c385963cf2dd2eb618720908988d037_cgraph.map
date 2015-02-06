@@ -1,0 +1,7 @@
+<map id="SendCoinsEntry::SendCoinsEntry" name="SendCoinsEntry::SendCoinsEntry">
+<area shape="rect" id="node2" href="$class_ui___send_coins_entry.html#a95119ab3cfd1ffa2f9ace382c097b148" title="Ui_SendCoinsEntry::\lsetupUi" alt="" coords="269,5,415,47"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#aeb3b902c0536bdb9c2def3d3e465aeba" title="GUIUtil::setupAddressWidget" alt="" coords="244,122,440,149"/>
+<area shape="rect" id="node5" href="$namespace_g_u_i_util.html#ad284d2b3b4732d897cf6f1d751065e98" title="GUIUtil::anoncoinAddressFont" alt="" coords="488,71,691,98"/>
+<area shape="rect" id="node3" href="$class_ui___send_coins_entry.html#af5d88f657872c78e3f4a88375e9f0428" title="Ui_SendCoinsEntry::\lretranslateUi" alt="" coords="517,5,662,47"/>
+<area shape="rect" id="node6" href="$class_q_validated_line_edit.html#af365be1760e17fd1ea6b430fa6005bd2" title="QValidatedLineEdit\l::setCheckValidator" alt="" coords="521,123,658,164"/>
+</map>

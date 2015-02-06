@@ -1,0 +1,51 @@
+<map id="CChain::Height" name="CChain::Height">
+<area shape="rect" id="node2" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="726,1304,797,1331"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#acd163a09d0e4384ebe85dead57730dd7" title="IsStandardTx" alt="" coords="453,56,554,83"/>
+<area shape="rect" id="node6" href="$main_8h.html#a1032f75235456abfa96b63e34e7ee2cc" title="(try to) add transaction to memory pool " alt="" coords="685,31,838,57"/>
+<area shape="rect" id="node9" href="$main_8h.html#aa7ca31ac11bff224c6b0ac27fccce7b5" title="IsFinalTx" alt="" coords="223,427,299,453"/>
+<area shape="rect" id="node10" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="1193,921,1289,948"/>
+<area shape="rect" id="node14" href="$class_transaction_desc.html#afcd4db6bf3a341cafe06a57ec31b7531" title="TransactionDesc::FormatTx\lStatus" alt="" coords="410,107,597,149"/>
+<area shape="rect" id="node15" href="$class_transaction_record.html#a9b643dd885a790ae511705a1446556be" title="Update status from core wallet tx. " alt="" coords="690,697,833,738"/>
+<area shape="rect" id="node25" href="$class_c_merkle_tx.html#a650229fec7fe661aa7a137902bc745a3" title="CMerkleTx::GetDepthInMain\lChainINTERNAL" alt="" coords="165,766,356,807"/>
+<area shape="rect" id="node27" href="$main_8h.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="183,1093,339,1120"/>
+<area shape="rect" id="node29" href="$main_8cpp.html#a730d390bfb0df0e54a5c2ddb901e748a" title="CheckForkWarningConditions" alt="" coords="404,1152,603,1179"/>
+<area shape="rect" id="node30" href="$main_8cpp.html#a0577f78a333e075d3bbb64c0741b5080" title="CheckForkWarningConditions\lOnNewFork" alt="" coords="662,1187,861,1229"/>
+<area shape="rect" id="node32" href="$main_8h.html#a63b860cc82a0a2dfb90c96ddc09dfecc" title="Find the best known block, and make it the tip of the block chain. " alt="" coords="438,1253,569,1280"/>
+<area shape="rect" id="node35" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="466,1355,541,1381"/>
+<area shape="rect" id="node36" href="$class_client_model.html#a9c298b0c2eb9c8e9ff18c6ff37725b0a" title="ClientModel::getNumBlocks" alt="" coords="168,1405,353,1432"/>
+<area shape="rect" id="node37" href="$class_transaction_record.html#aaca6757b7b300151694021be6af18d11" title="Return whether a status update is needed. " alt="" coords="187,1457,334,1498"/>
+<area shape="rect" id="node38" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="175,1522,347,1563"/>
+<area shape="rect" id="node39" href="$rpcblockchain_8cpp.html#a2874a1c1a24cfa6b9f5f33755e4d5318" title="getblockcount" alt="" coords="209,1588,313,1615"/>
+<area shape="rect" id="node40" href="$rpcblockchain_8cpp.html#a6ba5d2c76833bd2f10be0e95ded53037" title="getrawmempool" alt="" coords="202,1639,319,1665"/>
+<area shape="rect" id="node41" href="$rpcblockchain_8cpp.html#a6aec96723852fde932c01159a66a9911" title="getblockhash" alt="" coords="211,1689,311,1716"/>
+<area shape="rect" id="node42" href="$rpcblockchain_8cpp.html#ab1e71b6e17e11c519ea593776365a0a7" title="getblockchaininfo" alt="" coords="198,1740,323,1767"/>
+<area shape="rect" id="node43" href="$rpcdump_8cpp.html#a2566d5c9dd1938b74e70398cdb3ac5c1" title="importwallet" alt="" coords="214,1791,307,1817"/>
+<area shape="rect" id="node44" href="$rpcdump_8cpp.html#a831ddf746d4f2500ba6f6c07f63445cd" title="dumpwallet" alt="" coords="459,1993,548,2020"/>
+<area shape="rect" id="node45" href="$rpcmining_8cpp.html#a0727ff0776708e62ed17b0ddc184d50e" title="GetNetworkHashPS" alt="" coords="190,1892,331,1919"/>
+<area shape="rect" id="node46" href="$rpcmining_8cpp.html#a89c187faff7322c7d15134d13570ca1e" title="getmininginfo" alt="" coords="210,1943,311,1969"/>
+<area shape="rect" id="node47" href="$rpcmisc_8cpp.html#a70335b93783d51e48d276a1e08bd721a" title="getinfo" alt="" coords="229,1993,292,2020"/>
+<area shape="rect" id="node48" href="$rpcrawtransaction_8cpp.html#a366b04dae2aae86eee356cc85d759268" title="TxToJSON" alt="" coords="217,2044,305,2071"/>
+<area shape="rect" id="node49" href="$rpcwallet_8cpp.html#a53cf4975a89f414ef3bd180f6b4773cd" title="listsinceblock" alt="" coords="211,2095,311,2121"/>
+<area shape="rect" id="node50" href="$class_c_wallet.html#a15a34ea53ce86d9f613693b09b74807f" title="CWallet::GetKeyBirthTimes" alt="" coords="169,2145,353,2172"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1001,1279,1065,1305"/>
+<area shape="rect" id="node4" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="953,1329,1113,1356"/>
+<area shape="rect" id="node7" href="$class_c_merkle_tx.html#a032705bde1c536cd1b14f01f914e12f0" title="CMerkleTx::AcceptToMemoryPool" alt="" coords="920,5,1145,32"/>
+<area shape="rect" id="node8" href="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e" title="sendrawtransaction" alt="" coords="964,56,1101,83"/>
+<area shape="rect" id="node12" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="443,731,564,757"/>
+<area shape="rect" id="node16" href="$rpcwallet_8cpp.html#abbb6475509aa2e69844f0b3a8bcb422a" title="getreceivedbyaddress" alt="" coords="427,477,579,504"/>
+<area shape="rect" id="node17" href="$rpcwallet_8cpp.html#a07526be5270b0e55b4a0b79c01205f3d" title="getreceivedbyaccount" alt="" coords="427,528,579,555"/>
+<area shape="rect" id="node18" href="$rpcwallet_8cpp.html#a02d239cd69692dab8bbb33eb0010de1b" title="GetAccountBalance" alt="" coords="433,579,573,605"/>
+<area shape="rect" id="node19" href="$rpcwallet_8cpp.html#a0cc958f67a8d6d0002cb4fee19eddb5c" title="ListReceived" alt="" coords="454,629,553,656"/>
+<area shape="rect" id="node20" href="$class_c_wallet.html#a2b3585d31f7cda63b851db30b9b11fb4" title="CWallet::GetUnconfirmedBalance" alt="" coords="651,191,872,217"/>
+<area shape="rect" id="node21" href="$class_c_wallet.html#a1c8d440c03e118feda5e6dd01adc0f18" title="CWallet::GetUnconfirmedWatch\lOnlyBalance" alt="" coords="656,246,867,287"/>
+<area shape="rect" id="node22" href="$class_c_wallet.html#acf326816b2cf812e23b408b12854236b" title="CWallet::AvailableCoins" alt="" coords="679,320,843,347"/>
+<area shape="rect" id="node23" href="$class_c_wallet.html#aadffdf5d0e2f2413cdcc2a39fc2e310d" title="CWallet::GetAddressBalances" alt="" coords="661,373,862,400"/>
+<area shape="rect" id="node24" href="$class_c_wallet_tx.html#af2eff3b849af124cdf869fc03f587972" title="CWalletTx::IsTrusted" alt="" coords="430,325,577,352"/>
+<area shape="rect" id="node11" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="1337,921,1440,948"/>
+<area shape="rect" id="node13" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="700,785,823,812"/>
+<area shape="rect" id="node26" href="$class_c_merkle_tx.html#adf24748ee829f589ac8d6e99ec6121de" title="CMerkleTx::IsInMainChain" alt="" coords="414,781,593,808"/>
+<area shape="rect" id="node28" href="$main_8h.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="969,959,1096,985"/>
+<area shape="rect" id="node33" href="$main_8h.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3" title="Send queued protocol messages to be sent to a give node. " alt="" coords="447,1035,560,1061"/>
+<area shape="rect" id="node34" href="$class_client_model.html#afc3389cd7eef94a0f20b6913beb05f40" title="Return true if core is doing initial block download. " alt="" coords="417,1086,590,1127"/>
+<area shape="rect" id="node31" href="$main_8h.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="969,1165,1096,1192"/>
+</map>

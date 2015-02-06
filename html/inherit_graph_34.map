@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_c_chain_params.html" title="CChainParams defines various tweakable parameters of a given instance of the Anoncoin system..." alt="" coords="5,5,117,32"/>
+<area shape="rect" id="node2" href="$class_c_main_params.html" title="CMainParams" alt="" coords="165,5,272,32"/>
+<area shape="rect" id="node3" href="$class_c_test_net_params.html" title="CTestNetParams" alt="" coords="320,5,444,32"/>
+<area shape="rect" id="node4" href="$class_c_reg_test_params.html" title="CRegTestParams" alt="" coords="492,5,620,32"/>
+</map>

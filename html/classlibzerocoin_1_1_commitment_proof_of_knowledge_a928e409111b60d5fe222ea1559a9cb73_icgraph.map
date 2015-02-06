@@ -1,0 +1,13 @@
+<map id="libzerocoin::CommitmentProofOfKnowledge::calculateChallenge" name="libzerocoin::CommitmentProofOfKnowledge::calculateChallenge">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#af66449f2c4c0cb88d19cb409b67b4cff" title="Generates a proof that two commitments, a and b, open to the same value. " alt="" coords="276,9,573,50"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a846cfaed719d7d1513e899f4af124948" title="Verifies the proof. " alt="" coords="325,74,525,115"/>
+<area shape="rect" id="node4" href="$classlibzerocoin_1_1_coin_spend.html#a9048dabc1be9ef65aeefb41e92e2f53c" title="libzerocoin::CoinSpend\l::Verify" alt="" coords="621,45,780,86"/>
+<area shape="rect" id="node10" href="$_tests_8cpp.html#acad4aca9b2da482817b009b8b8e27ffd" title="Test_EqualityPoK" alt="" coords="637,111,765,137"/>
+<area shape="rect" id="node5" href="$_benchmark_8cpp.html#ad4c256613fa000fd3d3ec247021a6522" title="Test_MintAndSpend" alt="" coords="828,5,971,32"/>
+<area shape="rect" id="node8" href="$_tutorial_8cpp.html#a297c1339eda300b5818bf669440b3a7d" title="ZerocoinTutorial" alt="" coords="840,56,959,83"/>
+<area shape="rect" id="node6" href="$_benchmark_8cpp.html#a270b3d0914e20b5c58ab92bc2823c1d1" title="Test_RunAllTests" alt="" coords="1019,5,1145,32"/>
+<area shape="rect" id="node7" href="$_benchmark_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="1193,5,1244,32"/>
+<area shape="rect" id="node9" href="$_tutorial_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="1057,56,1107,83"/>
+<area shape="rect" id="node11" href="$_tests_8cpp.html#af61e520c81d1ffba1bccdb7dfd1c0a21" title="Test_RunAllTests" alt="" coords="836,111,963,137"/>
+<area shape="rect" id="node12" href="$_tests_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="1057,111,1107,137"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="AddressTableModel::addRow" name="AddressTableModel::addRow">
+<area shape="rect" id="node2" href="$class_edit_address_dialog.html#a8494a551799cd1f4c253e557424c206c" title="EditAddressDialog::\lsaveCurrentRow" alt="" coords="223,5,361,47"/>
+<area shape="rect" id="node4" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="201,71,383,112"/>
+<area shape="rect" id="node3" href="$class_edit_address_dialog.html#ac52b71129806bccf6533d0e9441393b6" title="EditAddressDialog::\laccept" alt="" coords="433,5,571,47"/>
+<area shape="rect" id="node5" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="431,71,573,112"/>
+</map>

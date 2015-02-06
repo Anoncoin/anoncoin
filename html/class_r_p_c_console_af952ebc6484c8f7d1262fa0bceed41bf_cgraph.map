@@ -1,0 +1,12 @@
+<map id="RPCConsole::peerLayoutChanged" name="RPCConsole::peerLayoutChanged">
+<area shape="rect" id="node2" href="$class_client_model.html#a643fc112ce94f50ac7187ecdf3c75360" title="ClientModel::getPeerTable\lModel" alt="" coords="297,5,477,47"/>
+<area shape="rect" id="node3" href="$class_peer_table_model.html#aa735d366015dafba4c5d79dfb76abe49" title="PeerTableModel::getRowBy\lNodeId" alt="" coords="293,71,481,112"/>
+<area shape="rect" id="node4" href="$class_peer_table_model.html#a98084d3299642316c71c5de3d36b9859" title="PeerTableModel::getNodeStats" alt="" coords="283,137,491,163"/>
+<area shape="rect" id="node6" href="$class_r_p_c_console.html#a0bd7e2be4a07bcf4f8b20eb1881dacbb" title="show detailed information on ui about selected node " alt="" coords="280,238,493,265"/>
+<area shape="rect" id="node5" href="$class_peer_table_priv.html#a58c817cce967ddd5ae4bad622bfaecb4" title="PeerTablePriv::index" alt="" coords="560,111,705,138"/>
+<area shape="rect" id="node7" href="$namespace_g_u_i_util.html#ac0c0a23fbbfefc827220eebcacc3ee63" title="GUIUtil::formatServicesStr" alt="" coords="543,162,722,189"/>
+<area shape="rect" id="node8" href="$namespace_g_u_i_util.html#aaf51686c47c77ad81c51d115d150e867" title="GUIUtil::formatDurationStr" alt="" coords="544,213,721,239"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="596,263,669,290"/>
+<area shape="rect" id="node10" href="$class_r_p_c_console.html#afa45a6e142193405038015a31f9e132b" title="RPCConsole::FormatBytes" alt="" coords="541,314,724,341"/>
+<area shape="rect" id="node11" href="$namespace_g_u_i_util.html#a432bcee36e242a968c9149fadfba44fa" title="GUIUtil::formatPingTime" alt="" coords="549,365,716,391"/>
+</map>

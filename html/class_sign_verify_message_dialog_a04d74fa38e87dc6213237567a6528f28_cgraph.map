@@ -1,0 +1,7 @@
+<map id="SignVerifyMessageDialog::SignVerifyMessageDialog" name="SignVerifyMessageDialog::SignVerifyMessageDialog">
+<area shape="rect" id="node2" href="$class_ui___sign_verify_message_dialog.html#ab2c5ab3f80600be42656f693b73e75b0" title="Ui_SignVerifyMessageDialog\l::setupUi" alt="" coords="237,5,431,47"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#aeb3b902c0536bdb9c2def3d3e465aeba" title="GUIUtil::setupAddressWidget" alt="" coords="236,122,432,149"/>
+<area shape="rect" id="node5" href="$namespace_g_u_i_util.html#ad284d2b3b4732d897cf6f1d751065e98" title="GUIUtil::anoncoinAddressFont" alt="" coords="480,71,683,98"/>
+<area shape="rect" id="node3" href="$class_ui___sign_verify_message_dialog.html#ad1b90e652bb25a7838e1faf591c3b779" title="Ui_SignVerifyMessageDialog\l::retranslateUi" alt="" coords="484,5,679,47"/>
+<area shape="rect" id="node6" href="$class_q_validated_line_edit.html#af365be1760e17fd1ea6b430fa6005bd2" title="QValidatedLineEdit\l::setCheckValidator" alt="" coords="513,123,650,164"/>
+</map>

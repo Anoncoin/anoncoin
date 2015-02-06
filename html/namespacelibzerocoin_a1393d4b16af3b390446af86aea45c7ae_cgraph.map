@@ -1,0 +1,6 @@
+<map id="libzerocoin::generateRandomPrime" name="libzerocoin::generateRandomPrime">
+<area shape="rect" id="node2" href="$namespacelibzerocoin.html#a7ce8281b4f89cff21bd6ce8fc3088585" title="libzerocoin::generateInteger\lFromSeed" alt="" coords="249,5,436,47"/>
+<area shape="rect" id="node5" href="$namespacelibzerocoin.html#aeda115c7208be9405f951779ec131494" title="Determines whether a uint32_t is a prime through trial division. " alt="" coords="258,71,427,112"/>
+<area shape="rect" id="node3" href="$namespacelibzerocoin.html#a2ab9735f14a3fdcdf18e0fd410a6e701" title="libzerocoin::calculateHash" alt="" coords="484,13,661,39"/>
+<area shape="rect" id="node4" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="709,13,868,39"/>
+</map>

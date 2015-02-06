@@ -1,0 +1,7 @@
+<map id="WalletModel::balanceChanged" name="WalletModel::balanceChanged">
+<area shape="rect" id="node2" href="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d" title="WalletModel::checkBalance\lChanged" alt="" coords="257,35,443,76"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="491,5,663,47"/>
+<area shape="rect" id="node5" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="494,71,659,98"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1" title="WalletModel::WalletModel" alt="" coords="711,13,887,39"/>
+<area shape="rect" id="node6" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="725,64,872,105"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="CNetMessage" name="CNetMessage">
+<area shape="rect" id="node2" href="$class_c_data_stream.html" title="Double ended buffer combining vector and stream&#45;like interfaces. " alt="" coords="5,5,108,32"/>
+<area shape="rect" id="node3" href="$class_c_message_header.html" title="Message header. " alt="" coords="132,5,261,32"/>
+</map>

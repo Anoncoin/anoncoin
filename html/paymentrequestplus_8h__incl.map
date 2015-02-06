@@ -1,0 +1,16 @@
+<map id="src/qt/paymentrequestplus.h" name="src/qt/paymentrequestplus.h">
+<area shape="rect" id="node2" href="$paymentrequest_8pb_8h.html" title="paymentrequest.pb.h" alt="" coords="2520,80,2667,107"/>
+<area shape="rect" id="node10" href="$base58_8h.html" title="base58.h" alt="" coords="1144,80,1221,107"/>
+<area shape="rect" id="node11" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="436,244,545,271"/>
+<area shape="rect" id="node35" href="$key_8h.html" title="key.h" alt="" coords="923,244,976,271"/>
+<area shape="rect" id="node39" href="$script_8h.html" title="script.h" alt="" coords="1383,162,1449,189"/>
+<area shape="rect" id="node12" href="$bignum_8h.html" title="bignum.h" alt="" coords="743,319,820,345"/>
+<area shape="rect" id="node30" href="$uint256_8h.html" title="uint256.h" alt="" coords="245,393,323,420"/>
+<area shape="rect" id="node13" href="$serialize_8h.html" title="serialize.h" alt="" coords="1152,393,1235,420"/>
+<area shape="rect" id="node32" href="$version_8h.html" title="version.h" alt="" coords="625,393,701,420"/>
+<area shape="rect" id="node14" href="$allocators_8h.html" title="allocators.h" alt="" coords="509,475,600,502"/>
+<area shape="rect" id="node36" href="$hash_8h.html" title="hash.h" alt="" coords="517,319,579,345"/>
+<area shape="rect" id="node40" href="$util_8h.html" title="util.h" alt="" coords="1583,319,1633,345"/>
+<area shape="rect" id="node41" href="$compat_8h.html" title="compat.h" alt="" coords="1828,393,1905,420"/>
+<area shape="rect" id="node42" href="$tinyformat_8h.html" title="tinyformat.h" alt="" coords="1462,393,1554,420"/>
+</map>

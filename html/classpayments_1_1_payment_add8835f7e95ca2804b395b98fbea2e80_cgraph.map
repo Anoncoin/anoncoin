@@ -1,0 +1,12 @@
+<map id="payments::Payment::MergeFrom" name="payments::Payment::MergeFrom">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment.html#aa3701100f4d4a3c80e265c3a53e04939" title="payments::Payment::\lhas_merchant_data" alt="" coords="219,5,365,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment.html#a5fcb7888dbff73e4808f0c9e2ba947db" title="payments::Payment::\lset_merchant_data" alt="" coords="219,71,365,112"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment.html#a306c3f432a874efc400f8ab9866deea6" title="payments::Payment::\lmerchant_data" alt="" coords="219,136,365,177"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment.html#a8852f9537d84d2ed4809d1571e9e0005" title="payments::Payment::\lhas_memo" alt="" coords="219,201,365,243"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment.html#a4a48f5493bf5e23bce9e55b8921b8f04" title="payments::Payment::\lset_memo" alt="" coords="219,267,365,308"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment.html#adf7663d6eead276ed5a9d3a15e5fc44e" title="payments::Payment::memo" alt="" coords="200,333,384,359"/>
+<area shape="rect" id="node10" href="$classpayments_1_1_payment.html#a51ffab88d861e5e99355b99dac5667c7" title="payments::Payment::\lmutable_unknown_fields" alt="" coords="207,384,377,425"/>
+<area shape="rect" id="node11" href="$classpayments_1_1_payment.html#ab2e68a5e02a04abc6f44194dea9716b8" title="payments::Payment::\lunknown_fields" alt="" coords="219,449,365,491"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment.html#a2e2e674f9faf3b6fa99295ddf31302e8" title="payments::Payment::\lset_has_merchant_data" alt="" coords="432,71,597,112"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment.html#a9ab6415778f3ddd1cb1f22633f155ce0" title="payments::Payment::\lset_has_memo" alt="" coords="441,267,588,308"/>
+</map>

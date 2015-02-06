@@ -1,0 +1,6 @@
+<map id="GetLocalAddress" name="GetLocalAddress">
+<area shape="rect" id="node2" href="$net_8cpp.html#a51605827c953a7843f9b165eada26857" title="GetLocal" alt="" coords="202,5,278,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="177,56,303,83"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="369,31,442,57"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="351,81,460,108"/>
+</map>

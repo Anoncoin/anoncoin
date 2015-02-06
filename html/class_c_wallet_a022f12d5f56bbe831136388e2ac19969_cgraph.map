@@ -1,0 +1,4 @@
+<map id="CWallet::AddWatchOnly" name="CWallet::AddWatchOnly">
+<area shape="rect" id="node2" href="$class_c_basic_key_store.html#a2417d0ae4e654c88cf47a1ba5f71b5a3" title="CBasicKeyStore::AddWatchOnly" alt="" coords="219,5,435,32"/>
+<area shape="rect" id="node3" href="$class_c_wallet_d_b.html#a05e5a277f66010d12071a5d72cb4dfb0" title="CWalletDB::WriteWatchOnly" alt="" coords="231,56,422,83"/>
+</map>

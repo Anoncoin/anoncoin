@@ -1,0 +1,15 @@
+<map id="CWalletTx::GetAvailableWatchOnlyCredit" name="CWalletTx::GetAvailableWatchOnlyCredit">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a39068cc4073715f7e6614aeb72f0872e" title="CWallet::GetWatchOnlyBalance" alt="" coords="257,31,468,57"/>
+<area shape="rect" id="node13" href="$class_c_wallet.html#a1c8d440c03e118feda5e6dd01adc0f18" title="CWallet::GetUnconfirmedWatch\lOnlyBalance" alt="" coords="257,82,468,123"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#aaf5c6210cc8ead78be9e6e4e45c244c4" title="WalletModel::getWatchBalance" alt="" coords="530,31,737,57"/>
+<area shape="rect" id="node4" href="$class_overview_page.html#a2ed52a3a87e9c74fee38fa873c9bc71f" title="OverviewPage::setWalletModel" alt="" coords="799,56,1005,83"/>
+<area shape="rect" id="node7" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="809,5,995,32"/>
+<area shape="rect" id="node8" href="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d" title="WalletModel::checkBalance\lChanged" alt="" coords="809,107,995,149"/>
+<area shape="rect" id="node5" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1053,31,1240,57"/>
+<area shape="rect" id="node6" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="1294,31,1458,57"/>
+<area shape="rect" id="node9" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="1061,153,1233,194"/>
+<area shape="rect" id="node11" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="1064,101,1229,128"/>
+<area shape="rect" id="node10" href="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1" title="WalletModel::WalletModel" alt="" coords="1288,160,1464,187"/>
+<area shape="rect" id="node12" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="1303,94,1449,135"/>
+<area shape="rect" id="node14" href="$class_wallet_model.html#abc134f63b276b9f66900a8d0a69a06ad" title="WalletModel::getWatchUnconfirmed\lBalance" alt="" coords="516,82,751,123"/>
+</map>

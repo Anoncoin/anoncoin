@@ -1,0 +1,5 @@
+<map id="SendCoinsDialog::coinControlFeatureChanged" name="SendCoinsDialog::coinControlFeatureChanged">
+<area shape="rect" id="node2" href="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa" title="SendCoinsDialog::setModel" alt="" coords="253,13,440,39"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="488,13,675,39"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="723,13,887,39"/>
+</map>

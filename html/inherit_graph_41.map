@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_c_coins_view.html" title="Abstract view on the open txout dataset. " alt="" coords="5,56,100,83"/>
+<area shape="rect" id="node2" href="$class_c_coins_view_backed.html" title="CCoinsView backed by another CCoinsView. " alt="" coords="148,31,287,57"/>
+<area shape="rect" id="node5" href="$class_c_coins_view_d_b.html" title="CCoinsView backed by the LevelDB coin database (chainstate/) " alt="" coords="161,81,274,108"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html" title="CCoinsView that adds a memory cache for transactions to another CCoinsView. " alt="" coords="343,5,477,32"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_mem_pool.html" title="CCoinsView that brings transactions from a memorypool into view. " alt="" coords="335,56,485,83"/>
+</map>

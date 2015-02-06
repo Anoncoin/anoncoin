@@ -1,0 +1,51 @@
+<map id="ThreadImport" name="ThreadImport">
+<area shape="rect" id="node2" href="$util_8cpp.html#a85fc1244e0bd3c91ee7a1c05ed10ebbb" title="RenameThread" alt="" coords="207,5,321,32"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097" title="Open a block file (blk?????.dat) " alt="" coords="727,208,837,235"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="1222,107,1311,133"/>
+<area shape="rect" id="node11" href="$main_8cpp.html#a201faac8744703cfca1c5d3800de9a83" title="Import blocks from an external file. " alt="" coords="187,993,341,1020"/>
+<area shape="rect" id="node39" href="$class_c_block_tree_d_b.html#a8fa5d150b98f4fd1aa8cf503eddfccef" title="CBlockTreeDB::WriteReindexing" alt="" coords="156,563,372,589"/>
+<area shape="rect" id="node42" href="$main_8cpp.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="211,360,317,387"/>
+<area shape="rect" id="node50" href="$util_8cpp.html#ad8f8509a84cc6f53344a5ac76369c327" title="RenameOver" alt="" coords="213,1044,315,1071"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635" title="OpenDiskFile" alt="" coords="991,208,1093,235"/>
+<area shape="rect" id="node5" href="$struct_c_disk_block_pos.html#a924f2805b274345afce890b27a0934d9" title="CDiskBlockPos::IsNull" alt="" coords="1190,208,1343,235"/>
+<area shape="rect" id="node7" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1449,360,1517,387"/>
+<area shape="rect" id="node8" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="1392,56,1575,83"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="1418,107,1549,133"/>
+<area shape="rect" id="node10" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="1401,157,1566,184"/>
+<area shape="rect" id="node12" href="$util_8h.html#a139d0fe6387b9e230a9b8bb12d9b43b9" title="GetTimeMillis" alt="" coords="469,1120,572,1147"/>
+<area shape="rect" id="node13" href="$class_c_block_tree_d_b.html#a6f951198dc53fbe9194626ff82638656" title="CBlockTreeDB::ReadBlockFileInfo" alt="" coords="669,613,895,640"/>
+<area shape="rect" id="node15" href="$class_c_buffered_file.html#afbf9abcc70f24824661aec96a4310a63" title="CBufferedFile::Seek" alt="" coords="450,1069,591,1096"/>
+<area shape="rect" id="node16" href="$class_c_buffered_file.html#af9e7226e682ede9c1c141fb2972afd7b" title="CBufferedFile::GetPos" alt="" coords="443,1171,599,1197"/>
+<area shape="rect" id="node17" href="$class_c_buffered_file.html#a86eed69d227056b1bcdb43716b391c71" title="CBufferedFile::good" alt="" coords="451,1221,591,1248"/>
+<area shape="rect" id="node18" href="$class_c_buffered_file.html#abc0a2462d47ae5ba23c258291509dd6d" title="CBufferedFile::eof" alt="" coords="456,1272,585,1299"/>
+<area shape="rect" id="node19" href="$class_c_buffered_file.html#aac4029a9aade127cc8a1fbbcc1549599" title="CBufferedFile::SetPos" alt="" coords="444,867,597,893"/>
+<area shape="rect" id="node20" href="$class_c_buffered_file.html#adfcf370a41be0454e0f6b3dc358e415c" title="CBufferedFile::SetLimit" alt="" coords="441,917,600,944"/>
+<area shape="rect" id="node21" href="$class_c_buffered_file.html#a15ce0683ba5925939d33f098a948236b" title="CBufferedFile::FindByte" alt="" coords="439,1423,603,1449"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#a49244347e4571b55f3f3985c28893d1c" title="Process an incoming block. " alt="" coords="469,1323,572,1349"/>
+<area shape="rect" id="node36" href="$class_c_validation_state.html#a8c608ada2395e5af099661ff353dbb3f" title="CValidationState::IsError" alt="" coords="436,968,605,995"/>
+<area shape="rect" id="node37" href="$main_8cpp.html#a00a5642fcaee2234f90f16a70b815a82" title="Abort with a message. " alt="" coords="478,1019,563,1045"/>
+<area shape="rect" id="node38" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="763,715,801,741"/>
+<area shape="rect" id="node14" href="$class_c_level_d_b_wrapper.html#aa3451a451298c7f8a66986ccd95474e2" title="CLevelDBWrapper::Read" alt="" coords="956,613,1128,640"/>
+<area shape="rect" id="node22" href="$class_c_buffered_file.html#a2c93fc60c4460bd1ccf90922646b19b8" title="CBufferedFile::Fill" alt="" coords="718,1472,846,1499"/>
+<area shape="rect" id="node24" href="$class_c_block_header.html#ae1165e54882d364b030fb33673d64dbd" title="CBlockHeader::GetHash" alt="" coords="698,961,866,988"/>
+<area shape="rect" id="node25" href="$class_c_validation_state.html#a88ff08b67f7f44bb3c7f7053bb1ee6fc" title="CValidationState::Invalid" alt="" coords="959,1117,1125,1144"/>
+<area shape="rect" id="node26" href="$class_c_validation_state.html#a3c6786d00da8d1c5df25b4c3876409e8" title="CValidationState::DoS" alt="" coords="1189,1219,1344,1245"/>
+<area shape="rect" id="node27" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="713,1015,851,1041"/>
+<area shape="rect" id="node28" href="$main_8cpp.html#a4c59314f4b6dced5b5e637031e9fd879" title="CheckBlock" alt="" coords="736,1219,828,1245"/>
+<area shape="rect" id="node30" href="$class_c_block_header.html#a2972ebc9d970b4b12434876263c4c2b5" title="CBlockHeader::GetBlockTime" alt="" coords="943,1269,1141,1296"/>
+<area shape="rect" id="node31" href="$namespace_checkpoints.html#ad91375160e77c30d6e6ccbfe1c682195" title="Checkpoints::GetLastCheckpoint" alt="" coords="674,1117,890,1144"/>
+<area shape="rect" id="node32" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="736,904,828,931"/>
+<area shape="rect" id="node33" href="$class_c_block_index.html#ab843ef9b8b0a0193ec3a5c24738e484f" title="CBlockIndex::GetBlockHash" alt="" coords="687,1168,877,1195"/>
+<area shape="rect" id="node34" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="962,1371,1122,1397"/>
+<area shape="rect" id="node35" href="$main_8h.html#a89e4204ed786d601f9b686f043485442" title="Calculate the minimum amount of work a received block needs, without knowing its direct parent..." alt="" coords="717,1421,847,1448"/>
+<area shape="rect" id="node29" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="982,512,1102,539"/>
+<area shape="rect" id="node40" href="$class_c_level_d_b_wrapper.html#a740caa1aefbafc888838ea7f70dc31f4" title="CLevelDBWrapper::Write" alt="" coords="696,512,868,539"/>
+<area shape="rect" id="node41" href="$class_c_level_d_b_wrapper.html#a9f67e2880ba191fdc9439ba34e315d72" title="CLevelDBWrapper::Erase" alt="" coords="433,613,609,640"/>
+<area shape="rect" id="node43" href="$class_c_chain.html#a1eee0372da596a8fc68369e480adc2f1" title="Returns the index entry for the genesis block of this chain, or NULL if none. " alt="" coords="459,208,582,235"/>
+<area shape="rect" id="node44" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="475,259,566,285"/>
+<area shape="rect" id="node45" href="$class_c_block_tree_d_b.html#af2f65b70ac5d8a198d4f29a7e909c08a" title="CBlockTreeDB::WriteFlag" alt="" coords="433,461,608,488"/>
+<area shape="rect" id="node46" href="$class_c_chain_params.html#abee677792d8f64e9dc766738ca0fbb55" title="CChainParams::GenesisBlock" alt="" coords="420,309,621,336"/>
+<area shape="rect" id="node47" href="$main_8cpp.html#a92fa926dca5dee9f673536d85f067ee7" title="FindBlockPos" alt="" coords="469,512,573,539"/>
+<area shape="rect" id="node48" href="$main_8cpp.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="457,157,584,184"/>
+<area shape="rect" id="node49" href="$main_8cpp.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="457,816,584,843"/>
+</map>

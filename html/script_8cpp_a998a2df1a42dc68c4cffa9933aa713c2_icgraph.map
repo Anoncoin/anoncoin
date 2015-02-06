@@ -1,0 +1,8 @@
+<map id="GetTxnOutputType" name="GetTxnOutputType">
+<area shape="rect" id="node2" href="$rpcrawtransaction_8cpp.html#acb6efc0d76394e3858fe7451148069c2" title="ScriptPubKeyToJSON" alt="" coords="189,56,343,83"/>
+<area shape="rect" id="node3" href="$rpcblockchain_8cpp.html#a1982f7877ed6e83102671c67c4ec6450" title="gettxout" alt="" coords="405,5,474,32"/>
+<area shape="rect" id="node4" href="$rpcrawtransaction_8cpp.html#a366b04dae2aae86eee356cc85d759268" title="TxToJSON" alt="" coords="395,56,483,83"/>
+<area shape="rect" id="node7" href="$rpcrawtransaction_8cpp.html#a342172992e2fa92490e8d83c2e95e87e" title="decodescript" alt="" coords="391,107,488,133"/>
+<area shape="rect" id="node5" href="$rpcrawtransaction_8cpp.html#a12e1b8a05d99d1544e5343c2282cc55a" title="getrawtransaction" alt="" coords="549,31,675,57"/>
+<area shape="rect" id="node6" href="$rpcrawtransaction_8cpp.html#a6775c600b1bfdbb22f38e5f1cd27cfea" title="decoderawtransaction" alt="" coords="536,81,688,108"/>
+</map>

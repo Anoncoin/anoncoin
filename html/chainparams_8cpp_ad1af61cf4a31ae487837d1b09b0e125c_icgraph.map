@@ -1,0 +1,7 @@
+<map id="SelectParams" name="SelectParams">
+<area shape="rect" id="node2" href="$chainparams_8h.html#a8b1e95814ad8f7fbcd9dead5cae3783d" title="Looks for &#45;regtest or &#45;testnet and then calls SelectParams as appropriate. " alt="" coords="177,5,400,32"/>
+<area shape="rect" id="node6" href="$class_payment_server.html#a5ed254902d978ed1e482055754d0f4a4" title="PaymentServer::ipcParseCommandLine" alt="" coords="159,56,419,83"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="467,5,531,32"/>
+<area shape="rect" id="node5" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="473,56,524,83"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="579,5,629,32"/>
+</map>

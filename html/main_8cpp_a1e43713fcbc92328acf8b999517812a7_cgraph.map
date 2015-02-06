@@ -1,0 +1,23 @@
+<map id="CheckInputs" name="CheckInputs">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="419,5,597,32"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html#a9107d0dd2cf79ba93a58e676aa412d3a" title="CCoinsViewCache::HaveInputs" alt="" coords="149,93,357,120"/>
+<area shape="rect" id="node8" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="410,157,606,184"/>
+<area shape="rect" id="node10" href="$class_c_validation_state.html#a88ff08b67f7f44bb3c7f7053bb1ee6fc" title="CValidationState::Invalid" alt="" coords="170,195,337,221"/>
+<area shape="rect" id="node11" href="$class_c_validation_state.html#a3c6786d00da8d1c5df25b4c3876409e8" title="CValidationState::DoS" alt="" coords="431,233,585,260"/>
+<area shape="rect" id="node12" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="173,296,334,323"/>
+<area shape="rect" id="node15" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="185,347,322,373"/>
+<area shape="rect" id="node17" href="$class_c_coins_view_cache.html#a2c578c50e6d146c90f386c755814e6c6" title="CCoinsViewCache::GetBest\lBlock" alt="" coords="159,398,348,439"/>
+<area shape="rect" id="node19" href="$class_c_coins.html#a5dda8b622fd4ebd48d382ea6be0db3c6" title="CCoins::IsCoinBase" alt="" coords="183,464,324,491"/>
+<area shape="rect" id="node20" href="$core_8h.html#ad1d9a769fa327ea042e0c9fadeb4836b" title="MoneyRange" alt="" coords="457,540,559,567"/>
+<area shape="rect" id="node21" href="$class_c_transaction.html#ac55950c7f9d437e5cd11a88af39b6deb" title="CTransaction::GetValueOut" alt="" coords="161,565,346,592"/>
+<area shape="rect" id="node22" href="$class_c_script_check.html#a69fbde608ff29c1885b8b9caf0fd40a0" title="CScriptCheck::swap" alt="" coords="182,616,325,643"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_cache.html#af10ddad5ca973d5e5f684b5d1c711560" title="CCoinsViewCache::HaveCoins" alt="" coords="405,56,611,83"/>
+<area shape="rect" id="node9" href="$class_c_coins.html#a69bdcbac02e1644cb02b2645068777b5" title="CCoins::IsAvailable" alt="" coords="439,107,577,133"/>
+<area shape="rect" id="node5" href="$class_c_coins_view_cache.html#ab0c3981b4eabc6f11bb58a0a3fe3e82d" title="CCoinsViewCache::FetchCoins" alt="" coords="659,63,867,89"/>
+<area shape="rect" id="node6" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="915,139,1072,165"/>
+<area shape="rect" id="node7" href="$class_c_coins.html#a9581324a74e9500b3d2cad472c0a830f" title="CCoins::swap" alt="" coords="941,63,1045,89"/>
+<area shape="rect" id="node13" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="456,296,560,323"/>
+<area shape="rect" id="node14" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="683,296,842,323"/>
+<area shape="rect" id="node16" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="442,347,574,373"/>
+<area shape="rect" id="node18" href="$class_c_coins_view.html#a729e4203cf5f9b21b8acd1b27e10a722" title="CCoinsView::GetBestBlock" alt="" coords="417,405,599,432"/>
+</map>

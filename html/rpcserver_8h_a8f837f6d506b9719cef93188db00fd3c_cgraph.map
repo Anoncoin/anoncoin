@@ -1,0 +1,5 @@
+<map id="EnsureWalletIsUnlocked" name="EnsureWalletIsUnlocked">
+<area shape="rect" id="node2" href="$class_c_crypto_key_store.html#a1c3ebef555fd13676d67509b95820fcf" title="CCryptoKeyStore::IsLocked" alt="" coords="220,5,407,32"/>
+<area shape="rect" id="node4" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="255,56,371,83"/>
+<area shape="rect" id="node3" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="455,5,645,32"/>
+</map>

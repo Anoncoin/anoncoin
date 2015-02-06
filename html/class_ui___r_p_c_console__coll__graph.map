@@ -1,0 +1,7 @@
+<map id="Ui_RPCConsole" name="Ui_RPCConsole">
+<area shape="rect" id="node2" href="$class_traffic_graph_widget.html" title="TrafficGraphWidget" alt="" coords="5,260,143,287"/>
+<area shape="rect" id="node4" href="$class_client_model.html" title="Model for Anoncoin network client. " alt="" coords="152,171,244,197"/>
+<area shape="rect" id="node6" href="$class_peer_table_model.html" title="Qt model providing information about connected peers, similar to the &quot;getpeerinfo&quot; RPC call..." alt="" coords="301,260,421,287"/>
+<area shape="rect" id="node8" href="$class_peer_table_priv.html" title="PeerTablePriv" alt="" coords="522,171,629,197"/>
+<area shape="rect" id="node9" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="219,81,323,108"/>
+</map>

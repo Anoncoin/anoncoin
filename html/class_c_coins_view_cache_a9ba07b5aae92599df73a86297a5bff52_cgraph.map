@@ -1,0 +1,8 @@
+<map id="CCoinsViewCache::GetPriority" name="CCoinsViewCache::GetPriority">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="271,5,448,32"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="261,56,457,83"/>
+<area shape="rect" id="node5" href="$class_c_coins.html#a69bdcbac02e1644cb02b2645068777b5" title="CCoins::IsAvailable" alt="" coords="291,107,428,133"/>
+<area shape="rect" id="node6" href="$class_c_transaction.html#ad2452fe2ae424f43e5fd767c28517b3b" title="CTransaction::ComputePriority" alt="" coords="257,157,461,184"/>
+<area shape="rect" id="node4" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="509,56,667,83"/>
+<area shape="rect" id="node7" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="528,157,648,184"/>
+</map>

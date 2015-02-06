@@ -1,0 +1,8 @@
+<map id="UnregisterWallet" name="UnregisterWallet">
+<area shape="rect" id="node2" href="$class_c_wallet_interface.html#a9b900d49a79ce0959eefaffdee1b5cbd" title="CWalletInterface::Resend\lWalletTransactions" alt="" coords="200,5,373,47"/>
+<area shape="rect" id="node3" href="$class_c_wallet_interface.html#a32858e2bb7bb6cb81ac391e0e2a0d4c1" title="CWalletInterface::Inventory" alt="" coords="195,71,378,98"/>
+<area shape="rect" id="node4" href="$class_c_wallet_interface.html#ac9c87a58906081f6629f3f82439dad8e" title="CWalletInterface::SetBest\lChain" alt="" coords="199,123,374,164"/>
+<area shape="rect" id="node5" href="$class_c_wallet_interface.html#a837adc7b84c1da6ba3961be8b1b511cf" title="CWalletInterface::Updated\lTransaction" alt="" coords="197,188,376,229"/>
+<area shape="rect" id="node6" href="$class_c_wallet_interface.html#a209e0de8725bab3274e7d79567cca630" title="CWalletInterface::EraseFrom\lWallet" alt="" coords="190,253,383,295"/>
+<area shape="rect" id="node7" href="$class_c_wallet_interface.html#aa0b95a4c18edbb9417d21990772aee3d" title="CWalletInterface::SyncTransaction" alt="" coords="173,319,400,346"/>
+</map>

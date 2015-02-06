@@ -1,0 +1,7 @@
+<map id="payments::PaymentRequest::set_has_pki_data" name="payments::PaymentRequest::set_has_pki_data">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#adccd273443666489df3b10e2569d4b33" title="payments::PaymentRequest\l::set_pki_data" alt="" coords="243,5,432,47"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#afebb5c733b99977adddcaf1f3b9b91da" title="payments::PaymentRequest\l::mutable_pki_data" alt="" coords="243,71,432,112"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_request.html#a3ac1e0853d3ae35889e6303688693256" title="payments::PaymentRequest\l::set_allocated_pki_data" alt="" coords="243,136,432,177"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a8be69c1b0e111e8c772670ce2dbf16eb" title="payments::PaymentRequest\l::MergeFrom" alt="" coords="495,5,684,47"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#aabe016dfb6e01d1ac87ff0a3ff2deba3" title="payments::PaymentRequest\l::MergePartialFromCodedStream" alt="" coords="480,71,699,112"/>
+</map>

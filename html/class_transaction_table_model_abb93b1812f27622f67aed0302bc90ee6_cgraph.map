@@ -1,0 +1,49 @@
+<map id="TransactionTableModel::updateTransaction" name="TransactionTableModel::updateTransaction">
+<area shape="rect" id="node2" href="$classbase__uint.html#ade1a897fac931f28f54998c92c797228" title="base_uint::SetHex" alt="" coords="223,349,354,376"/>
+<area shape="rect" id="node4" href="$class_transaction_table_priv.html#a27eb6d3e1f7717dd2cad80c5ce48f404" title="TransactionTablePriv\l::updateWallet" alt="" coords="215,514,363,555"/>
+<area shape="rect" id="node3" href="$uint256_8h.html#aa59e8a8c5a39cb5041f93bb95dd02119" title="HexDigit" alt="" coords="455,292,527,319"/>
+<area shape="rect" id="node5" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="422,659,559,685"/>
+<area shape="rect" id="node7" href="$class_transaction_record.html#a5ad1d1af4bec5b15a624b7a451e8cdbf" title="Decompose CWallet transaction to model transaction records. " alt="" coords="419,571,562,613"/>
+<area shape="rect" id="node15" href="$class_transaction_record.html#a9f5db4465fa5fdcc3f9af525096bcdb9" title="TransactionRecord::\ldecomposeTransaction" alt="" coords="411,343,571,385"/>
+<area shape="rect" id="node6" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="642,680,774,707"/>
+<area shape="rect" id="node8" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="619,579,797,605"/>
+<area shape="rect" id="node9" href="$class_c_merkle_tx.html#adf24748ee829f589ac8d6e99ec6121de" title="CMerkleTx::IsInMainChain" alt="" coords="619,629,797,656"/>
+<area shape="rect" id="node10" href="$class_c_merkle_tx.html#a650229fec7fe661aa7a137902bc745a3" title="CMerkleTx::GetDepthInMain\lChainINTERNAL" alt="" coords="845,799,1036,841"/>
+<area shape="rect" id="node11" href="$class_c_chain.html#a1ab1fe2932227af222699c64847e838b" title="Efficiently check whether a block is present in this chain. " alt="" coords="1117,832,1243,859"/>
+<area shape="rect" id="node12" href="$class_c_block.html#a81684cf96f6fb6731c869865b80d1ccd" title="CBlock::CheckMerkleBranch" alt="" coords="1084,781,1276,808"/>
+<area shape="rect" id="node14" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="1124,883,1236,909"/>
+<area shape="rect" id="node13" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="1377,756,1431,783"/>
+<area shape="rect" id="node16" href="$class_c_wallet_tx.html#a25fdd940fcdd2ea9d05547c5c789fc0d" title="CWalletTx::GetTxTime" alt="" coords="629,173,787,200"/>
+<area shape="rect" id="node17" href="$class_c_wallet_tx.html#a370bfa4e49ce68015740b0e675133e1d" title="CWalletTx::GetCredit" alt="" coords="634,275,782,301"/>
+<area shape="rect" id="node20" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="1149,187,1211,213"/>
+<area shape="rect" id="node22" href="$class_c_wallet_tx.html#ac1c7b4dd86b9565ddfe2810b46ea7d03" title="CWalletTx::GetDebit" alt="" coords="636,5,780,32"/>
+<area shape="rect" id="node24" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="627,427,789,453"/>
+<area shape="rect" id="node27" href="$class_c_wallet.html#ab7cc8fd8859fecc6ed768dacb5642c5e" title="CWallet::IsMine" alt="" coords="883,148,999,175"/>
+<area shape="rect" id="node28" href="$script_8cpp.html#a951f7e601746ae076afdf3169ecca2fc" title="ExtractDestination" alt="" coords="643,477,773,504"/>
+<area shape="rect" id="node42" href="$class_c_base58_data.html#a9a47b10dadff15b8d6a6d0e63ce3ae32" title="CBase58Data::ToString" alt="" coords="627,528,789,555"/>
+<area shape="rect" id="node45" href="$class_c_wallet_tx.html#ad326ed38cbb0dcb7d7dc4840c1279c39" title="CWalletTx::GetChange" alt="" coords="629,325,787,352"/>
+<area shape="rect" id="node47" href="$class_transaction_record.html#abb95ce852c0d00e86dcf7ebf63e70a83" title="TransactionRecord::\lTransactionRecord" alt="" coords="637,57,779,98"/>
+<area shape="rect" id="node48" href="$class_c_transaction.html#ac55950c7f9d437e5cd11a88af39b6deb" title="CTransaction::GetValueOut" alt="" coords="848,376,1033,403"/>
+<area shape="rect" id="node18" href="$class_c_wallet.html#a9ec15c32442fcceb95425d8b36492544" title="CWallet::GetCredit" alt="" coords="874,275,1007,301"/>
+<area shape="rect" id="node19" href="$core_8h.html#ad1d9a769fa327ea042e0c9fadeb4836b" title="MoneyRange" alt="" coords="1129,275,1231,301"/>
+<area shape="rect" id="node21" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="1324,187,1484,213"/>
+<area shape="rect" id="node23" href="$class_c_wallet.html#a9caab46cb65f0ef87f1a1f446655209a" title="CWallet::GetDebit" alt="" coords="876,52,1005,79"/>
+<area shape="rect" id="node25" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="889,427,993,453"/>
+<area shape="rect" id="node26" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="1101,325,1259,352"/>
+<area shape="rect" id="node29" href="$script_8cpp.html#a6ee6be50bff44464e905680c6fcee6dc" title="Solver" alt="" coords="911,477,971,504"/>
+<area shape="rect" id="node38" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="881,579,1001,605"/>
+<area shape="rect" id="node30" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="1135,376,1225,403"/>
+<area shape="rect" id="node32" href="$class_c_script.html#acba6d6d35776de4ce3a632446f44805f" title="CScript::IsPayToScriptHash" alt="" coords="1087,477,1273,504"/>
+<area shape="rect" id="node33" href="$class_c_script.html#a94635ed93d8d244ec3acfa83f9ecfe5f" title="CScript::GetOp" alt="" coords="1124,427,1236,453"/>
+<area shape="rect" id="node37" href="$class_c_script.html#a7f975fca06b3e9a17da8ba23c7647e2e" title="CScript::DecodeOP_N" alt="" coords="1102,528,1258,555"/>
+<area shape="rect" id="node31" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="1382,376,1426,403"/>
+<area shape="rect" id="node34" href="$class_c_script.html#a93ec95275ccce9b701c8f53c57cd7975" title="CScript::GetOp2" alt="" coords="1344,427,1464,453"/>
+<area shape="rect" id="node35" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1532,427,1604,453"/>
+<area shape="rect" id="node36" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1652,427,1736,453"/>
+<area shape="rect" id="node39" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="1142,629,1218,656"/>
+<area shape="rect" id="node40" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="1125,579,1235,605"/>
+<area shape="rect" id="node41" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="1339,579,1469,605"/>
+<area shape="rect" id="node43" href="$base58_8cpp.html#ace9a5807ee51604f33044339f073ec76" title="Encode a byte vector into a base58&#45;encoded string, including checksum. " alt="" coords="865,680,1016,707"/>
+<area shape="rect" id="node44" href="$base58_8cpp.html#a8d6f0e9d5df175b4966dcede31dc90ad" title="Encode a byte sequence as a base58&#45;encoded string. " alt="" coords="1124,680,1236,707"/>
+<area shape="rect" id="node46" href="$class_c_wallet.html#acca24496f54521dfb8ca457748d44518" title="CWallet::GetChange" alt="" coords="869,325,1013,352"/>
+</map>

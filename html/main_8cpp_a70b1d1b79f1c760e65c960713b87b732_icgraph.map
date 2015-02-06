@@ -1,0 +1,12 @@
+<map id="GetWarnings" name="GetWarnings">
+<area shape="rect" id="node2" href="$class_client_model.html#ae44eb0943b8528d5a0b22d063e5cc95c" title="Return warnings to be displayed in status bar. " alt="" coords="153,23,331,65"/>
+<area shape="rect" id="node7" href="$rpcmining_8cpp.html#a89c187faff7322c7d15134d13570ca1e" title="getmininginfo" alt="" coords="191,89,293,116"/>
+<area shape="rect" id="node8" href="$rpcmisc_8cpp.html#a70335b93783d51e48d276a1e08bd721a" title="getinfo" alt="" coords="211,140,273,167"/>
+<area shape="rect" id="node9" href="$class_c_r_p_c_table.html#aebba8d5a8f62089d1aa63278dbaf30a2" title="Execute a method. " alt="" coords="169,191,315,217"/>
+<area shape="rect" id="node3" href="$class_client_model.html#a16758b18ded91ceba202d6023cad4b51" title="ClientModel::updateAlert" alt="" coords="397,5,565,32"/>
+<area shape="rect" id="node4" href="$class_overview_page.html#a5d2610ab2b9c58e3b5f67c05f984e097" title="OverviewPage::setClientModel" alt="" coords="379,56,583,83"/>
+<area shape="rect" id="node5" href="$class_wallet_view.html#a46d9a8d93adfdcc29cae9ff0d44c313e" title="Set the client model. " alt="" coords="631,56,815,83"/>
+<area shape="rect" id="node6" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="863,56,1027,83"/>
+<area shape="rect" id="node10" href="$class_r_p_c_executor.html#a26e314b5c74eef7a5d310578e1cdb1eb" title="RPCExecutor::request" alt="" coords="403,165,558,192"/>
+<area shape="rect" id="node11" href="$rpcserver_8cpp.html#adda5af922ba2f27c9f6219394d3c4f4c" title="ServiceConnection" alt="" coords="414,216,547,243"/>
+</map>

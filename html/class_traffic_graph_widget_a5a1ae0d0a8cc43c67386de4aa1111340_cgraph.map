@@ -1,0 +1,6 @@
+<map id="TrafficGraphWidget::updateRates" name="TrafficGraphWidget::updateRates">
+<area shape="rect" id="node2" href="$class_client_model.html#a175c96ffc4d793777316e36c501a7f94" title="ClientModel::getTotalBytesRecv" alt="" coords="191,5,403,32"/>
+<area shape="rect" id="node4" href="$class_client_model.html#a4229224bf8a2df52e44438a449da6ba3" title="ClientModel::getTotalBytesSent" alt="" coords="192,56,401,83"/>
+<area shape="rect" id="node3" href="$class_c_node.html#a1988b63b48fdc9b72014bdf9588b0168" title="CNode::GetTotalBytesRecv" alt="" coords="451,5,636,32"/>
+<area shape="rect" id="node5" href="$class_c_node.html#af318a64e7ddad50d1e1b6fc123a5f0b9" title="CNode::GetTotalBytesSent" alt="" coords="452,56,635,83"/>
+</map>

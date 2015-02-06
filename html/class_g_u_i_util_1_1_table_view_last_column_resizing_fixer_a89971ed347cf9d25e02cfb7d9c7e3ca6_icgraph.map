@@ -1,0 +1,4 @@
+<map id="GUIUtil::TableViewLastColumnResizingFixer::stretchColumnWidth" name="GUIUtil::TableViewLastColumnResizingFixer::stretchColumnWidth">
+<area shape="rect" id="node2" href="$class_receive_coins_dialog.html#a8ebec2144a935622b4a33c57601a8868" title="ReceiveCoinsDialog\l::resizeEvent" alt="" coords="311,5,454,47"/>
+<area shape="rect" id="node3" href="$class_transaction_view.html#a6bcc05526bc111b4299d32d882f633b8" title="TransactionView::resizeEvent" alt="" coords="284,71,481,98"/>
+</map>

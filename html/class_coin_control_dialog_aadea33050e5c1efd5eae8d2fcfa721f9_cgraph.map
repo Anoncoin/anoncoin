@@ -1,0 +1,51 @@
+<map id="CoinControlDialog::updateView" name="CoinControlDialog::updateView">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="191,65,395,92"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#a89ed202e2dbc04aaa70d72872b95b351" title="WalletModel::getAddressTable\lModel" alt="" coords="191,117,395,158"/>
+<area shape="rect" id="node4" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="194,183,391,209"/>
+<area shape="rect" id="node5" href="$class_wallet_model.html#aadf8de5a584594abdb299b463bd7578f" title="WalletModel::listCoins" alt="" coords="216,512,369,539"/>
+<area shape="rect" id="node15" href="$class_c_coin_control.html#a8cbb071e0eb4ff34ba0209b3708c8142" title="CCoinControl::IsSelected" alt="" coords="715,731,887,757"/>
+<area shape="rect" id="node18" href="$script_8cpp.html#a951f7e601746ae076afdf3169ecca2fc" title="ExtractDestination" alt="" coords="735,208,866,235"/>
+<area shape="rect" id="node27" href="$class_c_base58_data.html#a9a47b10dadff15b8d6a6d0e63ce3ae32" title="CBase58Data::ToString" alt="" coords="462,680,625,707"/>
+<area shape="rect" id="node30" href="$class_address_table_model.html#a1c39ce19eecfc9f3ace10435b162607f" title="AddressTableModel::\llabelForAddress" alt="" coords="219,614,367,655"/>
+<area shape="rect" id="node31" href="$class_wallet_model.html#a25601217a489e196e947e47c2189c311" title="WalletModel::getPubKey" alt="" coords="209,731,377,757"/>
+<area shape="rect" id="node33" href="$class_c_pub_key.html#a397e437d9d0a008e2641892147b0931a" title="CPubKey::IsCompressed" alt="" coords="957,259,1129,285"/>
+<area shape="rect" id="node34" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="216,781,369,808"/>
+<area shape="rect" id="node38" href="$class_coin_control_dialog.html#ac01c96c8a1a024c9ca35eda9ca297792" title="CoinControlDialog::\lstrPad" alt="" coords="224,833,361,874"/>
+<area shape="rect" id="node39" href="$namespace_g_u_i_util.html#aae732a04fea25190081120bf0cc773e8" title="GUIUtil::dateTimeStr" alt="" coords="220,899,365,925"/>
+<area shape="rect" id="node40" href="$class_c_wallet_tx.html#a25fdd940fcdd2ea9d05547c5c789fc0d" title="CWalletTx::GetTxTime" alt="" coords="214,949,371,976"/>
+<area shape="rect" id="node41" href="$class_coin_control_dialog.html#a7285f91e6d9b510084966f4229146bcd" title="CoinControlDialog::\lgetPriorityLabel" alt="" coords="224,1001,361,1042"/>
+<area shape="rect" id="node43" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="212,1067,373,1093"/>
+<area shape="rect" id="node45" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="227,1117,359,1144"/>
+<area shape="rect" id="node46" href="$class_wallet_model.html#a7712ac646004fe66c0bcafd0122c4ede" title="WalletModel::isLockedCoin" alt="" coords="201,1168,384,1195"/>
+<area shape="rect" id="node48" href="$class_c_coin_control.html#a28843122428b30c81814e54b9a0bcaa6" title="CCoinControl::UnSelect" alt="" coords="211,1219,375,1245"/>
+<area shape="rect" id="node49" href="$class_coin_control_dialog.html#a9573211ed101522c9b4307a02b268e39" title="CoinControlDialog::\lsortView" alt="" coords="224,1270,361,1311"/>
+<area shape="rect" id="node6" href="$class_c_wallet.html#acf326816b2cf812e23b408b12854236b" title="CWallet::AvailableCoins" alt="" coords="461,528,625,555"/>
+<area shape="rect" id="node9" href="$class_c_wallet.html#ab7cc8fd8859fecc6ed768dacb5642c5e" title="CWallet::IsMine" alt="" coords="985,680,1101,707"/>
+<area shape="rect" id="node16" href="$class_c_wallet.html#a41f4c77a0843692388f8b11d5fb88042" title="CWallet::ListLockedCoins" alt="" coords="457,477,630,504"/>
+<area shape="rect" id="node17" href="$class_c_wallet.html#a0864e64299906f8ba499510d12125a23" title="CWallet::IsChange" alt="" coords="477,360,610,387"/>
+<area shape="rect" id="node7" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="1005,629,1081,656"/>
+<area shape="rect" id="node8" href="$class_c_wallet_tx.html#af2eff3b849af124cdf869fc03f587972" title="CWalletTx::IsTrusted" alt="" coords="727,680,874,707"/>
+<area shape="rect" id="node10" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="1240,579,1301,605"/>
+<area shape="rect" id="node11" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="712,360,889,387"/>
+<area shape="rect" id="node12" href="$class_c_merkle_tx.html#a8bd25cf06de6a443d0925ec8ba66c949" title="CMerkleTx::GetBlocksToMaturity" alt="" coords="692,411,909,437"/>
+<area shape="rect" id="node13" href="$class_c_merkle_tx.html#a1db61eaa33fcb975115116ecf85d0c6c" title="CMerkleTx::GetDepthInMain\lChain" alt="" coords="705,462,896,503"/>
+<area shape="rect" id="node14" href="$class_c_coin_control.html#a8c8b06e183e7a30c646bdec793b30e89" title="CCoinControl::HasSelected" alt="" coords="708,528,893,555"/>
+<area shape="rect" id="node19" href="$script_8cpp.html#a6ee6be50bff44464e905680c6fcee6dc" title="Solver" alt="" coords="1013,107,1073,133"/>
+<area shape="rect" id="node24" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="983,208,1103,235"/>
+<area shape="rect" id="node20" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="1225,157,1316,184"/>
+<area shape="rect" id="node21" href="$class_c_script.html#acba6d6d35776de4ce3a632446f44805f" title="CScript::IsPayToScriptHash" alt="" coords="1177,5,1364,32"/>
+<area shape="rect" id="node22" href="$class_c_script.html#a94635ed93d8d244ec3acfa83f9ecfe5f" title="CScript::GetOp" alt="" coords="1215,56,1327,83"/>
+<area shape="rect" id="node23" href="$class_c_script.html#a7f975fca06b3e9a17da8ba23c7647e2e" title="CScript::DecodeOP_N" alt="" coords="1193,107,1349,133"/>
+<area shape="rect" id="node25" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="1233,208,1309,235"/>
+<area shape="rect" id="node26" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="1216,259,1325,285"/>
+<area shape="rect" id="node28" href="$base58_8cpp.html#ace9a5807ee51604f33044339f073ec76" title="Encode a byte vector into a base58&#45;encoded string, including checksum. " alt="" coords="725,832,876,859"/>
+<area shape="rect" id="node29" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="1017,832,1070,859"/>
+<area shape="rect" id="node32" href="$class_c_crypto_key_store.html#abd897aff07ec5679235b14cb4485dc37" title="CCryptoKeyStore::GetPubKey" alt="" coords="443,731,644,757"/>
+<area shape="rect" id="node35" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="472,883,615,909"/>
+<area shape="rect" id="node36" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="469,781,618,808"/>
+<area shape="rect" id="node37" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="459,832,627,859"/>
+<area shape="rect" id="node42" href="$main_8h.html#ae6c67bac023a01f1ae29b7f2f4505bba" title="AllowFree" alt="" coords="503,1008,584,1035"/>
+<area shape="rect" id="node44" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="491,1067,595,1093"/>
+<area shape="rect" id="node47" href="$class_c_wallet.html#ab85a2574c33ca0f19da06b065d7f1eb5" title="CWallet::IsLockedCoin" alt="" coords="465,1168,622,1195"/>
+<area shape="rect" id="node50" href="$class_coin_control_dialog.html#a12cc992d1d2c5ef33f42d89c7e3e9dad" title="CoinControlDialog::\lgetMappedColumn" alt="" coords="475,1270,612,1311"/>
+</map>

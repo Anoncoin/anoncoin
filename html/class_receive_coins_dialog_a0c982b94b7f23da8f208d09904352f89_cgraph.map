@@ -1,0 +1,25 @@
+<map id="ReceiveCoinsDialog::ReceiveCoinsDialog" name="ReceiveCoinsDialog::ReceiveCoinsDialog">
+<area shape="rect" id="node2" href="$class_ui___receive_coins_dialog.html#a990cf54ed517108599c0fc1e97fb4288" title="Ui_ReceiveCoinsDialog\l::setupUi" alt="" coords="203,5,365,47"/>
+<area shape="rect" id="node5" href="$class_receive_coins_dialog.html#a9b485c40590668ac2e7d0a4a827a334f" title="ReceiveCoinsDialog\l::showMenu" alt="" coords="430,79,573,120"/>
+<area shape="rect" id="node7" href="$class_receive_coins_dialog.html#abdd69012e01da1d61b0bf622f9e156b1" title="ReceiveCoinsDialog\l::copyLabel" alt="" coords="213,123,355,164"/>
+<area shape="rect" id="node18" href="$class_receive_coins_dialog.html#a99b4d3cbb14744e8b3eff41f83413cb7" title="ReceiveCoinsDialog\l::copyMessage" alt="" coords="213,188,355,229"/>
+<area shape="rect" id="node19" href="$class_receive_coins_dialog.html#a3f8309dfaa944576bae760ba33222463" title="ReceiveCoinsDialog\l::copyAmount" alt="" coords="213,253,355,295"/>
+<area shape="rect" id="node20" href="$class_receive_coins_dialog.html#aaea0511f0ab43f1d2b23f8684d1edfc3" title="ReceiveCoinsDialog\l::clear" alt="" coords="430,312,573,353"/>
+<area shape="rect" id="node3" href="$class_ui___receive_coins_dialog.html#ab8ec986ddacb3e597797189ff26a3de2" title="Ui_ReceiveCoinsDialog\l::retranslateUi" alt="" coords="420,5,583,47"/>
+<area shape="rect" id="node4" href="$class_anoncoin_amount_field.html#a2d8609eead093e27b4e2d07f12b56815" title="AnoncoinAmountField\l::setText" alt="" coords="671,5,823,47"/>
+<area shape="rect" id="node6" href="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f" title="WalletModel::getRecentRequests\lTableModel" alt="" coords="637,79,857,120"/>
+<area shape="rect" id="node8" href="$class_receive_coins_dialog.html#adcf53aced7dfa041a55278b4807a20a2" title="ReceiveCoinsDialog\l::copyColumnToClipboard" alt="" coords="413,163,589,204"/>
+<area shape="rect" id="node9" href="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07" title="GUIUtil::setClipboard" alt="" coords="674,161,821,187"/>
+<area shape="rect" id="node10" href="$class_recent_requests_table_model.html#a899a483b2d6fd33a034d2781c5d638b7" title="RecentRequestsTableModel\l::data" alt="" coords="652,212,843,253"/>
+<area shape="rect" id="node11" href="$namespace_g_u_i_util.html#aae732a04fea25190081120bf0cc773e8" title="GUIUtil::dateTimeStr" alt="" coords="935,201,1080,227"/>
+<area shape="rect" id="node12" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="931,150,1084,177"/>
+<area shape="rect" id="node16" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="905,302,1109,329"/>
+<area shape="rect" id="node17" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="909,251,1106,278"/>
+<area shape="rect" id="node13" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="1182,99,1325,126"/>
+<area shape="rect" id="node14" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="1179,150,1328,177"/>
+<area shape="rect" id="node15" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="1169,201,1337,227"/>
+<area shape="rect" id="node21" href="$class_anoncoin_amount_field.html#a2fbc8a8cb0a623e6e773a0913bf5a828" title="Make field empty and ready for new input. " alt="" coords="671,360,823,401"/>
+<area shape="rect" id="node22" href="$class_receive_coins_dialog.html#a19eca7743c5326eee821bb8c0af234bb" title="ReceiveCoinsDialog\l::updateDisplayUnit" alt="" coords="676,295,819,336"/>
+<area shape="rect" id="node23" href="$class_anoncoin_amount_field.html#a44252e1921be1026e68adfbdc99d5ca4" title="Change unit used to display amount. " alt="" coords="931,353,1083,395"/>
+<area shape="rect" id="node24" href="$class_q_value_combo_box.html#af192c68c0c82f33000d8c1be8c013d2d" title="QValueComboBox::setValue" alt="" coords="1157,361,1349,387"/>
+</map>

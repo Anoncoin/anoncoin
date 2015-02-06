@@ -1,0 +1,19 @@
+<map id="AddressBookPage" name="AddressBookPage">
+<area shape="rect" id="node3" href="$class_address_table_model.html" title="Qt model of the address book in the core. " alt="" coords="1347,311,1487,337"/>
+<area shape="rect" id="node5" href="$class_address_table_priv.html" title="AddressTablePriv" alt="" coords="1665,265,1792,292"/>
+<area shape="rect" id="node16" href="$class_wallet_model.html" title="Interface to Anoncoin wallet from Qt view code. " alt="" coords="1681,452,1777,479"/>
+<area shape="rect" id="node18" href="$class_transaction_table_model.html" title="UI model for the transaction table of a wallet. " alt="" coords="2025,407,2187,433"/>
+<area shape="rect" id="node20" href="$class_recent_requests_table_model.html" title="Model for list of recently generated payment requests / anoncoin: URIs. " alt="" coords="2011,596,2201,623"/>
+<area shape="rect" id="node6" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="1144,239,1213,265"/>
+<area shape="rect" id="node19" href="$class_transaction_table_priv.html" title="TransactionTablePriv" alt="" coords="2292,361,2440,388"/>
+<area shape="rect" id="node7" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="805,137,931,164"/>
+<area shape="rect" id="node8" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="637,136,756,163"/>
+<area shape="rect" id="node9" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="501,137,588,164"/>
+<area shape="rect" id="node12" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="808,239,928,265"/>
+<area shape="rect" id="node13" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="829,289,907,316"/>
+<area shape="rect" id="node14" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="825,340,911,367"/>
+<area shape="rect" id="node15" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="671,340,722,367"/>
+<area shape="rect" id="node21" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="1365,525,1469,552"/>
+<area shape="rect" id="node23" href="$class_ui_1_1_address_book_page.html" title="Ui::AddressBookPage" alt="" coords="1341,56,1493,83"/>
+<area shape="rect" id="node24" href="$class_ui___address_book_page.html" title="Ui_AddressBookPage" alt="" coords="1103,56,1255,83"/>
+</map>

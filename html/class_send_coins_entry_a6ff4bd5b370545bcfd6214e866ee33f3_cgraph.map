@@ -1,0 +1,6 @@
+<map id="SendCoinsEntry::updateDisplayUnit" name="SendCoinsEntry::updateDisplayUnit">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="287,5,491,32"/>
+<area shape="rect" id="node3" href="$class_anoncoin_amount_field.html#a44252e1921be1026e68adfbdc99d5ca4" title="Change unit used to display amount. " alt="" coords="313,57,465,98"/>
+<area shape="rect" id="node5" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="290,123,487,149"/>
+<area shape="rect" id="node4" href="$class_q_value_combo_box.html#af192c68c0c82f33000d8c1be8c013d2d" title="QValueComboBox::setValue" alt="" coords="539,64,731,91"/>
+</map>

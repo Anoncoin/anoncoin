@@ -1,0 +1,51 @@
+<map id="src/bignum.h" name="src/bignum.h">
+<area shape="rect" id="node2" href="$chainparams_8h.html" title="src/chainparams.h" alt="" coords="945,80,1076,107"/>
+<area shape="rect" id="node7" href="$main_8h.html" title="src/main.h" alt="" coords="1334,162,1418,189"/>
+<area shape="rect" id="node36" href="$_zerocoin_8h.html" title="Exceptions and constants for Zerocoin. " alt="" coords="3225,319,3385,345"/>
+<area shape="rect" id="node48" href="$_coin_8h.html" title="PublicCoin and PrivateCoin classes for the Zerocoin library. " alt="" coords="3195,80,3331,107"/>
+<area shape="rect" id="node49" href="$_coin_spend_8h.html" title="CoinSpend class for the Zerocoin library. " alt="" coords="3281,244,3455,271"/>
+<area shape="rect" id="node50" href="$_serial_number_signature_of_knowledge_8h.html" title="SerialNumberSignatureOfKnowledge class for the Zerocoin library. " alt="" coords="3405,155,3584,196"/>
+<area shape="rect" id="node3" href="$protocol_8h.html" title="src/protocol.h" alt="" coords="2794,162,2897,189"/>
+<area shape="rect" id="node4" href="$chainparams_8cpp.html" title="src/chainparams.cpp" alt="" coords="2974,244,3119,271"/>
+<area shape="rect" id="node6" href="$anoncoin-cli_8cpp.html" title="src/anoncoin&#45;cli.cpp" alt="" coords="419,162,559,189"/>
+<area shape="rect" id="node13" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="989,319,1086,345"/>
+<area shape="rect" id="node19" href="$clientmodel_8cpp.html" title="src/qt/clientmodel.cpp" alt="" coords="115,319,266,345"/>
+<area shape="rect" id="node20" href="$rpcconsole_8cpp.html" title="src/qt/rpcconsole.cpp" alt="" coords="313,319,461,345"/>
+<area shape="rect" id="node28" href="$rpcmining_8cpp.html" title="src/rpcmining.cpp" alt="" coords="1954,244,2081,271"/>
+<area shape="rect" id="node32" href="$base58_8h.html" title="src/base58.h" alt="" coords="2491,162,2589,189"/>
+<area shape="rect" id="node33" href="$net_8cpp.html" title="src/net.cpp" alt="" coords="583,162,670,189"/>
+<area shape="rect" id="node34" href="$rpcclient_8cpp.html" title="src/rpcclient.cpp" alt="" coords="694,162,813,189"/>
+<area shape="rect" id="node35" href="$util_8cpp.html" title="src/util.cpp" alt="" coords="837,162,923,189"/>
+<area shape="rect" id="node5" href="$rpcnet_8cpp.html" title="src/rpcnet.cpp" alt="" coords="2793,244,2898,271"/>
+<area shape="rect" id="node8" href="$anoncoind_8cpp.html" title="src/anoncoind.cpp" alt="" coords="688,244,819,271"/>
+<area shape="rect" id="node9" href="$auxpow_8h.html" title="src/auxpow.h" alt="" coords="1665,244,1765,271"/>
+<area shape="rect" id="node10" href="$checkpoints_8cpp.html" title="src/checkpoints.cpp" alt="" coords="475,244,613,271"/>
+<area shape="rect" id="node11" href="$init_8cpp.html" title="src/init.cpp" alt="" coords="5,319,91,345"/>
+<area shape="rect" id="node12" href="$txdb_8h.html" title="src/txdb.h" alt="" coords="843,244,923,271"/>
+<area shape="rect" id="node14" href="$optionsdialog_8cpp.html" title="src/qt/optionsdialog.cpp" alt="" coords="592,319,755,345"/>
+<area shape="rect" id="node15" href="$optionsmodel_8cpp.html" title="src/qt/optionsmodel.cpp" alt="" coords="801,319,964,345"/>
+<area shape="rect" id="node16" href="$miner_8cpp.html" title="src/miner.cpp" alt="" coords="1325,244,1427,271"/>
+<area shape="rect" id="node17" href="$anoncoin_8cpp.html" title="src/qt/anoncoin.cpp" alt="" coords="1451,244,1589,271"/>
+<area shape="rect" id="node18" href="$peertablemodel_8h.html" title="src/qt/peertablemodel.h" alt="" coords="187,244,349,271"/>
+<area shape="rect" id="node21" href="$coincontroldialog_8cpp.html" title="src/qt/coincontroldialog.cpp" alt="" coords="1212,319,1396,345"/>
+<area shape="rect" id="node22" href="$transactiondesc_8cpp.html" title="src/qt/transactiondesc.cpp" alt="" coords="1827,319,2005,345"/>
+<area shape="rect" id="node23" href="$transactiontablemodel_8cpp.html" title="src/qt/transactiontablemodel.cpp" alt="" coords="1555,319,1768,345"/>
+<area shape="rect" id="node24" href="$walletmodel_8cpp.html" title="src/qt/walletmodel.cpp" alt="" coords="2547,319,2701,345"/>
+<area shape="rect" id="node25" href="$rpcblockchain_8cpp.html" title="src/rpcblockchain.cpp" alt="" coords="1150,244,1301,271"/>
+<area shape="rect" id="node26" href="$rpcdump_8cpp.html" title="src/rpcdump.cpp" alt="" coords="2725,319,2845,345"/>
+<area shape="rect" id="node27" href="$wallet_8h.html" title="src/wallet.h" alt="" coords="1789,244,1878,271"/>
+<area shape="rect" id="node29" href="$rpcmisc_8cpp.html" title="src/rpcmisc.cpp" alt="" coords="2253,244,2368,271"/>
+<area shape="rect" id="node30" href="$rpcrawtransaction_8cpp.html" title="src/rpcrawtransaction.cpp" alt="" coords="2392,244,2565,271"/>
+<area shape="rect" id="node31" href="$rpcserver_8cpp.html" title="src/rpcserver.cpp" alt="" coords="2105,244,2229,271"/>
+<area shape="rect" id="node37" href="$_accumulator_8cpp.html" title="Accumulator and AccumulatorWitness classes for the Zerocoin library. " alt="" coords="2184,401,2381,427"/>
+<area shape="rect" id="node38" href="$_accumulator_proof_of_knowledge_8cpp.html" title="AccumulatorProofOfKnowledge class for the Zerocoin library. " alt="" coords="2406,393,2578,435"/>
+<area shape="rect" id="node39" href="$_benchmark_8cpp.html" title="Benchmarking tests for Zerocoin. " alt="" coords="2602,401,2793,427"/>
+<area shape="rect" id="node40" href="$_coin_8cpp.html" title="PublicCoin and PrivateCoin classes for the Zerocoin library. " alt="" coords="2817,401,2967,427"/>
+<area shape="rect" id="node41" href="$_coin_spend_8cpp.html" title="CoinSpend class for the Zerocoin library. " alt="" coords="2992,401,3181,427"/>
+<area shape="rect" id="node42" href="$_commitment_8cpp.html" title="Commitment and CommitmentProof classes for the Zerocoin library. " alt="" coords="3206,401,3405,427"/>
+<area shape="rect" id="node43" href="$paramgen_8cpp.html" title="Parameter generation utility for Zerocoin. " alt="" coords="3429,401,3611,427"/>
+<area shape="rect" id="node44" href="$_param_generation_8cpp.html" title="Parameter manipulation routines for the Zerocoin cryptographic components. " alt="" coords="3635,401,3863,427"/>
+<area shape="rect" id="node45" href="$_params_8cpp.html" title="Parameter class for Zerocoin. " alt="" coords="3887,401,4057,427"/>
+<area shape="rect" id="node46" href="$_print_u_f_o_candidate_8cpp.html" title="src/zerocoin/PrintUFOCandidate.cpp" alt="" coords="4081,401,4319,427"/>
+<area shape="rect" id="node47" href="$_serial_number_signature_of_knowledge_8cpp.html" title="SerialNumberSignatureOfKnowledge class for the Zerocoin library. " alt="" coords="4344,393,4528,435"/>
+</map>

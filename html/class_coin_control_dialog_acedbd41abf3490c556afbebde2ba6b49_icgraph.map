@@ -1,0 +1,8 @@
+<map id="CoinControlDialog::updateLabelLocked" name="CoinControlDialog::updateLabelLocked">
+<area shape="rect" id="node2" href="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a" title="CoinControlDialog::\lsetModel" alt="" coords="192,5,329,47"/>
+<area shape="rect" id="node5" href="$class_coin_control_dialog.html#a92d82e9a08d81b99fda6546d83f63a19" title="CoinControlDialog::\llockCoin" alt="" coords="192,71,329,112"/>
+<area shape="rect" id="node7" href="$class_coin_control_dialog.html#a3097ebdc8972660aae30f49f2ccd1d8c" title="CoinControlDialog::\lunlockCoin" alt="" coords="192,136,329,177"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49" title="SendCoinsDialog::coinControl\lButtonClicked" alt="" coords="377,5,577,47"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="625,5,823,47"/>
+<area shape="rect" id="node6" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="409,103,546,144"/>
+</map>

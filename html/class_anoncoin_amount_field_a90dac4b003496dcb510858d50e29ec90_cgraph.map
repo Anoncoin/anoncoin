@@ -1,0 +1,6 @@
+<map id="AnoncoinAmountField::value" name="AnoncoinAmountField::value">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="207,31,356,57"/>
+<area shape="rect" id="node5" href="$class_anoncoin_amount_field.html#ac11ebe3fdc76e730bf43a1ee46e5ca8c" title="AnoncoinAmountField\l::text" alt="" coords="205,82,357,123"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="418,5,561,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="405,56,573,83"/>
+</map>

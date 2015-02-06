@@ -1,0 +1,11 @@
+<map id="ReceiveCoinsDialog::setModel" name="ReceiveCoinsDialog::setModel">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="464,137,668,163"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f" title="WalletModel::getRecentRequests\lTableModel" alt="" coords="196,71,416,112"/>
+<area shape="rect" id="node4" href="$class_recent_requests_table_model.html#a63ba78741b7115af25908f88d138c201" title="RecentRequestsTableModel\l::sort" alt="" coords="211,5,401,47"/>
+<area shape="rect" id="node6" href="$class_receive_coins_dialog.html#a19eca7743c5326eee821bb8c0af234bb" title="ReceiveCoinsDialog\l::updateDisplayUnit" alt="" coords="235,188,377,229"/>
+<area shape="rect" id="node10" href="$class_receive_coins_dialog.html#a7f6250ef737d2700d392612813f1d03c" title="ReceiveCoinsDialog\l::recentRequestsView\l_selectionChanged" alt="" coords="230,254,382,310"/>
+<area shape="rect" id="node5" href="$class_recent_requests_table_model.html#a24e3351b43bdf7213a95f906a4c3387a" title="RecentRequestsTableModel\l::index" alt="" coords="471,5,661,47"/>
+<area shape="rect" id="node7" href="$class_anoncoin_amount_field.html#a44252e1921be1026e68adfbdc99d5ca4" title="Change unit used to display amount. " alt="" coords="490,188,642,229"/>
+<area shape="rect" id="node9" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="467,254,665,281"/>
+<area shape="rect" id="node8" href="$class_q_value_combo_box.html#af192c68c0c82f33000d8c1be8c013d2d" title="QValueComboBox::setValue" alt="" coords="716,195,908,222"/>
+</map>

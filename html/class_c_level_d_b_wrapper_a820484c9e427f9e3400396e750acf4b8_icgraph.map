@@ -1,0 +1,33 @@
+<map id="CLevelDBWrapper::WriteBatch" name="CLevelDBWrapper::WriteBatch">
+<area shape="rect" id="node2" href="$class_c_level_d_b_wrapper.html#a740caa1aefbafc888838ea7f70dc31f4" title="CLevelDBWrapper::Write" alt="" coords="273,147,445,173"/>
+<area shape="rect" id="node27" href="$class_c_level_d_b_wrapper.html#a9f67e2880ba191fdc9439ba34e315d72" title="CLevelDBWrapper::Erase" alt="" coords="541,5,717,32"/>
+<area shape="rect" id="node28" href="$class_c_level_d_b_wrapper.html#abd05e914893cd610e8444871f829d8c9" title="CLevelDBWrapper::Sync" alt="" coords="273,197,444,224"/>
+<area shape="rect" id="node29" href="$class_c_coins_view_d_b.html#a86838a606916223df0beaacc58b3502f" title="CCoinsViewDB::SetCoins" alt="" coords="271,248,446,275"/>
+<area shape="rect" id="node30" href="$class_c_coins_view_d_b.html#abbc96beacd91d86fd1317ecb2d15d29b" title="CCoinsViewDB::SetBestBlock" alt="" coords="259,299,459,325"/>
+<area shape="rect" id="node31" href="$class_c_coins_view_d_b.html#a6a7ffc5ac9ecb7b8eb1f3514ef48eaf2" title="CCoinsViewDB::BatchWrite" alt="" coords="266,349,451,376"/>
+<area shape="rect" id="node32" href="$class_c_block_tree_d_b.html#a1e03745f9675ad352a1483a0aa7ef308" title="CBlockTreeDB::WriteTxIndex" alt="" coords="800,395,996,421"/>
+<area shape="rect" id="node3" href="$class_c_block_tree_d_b.html#a608a04a08445d95e477cb66889c679d0" title="CBlockTreeDB::WriteBlock\lIndex" alt="" coords="539,274,720,315"/>
+<area shape="rect" id="node20" href="$class_c_block_tree_d_b.html#ae4512620e5a65258449b8c9ba38f74b5" title="CBlockTreeDB::WriteBestInvalidWork" alt="" coords="507,340,752,367"/>
+<area shape="rect" id="node21" href="$class_c_block_tree_d_b.html#ae248032ee1f1303dea54a0b36ad84755" title="CBlockTreeDB::WriteBlock\lFileInfo" alt="" coords="539,209,720,250"/>
+<area shape="rect" id="node24" href="$class_c_block_tree_d_b.html#ae1f4ea54edf05a056d2da00ea90a9394" title="CBlockTreeDB::WriteLastBlockFile" alt="" coords="515,157,743,184"/>
+<area shape="rect" id="node25" href="$class_c_block_tree_d_b.html#a8fa5d150b98f4fd1aa8cf503eddfccef" title="CBlockTreeDB::WriteReindexing" alt="" coords="1044,19,1260,45"/>
+<area shape="rect" id="node26" href="$class_c_block_tree_d_b.html#af2f65b70ac5d8a198d4f29a7e909c08a" title="CBlockTreeDB::WriteFlag" alt="" coords="811,107,985,133"/>
+<area shape="rect" id="node4" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="1100,336,1204,363"/>
+<area shape="rect" id="node13" href="$main_8h.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="835,208,961,235"/>
+<area shape="rect" id="node5" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="1331,336,1406,363"/>
+<area shape="rect" id="node11" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="1308,392,1429,419"/>
+<area shape="rect" id="node6" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1831,120,1901,147"/>
+<area shape="rect" id="node10" href="$rpcblockchain_8cpp.html#a0b1dd8862fc7292c243ad9489f96a3c8" title="verifychain" alt="" coords="1512,297,1597,324"/>
+<area shape="rect" id="node7" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1997,95,2061,121"/>
+<area shape="rect" id="node9" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1949,145,2109,172"/>
+<area shape="rect" id="node8" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="2157,95,2208,121"/>
+<area shape="rect" id="node12" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="1493,399,1616,425"/>
+<area shape="rect" id="node14" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="1104,201,1200,228"/>
+<area shape="rect" id="node19" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="1099,145,1205,172"/>
+<area shape="rect" id="node15" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="1317,201,1420,228"/>
+<area shape="rect" id="node16" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="1477,196,1632,223"/>
+<area shape="rect" id="node18" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="1509,247,1601,273"/>
+<area shape="rect" id="node17" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="1680,145,1783,172"/>
+<area shape="rect" id="node22" href="$main_8cpp.html#a92fa926dca5dee9f673536d85f067ee7" title="FindBlockPos" alt="" coords="846,157,950,184"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#a16dd07301ce5269712d7936840c0217f" title="FindUndoPos" alt="" coords="847,264,949,291"/>
+</map>

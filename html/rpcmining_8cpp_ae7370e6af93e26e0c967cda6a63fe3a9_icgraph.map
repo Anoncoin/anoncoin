@@ -1,0 +1,6 @@
+<map id="ShutdownRPCMining" name="ShutdownRPCMining">
+<area shape="rect" id="node2" href="$init_8h.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9" title="Shutdown" alt="" coords="203,31,284,57"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="385,5,449,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_coin.html#ac33fbca9335d356d9d6102a0122f2a5b" title="AnoncoinCoin::shutdown" alt="" coords="332,56,501,83"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="549,5,600,32"/>
+</map>

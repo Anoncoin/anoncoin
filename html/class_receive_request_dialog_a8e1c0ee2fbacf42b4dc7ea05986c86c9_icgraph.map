@@ -1,0 +1,6 @@
+<map id="ReceiveRequestDialog::update" name="ReceiveRequestDialog::update">
+<area shape="rect" id="node2" href="$class_receive_request_dialog.html#ad57b3bf409346660842360836fd8569d" title="ReceiveRequestDialog\l::setModel" alt="" coords="211,5,368,47"/>
+<area shape="rect" id="node5" href="$class_receive_request_dialog.html#a43344270ef71e68ad9c7a931cc0ca9ed" title="ReceiveRequestDialog\l::setInfo" alt="" coords="211,71,368,112"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#a5eabd6106c8e3b275305b84c0303f314" title="ReceiveCoinsDialog\l::on_recentRequestsView\l_doubleClicked" alt="" coords="416,31,589,87"/>
+<area shape="rect" id="node4" href="$class_receive_coins_dialog.html#a56df78045de75af55f4c4045ad4b7fcd" title="ReceiveCoinsDialog\l::on_showRequestButton\l_clicked" alt="" coords="637,31,808,87"/>
+</map>

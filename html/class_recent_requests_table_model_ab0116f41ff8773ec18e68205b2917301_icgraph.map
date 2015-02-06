@@ -1,0 +1,5 @@
+<map id="RecentRequestsTableModel::getAmountTitle" name="RecentRequestsTableModel::getAmountTitle">
+<area shape="rect" id="node2" href="$class_recent_requests_table_model.html#ab3ef691b8c34e6d6e5ae0bdf7953a360" title="RecentRequestsTableModel\l::RecentRequestsTableModel" alt="" coords="721,5,919,47"/>
+<area shape="rect" id="node3" href="$class_recent_requests_table_model.html#a8bc224f31142bd2da1c2729010ee84a3" title="Updates the column title to &quot;Amount (DisplayUnit)&quot; and emits headerDataChanged() signal for table hea..." alt="" coords="244,35,435,76"/>
+<area shape="rect" id="node4" href="$class_recent_requests_table_model.html#a8c4fe82f628df4e3a46809514ba9fe03" title="RecentRequestsTableModel\l::updateDisplayUnit" alt="" coords="483,35,673,76"/>
+</map>

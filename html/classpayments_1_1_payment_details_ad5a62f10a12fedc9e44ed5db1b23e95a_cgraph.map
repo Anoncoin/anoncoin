@@ -1,0 +1,5 @@
+<map id="payments::PaymentDetails::set_allocated_payment_url" name="payments::PaymentDetails::set_allocated_payment_url">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_details.html#ab566f44ee9f9a7961dbe8f430602e539" title="payments::PaymentDetails\l::set_has_payment_url" alt="" coords="243,5,423,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#abf568d7f349cf822d99e69d1424c5099" title="payments::PaymentDetails\l::payment_url" alt="" coords="243,71,423,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_details.html#aa95ff6fa704ede82cba04f2dab185513" title="payments::PaymentDetails\l::clear_has_payment_url" alt="" coords="243,136,423,177"/>
+</map>

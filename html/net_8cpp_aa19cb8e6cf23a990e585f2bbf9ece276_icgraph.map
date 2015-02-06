@@ -1,0 +1,9 @@
+<map id="OpenNetworkConnection" name="OpenNetworkConnection">
+<area shape="rect" id="node2" href="$net_8cpp.html#a3b4720330e61127963a43df26b80f804" title="ThreadOpenConnections" alt="" coords="243,5,414,32"/>
+<area shape="rect" id="node8" href="$net_8cpp.html#a2d1ca95557ae336582b886a251e7fe94" title="ThreadOpenAddedConnections" alt="" coords="224,56,433,83"/>
+<area shape="rect" id="node3" href="$net_8h.html#a9396d8054e8f74959e9391871aaddde0" title="StartNode" alt="" coords="481,31,564,57"/>
+<area shape="rect" id="node4" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="612,31,683,57"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="779,5,843,32"/>
+<area shape="rect" id="node7" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="731,56,891,83"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="939,5,989,32"/>
+</map>

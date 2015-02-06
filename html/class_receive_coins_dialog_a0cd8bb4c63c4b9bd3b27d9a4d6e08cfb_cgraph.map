@@ -1,0 +1,15 @@
+<map id="ReceiveCoinsDialog::on_removeRequestButton_clicked" name="ReceiveCoinsDialog::on_removeRequestButton_clicked">
+<area shape="rect" id="node2" href="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f" title="WalletModel::getRecentRequests\lTableModel" alt="" coords="237,85,457,126"/>
+<area shape="rect" id="node3" href="$class_recent_requests_table_model.html#a63504be44ff9d33d5c508f6303622e5a" title="RecentRequestsTableModel\l::removeRows" alt="" coords="252,150,443,191"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a88d44bc0994c1701386f63b1f266637f" title="WalletModel::saveReceive\lRequest" alt="" coords="505,150,684,191"/>
+<area shape="rect" id="node5" href="$class_c_anoncoin_address.html#a046d3fc0d98fdb1093a1d41e32adf43f" title="CAnoncoinAddress::Get" alt="" coords="733,81,898,108"/>
+<area shape="rect" id="node11" href="$class_c_wallet.html#a9a03cf9972842588178387839f0ded3c" title="Erases a destination data tuple in the store and on disk. " alt="" coords="732,157,899,184"/>
+<area shape="rect" id="node13" href="$class_c_wallet.html#acbeae89a10e129930e5059d9167697e5" title="Adds a destination data tuple to the store, and saves it to disk. " alt="" coords="737,208,893,235"/>
+<area shape="rect" id="node6" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="947,56,1131,83"/>
+<area shape="rect" id="node7" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1245,5,1313,32"/>
+<area shape="rect" id="node9" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1003,107,1075,133"/>
+<area shape="rect" id="node8" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="1180,56,1379,83"/>
+<area shape="rect" id="node10" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1237,107,1321,133"/>
+<area shape="rect" id="node12" href="$class_c_wallet_d_b.html#a0403a98efe565020f8804eefbc808d90" title="Erase destination data tuple from wallet database. " alt="" coords="947,157,1132,184"/>
+<area shape="rect" id="node14" href="$class_c_wallet_d_b.html#af0de4949373dc3f0063db673fd8b24aa" title="Write destination data key,value tuple to database. " alt="" coords="949,208,1130,235"/>
+</map>

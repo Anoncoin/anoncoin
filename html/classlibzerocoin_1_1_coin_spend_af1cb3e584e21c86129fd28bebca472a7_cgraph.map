@@ -1,0 +1,5 @@
+<map id="libzerocoin::CoinSpend::CoinSpend" name="libzerocoin::CoinSpend::CoinSpend">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_accumulator_witness.html#a62539f46936225e0af0cdb072c3e04dc" title="Checks that this is a witness to the accumulation of coin. " alt="" coords="212,5,379,47"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_private_coin.html#a11f0047e01af467bba8d9fde58f88798" title="libzerocoin::PrivateCoin\l::getPublicCoin" alt="" coords="214,71,377,112"/>
+<area shape="rect" id="node4" href="$classlibzerocoin_1_1_public_coin.html#a6be47c86e07f35e6871eb45f8a621fb7" title="libzerocoin::PublicCoin\l::getValue" alt="" coords="217,136,374,177"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="CDataStream::SetVersion" name="CDataStream::SetVersion">
+<area shape="rect" id="node2" href="$class_c_net_message.html#a63b9f2351d5e92126cacacd51d9e16b6" title="CNetMessage::SetVersion" alt="" coords="229,5,408,32"/>
+<area shape="rect" id="node3" href="$class_c_node.html#a94438c6285d1635c62ccff10593780e6" title="CNode::SetRecvVersion" alt="" coords="456,5,623,32"/>
+</map>

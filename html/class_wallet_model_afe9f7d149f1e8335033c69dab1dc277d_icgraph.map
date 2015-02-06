@@ -1,0 +1,7 @@
+<map id="WalletModel::getTransactionTableModel" name="WalletModel::getTransactionTableModel">
+<area shape="rect" id="node2" href="$class_overview_page.html#a2ed52a3a87e9c74fee38fa873c9bc71f" title="OverviewPage::setWalletModel" alt="" coords="260,5,467,32"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="531,81,717,108"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a4920c2cd57d72eb50248948fa160c83c" title="TransactionView::setModel" alt="" coords="272,107,455,133"/>
+<area shape="rect" id="node6" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="244,157,483,184"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="765,81,929,108"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="SAM::Socket::bootstrapI2P" name="SAM::Socket::bootstrapI2P">
+<area shape="rect" id="node2" href="$class_s_a_m_1_1_socket.html#a453868a384aa8e90282dbc6c602293e1" title="SAM::Socket::init" alt="" coords="260,193,384,219"/>
+<area shape="rect" id="node4" href="$class_s_a_m_1_1_socket.html#a1455a6eec384bbdeda6382f33b49843b" title="SAM::Socket::isOk" alt="" coords="754,243,887,270"/>
+<area shape="rect" id="node5" href="$class_s_a_m_1_1_socket.html#acca2e69487ef3f865275d2d5fd1fbca1" title="SAM::Socket::handshake" alt="" coords="236,117,408,143"/>
+<area shape="rect" id="node3" href="$class_s_a_m_1_1_socket.html#a4255f1f63449dfc32d012089ea73f5e7" title="SAM::Socket::close" alt="" coords="752,193,889,219"/>
+<area shape="rect" id="node6" href="$class_s_a_m_1_1_socket.html#ae19e83b3127dc1560f164a05b1acd763" title="SAM::Socket::write" alt="" coords="488,243,623,270"/>
+<area shape="rect" id="node7" href="$class_s_a_m_1_1_message.html#a586e92a2047246d9bc1d54b2fe184531" title="SAM::Message::hello" alt="" coords="481,91,629,118"/>
+<area shape="rect" id="node9" href="$class_s_a_m_1_1_socket.html#a3455043c16c8ca5c64855e6ea3ff15e1" title="SAM::Socket::read" alt="" coords="489,142,622,169"/>
+<area shape="rect" id="node10" href="$class_s_a_m_1_1_message.html#a1d976198d4f36ab56f838f560d536d37" title="SAM::Message::checkAnswer" alt="" coords="456,41,655,67"/>
+<area shape="rect" id="node11" href="$class_s_a_m_1_1_message.html#a134481a97dd531c7e5e11aeff965ea6c" title="SAM::Message::getValue" alt="" coords="735,15,907,42"/>
+<area shape="rect" id="node8" href="$class_s_a_m_1_1_message.html#a2e50d96be91972360cdeed02071ec8b3" title="SAM::Message::createSAMRequest" alt="" coords="703,91,939,118"/>
+</map>

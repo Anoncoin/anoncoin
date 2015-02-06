@@ -1,0 +1,5 @@
+<map id="UnitDisplayStatusBarControl::setOptionsModel" name="UnitDisplayStatusBarControl::setOptionsModel">
+<area shape="rect" id="node2" href="$class_unit_display_status_bar_control.html#a380947f855d0a7ca8c457ad463c359bb" title="When Display Units are changed on OptionsModel it will refresh the display text of the control on the..." alt="" coords="247,5,438,47"/>
+<area shape="rect" id="node4" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="244,71,441,98"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="489,13,639,39"/>
+</map>

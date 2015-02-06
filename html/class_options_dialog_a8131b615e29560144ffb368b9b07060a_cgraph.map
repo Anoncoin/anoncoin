@@ -1,0 +1,25 @@
+<map id="OptionsDialog::OptionsDialog" name="OptionsDialog::OptionsDialog">
+<area shape="rect" id="node2" href="$class_ui___options_dialog.html#a47bf14cad55739827a2a327a28113e39" title="Ui_OptionsDialog::setupUi" alt="" coords="271,5,450,32"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#a9fd50f13c602e4e01b0d1d70d54ee89a" title="Restore window size and position. " alt="" coords="251,56,471,83"/>
+<area shape="rect" id="node5" href="$class_q_validated_line_edit.html#af0a2d32e9d2fb08c5069852cf4bfc860" title="QValidatedLineEdit\l::setEnabled" alt="" coords="293,107,429,149"/>
+<area shape="rect" id="node8" href="$class_anoncoin_amount_field.html#a168a4f11d296a1a9b17dc164f5f5f11e" title="Set single step in satoshis. " alt="" coords="285,366,437,407"/>
+<area shape="rect" id="node18" href="$class_options_dialog.html#ad0881b054b041e080a7cca8a0601651e" title="OptionsDialog::doProxyIp\lChecks" alt="" coords="274,217,447,258"/>
+<area shape="rect" id="node3" href="$class_ui___options_dialog.html#a94a42dd5b39a8472c62c8bec283f11ea" title="Ui_OptionsDialog::retranslateUi" alt="" coords="519,5,728,32"/>
+<area shape="rect" id="node6" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="805,107,941,149"/>
+<area shape="rect" id="node7" href="$class_q_validated_line_edit.html#aa5b5196dc6215f088bc138ac4dbc3e28" title="QValidatedLineEdit\l::checkValidity" alt="" coords="555,107,691,149"/>
+<area shape="rect" id="node9" href="$class_anoncoin_amount_field.html#a57a80569ce0ee2a8aee65d040a559dd4" title="AnoncoinAmountField\l::unitChanged" alt="" coords="547,451,699,493"/>
+<area shape="rect" id="node10" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="1219,341,1387,368"/>
+<area shape="rect" id="node11" href="$class_anoncoin_units.html#afc068b31e91676a7d0c88804f6d83c2b" title="Number of amount digits (to represent max number of coins) " alt="" coords="776,560,969,587"/>
+<area shape="rect" id="node12" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="1228,476,1377,503"/>
+<area shape="rect" id="node13" href="$class_anoncoin_amount_field.html#adcb07ed5c03e94809a1eb9bd00b8b98f" title="AnoncoinAmountField\l::setValue" alt="" coords="797,393,949,434"/>
+<area shape="rect" id="node14" href="$class_anoncoin_amount_field.html#a2d8609eead093e27b4e2d07f12b56815" title="AnoncoinAmountField\l::setText" alt="" coords="1018,443,1170,485"/>
+<area shape="rect" id="node17" href="$class_anoncoin_amount_field.html#ad3c794ea41c9fca0cbbb2aad5a1fdaff" title="Mark current value as invalid in UI. " alt="" coords="797,611,949,653"/>
+<area shape="rect" id="node15" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="1017,392,1171,419"/>
+<area shape="rect" id="node16" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="1231,392,1374,419"/>
+<area shape="rect" id="node19" href="$netbase_8cpp.html#aca44bd756958aa16d8d8703e4c90c936" title="LookupNumeric" alt="" coords="565,224,681,251"/>
+<area shape="rect" id="node22" href="$class_options_dialog.html#afc1563fdbe4599311b617533dd8af0a9" title="OptionsDialog::disableOk\lButton" alt="" coords="537,275,709,317"/>
+<area shape="rect" id="node24" href="$class_options_dialog.html#a8828179d8f32f304e47392210eb18046" title="OptionsDialog::enableOkButton" alt="" coords="519,341,728,368"/>
+<area shape="rect" id="node20" href="$netbase_8cpp.html#a56a2f4bcb9fb77b5efe358f804f642cc" title="Lookup" alt="" coords="840,224,905,251"/>
+<area shape="rect" id="node21" href="$netbase_8cpp.html#a1b1ce2ba1ffe40785e65ec3ad5a20e79" title="SplitHostPort" alt="" coords="1044,224,1144,251"/>
+<area shape="rect" id="node23" href="$class_options_dialog.html#afa0db091df14d443de8afd4ee28e0775" title="OptionsDialog::setOkButton\lState" alt="" coords="779,275,966,317"/>
+</map>

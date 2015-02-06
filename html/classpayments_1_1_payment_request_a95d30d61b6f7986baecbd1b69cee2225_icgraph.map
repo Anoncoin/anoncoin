@@ -1,0 +1,7 @@
+<map id="payments::PaymentRequest::set_has_serialized_payment_details" name="payments::PaymentRequest::set_has_serialized_payment_details">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#a312a47565fe341c42e04478d1dd1e32d" title="payments::PaymentRequest\l::set_serialized_payment\l_details" alt="" coords="257,5,446,61"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a43c849ca183fd9a7406b16ad0e2a1744" title="payments::PaymentRequest\l::mutable_serialized_payment\l_details" alt="" coords="252,85,451,141"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_request.html#a3df864da964d7b63264ee89b79087547" title="payments::PaymentRequest\l::set_allocated_serialized\l_payment_details" alt="" coords="257,165,446,221"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a8be69c1b0e111e8c772670ce2dbf16eb" title="payments::PaymentRequest\l::MergeFrom" alt="" coords="513,13,703,54"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#aabe016dfb6e01d1ac87ff0a3ff2deba3" title="payments::PaymentRequest\l::MergePartialFromCodedStream" alt="" coords="499,93,717,134"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="CWallet::EncryptWallet" name="CWallet::EncryptWallet">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a444340830badcd48e3a4dd6b03d9c4d7" title="WalletModel::setWalletEncrypted" alt="" coords="212,13,429,39"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a5fb49bac2748015a256c63e9f8ccc539" title="encryptwallet" alt="" coords="271,63,371,90"/>
+<area shape="rect" id="node3" href="$class_ask_passphrase_dialog.html#ac2f176af3693b73870d26ef0bfc6cbb9" title="AskPassphraseDialog\l::accept" alt="" coords="477,5,629,47"/>
+</map>

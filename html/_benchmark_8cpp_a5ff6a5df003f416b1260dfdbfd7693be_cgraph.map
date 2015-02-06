@@ -1,0 +1,5 @@
+<map id="Test_MintCoin" name="Test_MintCoin">
+<area shape="rect" id="node2" href="$class_timer.html#adcc2a315e6a05332a9f6eeef3fad706b" title="Timer::start" alt="" coords="173,5,262,32"/>
+<area shape="rect" id="node3" href="$class_timer.html#a2e08b7392107f224dc5bbc8e1dcfa124" title="Timer::stop" alt="" coords="173,56,262,83"/>
+<area shape="rect" id="node4" href="$class_timer.html#a5c57119ca6ae8138b1b4b576685b4ab5" title="Timer::duration" alt="" coords="161,107,273,133"/>
+</map>

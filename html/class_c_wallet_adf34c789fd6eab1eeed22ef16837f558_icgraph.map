@@ -1,0 +1,11 @@
+<map id="CWallet::AddToWallet" name="CWallet::AddToWallet">
+<area shape="rect" id="node2" href="$walletdb_8cpp.html#ad1f171cf096f5479805a06fc20480343" title="ReadKeyValue" alt="" coords="205,31,316,57"/>
+<area shape="rect" id="node3" href="$class_c_wallet_d_b.html#a14f26e53502d1a60dd2b034f830acf03" title="CWalletDB::LoadWallet" alt="" coords="364,5,525,32"/>
+<area shape="rect" id="node9" href="$class_c_wallet_d_b.html#a3ebeb12f37d9c66512e2bc2903a6854a" title="CWalletDB::Recover" alt="" coords="373,56,517,83"/>
+<area shape="rect" id="node4" href="$class_c_wallet.html#a5d7b244b8ed0cbe24233ee0b6ca3cae0" title="CWallet::LoadWallet" alt="" coords="574,5,717,32"/>
+<area shape="rect" id="node5" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="765,31,836,57"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="932,5,996,32"/>
+<area shape="rect" id="node8" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="884,56,1044,83"/>
+<area shape="rect" id="node7" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1092,5,1143,32"/>
+<area shape="rect" id="node10" href="$class_c_wallet_d_b.html#a44388f1c3ee63191dcb78b1001e9390c" title="CWalletDB::Recover" alt="" coords="573,107,717,133"/>
+</map>

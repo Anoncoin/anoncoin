@@ -1,0 +1,4 @@
+<map id="CWallet::DelAddressBook" name="CWallet::DelAddressBook">
+<area shape="rect" id="node2" href="$class_address_table_model.html#a5c6bd467fd1fc499d126fe2b7380ce5c" title="AddressTableModel::\lsetData" alt="" coords="229,5,377,47"/>
+<area shape="rect" id="node3" href="$class_address_table_model.html#a682e6e3374d65543e49769906c8916e5" title="AddressTableModel::\lremoveRows" alt="" coords="229,71,377,112"/>
+</map>

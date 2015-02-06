@@ -1,0 +1,4 @@
+<map id="CLevelDBWrapper::NewIterator" name="CLevelDBWrapper::NewIterator">
+<area shape="rect" id="node2" href="$class_c_coins_view_d_b.html#abf52d3ea526344e4b4ba9e4c08e60178" title="CCoinsViewDB::GetStats" alt="" coords="297,5,469,32"/>
+<area shape="rect" id="node3" href="$class_c_block_tree_d_b.html#a12be19bb1d7253eeb40e1aa88b032346" title="CBlockTreeDB::LoadBlockIndexGuts" alt="" coords="263,56,503,83"/>
+</map>

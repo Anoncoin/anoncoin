@@ -1,0 +1,51 @@
+<map id="getblocktemplate" name="getblocktemplate">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="221,5,339,32"/>
+<area shape="rect" id="node3" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="217,56,343,83"/>
+<area shape="rect" id="node4" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="222,107,338,133"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="456,329,612,356"/>
+<area shape="rect" id="node9" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="751,203,843,229"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="1025,253,1098,280"/>
+<area shape="rect" id="node12" href="$class_c_tx_mem_pool.html#a26a5bdb66c9b84f73d1d30fea8e31cc9" title="CTxMemPool::GetTransactions\lUpdated" alt="" coords="176,1825,384,1866"/>
+<area shape="rect" id="node13" href="$miner_8cpp.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="219,1193,341,1220"/>
+<area shape="rect" id="node17" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="1227,1428,1405,1455"/>
+<area shape="rect" id="node33" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="981,659,1142,685"/>
+<area shape="rect" id="node36" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="1250,1840,1382,1867"/>
+<area shape="rect" id="node40" href="$main_8cpp.html#a9fbb6d657c8c96746115ed93c32a6e0b" title="UpdateTime" alt="" coords="487,507,581,533"/>
+<area shape="rect" id="node41" href="$class_c_block_index.html#abffb24cc73329a3dce024403ba770b4a" title="CBlockIndex::GetMedianTimePast" alt="" coords="684,456,909,483"/>
+<area shape="rect" id="node45" href="$util_8h.html#ace13a819ca4e98c22847d26b3b357e75" title="HexStr" alt="" coords="503,1941,565,1968"/>
+<area shape="rect" id="node46" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="209,1992,351,2019"/>
+<area shape="rect" id="node47" href="$class_c_data_stream.html#a1c22182691412ed9e0a30b719d388f31" title="CDataStream::end" alt="" coords="214,2043,346,2069"/>
+<area shape="rect" id="node48" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="200,2093,360,2120"/>
+<area shape="rect" id="node49" href="$class_c_big_num.html#ad17ff84ee557ca5ad4b854e14d08099f" title="CBigNum::getuint256" alt="" coords="205,2144,355,2171"/>
+<area shape="rect" id="node50" href="$rpcserver_8cpp.html#aacef5c811c5f1521177d2395fb4d6235" title="HexBits" alt="" coords="246,1941,314,1968"/>
+<area shape="rect" id="node6" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="741,355,853,381"/>
+<area shape="rect" id="node7" href="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0" title="Checkpoints::GetTotalBlocks\lEstimate" alt="" coords="700,710,893,751"/>
+<area shape="rect" id="node11" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="967,380,1155,407"/>
+<area shape="rect" id="node8" href="$namespace_checkpoints.html#a63e87603e80d739b1aefa062f9bd337e" title="Checkpoints::Checkpoints" alt="" coords="973,717,1149,744"/>
+<area shape="rect" id="node14" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="502,1637,566,1664"/>
+<area shape="rect" id="node15" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="489,1587,579,1613"/>
+<area shape="rect" id="node18" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="496,405,572,432"/>
+<area shape="rect" id="node20" href="$class_c_coins_view_cache.html#af10ddad5ca973d5e5f684b5d1c711560" title="CCoinsViewCache::HaveCoins" alt="" coords="1213,1029,1419,1056"/>
+<area shape="rect" id="node23" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="1218,1124,1414,1151"/>
+<area shape="rect" id="node24" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="737,928,857,955"/>
+<area shape="rect" id="node25" href="$class_c_transaction.html#ad2452fe2ae424f43e5fd767c28517b3b" title="CTransaction::ComputePriority" alt="" coords="432,979,636,1005"/>
+<area shape="rect" id="node26" href="$class_c_transaction.html#ac55950c7f9d437e5cd11a88af39b6deb" title="CTransaction::GetValueOut" alt="" coords="969,1333,1154,1360"/>
+<area shape="rect" id="node27" href="$main_8cpp.html#ad2eaf4f8542c12ea9ee1183609cc6d1a" title="Count ECDSA signature operations the old&#45;fashioned (pre&#45;0.6) way. " alt="" coords="717,1384,876,1411"/>
+<area shape="rect" id="node28" href="$main_8h.html#ae6c67bac023a01f1ae29b7f2f4505bba" title="AllowFree" alt="" coords="493,1739,575,1765"/>
+<area shape="rect" id="node29" href="$class_c_coins_view_cache.html#a9107d0dd2cf79ba93a58e676aa412d3a" title="CCoinsViewCache::HaveInputs" alt="" coords="957,1080,1165,1107"/>
+<area shape="rect" id="node30" href="$class_c_coins_view_cache.html#a76b66754d945148d012051baa5417351" title="Amount of anoncoins coming in to a transaction Note that lightweight clients may not know anything be..." alt="" coords="693,1637,900,1664"/>
+<area shape="rect" id="node31" href="$main_8cpp.html#abc5832fe7ae73111ebca2eae086c0bdd" title="Count ECDSA signature operations in pay&#45;to&#45;script&#45;hash inputs. " alt="" coords="721,1587,872,1613"/>
+<area shape="rect" id="node32" href="$main_8cpp.html#a1e43713fcbc92328acf8b999517812a7" title="CheckInputs" alt="" coords="749,1131,845,1157"/>
+<area shape="rect" id="node35" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="993,1789,1130,1816"/>
+<area shape="rect" id="node37" href="$main_8cpp.html#ad99b217e1e3e23f55bfe98a1b9d725fe" title="UpdateCoins" alt="" coords="1012,1232,1111,1259"/>
+<area shape="rect" id="node38" href="$main_8h.html#a20e4ff5275db34756340966f2934230e" title="GetBlockValue" alt="" coords="741,1435,852,1461"/>
+<area shape="rect" id="node39" href="$class_c_block_index.html#ab843ef9b8b0a0193ec3a5c24738e484f" title="CBlockIndex::GetBlockHash" alt="" coords="702,1485,891,1512"/>
+<area shape="rect" id="node43" href="$main_8h.html#a5ab312a838f427dd7a13b999fe21a52e" title="GetNextWorkRequired" alt="" coords="719,557,875,584"/>
+<area shape="rect" id="node44" href="$main_8cpp.html#a1beeeb138ebc8e3c3298b9429abb78d6" title="ConnectBlock" alt="" coords="482,1232,586,1259"/>
+<area shape="rect" id="node16" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="775,1688,819,1715"/>
+<area shape="rect" id="node19" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="734,405,859,432"/>
+<area shape="rect" id="node21" href="$class_c_coins_view_cache.html#ab0c3981b4eabc6f11bb58a0a3fe3e82d" title="CCoinsViewCache::FetchCoins" alt="" coords="1467,1036,1675,1063"/>
+<area shape="rect" id="node22" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="1723,1075,1880,1101"/>
+<area shape="rect" id="node34" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="1264,659,1368,685"/>
+<area shape="rect" id="node42" href="$chainparams_8h.html#abc8c1af875107f5eac0f327bd3b8363d" title="TestNet" alt="" coords="1027,532,1096,559"/>
+</map>

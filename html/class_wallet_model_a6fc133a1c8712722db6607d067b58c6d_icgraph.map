@@ -1,0 +1,4 @@
+<map id="WalletModel::message" name="WalletModel::message">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a8abc851901c7c7343ebfb5a8e5fc0154" title="WalletModel::prepareTransaction" alt="" coords="211,13,429,39"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="477,5,624,47"/>
+</map>

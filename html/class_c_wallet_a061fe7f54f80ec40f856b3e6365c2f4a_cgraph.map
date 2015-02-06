@@ -1,0 +1,13 @@
+<map id="CWallet::GenerateNewKey" name="CWallet::GenerateNewKey">
+<area shape="rect" id="node2" href="$util_8cpp.html#a786af12a87491f8dc24351d93b9833b6" title="RandAddSeedPerfmon" alt="" coords="235,5,393,32"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="459,56,533,83"/>
+<area shape="rect" id="node6" href="$class_c_key.html#a9d12ed9d297e4286250fd7ea6b59e1a5" title="CKey::MakeNewKey" alt="" coords="242,107,386,133"/>
+<area shape="rect" id="node8" href="$class_c_key.html#ae4b61da6ec62f676fe6362ac5fc26aca" title="CKey::GetPubKey" alt="" coords="249,157,379,184"/>
+<area shape="rect" id="node9" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="254,208,374,235"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#ab699fbdf803610a4e2060fd87787f7e0" title="RandAddSeed" alt="" coords="441,5,551,32"/>
+<area shape="rect" id="node4" href="$util_8h.html#acd4d9988b9bb3f31fddf72a34b2bc37f" title="GetPerformanceCounter" alt="" coords="599,5,765,32"/>
+<area shape="rect" id="node7" href="$class_c_key.html#acec869bc75fa8f4d619ab025d367a97c" title="CKey::Check" alt="" coords="446,107,546,133"/>
+<area shape="rect" id="node10" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="458,183,534,209"/>
+<area shape="rect" id="node11" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="441,233,551,260"/>
+<area shape="rect" id="node12" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="617,233,747,260"/>
+</map>

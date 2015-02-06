@@ -1,0 +1,7 @@
+<map id="EnsureWalletIsUnlocked" name="EnsureWalletIsUnlocked">
+<area shape="rect" id="node2" href="$rpcwallet_8cpp.html#a134064858f9cfa4775a6ae34cac2b133" title="sendtoaddress" alt="" coords="220,5,329,32"/>
+<area shape="rect" id="node3" href="$rpcwallet_8cpp.html#a315b42a2c859c4b50a54c1b05984928c" title="signmessage" alt="" coords="225,56,325,83"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a845eaefd9ec7752b1145c183205524d0" title="sendfrom" alt="" coords="236,107,313,133"/>
+<area shape="rect" id="node5" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="233,157,317,184"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#afe8615fcf2c8e5319166c2fa8c638e08" title="keypoolrefill" alt="" coords="229,208,321,235"/>
+</map>

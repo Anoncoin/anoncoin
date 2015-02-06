@@ -1,0 +1,27 @@
+<map id="ServiceConnection" name="ServiceConnection">
+<area shape="rect" id="node2" href="$init_8cpp.html#a6f201ca9fe6b594f1985c12b4482ea5a" title="ShutdownRequested" alt="" coords="199,5,344,32"/>
+<area shape="rect" id="node3" href="$rpcprotocol_8cpp.html#add578b3fb095706a7a78d265fa97d8d0" title="ReadHTTPRequestLine" alt="" coords="604,115,768,141"/>
+<area shape="rect" id="node5" href="$class_accepted_connection.html#a2072a12e4d8f1b79a67bc86903400a0e" title="AcceptedConnection\l::stream" alt="" coords="199,107,344,149"/>
+<area shape="rect" id="node6" href="$rpcprotocol_8cpp.html#a89f5b5f255f9edaac6e48fc81273cab9" title="ReadHTTPMessage" alt="" coords="409,224,551,251"/>
+<area shape="rect" id="node8" href="$rpcprotocol_8cpp.html#afa39f57077df4d88ad60373f58d793e1" title="HTTPReply" alt="" coords="435,544,525,571"/>
+<area shape="rect" id="node11" href="$rpcserver_8cpp.html#ab8fabed74cd2c68e52b1838425da0f0f" title="HTTPAuthorized" alt="" coords="211,173,331,200"/>
+<area shape="rect" id="node14" href="$class_accepted_connection.html#adb2d35d48527a90078833f85249f2a56" title="AcceptedConnection\l::peer_address_to_string" alt="" coords="187,326,356,367"/>
+<area shape="rect" id="node15" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="232,392,311,419"/>
+<area shape="rect" id="node16" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="422,443,538,469"/>
+<area shape="rect" id="node17" href="$class_j_s_o_n_request.html#a5c68b21e7f1bead9fd39f27208446add" title="JSONRequest::parse" alt="" coords="197,493,345,520"/>
+<area shape="rect" id="node18" href="$class_c_r_p_c_table.html#aebba8d5a8f62089d1aa63278dbaf30a2" title="Execute a method. " alt="" coords="198,275,345,301"/>
+<area shape="rect" id="node24" href="$rpcprotocol_8cpp.html#a091e4839a15f5f6d569a97c709d80374" title="JSONRPCReply" alt="" coords="420,620,540,647"/>
+<area shape="rect" id="node26" href="$rpcserver_8cpp.html#a01dbd901fe882171ef907f64ce31db00" title="ErrorReply" alt="" coords="229,595,314,621"/>
+<area shape="rect" id="node4" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="861,224,905,251"/>
+<area shape="rect" id="node7" href="$rpcprotocol_8cpp.html#adfa1ef30dd1e00dcbecff15e1161e369" title="ReadHTTPHeaders" alt="" coords="617,224,755,251"/>
+<area shape="rect" id="node9" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="621,544,751,571"/>
+<area shape="rect" id="node10" href="$clientversion_8cpp.html#aff087070aeaa72e85b2d1a6192af8af5" title="CLIENT_BUILD" alt="" coords="825,544,941,571"/>
+<area shape="rect" id="node12" href="$util_8cpp.html#a224a1ec4dc69c9463abf0e8ae767af0d" title="DecodeBase64" alt="" coords="423,173,537,200"/>
+<area shape="rect" id="node13" href="$util_8h.html#a7ddc80f6840eae3277e324aec17c2568" title="Timing&#45;attack&#45;resistant comparison. " alt="" coords="404,123,556,149"/>
+<area shape="rect" id="node19" href="$main_8cpp.html#a70b1d1b79f1c760e65c960713b87b732" title="GetWarnings" alt="" coords="430,325,530,352"/>
+<area shape="rect" id="node20" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="641,275,731,301"/>
+<area shape="rect" id="node21" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="667,325,705,352"/>
+<area shape="rect" id="node22" href="$class_c_alert.html#a0a7fab6a971781904afb3e4a0ee29e12" title="CAlert::AppliesToMe" alt="" coords="614,376,758,403"/>
+<area shape="rect" id="node23" href="$clientversion_8cpp.html#a7e6809cdbfc7f83b46f83caea740894d" title="Format the subversion field according to BIP 14 spec (https://github.com/bitcoin/bips/blob/master/bip..." alt="" coords="816,376,949,403"/>
+<area shape="rect" id="node25" href="$rpcprotocol_8cpp.html#a48add16ec902386cc873c5cf0b40b2dd" title="JSONRPCReplyObj" alt="" coords="616,620,756,647"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="PaymentRequestPlus::getMerchant" name="PaymentRequestPlus::getMerchant">
+<area shape="rect" id="node2" href="$class_payment_request_plus.html#a62ae278689d852e4a73cdef627763944" title="PaymentRequestPlus\l::IsInitialized" alt="" coords="223,5,374,47"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a42d70acf5e751d9304f1e4246587b648" title="payments::PaymentRequest\l::pki_type" alt="" coords="204,71,393,112"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#ac8f305ba3185f34458c9abe869119c6a" title="payments::PaymentRequest\l::pki_data" alt="" coords="204,136,393,177"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_x509_certificates.html#a2e492800721141b6c29b7ef46a9cfe0e" title="payments::X509Certificates\l::certificate_size" alt="" coords="206,201,391,243"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_x509_certificates.html#ab887f34700ccaaa31eb80da5a0cd7a90" title="payments::X509Certificates\l::certificate" alt="" coords="206,267,391,308"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment_request.html#ad2a94a64caa232f0ae773d91f7bd2d09" title="payments::PaymentRequest\l::set_signature" alt="" coords="204,332,393,373"/>
+<area shape="rect" id="node10" href="$classpayments_1_1_payment_request.html#a55eab9735c9b7675d42eef66336958fc" title="payments::PaymentRequest\l::signature" alt="" coords="204,397,393,439"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a823854558ba54ec4b6258d9132affc15" title="payments::PaymentRequest\l::IsInitialized" alt="" coords="441,5,631,47"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment_request.html#ac0b591920a592f6e1ad3d4bb2f0f2043" title="payments::PaymentRequest\l::set_has_signature" alt="" coords="441,332,631,373"/>
+</map>

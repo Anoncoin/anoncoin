@@ -1,0 +1,4 @@
+<map id="SendCoinsDialog::coinControlChangeEdited" name="SendCoinsDialog::coinControlChangeEdited">
+<area shape="rect" id="node2" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="501,5,699,47"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a21224b0dedf14f7a6c05174bff9dea65" title="SendCoinsDialog::coinControl\lChangeChecked" alt="" coords="253,35,453,76"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Intro::on_dataDirDefault_clicked" name="Intro::on_dataDirDefault_clicked">
+<area shape="rect" id="node2" href="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b" title="Intro::setDataDirectory" alt="" coords="217,5,373,32"/>
+<area shape="rect" id="node3" href="$class_intro.html#aad225845533fc7f451648dc7c9643e6a" title="Determine default data directory for operating system. " alt="" coords="421,31,620,57"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#a8bbd2bea6cbc55658e8496603d1fd564" title="GUIUtil::boostPathToQString" alt="" coords="668,5,861,32"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="699,56,830,83"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="909,56,1044,83"/>
+</map>

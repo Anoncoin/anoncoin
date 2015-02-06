@@ -1,0 +1,5 @@
+<map id="CWallet::GetKeyPoolSize" name="CWallet::GetKeyPoolSize">
+<area shape="rect" id="node2" href="$rpcmisc_8cpp.html#a70335b93783d51e48d276a1e08bd721a" title="getinfo" alt="" coords="243,5,306,32"/>
+<area shape="rect" id="node3" href="$rpcwallet_8cpp.html#afe8615fcf2c8e5319166c2fa8c638e08" title="keypoolrefill" alt="" coords="229,56,321,83"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a9401fef738a283075915e0ea0086fae9" title="getwalletinfo" alt="" coords="227,107,323,133"/>
+</map>

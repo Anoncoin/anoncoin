@@ -1,0 +1,19 @@
+<map id="SendCoinsEntry::validate" name="SendCoinsEntry::validate">
+<area shape="rect" id="node2" href="$class_payment_request_plus.html#a62ae278689d852e4a73cdef627763944" title="PaymentRequestPlus\l::IsInitialized" alt="" coords="249,9,399,51"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a04604615253aeaae1253b1412a70a1f7" title="WalletModel::validateAddress" alt="" coords="225,81,423,107"/>
+<area shape="rect" id="node8" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="256,143,392,184"/>
+<area shape="rect" id="node9" href="$class_anoncoin_amount_field.html#ae0766727d1352a21980231772200c0ad" title="Perform input validation, mark field as invalid if entered value is not valid. " alt="" coords="248,208,400,249"/>
+<area shape="rect" id="node15" href="$class_anoncoin_amount_field.html#ad3c794ea41c9fca0cbbb2aad5a1fdaff" title="Mark current value as invalid in UI. " alt="" coords="489,291,641,332"/>
+<area shape="rect" id="node16" href="$namespace_g_u_i_util.html#af947045729005fce641839cdb55a92cb" title="GUIUtil::isDust" alt="" coords="269,357,379,383"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a823854558ba54ec4b6258d9132affc15" title="payments::PaymentRequest\l::IsInitialized" alt="" coords="471,5,660,47"/>
+<area shape="rect" id="node5" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="473,71,657,98"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="773,21,841,47"/>
+<area shape="rect" id="node7" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="708,71,907,98"/>
+<area shape="rect" id="node10" href="$class_anoncoin_units.html#a66092d654e5411fd7e43e94ba786a919" title="Parse string to coin amount. " alt="" coords="491,122,640,149"/>
+<area shape="rect" id="node13" href="$class_anoncoin_amount_field.html#ac11ebe3fdc76e730bf43a1ee46e5ca8c" title="AnoncoinAmountField\l::text" alt="" coords="489,173,641,215"/>
+<area shape="rect" id="node14" href="$class_anoncoin_units.html#a110ee106f3eae40f4edc0a0bc5ad41b5" title="Max amount per unit. " alt="" coords="472,239,659,266"/>
+<area shape="rect" id="node11" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="736,122,879,149"/>
+<area shape="rect" id="node12" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="723,173,891,199"/>
+<area shape="rect" id="node17" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="485,357,645,383"/>
+<area shape="rect" id="node18" href="$class_c_tx_out.html#a89bf5bc4987ccd09e9a675d980e18602" title="CTxOut::IsDust" alt="" coords="509,407,622,434"/>
+</map>

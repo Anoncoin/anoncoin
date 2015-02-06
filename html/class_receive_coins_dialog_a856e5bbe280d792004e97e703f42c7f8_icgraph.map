@@ -1,0 +1,4 @@
+<map id="ReceiveCoinsDialog::setModel" name="ReceiveCoinsDialog::setModel">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="196,13,383,39"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="431,13,595,39"/>
+</map>

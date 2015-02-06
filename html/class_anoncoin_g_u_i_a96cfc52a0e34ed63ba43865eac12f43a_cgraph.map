@@ -1,0 +1,5 @@
+<map id="AnoncoinGUI::closeEvent" name="AnoncoinGUI::closeEvent">
+<area shape="rect" id="node2" href="$class_client_model.html#ae8da1e2eabfbbcc49a7eed821908bdb6" title="ClientModel::getOptionsModel" alt="" coords="227,5,427,32"/>
+<area shape="rect" id="node3" href="$class_options_model.html#af026ad3b0705de76c1f57d9a6132aec0" title="OptionsModel::getMinimize\lToTray" alt="" coords="235,57,418,98"/>
+<area shape="rect" id="node4" href="$class_options_model.html#a82cd711817f3c9c87efbfa71b5ae0629" title="OptionsModel::getMinimize\lOnClose" alt="" coords="235,122,418,163"/>
+</map>

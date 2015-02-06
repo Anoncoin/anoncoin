@@ -1,0 +1,25 @@
+<map id="SignVerifyMessageDialog::on_signMessageButton_SM_clicked" name="SignVerifyMessageDialog::on_signMessageButton_SM_clicked">
+<area shape="rect" id="node2" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="254,235,390,276"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#ae98eaede9493625ce778a0a873b3d124" title="WalletModel::requestUnlock" alt="" coords="228,301,416,328"/>
+<area shape="rect" id="node7" href="$class_c_crypto_key_store.html#a58cfb3c490318ef82de8fc9be6637269" title="CCryptoKeyStore::GetKey" alt="" coords="233,352,411,378"/>
+<area shape="rect" id="node15" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="763,453,816,480"/>
+<area shape="rect" id="node21" href="$class_c_key.html#a59afeabf3f63d99dfdbd3722087853a1" title="CKey::SignCompact" alt="" coords="251,529,393,556"/>
+<area shape="rect" id="node22" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="251,580,393,606"/>
+<area shape="rect" id="node23" href="$class_c_data_stream.html#a1c22182691412ed9e0a30b719d388f31" title="CDataStream::end" alt="" coords="256,630,388,657"/>
+<area shape="rect" id="node24" href="$util_8cpp.html#a5e074135870a6fdfae4ac02047bc0432" title="EncodeBase64" alt="" coords="266,681,378,708"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#acfb62be638267bbf1bf498fb6501c31d" title="WalletModel::getEncryption\lStatus" alt="" coords="464,7,648,48"/>
+<area shape="rect" id="node5" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="931,22,1121,49"/>
+<area shape="rect" id="node6" href="$class_c_crypto_key_store.html#a1c3ebef555fd13676d67509b95820fcf" title="CCryptoKeyStore::IsLocked" alt="" coords="696,22,883,49"/>
+<area shape="rect" id="node8" href="$class_c_basic_key_store.html#a3cf9b5d002a8af75e7f90ae7654a234f" title="CBasicKeyStore::GetKey" alt="" coords="471,428,641,454"/>
+<area shape="rect" id="node9" href="$crypter_8cpp.html#aded00aa7498a7485a00e77a20856b3e4" title="DecryptSecret" alt="" coords="503,200,609,226"/>
+<area shape="rect" id="node14" href="$class_c_pub_key.html#a85b5eaf92b26cb4a230586050285c3f4" title="CPubKey::GetHash" alt="" coords="487,377,625,404"/>
+<area shape="rect" id="node18" href="$class_c_key.html#aaa13d5f08456bba094210c5eeabf64c8" title="CKey::Set" alt="" coords="515,276,597,302"/>
+<area shape="rect" id="node20" href="$class_c_pub_key.html#a397e437d9d0a008e2641892147b0931a" title="CPubKey::IsCompressed" alt="" coords="470,326,642,353"/>
+<area shape="rect" id="node10" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="990,225,1062,252"/>
+<area shape="rect" id="node12" href="$class_c_crypter.html#a0d948dd4796e2420e1dd9c1ddbf7974e" title="CCrypter::SetKey" alt="" coords="727,225,852,252"/>
+<area shape="rect" id="node13" href="$class_c_crypter.html#a4dbabed4975d4435d22c76deac43df7f" title="CCrypter::Decrypt" alt="" coords="725,124,854,150"/>
+<area shape="rect" id="node11" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1169,225,1253,252"/>
+<area shape="rect" id="node16" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="735,377,844,404"/>
+<area shape="rect" id="node17" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="961,377,1091,404"/>
+<area shape="rect" id="node19" href="$class_c_key.html#acec869bc75fa8f4d619ab025d367a97c" title="CKey::Check" alt="" coords="739,276,839,302"/>
+</map>

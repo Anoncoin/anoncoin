@@ -1,0 +1,4 @@
+<map id="DetectShutdownThread" name="DetectShutdownThread">
+<area shape="rect" id="node2" href="$init_8cpp.html#a6f201ca9fe6b594f1985c12b4482ea5a" title="ShutdownRequested" alt="" coords="216,5,361,32"/>
+<area shape="rect" id="node3" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="249,56,328,83"/>
+</map>

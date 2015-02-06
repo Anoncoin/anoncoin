@@ -1,0 +1,18 @@
+<map id="CNode::PushMessage" name="CNode::PushMessage">
+<area shape="rect" id="node2" href="$class_c_alert.html#ae89d673f6f1285eefcc343b3c029dab5" title="CAlert::RelayTo" alt="" coords="209,5,325,32"/>
+<area shape="rect" id="node3" href="$main_8h.html#a28098619373dbab927d25bca3cea8a4a" title="PushGetBlocks" alt="" coords="211,56,324,83"/>
+<area shape="rect" id="node12" href="$main_8h.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3" title="Send queued protocol messages to be sent to a give node. " alt="" coords="382,107,495,133"/>
+<area shape="rect" id="node17" href="$main_8h.html#a196f9318f02448b85b28d612698934fd" title="Process protocol messages received from a given node. " alt="" coords="373,157,504,184"/>
+<area shape="rect" id="node4" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="387,56,490,83"/>
+<area shape="rect" id="node5" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="554,56,709,83"/>
+<area shape="rect" id="node11" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="585,5,677,32"/>
+<area shape="rect" id="node6" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="759,56,861,83"/>
+<area shape="rect" id="node7" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="959,81,1029,108"/>
+<area shape="rect" id="node8" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1175,157,1239,184"/>
+<area shape="rect" id="node10" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1127,81,1287,108"/>
+<area shape="rect" id="node9" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1335,157,1385,184"/>
+<area shape="rect" id="node13" href="$main_8h.html#ab02615ff65f91d69f8d786ec900baa8a" title="Register with a network node to receive its signals. " alt="" coords="558,107,705,133"/>
+<area shape="rect" id="node14" href="$main_8h.html#a3ef0cc6e9d9d6435ee2a5569244d6ebd" title="Unregister a network node. " alt="" coords="552,157,711,184"/>
+<area shape="rect" id="node15" href="$init_8h.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9" title="Shutdown" alt="" coords="769,157,851,184"/>
+<area shape="rect" id="node16" href="$class_anoncoin_coin.html#ac33fbca9335d356d9d6102a0122f2a5b" title="AnoncoinCoin::shutdown" alt="" coords="909,132,1079,159"/>
+</map>

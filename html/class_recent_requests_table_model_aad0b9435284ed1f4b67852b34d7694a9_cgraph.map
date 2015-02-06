@@ -1,0 +1,26 @@
+<map id="RecentRequestsTableModel::addNewRequest" name="RecentRequestsTableModel::addNewRequest">
+<area shape="rect" id="node2" href="$class_recent_requests_table_model.html#a899a483b2d6fd33a034d2781c5d638b7" title="RecentRequestsTableModel\l::data" alt="" coords="244,94,435,135"/>
+<area shape="rect" id="node10" href="$class_recent_requests_table_model.html#abd51da01be471df1d072d5e5c1b8007d" title="RecentRequestsTableModel\l::entry" alt="" coords="244,159,435,201"/>
+<area shape="rect" id="node11" href="$class_recent_requests_table_model.html#ae9866ffd5aed0f041437996410928edd" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="244,225,435,266"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#aae732a04fea25190081120bf0cc773e8" title="GUIUtil::dateTimeStr" alt="" coords="512,5,657,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="508,56,661,83"/>
+<area shape="rect" id="node8" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="483,107,687,133"/>
+<area shape="rect" id="node9" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="486,157,683,184"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="747,5,890,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="744,56,893,83"/>
+<area shape="rect" id="node7" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="735,107,903,133"/>
+<area shape="rect" id="node12" href="$class_wallet_model.html#a88d44bc0994c1701386f63b1f266637f" title="WalletModel::saveReceive\lRequest" alt="" coords="495,219,674,261"/>
+<area shape="rect" id="node23" href="$class_c_data_stream.html#aa3a9ecf166f36f4ea531d2b23628d2c9" title="CDataStream::str" alt="" coords="522,323,647,349"/>
+<area shape="rect" id="node13" href="$class_c_anoncoin_address.html#a046d3fc0d98fdb1093a1d41e32adf43f" title="CAnoncoinAddress::Get" alt="" coords="736,167,901,193"/>
+<area shape="rect" id="node19" href="$class_c_wallet.html#a9a03cf9972842588178387839f0ded3c" title="Erases a destination data tuple in the store and on disk. " alt="" coords="735,221,902,248"/>
+<area shape="rect" id="node21" href="$class_c_wallet.html#acbeae89a10e129930e5059d9167697e5" title="Adds a destination data tuple to the store, and saves it to disk. " alt="" coords="741,272,897,299"/>
+<area shape="rect" id="node14" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="951,120,1135,147"/>
+<area shape="rect" id="node15" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1249,69,1317,96"/>
+<area shape="rect" id="node17" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1007,171,1079,197"/>
+<area shape="rect" id="node16" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="1184,120,1383,147"/>
+<area shape="rect" id="node18" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1241,171,1325,197"/>
+<area shape="rect" id="node20" href="$class_c_wallet_d_b.html#a0403a98efe565020f8804eefbc808d90" title="Erase destination data tuple from wallet database. " alt="" coords="951,221,1136,248"/>
+<area shape="rect" id="node22" href="$class_c_wallet_d_b.html#af0de4949373dc3f0063db673fd8b24aa" title="Write destination data key,value tuple to database. " alt="" coords="953,272,1134,299"/>
+<area shape="rect" id="node24" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="747,323,890,349"/>
+<area shape="rect" id="node25" href="$class_c_data_stream.html#a1c22182691412ed9e0a30b719d388f31" title="CDataStream::end" alt="" coords="753,373,885,400"/>
+</map>

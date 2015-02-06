@@ -1,0 +1,13 @@
+<map id="libzerocoin::PrivateCoin::getPublicCoin" name="libzerocoin::PrivateCoin::getPublicCoin">
+<area shape="rect" id="node2" href="$_benchmark_8cpp.html#a8223c6bd6d6bbaa0b3973dca9eaebd65" title="Test_Accumulator" alt="" coords="231,5,360,32"/>
+<area shape="rect" id="node5" href="$_benchmark_8cpp.html#ad4c256613fa000fd3d3ec247021a6522" title="Test_MintAndSpend" alt="" coords="224,56,367,83"/>
+<area shape="rect" id="node6" href="$classlibzerocoin_1_1_coin_spend.html#af1cb3e584e21c86129fd28bebca472a7" title="Generates a proof spending a zerocoin. " alt="" coords="216,107,375,149"/>
+<area shape="rect" id="node7" href="$_tests_8cpp.html#a5ff6a5df003f416b1260dfdbfd7693be" title="Test_MintCoin" alt="" coords="241,173,349,200"/>
+<area shape="rect" id="node11" href="$_tutorial_8cpp.html#a297c1339eda300b5818bf669440b3a7d" title="ZerocoinTutorial" alt="" coords="236,224,355,251"/>
+<area shape="rect" id="node3" href="$_benchmark_8cpp.html#a270b3d0914e20b5c58ab92bc2823c1d1" title="Test_RunAllTests" alt="" coords="431,31,557,57"/>
+<area shape="rect" id="node4" href="$_benchmark_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="651,31,702,57"/>
+<area shape="rect" id="node8" href="$_tests_8cpp.html#ad4c256613fa000fd3d3ec247021a6522" title="Test_MintAndSpend" alt="" coords="423,123,565,149"/>
+<area shape="rect" id="node9" href="$_tests_8cpp.html#af61e520c81d1ffba1bccdb7dfd1c0a21" title="Test_RunAllTests" alt="" coords="613,148,740,175"/>
+<area shape="rect" id="node10" href="$_tests_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="788,148,839,175"/>
+<area shape="rect" id="node12" href="$_tutorial_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="469,224,519,251"/>
+</map>

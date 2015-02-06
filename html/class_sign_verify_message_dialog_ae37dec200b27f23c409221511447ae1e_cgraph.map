@@ -1,0 +1,12 @@
+<map id="SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked" name="SignVerifyMessageDialog::on_verifyMessageButton_VM_clicked">
+<area shape="rect" id="node2" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="256,5,392,47"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a224a1ec4dc69c9463abf0e8ae767af0d" title="DecodeBase64" alt="" coords="267,71,381,98"/>
+<area shape="rect" id="node4" href="$class_c_pub_key.html#a169505e735a02db385486b0affeb565c" title="CPubKey::RecoverCompact" alt="" coords="229,122,419,149"/>
+<area shape="rect" id="node5" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="297,173,351,199"/>
+<area shape="rect" id="node6" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="253,223,395,250"/>
+<area shape="rect" id="node7" href="$class_c_data_stream.html#a1c22182691412ed9e0a30b719d388f31" title="CDataStream::end" alt="" coords="258,274,390,301"/>
+<area shape="rect" id="node8" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="264,325,384,351"/>
+<area shape="rect" id="node9" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="483,299,559,326"/>
+<area shape="rect" id="node10" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="467,350,576,377"/>
+<area shape="rect" id="node11" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="624,350,753,377"/>
+</map>

@@ -1,0 +1,23 @@
+<map id="PrintBlockTree" name="PrintBlockTree">
+<area shape="rect" id="node2" href="$class_c_chain.html#a1eee0372da596a8fc68369e480adc2f1" title="Returns the index entry for the genesis block of this chain, or NULL if none. " alt="" coords="201,5,323,32"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#a2dc350346749b7da7f4b40c114ee5147" title="ReadBlockFromDisk" alt="" coords="190,56,334,83"/>
+<area shape="rect" id="node18" href="$class_c_block_index.html#ae2b58426ae9365dce6cfacc5d0c92e44" title="CBlockIndex::GetBlockPos" alt="" coords="171,107,353,133"/>
+<area shape="rect" id="node19" href="$util_8cpp.html#a749bc6776c8ec72d7c5e4dea56aee415" title="DateTimeStrFormat" alt="" coords="193,157,331,184"/>
+<area shape="rect" id="node20" href="$class_c_block_header.html#a2972ebc9d970b4b12434876263c4c2b5" title="CBlockHeader::GetBlockTime" alt="" coords="163,208,361,235"/>
+<area shape="rect" id="node21" href="$class_c_chain.html#acd3c27582e3d60b93363fda5d9f3775a" title="Find the successor of a block in this chain, or NULL if the given index is not found or is the tip..." alt="" coords="211,259,313,285"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097" title="Open a block file (blk?????.dat) " alt="" coords="453,56,563,83"/>
+<area shape="rect" id="node13" href="$main_8h.html#a20a76dbc6ac5b8a6e0aaef85522b1069" title="Check whether a block hash satisfies the proof&#45;of&#45;work requirement specified by nBits. " alt="" coords="439,132,577,159"/>
+<area shape="rect" id="node16" href="$class_c_block_header.html#ace82f72f060caa4fd96759b4ff99a25e" title="CBlockHeader::GetPoWHash" alt="" coords="409,5,607,32"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635" title="OpenDiskFile" alt="" coords="683,56,786,83"/>
+<area shape="rect" id="node6" href="$struct_c_disk_block_pos.html#a924f2805b274345afce890b27a0934d9" title="CDiskBlockPos::IsNull" alt="" coords="863,107,1016,133"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="895,56,984,83"/>
+<area shape="rect" id="node8" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1121,157,1189,184"/>
+<area shape="rect" id="node9" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="1064,56,1247,83"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="1090,107,1221,133"/>
+<area shape="rect" id="node12" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="1073,5,1238,32"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="1295,107,1429,133"/>
+<area shape="rect" id="node14" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="655,208,815,235"/>
+<area shape="rect" id="node15" href="$class_c_big_num.html#ad17ff84ee557ca5ad4b854e14d08099f" title="CBigNum::getuint256" alt="" coords="660,107,809,133"/>
+<area shape="rect" id="node17" href="$scrypt_8cpp.html#a7cf6198bde926ddbc13d1dd80530969f" title="scrypt_1024_1_1_256" alt="" coords="658,5,811,32"/>
+<area shape="rect" id="node22" href="$class_c_chain.html#a1ab1fe2932227af222699c64847e838b" title="Efficiently check whether a block is present in this chain. " alt="" coords="445,259,571,285"/>
+</map>

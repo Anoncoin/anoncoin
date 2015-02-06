@@ -1,0 +1,4 @@
+<map id="libzerocoin::Commitment::getContents" name="libzerocoin::Commitment::getContents">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#acce987e79e2498918495c3a7e8873810" title="Generates a proof that a commitment to a coin c was accumulated. " alt="" coords="263,5,479,61"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#af66449f2c4c0cb88d19cb409b67b4cff" title="Generates a proof that two commitments, a and b, open to the same value. " alt="" coords="223,86,520,127"/>
+</map>

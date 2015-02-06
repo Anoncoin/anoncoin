@@ -1,0 +1,4 @@
+<map id="CWalletDB::WriteOrderPosNext" name="CWalletDB::WriteOrderPosNext">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a7a76d68661e6879651ac0b11f2893e58" title="Increment the next transaction order id. " alt="" coords="264,5,443,32"/>
+<area shape="rect" id="node3" href="$rpcwallet_8cpp.html#a7dcb5aa63b46944bc4874719c8e1db15" title="movecmd" alt="" coords="491,5,571,32"/>
+</map>

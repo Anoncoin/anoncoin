@@ -1,0 +1,4 @@
+<map id="Ui_ReceiveCoinsDialog" name="Ui_ReceiveCoinsDialog">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html" title="Widget for entering anoncoin amounts. " alt="" coords="11,171,163,197"/>
+<area shape="rect" id="node4" href="$class_q_value_combo_box.html" title="QValueComboBox" alt="" coords="105,81,237,108"/>
+</map>

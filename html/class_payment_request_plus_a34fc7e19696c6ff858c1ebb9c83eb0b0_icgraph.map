@@ -1,0 +1,4 @@
+<map id="PaymentRequestPlus::SerializeToString" name="PaymentRequestPlus::SerializeToString">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="204,13,369,39"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="417,5,564,47"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="TransactionView::updateWatchOnlyColumn" name="TransactionView::updateWatchOnlyColumn">
+<area shape="rect" id="node2" href="$class_transaction_view.html#a4920c2cd57d72eb50248948fa160c83c" title="TransactionView::setModel" alt="" coords="260,13,443,39"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="491,13,677,39"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="725,13,889,39"/>
+</map>

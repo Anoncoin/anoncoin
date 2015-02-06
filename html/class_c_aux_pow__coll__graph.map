@@ -1,0 +1,8 @@
+<map id="CAuxPow" name="CAuxPow">
+<area shape="rect" id="node2" href="$class_c_merkle_tx.html" title="A transaction with a merkle branch linking it to the block chain. " alt="" coords="31,185,118,212"/>
+<area shape="rect" id="node3" href="$class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ..." alt="" coords="5,81,107,108"/>
+<area shape="rect" id="node4" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="147,81,213,108"/>
+<area shape="rect" id="node7" href="$class_c_block_header.html" title="Nodes collect new transactions into a block, hash them into a hash tree, and scan through nonce value..." alt="" coords="142,185,250,212"/>
+<area shape="rect" id="node5" href="$classbase__uint.html" title="Base class without constructors for uint256 and uint160. " alt="" coords="129,5,231,32"/>
+<area shape="rect" id="node6" href="$class_c_block.html" title="CBlock" alt="" coords="144,261,208,288"/>
+</map>

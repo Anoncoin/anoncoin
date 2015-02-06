@@ -1,0 +1,5 @@
+<map id="Ui_OptionsDialog" name="Ui_OptionsDialog">
+<area shape="rect" id="node2" href="$class_q_validated_line_edit.html" title="Line edit that can be marked as &quot;invalid&quot; to show input validation feedback. " alt="" coords="5,172,141,199"/>
+<area shape="rect" id="node4" href="$class_anoncoin_amount_field.html" title="Widget for entering anoncoin amounts. " alt="" coords="165,172,317,199"/>
+<area shape="rect" id="node6" href="$class_q_value_combo_box.html" title="QValueComboBox" alt="" coords="299,81,431,108"/>
+</map>

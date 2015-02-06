@@ -1,0 +1,13 @@
+<map id="HelpMessageDialog::HelpMessageDialog" name="HelpMessageDialog::HelpMessageDialog">
+<area shape="rect" id="node2" href="$class_ui___help_message_dialog.html#a4fc6a1d13f2c81262d055b8b8868d542" title="Ui_HelpMessageDialog\l::setupUi" alt="" coords="232,5,393,47"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#a9fd50f13c602e4e01b0d1d70d54ee89a" title="Restore window size and position. " alt="" coords="203,71,423,98"/>
+<area shape="rect" id="node5" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="247,122,378,149"/>
+<area shape="rect" id="node7" href="$init_8cpp.html#ab78d8131a34bee87ee610b82f48823d3" title="HelpMessage" alt="" coords="261,173,365,199"/>
+<area shape="rect" id="node12" href="$namespace_g_u_i_util.html#ad284d2b3b4732d897cf6f1d751065e98" title="GUIUtil::anoncoinAddressFont" alt="" coords="211,223,414,250"/>
+<area shape="rect" id="node3" href="$class_ui___help_message_dialog.html#a537a65cdbd8cb9b898f896ffe41d120c" title="Ui_HelpMessageDialog\l::retranslateUi" alt="" coords="471,5,632,47"/>
+<area shape="rect" id="node6" href="$clientversion_8cpp.html#aff087070aeaa72e85b2d1a6192af8af5" title="CLIENT_BUILD" alt="" coords="493,97,609,123"/>
+<area shape="rect" id="node8" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="532,147,571,174"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="506,198,597,225"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a3293aaba439017a99a494cbf39fb5681" title="FormatMoney" alt="" coords="499,249,603,275"/>
+<area shape="rect" id="node10" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="680,198,724,225"/>
+</map>

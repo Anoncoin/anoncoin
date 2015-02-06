@@ -1,0 +1,51 @@
+<map id="UnregisterNodeSignals" name="UnregisterNodeSignals">
+<area shape="rect" id="node2" href="$main_8cpp.html#a196f9318f02448b85b28d612698934fd" title="Process protocol messages received from a given node. " alt="" coords="386,251,517,277"/>
+<area shape="rect" id="node21" href="$main_8cpp.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3" title="Send queued protocol messages to be sent to a give node. " alt="" coords="212,1027,325,1053"/>
+<area shape="rect" id="node3" href="$net_8h.html#a13f289d6233bd32b78a38793f76bdccb" title="SendBufferSize" alt="" coords="871,555,986,581"/>
+<area shape="rect" id="node5" href="$class_c_net_message.html#a440150fa0e6a84699780048baca55da8" title="CNetMessage::complete" alt="" coords="590,149,758,176"/>
+<area shape="rect" id="node6" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="895,225,963,252"/>
+<area shape="rect" id="node7" href="$class_c_message_header.html#a21f5760d034d4a040b00d6c34e927be0" title="CMessageHeader::IsValid" alt="" coords="585,251,763,277"/>
+<area shape="rect" id="node8" href="$class_c_message_header.html#a71f022e98bff1acd65be4b75ce4cc038" title="CMessageHeader::GetCommand" alt="" coords="819,289,1039,316"/>
+<area shape="rect" id="node9" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="1139,352,1192,379"/>
+<area shape="rect" id="node10" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="1094,61,1237,88"/>
+<area shape="rect" id="node11" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1129,239,1201,265"/>
+<area shape="rect" id="node13" href="$class_c_node.html#a204fda3d33404cb37698c085b1583ab2" title="CNode::PushMessage" alt="" coords="596,453,752,480"/>
+<area shape="rect" id="node20" href="$util_8cpp.html#a477231880f761159de1567ad6fb98fac" title="PrintExceptionContinue" alt="" coords="593,352,755,379"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="1133,605,1197,632"/>
+<area shape="rect" id="node12" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1292,239,1376,265"/>
+<area shape="rect" id="node14" href="$class_c_node.html#af76d193027757002321d0d674290b955" title="CNode::BeginMessage" alt="" coords="849,504,1008,531"/>
+<area shape="rect" id="node16" href="$class_c_node.html#af8d4b8c0f883afffcb62d906c31b2cdf" title="CNode::EndMessage" alt="" coords="854,453,1003,480"/>
+<area shape="rect" id="node18" href="$class_c_node.html#aae0fdfe555001a60bab8f216c3bc3978" title="CNode::AbortMessage" alt="" coords="1087,403,1244,429"/>
+<area shape="rect" id="node15" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="1099,555,1232,581"/>
+<area shape="rect" id="node17" href="$util_8cpp.html#a27d9149d522b1fa87d84e5e9ca902aef" title="GetRand" alt="" coords="1296,479,1372,505"/>
+<area shape="rect" id="node19" href="$class_c_node.html#a39512c4e2c788fb7a09e629b79a69e47" title="CNode::Fuzz" alt="" coords="1115,453,1215,480"/>
+<area shape="rect" id="node22" href="$util_8h.html#a0c5a06b50cd805b1923552114494c029" title="GetTimeMicros" alt="" coords="395,925,507,952"/>
+<area shape="rect" id="node23" href="$main_8cpp.html#a5edcd96316574fd4a7f3ae0922a5cfd6" title="Check whether we are doing an initial block download (synchronizing from disk or network) ..." alt="" coords="373,816,529,843"/>
+<area shape="rect" id="node26" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="628,925,720,952"/>
+<area shape="rect" id="node27" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="892,841,965,868"/>
+<area shape="rect" id="node29" href="$classmruset.html#ac7a85b54646e9d9d1962ce7f30b2a1fc" title="mruset::clear" alt="" coords="402,1179,501,1205"/>
+<area shape="rect" id="node30" href="$net_8cpp.html#a66f5f0bc1dad5cfe429157d5637a93dc" title="GetLocalAddress" alt="" coords="389,1128,513,1155"/>
+<area shape="rect" id="node33" href="$class_c_net_addr.html#a35131b2792434d1c9a860c583b610ab6" title="CNetAddr::IsRoutable" alt="" coords="375,1331,527,1357"/>
+<area shape="rect" id="node35" href="$class_c_node.html#a06950a5ce265a1d4df1aad7f28e6fde8" title="CNode::PushAddress" alt="" coords="376,1077,527,1104"/>
+<area shape="rect" id="node37" href="$classmruset.html#abf122b956abffbf3ce190c80d215660c" title="mruset::count" alt="" coords="623,1027,725,1053"/>
+<area shape="rect" id="node38" href="$classmruset.html#af2e0dfe9d8b029bde78457797cdc42a9" title="mruset::insert" alt="" coords="400,1381,503,1408"/>
+<area shape="rect" id="node39" href="$class_c_node.html#ac0f1a22fa938e84138536308e2001340" title="CNode::GetId" alt="" coords="399,1432,503,1459"/>
+<area shape="rect" id="node40" href="$class_c_net_addr.html#a6cfa18f323424408cf7ace36c9a7c2e2" title="CNetAddr::IsLocal" alt="" coords="386,1483,517,1509"/>
+<area shape="rect" id="node41" href="$class_c_service.html#a336f9848fe9364e260c76499be0351a5" title="CService::ToString" alt="" coords="385,639,518,665"/>
+<area shape="rect" id="node43" href="$class_c_node.html#a7d5dd8d7531bfbe069092be583569956" title="CNode::Ban" alt="" coords="627,656,721,683"/>
+<area shape="rect" id="node44" href="$main_8cpp.html#a28098619373dbab927d25bca3cea8a4a" title="PushGetBlocks" alt="" coords="395,555,508,581"/>
+<area shape="rect" id="node46" href="$util_8cpp.html#af3aedae75efabb170337a497457f7ecf" title="GetRandHash" alt="" coords="398,1533,505,1560"/>
+<area shape="rect" id="node47" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="605,1280,743,1307"/>
+<area shape="rect" id="node49" href="$class_c_inv.html#a87a826a842d549c2747ced0c1a90bc18" title="CInv::ToString" alt="" coords="398,1229,505,1256"/>
+<area shape="rect" id="node24" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="618,808,730,835"/>
+<area shape="rect" id="node25" href="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0" title="Checkpoints::GetTotalBlocks\lEstimate" alt="" coords="577,859,771,901"/>
+<area shape="rect" id="node28" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="580,757,768,784"/>
+<area shape="rect" id="node31" href="$net_8cpp.html#a51605827c953a7843f9b165eada26857" title="GetLocal" alt="" coords="636,1179,712,1205"/>
+<area shape="rect" id="node32" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="611,1128,737,1155"/>
+<area shape="rect" id="node34" href="$net_8cpp.html#a16fa1bd4d34c4c29c90903fc3cdf7517" title="check whether a given address is potentially local " alt="" coords="642,1331,706,1357"/>
+<area shape="rect" id="node36" href="$class_c_net_addr.html#a52a1b506f07e5450057e12a8b5a7fbcd" title="CNetAddr::IsValid" alt="" coords="610,1077,738,1104"/>
+<area shape="rect" id="node42" href="$class_c_service.html#a39b82301356b0dfc2a92befc727b77be" title="CService::ToStringIPPort" alt="" coords="843,605,1014,632"/>
+<area shape="rect" id="node45" href="$class_c_chain.html#a3f7e9ed312ad1cadd266a9529586ade6" title="Return a CBlockLocator that refers to a block in this chain (by default the tip). ..." alt="" coords="604,555,744,581"/>
+<area shape="rect" id="node48" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="863,1280,995,1307"/>
+<area shape="rect" id="node50" href="$class_c_inv.html#a393dc4726f105b25090a6ee4952e71b5" title="CInv::GetCommand" alt="" coords="604,1229,744,1256"/>
+</map>

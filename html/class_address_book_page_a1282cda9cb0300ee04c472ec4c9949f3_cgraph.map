@@ -1,0 +1,8 @@
+<map id="AddressBookPage::setModel" name="AddressBookPage::setModel">
+<area shape="rect" id="node2" href="$class_address_book_page.html#a9df2b5984c8b4ab2c4b5eade1aab8f3e" title="Set button states based on selected tab and selection. " alt="" coords="251,5,443,47"/>
+<area shape="rect" id="node3" href="$class_address_book_page.html#ab62ba5d31e2d64c4d901da58d6b32a59" title="New entry/entries were added to address table. " alt="" coords="247,71,448,112"/>
+<area shape="rect" id="node4" href="$class_address_table_model.html#a84f095bae13574410fceba53f8184abc" title="AddressTableModel::\lindex" alt="" coords="496,71,644,112"/>
+<area shape="rect" id="node5" href="$class_address_table_model.html#a5ff6e3e2dab8b80428c4f59c4f1bc95a" title="AddressTableModel::data" alt="" coords="692,53,865,79"/>
+<area shape="rect" id="node7" href="$class_address_table_priv.html#af311eb7d0189a74a508d7ad0f563f307" title="AddressTablePriv::index" alt="" coords="695,103,862,130"/>
+<area shape="rect" id="node6" href="$namespace_g_u_i_util.html#ad284d2b3b4732d897cf6f1d751065e98" title="GUIUtil::anoncoinAddressFont" alt="" coords="913,53,1116,79"/>
+</map>

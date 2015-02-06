@@ -1,0 +1,9 @@
+<map id="CNode::Release" name="CNode::Release">
+<area shape="rect" id="node2" href="$net_8cpp.html#aa1111c12121e039bbd8eedb556e4514a" title="Main Thread that handling socket&#39;s &amp; their housekeeping... " alt="" coords="180,5,332,32"/>
+<area shape="rect" id="node8" href="$net_8cpp.html#a379b0d3521bdd62ac296f219d70c4e30" title="ThreadMessageHandler" alt="" coords="173,56,339,83"/>
+<area shape="rect" id="node3" href="$net_8h.html#a9396d8054e8f74959e9391871aaddde0" title="StartNode" alt="" coords="387,31,469,57"/>
+<area shape="rect" id="node4" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="517,31,588,57"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="684,5,748,32"/>
+<area shape="rect" id="node7" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="636,56,796,83"/>
+<area shape="rect" id="node6" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="844,5,895,32"/>
+</map>

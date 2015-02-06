@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ..." alt="" coords="5,31,107,57"/>
+<area shape="rect" id="node2" href="$class_c_merkle_tx.html" title="A transaction with a merkle branch linking it to the block chain. " alt="" coords="155,31,241,57"/>
+<area shape="rect" id="node3" href="$class_c_aux_pow.html" title="CAuxPow" alt="" coords="291,5,371,32"/>
+<area shape="rect" id="node4" href="$class_c_wallet_tx.html" title="A transaction with a bunch of additional info that only the owner cares about. " alt="" coords="289,56,373,83"/>
+</map>

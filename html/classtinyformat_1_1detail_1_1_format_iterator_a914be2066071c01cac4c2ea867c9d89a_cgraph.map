@@ -1,0 +1,8 @@
+<map id="tinyformat::detail::FormatIterator::accept" name="tinyformat::detail::FormatIterator::accept">
+<area shape="rect" id="node2" href="$classtinyformat_1_1detail_1_1_format_iterator.html#af3bbb8259ac0593ec2268ef5863311d5" title="tinyformat::detail\l::FormatIterator::printFormat\lStringLiteral" alt="" coords="221,5,410,61"/>
+<area shape="rect" id="node3" href="$classtinyformat_1_1detail_1_1_format_iterator.html#a42ed39c6771b424bc084b32c5836e83e" title="tinyformat::detail\l::FormatIterator::streamState\lFromFormat" alt="" coords="219,85,412,141"/>
+<area shape="rect" id="node5" href="$structtinyformat_1_1detail_1_1convert_to_int.html#a1e1c0d85c6afc3bb21d2bc9458b3feb1" title="tinyformat::detail\l::convertToInt::invoke" alt="" coords="241,166,390,207"/>
+<area shape="rect" id="node6" href="$namespacetinyformat.html#adc03c92f312158ae351d38ac867b9296" title="tinyformat::formatValue" alt="" coords="235,232,395,259"/>
+<area shape="rect" id="node7" href="$classtinyformat_1_1detail_1_1_format_iterator.html#a048d56660908fe084fc9930bad352c8e" title="tinyformat::detail\l::FormatIterator::formatCString\lTruncate" alt="" coords="213,283,417,339"/>
+<area shape="rect" id="node4" href="$classtinyformat_1_1detail_1_1_format_iterator.html#a4fab0ac9b2555c20c304da12668020ff" title="tinyformat::detail\l::FormatIterator::parseInt\lAndAdvance" alt="" coords="465,85,635,141"/>
+</map>

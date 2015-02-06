@@ -1,0 +1,10 @@
+<map id="AskPassphraseDialog::setModel" name="AskPassphraseDialog::setModel">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a164c3de8fc69ef6f39fb7c15e4bda553" title="Encrypt the wallet. " alt="" coords="222,5,398,32"/>
+<area shape="rect" id="node4" href="$class_wallet_view.html#a36699c31e256becb2afd92f834830ba0" title="Change encrypted wallet passphrase. " alt="" coords="205,56,415,83"/>
+<area shape="rect" id="node6" href="$class_wallet_view.html#ac258d549f0e55ad4f84b9d21848faf02" title="Ask for passphrase to unlock wallet temporarily. " alt="" coords="225,107,395,133"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#a8a9a419ba3e249f29fe321f2d789b761" title="Encrypt the wallet. " alt="" coords="479,5,665,32"/>
+<area shape="rect" id="node5" href="$class_wallet_frame.html#a0a4026a734acdc0f5fbd5f775c167443" title="Change encrypted wallet passphrase. " alt="" coords="463,56,681,83"/>
+<area shape="rect" id="node7" href="$class_wallet_frame.html#a31b6e87c87b383ef53225b6c2b37f057" title="Ask for passphrase to unlock wallet temporarily. " alt="" coords="482,107,662,133"/>
+<area shape="rect" id="node8" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="479,157,665,184"/>
+<area shape="rect" id="node9" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="729,157,893,184"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="OpenUndoFile" name="OpenUndoFile">
+<area shape="rect" id="node2" href="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635" title="OpenDiskFile" alt="" coords="161,56,264,83"/>
+<area shape="rect" id="node3" href="$struct_c_disk_block_pos.html#a924f2805b274345afce890b27a0934d9" title="CDiskBlockPos::IsNull" alt="" coords="312,31,465,57"/>
+<area shape="rect" id="node4" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="344,81,433,108"/>
+<area shape="rect" id="node5" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="571,5,639,32"/>
+<area shape="rect" id="node6" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="513,56,696,83"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="539,107,670,133"/>
+<area shape="rect" id="node9" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="522,157,687,184"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="744,107,879,133"/>
+</map>

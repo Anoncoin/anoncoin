@@ -1,0 +1,16 @@
+<map id="RecentRequestsTableModel" name="RecentRequestsTableModel">
+<area shape="rect" id="node3" href="$class_wallet_model.html" title="Interface to Anoncoin wallet from Qt view code. " alt="" coords="1535,375,1631,401"/>
+<area shape="rect" id="node5" href="$class_transaction_table_model.html" title="UI model for the transaction table of a wallet. " alt="" coords="1817,151,1979,177"/>
+<area shape="rect" id="node17" href="$class_address_table_model.html" title="Qt model of the address book in the core. " alt="" coords="1828,324,1968,351"/>
+<area shape="rect" id="node6" href="$class_transaction_table_priv.html" title="TransactionTablePriv" alt="" coords="2069,28,2217,55"/>
+<area shape="rect" id="node7" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="1189,124,1258,151"/>
+<area shape="rect" id="node18" href="$class_address_table_priv.html" title="AddressTablePriv" alt="" coords="2080,279,2207,305"/>
+<area shape="rect" id="node8" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="818,108,943,135"/>
+<area shape="rect" id="node9" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="637,119,756,145"/>
+<area shape="rect" id="node10" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="501,111,588,137"/>
+<area shape="rect" id="node13" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="821,159,941,185"/>
+<area shape="rect" id="node14" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="841,209,920,236"/>
+<area shape="rect" id="node15" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="837,5,924,32"/>
+<area shape="rect" id="node16" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="671,5,722,32"/>
+<area shape="rect" id="node19" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="1171,445,1275,472"/>
+</map>

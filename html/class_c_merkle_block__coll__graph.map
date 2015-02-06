@@ -1,0 +1,6 @@
+<map id="CMerkleBlock" name="CMerkleBlock">
+<area shape="rect" id="node2" href="$class_c_partial_merkle_tree.html" title="Data structure that represents a partial merkle tree. " alt="" coords="5,185,143,212"/>
+<area shape="rect" id="node3" href="$class_c_block_header.html" title="Nodes collect new transactions into a block, hash them into a hash tree, and scan through nonce value..." alt="" coords="167,185,275,212"/>
+<area shape="rect" id="node4" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="188,81,253,108"/>
+<area shape="rect" id="node5" href="$classbase__uint.html" title="Base class without constructors for uint256 and uint160. " alt="" coords="169,5,272,32"/>
+</map>

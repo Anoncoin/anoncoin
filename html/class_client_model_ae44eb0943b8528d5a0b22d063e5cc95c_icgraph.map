@@ -1,0 +1,6 @@
+<map id="ClientModel::getStatusBarWarnings" name="ClientModel::getStatusBarWarnings">
+<area shape="rect" id="node2" href="$class_client_model.html#a16758b18ded91ceba202d6023cad4b51" title="ClientModel::updateAlert" alt="" coords="249,5,417,32"/>
+<area shape="rect" id="node3" href="$class_overview_page.html#a5d2610ab2b9c58e3b5f67c05f984e097" title="OverviewPage::setClientModel" alt="" coords="231,56,435,83"/>
+<area shape="rect" id="node4" href="$class_wallet_view.html#a46d9a8d93adfdcc29cae9ff0d44c313e" title="Set the client model. " alt="" coords="483,56,667,83"/>
+<area shape="rect" id="node5" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="715,56,879,83"/>
+</map>

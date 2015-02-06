@@ -1,0 +1,8 @@
+<map id="HelpRequiringPassphrase" name="HelpRequiringPassphrase">
+<area shape="rect" id="node2" href="$rpcrawtransaction_8cpp.html#aa0d151e35c0ad5ec82df451a833aeadb" title="signrawtransaction" alt="" coords="231,5,364,32"/>
+<area shape="rect" id="node3" href="$rpcwallet_8cpp.html#a134064858f9cfa4775a6ae34cac2b133" title="sendtoaddress" alt="" coords="243,56,352,83"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a315b42a2c859c4b50a54c1b05984928c" title="signmessage" alt="" coords="247,107,347,133"/>
+<area shape="rect" id="node5" href="$rpcwallet_8cpp.html#a845eaefd9ec7752b1145c183205524d0" title="sendfrom" alt="" coords="259,157,336,184"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="255,208,339,235"/>
+<area shape="rect" id="node7" href="$rpcwallet_8cpp.html#afe8615fcf2c8e5319166c2fa8c638e08" title="keypoolrefill" alt="" coords="251,259,343,285"/>
+</map>

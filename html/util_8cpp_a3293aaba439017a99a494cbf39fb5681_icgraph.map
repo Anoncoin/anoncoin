@@ -1,0 +1,9 @@
+<map id="FormatMoney" name="FormatMoney">
+<area shape="rect" id="node2" href="$init_8h.html#a514083d1b88bf8cf314f27ee3dc966c1" title="HelpMessage" alt="" coords="204,35,308,61"/>
+<area shape="rect" id="node6" href="$class_c_wallet.html#aa4b7db96dd52bf099497fdff1d91f33a" title="CWallet::SelectCoinsMinConf" alt="" coords="157,85,355,112"/>
+<area shape="rect" id="node7" href="$class_c_wallet.html#a291a1d3b57a7908407de34b051cc2f67" title="CWallet::SendMoney" alt="" coords="183,136,329,163"/>
+<area shape="rect" id="node8" href="$class_c_output.html#a30a78d31f6667803c613efdef28cbe52" title="COutput::ToString" alt="" coords="191,187,321,213"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="445,5,509,32"/>
+<area shape="rect" id="node5" href="$class_help_message_dialog.html#a7a3d90a39f3f4aad69764773540c7aba" title="&quot;Help message&quot; dialog box " alt="" coords="403,57,552,98"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="600,5,651,32"/>
+</map>

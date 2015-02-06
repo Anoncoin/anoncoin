@@ -1,0 +1,12 @@
+<map id="ClientModel::getNumBlocks" name="ClientModel::getNumBlocks">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="481,46,679,73"/>
+<area shape="rect" id="node8" href="$class_client_model.html#a6bc7b2b076e7d4f999f189b6db74d909" title="ClientModel::getNumBlocks\lAtStartup" alt="" coords="243,39,429,80"/>
+<area shape="rect" id="node9" href="$class_client_model.html#a82d434ebd032c00736e043ce2d36ac5e" title="From: https://qt&#45;project.org/doc/qt&#45;5&#45;snapshot/signalsandslots.html A slot is a function that is call..." alt="" coords="249,155,423,182"/>
+<area shape="rect" id="node11" href="$class_r_p_c_console.html#a355349a33664a07628e9ca22a60f5fa7" title="RPCConsole::setClientModel" alt="" coords="239,105,433,131"/>
+<area shape="rect" id="node3" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="727,5,869,47"/>
+<area shape="rect" id="node5" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="727,71,869,112"/>
+<area shape="rect" id="node4" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="963,13,1014,39"/>
+<area shape="rect" id="node6" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="917,71,1060,112"/>
+<area shape="rect" id="node7" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="1108,71,1259,112"/>
+<area shape="rect" id="node10" href="$class_client_model.html#aec1d32d5dc8c094eba66036a19a22854" title="ClientModel::ClientModel" alt="" coords="495,155,665,182"/>
+</map>

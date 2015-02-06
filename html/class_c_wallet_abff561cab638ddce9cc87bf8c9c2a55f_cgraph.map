@@ -1,0 +1,7 @@
+<map id="CWallet::GetImmatureBalance" name="CWallet::GetImmatureBalance">
+<area shape="rect" id="node2" href="$class_c_wallet_tx.html#a0359562531c6ce0835dc84ae03b51108" title="CWalletTx::GetImmatureCredit" alt="" coords="256,43,460,69"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#a9ec15c32442fcceb95425d8b36492544" title="CWallet::GetCredit" alt="" coords="508,43,641,69"/>
+<area shape="rect" id="node4" href="$core_8h.html#ad1d9a769fa327ea042e0c9fadeb4836b" title="MoneyRange" alt="" coords="689,5,791,32"/>
+<area shape="rect" id="node5" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="709,80,771,107"/>
+<area shape="rect" id="node6" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="839,80,999,107"/>
+</map>

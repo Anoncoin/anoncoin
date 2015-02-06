@@ -1,0 +1,33 @@
+<map id="PaymentServer::fetchPaymentACK" name="PaymentServer::fetchPaymentACK">
+<area shape="rect" id="node2" href="$class_payment_request_plus.html#a7c8897087763a5add91d9fdee059a126" title="PaymentRequestPlus\l::getDetails" alt="" coords="313,5,464,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#a3ae4b2d07c7e300ff7df1fba6861d17e" title="payments::PaymentDetails\l::has_payment_url" alt="" coords="299,71,479,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_details.html#abf568d7f349cf822d99e69d1424c5099" title="payments::PaymentDetails\l::payment_url" alt="" coords="299,136,479,177"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment.html#a5fcb7888dbff73e4808f0c9e2ba947db" title="payments::Payment::\lset_merchant_data" alt="" coords="315,201,462,243"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment_details.html#ab38d62eca2f03cf3a9ade74790c269b2" title="payments::PaymentDetails\l::merchant_data" alt="" coords="299,267,479,308"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment.html#a8fc8dd96734700dce2670146e691f7f7" title="payments::Payment::\ladd_transactions" alt="" coords="315,332,462,373"/>
+<area shape="rect" id="node9" href="$class_c_wallet.html#a00a2ae965f07599d2146ba27d5516fae" title="CWallet::GetAccountAddresses" alt="" coords="284,398,493,425"/>
+<area shape="rect" id="node10" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="773,770,933,797"/>
+<area shape="rect" id="node11" href="$classpayments_1_1_payment.html#aadb24119a35292ab26f98d1d5a4eef8b" title="payments::Payment::\ladd_refund_to" alt="" coords="315,515,462,556"/>
+<area shape="rect" id="node12" href="$classpayments_1_1_output.html#ab4263ea2e71f7cc6fc5f6bb604fd83d2" title="payments::Output::set\l_script" alt="" coords="313,449,465,491"/>
+<area shape="rect" id="node14" href="$class_c_wallet.html#a18549ec5c472c003afc4794daeb9adfd" title="CWallet::GetKeyFromPool" alt="" coords="299,631,478,658"/>
+<area shape="rect" id="node15" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="329,581,449,607"/>
+<area shape="rect" id="node19" href="$class_c_wallet.html#a53e5528d7005608594e73f500bc5bb8f" title="CWallet::SetAddressBook" alt="" coords="301,758,477,785"/>
+<area shape="rect" id="node23" href="$classpayments_1_1_payment.html#aad929aa08270759e3298e71e2a66aaed" title="payments::Payment::\lByteSize" alt="" coords="315,1125,462,1167"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment.html#a2e2e674f9faf3b6fa99295ddf31302e8" title="payments::Payment::\lset_has_merchant_data" alt="" coords="551,201,716,243"/>
+<area shape="rect" id="node13" href="$classpayments_1_1_output.html#af756736c767892da923aa6024478f099" title="payments::Output::set\l_has_script" alt="" coords="557,449,709,491"/>
+<area shape="rect" id="node16" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="595,606,671,633"/>
+<area shape="rect" id="node17" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="579,555,688,582"/>
+<area shape="rect" id="node18" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="789,555,918,582"/>
+<area shape="rect" id="node20" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="603,858,664,885"/>
+<area shape="rect" id="node21" href="$class_c_wallet_d_b.html#a8d4e8d73b977dc62c137bd3543c278bf" title="CWalletDB::WritePurpose" alt="" coords="545,733,721,759"/>
+<area shape="rect" id="node22" href="$class_c_wallet_d_b.html#ad1b3bce77e9dd6ddd8c668a469c38f0a" title="CWalletDB::WriteName" alt="" coords="553,783,714,810"/>
+<area shape="rect" id="node24" href="$classpayments_1_1_payment.html#aa3701100f4d4a3c80e265c3a53e04939" title="payments::Payment::\lhas_merchant_data" alt="" coords="560,1419,707,1460"/>
+<area shape="rect" id="node25" href="$classpayments_1_1_payment.html#a306c3f432a874efc400f8ab9866deea6" title="payments::Payment::\lmerchant_data" alt="" coords="560,909,707,951"/>
+<area shape="rect" id="node26" href="$classpayments_1_1_payment.html#a8852f9537d84d2ed4809d1571e9e0005" title="payments::Payment::\lhas_memo" alt="" coords="560,975,707,1016"/>
+<area shape="rect" id="node27" href="$classpayments_1_1_payment.html#adf7663d6eead276ed5a9d3a15e5fc44e" title="payments::Payment::memo" alt="" coords="541,1041,725,1067"/>
+<area shape="rect" id="node28" href="$classpayments_1_1_payment.html#a2a0d53760bf777332ed1fe36ff01559f" title="payments::Payment::\ltransactions_size" alt="" coords="560,1092,707,1133"/>
+<area shape="rect" id="node29" href="$classpayments_1_1_payment.html#a289486488710f1e77cdcdc3849a5c212" title="payments::Payment::\ltransactions" alt="" coords="560,1157,707,1199"/>
+<area shape="rect" id="node30" href="$classpayments_1_1_payment.html#a657df3e2560d69a7451d27098595edca" title="payments::Payment::\lrefund_to_size" alt="" coords="560,1223,707,1264"/>
+<area shape="rect" id="node31" href="$classpayments_1_1_payment.html#ad8154308960a21e22f7bdc7033ef7170" title="payments::Payment::\lrefund_to" alt="" coords="560,1288,707,1329"/>
+<area shape="rect" id="node32" href="$classpayments_1_1_payment.html#ab2e68a5e02a04abc6f44194dea9716b8" title="payments::Payment::\lunknown_fields" alt="" coords="560,1353,707,1395"/>
+</map>

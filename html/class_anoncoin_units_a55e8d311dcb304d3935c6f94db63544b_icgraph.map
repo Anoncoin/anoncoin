@@ -1,0 +1,6 @@
+<map id="AnoncoinUnits::getAmountColumnTitle" name="AnoncoinUnits::getAmountColumnTitle">
+<area shape="rect" id="node2" href="$class_transaction_table_model.html#a6c10b7cab9804eee6df9e049a978dc62" title="TransactionTableModel\l::TransactionTableModel" alt="" coords="700,5,869,47"/>
+<area shape="rect" id="node3" href="$class_transaction_table_model.html#acbb6e7531f507369ad18b656ad7b3f10" title="Updates the column title to &quot;Amount (DisplayUnit)&quot; and emits headerDataChanged() signal for table hea..." alt="" coords="245,35,431,76"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a5983022ff1e5395f87de3c5728eff8da" title="TransactionView::exportClicked" alt="" coords="233,101,443,127"/>
+<area shape="rect" id="node4" href="$class_transaction_table_model.html#a8b73ff7d72ec2dd69790bc61bbe8575e" title="TransactionTableModel\l::updateDisplayUnit" alt="" coords="491,35,652,76"/>
+</map>

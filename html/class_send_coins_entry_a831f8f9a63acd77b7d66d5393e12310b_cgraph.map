@@ -1,0 +1,12 @@
+<map id="SendCoinsEntry::setModel" name="SendCoinsEntry::setModel">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="768,5,972,32"/>
+<area shape="rect" id="node3" href="$class_send_coins_entry.html#a6ff4bd5b370545bcfd6214e866ee33f3" title="SendCoinsEntry::updateDisplayUnit" alt="" coords="487,64,720,91"/>
+<area shape="rect" id="node7" href="$class_send_coins_entry.html#aa749b51119d0504f204bbf7c90744e2e" title="SendCoinsEntry::deleteClicked" alt="" coords="233,112,439,139"/>
+<area shape="rect" id="node8" href="$class_send_coins_entry.html#abff66fcd456c82144e7a2c410f5082ac" title="SendCoinsEntry::clear" alt="" coords="259,163,413,189"/>
+<area shape="rect" id="node4" href="$class_anoncoin_amount_field.html#a44252e1921be1026e68adfbdc99d5ca4" title="Change unit used to display amount. " alt="" coords="794,57,946,98"/>
+<area shape="rect" id="node6" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="771,123,969,149"/>
+<area shape="rect" id="node5" href="$class_q_value_combo_box.html#af192c68c0c82f33000d8c1be8c013d2d" title="QValueComboBox::setValue" alt="" coords="1020,64,1212,91"/>
+<area shape="rect" id="node9" href="$class_q_validated_line_edit.html#aee2a648f6f4904f21e55871afbddefa9" title="QValidatedLineEdit\l::clear" alt="" coords="535,155,671,197"/>
+<area shape="rect" id="node11" href="$class_anoncoin_amount_field.html#a2fbc8a8cb0a623e6e773a0913bf5a828" title="Make field empty and ready for new input. " alt="" coords="527,221,679,262"/>
+<area shape="rect" id="node10" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="802,174,938,215"/>
+</map>

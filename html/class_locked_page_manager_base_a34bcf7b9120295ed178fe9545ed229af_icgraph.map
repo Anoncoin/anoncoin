@@ -1,0 +1,9 @@
+<map id="LockedPageManagerBase::UnlockRange" name="LockedPageManagerBase::UnlockRange">
+<area shape="rect" id="node2" href="$allocators_8h.html#a49577b8da0ecffd2fbc222896283004c" title="UnlockObject" alt="" coords="275,56,377,83"/>
+<area shape="rect" id="node7" href="$structsecure__allocator.html#af86cc49185bd507b8b479e070d744eb0" title="secure_allocator::deallocate" alt="" coords="232,107,420,133"/>
+<area shape="rect" id="node8" href="$class_c_crypter.html#ac0dccc762fb60fe9605409232ebfaa0f" title="CCrypter::~CCrypter" alt="" coords="254,157,398,184"/>
+<area shape="rect" id="node3" href="$class_c_key.html#abb0091d4390dcece3c56ea4c1fdd6036" title="CKey::Derive" alt="" coords="489,5,589,32"/>
+<area shape="rect" id="node5" href="$struct_c_ext_key.html#a8cd6ecafdd649082601d7eebbec79688" title="CExtKey::SetMaster" alt="" coords="468,56,611,83"/>
+<area shape="rect" id="node6" href="$class_c_key.html#a57d5b254748cef054c40f99c1c339147" title="CKey::~CKey" alt="" coords="488,107,591,133"/>
+<area shape="rect" id="node4" href="$struct_c_ext_key.html#a2fa3a39434ae09efbbd4058d1d081aa2" title="CExtKey::Derive" alt="" coords="659,5,779,32"/>
+</map>

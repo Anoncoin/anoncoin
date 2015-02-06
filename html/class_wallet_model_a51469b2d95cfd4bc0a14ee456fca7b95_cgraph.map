@@ -1,0 +1,51 @@
+<map id="WalletModel::pollBalanceChanged" name="WalletModel::pollBalanceChanged">
+<area shape="rect" id="node2" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="1528,68,1640,95"/>
+<area shape="rect" id="node3" href="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d" title="WalletModel::checkBalance\lChanged" alt="" coords="225,262,411,303"/>
+<area shape="rect" id="node30" href="$class_transaction_table_model.html#a5899d9eda6465bfb16d2846b6459567e" title="TransactionTableModel\l::updateConfirmations" alt="" coords="237,1245,399,1286"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a4edb2c8ed20331803bebdfa028372ea1" title="WalletModel::getBalance" alt="" coords="491,93,661,120"/>
+<area shape="rect" id="node16" href="$class_wallet_model.html#a003568663b99fc775244acac214f62ef" title="WalletModel::getUnconfirmed\lBalance" alt="" coords="477,145,675,186"/>
+<area shape="rect" id="node18" href="$class_wallet_model.html#abcdf7afaa43c42510a4ec0eead0a1f47" title="WalletModel::getImmature\lBalance" alt="" coords="487,327,665,369"/>
+<area shape="rect" id="node21" href="$class_wallet_model.html#aab93d19f9d98e3b984e81fd961ce35db" title="WalletModel::haveWatchOnly" alt="" coords="477,393,675,420"/>
+<area shape="rect" id="node22" href="$class_wallet_model.html#aaf5c6210cc8ead78be9e6e4e45c244c4" title="WalletModel::getWatchBalance" alt="" coords="473,211,679,237"/>
+<area shape="rect" id="node25" href="$class_wallet_model.html#abc134f63b276b9f66900a8d0a69a06ad" title="WalletModel::getWatchUnconfirmed\lBalance" alt="" coords="459,262,693,303"/>
+<area shape="rect" id="node27" href="$class_wallet_model.html#a5a22c7d3d92428d53cdf7cbd78113929" title="WalletModel::getWatchImmature\lBalance" alt="" coords="468,545,684,586"/>
+<area shape="rect" id="node5" href="$class_c_wallet.html#acf326816b2cf812e23b408b12854236b" title="CWallet::AvailableCoins" alt="" coords="770,428,934,455"/>
+<area shape="rect" id="node14" href="$class_c_wallet.html#a077694e4421644296378d9b3ef68af8a" title="CWallet::GetBalance" alt="" coords="779,93,925,120"/>
+<area shape="rect" id="node6" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="1340,144,1416,171"/>
+<area shape="rect" id="node7" href="$class_c_wallet_tx.html#af2eff3b849af124cdf869fc03f587972" title="CWalletTx::IsTrusted" alt="" coords="1046,144,1193,171"/>
+<area shape="rect" id="node8" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="1031,428,1208,455"/>
+<area shape="rect" id="node9" href="$class_c_merkle_tx.html#a8bd25cf06de6a443d0925ec8ba66c949" title="CMerkleTx::GetBlocksToMaturity" alt="" coords="1011,479,1228,505"/>
+<area shape="rect" id="node10" href="$class_c_merkle_tx.html#a1db61eaa33fcb975115116ecf85d0c6c" title="CMerkleTx::GetDepthInMain\lChain" alt="" coords="1024,261,1215,302"/>
+<area shape="rect" id="node11" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="1089,553,1150,580"/>
+<area shape="rect" id="node12" href="$class_c_coin_control.html#a8c8b06e183e7a30c646bdec793b30e89" title="CCoinControl::HasSelected" alt="" coords="1027,604,1212,631"/>
+<area shape="rect" id="node13" href="$class_c_coin_control.html#a8cbb071e0eb4ff34ba0209b3708c8142" title="CCoinControl::IsSelected" alt="" coords="1033,655,1205,681"/>
+<area shape="rect" id="node15" href="$class_c_wallet_tx.html#a4faffd750f4b5a37402bad042428bfcb" title="CWalletTx::GetAvailableCredit" alt="" coords="1018,43,1221,69"/>
+<area shape="rect" id="node17" href="$class_c_wallet.html#a2b3585d31f7cda63b851db30b9b11fb4" title="CWallet::GetUnconfirmedBalance" alt="" coords="741,144,963,171"/>
+<area shape="rect" id="node19" href="$class_c_wallet.html#abff561cab638ddce9cc87bf8c9c2a55f" title="CWallet::GetImmatureBalance" alt="" coords="751,536,953,563"/>
+<area shape="rect" id="node20" href="$class_c_wallet_tx.html#a0359562531c6ce0835dc84ae03b51108" title="CWalletTx::GetImmatureCredit" alt="" coords="1017,705,1221,732"/>
+<area shape="rect" id="node23" href="$class_c_wallet.html#a39068cc4073715f7e6614aeb72f0872e" title="CWallet::GetWatchOnlyBalance" alt="" coords="747,203,957,229"/>
+<area shape="rect" id="node24" href="$class_c_wallet_tx.html#a6e34cd093f13714b57a25ca914301f5c" title="CWalletTx::GetAvailableWatch\lOnlyCredit" alt="" coords="1017,195,1221,237"/>
+<area shape="rect" id="node26" href="$class_c_wallet.html#a1c8d440c03e118feda5e6dd01adc0f18" title="CWallet::GetUnconfirmedWatch\lOnlyBalance" alt="" coords="747,261,957,302"/>
+<area shape="rect" id="node28" href="$class_c_wallet.html#a2454a9b5d34e4831eff3a16f9a160598" title="CWallet::GetImmatureWatch\lOnlyBalance" alt="" coords="756,701,948,742"/>
+<area shape="rect" id="node29" href="$class_c_wallet_tx.html#a9a9a89a9c03e4dfe9aff4e9b3c41d5b1" title="CWalletTx::GetImmatureWatch\lOnlyCredit" alt="" coords="1016,757,1223,798"/>
+<area shape="rect" id="node31" href="$class_transaction_table_model.html#aaaf3cea9a5373fff771ce81d2f26de6e" title="TransactionTableModel\l::index" alt="" coords="495,1245,657,1286"/>
+<area shape="rect" id="node50" href="$class_transaction_table_priv.html#acc5c85ae550eca3a35b7b4d68d0994bf" title="TransactionTablePriv\l::size" alt="" coords="502,1310,650,1351"/>
+<area shape="rect" id="node32" href="$class_transaction_table_model.html#a416d0751ab9a95ecd87d3f7bed4f0b06" title="TransactionTableModel\l::data" alt="" coords="771,1245,933,1286"/>
+<area shape="rect" id="node49" href="$class_transaction_table_priv.html#ac692aa6aa7820e80accc971c70e0fae5" title="TransactionTablePriv\l::index" alt="" coords="778,1310,926,1351"/>
+<area shape="rect" id="node33" href="$class_transaction_table_model.html#ae3e39030b7f4c7fca470d20d4c693307" title="TransactionTableModel\l::txStatusDecoration" alt="" coords="1039,822,1200,863"/>
+<area shape="rect" id="node34" href="$class_transaction_table_model.html#af7265793d57a7201b1cf62927b1d7248" title="TransactionTableModel\l::txWatchonlyDecoration" alt="" coords="1036,887,1203,929"/>
+<area shape="rect" id="node35" href="$class_transaction_table_model.html#a79540ec0dc8011a07c5d88f4c3fb35f4" title="TransactionTableModel\l::txAddressDecoration" alt="" coords="1039,953,1200,994"/>
+<area shape="rect" id="node36" href="$class_transaction_table_model.html#a78dc7fc1522f909b8982cbc0db267a35" title="TransactionTableModel\l::formatTxDate" alt="" coords="1039,1018,1200,1059"/>
+<area shape="rect" id="node37" href="$class_transaction_table_model.html#afe47024a8d364c854e07c7cef5908987" title="TransactionTableModel\l::formatTxType" alt="" coords="1297,1102,1459,1143"/>
+<area shape="rect" id="node38" href="$class_transaction_table_model.html#aa48d6e350454723a32c801362e4647ef" title="TransactionTableModel\l::formatTxToAddress" alt="" coords="1297,1181,1459,1222"/>
+<area shape="rect" id="node39" href="$class_transaction_table_model.html#abcec6af1000e66d990e3d07bcc9b8617" title="TransactionTableModel\l::formatTxAmount" alt="" coords="1039,1303,1200,1345"/>
+<area shape="rect" id="node40" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="1276,1281,1480,1308"/>
+<area shape="rect" id="node41" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="1279,1360,1477,1387"/>
+<area shape="rect" id="node42" href="$class_transaction_table_model.html#a55917dc63edf980cf6f81ed17fbb9bca" title="TransactionTableModel\l::formatTooltip" alt="" coords="1039,1135,1200,1177"/>
+<area shape="rect" id="node43" href="$class_transaction_table_model.html#a335af23b7fc385cb9d91e944d7c94e6a" title="TransactionTableModel\l::addressColor" alt="" coords="1039,1471,1200,1513"/>
+<area shape="rect" id="node44" href="$class_wallet_model.html#a89ed202e2dbc04aaa70d72872b95b351" title="WalletModel::getAddressTable\lModel" alt="" coords="1276,1422,1480,1463"/>
+<area shape="rect" id="node45" href="$class_address_table_model.html#a1c39ce19eecfc9f3ace10435b162607f" title="AddressTableModel::\llabelForAddress" alt="" coords="1304,1509,1452,1550"/>
+<area shape="rect" id="node46" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="1045,1589,1193,1630"/>
+<area shape="rect" id="node47" href="$class_transaction_record.html#a8f3795b100c3c4653249d2c96a898c0d" title="Return the unique identifier for this transaction (part) " alt="" coords="1048,1654,1191,1695"/>
+<area shape="rect" id="node48" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="1051,1720,1188,1747"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="Test_ParamGen" name="Test_ParamGen">
+<area shape="rect" id="node2" href="$class_timer.html#adcc2a315e6a05332a9f6eeef3fad706b" title="Timer::start" alt="" coords="189,5,278,32"/>
+<area shape="rect" id="node3" href="$_benchmark_8cpp.html#abea6adf7c4f25b79783331a450f41e26" title="GetTestModulus" alt="" coords="173,56,293,83"/>
+<area shape="rect" id="node4" href="$class_timer.html#a2e08b7392107f224dc5bbc8e1dcfa124" title="Timer::stop" alt="" coords="189,107,278,133"/>
+<area shape="rect" id="node5" href="$class_timer.html#a5c57119ca6ae8138b1b4b576685b4ab5" title="Timer::duration" alt="" coords="177,157,289,184"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="src/zerocoin/SpendMetaData.h" name="src/zerocoin/SpendMetaData.h">
+<area shape="rect" id="node2" href="$_coin_spend_8h.html" title="CoinSpend class for the Zerocoin library. " alt="" coords="1369,80,1543,107"/>
+<area shape="rect" id="node3" href="$_zerocoin_8h.html" title="Exceptions and constants for Zerocoin. " alt="" coords="1376,155,1536,181"/>
+<area shape="rect" id="node4" href="$_accumulator_8cpp.html" title="Accumulator and AccumulatorWitness classes for the Zerocoin library. " alt="" coords="5,237,203,263"/>
+<area shape="rect" id="node5" href="$_accumulator_proof_of_knowledge_8cpp.html" title="AccumulatorProofOfKnowledge class for the Zerocoin library. " alt="" coords="227,229,399,271"/>
+<area shape="rect" id="node6" href="$_benchmark_8cpp.html" title="Benchmarking tests for Zerocoin. " alt="" coords="423,237,614,263"/>
+<area shape="rect" id="node7" href="$_coin_8cpp.html" title="PublicCoin and PrivateCoin classes for the Zerocoin library. " alt="" coords="638,237,789,263"/>
+<area shape="rect" id="node8" href="$_coin_spend_8cpp.html" title="CoinSpend class for the Zerocoin library. " alt="" coords="813,237,1003,263"/>
+<area shape="rect" id="node9" href="$_commitment_8cpp.html" title="Commitment and CommitmentProof classes for the Zerocoin library. " alt="" coords="1027,237,1226,263"/>
+<area shape="rect" id="node10" href="$paramgen_8cpp.html" title="Parameter generation utility for Zerocoin. " alt="" coords="1250,237,1433,263"/>
+<area shape="rect" id="node11" href="$_param_generation_8cpp.html" title="Parameter manipulation routines for the Zerocoin cryptographic components. " alt="" coords="1457,237,1685,263"/>
+<area shape="rect" id="node12" href="$_params_8cpp.html" title="Parameter class for Zerocoin. " alt="" coords="1709,237,1878,263"/>
+<area shape="rect" id="node13" href="$_print_u_f_o_candidate_8cpp.html" title="src/zerocoin/PrintUFOCandidate.cpp" alt="" coords="1902,237,2141,263"/>
+<area shape="rect" id="node14" href="$_serial_number_signature_of_knowledge_8cpp.html" title="SerialNumberSignatureOfKnowledge class for the Zerocoin library. " alt="" coords="2165,229,2349,271"/>
+<area shape="rect" id="node15" href="$_spend_meta_data_8cpp.html" title="SpendMetaData class for the Zerocoin library. " alt="" coords="2373,237,2592,263"/>
+<area shape="rect" id="node16" href="$_tests_8cpp.html" title="Test routines for Zerocoin. " alt="" coords="2617,237,2773,263"/>
+<area shape="rect" id="node17" href="$_tutorial_8cpp.html" title="Simple tutorial program to illustrate Zerocoin usage. " alt="" coords="2797,237,2963,263"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_c_net_addr.html" title="IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) " alt="" coords="5,5,85,32"/>
+<area shape="rect" id="node2" href="$class_c_service.html" title="A combination of a network address (CNetAddr) and a (TCP) port. " alt="" coords="133,5,209,32"/>
+<area shape="rect" id="node3" href="$class_c_address.html" title="A CService with information about it as peer. " alt="" coords="257,5,337,32"/>
+<area shape="rect" id="node4" href="$class_c_addr_info.html" title="Extended statistics about a CAddress. " alt="" coords="385,5,468,32"/>
+</map>

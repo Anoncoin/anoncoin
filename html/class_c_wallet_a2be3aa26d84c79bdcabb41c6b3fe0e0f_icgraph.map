@@ -1,0 +1,6 @@
+<map id="CWallet::LockCoin" name="CWallet::LockCoin">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a9bb6c954dc3cf27e25ced65375fa02f0" title="WalletModel::lockCoin" alt="" coords="185,13,339,39"/>
+<area shape="rect" id="node5" href="$rpcwallet_8cpp.html#a039075982abdf78052b40886b5b3e2cf" title="lockunspent" alt="" coords="215,63,309,90"/>
+<area shape="rect" id="node3" href="$class_coin_control_dialog.html#a92d82e9a08d81b99fda6546d83f63a19" title="CoinControlDialog::\llockCoin" alt="" coords="387,5,524,47"/>
+<area shape="rect" id="node4" href="$class_coin_control_dialog.html#a0945e59c25f956fdab199dbaf252eff5" title="CoinControlDialog::\lCoinControlDialog" alt="" coords="572,5,709,47"/>
+</map>

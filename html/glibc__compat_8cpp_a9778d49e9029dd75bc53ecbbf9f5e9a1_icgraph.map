@@ -1,0 +1,51 @@
+<map id="memmove" name="memmove">
+<area shape="rect" id="node2" href="$glibc__sanity_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="137,1196,209,1223"/>
+<area shape="rect" id="node3" href="$class_c_base58_data.html#afab1c06a0a4f631fd889434a2bc48c27" title="CBase58Data::SetData" alt="" coords="278,5,438,32"/>
+<area shape="rect" id="node4" href="$class_c_base58_data.html#a250fa3bc97d03c7d87de5485c8b49b57" title="CBase58Data::SetString" alt="" coords="275,56,441,83"/>
+<area shape="rect" id="node5" href="$class_c_anoncoin_address.html#a046d3fc0d98fdb1093a1d41e32adf43f" title="CAnoncoinAddress::Get" alt="" coords="275,107,441,133"/>
+<area shape="rect" id="node6" href="$class_c_anoncoin_address.html#ac94ac53d282f9f96f5dd5a4abef8e2b2" title="CAnoncoinAddress::GetKeyID" alt="" coords="257,157,459,184"/>
+<area shape="rect" id="node7" href="$class_c_main_params.html#ab7dfebf3c4dd5cc0ebdfabe1111056d6" title="CMainParams::CMainParams" alt="" coords="259,208,457,235"/>
+<area shape="rect" id="node8" href="$glibc__sanity_8cpp.html#a5f0bdd4402f85d9b30074959e99699f5" title="memcpy_int" alt="" coords="311,259,405,285"/>
+<area shape="rect" id="node9" href="$class_c_crypter.html#a0d948dd4796e2420e1dd9c1ddbf7974e" title="CCrypter::SetKey" alt="" coords="295,360,421,387"/>
+<area shape="rect" id="node10" href="$crypter_8h.html#a4fa4e3134d2b6e4913b9ce6369820697" title="EncryptSecret" alt="" coords="531,323,636,349"/>
+<area shape="rect" id="node11" href="$crypter_8h.html#aded00aa7498a7485a00e77a20856b3e4" title="DecryptSecret" alt="" coords="530,399,637,425"/>
+<area shape="rect" id="node12" href="$hash_8h.html#a4b8c72838f26539d69f31e256fd6dc5c" title="HMAC_SHA512_Init" alt="" coords="286,512,430,539"/>
+<area shape="rect" id="node13" href="$struct_c_ext_key.html#a8cd6ecafdd649082601d7eebbec79688" title="CExtKey::SetMaster" alt="" coords="512,512,655,539"/>
+<area shape="rect" id="node14" href="$class_c_key.html#abb0091d4390dcece3c56ea4c1fdd6036" title="CKey::Derive" alt="" coords="308,715,408,741"/>
+<area shape="rect" id="node15" href="$struct_c_ext_key.html#a2fa3a39434ae09efbbd4058d1d081aa2" title="CExtKey::Derive" alt="" coords="523,689,643,716"/>
+<area shape="rect" id="node16" href="$class_c_pub_key.html#a182298237bb189abfe006e2ff3350acc" title="CPubKey::Derive" alt="" coords="296,816,420,843"/>
+<area shape="rect" id="node17" href="$struct_c_ext_pub_key.html#a404798f7d800ffb539cf97431025597f" title="CExtPubKey::Derive" alt="" coords="511,791,655,817"/>
+<area shape="rect" id="node18" href="$struct_c_ext_key.html#a49f98a470d61ab1f2948b7c414ec9563" title="CExtKey::Neuter" alt="" coords="297,867,419,893"/>
+<area shape="rect" id="node19" href="$struct_c_ext_key.html#aa60d612abaa124e00f66f81ac4a74699" title="CExtKey::Encode" alt="" coords="295,917,421,944"/>
+<area shape="rect" id="node20" href="$struct_c_ext_key.html#a9720e119745472336b6729e19f0819dd" title="CExtKey::Decode" alt="" coords="520,588,647,615"/>
+<area shape="rect" id="node21" href="$struct_c_ext_pub_key.html#af197553c91c690fc436421fe00d55f8e" title="CExtPubKey::Encode" alt="" coords="283,968,433,995"/>
+<area shape="rect" id="node22" href="$struct_c_ext_pub_key.html#aa3ca44410ecfa765962d3b97aef61ab5" title="CExtPubKey::Decode" alt="" coords="508,1044,659,1071"/>
+<area shape="rect" id="node23" href="$class_c_pub_key.html#af59bc1d3be119c1f8b49d3c1e2c0797b" title="CPubKey::Set" alt="" coords="305,1069,411,1096"/>
+<area shape="rect" id="node24" href="$class_c_key.html#afcea34cefd25675f4cf9b03eaa4bb7d9" title="CKey::CKey" alt="" coords="311,1120,405,1147"/>
+<area shape="rect" id="node25" href="$class_c_key.html#aaa13d5f08456bba094210c5eeabf64c8" title="CKey::Set" alt="" coords="317,563,399,589"/>
+<area shape="rect" id="node26" href="$main_8h.html#a196f9318f02448b85b28d612698934fd" title="Process protocol messages received from a given node. " alt="" coords="293,1171,423,1197"/>
+<area shape="rect" id="node27" href="$miner_8h.html#a391a5a462c3f60bbb7dbf6a09fe2e78f" title="Do mining precalculation. " alt="" coords="289,1221,427,1248"/>
+<area shape="rect" id="node28" href="$class_c_net_message.html#a3e58f5f29b23d1377f8fd15fc75c78ac" title="CNetMessage::readHeader" alt="" coords="266,1272,450,1299"/>
+<area shape="rect" id="node29" href="$class_c_net_message.html#adbc1669a56462daea5f37e5e99117f8c" title="CNetMessage::readData" alt="" coords="273,1323,443,1349"/>
+<area shape="rect" id="node30" href="$class_c_node.html#af8d4b8c0f883afffcb62d906c31b2cdf" title="CNode::EndMessage" alt="" coords="283,1373,433,1400"/>
+<area shape="rect" id="node31" href="$class_c_net_addr.html#a1c6087345e5ca07a151451cd6deb974f" title="CNetAddr::SetIP" alt="" coords="298,1424,418,1451"/>
+<area shape="rect" id="node32" href="$class_c_net_addr.html#aa3e44dfd064d9d8da1cb48cdcb7dd231" title="Returns TRUE if the address name can be looked up and resolved. " alt="" coords="282,1475,434,1501"/>
+<area shape="rect" id="node33" href="$class_c_net_addr.html#a0af492cd8aca9bbaa3392cdbfbb55681" title="CNetAddr::CNetAddr" alt="" coords="285,1525,431,1552"/>
+<area shape="rect" id="node34" href="$class_c_net_addr.html#aa2e2c78db01a6a27d6a2740f2ba43e90" title="CNetAddr::GetInAddr" alt="" coords="283,1576,433,1603"/>
+<area shape="rect" id="node35" href="$class_c_net_addr.html#add7811be50f5fe60c4fa65b461dea98c" title="CNetAddr::GetIn6Addr" alt="" coords="280,1627,436,1653"/>
+<area shape="rect" id="node36" href="$class_c_net_addr.html#af196f306433562cb088dc83fd314a267" title="CNetAddr::GetGroup" alt="" coords="285,1677,431,1704"/>
+<area shape="rect" id="node37" href="$class_c_net_addr.html#a4c94fea8695ef97adf5b2a18e1074308" title="CNetAddr::GetHash" alt="" coords="288,1728,428,1755"/>
+<area shape="rect" id="node38" href="$class_c_service.html#a74d6e1526688229cb424584c29046e9e" title="CService::GetKey" alt="" coords="294,1779,422,1805"/>
+<area shape="rect" id="node39" href="$class_c_message_header.html#a188435dbfe51172b368873e8e7f688b0" title="CMessageHeader::CMessage\lHeader" alt="" coords="258,1830,458,1871"/>
+<area shape="rect" id="node40" href="$script_8h.html#a7f55c113b0164f50f214d94996b6b02a" title="EvalScript" alt="" coords="317,1896,399,1923"/>
+<area shape="rect" id="node41" href="$class_c_script_compressor.html#a13afc45e3a0a8a3d634cfafba9b2a040" title="CScriptCompressor::\lIsToKeyID" alt="" coords="285,1947,431,1989"/>
+<area shape="rect" id="node42" href="$class_c_script_compressor.html#a6da015ff028139ef52e7376166b04928" title="CScriptCompressor::\lIsToScriptID" alt="" coords="285,2013,431,2054"/>
+<area shape="rect" id="node43" href="$class_c_script_compressor.html#a98cb19f185efc85a395a5332574ef56b" title="CScriptCompressor::\lCompress" alt="" coords="285,2078,431,2119"/>
+<area shape="rect" id="node44" href="$class_c_script_compressor.html#a1feb663ddab3a45218c7cb02f2a25717" title="CScriptCompressor::\lDecompress" alt="" coords="285,2143,431,2185"/>
+<area shape="rect" id="node45" href="$class_c_script.html#a93ec95275ccce9b701c8f53c57cd7975" title="CScript::GetOp2" alt="" coords="298,2209,418,2236"/>
+<area shape="rect" id="node46" href="$scrypt_8h.html#aee9e3622e2f69c23a5891ddc86fd1228" title="PBKDF2_SHA256(passwd, passwdlen, salt, saltlen, c, buf, dkLen): Compute PBKDF2(passwd, salt, c, dkLen) using HMAC&#45;SHA256 as the PRF, and write the output to buf. " alt="" coords="293,2311,423,2337"/>
+<area shape="rect" id="node47" href="$scrypt_8h.html#a81bfcfcaa49ea827de85105fac614463" title="scrypt_1024_1_1_256\l_sp_generic" alt="" coords="507,2278,660,2319"/>
+<area shape="rect" id="node48" href="$class_c_data_stream.html#aa15a60d7ee6d987de444426f2825f284" title="CDataStream::insert" alt="" coords="287,2361,429,2388"/>
+<area shape="rect" id="node49" href="$class_c_data_stream.html#a018f3ebc89837a806c3a26f89a86759e" title="CDataStream::read" alt="" coords="289,2412,427,2439"/>
+<area shape="rect" id="node50" href="$class_c_buffered_file.html#a20c6d2a4dbc69a8e5c7ba766d04b3d85" title="CBufferedFile::read" alt="" coords="289,2463,427,2489"/>
+</map>

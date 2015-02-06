@@ -1,0 +1,12 @@
+<map id="SAM::Message::checkAnswer" name="SAM::Message::checkAnswer">
+<area shape="rect" id="node2" href="$class_s_a_m_1_1_socket.html#acca2e69487ef3f865275d2d5fd1fbca1" title="SAM::Socket::handshake" alt="" coords="252,80,424,107"/>
+<area shape="rect" id="node5" href="$class_s_a_m_1_1_stream_session.html#ac9a46b7b8759fe46ff128982f983a62b" title="SAM::StreamSession\l::rawRequest" alt="" coords="263,163,413,205"/>
+<area shape="rect" id="node3" href="$class_s_a_m_1_1_socket.html#a06437196adb5bc7b8df6c1819053b3b1" title="SAM::Socket::bootstrapI2P" alt="" coords="472,15,655,41"/>
+<area shape="rect" id="node4" href="$class_s_a_m_1_1_socket.html#ab1373984617b43dc2108491181de49b3" title="SAM::Socket::Socket" alt="" coords="708,5,855,32"/>
+<area shape="rect" id="node6" href="$class_s_a_m_1_1_stream_session.html#a4dbdcff8b70973f5746777ab55319ffc" title="SAM::StreamSession\l::request" alt="" coords="489,179,638,221"/>
+<area shape="rect" id="node7" href="$class_s_a_m_1_1_stream_session.html#ae76b79240acb94a98ef5ccacb44f537a" title="SAM::StreamSession\l::createStreamSession" alt="" coords="703,57,860,98"/>
+<area shape="rect" id="node8" href="$class_s_a_m_1_1_stream_session.html#ac04d26e34abfffca6030d33317235c1a" title="SAM::StreamSession\l::namingLookup" alt="" coords="707,122,856,163"/>
+<area shape="rect" id="node9" href="$class_s_a_m_1_1_stream_session.html#a9474b137168e5f3e38a96a0b7e58f230" title="SAM::StreamSession\l::accept" alt="" coords="707,187,856,229"/>
+<area shape="rect" id="node10" href="$class_s_a_m_1_1_stream_session.html#a551ef7338e1387f0f2ae023777296704" title="SAM::StreamSession\l::connect" alt="" coords="707,253,856,294"/>
+<area shape="rect" id="node11" href="$class_s_a_m_1_1_stream_session.html#af91905ca845614cc9f49f8ea7537a452" title="SAM::StreamSession\l::forward" alt="" coords="707,318,856,359"/>
+</map>

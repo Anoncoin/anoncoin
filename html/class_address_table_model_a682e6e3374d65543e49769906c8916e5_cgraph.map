@@ -1,0 +1,13 @@
+<map id="AddressTableModel::removeRows" name="AddressTableModel::removeRows">
+<area shape="rect" id="node2" href="$class_address_table_priv.html#af311eb7d0189a74a508d7ad0f563f307" title="AddressTablePriv::index" alt="" coords="206,105,373,132"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#ac6542da8493cbb958068b7a01c05b631" title="CWallet::DelAddressBook" alt="" coords="201,156,377,183"/>
+<area shape="rect" id="node4" href="$class_c_base58_data.html#a9a47b10dadff15b8d6a6d0e63ce3ae32" title="CBase58Data::ToString" alt="" coords="437,31,599,57"/>
+<area shape="rect" id="node8" href="$class_c_wallet_d_b.html#a0403a98efe565020f8804eefbc808d90" title="Erase destination data tuple from wallet database. " alt="" coords="425,81,611,108"/>
+<area shape="rect" id="node9" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="487,156,549,183"/>
+<area shape="rect" id="node11" href="$class_c_wallet_d_b.html#adaba27cee112077ade5b2e795382cec6" title="CWalletDB::ErasePurpose" alt="" coords="429,207,607,233"/>
+<area shape="rect" id="node12" href="$class_c_wallet_d_b.html#a319209fcf90ea860b668b92c44a3fa7a" title="CWalletDB::EraseName" alt="" coords="435,257,601,284"/>
+<area shape="rect" id="node5" href="$base58_8cpp.html#ace9a5807ee51604f33044339f073ec76" title="Encode a byte vector into a base58&#45;encoded string, including checksum. " alt="" coords="663,31,814,57"/>
+<area shape="rect" id="node6" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="896,5,949,32"/>
+<area shape="rect" id="node7" href="$base58_8cpp.html#a8d6f0e9d5df175b4966dcede31dc90ad" title="Encode a byte sequence as a base58&#45;encoded string. " alt="" coords="867,56,979,83"/>
+<area shape="rect" id="node10" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="659,156,819,183"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="AnoncoinUnits::formatWithUnit" name="AnoncoinUnits::formatWithUnit">
+<area shape="rect" id="node2" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="257,56,411,83"/>
+<area shape="rect" id="node6" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="259,107,409,133"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="471,5,614,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="468,56,617,83"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="459,107,627,133"/>
+</map>

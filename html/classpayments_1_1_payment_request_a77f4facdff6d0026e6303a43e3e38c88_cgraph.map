@@ -1,0 +1,9 @@
+<map id="payments::PaymentRequest::CopyFrom" name="payments::PaymentRequest::CopyFrom">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#a222f0b2cebe5bef9bbdd27e41b41ab4c" title="payments::PaymentRequest\l::Clear" alt="" coords="243,144,432,185"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment_request.html#adda78ee51efa328d03ffd9ac5b19417c" title="payments::PaymentRequest\l::MergeFrom" alt="" coords="243,209,432,251"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a468d0df13c43608b8df88dff36a89cb5" title="payments::PaymentRequest\l::has_pki_type" alt="" coords="480,5,669,47"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#ac0c246fd8bc59b43274866909e2f7d0e" title="payments::PaymentRequest\l::has_pki_data" alt="" coords="480,71,669,112"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#a2ca7d37905f9d20151a760381a6047d0" title="payments::PaymentRequest\l::has_serialized_payment\l_details" alt="" coords="480,137,669,193"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_request.html#a0121113b95563ae0541c9ba54949d925" title="payments::PaymentRequest\l::has_signature" alt="" coords="480,217,669,259"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment_request.html#a0685727be1f02889f11f825436cac5b3" title="payments::PaymentRequest\l::mutable_unknown_fields" alt="" coords="480,283,669,324"/>
+</map>

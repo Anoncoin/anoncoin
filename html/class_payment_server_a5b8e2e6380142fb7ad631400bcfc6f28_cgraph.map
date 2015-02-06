@@ -1,0 +1,51 @@
+<map id="PaymentServer::netRequestFinished" name="PaymentServer::netRequestFinished">
+<area shape="rect" id="node2" href="$class_payment_request_plus.html#aaa495c136209bac976cc195705a6c509" title="PaymentRequestPlus\l::parse" alt="" coords="277,149,428,191"/>
+<area shape="rect" id="node11" href="$class_payment_server.html#abe96a7c90755b8e1975e380b5a8228bd" title="PaymentServer::processPayment\lRequest" alt="" coords="243,675,463,716"/>
+<area shape="rect" id="node12" href="$namespace_g_u_i_util.html#a2d4b7f2c11ebc4b97af10bc20d19b1b2" title="GUIUtil::HtmlEscape" alt="" coords="541,493,685,519"/>
+<area shape="rect" id="node50" href="$classpayments_1_1_payment_a_c_k.html#af5473059f2e5d45e26ee2605f0d7ce97" title="payments::PaymentACK\l::memo" alt="" coords="269,740,436,781"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#ae3325b49f6423d3c761233e6a942e7ee" title="payments::PaymentRequest\l::payment_details_version" alt="" coords="518,51,707,92"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a409c3294565d64b32604eec63343a097" title="payments::PaymentRequest\l::serialized_payment_details" alt="" coords="517,116,708,157"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#a222f0b2cebe5bef9bbdd27e41b41ab4c" title="payments::PaymentRequest\l::Clear" alt="" coords="518,181,707,223"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment_request.html#a468d0df13c43608b8df88dff36a89cb5" title="payments::PaymentRequest\l::has_pki_type" alt="" coords="763,5,952,47"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment_request.html#ac0c246fd8bc59b43274866909e2f7d0e" title="payments::PaymentRequest\l::has_pki_data" alt="" coords="763,71,952,112"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment_request.html#a2ca7d37905f9d20151a760381a6047d0" title="payments::PaymentRequest\l::has_serialized_payment\l_details" alt="" coords="763,137,952,193"/>
+<area shape="rect" id="node9" href="$classpayments_1_1_payment_request.html#a0121113b95563ae0541c9ba54949d925" title="payments::PaymentRequest\l::has_signature" alt="" coords="763,217,952,259"/>
+<area shape="rect" id="node10" href="$classpayments_1_1_payment_request.html#a0685727be1f02889f11f825436cac5b3" title="payments::PaymentRequest\l::mutable_unknown_fields" alt="" coords="763,283,952,324"/>
+<area shape="rect" id="node13" href="$class_payment_request_plus.html#a7c8897087763a5add91d9fdee059a126" title="PaymentRequestPlus\l::getDetails" alt="" coords="537,544,688,585"/>
+<area shape="rect" id="node14" href="$classpayments_1_1_payment_details.html#a978562af43036ce6590a157d0f39e58b" title="payments::PaymentDetails\l::memo" alt="" coords="523,609,703,651"/>
+<area shape="rect" id="node15" href="$class_payment_request_plus.html#ae5d361b6e34549a83f3cb7885b20b120" title="PaymentRequestPlus\l::getMerchant" alt="" coords="537,675,688,716"/>
+<area shape="rect" id="node25" href="$class_payment_request_plus.html#a30ec9429606dfdcb7c818c2f443db872" title="PaymentRequestPlus\l::getPayTo" alt="" coords="537,871,688,912"/>
+<area shape="rect" id="node30" href="$script_8cpp.html#a951f7e601746ae076afdf3169ecca2fc" title="ExtractDestination" alt="" coords="547,987,678,1014"/>
+<area shape="rect" id="node42" href="$class_c_tx_out.html#a89bf5bc4987ccd09e9a675d980e18602" title="CTxOut::IsDust" alt="" coords="556,1038,669,1065"/>
+<area shape="rect" id="node43" href="$class_anoncoin_units.html#a07b2ad9cac3728231143e4d78c059e14" title="Format as string (with unit) " alt="" coords="511,1139,715,1166"/>
+<area shape="rect" id="node49" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="514,1190,711,1217"/>
+<area shape="rect" id="node16" href="$class_payment_request_plus.html#a62ae278689d852e4a73cdef627763944" title="PaymentRequestPlus\l::IsInitialized" alt="" coords="782,348,933,389"/>
+<area shape="rect" id="node18" href="$classpayments_1_1_payment_request.html#a42d70acf5e751d9304f1e4246587b648" title="payments::PaymentRequest\l::pki_type" alt="" coords="763,413,952,455"/>
+<area shape="rect" id="node19" href="$classpayments_1_1_payment_request.html#ac8f305ba3185f34458c9abe869119c6a" title="payments::PaymentRequest\l::pki_data" alt="" coords="763,479,952,520"/>
+<area shape="rect" id="node20" href="$classpayments_1_1_x509_certificates.html#a2e492800721141b6c29b7ef46a9cfe0e" title="payments::X509Certificates\l::certificate_size" alt="" coords="765,544,950,585"/>
+<area shape="rect" id="node21" href="$classpayments_1_1_x509_certificates.html#ab887f34700ccaaa31eb80da5a0cd7a90" title="payments::X509Certificates\l::certificate" alt="" coords="765,609,950,651"/>
+<area shape="rect" id="node22" href="$classpayments_1_1_payment_request.html#ad2a94a64caa232f0ae773d91f7bd2d09" title="payments::PaymentRequest\l::set_signature" alt="" coords="763,675,952,716"/>
+<area shape="rect" id="node24" href="$classpayments_1_1_payment_request.html#a55eab9735c9b7675d42eef66336958fc" title="payments::PaymentRequest\l::signature" alt="" coords="763,740,952,781"/>
+<area shape="rect" id="node17" href="$classpayments_1_1_payment_request.html#a823854558ba54ec4b6258d9132affc15" title="payments::PaymentRequest\l::IsInitialized" alt="" coords="1000,348,1189,389"/>
+<area shape="rect" id="node23" href="$classpayments_1_1_payment_request.html#ac0b591920a592f6e1ad3d4bb2f0f2043" title="payments::PaymentRequest\l::set_has_signature" alt="" coords="1000,675,1189,716"/>
+<area shape="rect" id="node26" href="$classpayments_1_1_payment_details.html#adafb0db0ce50e68c794846568be749ee" title="payments::PaymentDetails\l::outputs_size" alt="" coords="767,805,947,847"/>
+<area shape="rect" id="node27" href="$classpayments_1_1_payment_details.html#a540d66687ea7828186b4385c99c860a3" title="payments::PaymentDetails\l::outputs" alt="" coords="767,871,947,912"/>
+<area shape="rect" id="node28" href="$classpayments_1_1_output.html#a44907aa137316a13171e889983ecf451" title="payments::Output::script" alt="" coords="774,937,941,963"/>
+<area shape="rect" id="node29" href="$classpayments_1_1_output.html#a4f93c42c8c50eaf997789c3835280618" title="payments::Output::amount" alt="" coords="768,987,947,1014"/>
+<area shape="rect" id="node31" href="$script_8cpp.html#a6ee6be50bff44464e905680c6fcee6dc" title="Solver" alt="" coords="827,1038,887,1065"/>
+<area shape="rect" id="node38" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="797,1089,917,1115"/>
+<area shape="rect" id="node32" href="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d" title="Return boolean argument or default value. " alt="" coords="1049,886,1140,913"/>
+<area shape="rect" id="node34" href="$class_c_script.html#acba6d6d35776de4ce3a632446f44805f" title="CScript::IsPayToScriptHash" alt="" coords="1001,937,1188,963"/>
+<area shape="rect" id="node35" href="$class_c_script.html#a94635ed93d8d244ec3acfa83f9ecfe5f" title="CScript::GetOp" alt="" coords="1039,987,1151,1014"/>
+<area shape="rect" id="node37" href="$class_c_script.html#a7f975fca06b3e9a17da8ba23c7647e2e" title="CScript::DecodeOP_N" alt="" coords="1017,1038,1173,1065"/>
+<area shape="rect" id="node33" href="$util_8h.html#aa5ce96ec36f4413f820cec9c1831c070" title="atoi" alt="" coords="1280,886,1324,913"/>
+<area shape="rect" id="node36" href="$class_c_script.html#a93ec95275ccce9b701c8f53c57cd7975" title="CScript::GetOp2" alt="" coords="1242,987,1362,1014"/>
+<area shape="rect" id="node39" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="1057,1089,1133,1115"/>
+<area shape="rect" id="node40" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="1040,1139,1149,1166"/>
+<area shape="rect" id="node41" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="1237,1139,1367,1166"/>
+<area shape="rect" id="node44" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="781,1190,934,1217"/>
+<area shape="rect" id="node48" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="783,1241,932,1267"/>
+<area shape="rect" id="node45" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="1023,1190,1166,1217"/>
+<area shape="rect" id="node46" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="1020,1241,1169,1267"/>
+<area shape="rect" id="node47" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="1011,1291,1179,1318"/>
+</map>

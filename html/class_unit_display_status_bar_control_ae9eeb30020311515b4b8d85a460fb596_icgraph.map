@@ -1,0 +1,5 @@
+<map id="UnitDisplayStatusBarControl::onDisplayUnitsClicked" name="UnitDisplayStatusBarControl::onDisplayUnitsClicked">
+<area shape="rect" id="node2" href="$class_unit_display_status_bar_control.html#a645cb0f2a435881ca9cc5ac09355cff0" title="So that it responds to left&#45;button clicks. " alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node3" href="$class_unit_display_status_bar_control.html#a3d131e977c2e9095d05d362d456a0e47" title="Creates context menu, its actions, and wires up all the relevant signals for mouse events..." alt="" coords="244,71,435,112"/>
+<area shape="rect" id="node4" href="$class_unit_display_status_bar_control.html#aa4a399de0d0d93dedf44bcb328f78131" title="UnitDisplayStatusBarControl\l::UnitDisplayStatusBarControl" alt="" coords="483,71,681,112"/>
+</map>

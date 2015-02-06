@@ -1,0 +1,31 @@
+<map id="FindUndoPos" name="FindUndoPos">
+<area shape="rect" id="node2" href="$class_c_block_tree_d_b.html#ae248032ee1f1303dea54a0b36ad84755" title="CBlockTreeDB::WriteBlock\lFileInfo" alt="" coords="178,5,359,47"/>
+<area shape="rect" id="node11" href="$class_c_validation_state.html#a6788cb521cf538ac80413a1c6c3da5e8" title="CValidationState::Abort" alt="" coords="189,71,349,98"/>
+<area shape="rect" id="node14" href="$class_c_validation_state.html#abf67ad56f62df5679d47c289684c554c" title="CValidationState::Error" alt="" coords="436,121,595,147"/>
+<area shape="rect" id="node15" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="496,171,535,198"/>
+<area shape="rect" id="node16" href="$class_c_block_tree_d_b.html#a6f951198dc53fbe9194626ff82638656" title="CBlockTreeDB::ReadBlockFileInfo" alt="" coords="156,274,381,301"/>
+<area shape="rect" id="node19" href="$main_8cpp.html#a7d4a97e049394047743b48c0cd0f0791" title="Check whether enough disk space is available for an incoming block. " alt="" coords="207,223,331,250"/>
+<area shape="rect" id="node27" href="$main_8cpp.html#af17e2878956b7c457ef8148025d4c462" title="Open an undo file (rev?????.dat) " alt="" coords="215,325,323,351"/>
+<area shape="rect" id="node30" href="$util_8cpp.html#a91c763bffc49cf7ed8d45cc44870e55c" title="AllocateFileRange" alt="" coords="203,375,334,402"/>
+<area shape="rect" id="node3" href="$class_c_level_d_b_wrapper.html#a740caa1aefbafc888838ea7f70dc31f4" title="CLevelDBWrapper::Write" alt="" coords="429,17,601,43"/>
+<area shape="rect" id="node4" href="$class_c_level_d_b_batch.html#ab459da1abafa27e834de9a4cc25b6f2d" title="CLevelDBBatch::Write" alt="" coords="675,67,829,94"/>
+<area shape="rect" id="node9" href="$class_c_level_d_b_wrapper.html#a820484c9e427f9e3400396e750acf4b8" title="CLevelDBWrapper::WriteBatch" alt="" coords="649,17,855,43"/>
+<area shape="rect" id="node5" href="$class_c_data_stream.html#a5542e71bd7af2ab7cd7be0f381d39cb5" title="CDataStream::reserve" alt="" coords="930,169,1085,195"/>
+<area shape="rect" id="node6" href="$class_c_data_stream.html#aaf2b9e953793ce5a4fc438a7ecb00dc2" title="CDataStream::GetSerializeSize" alt="" coords="903,67,1112,94"/>
+<area shape="rect" id="node8" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="941,118,1074,145"/>
+<area shape="rect" id="node7" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="1167,67,1287,94"/>
+<area shape="rect" id="node10" href="$leveldbwrapper_8cpp.html#aea36eb5fddb6266b14ea8cb15e183486" title="HandleError" alt="" coords="961,17,1054,43"/>
+<area shape="rect" id="node12" href="$main_8h.html#a796d22b033e4a9628490e5ffa3fac4fa" title="Abort with a message. " alt="" coords="473,70,558,97"/>
+<area shape="rect" id="node13" href="$init_8cpp.html#ac7140c7327b1e6a8d46470b1cd0e8e1b" title="StartShutdown" alt="" coords="697,118,807,145"/>
+<area shape="rect" id="node17" href="$class_c_level_d_b_wrapper.html#aa3451a451298c7f8a66986ccd95474e2" title="CLevelDBWrapper::Read" alt="" coords="666,169,838,195"/>
+<area shape="rect" id="node18" href="$leveldbwrapper_8h.html#aea36eb5fddb6266b14ea8cb15e183486" title="HandleError" alt="" coords="961,219,1054,246"/>
+<area shape="rect" id="node20" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="707,322,797,349"/>
+<area shape="rect" id="node26" href="$main_8cpp.html#a00a5642fcaee2234f90f16a70b815a82" title="Abort with a message. " alt="" coords="473,222,558,249"/>
+<area shape="rect" id="node21" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="973,422,1041,449"/>
+<area shape="rect" id="node22" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="916,270,1099,297"/>
+<area shape="rect" id="node23" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="942,321,1073,347"/>
+<area shape="rect" id="node25" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="925,371,1090,398"/>
+<area shape="rect" id="node24" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="1160,321,1295,347"/>
+<area shape="rect" id="node28" href="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635" title="OpenDiskFile" alt="" coords="464,374,567,401"/>
+<area shape="rect" id="node29" href="$struct_c_disk_block_pos.html#a924f2805b274345afce890b27a0934d9" title="CDiskBlockPos::IsNull" alt="" coords="675,374,829,401"/>
+</map>

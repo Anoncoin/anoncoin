@@ -1,0 +1,25 @@
+<map id="src/txdb.h" name="src/txdb.h">
+<area shape="rect" id="node2" href="$leveldbwrapper_8h.html" title="leveldbwrapper.h" alt="" coords="490,379,614,405"/>
+<area shape="rect" id="node34" href="$main_8h.html" title="main.h" alt="" coords="1489,80,1551,107"/>
+<area shape="rect" id="node3" href="$clientversion_8h.html" title="clientversion.h" alt="" coords="645,453,752,480"/>
+<area shape="rect" id="node6" href="$serialize_8h.html" title="serialize.h" alt="" coords="1324,528,1407,555"/>
+<area shape="rect" id="node19" href="$util_8h.html" title="util.h" alt="" coords="1971,453,2021,480"/>
+<area shape="rect" id="node31" href="$version_8h.html" title="version.h" alt="" coords="570,528,646,555"/>
+<area shape="rect" id="node7" href="$allocators_8h.html" title="allocators.h" alt="" coords="1461,610,1552,637"/>
+<area shape="rect" id="node20" href="$compat_8h.html" title="compat.h" alt="" coords="2517,528,2595,555"/>
+<area shape="rect" id="node22" href="$tinyformat_8h.html" title="tinyformat.h" alt="" coords="1482,528,1574,555"/>
+<area shape="rect" id="node35" href="$bignum_8h.html" title="bignum.h" alt="" coords="928,453,1005,480"/>
+<area shape="rect" id="node36" href="$uint256_8h.html" title="uint256.h" alt="" coords="1071,528,1148,555"/>
+<area shape="rect" id="node38" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="997,379,1107,405"/>
+<area shape="rect" id="node39" href="$coins_8h.html" title="coins.h" alt="" coords="1315,229,1379,256"/>
+<area shape="rect" id="node40" href="$core_8h.html" title="core.h" alt="" coords="1149,304,1208,331"/>
+<area shape="rect" id="node41" href="$script_8h.html" title="script.h" alt="" coords="1474,379,1539,405"/>
+<area shape="rect" id="node44" href="$net_8h.html" title="net.h" alt="" coords="1970,379,2022,405"/>
+<area shape="rect" id="node49" href="$sync_8h.html" title="sync.h" alt="" coords="2561,453,2621,480"/>
+<area shape="rect" id="node50" href="$txmempool_8h.html" title="txmempool.h" alt="" coords="1384,155,1483,181"/>
+<area shape="rect" id="node43" href="$scrypt_8h.html" title="scrypt.h" alt="" coords="144,379,213,405"/>
+<area shape="rect" id="node45" href="$bloom_8h.html" title="bloom.h" alt="" coords="1829,453,1899,480"/>
+<area shape="rect" id="node46" href="$hash_8h.html" title="hash.h" alt="" coords="1641,453,1703,480"/>
+<area shape="rect" id="node47" href="$limitedmap_8h.html" title="limitedmap.h" alt="" coords="2875,528,2973,555"/>
+<area shape="rect" id="node48" href="$mruset_8h.html" title="mruset.h" alt="" coords="3099,528,3173,555"/>
+</map>

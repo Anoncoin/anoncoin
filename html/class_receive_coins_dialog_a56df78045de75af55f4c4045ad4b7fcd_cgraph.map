@@ -1,0 +1,18 @@
+<map id="ReceiveCoinsDialog::on_showRequestButton_clicked" name="ReceiveCoinsDialog::on_showRequestButton_clicked">
+<area shape="rect" id="node2" href="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f" title="WalletModel::getRecentRequests\lTableModel" alt="" coords="445,5,665,47"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#a5eabd6106c8e3b275305b84c0303f314" title="ReceiveCoinsDialog\l::on_recentRequestsView\l_doubleClicked" alt="" coords="224,107,397,163"/>
+<area shape="rect" id="node4" href="$class_receive_request_dialog.html#ad57b3bf409346660842360836fd8569d" title="ReceiveRequestDialog\l::setModel" alt="" coords="477,71,634,112"/>
+<area shape="rect" id="node15" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="453,137,657,163"/>
+<area shape="rect" id="node16" href="$class_receive_request_dialog.html#a43344270ef71e68ad9c7a931cc0ca9ed" title="ReceiveRequestDialog\l::setInfo" alt="" coords="477,188,634,229"/>
+<area shape="rect" id="node17" href="$class_recent_requests_table_model.html#abd51da01be471df1d072d5e5c1b8007d" title="RecentRequestsTableModel\l::entry" alt="" coords="460,253,651,295"/>
+<area shape="rect" id="node5" href="$class_receive_request_dialog.html#a8e1c0ee2fbacf42b4dc7ea05986c86c9" title="ReceiveRequestDialog\l::update" alt="" coords="713,129,871,171"/>
+<area shape="rect" id="node6" href="$namespace_g_u_i_util.html#a87288c8a7c8e7ca91358dfba17fd402b" title="GUIUtil::formatAnoncoinURI" alt="" coords="926,61,1115,87"/>
+<area shape="rect" id="node11" href="$namespace_g_u_i_util.html#a2d4b7f2c11ebc4b97af10bc20d19b1b2" title="GUIUtil::HtmlEscape" alt="" coords="949,111,1093,138"/>
+<area shape="rect" id="node12" href="$class_anoncoin_units.html#a07b2ad9cac3728231143e4d78c059e14" title="Format as string (with unit) " alt="" coords="919,162,1123,189"/>
+<area shape="rect" id="node14" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="922,213,1119,239"/>
+<area shape="rect" id="node7" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="1171,86,1324,113"/>
+<area shape="rect" id="node8" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="1385,35,1527,62"/>
+<area shape="rect" id="node9" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="1381,86,1531,113"/>
+<area shape="rect" id="node10" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="1372,137,1540,163"/>
+<area shape="rect" id="node13" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="1173,162,1322,189"/>
+</map>

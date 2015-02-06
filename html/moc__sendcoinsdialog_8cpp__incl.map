@@ -1,0 +1,18 @@
+<map id="src/qt/moc_sendcoinsdialog.cpp" name="src/qt/moc_sendcoinsdialog.cpp">
+<area shape="rect" id="node2" href="$sendcoinsdialog_8h.html" title="qt/sendcoinsdialog.h" alt="" coords="1861,80,2005,107"/>
+<area shape="rect" id="node3" href="$walletmodel_8h.html" title="walletmodel.h" alt="" coords="1616,155,1720,181"/>
+<area shape="rect" id="node4" href="$paymentrequestplus_8h.html" title="paymentrequestplus.h" alt="" coords="1498,229,1651,256"/>
+<area shape="rect" id="node17" href="$allocators_8h.html" title="allocators.h" alt="" coords="385,692,476,719"/>
+<area shape="rect" id="node46" href="$walletmodeltransaction_8h.html" title="walletmodeltransaction.h" alt="" coords="1675,229,1845,256"/>
+<area shape="rect" id="node5" href="$paymentrequest_8pb_8h.html" title="paymentrequest.pb.h" alt="" coords="1729,304,1876,331"/>
+<area shape="rect" id="node13" href="$base58_8h.html" title="base58.h" alt="" coords="1361,304,1439,331"/>
+<area shape="rect" id="node14" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="1567,468,1676,495"/>
+<area shape="rect" id="node35" href="$key_8h.html" title="key.h" alt="" coords="1035,468,1088,495"/>
+<area shape="rect" id="node39" href="$script_8h.html" title="script.h" alt="" coords="1346,386,1411,413"/>
+<area shape="rect" id="node15" href="$bignum_8h.html" title="bignum.h" alt="" coords="1567,543,1644,569"/>
+<area shape="rect" id="node30" href="$uint256_8h.html" title="uint256.h" alt="" coords="1756,617,1833,644"/>
+<area shape="rect" id="node16" href="$serialize_8h.html" title="serialize.h" alt="" coords="487,617,569,644"/>
+<area shape="rect" id="node32" href="$version_8h.html" title="version.h" alt="" coords="1023,617,1099,644"/>
+<area shape="rect" id="node36" href="$hash_8h.html" title="hash.h" alt="" coords="954,543,1017,569"/>
+<area shape="rect" id="node40" href="$util_8h.html" title="util.h" alt="" coords="1331,543,1381,569"/>
+</map>

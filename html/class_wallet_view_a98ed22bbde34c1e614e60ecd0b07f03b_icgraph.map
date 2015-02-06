@@ -1,0 +1,9 @@
+<map id="WalletView::encryptionStatusChanged" name="WalletView::encryptionStatusChanged">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a99d6a88bea0aef8db23e249c7ffb24d0" title="WalletView::setAnoncoinGUI" alt="" coords="251,5,443,32"/>
+<area shape="rect" id="node4" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="503,56,690,83"/>
+<area shape="rect" id="node5" href="$class_wallet_view.html#ad348f2ed9f843ef9125ca416307c7412" title="Re&#45;emit encryption status signal. " alt="" coords="248,107,447,149"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="757,31,921,57"/>
+<area shape="rect" id="node6" href="$class_wallet_frame.html#ab6d4f86307bf1b28b53c2583c5166905" title="WalletFrame::setCurrentWallet" alt="" coords="495,111,699,137"/>
+<area shape="rect" id="node7" href="$class_wallet_view.html#a164c3de8fc69ef6f39fb7c15e4bda553" title="Encrypt the wallet. " alt="" coords="509,161,685,188"/>
+<area shape="rect" id="node8" href="$class_wallet_frame.html#a8a9a419ba3e249f29fe321f2d789b761" title="Encrypt the wallet. " alt="" coords="747,161,932,188"/>
+</map>

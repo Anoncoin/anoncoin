@@ -1,0 +1,6 @@
+<map id="Test_EqualityPoK" name="Test_EqualityPoK">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a846cfaed719d7d1513e899f4af124948" title="Verifies the proof. " alt="" coords="181,5,381,47"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_commitment.html#a8579660978e970e236554c5bf33005fc" title="libzerocoin::Commitment\l::getCommitmentValue" alt="" coords="197,71,366,112"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a928e409111b60d5fe222ea1559a9cb73" title="libzerocoin::CommitmentProof\lOfKnowledge::calculateChallenge" alt="" coords="429,5,652,47"/>
+<area shape="rect" id="node4" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="700,13,859,39"/>
+</map>

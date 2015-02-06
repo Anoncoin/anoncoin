@@ -1,0 +1,4 @@
+<map id="payments::Output::set_script" name="payments::Output::set_script">
+<area shape="rect" id="node2" href="$classpayments_1_1_output.html#af202416ff7c832a97ada570047e7e7cf" title="payments::Output::MergeFrom" alt="" coords="219,5,423,32"/>
+<area shape="rect" id="node3" href="$class_payment_server.html#ab846f9e8778e5cc878b644133e8628f1" title="PaymentServer::fetchPaymentACK" alt="" coords="205,56,436,83"/>
+</map>

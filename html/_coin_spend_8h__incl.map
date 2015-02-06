@@ -1,0 +1,15 @@
+<map id="src/zerocoin/CoinSpend.h" name="src/zerocoin/CoinSpend.h">
+<area shape="rect" id="node2" href="$_params_8h.html" title="Parameter classes for Zerocoin. " alt="" coords="830,229,909,256"/>
+<area shape="rect" id="node3" href="$_coin_8h.html" title="PublicCoin and PrivateCoin classes for the Zerocoin library. " alt="" coords="977,155,1037,181"/>
+<area shape="rect" id="node4" href="$bignum_8h.html" title="bignum.h" alt="" coords="1216,229,1293,256"/>
+<area shape="rect" id="node5" href="$serialize_8h.html" title="serialize.h" alt="" coords="713,304,796,331"/>
+<area shape="rect" id="node28" href="$_commitment_8h.html" title="Commitment and CommitmentProof classes for the Zerocoin library. " alt="" coords="611,155,720,181"/>
+<area shape="rect" id="node29" href="$_accumulator_8h.html" title="Accumulator and AccumulatorWitness classes for the Zerocoin library. " alt="" coords="795,155,901,181"/>
+<area shape="rect" id="node30" href="$_accumulator_proof_of_knowledge_8h.html" title="AccumulatorProofOfKnowledge class for the Zerocoin library. " alt="" coords="1213,80,1432,107"/>
+<area shape="rect" id="node31" href="$_serial_number_signature_of_knowledge_8h.html" title="SerialNumberSignatureOfKnowledge class for the Zerocoin library. " alt="" coords="937,80,1189,107"/>
+<area shape="rect" id="node37" href="$_spend_meta_data_8h.html" title="SpendMetaData class for the Zerocoin library. " alt="" coords="1062,229,1191,256"/>
+<area shape="rect" id="node23" href="$uint256_8h.html" title="uint256.h" alt="" coords="1140,304,1217,331"/>
+<area shape="rect" id="node25" href="$version_8h.html" title="version.h" alt="" coords="1293,304,1369,331"/>
+<area shape="rect" id="node6" href="$allocators_8h.html" title="allocators.h" alt="" coords="859,386,949,413"/>
+<area shape="rect" id="node34" href="$hash_8h.html" title="hash.h" alt="" coords="1318,229,1381,256"/>
+</map>

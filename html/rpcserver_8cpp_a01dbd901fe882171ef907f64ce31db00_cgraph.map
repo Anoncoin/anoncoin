@@ -1,0 +1,7 @@
+<map id="ErrorReply" name="ErrorReply">
+<area shape="rect" id="node2" href="$rpcprotocol_8cpp.html#a091e4839a15f5f6d569a97c709d80374" title="JSONRPCReply" alt="" coords="139,5,259,32"/>
+<area shape="rect" id="node4" href="$rpcprotocol_8cpp.html#afa39f57077df4d88ad60373f58d793e1" title="HTTPReply" alt="" coords="153,56,244,83"/>
+<area shape="rect" id="node3" href="$rpcprotocol_8cpp.html#a48add16ec902386cc873c5cf0b40b2dd" title="JSONRPCReplyObj" alt="" coords="307,5,447,32"/>
+<area shape="rect" id="node5" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="311,56,442,83"/>
+<area shape="rect" id="node6" href="$clientversion_8cpp.html#aff087070aeaa72e85b2d1a6192af8af5" title="CLIENT_BUILD" alt="" coords="495,56,611,83"/>
+</map>

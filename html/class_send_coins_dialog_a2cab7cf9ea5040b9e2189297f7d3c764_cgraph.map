@@ -1,0 +1,51 @@
+<map id="SendCoinsDialog::on_sendButton_clicked" name="SendCoinsDialog::on_sendButton_clicked">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="715,1835,919,1862"/>
+<area shape="rect" id="node3" href="$class_send_coins_entry.html#ab77df95fe77e9a001190cd4dabe0dfec" title="SendCoinsEntry::validate" alt="" coords="223,189,395,215"/>
+<area shape="rect" id="node4" href="$class_payment_request_plus.html#a62ae278689d852e4a73cdef627763944" title="PaymentRequestPlus\l::IsInitialized" alt="" coords="741,451,892,492"/>
+<area shape="rect" id="node13" href="$class_send_coins_entry.html#af36fb0ed9e2e07079c1a982b31e793c8" title="SendCoinsEntry::getValue" alt="" coords="477,1675,656,1702"/>
+<area shape="rect" id="node14" href="$class_anoncoin_units.html#a07b2ad9cac3728231143e4d78c059e14" title="Format as string (with unit) " alt="" coords="715,1755,919,1782"/>
+<area shape="rect" id="node17" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="718,2043,915,2070"/>
+<area shape="rect" id="node18" href="$namespace_g_u_i_util.html#a2d4b7f2c11ebc4b97af10bc20d19b1b2" title="GUIUtil::HtmlEscape" alt="" coords="237,1667,381,1694"/>
+<area shape="rect" id="node19" href="$class_wallet_model.html#ae98eaede9493625ce778a0a873b3d124" title="WalletModel::requestUnlock" alt="" coords="215,327,403,354"/>
+<area shape="rect" id="node21" href="$class_options_model.html#ace6c871068f613aee277e37bfdc988c0" title="OptionsModel::getCoinControl\lFeatures" alt="" coords="467,1893,667,1935"/>
+<area shape="rect" id="node22" href="$class_wallet_model.html#a8abc851901c7c7343ebfb5a8e5fc0154" title="WalletModel::prepareTransaction" alt="" coords="200,830,419,857"/>
+<area shape="rect" id="node35" href="$class_send_coins_dialog.html#a349fff162bb43ec63e56e8f7db203a66" title="SendCoinsDialog::process\lSendCoinsReturn" alt="" coords="220,1887,399,1928"/>
+<area shape="rect" id="node36" href="$class_wallet_model_transaction.html#a266cbd41f127e2313ab9a8a11367a8ec" title="WalletModelTransaction\l::getTransactionFee" alt="" coords="227,1952,392,1993"/>
+<area shape="rect" id="node37" href="$class_wallet_model_transaction.html#a65518b8ac138145d6491ab7ad1e9be08" title="WalletModelTransaction\l::getTotalTransactionAmount" alt="" coords="213,2017,406,2059"/>
+<area shape="rect" id="node38" href="$class_anoncoin_units.html#a1bb6101ca39bc95a54d4401f40d5f151" title="Get list of units, for drop&#45;down box. " alt="" coords="225,2083,393,2124"/>
+<area shape="rect" id="node39" href="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39" title="WalletModel::sendCoins" alt="" coords="227,1391,392,1418"/>
+<area shape="rect" id="node46" href="$class_send_coins_dialog.html#af2185c3d29e43d37c30669f0def46060" title="SendCoinsDialog::accept" alt="" coords="223,2301,395,2327"/>
+<area shape="rect" id="node48" href="$class_c_coin_control.html#a78bc21b1698e6ae5e6c2fef9758db39c" title="CCoinControl::UnSelectAll" alt="" coords="220,2250,399,2277"/>
+<area shape="rect" id="node49" href="$class_send_coins_dialog.html#ae4f429aabcaf309aa314b90049be2a74" title="SendCoinsDialog::coinControl\lUpdateLabels" alt="" coords="209,1769,409,1811"/>
+<area shape="rect" id="node6" href="$class_wallet_model.html#a04604615253aeaae1253b1412a70a1f7" title="WalletModel::validateAddress" alt="" coords="468,509,665,535"/>
+<area shape="rect" id="node8" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="499,5,635,47"/>
+<area shape="rect" id="node9" href="$class_anoncoin_amount_field.html#ae0766727d1352a21980231772200c0ad" title="Perform input validation, mark field as invalid if entered value is not valid. " alt="" coords="491,123,643,164"/>
+<area shape="rect" id="node10" href="$class_anoncoin_amount_field.html#ad3c794ea41c9fca0cbbb2aad5a1fdaff" title="Mark current value as invalid in UI. " alt="" coords="741,93,893,135"/>
+<area shape="rect" id="node11" href="$namespace_g_u_i_util.html#af947045729005fce641839cdb55a92cb" title="GUIUtil::isDust" alt="" coords="512,189,621,215"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_payment_request.html#a823854558ba54ec4b6258d9132affc15" title="payments::PaymentRequest\l::IsInitialized" alt="" coords="967,451,1156,492"/>
+<area shape="rect" id="node7" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="725,954,909,981"/>
+<area shape="rect" id="node12" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="737,273,897,299"/>
+<area shape="rect" id="node15" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="985,1730,1138,1757"/>
+<area shape="rect" id="node16" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="987,1781,1136,1807"/>
+<area shape="rect" id="node20" href="$class_wallet_model.html#acfb62be638267bbf1bf498fb6501c31d" title="WalletModel::getEncryption\lStatus" alt="" coords="475,291,659,332"/>
+<area shape="rect" id="node23" href="$class_wallet_model_transaction.html#a477180740c53bbbaed217faec2ccb8fa" title="WalletModelTransaction\l::getRecipients" alt="" coords="484,1159,649,1200"/>
+<area shape="rect" id="node24" href="$class_payment_request_plus.html#a7c8897087763a5add91d9fdee059a126" title="PaymentRequestPlus\l::getDetails" alt="" coords="491,911,642,952"/>
+<area shape="rect" id="node25" href="$classpayments_1_1_payment_details.html#adafb0db0ce50e68c794846568be749ee" title="payments::PaymentDetails\l::outputs_size" alt="" coords="477,976,657,1017"/>
+<area shape="rect" id="node26" href="$classpayments_1_1_payment_details.html#a540d66687ea7828186b4385c99c860a3" title="payments::PaymentDetails\l::outputs" alt="" coords="477,560,657,601"/>
+<area shape="rect" id="node27" href="$classpayments_1_1_output.html#a4f93c42c8c50eaf997789c3835280618" title="payments::Output::amount" alt="" coords="477,626,656,653"/>
+<area shape="rect" id="node28" href="$classpayments_1_1_output.html#a44907aa137316a13171e889983ecf451" title="payments::Output::script" alt="" coords="483,677,650,703"/>
+<area shape="rect" id="node29" href="$class_wallet_model.html#a4edb2c8ed20331803bebdfa028372ea1" title="WalletModel::getBalance" alt="" coords="732,1330,901,1357"/>
+<area shape="rect" id="node30" href="$class_wallet_model_transaction.html#ab7bbd336d1904714078e43aa85a3b8f0" title="WalletModelTransaction\l::setTransactionFee" alt="" coords="484,728,649,769"/>
+<area shape="rect" id="node31" href="$class_wallet_model_transaction.html#af6e3adde528f4578145be97699c45bb8" title="WalletModelTransaction\l::newPossibleKeyChange" alt="" coords="480,793,653,835"/>
+<area shape="rect" id="node32" href="$class_wallet_model_transaction.html#a1db8f14976edf56a7678d9f7b390c0c5" title="WalletModelTransaction\l::getTransaction" alt="" coords="484,1224,649,1265"/>
+<area shape="rect" id="node33" href="$class_wallet_model_transaction.html#a58835446dab9397f823106d4a6ba6812" title="WalletModelTransaction\l::getPossibleKeyChange" alt="" coords="483,1093,651,1135"/>
+<area shape="rect" id="node34" href="$class_c_wallet.html#a9cfbc01e6c686cdc49288dfb049a3c1f" title="CWallet::CreateTransaction" alt="" coords="474,859,659,886"/>
+<area shape="rect" id="node40" href="$class_payment_request_plus.html#a34fc7e19696c6ff858c1ebb9c83eb0b0" title="PaymentRequestPlus\l::SerializeToString" alt="" coords="491,1544,642,1585"/>
+<area shape="rect" id="node41" href="$class_c_wallet.html#ac30e619488120651a6753195b77f3ad8" title="CWallet::CommitTransaction" alt="" coords="471,1341,663,1367"/>
+<area shape="rect" id="node42" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="500,1442,633,1469"/>
+<area shape="rect" id="node43" href="$class_c_anoncoin_address.html#a046d3fc0d98fdb1093a1d41e32adf43f" title="CAnoncoinAddress::Get" alt="" coords="484,1391,649,1418"/>
+<area shape="rect" id="node44" href="$class_c_wallet.html#a53e5528d7005608594e73f500bc5bb8f" title="CWallet::SetAddressBook" alt="" coords="479,1493,655,1519"/>
+<area shape="rect" id="node45" href="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d" title="WalletModel::checkBalance\lChanged" alt="" coords="474,1609,659,1651"/>
+<area shape="rect" id="node47" href="$class_send_coins_dialog.html#a127bddff45f49ff5e6e263efe218ae26" title="SendCoinsDialog::clear" alt="" coords="486,2301,647,2327"/>
+<area shape="rect" id="node50" href="$class_coin_control_dialog.html#a4fc60e89b097952ff22dc0f9c58c87d9" title="CoinControlDialog::\lupdateLabels" alt="" coords="498,1828,635,1869"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="CTxMemPool::check" name="CTxMemPool::check">
+<area shape="rect" id="node2" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="199,5,395,32"/>
+<area shape="rect" id="node4" href="$class_c_coins.html#a69bdcbac02e1644cb02b2645068777b5" title="CCoins::IsAvailable" alt="" coords="228,56,365,83"/>
+<area shape="rect" id="node3" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="443,5,600,32"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="WalletModel::getWatchBalance" name="WalletModel::getWatchBalance">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a39068cc4073715f7e6614aeb72f0872e" title="CWallet::GetWatchOnlyBalance" alt="" coords="260,139,471,165"/>
+<area shape="rect" id="node3" href="$class_c_wallet_tx.html#af2eff3b849af124cdf869fc03f587972" title="CWalletTx::IsTrusted" alt="" coords="547,100,694,127"/>
+<area shape="rect" id="node13" href="$class_c_wallet_tx.html#a6e34cd093f13714b57a25ca914301f5c" title="CWalletTx::GetAvailableWatch\lOnlyCredit" alt="" coords="519,194,723,235"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#adc332cd7ac94e639bb4239618341be19" title="IsFinalTx" alt="" coords="807,24,883,51"/>
+<area shape="rect" id="node9" href="$class_c_wallet.html#abdffee587c00bc1ebea53ea26f3efa61" title="CWallet::GetWalletTx" alt="" coords="771,75,920,101"/>
+<area shape="rect" id="node10" href="$class_c_wallet.html#ab7cc8fd8859fecc6ed768dacb5642c5e" title="CWallet::IsMine" alt="" coords="787,125,903,152"/>
+<area shape="rect" id="node5" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="975,5,1087,32"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6" title="GetAdjustedTime" alt="" coords="968,56,1093,83"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f" title="GetTime" alt="" coords="1185,43,1258,69"/>
+<area shape="rect" id="node8" href="$util_8cpp.html#a50ca5344c75631267633f15cfe5e983e" title="GetTimeOffset" alt="" coords="1167,93,1276,120"/>
+<area shape="rect" id="node11" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="1000,172,1061,199"/>
+<area shape="rect" id="node12" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="1141,172,1301,199"/>
+<area shape="rect" id="node14" href="$class_c_wallet.html#a7d77e683a0f10403fe2b67385895d497" title="CWallet::IsSpent" alt="" coords="785,176,906,203"/>
+<area shape="rect" id="node15" href="$class_c_wallet.html#a9ec15c32442fcceb95425d8b36492544" title="CWallet::GetCredit" alt="" coords="779,227,912,253"/>
+<area shape="rect" id="node16" href="$core_8h.html#ad1d9a769fa327ea042e0c9fadeb4836b" title="MoneyRange" alt="" coords="980,252,1081,279"/>
+</map>

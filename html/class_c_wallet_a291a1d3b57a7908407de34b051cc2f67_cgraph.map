@@ -1,0 +1,4 @@
+<map id="CWallet::SendMoney" name="CWallet::SendMoney">
+<area shape="rect" id="node2" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="233,5,271,32"/>
+<area shape="rect" id="node3" href="$util_8cpp.html#a3293aaba439017a99a494cbf39fb5681" title="FormatMoney" alt="" coords="200,56,304,83"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="CCryptoKeyStore" name="CCryptoKeyStore">
+<area shape="rect" id="node2" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="26,261,145,288"/>
+<area shape="rect" id="node3" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="42,185,129,212"/>
+</map>

@@ -1,0 +1,21 @@
+<map id="ReadBlockFromDisk" name="ReadBlockFromDisk">
+<area shape="rect" id="node2" href="$main_8cpp.html#a2dc350346749b7da7f4b40c114ee5147" title="ReadBlockFromDisk" alt="" coords="220,56,364,83"/>
+<area shape="rect" id="node17" href="$class_c_block_index.html#ae2b58426ae9365dce6cfacc5d0c92e44" title="CBlockIndex::GetBlockPos" alt="" coords="201,107,383,133"/>
+<area shape="rect" id="node18" href="$class_c_block_header.html#ae1165e54882d364b030fb33673d64dbd" title="CBlockHeader::GetHash" alt="" coords="208,157,376,184"/>
+<area shape="rect" id="node20" href="$class_c_block_index.html#ab843ef9b8b0a0193ec3a5c24738e484f" title="CBlockIndex::GetBlockHash" alt="" coords="197,208,387,235"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097" title="Open a block file (blk?????.dat) " alt="" coords="479,56,588,83"/>
+<area shape="rect" id="node12" href="$main_8h.html#a20a76dbc6ac5b8a6e0aaef85522b1069" title="Check whether a block hash satisfies the proof&#45;of&#45;work requirement specified by nBits. " alt="" coords="465,107,602,133"/>
+<area shape="rect" id="node15" href="$class_c_block_header.html#ace82f72f060caa4fd96759b4ff99a25e" title="CBlockHeader::GetPoWHash" alt="" coords="435,5,632,32"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635" title="OpenDiskFile" alt="" coords="709,56,811,83"/>
+<area shape="rect" id="node5" href="$struct_c_disk_block_pos.html#a924f2805b274345afce890b27a0934d9" title="CDiskBlockPos::IsNull" alt="" coords="888,107,1041,133"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="920,56,1009,83"/>
+<area shape="rect" id="node7" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1147,157,1215,184"/>
+<area shape="rect" id="node8" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="1089,56,1272,83"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="1115,107,1246,133"/>
+<area shape="rect" id="node11" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="1098,5,1263,32"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="1320,107,1455,133"/>
+<area shape="rect" id="node13" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="680,208,840,235"/>
+<area shape="rect" id="node14" href="$class_c_big_num.html#ad17ff84ee557ca5ad4b854e14d08099f" title="CBigNum::getuint256" alt="" coords="685,107,835,133"/>
+<area shape="rect" id="node16" href="$scrypt_8cpp.html#a7cf6198bde926ddbc13d1dd80530969f" title="scrypt_1024_1_1_256" alt="" coords="683,5,837,32"/>
+<area shape="rect" id="node19" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="507,157,560,184"/>
+</map>

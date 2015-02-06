@@ -1,0 +1,5 @@
+<map id="CheckProofOfWork" name="CheckProofOfWork">
+<area shape="rect" id="node2" href="$class_c_big_num.html#a27e3ca82a40ae0c34ac4c059e4d0d66c" title="CBigNum::SetCompact" alt="" coords="191,5,351,32"/>
+<area shape="rect" id="node3" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="237,56,305,83"/>
+<area shape="rect" id="node4" href="$class_c_big_num.html#ad17ff84ee557ca5ad4b854e14d08099f" title="CBigNum::getuint256" alt="" coords="196,107,345,133"/>
+</map>

@@ -1,0 +1,16 @@
+<map id="WalletFrame::backupWallet" name="WalletFrame::backupWallet">
+<area shape="rect" id="node2" href="$class_wallet_frame.html#a026798332d142b693e4f1820185d3f1c" title="WalletFrame::currentWalletView" alt="" coords="239,5,451,32"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a9800d793b552076b4207276d9e08c8b6" title="Backup the wallet. " alt="" coords="257,56,433,83"/>
+<area shape="rect" id="node4" href="$namespace_g_u_i_util.html#a788c51092a2255b1f8976d4794fc3ee6" title="Get save filename, mimics QFileDialog::getSaveFileName, except that it appends a default suffix when ..." alt="" coords="501,31,679,57"/>
+<area shape="rect" id="node5" href="$class_wallet_model.html#aa316c19ef41f26ea89f194ab253d3206" title="WalletModel::backupWallet" alt="" coords="499,81,681,108"/>
+<area shape="rect" id="node6" href="$walletdb_8cpp.html#a273c3692765c732c5f724cec93e6b62f" title="BackupWallet" alt="" coords="729,81,833,108"/>
+<area shape="rect" id="node7" href="$class_c_d_b_env.html#ac53fd53afdd1e0881b8ffbb11a89b556" title="CDBEnv::CloseDb" alt="" coords="902,5,1034,32"/>
+<area shape="rect" id="node8" href="$class_c_d_b_env.html#aaf4c0dd43825ee2441eaa4177bef137b" title="CDBEnv::CheckpointLSN" alt="" coords="881,56,1055,83"/>
+<area shape="rect" id="node9" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="923,107,1013,133"/>
+<area shape="rect" id="node15" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="929,157,1007,184"/>
+<area shape="rect" id="node10" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1160,31,1228,57"/>
+<area shape="rect" id="node11" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="1103,81,1285,108"/>
+<area shape="rect" id="node12" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="1129,132,1259,159"/>
+<area shape="rect" id="node14" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="1111,183,1277,209"/>
+<area shape="rect" id="node13" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="1333,132,1468,159"/>
+</map>

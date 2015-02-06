@@ -1,0 +1,4 @@
+<map id="libzerocoin::calculateGroupGenerator" name="libzerocoin::calculateGroupGenerator">
+<area shape="rect" id="node2" href="$namespacelibzerocoin.html#a49d954a2ad7e4abe50ae454c900d915a" title="Format a seed string by hashing several values. " alt="" coords="236,13,473,39"/>
+<area shape="rect" id="node3" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="521,13,680,39"/>
+</map>

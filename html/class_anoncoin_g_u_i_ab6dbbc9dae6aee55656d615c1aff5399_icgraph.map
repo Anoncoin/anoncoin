@@ -1,0 +1,7 @@
+<map id="AnoncoinGUI::setClientModel" name="AnoncoinGUI::setClientModel">
+<area shape="rect" id="node2" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="251,5,393,47"/>
+<area shape="rect" id="node4" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="251,71,393,112"/>
+<area shape="rect" id="node3" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="487,13,538,39"/>
+<area shape="rect" id="node5" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="441,71,584,112"/>
+<area shape="rect" id="node6" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="632,71,783,112"/>
+</map>

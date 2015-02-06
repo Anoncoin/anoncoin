@@ -1,0 +1,5 @@
+<map id="CBloomFilter::insert" name="CBloomFilter::insert">
+<area shape="rect" id="node2" href="$class_c_bloom_filter.html#aa4381af6e52b4f2279d790738b868509" title="CBloomFilter::Hash" alt="" coords="192,5,329,32"/>
+<area shape="rect" id="node3" href="$hash_8cpp.html#a3cf0406d24590eaad9a3163c552e9730" title="MurmurHash3" alt="" coords="377,5,484,32"/>
+<area shape="rect" id="node4" href="$hash_8cpp.html#aa8045f521ac28bee04e4980f93272dc0" title="ROTL32" alt="" coords="532,5,604,32"/>
+</map>

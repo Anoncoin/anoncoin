@@ -1,0 +1,13 @@
+<map id="WalletFrame" name="WalletFrame">
+<area shape="rect" id="node10" href="$class_anoncoin_g_u_i.html" title="Anoncoin GUI main class. " alt="" coords="1724,175,1825,201"/>
+<area shape="rect" id="node3" href="$class_client_model.html" title="Model for Anoncoin network client. " alt="" coords="479,267,571,293"/>
+<area shape="rect" id="node5" href="$class_peer_table_model.html" title="Qt model providing information about connected peers, similar to the &quot;getpeerinfo&quot; RPC call..." alt="" coords="778,385,898,412"/>
+<area shape="rect" id="node12" href="$class_r_p_c_console.html" title="Local Anoncoin RPC console. " alt="" coords="1495,217,1593,244"/>
+<area shape="rect" id="node16" href="$class_traffic_graph_widget.html" title="TrafficGraphWidget" alt="" coords="769,169,907,196"/>
+<area shape="rect" id="node18" href="$class_notificator.html" title="Cross&#45;platform desktop notification client. " alt="" coords="653,12,736,39"/>
+<area shape="rect" id="node7" href="$class_peer_table_priv.html" title="PeerTablePriv" alt="" coords="471,401,578,428"/>
+<area shape="rect" id="node8" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="193,316,297,343"/>
+<area shape="rect" id="node19" href="$class_unit_display_status_bar_control.html" title="UnitDisplayStatusBarControl" alt="" coords="429,503,620,529"/>
+<area shape="rect" id="node14" href="$class_ui_1_1_r_p_c_console.html" title="Ui::RPCConsole" alt="" coords="1308,159,1427,185"/>
+<area shape="rect" id="node15" href="$class_ui___r_p_c_console.html" title="Ui_RPCConsole" alt="" coords="1029,169,1148,196"/>
+</map>

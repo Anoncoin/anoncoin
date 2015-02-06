@@ -1,0 +1,15 @@
+<map id="backupwallet" name="backupwallet">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="156,5,273,32"/>
+<area shape="rect" id="node3" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="152,56,277,83"/>
+<area shape="rect" id="node4" href="$walletdb_8cpp.html#a273c3692765c732c5f724cec93e6b62f" title="BackupWallet" alt="" coords="163,107,267,133"/>
+<area shape="rect" id="node14" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="157,157,273,184"/>
+<area shape="rect" id="node5" href="$class_c_d_b_env.html#ac53fd53afdd1e0881b8ffbb11a89b556" title="CDBEnv::CloseDb" alt="" coords="346,31,478,57"/>
+<area shape="rect" id="node6" href="$class_c_d_b_env.html#aaf4c0dd43825ee2441eaa4177bef137b" title="CDBEnv::CheckpointLSN" alt="" coords="325,81,499,108"/>
+<area shape="rect" id="node7" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="367,132,457,159"/>
+<area shape="rect" id="node13" href="$util_8h.html#ac635182d3e845eda4af4fa5ab31609da" title="MilliSleep" alt="" coords="373,183,451,209"/>
+<area shape="rect" id="node8" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="604,56,672,83"/>
+<area shape="rect" id="node9" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="547,107,729,133"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="573,157,703,184"/>
+<area shape="rect" id="node12" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="555,208,721,235"/>
+<area shape="rect" id="node11" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="777,157,912,184"/>
+</map>

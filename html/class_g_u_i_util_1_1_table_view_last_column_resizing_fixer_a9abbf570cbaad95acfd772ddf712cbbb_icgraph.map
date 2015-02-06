@@ -1,0 +1,11 @@
+<map id="GUIUtil::TableViewLastColumnResizingFixer::getColumnsWidth" name="GUIUtil::TableViewLastColumnResizingFixer::getColumnsWidth">
+<area shape="rect" id="node2" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ad0c6ff117107634ae8d37f056d27e711" title="GUIUtil::TableViewLastColumn\lResizingFixer::getAvailableWidth\lForColumn" alt="" coords="269,132,487,188"/>
+<area shape="rect" id="node3" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ac5622cca5767d788033fff5d54629d7f" title="GUIUtil::TableViewLastColumn\lResizingFixer::adjustTableColumnsWidth" alt="" coords="535,78,800,119"/>
+<area shape="rect" id="node9" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a93f3b32cf06688099875a1c9d2df57f2" title="GUIUtil::TableViewLastColumn\lResizingFixer::on_geometriesChanged" alt="" coords="1403,115,1655,157"/>
+<area shape="rect" id="node4" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a31422ff98c30c95c01dba5bbb8ccbcae" title="GUIUtil::TableViewLastColumn\lResizingFixer::on_sectionResized" alt="" coords="848,195,1071,237"/>
+<area shape="rect" id="node6" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a89971ed347cf9d25e02cfb7d9c7e3ca6" title="GUIUtil::TableViewLastColumn\lResizingFixer::stretchColumnWidth" alt="" coords="2004,181,2235,222"/>
+<area shape="rect" id="node5" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ab01fe3dbf021a9306ec74afda41d6f45" title="GUIUtil::TableViewLastColumn\lResizingFixer::connectViewHeaders\lSignals" alt="" coords="1119,165,1355,221"/>
+<area shape="rect" id="node10" href="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ae36cd142d60656073928ba6bd05a6661" title="GUIUtil::TableViewLastColumn\lResizingFixer::disconnectViewHeaders\lSignals" alt="" coords="1703,108,1956,164"/>
+<area shape="rect" id="node7" href="$class_receive_coins_dialog.html#a8ebec2144a935622b4a33c57601a8868" title="ReceiveCoinsDialog\l::resizeEvent" alt="" coords="2310,151,2453,193"/>
+<area shape="rect" id="node8" href="$class_transaction_view.html#a6bcc05526bc111b4299d32d882f633b8" title="TransactionView::resizeEvent" alt="" coords="2283,217,2480,244"/>
+</map>

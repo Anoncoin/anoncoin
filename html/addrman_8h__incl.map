@@ -1,0 +1,14 @@
+<map id="src/addrman.h" name="src/addrman.h">
+<area shape="rect" id="node2" href="$netbase_8h.html" title="netbase.h" alt="" coords="2137,244,2217,271"/>
+<area shape="rect" id="node32" href="$protocol_8h.html" title="protocol.h" alt="" coords="2391,80,2471,107"/>
+<area shape="rect" id="node36" href="$sync_8h.html" title="sync.h" alt="" coords="3001,80,3061,107"/>
+<area shape="rect" id="node41" href="$util_8h.html" title="util.h" alt="" coords="899,244,949,271"/>
+<area shape="rect" id="node3" href="$compat_8h.html" title="compat.h" alt="" coords="1009,319,1087,345"/>
+<area shape="rect" id="node16" href="$serialize_8h.html" title="serialize.h" alt="" coords="2007,319,2089,345"/>
+<area shape="rect" id="node17" href="$allocators_8h.html" title="allocators.h" alt="" coords="2311,401,2401,427"/>
+<area shape="rect" id="node33" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="2389,162,2499,189"/>
+<area shape="rect" id="node35" href="$uint256_8h.html" title="uint256.h" alt="" coords="2519,319,2596,345"/>
+<area shape="rect" id="node34" href="$bignum_8h.html" title="bignum.h" alt="" coords="2417,244,2495,271"/>
+<area shape="rect" id="node37" href="$threadsafety_8h.html" title="threadsafety.h" alt="" coords="2900,162,3007,189"/>
+<area shape="rect" id="node42" href="$tinyformat_8h.html" title="tinyformat.h" alt="" coords="1162,319,1254,345"/>
+</map>

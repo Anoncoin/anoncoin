@@ -1,0 +1,15 @@
+<map id="COutput" name="COutput">
+<area shape="rect" id="node2" href="$class_c_wallet_tx.html" title="A transaction with a bunch of additional info that only the owner cares about. " alt="" coords="1283,103,1367,129"/>
+<area shape="rect" id="node3" href="$class_c_merkle_tx.html" title="A transaction with a merkle branch linking it to the block chain. " alt="" coords="1103,56,1189,83"/>
+<area shape="rect" id="node4" href="$class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ..." alt="" coords="817,5,919,32"/>
+<area shape="rect" id="node5" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="835,56,901,83"/>
+<area shape="rect" id="node6" href="$classbase__uint.html" title="Base class without constructors for uint256 and uint160. " alt="" coords="645,55,748,81"/>
+<area shape="rect" id="node7" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="1111,193,1181,220"/>
+<area shape="rect" id="node8" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="805,157,931,184"/>
+<area shape="rect" id="node9" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="637,168,756,195"/>
+<area shape="rect" id="node10" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="501,160,588,187"/>
+<area shape="rect" id="node13" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="808,208,928,235"/>
+<area shape="rect" id="node14" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="829,259,907,285"/>
+<area shape="rect" id="node15" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="825,309,911,336"/>
+<area shape="rect" id="node16" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="671,309,722,336"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="CWalletDB::WriteMinVersion" name="CWalletDB::WriteMinVersion">
+<area shape="rect" id="node2" href="$class_c_wallet.html#afa48a3ee3096681650c8b9589579e9cb" title="CWallet::SetMinVersion" alt="" coords="245,31,408,57"/>
+<area shape="rect" id="node3" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="456,31,527,57"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="623,5,687,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="575,56,735,83"/>
+<area shape="rect" id="node5" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="783,5,833,32"/>
+</map>

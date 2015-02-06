@@ -1,0 +1,9 @@
+<map id="TransactionRecord::showTransaction" name="TransactionRecord::showTransaction">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="197,5,374,32"/>
+<area shape="rect" id="node3" href="$class_c_merkle_tx.html#adf24748ee829f589ac8d6e99ec6121de" title="CMerkleTx::IsInMainChain" alt="" coords="196,56,375,83"/>
+<area shape="rect" id="node4" href="$class_c_merkle_tx.html#a650229fec7fe661aa7a137902bc745a3" title="CMerkleTx::GetDepthInMain\lChainINTERNAL" alt="" coords="423,49,613,90"/>
+<area shape="rect" id="node5" href="$class_c_chain.html#a1ab1fe2932227af222699c64847e838b" title="Efficiently check whether a block is present in this chain. " alt="" coords="694,5,821,32"/>
+<area shape="rect" id="node6" href="$class_c_block.html#a81684cf96f6fb6731c869865b80d1ccd" title="CBlock::CheckMerkleBranch" alt="" coords="661,56,853,83"/>
+<area shape="rect" id="node8" href="$class_c_chain.html#a0c4ffb8501acfb8a7e1c0f5e6322ada3" title="Return the maximal height in the chain. " alt="" coords="701,107,813,133"/>
+<area shape="rect" id="node7" href="$hash_8h.html#ab3f6c437460137530d86e09c2c102e99" title="Hash" alt="" coords="901,56,955,83"/>
+</map>

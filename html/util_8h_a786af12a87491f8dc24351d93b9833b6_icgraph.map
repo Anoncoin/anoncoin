@@ -1,0 +1,11 @@
+<map id="RandAddSeedPerfmon" name="RandAddSeedPerfmon">
+<area shape="rect" id="node2" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="267,31,338,57"/>
+<area shape="rect" id="node6" href="$class_c_wallet.html#a061fe7f54f80ec40f856b3e6365c2f4a" title="CWallet::GenerateNewKey" alt="" coords="212,81,393,108"/>
+<area shape="rect" id="node7" href="$class_c_wallet.html#ab34fe5bf771619dcbe22a65f013e5469" title="CWallet::EncryptWallet" alt="" coords="223,132,382,159"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="518,5,582,32"/>
+<area shape="rect" id="node5" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="470,56,630,83"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="757,5,808,32"/>
+<area shape="rect" id="node8" href="$class_wallet_model.html#a444340830badcd48e3a4dd6b03d9c4d7" title="WalletModel::setWalletEncrypted" alt="" coords="441,107,659,133"/>
+<area shape="rect" id="node10" href="$rpcwallet_8cpp.html#a5fb49bac2748015a256c63e9f8ccc539" title="encryptwallet" alt="" coords="500,157,600,184"/>
+<area shape="rect" id="node9" href="$class_ask_passphrase_dialog.html#ac2f176af3693b73870d26ef0bfc6cbb9" title="AskPassphraseDialog\l::accept" alt="" coords="707,99,859,141"/>
+</map>

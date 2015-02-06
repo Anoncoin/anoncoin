@@ -1,0 +1,11 @@
+<map id="WalletTxToJSON" name="WalletTxToJSON">
+<area shape="rect" id="node2" href="$class_c_merkle_tx.html#a1db61eaa33fcb975115116ecf85d0c6c" title="CMerkleTx::GetDepthInMain\lChain" alt="" coords="179,5,369,47"/>
+<area shape="rect" id="node4" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="185,71,363,98"/>
+<area shape="rect" id="node5" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="208,122,340,149"/>
+<area shape="rect" id="node6" href="$class_c_transaction.html#a3f8666d2a275c40da14bd5eaf47dc004" title="CTransaction::GetHash" alt="" coords="193,173,355,199"/>
+<area shape="rect" id="node9" href="$class_c_wallet_tx.html#ab1820e97b0ed6b80763d61e232d0afaa" title="CWalletTx::GetConflicts" alt="" coords="192,223,356,250"/>
+<area shape="rect" id="node10" href="$class_c_wallet_tx.html#a25fdd940fcdd2ea9d05547c5c789fc0d" title="CWalletTx::GetTxTime" alt="" coords="195,274,353,301"/>
+<area shape="rect" id="node3" href="$class_c_tx_mem_pool.html#adba06e79be4a1a092dd2db8290733be7" title="CTxMemPool::exists" alt="" coords="417,13,561,39"/>
+<area shape="rect" id="node7" href="$hash_8h.html#a6de694e43f17c62025c6883965b65e63" title="SerializeHash" alt="" coords="437,173,541,199"/>
+<area shape="rect" id="node8" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="609,173,768,199"/>
+</map>

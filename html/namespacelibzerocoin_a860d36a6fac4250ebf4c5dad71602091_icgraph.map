@@ -1,0 +1,12 @@
+<map id="libzerocoin::deriveGeneratorsFromSerialNumber" name="libzerocoin::deriveGeneratorsFromSerialNumber">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_private_coin.html#ae466bc27aabcf43feb7cc62aba6f7f1e" title="Mint a new coin using a faster process. " alt="" coords="292,5,455,47"/>
+<area shape="rect" id="node4" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#a5b39d7ffa5f5507f2af56fe8f42ade11" title="Creates a Signature of knowledge object that a commitment to a coin contains a coin with serial numbe..." alt="" coords="249,71,497,127"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#a570a8d439385cc3b18701c4a252ff104" title="Verifies the Signature of knowledge. " alt="" coords="273,152,473,193"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_private_coin.html#a77d6031b28228d478057ffd158d970c9" title="libzerocoin::PrivateCoin\l::PrivateCoin" alt="" coords="545,5,708,47"/>
+<area shape="rect" id="node6" href="$classlibzerocoin_1_1_coin_spend.html#a9048dabc1be9ef65aeefb41e92e2f53c" title="libzerocoin::CoinSpend\l::Verify" alt="" coords="547,152,706,193"/>
+<area shape="rect" id="node7" href="$_benchmark_8cpp.html#ad4c256613fa000fd3d3ec247021a6522" title="Test_MintAndSpend" alt="" coords="756,134,899,161"/>
+<area shape="rect" id="node10" href="$_tutorial_8cpp.html#a297c1339eda300b5818bf669440b3a7d" title="ZerocoinTutorial" alt="" coords="768,185,887,211"/>
+<area shape="rect" id="node8" href="$_benchmark_8cpp.html#a270b3d0914e20b5c58ab92bc2823c1d1" title="Test_RunAllTests" alt="" coords="947,134,1073,161"/>
+<area shape="rect" id="node9" href="$_benchmark_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="1121,134,1172,161"/>
+<area shape="rect" id="node11" href="$_tutorial_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="985,185,1035,211"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="SignVerifyMessageDialog::showTab_SM" name="SignVerifyMessageDialog::showTab_SM">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a6443ddcb872a1743a61102a3dcd2d560" title="Show Sign/Verify Message dialog and switch to sign message tab. " alt="" coords="228,13,453,39"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#a386b4f2e20af7d13a688662cd3f9e1fc" title="Show Sign/Verify Message dialog and switch to sign message tab. " alt="" coords="501,13,736,39"/>
+</map>

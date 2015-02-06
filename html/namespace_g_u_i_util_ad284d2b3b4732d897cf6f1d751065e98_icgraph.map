@@ -1,0 +1,28 @@
+<map id="GUIUtil::anoncoinAddressFont" name="GUIUtil::anoncoinAddressFont">
+<area shape="rect" id="node2" href="$class_address_table_model.html#a5ff6e3e2dab8b80428c4f59c4f1bc95a" title="AddressTableModel::data" alt="" coords="267,553,441,579"/>
+<area shape="rect" id="node22" href="$namespace_g_u_i_util.html#aeb3b902c0536bdb9c2def3d3e465aeba" title="GUIUtil::setupAddressWidget" alt="" coords="256,691,452,718"/>
+<area shape="rect" id="node25" href="$class_send_coins_entry.html#a1c385963cf2dd2eb618720908988d037" title="SendCoinsEntry::SendCoins\lEntry" alt="" coords="503,735,694,776"/>
+<area shape="rect" id="node26" href="$class_sign_verify_message_dialog.html#a04d74fa38e87dc6213237567a6528f28" title="SignVerifyMessageDialog\l::SignVerifyMessageDialog" alt="" coords="507,800,690,841"/>
+<area shape="rect" id="node27" href="$class_help_message_dialog.html#a7a3d90a39f3f4aad69764773540c7aba" title="&quot;Help message&quot; dialog box " alt="" coords="279,844,429,885"/>
+<area shape="rect" id="node3" href="$class_address_table_model.html#a84f095bae13574410fceba53f8184abc" title="AddressTableModel::\lindex" alt="" coords="525,428,673,469"/>
+<area shape="rect" id="node16" href="$class_transaction_view.html#a18817639384e53f94fc1ad956d7263d9" title="TransactionView::editLabel" alt="" coords="1000,494,1183,521"/>
+<area shape="rect" id="node4" href="$class_address_book_page.html#ab62ba5d31e2d64c4d901da58d6b32a59" title="New entry/entries were added to address table. " alt="" coords="745,256,947,297"/>
+<area shape="rect" id="node15" href="$class_address_table_model.html#a49a260d5e629286f6277a2dbc0aaeaaa" title="AddressTableModel::\llookupAddress" alt="" coords="772,487,920,528"/>
+<area shape="rect" id="node18" href="$class_address_table_model.html#a42cbcc82a8752c4af3b75fd62e8c7a40" title="Notify listeners that data changed. " alt="" coords="772,369,920,411"/>
+<area shape="rect" id="node5" href="$class_address_book_page.html#a1282cda9cb0300ee04c472ec4c9949f3" title="AddressBookPage::setModel" alt="" coords="995,231,1188,258"/>
+<area shape="rect" id="node6" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="1263,5,1445,47"/>
+<area shape="rect" id="node8" href="$class_send_coins_entry.html#ac661741d286d9f3db32f78bd22125cb0" title="SendCoinsEntry::on\l_addressBookButton_clicked" alt="" coords="1257,71,1451,112"/>
+<area shape="rect" id="node9" href="$class_sign_verify_message_dialog.html#a792a3bd647958c8ae74286c5ab3cf205" title="SignVerifyMessageDialog\l::on_addressBookButton\l_SM_clicked" alt="" coords="1267,137,1441,193"/>
+<area shape="rect" id="node10" href="$class_sign_verify_message_dialog.html#a90ceb00084c68da5e9c481ba0841d976" title="SignVerifyMessageDialog\l::on_addressBookButton\l_VM_clicked" alt="" coords="1267,217,1441,273"/>
+<area shape="rect" id="node11" href="$class_wallet_view.html#a6f0d012c18ea2df7336c852abe2a50d0" title="Show used sending addresses. " alt="" coords="1236,297,1472,323"/>
+<area shape="rect" id="node13" href="$class_wallet_view.html#accb5d9e2789c62e03ad1723518d31c02" title="Show used receiving addresses. " alt="" coords="1263,348,1445,389"/>
+<area shape="rect" id="node7" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="1560,5,1703,47"/>
+<area shape="rect" id="node12" href="$class_wallet_frame.html#a7f697d220e7ea40d6e4d6e6c5e9ef3b4" title="Show used sending addresses. " alt="" coords="1540,287,1723,328"/>
+<area shape="rect" id="node14" href="$class_wallet_frame.html#a9273a0b98cf7ec9fc344658c38a4a0a3" title="Show used receiving addresses. " alt="" coords="1535,352,1727,393"/>
+<area shape="rect" id="node17" href="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f" title="TransactionView::TransactionView" alt="" coords="1241,494,1467,521"/>
+<area shape="rect" id="node19" href="$class_address_table_priv.html#a6f4b10febc3055afde7200c0dbc8ccef" title="AddressTablePriv::update\lEntry" alt="" coords="1003,384,1179,425"/>
+<area shape="rect" id="node20" href="$class_address_table_model.html#aa2f39463431a15741ed4d78ef592dfe5" title="AddressTableModel::\lupdateEntry" alt="" coords="1280,413,1428,455"/>
+<area shape="rect" id="node21" href="$class_wallet_model.html#ad70ea697efb4d5bdc4a834b538b4d535" title="WalletModel::updateAddressBook" alt="" coords="1520,421,1743,447"/>
+<area shape="rect" id="node23" href="$class_edit_address_dialog.html#a625792e82d332070d6009898febc3afa" title="EditAddressDialog::\lEditAddressDialog" alt="" coords="529,604,668,645"/>
+<area shape="rect" id="node24" href="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f" title="SendCoinsDialog::SendCoins\lDialog" alt="" coords="500,669,697,711"/>
+</map>

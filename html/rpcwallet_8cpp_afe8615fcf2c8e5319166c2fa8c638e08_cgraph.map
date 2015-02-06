@@ -1,0 +1,13 @@
+<map id="keypoolrefill" name="keypoolrefill">
+<area shape="rect" id="node2" href="$rpcwallet_8cpp.html#abcfbb0ad9335791f2832c01209b8f12d" title="HelpRequiringPassphrase" alt="" coords="371,40,549,67"/>
+<area shape="rect" id="node4" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="173,40,291,67"/>
+<area shape="rect" id="node5" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="169,91,295,117"/>
+<area shape="rect" id="node6" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="402,141,518,168"/>
+<area shape="rect" id="node7" href="$rpcwallet_8cpp.html#a8f837f6d506b9719cef93188db00fd3c" title="EnsureWalletIsUnlocked" alt="" coords="149,192,315,219"/>
+<area shape="rect" id="node9" href="$class_c_wallet.html#a9730278506e0a4f1c65239b951525b55" title="CWallet::TopUpKeyPool" alt="" coords="149,243,315,269"/>
+<area shape="rect" id="node12" href="$class_c_wallet.html#a9d7415d88d10655ff2188bc713dff662" title="CWallet::GetKeyPoolSize" alt="" coords="145,293,319,320"/>
+<area shape="rect" id="node3" href="$class_c_crypto_key_store.html#a1cb434078a9ea686c0acf168d2c81252" title="CCryptoKeyStore::IsCrypted" alt="" coords="601,116,792,143"/>
+<area shape="rect" id="node8" href="$class_c_crypto_key_store.html#a1c3ebef555fd13676d67509b95820fcf" title="CCryptoKeyStore::IsLocked" alt="" coords="367,192,553,219"/>
+<area shape="rect" id="node10" href="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8" title="Return string argument or default value. " alt="" coords="428,243,492,269"/>
+<area shape="rect" id="node11" href="$class_c_wallet_d_b.html#ad43630ad28a68c3e8b1a633f09aa0964" title="CWalletDB::WritePool" alt="" coords="384,293,536,320"/>
+</map>

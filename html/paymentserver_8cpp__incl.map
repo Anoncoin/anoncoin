@@ -1,0 +1,15 @@
+<map id="src/qt/paymentserver.cpp" name="src/qt/paymentserver.cpp">
+<area shape="rect" id="node2" href="$paymentserver_8h.html" title="paymentserver.h" alt="" coords="633,80,754,107"/>
+<area shape="rect" id="node4" href="$base58_8h.html" title="base58.h" alt="" coords="335,304,412,331"/>
+<area shape="rect" id="node16" href="$anoncoinunits_8h.html" title="anoncoinunits.h" alt="" coords="966,80,1082,107"/>
+<area shape="rect" id="node18" href="$guiconstants_8h.html" title="guiconstants.h" alt="" coords="501,80,609,107"/>
+<area shape="rect" id="node19" href="$guiutil_8h.html" title="guiutil.h" alt="" coords="965,155,1033,181"/>
+<area shape="rect" id="node26" href="$optionsmodel_8h.html" title="optionsmodel.h" alt="" coords="830,80,942,107"/>
+<area shape="rect" id="node27" href="$ui__interface_8h.html" title="ui_interface.h" alt="" coords="24,379,126,405"/>
+<area shape="rect" id="node28" href="$wallet_8h.html" title="wallet.h" alt="" coords="164,304,231,331"/>
+<area shape="rect" id="node3" href="$paymentrequestplus_8h.html" title="paymentrequestplus.h" alt="" coords="501,229,654,256"/>
+<area shape="rect" id="node14" href="$walletmodel_8h.html" title="walletmodel.h" alt="" coords="632,155,736,181"/>
+<area shape="rect" id="node5" href="$chainparams_8h.html" title="chainparams.h" alt="" coords="495,379,604,405"/>
+<area shape="rect" id="node7" href="$key_8h.html" title="key.h" alt="" coords="400,453,454,480"/>
+<area shape="rect" id="node8" href="$script_8h.html" title="script.h" alt="" coords="304,379,369,405"/>
+</map>

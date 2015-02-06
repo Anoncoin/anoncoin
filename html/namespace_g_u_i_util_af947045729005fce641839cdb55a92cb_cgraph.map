@@ -1,0 +1,4 @@
+<map id="GUIUtil::isDust" name="GUIUtil::isDust">
+<area shape="rect" id="node2" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="163,5,323,32"/>
+<area shape="rect" id="node3" href="$class_c_tx_out.html#a89bf5bc4987ccd09e9a675d980e18602" title="CTxOut::IsDust" alt="" coords="186,56,299,83"/>
+</map>

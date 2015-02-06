@@ -1,0 +1,5 @@
+<map id="CCheckQueueControl::~CCheckQueueControl" name="CCheckQueueControl::~CCheckQueueControl">
+<area shape="rect" id="node2" href="$class_c_check_queue_control.html#ab31d809a76b876d21608c0c5d0e3baf0" title="CCheckQueueControl\l::Wait" alt="" coords="221,5,373,47"/>
+<area shape="rect" id="node3" href="$class_c_check_queue.html#a4ff3e0e8241491efa1803eeb3a53e7fa" title="CCheckQueue::Wait" alt="" coords="421,13,565,39"/>
+<area shape="rect" id="node4" href="$class_c_check_queue.html#a20cdd097d93da6deeca6e5721a758165" title="CCheckQueue::Loop" alt="" coords="613,13,760,39"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html" title="Widget for entering anoncoin amounts. " alt="" coords="127,5,279,32"/>
+<area shape="rect" id="node3" href="$class_i2_p_options_widget.html" title="I2POptionsWidget" alt="" coords="138,56,267,83"/>
+<area shape="rect" id="node4" href="$class_overview_page.html" title="Overview (&quot;home&quot;) page widget. " alt="" coords="148,107,257,133"/>
+<area shape="rect" id="node5" href="$class_traffic_graph_widget.html" title="TrafficGraphWidget" alt="" coords="134,157,271,184"/>
+<area shape="rect" id="node6" href="$class_transaction_view.html" title="Widget showing the transaction list for a wallet, including a filter row. " alt="" coords="143,208,263,235"/>
+</map>

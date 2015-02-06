@@ -1,0 +1,11 @@
+<map id="ReceiveCoinsDialog::updateDisplayUnit" name="ReceiveCoinsDialog::updateDisplayUnit">
+<area shape="rect" id="node2" href="$class_receive_coins_dialog.html#a856e5bbe280d792004e97e703f42c7f8" title="ReceiveCoinsDialog\l::setModel" alt="" coords="196,27,339,69"/>
+<area shape="rect" id="node5" href="$class_receive_coins_dialog.html#aaea0511f0ab43f1d2b23f8684d1edfc3" title="ReceiveCoinsDialog\l::clear" alt="" coords="196,122,339,163"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="387,5,573,32"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="621,5,785,32"/>
+<area shape="rect" id="node6" href="$class_receive_coins_dialog.html#a0c982b94b7f23da8f208d09904352f89" title="ReceiveCoinsDialog\l::ReceiveCoinsDialog" alt="" coords="405,57,555,98"/>
+<area shape="rect" id="node7" href="$class_receive_coins_dialog.html#aeed78dd55cfc9def8b1b3ec3cec4bc11" title="ReceiveCoinsDialog\l::reject" alt="" coords="409,122,551,163"/>
+<area shape="rect" id="node8" href="$class_receive_coins_dialog.html#aa34d81582b9a1c4311e5cf551aab415e" title="ReceiveCoinsDialog\l::accept" alt="" coords="409,187,551,229"/>
+<area shape="rect" id="node9" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="389,253,571,294"/>
+<area shape="rect" id="node10" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="632,253,775,294"/>
+</map>

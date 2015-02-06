@@ -1,0 +1,16 @@
+<map id="AddressTablePriv" name="AddressTablePriv">
+<area shape="rect" id="node2" href="$class_address_table_model.html" title="Qt model of the address book in the core. " alt="" coords="1500,199,1640,225"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html" title="Interface to Anoncoin wallet from Qt view code. " alt="" coords="1809,229,1905,256"/>
+<area shape="rect" id="node6" href="$class_transaction_table_model.html" title="UI model for the transaction table of a wallet. " alt="" coords="2136,103,2297,129"/>
+<area shape="rect" id="node18" href="$class_recent_requests_table_model.html" title="Model for list of recently generated payment requests / anoncoin: URIs. " alt="" coords="2121,227,2312,253"/>
+<area shape="rect" id="node7" href="$class_transaction_table_priv.html" title="TransactionTablePriv" alt="" coords="2403,148,2551,175"/>
+<area shape="rect" id="node8" href="$class_c_wallet.html" title="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..." alt="" coords="1103,252,1172,279"/>
+<area shape="rect" id="node9" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="805,201,931,228"/>
+<area shape="rect" id="node10" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="637,207,756,233"/>
+<area shape="rect" id="node11" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="501,199,588,225"/>
+<area shape="rect" id="node14" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="808,252,928,279"/>
+<area shape="rect" id="node15" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="829,303,907,329"/>
+<area shape="rect" id="node16" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="825,353,911,380"/>
+<area shape="rect" id="node17" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="671,353,722,380"/>
+<area shape="rect" id="node19" href="$class_options_model.html" title="Interface from Qt to configuration data structure for Anoncoin client. " alt="" coords="1518,375,1622,401"/>
+</map>

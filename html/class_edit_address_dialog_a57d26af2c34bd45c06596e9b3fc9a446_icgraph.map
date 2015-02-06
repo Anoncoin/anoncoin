@@ -1,0 +1,7 @@
+<map id="EditAddressDialog::setModel" name="EditAddressDialog::setModel">
+<area shape="rect" id="node2" href="$class_address_book_page.html#a00b9dc5da59d39ae90af3ff41f8d9b76" title="Edit currently selected address entry (no button) " alt="" coords="192,13,407,39"/>
+<area shape="rect" id="node4" href="$class_address_book_page.html#aba6968524ce48f58ef26aa16837113ef" title="Create a new address for receiving coins and / or add a new address book entry. " alt="" coords="222,64,377,105"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a18817639384e53f94fc1ad956d7263d9" title="TransactionView::editLabel" alt="" coords="208,130,391,157"/>
+<area shape="rect" id="node3" href="$class_address_book_page.html#a493ad5adf2b6064b97bc2ba6eb41587e" title="AddressBookPage::Address\lBookPage" alt="" coords="473,5,663,47"/>
+<area shape="rect" id="node6" href="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f" title="TransactionView::TransactionView" alt="" coords="455,130,681,157"/>
+</map>

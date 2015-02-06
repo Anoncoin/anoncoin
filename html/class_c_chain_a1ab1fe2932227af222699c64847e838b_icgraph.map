@@ -1,0 +1,51 @@
+<map id="CChain::Contains" name="CChain::Contains">
+<area shape="rect" id="node2" href="$class_c_merkle_tx.html#a650229fec7fe661aa7a137902bc745a3" title="CMerkleTx::GetDepthInMain\lChainINTERNAL" alt="" coords="180,297,371,339"/>
+<area shape="rect" id="node23" href="$main_8h.html#a63b860cc82a0a2dfb90c96ddc09dfecc" title="Find the best known block, and make it the tip of the block chain. " alt="" coords="210,454,341,481"/>
+<area shape="rect" id="node35" href="$class_c_chain.html#acd3c27582e3d60b93363fda5d9f3775a" title="Find the successor of a block in this chain, or NULL if the given index is not found or is the tip..." alt="" coords="1127,581,1229,607"/>
+<area shape="rect" id="node46" href="$rpcrawtransaction_8cpp.html#a366b04dae2aae86eee356cc85d759268" title="TxToJSON" alt="" coords="231,555,319,582"/>
+<area shape="rect" id="node49" href="$class_c_wallet.html#a15a34ea53ce86d9f613693b09b74807f" title="CWallet::GetKeyBirthTimes" alt="" coords="183,631,367,658"/>
+<area shape="rect" id="node3" href="$class_c_merkle_tx.html#adf24748ee829f589ac8d6e99ec6121de" title="CMerkleTx::IsInMainChain" alt="" coords="419,175,597,202"/>
+<area shape="rect" id="node4" href="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4" title="TransactionDesc::toHTML" alt="" coords="645,146,823,173"/>
+<area shape="rect" id="node14" href="$class_transaction_record.html#a5ad1d1af4bec5b15a624b7a451e8cdbf" title="Decompose CWallet transaction to model transaction records. " alt="" coords="663,71,805,112"/>
+<area shape="rect" id="node19" href="$class_transaction_record.html#a9b643dd885a790ae511705a1446556be" title="Update status from core wallet tx. " alt="" coords="663,200,805,241"/>
+<area shape="rect" id="node5" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="871,136,1019,177"/>
+<area shape="rect" id="node6" href="$class_transaction_table_model.html#a416d0751ab9a95ecd87d3f7bed4f0b06" title="TransactionTableModel\l::data" alt="" coords="1097,135,1259,176"/>
+<area shape="rect" id="node7" href="$class_transaction_table_model.html#aaaf3cea9a5373fff771ce81d2f26de6e" title="TransactionTableModel\l::index" alt="" coords="1377,135,1538,176"/>
+<area shape="rect" id="node8" href="$class_transaction_table_model.html#a5899d9eda6465bfb16d2846b6459567e" title="TransactionTableModel\l::updateConfirmations" alt="" coords="1664,133,1825,175"/>
+<area shape="rect" id="node10" href="$class_transaction_table_model.html#a8b73ff7d72ec2dd69790bc61bbe8575e" title="TransactionTableModel\l::updateDisplayUnit" alt="" coords="1664,68,1825,109"/>
+<area shape="rect" id="node12" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="1625,199,1864,226"/>
+<area shape="rect" id="node9" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="1919,133,2091,175"/>
+<area shape="rect" id="node11" href="$class_transaction_table_model.html#a6c10b7cab9804eee6df9e049a978dc62" title="TransactionTableModel\l::TransactionTableModel" alt="" coords="1921,39,2090,80"/>
+<area shape="rect" id="node13" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1912,199,2099,226"/>
+<area shape="rect" id="node15" href="$class_transaction_table_priv.html#a1f81da5d7cfb2aac03a5e18e6bc91792" title="TransactionTablePriv\l::refreshWallet" alt="" coords="871,5,1019,47"/>
+<area shape="rect" id="node16" href="$class_transaction_table_priv.html#a27eb6d3e1f7717dd2cad80c5ce48f404" title="TransactionTablePriv\l::updateWallet" alt="" coords="871,71,1019,112"/>
+<area shape="rect" id="node17" href="$class_transaction_table_model.html#abb93b1812f27622f67aed0302bc90ee6" title="TransactionTableModel\l::updateTransaction" alt="" coords="1097,69,1259,111"/>
+<area shape="rect" id="node18" href="$class_wallet_model.html#ad63ff7c16477dc5795c95b56593f2e9f" title="WalletModel::updateTransaction" alt="" coords="1351,77,1564,103"/>
+<area shape="rect" id="node20" href="$class_transaction_table_priv.html#ac692aa6aa7820e80accc971c70e0fae5" title="TransactionTablePriv\l::index" alt="" coords="871,201,1019,243"/>
+<area shape="rect" id="node21" href="$class_transaction_view.html#abe5793b86a4ea6f80a6d822ee878e646" title="TransactionView::contextualMenu" alt="" coords="1067,251,1289,278"/>
+<area shape="rect" id="node22" href="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f" title="TransactionView::TransactionView" alt="" coords="1344,251,1571,278"/>
+<area shape="rect" id="node24" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1709,505,1780,531"/>
+<area shape="rect" id="node28" href="$main_8h.html#afeae84b261095307379e43eed39ea7c6" title="AddToBlockIndex" alt="" coords="445,378,571,405"/>
+<area shape="rect" id="node25" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1973,530,2037,557"/>
+<area shape="rect" id="node27" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1925,479,2085,506"/>
+<area shape="rect" id="node26" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="2147,530,2197,557"/>
+<area shape="rect" id="node29" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="686,378,782,405"/>
+<area shape="rect" id="node34" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="1125,302,1231,329"/>
+<area shape="rect" id="node30" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="893,378,996,405"/>
+<area shape="rect" id="node31" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="1101,403,1255,430"/>
+<area shape="rect" id="node33" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="1132,353,1224,379"/>
+<area shape="rect" id="node32" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="1406,403,1509,430"/>
+<area shape="rect" id="node36" href="$class_c_block_index.html#af5655bbac76509ae8840dcbfccd9787c" title="CBlockIndex::GetMedianTime" alt="" coords="1358,505,1557,531"/>
+<area shape="rect" id="node37" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="1420,606,1495,633"/>
+<area shape="rect" id="node39" href="$main_8h.html#aac88c75e65aa0dee60e4332dbcc16120" title="Print the loaded block tree. " alt="" coords="1403,555,1512,582"/>
+<area shape="rect" id="node40" href="$rpcblockchain_8cpp.html#a9e868dd8b7d22ea15aa7c7130e8e42be" title="blockToJSON" alt="" coords="1405,657,1509,683"/>
+<area shape="rect" id="node42" href="$class_c_wallet.html#a979a17e80e4897ed1f4ae9a4be7c493c" title="CWallet::ScanForWalletTransactions" alt="" coords="1337,707,1577,734"/>
+<area shape="rect" id="node38" href="$rpcblockchain_8cpp.html#a0b1dd8862fc7292c243ad9489f96a3c8" title="verifychain" alt="" coords="1702,606,1787,633"/>
+<area shape="rect" id="node41" href="$rpcblockchain_8cpp.html#a63608cf1bb275120194c3b4e070af3d7" title="getblock" alt="" coords="1709,657,1781,683"/>
+<area shape="rect" id="node43" href="$rpcdump_8cpp.html#a3a6fdb974fce01220a895393d444e981" title="importprivkey" alt="" coords="1694,707,1795,734"/>
+<area shape="rect" id="node44" href="$rpcdump_8cpp.html#a457bc572859c8265c72a0afd1a6db56c" title="importaddress" alt="" coords="1691,758,1798,785"/>
+<area shape="rect" id="node45" href="$rpcdump_8cpp.html#a2566d5c9dd1938b74e70398cdb3ac5c1" title="importwallet" alt="" coords="1698,809,1791,835"/>
+<area shape="rect" id="node47" href="$rpcrawtransaction_8cpp.html#a12e1b8a05d99d1544e5343c2282cc55a" title="getrawtransaction" alt="" coords="445,606,571,633"/>
+<area shape="rect" id="node48" href="$rpcrawtransaction_8cpp.html#a6775c600b1bfdbb22f38e5f1cd27cfea" title="decoderawtransaction" alt="" coords="432,555,584,582"/>
+<area shape="rect" id="node50" href="$rpcdump_8cpp.html#a831ddf746d4f2500ba6f6c07f63445cd" title="dumpwallet" alt="" coords="463,657,553,683"/>
+</map>

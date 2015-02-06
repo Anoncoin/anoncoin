@@ -1,0 +1,5 @@
+<map id="AnoncoinCoin::runawayException" name="AnoncoinCoin::runawayException">
+<area shape="rect" id="node2" href="$class_anoncoin_coin.html#a19cc3b8135a5d63b023cb1f033277f55" title="Pass fatal exception message to UI thread. " alt="" coords="275,23,483,65"/>
+<area shape="rect" id="node3" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="535,5,695,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_coin.html#ac33fbca9335d356d9d6102a0122f2a5b" title="AnoncoinCoin::shutdown" alt="" coords="531,56,700,83"/>
+</map>

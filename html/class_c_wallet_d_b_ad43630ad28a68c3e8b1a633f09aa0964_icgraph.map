@@ -1,0 +1,9 @@
+<map id="CWalletDB::WritePool" name="CWalletDB::WritePool">
+<area shape="rect" id="node2" href="$class_c_wallet.html#a7353ba1e79fc4167fbfbe79b41698fa7" title="CWallet::NewKeyPool" alt="" coords="215,31,367,57"/>
+<area shape="rect" id="node3" href="$class_c_wallet.html#a9730278506e0a4f1c65239b951525b55" title="CWallet::TopUpKeyPool" alt="" coords="209,81,374,108"/>
+<area shape="rect" id="node8" href="$class_c_wallet.html#afecefdad197b3b021139cef1fd0e7a9b" title="CWallet::AddReserveKey" alt="" coords="205,132,377,159"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#aead824d845d670fbd8f187ebd4f9a535" title="getnewaddress" alt="" coords="446,5,558,32"/>
+<area shape="rect" id="node5" href="$rpcwallet_8cpp.html#ae71809202b4dcc13d2034c5c72af34da" title="getrawchangeaddress" alt="" coords="425,56,579,83"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#afe8615fcf2c8e5319166c2fa8c638e08" title="keypoolrefill" alt="" coords="456,107,548,133"/>
+<area shape="rect" id="node7" href="$rpcwallet_8cpp.html#a733f7c70e7c18783935e6de9643c0086" title="walletpassphrase" alt="" coords="439,157,565,184"/>
+</map>

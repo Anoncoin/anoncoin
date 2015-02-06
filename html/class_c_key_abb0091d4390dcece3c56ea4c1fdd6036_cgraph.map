@@ -1,0 +1,20 @@
+<map id="CKey::Derive" name="CKey::Derive">
+<area shape="rect" id="node2" href="$class_c_key.html#a62094263b7422a45b45ac508396f19eb" title="CKey::IsValid" alt="" coords="176,5,279,32"/>
+<area shape="rect" id="node3" href="$class_c_key.html#abdc7d807f7a1b27ff3ad9dd5164a2273" title="CKey::IsCompressed" alt="" coords="153,56,301,83"/>
+<area shape="rect" id="node4" href="$allocators_8h.html#ab73cc3988a03bed966c0c2bb191a8d2a" title="LockObject" alt="" coords="183,157,272,184"/>
+<area shape="rect" id="node8" href="$class_c_key.html#ae4b61da6ec62f676fe6362ac5fc26aca" title="CKey::GetPubKey" alt="" coords="162,208,293,235"/>
+<area shape="rect" id="node9" href="$class_c_pub_key.html#add9987e0d25aff11181f5ad70413994b" title="CPubKey::begin" alt="" coords="168,259,287,285"/>
+<area shape="rect" id="node10" href="$class_c_pub_key.html#aa559d2a4f2cbdec84c02a4adc18fa657" title="CPubKey::end" alt="" coords="173,309,281,336"/>
+<area shape="rect" id="node13" href="$class_c_key.html#aabd29e0d5faf30032cc8519a1ce62a5a" title="CKey::begin" alt="" coords="180,360,275,387"/>
+<area shape="rect" id="node14" href="$class_c_key.html#a651d1e10b4085da5e4c4a764f3a384df" title="CKey::end" alt="" coords="185,411,269,437"/>
+<area shape="rect" id="node16" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="191,461,263,488"/>
+<area shape="rect" id="node18" href="$allocators_8h.html#a49577b8da0ecffd2fbc222896283004c" title="UnlockObject" alt="" coords="177,107,278,133"/>
+<area shape="rect" id="node5" href="$class_locked_page_manager.html#ac9b1d42d240dba4714a35fff970b6dde" title="LockedPageManager::\lInstance" alt="" coords="361,125,517,166"/>
+<area shape="rect" id="node7" href="$class_locked_page_manager_base.html#ae24ac08899505b892d451404133fa494" title="LockedPageManagerBase\l::LockRange" alt="" coords="349,190,528,231"/>
+<area shape="rect" id="node6" href="$class_locked_page_manager.html#a3933ba60669b1c1b0ef03222637257e7" title="LockedPageManager::\lCreateInstance" alt="" coords="576,125,732,166"/>
+<area shape="rect" id="node11" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="384,309,493,336"/>
+<area shape="rect" id="node12" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="589,309,719,336"/>
+<area shape="rect" id="node15" href="$class_c_key.html#a6329a38926a8af8112d06da96afbfe39" title="CKey::size" alt="" coords="396,411,481,437"/>
+<area shape="rect" id="node17" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="397,461,481,488"/>
+<area shape="rect" id="node19" href="$class_locked_page_manager_base.html#a34bcf7b9120295ed178fe9545ed229af" title="LockedPageManagerBase\l::UnlockRange" alt="" coords="349,59,528,101"/>
+</map>

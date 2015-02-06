@@ -1,0 +1,7 @@
+<map id="OptionsDialog::clearStatusLabel" name="OptionsDialog::clearStatusLabel">
+<area shape="rect" id="node2" href="$class_options_dialog.html#a866e74896ea7dacdc99b5e0af4fd5b38" title="OptionsDialog::showRestart\lWarning" alt="" coords="233,5,420,47"/>
+<area shape="rect" id="node3" href="$class_options_dialog.html#a11e902a52cb7472497d14e70cd9399d9" title="OptionsDialog::setModel" alt="" coords="468,13,635,39"/>
+<area shape="rect" id="node4" href="$class_anoncoin_g_u_i.html#a1afb9a47588132239cfba7be0adc2542" title="Show configuration dialog. " alt="" coords="683,13,879,39"/>
+<area shape="rect" id="node5" href="$class_anoncoin_g_u_i.html#a8aa41c17fd6005652003d93330dbf7fb" title="Create the main UI actions. " alt="" coords="927,13,1116,39"/>
+<area shape="rect" id="node6" href="$class_anoncoin_g_u_i.html#a82d1cf09f42a7c169b3e9c8d3e54a3d0" title="AnoncoinGUI::AnoncoinGUI" alt="" coords="1164,13,1352,39"/>
+</map>

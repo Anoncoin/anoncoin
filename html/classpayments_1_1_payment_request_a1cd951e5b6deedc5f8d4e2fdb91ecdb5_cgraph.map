@@ -1,0 +1,5 @@
+<map id="payments::PaymentRequest::set_allocated_pki_type" name="payments::PaymentRequest::set_allocated_pki_type">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#a432c5a68aa7c1cbdde824a18ebdc39d8" title="payments::PaymentRequest\l::set_has_pki_type" alt="" coords="243,5,432,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_request.html#a42d70acf5e751d9304f1e4246587b648" title="payments::PaymentRequest\l::pki_type" alt="" coords="243,71,432,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#a63a5e8545a87daffb4910d371ab87b73" title="payments::PaymentRequest\l::clear_has_pki_type" alt="" coords="243,136,432,177"/>
+</map>

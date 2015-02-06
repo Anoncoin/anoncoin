@@ -1,0 +1,24 @@
+<map id="RecentRequestsTableModel::RecentRequestsTableModel" name="RecentRequestsTableModel::RecentRequestsTableModel">
+<area shape="rect" id="node2" href="$class_wallet_model.html#a0ec10fbe74317b1949ac4ae63451d115" title="WalletModel::loadReceive\lRequests" alt="" coords="258,129,434,170"/>
+<area shape="rect" id="node3" href="$class_recent_requests_table_model.html#ae9866ffd5aed0f041437996410928edd" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="251,194,441,235"/>
+<area shape="rect" id="node18" href="$class_recent_requests_table_model.html#ab0116f41ff8773ec18e68205b2917301" title="Gets title for amount column including current display unit if optionsModel reference available..." alt="" coords="728,323,919,365"/>
+<area shape="rect" id="node19" href="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300" title="WalletModel::getOptionsModel" alt="" coords="967,411,1171,437"/>
+<area shape="rect" id="node22" href="$class_recent_requests_table_model.html#a8c4fe82f628df4e3a46809514ba9fe03" title="RecentRequestsTableModel\l::updateDisplayUnit" alt="" coords="251,265,441,306"/>
+<area shape="rect" id="node4" href="$class_wallet_model.html#a88d44bc0994c1701386f63b1f266637f" title="WalletModel::saveReceive\lRequest" alt="" coords="495,159,674,201"/>
+<area shape="rect" id="node15" href="$class_c_data_stream.html#aa3a9ecf166f36f4ea531d2b23628d2c9" title="CDataStream::str" alt="" coords="522,56,647,83"/>
+<area shape="rect" id="node5" href="$class_c_anoncoin_address.html#a046d3fc0d98fdb1093a1d41e32adf43f" title="CAnoncoinAddress::Get" alt="" coords="741,208,906,235"/>
+<area shape="rect" id="node11" href="$class_c_wallet.html#a9a03cf9972842588178387839f0ded3c" title="Erases a destination data tuple in the store and on disk. " alt="" coords="740,107,907,133"/>
+<area shape="rect" id="node13" href="$class_c_wallet.html#acbeae89a10e129930e5059d9167697e5" title="Adds a destination data tuple to the store, and saves it to disk. " alt="" coords="745,157,901,184"/>
+<area shape="rect" id="node6" href="$class_c_anoncoin_address.html#af5c7de8942a49523747a7d93e614779f" title="CAnoncoinAddress::IsValid" alt="" coords="977,208,1161,235"/>
+<area shape="rect" id="node7" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="1284,157,1352,184"/>
+<area shape="rect" id="node9" href="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf" title="memcpy" alt="" coords="1033,259,1105,285"/>
+<area shape="rect" id="node8" href="$class_c_chain_params.html#a6088d3a4f45d89c90e7e6117c3c5720d" title="CChainParams::Base58Prefix" alt="" coords="1219,208,1417,235"/>
+<area shape="rect" id="node10" href="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1" title="memmove" alt="" coords="1276,259,1360,285"/>
+<area shape="rect" id="node12" href="$class_c_wallet_d_b.html#a0403a98efe565020f8804eefbc808d90" title="Erase destination data tuple from wallet database. " alt="" coords="976,56,1161,83"/>
+<area shape="rect" id="node14" href="$class_c_wallet_d_b.html#af0de4949373dc3f0063db673fd8b24aa" title="Write destination data key,value tuple to database. " alt="" coords="978,107,1159,133"/>
+<area shape="rect" id="node16" href="$class_c_data_stream.html#a5b9e70188c662f4e9496066472af213e" title="CDataStream::begin" alt="" coords="752,56,895,83"/>
+<area shape="rect" id="node17" href="$class_c_data_stream.html#a1c22182691412ed9e0a30b719d388f31" title="CDataStream::end" alt="" coords="757,5,889,32"/>
+<area shape="rect" id="node20" href="$class_anoncoin_units.html#ad83d732db7699510db372a5c17590fba" title="Short name. " alt="" coords="994,309,1143,336"/>
+<area shape="rect" id="node21" href="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e" title="OptionsModel::getDisplayUnit" alt="" coords="970,360,1167,387"/>
+<area shape="rect" id="node23" href="$class_recent_requests_table_model.html#a8bc224f31142bd2da1c2729010ee84a3" title="Updates the column title to &quot;Amount (DisplayUnit)&quot; and emits headerDataChanged() signal for table hea..." alt="" coords="489,265,680,306"/>
+</map>

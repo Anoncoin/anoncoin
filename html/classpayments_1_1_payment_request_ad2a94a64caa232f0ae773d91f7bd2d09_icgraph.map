@@ -1,0 +1,25 @@
+<map id="payments::PaymentRequest::set_signature" name="payments::PaymentRequest::set_signature">
+<area shape="rect" id="node2" href="$classpayments_1_1_payment_request.html#a8be69c1b0e111e8c772670ce2dbf16eb" title="payments::PaymentRequest\l::MergeFrom" alt="" coords="243,139,432,181"/>
+<area shape="rect" id="node3" href="$class_payment_request_plus.html#ae5d361b6e34549a83f3cb7885b20b120" title="PaymentRequestPlus\l::getMerchant" alt="" coords="262,205,413,246"/>
+<area shape="rect" id="node4" href="$class_payment_server.html#abe96a7c90755b8e1975e380b5a8228bd" title="PaymentServer::processPayment\lRequest" alt="" coords="480,146,700,187"/>
+<area shape="rect" id="node8" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="1621,147,1773,189"/>
+<area shape="rect" id="node13" href="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4" title="TransactionDesc::toHTML" alt="" coords="501,267,679,293"/>
+<area shape="rect" id="node5" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="748,76,968,103"/>
+<area shape="rect" id="node11" href="$class_payment_server.html#a5b8e2e6380142fb7ad631400bcfc6f28" title="PaymentServer::netRequest\lFinished" alt="" coords="763,146,953,187"/>
+<area shape="rect" id="node6" href="$class_payment_server.html#af795e3c318556c833792e530b279efc9" title="PaymentServer::eventFilter" alt="" coords="1050,5,1234,32"/>
+<area shape="rect" id="node7" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="1337,155,1508,181"/>
+<area shape="rect" id="node9" href="$class_payment_server.html#a6ee6e29e1255605582459463d195a651" title="PaymentServer::handleURIConnection" alt="" coords="1016,56,1268,83"/>
+<area shape="rect" id="node10" href="$class_payment_server.html#a4a66f55c11f4757b121179d5d6988ab2" title="PaymentServer::PaymentServer" alt="" coords="1316,56,1529,83"/>
+<area shape="rect" id="node12" href="$class_payment_server.html#a2f94f2c3e12d03199870e17008535302" title="PaymentServer::initNetManager" alt="" coords="1036,157,1248,184"/>
+<area shape="rect" id="node14" href="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780" title="TransactionTablePriv\l::describe" alt="" coords="784,265,932,306"/>
+<area shape="rect" id="node15" href="$class_transaction_table_model.html#a416d0751ab9a95ecd87d3f7bed4f0b06" title="TransactionTableModel\l::data" alt="" coords="1061,266,1223,307"/>
+<area shape="rect" id="node16" href="$class_transaction_table_model.html#aaaf3cea9a5373fff771ce81d2f26de6e" title="TransactionTableModel\l::index" alt="" coords="1342,270,1503,311"/>
+<area shape="rect" id="node17" href="$class_transaction_table_model.html#a5899d9eda6465bfb16d2846b6459567e" title="TransactionTableModel\l::updateConfirmations" alt="" coords="1616,330,1777,371"/>
+<area shape="rect" id="node20" href="$class_transaction_table_model.html#a8b73ff7d72ec2dd69790bc61bbe8575e" title="TransactionTableModel\l::updateDisplayUnit" alt="" coords="1616,213,1777,254"/>
+<area shape="rect" id="node22" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="1577,279,1816,305"/>
+<area shape="rect" id="node18" href="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95" title="WalletModel::pollBalance\lChanged" alt="" coords="1871,330,2043,371"/>
+<area shape="rect" id="node19" href="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1" title="WalletModel::WalletModel" alt="" coords="2099,337,2275,364"/>
+<area shape="rect" id="node21" href="$class_transaction_table_model.html#a6c10b7cab9804eee6df9e049a978dc62" title="TransactionTableModel\l::TransactionTableModel" alt="" coords="1873,213,2042,254"/>
+<area shape="rect" id="node23" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="1864,279,2051,305"/>
+<area shape="rect" id="node24" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="2105,279,2269,305"/>
+</map>

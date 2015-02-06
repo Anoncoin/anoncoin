@@ -1,0 +1,4 @@
+<map id="TransactionRecord::formatSubTxId" name="TransactionRecord::formatSubTxId">
+<area shape="rect" id="node2" href="$classbase__uint.html#ac3080a72402cadf28dbc9f9b69cc60be" title="base_uint::ToString" alt="" coords="196,13,333,39"/>
+<area shape="rect" id="node3" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="381,13,513,39"/>
+</map>

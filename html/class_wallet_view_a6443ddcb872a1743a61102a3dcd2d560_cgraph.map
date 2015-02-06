@@ -1,0 +1,5 @@
+<map id="WalletView::gotoSignMessageTab" name="WalletView::gotoSignMessageTab">
+<area shape="rect" id="node2" href="$class_sign_verify_message_dialog.html#ad1479ca27c2fd7d6fd1160c41660ea84" title="SignVerifyMessageDialog\l::setModel" alt="" coords="279,5,453,47"/>
+<area shape="rect" id="node3" href="$class_sign_verify_message_dialog.html#a3b06ea85a2640312e0074d8dabce6416" title="SignVerifyMessageDialog\l::showTab_SM" alt="" coords="279,71,453,112"/>
+<area shape="rect" id="node4" href="$class_sign_verify_message_dialog.html#a5fc13a7072e3667c91d7e984da09eac2" title="SignVerifyMessageDialog\l::setAddress_SM" alt="" coords="279,136,453,177"/>
+</map>

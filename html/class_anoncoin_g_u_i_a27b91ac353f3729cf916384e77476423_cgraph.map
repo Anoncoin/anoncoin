@@ -1,0 +1,6 @@
+<map id="AnoncoinGUI::aboutClicked" name="AnoncoinGUI::aboutClicked">
+<area shape="rect" id="node2" href="$class_about_dialog.html#ad15ee5cad707263d7b39ba7803bb6def" title="AboutDialog::setModel" alt="" coords="239,5,395,32"/>
+<area shape="rect" id="node3" href="$class_client_model.html#a1c93d11fd03ef9aabf9b694e73698710" title="ClientModel::formatFullVersion" alt="" coords="443,5,647,32"/>
+<area shape="rect" id="node4" href="$clientversion_8cpp.html#ac3e3098552063f228d9deac38a8b9848" title="FormatFullVersion" alt="" coords="695,5,825,32"/>
+<area shape="rect" id="node5" href="$clientversion_8cpp.html#aff087070aeaa72e85b2d1a6192af8af5" title="CLIENT_BUILD" alt="" coords="873,5,989,32"/>
+</map>

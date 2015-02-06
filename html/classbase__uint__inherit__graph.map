@@ -1,0 +1,6 @@
+<map id="base_uint&lt; BITS &gt;" name="base_uint&lt; BITS &gt;">
+<area shape="rect" id="node2" href="$classuint160.html" title="160&#45;bit unsigned integer " alt="" coords="32,80,143,107"/>
+<area shape="rect" id="node5" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="167,80,277,107"/>
+<area shape="rect" id="node3" href="$class_c_key_i_d.html" title="A reference to a CKey: the Hash160 of its serialized public key. " alt="" coords="5,155,73,181"/>
+<area shape="rect" id="node4" href="$class_c_script_i_d.html" title="A reference to a CScript: the Hash160 of its serialization (see script.h) " alt="" coords="97,155,176,181"/>
+</map>

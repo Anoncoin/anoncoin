@@ -1,0 +1,15 @@
+<map id="src/coins.cpp" name="src/coins.cpp">
+<area shape="rect" id="node2" href="$coins_8h.html" title="coins.h" alt="" coords="2459,80,2523,107"/>
+<area shape="rect" id="node3" href="$core_8h.html" title="core.h" alt="" coords="2353,155,2411,181"/>
+<area shape="rect" id="node14" href="$serialize_8h.html" title="serialize.h" alt="" coords="2279,453,2362,480"/>
+<area shape="rect" id="node25" href="$uint256_8h.html" title="uint256.h" alt="" coords="1649,453,1726,480"/>
+<area shape="rect" id="node4" href="$script_8h.html" title="script.h" alt="" coords="1628,229,1693,256"/>
+<area shape="rect" id="node49" href="$scrypt_8h.html" title="scrypt.h" alt="" coords="2529,229,2598,256"/>
+<area shape="rect" id="node5" href="$key_8h.html" title="key.h" alt="" coords="1899,304,1953,331"/>
+<area shape="rect" id="node31" href="$util_8h.html" title="util.h" alt="" coords="995,379,1046,405"/>
+<area shape="rect" id="node6" href="$allocators_8h.html" title="allocators.h" alt="" coords="2578,535,2669,562"/>
+<area shape="rect" id="node13" href="$hash_8h.html" title="hash.h" alt="" coords="1909,379,1972,405"/>
+<area shape="rect" id="node27" href="$version_8h.html" title="version.h" alt="" coords="1903,453,1979,480"/>
+<area shape="rect" id="node32" href="$compat_8h.html" title="compat.h" alt="" coords="497,453,574,480"/>
+<area shape="rect" id="node39" href="$tinyformat_8h.html" title="tinyformat.h" alt="" coords="1329,453,1421,480"/>
+</map>

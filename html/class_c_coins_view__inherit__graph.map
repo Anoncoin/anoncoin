@@ -1,0 +1,6 @@
+<map id="CCoinsView" name="CCoinsView">
+<area shape="rect" id="node2" href="$class_c_coins_view_backed.html" title="CCoinsView backed by another CCoinsView. " alt="" coords="85,80,224,107"/>
+<area shape="rect" id="node5" href="$class_c_coins_view_d_b.html" title="CCoinsView backed by the LevelDB coin database (chainstate/) " alt="" coords="249,80,362,107"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html" title="CCoinsView that adds a memory cache for transactions to another CCoinsView. " alt="" coords="5,155,139,181"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_mem_pool.html" title="CCoinsView that brings transactions from a memorypool into view. " alt="" coords="163,155,314,181"/>
+</map>

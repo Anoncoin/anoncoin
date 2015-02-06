@@ -1,0 +1,10 @@
+<map id="GUIUtil::copyEntryData" name="GUIUtil::copyEntryData">
+<area shape="rect" id="node2" href="$class_address_book_page.html#a392fa7dfb663a7e3ad1313dffd1123b9" title="Copy address of currently selected address entry to clipboard. " alt="" coords="245,5,400,47"/>
+<area shape="rect" id="node4" href="$class_address_book_page.html#a13592aacb4316283b51c1b03a10ef190" title="Copy label of currently selected address entry to clipboard (no button) " alt="" coords="213,71,432,112"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a768ffc4deca27f0cfffb39003bf46f75" title="TransactionView::copyAddress" alt="" coords="220,137,425,163"/>
+<area shape="rect" id="node7" href="$class_transaction_view.html#a78d63230a1b7810108f46bb2366b2038" title="TransactionView::copyLabel" alt="" coords="228,187,417,214"/>
+<area shape="rect" id="node8" href="$class_transaction_view.html#a83e5ce148e328b673c1b6af09a1d94ea" title="TransactionView::copyAmount" alt="" coords="221,238,424,265"/>
+<area shape="rect" id="node9" href="$class_transaction_view.html#a465c51f03cf28f66492766b4a5da8896" title="TransactionView::copyTxID" alt="" coords="231,289,415,315"/>
+<area shape="rect" id="node3" href="$class_address_book_page.html#a493ad5adf2b6064b97bc2ba6eb41587e" title="AddressBookPage::Address\lBookPage" alt="" coords="499,39,688,80"/>
+<area shape="rect" id="node6" href="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f" title="TransactionView::TransactionView" alt="" coords="480,213,707,239"/>
+</map>

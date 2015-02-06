@@ -1,0 +1,4 @@
+<map id="WalletView::gotoHistoryPage" name="WalletView::gotoHistoryPage">
+<area shape="rect" id="node2" href="$class_wallet_view.html#a99d6a88bea0aef8db23e249c7ffb24d0" title="WalletView::setAnoncoinGUI" alt="" coords="247,5,439,32"/>
+<area shape="rect" id="node3" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="487,5,651,32"/>
+</map>

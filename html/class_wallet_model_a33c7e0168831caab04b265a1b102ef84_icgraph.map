@@ -1,0 +1,5 @@
+<map id="WalletModel::processingQueuedTransactions" name="WalletModel::processingQueuedTransactions">
+<area shape="rect" id="node2" href="$class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a" title="Show incoming transaction notification for new transactions. " alt="" coords="268,13,507,39"/>
+<area shape="rect" id="node3" href="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be" title="Set the wallet model. " alt="" coords="555,13,741,39"/>
+<area shape="rect" id="node4" href="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86" title="WalletFrame::addWallet" alt="" coords="789,13,953,39"/>
+</map>

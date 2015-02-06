@@ -1,0 +1,9 @@
+<map id="CWallet" name="CWallet">
+<area shape="rect" id="node2" href="$class_c_crypto_key_store.html" title="Keystore which keeps the private keys encrypted. " alt="" coords="805,60,931,87"/>
+<area shape="rect" id="node3" href="$class_c_basic_key_store.html" title="Basic key store, that keeps keys in an address&#45;&gt;secret map. " alt="" coords="637,68,756,95"/>
+<area shape="rect" id="node4" href="$class_c_key_store.html" title="A virtual base class for key stores. " alt="" coords="501,60,588,87"/>
+<area shape="rect" id="node7" href="$class_c_wallet_interface.html" title="CWalletInterface" alt="" coords="808,111,928,137"/>
+<area shape="rect" id="node8" href="$class_c_pub_key.html" title="An encapsulated public key. " alt="" coords="829,161,907,188"/>
+<area shape="rect" id="node9" href="$class_c_wallet_d_b.html" title="Access to the wallet database (wallet.dat) " alt="" coords="825,212,911,239"/>
+<area shape="rect" id="node10" href="$class_c_d_b.html" title="RAII class that provides access to a Berkeley database. " alt="" coords="671,212,722,239"/>
+</map>

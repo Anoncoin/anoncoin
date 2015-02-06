@@ -1,0 +1,19 @@
+<map id="payments::Output::script" name="payments::Output::script">
+<area shape="rect" id="node2" href="$classpayments_1_1_output.html#aeb7bbba39eba33291922c69cf118fdfb" title="payments::Output::Serialize\lWithCachedSizes" alt="" coords="237,5,422,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_output.html#af7de4ad0f580ce367f1f06c8125c1da0" title="payments::Output::Serialize\lWithCachedSizesToArray" alt="" coords="237,71,422,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_output.html#a04597d4ce8a4c6a1d495a90db46f1e5b" title="payments::Output::ByteSize" alt="" coords="236,137,423,163"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_output.html#af202416ff7c832a97ada570047e7e7cf" title="payments::Output::MergeFrom" alt="" coords="227,187,431,214"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_output.html#a2ccf6b84cbe7f8a6d837bbc89ea87101" title="payments::Output::set\l_allocated_script" alt="" coords="253,239,405,280"/>
+<area shape="rect" id="node7" href="$class_payment_request_plus.html#a30ec9429606dfdcb7c818c2f443db872" title="PaymentRequestPlus\l::getPayTo" alt="" coords="254,304,405,345"/>
+<area shape="rect" id="node17" href="$class_wallet_model.html#a8abc851901c7c7343ebfb5a8e5fc0154" title="WalletModel::prepareTransaction" alt="" coords="220,371,439,398"/>
+<area shape="rect" id="node8" href="$class_payment_server.html#abe96a7c90755b8e1975e380b5a8228bd" title="PaymentServer::processPayment\lRequest" alt="" coords="487,301,707,343"/>
+<area shape="rect" id="node9" href="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d" title="PaymentServer::handleURIOrFile" alt="" coords="755,258,975,285"/>
+<area shape="rect" id="node15" href="$class_payment_server.html#a5b8e2e6380142fb7ad631400bcfc6f28" title="PaymentServer::netRequest\lFinished" alt="" coords="770,331,959,372"/>
+<area shape="rect" id="node10" href="$class_payment_server.html#af795e3c318556c833792e530b279efc9" title="PaymentServer::eventFilter" alt="" coords="1057,247,1241,274"/>
+<area shape="rect" id="node11" href="$class_payment_server.html#abb6c65fabbf97ba95381997ca9cd6993" title="PaymentServer::uiReady" alt="" coords="1344,323,1515,350"/>
+<area shape="rect" id="node13" href="$class_payment_server.html#a6ee6e29e1255605582459463d195a651" title="PaymentServer::handleURIConnection" alt="" coords="1023,197,1275,223"/>
+<area shape="rect" id="node12" href="$class_payment_server_tests.html#a82c8a7437bfc26c28619b954a5ee8cad" title="PaymentServerTests\l::paymentServerTests" alt="" coords="1584,316,1736,357"/>
+<area shape="rect" id="node14" href="$class_payment_server.html#a4a66f55c11f4757b121179d5d6988ab2" title="PaymentServer::PaymentServer" alt="" coords="1323,197,1536,223"/>
+<area shape="rect" id="node16" href="$class_payment_server.html#a2f94f2c3e12d03199870e17008535302" title="PaymentServer::initNetManager" alt="" coords="1043,349,1255,375"/>
+<area shape="rect" id="node18" href="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764" title="SendCoinsDialog::on\l_sendButton_clicked" alt="" coords="523,367,670,408"/>
+</map>

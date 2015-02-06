@@ -1,0 +1,8 @@
+<map id="UpdateCoins" name="UpdateCoins">
+<area shape="rect" id="node2" href="$class_c_transaction.html#a274384ecbb50d71355cd287b7a6bca51" title="CTransaction::IsCoinBase" alt="" coords="161,5,339,32"/>
+<area shape="rect" id="node3" href="$class_c_coins_view_cache.html#aa6a5e44220f594be6d0cf2911bd39fd6" title="CCoinsViewCache::GetCoins" alt="" coords="152,56,348,83"/>
+<area shape="rect" id="node5" href="$class_c_coins.html#a8d5fe8c1ab0c9558620448a19ecdb8b2" title="CCoins::Spend" alt="" coords="194,107,306,133"/>
+<area shape="rect" id="node7" href="$class_c_coins_view_cache.html#a6b9b4355ee342b60d7e52f8b01e84833" title="CCoinsViewCache::SetCoins" alt="" coords="153,157,347,184"/>
+<area shape="rect" id="node4" href="$class_c_coins_view.html#a7fe9216505bc5f3d78f2938bc7b29e26" title="CCoinsView::GetCoins" alt="" coords="396,56,553,83"/>
+<area shape="rect" id="node6" href="$class_c_coins.html#a7cfa2efc07f4d35785c9c75caa8bddcb" title="CCoins::Cleanup" alt="" coords="413,107,536,133"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="SAM::Message::hello" name="SAM::Message::hello">
+<area shape="rect" id="node2" href="$class_s_a_m_1_1_socket.html#acca2e69487ef3f865275d2d5fd1fbca1" title="SAM::Socket::handshake" alt="" coords="201,5,373,32"/>
+<area shape="rect" id="node3" href="$class_s_a_m_1_1_socket.html#a06437196adb5bc7b8df6c1819053b3b1" title="SAM::Socket::bootstrapI2P" alt="" coords="421,5,604,32"/>
+<area shape="rect" id="node4" href="$class_s_a_m_1_1_socket.html#ab1373984617b43dc2108491181de49b3" title="SAM::Socket::Socket" alt="" coords="652,5,799,32"/>
+</map>

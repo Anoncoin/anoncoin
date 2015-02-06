@@ -1,0 +1,12 @@
+<map id="AnoncoinGUI::setNumBlocks" name="AnoncoinGUI::setNumBlocks">
+<area shape="rect" id="node2" href="$class_client_model.html#acd447f61bfd57267a31a0aa88c176ee6" title="Return true if core is importing blocks. " alt="" coords="252,15,445,41"/>
+<area shape="rect" id="node4" href="$class_client_model.html#a3dd65362947749364c48ff53a37820db" title="ClientModel::getLastBlockDate" alt="" coords="247,75,451,101"/>
+<area shape="rect" id="node8" href="$class_wallet_frame.html#aeda920e4141c99d457814f20fa89dde6" title="WalletFrame::showOutOfSync\lWarning" alt="" coords="248,126,449,167"/>
+<area shape="rect" id="node9" href="$class_client_model.html#ac91e6c5bd6d70a0ae96ad2a29f97edf5" title="ClientModel::getVerification\lProgress" alt="" coords="257,191,441,233"/>
+<area shape="rect" id="node3" href="$class_client_model.html#ab893445b458943e3112770b026195067" title="Return number of connections, default is in&#45; and outbound (total) " alt="" coords="499,5,719,32"/>
+<area shape="rect" id="node5" href="$class_c_chain.html#a7482d06d8e8143f46326cf9c12c06daf" title="Returns the index entry for the tip of this chain, or NULL if none. " alt="" coords="563,157,655,184"/>
+<area shape="rect" id="node6" href="$class_c_block_index.html#ab63b774ae798f5f9e54b400ac8b5ef4b" title="CBlockIndex::GetBlockTime" alt="" coords="515,56,703,83"/>
+<area shape="rect" id="node7" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="991,147,1059,173"/>
+<area shape="rect" id="node10" href="$namespace_checkpoints.html#ad473e253a3826fec1a7f9394c695ba91" title="Checkpoints::GuessVerification\lProgress" alt="" coords="505,209,712,250"/>
+<area shape="rect" id="node11" href="$namespace_checkpoints.html#a63e87603e80d739b1aefa062f9bd337e" title="Checkpoints::Checkpoints" alt="" coords="767,187,943,213"/>
+</map>

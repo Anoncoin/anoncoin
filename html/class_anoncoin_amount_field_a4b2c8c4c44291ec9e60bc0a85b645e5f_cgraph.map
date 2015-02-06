@@ -1,0 +1,11 @@
+<map id="AnoncoinAmountField::AnoncoinAmountField" name="AnoncoinAmountField::AnoncoinAmountField">
+<area shape="rect" id="node2" href="$class_anoncoin_amount_field.html#a57a80569ce0ee2a8aee65d040a559dd4" title="AnoncoinAmountField\l::unitChanged" alt="" coords="213,151,365,193"/>
+<area shape="rect" id="node3" href="$class_anoncoin_units.html#a5653b325d94d65dc30cf75aec3718112" title="Number of decimals left. " alt="" coords="856,16,1024,43"/>
+<area shape="rect" id="node4" href="$class_anoncoin_units.html#afc068b31e91676a7d0c88804f6d83c2b" title="Number of amount digits (to represent max number of coins) " alt="" coords="413,235,607,261"/>
+<area shape="rect" id="node5" href="$class_anoncoin_units.html#aa3bdc0febcf7e6f42ab07179d9946f57" title="Number of Satoshis (1e&#45;8) per unit. " alt="" coords="865,151,1015,177"/>
+<area shape="rect" id="node6" href="$class_anoncoin_amount_field.html#adcb07ed5c03e94809a1eb9bd00b8b98f" title="AnoncoinAmountField\l::setValue" alt="" coords="434,67,586,109"/>
+<area shape="rect" id="node7" href="$class_anoncoin_amount_field.html#a2d8609eead093e27b4e2d07f12b56815" title="AnoncoinAmountField\l::setText" alt="" coords="655,118,807,159"/>
+<area shape="rect" id="node10" href="$class_anoncoin_amount_field.html#ad3c794ea41c9fca0cbbb2aad5a1fdaff" title="Mark current value as invalid in UI. " alt="" coords="434,286,586,327"/>
+<area shape="rect" id="node8" href="$class_anoncoin_units.html#acbdb244b3fc381599233882de4284e34" title="Format as string. " alt="" coords="655,67,808,93"/>
+<area shape="rect" id="node9" href="$class_anoncoin_units.html#aa51b639723ccb854bc42c7bd4bcd8890" title="Is unit ID valid? " alt="" coords="869,67,1011,93"/>
+</map>

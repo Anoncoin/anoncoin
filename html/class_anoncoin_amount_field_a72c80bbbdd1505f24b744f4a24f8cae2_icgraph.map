@@ -1,0 +1,7 @@
+<map id="AnoncoinAmountField::setReadOnly" name="AnoncoinAmountField::setReadOnly">
+<area shape="rect" id="node2" href="$class_send_coins_entry.html#a513dd22231d0d7c2550c5533e9518cf5" title="SendCoinsEntry::setValue" alt="" coords="205,13,383,39"/>
+<area shape="rect" id="node3" href="$class_send_coins_dialog.html#a4440d15ced5d217baaad33a17d56b409" title="SendCoinsDialog::pasteEntry" alt="" coords="431,13,627,39"/>
+<area shape="rect" id="node4" href="$class_send_coins_dialog.html#a82ed6a3badadaa523415e1924ebd292a" title="SendCoinsDialog::handlePayment\lRequest" alt="" coords="675,5,900,47"/>
+<area shape="rect" id="node5" href="$class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d" title="WalletView::handlePayment\lRequest" alt="" coords="948,5,1136,47"/>
+<area shape="rect" id="node6" href="$class_wallet_frame.html#aa8c5b10f2240df164795619ca41c619c" title="WalletFrame::handlePayment\lRequest" alt="" coords="1184,5,1381,47"/>
+</map>

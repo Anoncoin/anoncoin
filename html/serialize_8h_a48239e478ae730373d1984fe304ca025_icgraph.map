@@ -1,0 +1,51 @@
+<map id="GetSerializeSize" name="GetSerializeSize">
+<area shape="rect" id="node2" href="$auxpow_8h.html#a674319880eb96057cf69896d0e04670d" title="ReadWriteAuxPow" alt="" coords="218,5,351,32"/>
+<area shape="rect" id="node3" href="$class_c_big_num.html#afea3e99a3610f44c90c1242a324fd002" title="CBigNum::GetSerializeSize" alt="" coords="192,56,377,83"/>
+<area shape="rect" id="node4" href="$class_c_transaction.html#ad2452fe2ae424f43e5fd767c28517b3b" title="CTransaction::ComputePriority" alt="" coords="183,208,387,235"/>
+<area shape="rect" id="node9" href="$miner_8h.html#af441d1c1899839f4e3cc0ee1367914a5" title="Generate a new block, without valid proof&#45;of&#45;work. " alt="" coords="1263,157,1385,184"/>
+<area shape="rect" id="node11" href="$class_c_tx_in_undo.html#a6f992d64f9d4ee6299cbd3305e4fd90f" title="CTxInUndo::GetSerializeSize" alt="" coords="187,816,383,843"/>
+<area shape="rect" id="node12" href="$main_8h.html#a3d8c4ba3a0c2b7a05cab21c95a886fbe" title="CheckTransaction" alt="" coords="481,259,611,285"/>
+<area shape="rect" id="node13" href="$main_8h.html#afbaa5058f820d623e6a36f39da4fe484" title="CheckBlock" alt="" coords="765,360,857,387"/>
+<area shape="rect" id="node14" href="$main_8h.html#ae478a2e37bd5c3ac735f30cc12cc7f8b" title="ConnectBlock" alt="" coords="1034,411,1138,437"/>
+<area shape="rect" id="node27" href="$main_8h.html#aae69635467b9737d6c5b44d8ccff5c82" title="AcceptBlock" alt="" coords="763,816,859,843"/>
+<area shape="rect" id="node28" href="$main_8h.html#a92e5e1fcbd56cc44c27d39b64da8a79a" title="Initialize a new block tree database + block data on disk. " alt="" coords="1271,841,1377,868"/>
+<area shape="rect" id="node29" href="$rpcblockchain_8cpp.html#a9e868dd8b7d22ea15aa7c7130e8e42be" title="blockToJSON" alt="" coords="233,867,337,893"/>
+<area shape="rect" id="node31" href="$serialize_8h.html#a329d6980a25c10b1e34913ac11329fde" title="GetSerializeSize_impl" alt="" coords="209,917,361,944"/>
+<area shape="rect" id="node32" href="$serialize_8h.html#a111324194564a4e799f5b1ac9b0932eb" title="GetSerializeSize" alt="" coords="225,968,345,995"/>
+<area shape="rect" id="node33" href="$serialize_8h.html#a9cd643cfa4ca2da679b6f9843bf319aa" title="SerReadWrite" alt="" coords="232,1019,337,1045"/>
+<area shape="rect" id="node35" href="$class_c_data_stream.html#aaf2b9e953793ce5a4fc438a7ecb00dc2" title="CDataStream::GetSerializeSize" alt="" coords="180,563,389,589"/>
+<area shape="rect" id="node48" href="$class_c_auto_file.html#a883a261f0d7d0320f72152ff2167fd24" title="CAutoFile::GetSerializeSize" alt="" coords="191,715,378,741"/>
+<area shape="rect" id="node50" href="$class_c_tx_mem_pool_entry.html#ad67e51ee60cb090d5daf28bf4bc52c9f" title="CTxMemPoolEntry::CTxMemPool\lEntry" alt="" coords="173,1070,396,1111"/>
+<area shape="rect" id="node5" href="$class_c_coins_view_cache.html#a9ba07b5aae92599df73a86297a5bff52" title="CCoinsViewCache::GetPriority" alt="" coords="444,208,648,235"/>
+<area shape="rect" id="node6" href="$main_8h.html#a1032f75235456abfa96b63e34e7ee2cc" title="(try to) add transaction to memory pool " alt="" coords="734,208,887,235"/>
+<area shape="rect" id="node7" href="$class_c_merkle_tx.html#a032705bde1c536cd1b14f01f914e12f0" title="CMerkleTx::AcceptToMemoryPool" alt="" coords="973,208,1199,235"/>
+<area shape="rect" id="node8" href="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e" title="sendrawtransaction" alt="" coords="1017,259,1155,285"/>
+<area shape="rect" id="node10" href="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a" title="getblocktemplate" alt="" coords="1460,157,1583,184"/>
+<area shape="rect" id="node24" href="$walletdb_8cpp.html#ad1f171cf096f5479805a06fc20480343" title="ReadKeyValue" alt="" coords="755,259,866,285"/>
+<area shape="rect" id="node15" href="$main_8h.html#abfcd613b1eaa02bc626b1c3cb098fc4a" title="Verify consistency of the block and coin databases. " alt="" coords="1287,461,1361,488"/>
+<area shape="rect" id="node20" href="$main_8h.html#a87a59e710c26c4a10de57b5acb1e2e92" title="Process an incoming block. " alt="" coords="1035,715,1137,741"/>
+<area shape="rect" id="node16" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="1641,613,1712,640"/>
+<area shape="rect" id="node19" href="$rpcblockchain_8cpp.html#a0b1dd8862fc7292c243ad9489f96a3c8" title="verifychain" alt="" coords="1479,512,1564,539"/>
+<area shape="rect" id="node17" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="1808,588,1872,615"/>
+<area shape="rect" id="node18" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="1760,639,1920,665"/>
+<area shape="rect" id="node21" href="$main_8h.html#a8641eccb4e5d174838adeea9b234a691" title="Import blocks from an external file. " alt="" coords="1247,765,1401,792"/>
+<area shape="rect" id="node23" href="$rpcmining_8cpp.html#a6fc1aa077add8cb1c74207056616134d" title="submitblock" alt="" coords="1278,715,1370,741"/>
+<area shape="rect" id="node22" href="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9" title="ThreadImport" alt="" coords="1470,765,1573,792"/>
+<area shape="rect" id="node25" href="$class_c_wallet_d_b.html#a14f26e53502d1a60dd2b034f830acf03" title="CWalletDB::LoadWallet" alt="" coords="1005,360,1167,387"/>
+<area shape="rect" id="node26" href="$class_c_wallet_d_b.html#a3ebeb12f37d9c66512e2bc2903a6854a" title="CWalletDB::Recover" alt="" coords="1449,360,1593,387"/>
+<area shape="rect" id="node30" href="$rpcblockchain_8cpp.html#a63608cf1bb275120194c3b4e070af3d7" title="getblock" alt="" coords="510,892,582,919"/>
+<area shape="rect" id="node34" href="$auxpow_8h.html#a09e1a9ec438cbd3eddcd200a8b2ad49a" title="ReadWriteAuxPow" alt="" coords="479,1019,613,1045"/>
+<area shape="rect" id="node36" href="$class_c_level_d_b_batch.html#ab459da1abafa27e834de9a4cc25b6f2d" title="CLevelDBBatch::Write" alt="" coords="469,461,623,488"/>
+<area shape="rect" id="node39" href="$class_c_level_d_b_batch.html#a22bf093d560b4ce3333e8f4a947faa7f" title="CLevelDBBatch::Erase" alt="" coords="467,512,625,539"/>
+<area shape="rect" id="node41" href="$class_c_level_d_b_wrapper.html#aa3451a451298c7f8a66986ccd95474e2" title="CLevelDBWrapper::Read" alt="" coords="460,613,632,640"/>
+<area shape="rect" id="node47" href="$class_c_level_d_b_wrapper.html#a916e029b612f3bb0e3110742121e73eb" title="CLevelDBWrapper::Exists" alt="" coords="458,563,634,589"/>
+<area shape="rect" id="node37" href="$class_c_level_d_b_wrapper.html#a740caa1aefbafc888838ea7f70dc31f4" title="CLevelDBWrapper::Write" alt="" coords="725,461,897,488"/>
+<area shape="rect" id="node38" href="$class_c_block_tree_d_b.html#a1e03745f9675ad352a1483a0aa7ef308" title="CBlockTreeDB::WriteTxIndex" alt="" coords="713,411,909,437"/>
+<area shape="rect" id="node40" href="$class_c_level_d_b_wrapper.html#a9f67e2880ba191fdc9439ba34e315d72" title="CLevelDBWrapper::Erase" alt="" coords="723,512,899,539"/>
+<area shape="rect" id="node42" href="$class_c_coins_view_d_b.html#a6abb3db74d1ec815b2cb8a8672b848bb" title="CCoinsViewDB::GetCoins" alt="" coords="723,715,899,741"/>
+<area shape="rect" id="node43" href="$class_c_coins_view_d_b.html#a5a4569b8b1675539eedf1bf14a9c7fc0" title="CCoinsViewDB::GetBestBlock" alt="" coords="710,563,911,589"/>
+<area shape="rect" id="node44" href="$class_c_block_tree_d_b.html#a6f951198dc53fbe9194626ff82638656" title="CBlockTreeDB::ReadBlockFileInfo" alt="" coords="973,765,1199,792"/>
+<area shape="rect" id="node45" href="$class_c_block_tree_d_b.html#adb1276fe2f0e0c4c106660948c581711" title="CBlockTreeDB::ReadLastBlockFile" alt="" coords="696,613,925,640"/>
+<area shape="rect" id="node46" href="$class_c_block_tree_d_b.html#a74383427266d627e84c2d0c8e21e03c7" title="CBlockTreeDB::ReadTxIndex" alt="" coords="712,664,909,691"/>
+<area shape="rect" id="node49" href="$main_8h.html#ada76402fa869197c916231a42b011fd4" title="Functions for disk access for blocks. " alt="" coords="483,791,609,817"/>
+</map>

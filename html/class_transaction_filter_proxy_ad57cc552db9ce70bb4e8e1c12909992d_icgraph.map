@@ -1,0 +1,6 @@
+<map id="TransactionFilterProxy::setDateRange" name="TransactionFilterProxy::setDateRange">
+<area shape="rect" id="node2" href="$class_transaction_view.html#abd49a0777b14f7bf5a72a4d5901d033d" title="TransactionView::chooseDate" alt="" coords="451,5,649,32"/>
+<area shape="rect" id="node4" href="$class_transaction_view.html#ab9000969ec2cc3617b9c06caf33e747a" title="TransactionView::dateRange\lChanged" alt="" coords="209,57,403,98"/>
+<area shape="rect" id="node3" href="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f" title="TransactionView::TransactionView" alt="" coords="697,35,924,61"/>
+<area shape="rect" id="node5" href="$class_transaction_view.html#a4455d37773d81280d068f0b7751150f7" title="TransactionView::createDate\lRangeWidget" alt="" coords="453,57,647,98"/>
+</map>

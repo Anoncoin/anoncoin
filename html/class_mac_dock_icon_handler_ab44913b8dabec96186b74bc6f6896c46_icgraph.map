@@ -1,0 +1,12 @@
+<map id="MacDockIconHandler::MacDockIconHandler" name="MacDockIconHandler::MacDockIconHandler">
+<area shape="rect" id="node2" href="$class_mac_dock_icon_handler.html#afd3ef7126d0b6ef02eaf85e5455fe6f4" title="MacDockIconHandler\l::instance" alt="" coords="211,49,360,90"/>
+<area shape="rect" id="node3" href="$class_anoncoin_g_u_i.html#a82d1cf09f42a7c169b3e9c8d3e54a3d0" title="AnoncoinGUI::AnoncoinGUI" alt="" coords="429,5,617,32"/>
+<area shape="rect" id="node4" href="$class_anoncoin_g_u_i.html#a752f8f9713a04608b050d9596910c6c5" title="AnoncoinGUI::~AnoncoinGUI" alt="" coords="425,56,621,83"/>
+<area shape="rect" id="node5" href="$class_anoncoin_g_u_i.html#a8e42c1b5f78aeab21118e07265874abe" title="Create system tray menu (or setup the dock menu) " alt="" coords="408,107,639,133"/>
+<area shape="rect" id="node6" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="687,107,884,133"/>
+<area shape="rect" id="node7" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="932,66,1075,107"/>
+<area shape="rect" id="node9" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="932,131,1075,173"/>
+<area shape="rect" id="node8" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1169,73,1219,100"/>
+<area shape="rect" id="node10" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="1123,131,1265,173"/>
+<area shape="rect" id="node11" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="1313,131,1464,173"/>
+</map>

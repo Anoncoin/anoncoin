@@ -1,0 +1,11 @@
+<map id="CheckDiskSpace" name="CheckDiskSpace">
+<area shape="rect" id="node2" href="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba" title="GetDataDir" alt="" coords="177,107,267,133"/>
+<area shape="rect" id="node8" href="$main_8cpp.html#a00a5642fcaee2234f90f16a70b815a82" title="Abort with a message. " alt="" coords="179,183,265,209"/>
+<area shape="rect" id="node10" href="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1" title="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..." alt="" coords="203,233,241,260"/>
+<area shape="rect" id="node3" href="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a" title="Return the currently selected parameters. " alt="" coords="372,5,440,32"/>
+<area shape="rect" id="node4" href="$class_c_chain_params.html#a90dc493ec0c0325c98c3ac06eb99862b" title="CChainParams::NetworkID" alt="" coords="315,56,497,83"/>
+<area shape="rect" id="node5" href="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6" title="GetDefaultDataDir" alt="" coords="341,107,471,133"/>
+<area shape="rect" id="node7" href="$class_c_chain_params.html#ad11dd170e65650ff4b12d45a32b9c774" title="CChainParams::DataDir" alt="" coords="323,157,489,184"/>
+<area shape="rect" id="node6" href="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064" title="TryCreateDirectory" alt="" coords="545,107,680,133"/>
+<area shape="rect" id="node9" href="$init_8cpp.html#ac7140c7327b1e6a8d46470b1cd0e8e1b" title="StartShutdown" alt="" coords="351,208,461,235"/>
+</map>

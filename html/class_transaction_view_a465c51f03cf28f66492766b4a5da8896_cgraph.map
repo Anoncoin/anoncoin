@@ -1,0 +1,4 @@
+<map id="TransactionView::copyTxID" name="TransactionView::copyTxID">
+<area shape="rect" id="node2" href="$namespace_g_u_i_util.html#ae231227ad96528c828e1c846f253f642" title="Copy a field of the currently selected entry of a view to the clipboard. " alt="" coords="237,5,397,32"/>
+<area shape="rect" id="node3" href="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07" title="GUIUtil::setClipboard" alt="" coords="445,5,592,32"/>
+</map>

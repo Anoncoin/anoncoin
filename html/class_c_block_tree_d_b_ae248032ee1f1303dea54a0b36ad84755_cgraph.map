@@ -1,0 +1,10 @@
+<map id="CBlockTreeDB::WriteBlockFileInfo" name="CBlockTreeDB::WriteBlockFileInfo">
+<area shape="rect" id="node2" href="$class_c_level_d_b_wrapper.html#a740caa1aefbafc888838ea7f70dc31f4" title="CLevelDBWrapper::Write" alt="" coords="235,101,407,128"/>
+<area shape="rect" id="node3" href="$class_c_level_d_b_batch.html#ab459da1abafa27e834de9a4cc25b6f2d" title="CLevelDBBatch::Write" alt="" coords="480,69,635,96"/>
+<area shape="rect" id="node8" href="$class_c_level_d_b_wrapper.html#a820484c9e427f9e3400396e750acf4b8" title="CLevelDBWrapper::WriteBatch" alt="" coords="455,132,660,159"/>
+<area shape="rect" id="node4" href="$class_c_data_stream.html#a5542e71bd7af2ab7cd7be0f381d39cb5" title="CDataStream::reserve" alt="" coords="735,5,890,32"/>
+<area shape="rect" id="node5" href="$class_c_data_stream.html#aaf2b9e953793ce5a4fc438a7ecb00dc2" title="CDataStream::GetSerializeSize" alt="" coords="708,56,917,83"/>
+<area shape="rect" id="node7" href="$class_c_data_stream.html#ac6567f6d600d644d9855b52bb59049cd" title="CDataStream::size" alt="" coords="746,107,879,133"/>
+<area shape="rect" id="node6" href="$serialize_8h.html#a48239e478ae730373d1984fe304ca025" title="GetSerializeSize" alt="" coords="965,56,1085,83"/>
+<area shape="rect" id="node9" href="$leveldbwrapper_8cpp.html#aea36eb5fddb6266b14ea8cb15e183486" title="HandleError" alt="" coords="766,157,859,184"/>
+</map>

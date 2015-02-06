@@ -1,0 +1,9 @@
+<map id="roundint64" name="roundint64">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#a24a3c6bbc75f2c852a8e7a00df4b2970" title="AmountFromValue" alt="" coords="139,132,272,159"/>
+<area shape="rect" id="node3" href="$rpcrawtransaction_8cpp.html#a7924d2aa3d68d890b82773445e0d949e" title="createrawtransaction" alt="" coords="320,5,465,32"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a134064858f9cfa4775a6ae34cac2b133" title="sendtoaddress" alt="" coords="338,56,447,83"/>
+<area shape="rect" id="node5" href="$rpcwallet_8cpp.html#a7dcb5aa63b46944bc4874719c8e1db15" title="movecmd" alt="" coords="353,107,433,133"/>
+<area shape="rect" id="node6" href="$rpcwallet_8cpp.html#a845eaefd9ec7752b1145c183205524d0" title="sendfrom" alt="" coords="354,157,431,184"/>
+<area shape="rect" id="node7" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="351,208,435,235"/>
+<area shape="rect" id="node8" href="$rpcwallet_8cpp.html#a68e2fb93e252e5b3a97dd629815a9159" title="settxfee" alt="" coords="358,259,427,285"/>
+</map>

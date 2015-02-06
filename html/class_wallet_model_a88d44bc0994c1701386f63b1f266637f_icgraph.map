@@ -1,0 +1,9 @@
+<map id="WalletModel::saveReceiveRequest" name="WalletModel::saveReceiveRequest">
+<area shape="rect" id="node2" href="$class_recent_requests_table_model.html#a63504be44ff9d33d5c508f6303622e5a" title="RecentRequestsTableModel\l::removeRows" alt="" coords="232,31,423,73"/>
+<area shape="rect" id="node4" href="$class_recent_requests_table_model.html#ae9866ffd5aed0f041437996410928edd" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="232,133,423,174"/>
+<area shape="rect" id="node3" href="$class_receive_coins_dialog.html#a0cd8bb4c63c4b9bd3b27d9a4d6e08cfb" title="ReceiveCoinsDialog\l::on_removeRequestButton\l_clicked" alt="" coords="477,5,661,61"/>
+<area shape="rect" id="node5" href="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd" title="ReceiveCoinsDialog\l::on_receiveButton_clicked" alt="" coords="479,86,660,127"/>
+<area shape="rect" id="node7" href="$class_recent_requests_table_model.html#ab3ef691b8c34e6d6e5ae0bdf7953a360" title="RecentRequestsTableModel\l::RecentRequestsTableModel" alt="" coords="471,151,668,193"/>
+<area shape="rect" id="node8" href="$class_recent_requests_table_model.html#aad0b9435284ed1f4b67852b34d7694a9" title="RecentRequestsTableModel\l::addNewRequest" alt="" coords="474,217,665,258"/>
+<area shape="rect" id="node6" href="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10" title="ReceiveCoinsDialog\l::keyPressEvent" alt="" coords="716,86,859,127"/>
+</map>

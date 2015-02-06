@@ -1,0 +1,18 @@
+<map id="src/rpcprotocol.h" name="src/rpcprotocol.h">
+<area shape="rect" id="node2" href="$anoncoin-cli_8cpp.html" title="src/anoncoin&#45;cli.cpp" alt="" coords="693,80,833,107"/>
+<area shape="rect" id="node3" href="$rpcserver_8h.html" title="src/rpcserver.h" alt="" coords="857,80,967,107"/>
+<area shape="rect" id="node16" href="$rpcclient_8cpp.html" title="src/rpcclient.cpp" alt="" coords="991,80,1110,107"/>
+<area shape="rect" id="node17" href="$rpcprotocol_8cpp.html" title="src/rpcprotocol.cpp" alt="" coords="1134,80,1269,107"/>
+<area shape="rect" id="node4" href="$anoncoind_8cpp.html" title="src/anoncoind.cpp" alt="" coords="5,155,136,181"/>
+<area shape="rect" id="node5" href="$init_8cpp.html" title="src/init.cpp" alt="" coords="160,155,245,181"/>
+<area shape="rect" id="node6" href="$anoncoin_8cpp.html" title="src/qt/anoncoin.cpp" alt="" coords="270,155,407,181"/>
+<area shape="rect" id="node7" href="$rpcconsole_8cpp.html" title="src/qt/rpcconsole.cpp" alt="" coords="431,155,579,181"/>
+<area shape="rect" id="node8" href="$rpcblockchain_8cpp.html" title="src/rpcblockchain.cpp" alt="" coords="603,155,754,181"/>
+<area shape="rect" id="node9" href="$rpcdump_8cpp.html" title="src/rpcdump.cpp" alt="" coords="779,155,899,181"/>
+<area shape="rect" id="node10" href="$rpcmining_8cpp.html" title="src/rpcmining.cpp" alt="" coords="923,155,1050,181"/>
+<area shape="rect" id="node11" href="$rpcmisc_8cpp.html" title="src/rpcmisc.cpp" alt="" coords="1075,155,1189,181"/>
+<area shape="rect" id="node12" href="$rpcnet_8cpp.html" title="src/rpcnet.cpp" alt="" coords="1214,155,1319,181"/>
+<area shape="rect" id="node13" href="$rpcrawtransaction_8cpp.html" title="src/rpcrawtransaction.cpp" alt="" coords="1344,155,1517,181"/>
+<area shape="rect" id="node14" href="$rpcserver_8cpp.html" title="src/rpcserver.cpp" alt="" coords="1542,155,1666,181"/>
+<area shape="rect" id="node15" href="$rpcwallet_8cpp.html" title="src/rpcwallet.cpp" alt="" coords="1690,155,1811,181"/>
+</map>

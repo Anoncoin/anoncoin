@@ -1,0 +1,4 @@
+<map id="SignVerifyMessageDialog::on_clearButton_VM_clicked" name="SignVerifyMessageDialog::on_clearButton_VM_clicked">
+<area shape="rect" id="node2" href="$class_q_validated_line_edit.html#aee2a648f6f4904f21e55871afbddefa9" title="QValidatedLineEdit\l::clear" alt="" coords="248,5,384,47"/>
+<area shape="rect" id="node3" href="$class_q_validated_line_edit.html#ad9984e2e463cc7fbf28fe334498a1df5" title="QValidatedLineEdit\l::setValid" alt="" coords="432,5,568,47"/>
+</map>

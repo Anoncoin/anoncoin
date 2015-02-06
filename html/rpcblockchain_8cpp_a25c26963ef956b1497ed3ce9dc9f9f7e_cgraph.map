@@ -1,0 +1,8 @@
+<map id="gettxoutsetinfo" name="gettxoutsetinfo">
+<area shape="rect" id="node2" href="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec" title="HelpExampleCli" alt="" coords="203,5,321,32"/>
+<area shape="rect" id="node3" href="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef" title="HelpExampleRpc" alt="" coords="199,56,325,83"/>
+<area shape="rect" id="node4" href="$class_c_coins_view_backed.html#a6c9ad8a91f65a2e610e80e40ad6df16d" title="CCoinsViewBacked::GetStats" alt="" coords="163,107,361,133"/>
+<area shape="rect" id="node6" href="$classbase__uint.html#ac9929c28600796a9acf75881bb750576" title="base_uint::GetHex" alt="" coords="196,157,328,184"/>
+<area shape="rect" id="node7" href="$rpcserver_8cpp.html#a577ce17add6d7e837a6e0653f8c048a1" title="ValueFromAmount" alt="" coords="195,208,329,235"/>
+<area shape="rect" id="node5" href="$class_c_coins_view.html#a30a9a8840bf4867c13061d57c29fbd64" title="CCoinsView::GetStats" alt="" coords="409,107,563,133"/>
+</map>

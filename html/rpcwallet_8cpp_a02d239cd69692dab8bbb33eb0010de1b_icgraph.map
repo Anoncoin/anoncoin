@@ -1,0 +1,6 @@
+<map id="GetAccountBalance" name="GetAccountBalance">
+<area shape="rect" id="node2" href="$rpcwallet_8cpp.html#af46abb4dba0774b0027591d6e3b30b1e" title="GetAccountBalance" alt="" coords="193,5,333,32"/>
+<area shape="rect" id="node3" href="$rpcwallet_8cpp.html#a1fdcef480c78c033eb587bd442ec305f" title="getbalance" alt="" coords="220,56,307,83"/>
+<area shape="rect" id="node4" href="$rpcwallet_8cpp.html#a845eaefd9ec7752b1145c183205524d0" title="sendfrom" alt="" coords="225,107,302,133"/>
+<area shape="rect" id="node5" href="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d" title="sendmany" alt="" coords="221,157,305,184"/>
+</map>

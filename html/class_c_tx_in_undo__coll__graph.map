@@ -1,0 +1,4 @@
+<map id="CTxInUndo" name="CTxInUndo">
+<area shape="rect" id="node2" href="$class_c_tx_out.html" title="An output of a transaction. " alt="" coords="46,185,114,212"/>
+<area shape="rect" id="node3" href="$class_c_script.html" title="Serialized script, used inside transaction inputs and outputs. " alt="" coords="47,96,113,123"/>
+</map>

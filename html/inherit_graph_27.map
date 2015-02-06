@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_c_block_index.html" title="The block chain is a tree shaped structure starting with the genesis block at the root..." alt="" coords="5,5,103,32"/>
+<area shape="rect" id="node2" href="$class_c_disk_block_index.html" title="Used to marshal pointers into hashes for db storage. " alt="" coords="151,5,273,32"/>
+</map>

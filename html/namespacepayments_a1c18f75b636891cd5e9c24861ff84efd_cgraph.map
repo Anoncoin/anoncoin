@@ -1,0 +1,10 @@
+<map id="payments::protobuf_AddDesc_paymentrequest_2eproto" name="payments::protobuf_AddDesc_paymentrequest_2eproto">
+<area shape="rect" id="node2" href="$classpayments_1_1_output.html#a9b3c239485e2a7dd5a2e323ce5a94a4e" title="payments::Output::InitAs\lDefaultInstance" alt="" coords="263,5,431,47"/>
+<area shape="rect" id="node3" href="$classpayments_1_1_payment_details.html#a1f3d624d765f0c18c450559ce2dd492b" title="payments::PaymentDetails\l::InitAsDefaultInstance" alt="" coords="257,71,437,112"/>
+<area shape="rect" id="node4" href="$classpayments_1_1_payment_request.html#aff77993f0ca6fd22f0a1a31002f1cdf6" title="payments::PaymentRequest\l::InitAsDefaultInstance" alt="" coords="252,136,441,177"/>
+<area shape="rect" id="node5" href="$classpayments_1_1_x509_certificates.html#a2e6c093cd355454f2ead40f193ea242f" title="payments::X509Certificates\l::InitAsDefaultInstance" alt="" coords="254,201,439,243"/>
+<area shape="rect" id="node6" href="$classpayments_1_1_payment.html#a9687f7af685e683a3ff32edf34668d5d" title="payments::Payment::\lInitAsDefaultInstance" alt="" coords="273,267,421,308"/>
+<area shape="rect" id="node7" href="$classpayments_1_1_payment_a_c_k.html#a750fc4348b5641e93e7ca4cfb57d3dcd" title="payments::PaymentACK\l::InitAsDefaultInstance" alt="" coords="263,332,430,373"/>
+<area shape="rect" id="node9" href="$namespacepayments.html#a3f66fe8b6edddc333e2680af627c8891" title="payments::protobuf\l_ShutdownFile_paymentrequest\l_2eproto" alt="" coords="240,398,453,454"/>
+<area shape="rect" id="node8" href="$classpayments_1_1_payment.html#ae27f24c010f09a0f426a71360632e785" title="payments::Payment::\ldefault_instance" alt="" coords="501,332,648,373"/>
+</map>

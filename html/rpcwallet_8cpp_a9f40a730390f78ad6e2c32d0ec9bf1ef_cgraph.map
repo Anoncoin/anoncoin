@@ -1,0 +1,17 @@
+<map id="GetAccountAddress" name="GetAccountAddress">
+<area shape="rect" id="node2" href="$class_c_wallet_d_b.html#afa8d9d374072629b360adb49b9bdd584" title="CWalletDB::ReadAccount" alt="" coords="195,5,370,32"/>
+<area shape="rect" id="node4" href="$class_c_pub_key.html#aad6f369d7972f2244466ca6db900c2a4" title="CPubKey::IsValid" alt="" coords="220,56,345,83"/>
+<area shape="rect" id="node7" href="$class_c_script.html#ad1b5a9077241aa06116040c4f1b7c31e" title="CScript::SetDestination" alt="" coords="644,227,804,253"/>
+<area shape="rect" id="node8" href="$class_c_pub_key.html#a9c1908fef34fd9e1c4b5e0ffd5d3834e" title="CPubKey::GetID" alt="" coords="223,107,343,133"/>
+<area shape="rect" id="node10" href="$class_c_wallet.html#a18549ec5c472c003afc4794daeb9adfd" title="CWallet::GetKeyFromPool" alt="" coords="193,208,372,235"/>
+<area shape="rect" id="node11" href="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039" title="JSONRPCError" alt="" coords="225,259,341,285"/>
+<area shape="rect" id="node12" href="$class_c_wallet.html#a53e5528d7005608594e73f500bc5bb8f" title="CWallet::SetAddressBook" alt="" coords="195,309,371,336"/>
+<area shape="rect" id="node16" href="$class_c_wallet_d_b.html#afef640a4990f74fd5af7178c99415cf3" title="CWalletDB::WriteAccount" alt="" coords="196,360,369,387"/>
+<area shape="rect" id="node3" href="$class_c_account.html#ac63a4127fd899a21a5916a86588e809a" title="CAccount::SetNull" alt="" coords="443,5,573,32"/>
+<area shape="rect" id="node5" href="$class_c_pub_key.html#a9d7129b65b6dee792b4f3923cd64ed59" title="CPubKey::size" alt="" coords="453,56,563,83"/>
+<area shape="rect" id="node6" href="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb" title="CPubKey::GetLen" alt="" coords="659,56,789,83"/>
+<area shape="rect" id="node9" href="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b" title="Hash160" alt="" coords="470,107,546,133"/>
+<area shape="rect" id="node13" href="$script_8cpp.html#adc59cf67d903c1ba1ef225561b85bfce" title="IsMine" alt="" coords="477,296,539,323"/>
+<area shape="rect" id="node14" href="$class_c_wallet_d_b.html#a8d4e8d73b977dc62c137bd3543c278bf" title="CWalletDB::WritePurpose" alt="" coords="420,347,596,373"/>
+<area shape="rect" id="node15" href="$class_c_wallet_d_b.html#ad1b3bce77e9dd6ddd8c668a469c38f0a" title="CWalletDB::WriteName" alt="" coords="427,221,589,248"/>
+</map>

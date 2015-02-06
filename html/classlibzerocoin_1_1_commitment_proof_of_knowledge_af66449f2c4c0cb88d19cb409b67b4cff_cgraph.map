@@ -1,0 +1,7 @@
+<map id="libzerocoin::CommitmentProofOfKnowledge::CommitmentProofOfKnowledge" name="libzerocoin::CommitmentProofOfKnowledge::CommitmentProofOfKnowledge">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_commitment.html#ab8b02750cb98a14da64f4d8bbbe47df1" title="libzerocoin::Commitment\l::getContents" alt="" coords="377,5,547,47"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a928e409111b60d5fe222ea1559a9cb73" title="libzerocoin::CommitmentProof\lOfKnowledge::calculateChallenge" alt="" coords="351,71,573,112"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_commitment.html#a8579660978e970e236554c5bf33005fc" title="libzerocoin::Commitment\l::getCommitmentValue" alt="" coords="377,136,547,177"/>
+<area shape="rect" id="node6" href="$classlibzerocoin_1_1_commitment.html#a976c7f3a0d40f80fb1bba33e837f8e7d" title="libzerocoin::Commitment\l::getRandomness" alt="" coords="377,201,547,243"/>
+<area shape="rect" id="node4" href="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a" title="CHashWriter::GetHash" alt="" coords="621,78,780,105"/>
+</map>

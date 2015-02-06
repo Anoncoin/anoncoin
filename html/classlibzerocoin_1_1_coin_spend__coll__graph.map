@@ -1,0 +1,8 @@
+<map id="libzerocoin::CoinSpend" name="libzerocoin::CoinSpend">
+<area shape="rect" id="node2" href="$classlibzerocoin_1_1_coin_denomination.html" title="libzerocoin::CoinDenomination" alt="" coords="304,5,507,32"/>
+<area shape="rect" id="node3" href="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html" title="Proof that two commitments open to the same value. " alt="" coords="305,57,505,98"/>
+<area shape="rect" id="node4" href="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html" title="A prove that a value insde the commitment commitmentToCoin is in an accumulator a. " alt="" coords="322,122,489,163"/>
+<area shape="rect" id="node5" href="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html" title="A Signature of knowledge on the hash of metadata attesting that the signer knows the values necessary..." alt="" coords="318,187,493,229"/>
+<area shape="rect" id="node6" href="$classuint256.html" title="256&#45;bit unsigned integer " alt="" coords="157,195,223,221"/>
+<area shape="rect" id="node7" href="$classbase__uint.html" title="Base class without constructors for uint256 and uint160. " alt="" coords="5,195,108,221"/>
+</map>

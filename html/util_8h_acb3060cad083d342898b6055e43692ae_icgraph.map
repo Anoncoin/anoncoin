@@ -1,0 +1,11 @@
+<map id="SoftSetBoolArg" name="SoftSetBoolArg">
+<area shape="rect" id="node2" href="$anoncoind_8cpp.html#ac59316b767e6984e1285f0531275286b" title="AppInit" alt="" coords="784,5,848,32"/>
+<area shape="rect" id="node4" href="$i2pwrapper_8h.html#abe20e174a9aa7c6ff216ea880df16333" title="InitializeI2pSettings" alt="" coords="404,43,541,69"/>
+<area shape="rect" id="node5" href="$init_8h.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3" title="Initialize anoncoin. " alt="" coords="617,81,688,108"/>
+<area shape="rect" id="node7" href="$class_options_model.html#a0e02c341067bff7be262fede017fbea0" title="OptionsModel::Init" alt="" coords="183,144,312,171"/>
+<area shape="rect" id="node9" href="$class_c_wallet_d_b.html#a14f26e53502d1a60dd2b034f830acf03" title="CWalletDB::LoadWallet" alt="" coords="167,195,328,221"/>
+<area shape="rect" id="node3" href="$anoncoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="944,5,995,32"/>
+<area shape="rect" id="node6" href="$class_anoncoin_coin.html#a9510881824d283404ac43414dbb74586" title="AnoncoinCoin::initialize" alt="" coords="736,81,896,108"/>
+<area shape="rect" id="node8" href="$class_options_model.html#a17c6b3de70c415b0fdf5c27f5f871054" title="OptionsModel::OptionsModel" alt="" coords="376,144,569,171"/>
+<area shape="rect" id="node10" href="$class_c_wallet.html#a5d7b244b8ed0cbe24233ee0b6ca3cae0" title="CWallet::LoadWallet" alt="" coords="401,195,544,221"/>
+</map>

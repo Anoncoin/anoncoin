@@ -1,0 +1,3 @@
+<map id="UnitDisplayStatusBarControl::onMenuSelection" name="UnitDisplayStatusBarControl::onMenuSelection">
+<area shape="rect" id="node2" href="$class_options_model.html#a42efacc748130848acc20247a7ed4617" title="Updates current unit in memory, settings and emits displayUnitChanged(newUnit) signal. " alt="" coords="244,13,441,39"/>
+</map>

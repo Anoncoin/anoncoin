@@ -1,0 +1,12 @@
+<map id="ClientModel::getNumConnections" name="ClientModel::getNumConnections">
+<area shape="rect" id="node2" href="$class_anoncoin_g_u_i.html#ab6dbbc9dae6aee55656d615c1aff5399" title="Set the client model. " alt="" coords="791,46,988,73"/>
+<area shape="rect" id="node8" href="$class_client_model.html#acd447f61bfd57267a31a0aa88c176ee6" title="Return true if core is importing blocks. " alt="" coords="290,46,483,73"/>
+<area shape="rect" id="node10" href="$class_r_p_c_console.html#a355349a33664a07628e9ca22a60f5fa7" title="RPCConsole::setClientModel" alt="" coords="548,97,743,123"/>
+<area shape="rect" id="node11" href="$class_r_p_c_console.html#aa4546cb7812dd35704de8bf09a6ceb60" title="Set number of connections shown in the UI. " alt="" coords="273,147,500,174"/>
+<area shape="rect" id="node3" href="$class_anoncoin_application.html#a931ed67447cc07f1e0f32327b122af01" title="Request core shutdown. " alt="" coords="1036,5,1179,47"/>
+<area shape="rect" id="node5" href="$class_anoncoin_application.html#a565d432edd9d4fc30ce60bfd8d5699e3" title="AnoncoinApplication\l::initializeResult" alt="" coords="1036,71,1179,112"/>
+<area shape="rect" id="node4" href="$anoncoin_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="1273,13,1323,39"/>
+<area shape="rect" id="node6" href="$class_anoncoin_application.html#a757849a7d52cb0559592ba4194f4872c" title="AnoncoinApplication\l::startThread" alt="" coords="1227,71,1369,112"/>
+<area shape="rect" id="node7" href="$class_anoncoin_application.html#a4e345b36dac09420eac7edc10fa4ffcf" title="AnoncoinApplication\l::AnoncoinApplication" alt="" coords="1417,71,1568,112"/>
+<area shape="rect" id="node9" href="$class_anoncoin_g_u_i.html#a65993507b442bd334614ea6eb46dec91" title="Set number of blocks shown in the UI. " alt="" coords="549,46,742,73"/>
+</map>
