@@ -17,14 +17,13 @@ About the Coin
 Building Anoncoin from source
 -----------------------------
 
-If all the required dependencies have already been built, compiling Anoncoin from source could be as simple as executing the following commands in the Anoncoin root directory
+If all the required dependencies have already been built, compiling Anoncoin from source could be as simple as executing the following commands in the Anoncoin root directory:
 
     ./autogen.sh
     ./configure
     make
-    make deploy  (OSX only)
     
-Detailed platform-specific instructions can be found in 
+Detailed platform-specific instructions can be found in these files:
 
 - [doc/README.md](doc/README.md)
 - [doc/build-osx.md](doc/build-osx.md)
@@ -34,9 +33,7 @@ Detailed platform-specific instructions can be found in
 Development process
 -------------------
 
-Developers work in their own trees, then submit pull requests when
-they think their feature or bug fix is ready. The master branch is regularly built and tested, but is not guaranteed to be completely stable. Tags are regularly created to indicate new official, stable release versions of Anoncoin. Feature branches are created when there are major new features being
-worked on by several people. The develop branch should be used with extreme caution.
+Developers work in their own trees, then submit pull requests when they think their feature or bug fix is ready. The master branch is built and tested regularly, but is not guaranteed to be completely stable. Tags are created to indicate new official, stable releases of Anoncoin. Feature branches are created when major new features are being developed, and the `develop` branch is used for all other routine development. Any branch besides `master` should be used with extreme caution. Detailed information concerning the Anoncoin code base can be found in the [developer documentation](http://anoncoin.github.io/anoncoin).
 
 For more information
 --------------------
