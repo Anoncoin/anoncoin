@@ -1,7 +1,8 @@
 [main]
 host = https://www.transifex.com
 
-[anoncoin.tx]
+[anoncoin.qt-translation-v9]
 file_filter = src/qt/locale/anoncoin_<lang>.ts
 source_file = src/qt/locale/anoncoin_en.ts
 source_lang = en
+type = QT

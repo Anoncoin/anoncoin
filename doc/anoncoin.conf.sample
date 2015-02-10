@@ -1,24 +1,36 @@
 #anoncoin.conf.sample
+# Updated 2/6/2015 for Anoncoin v9+ wallets
 #
 #rpcallowip=192.168.xx.xx
 rpcport=9376
 rpcuser=youruser
 rpcpassword=yoursecret
 
-# If you've an I2P Router warmed up, switch to a more secure peer network, by setting the following:
-#onlynet=i2p
+# As of 2/7/2015 during v0.9.4.3 build tests, this value changed to the default setting...if:
+# there has been no -onlynet option supplied on the commandline AND there is no anoncoin.conf
+# file read from disk (Default new install)...
+# In order to use Anoncoin with I2P, you will need an I2P Router warmed up.
+onlynet=i2p
 
-# Sometimes we only have old clearnet as an option...
+# Sometimes we only have old clearnet as an option, some are still using tor, that option has
+# now changed to -onion.  Anyone testing with Tor, please let the development team know.
 #onlynet=ipv4
+#onlynet=ipv6
+#onlynet=onion
 
-# Enable and disable Server functions, if running anoncoind the daemon option is most often best to...
-# server=0
+# Enable and disable RPC Server function, works for both anoncoind and anoncoin-qt, in most
+# cases you want this on, or the program will not respond to your RPC commands.
 server=1
+
+# In most cases, when running anoncoind, the daemon option is best. 
+# The wallet then runs on your system as a service...
 daemon=1
 
 # As of 2/2/15, we working on the code involved in this section, leave it disabled.
 gen=0
 
+#Useful for multisig, Maintain a full transaction index (default: 0)
+txindex=1
 
 # Default binds often connect to your loopback adapter 127.0.0.1, and never allow any inbound connections,
 # perhaps despite your best efforts at configuring a local network to allow them.  If your behind a router
