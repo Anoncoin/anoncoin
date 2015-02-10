@@ -3,74 +3,31 @@ noinst_LIBRARIES += qt/libanoncoinqt.a
 
 # anoncoin qt core #
 QT_TS = \
-  qt/locale/anoncoin_ach.ts \
-  qt/locale/anoncoin_af_ZA.ts \
   qt/locale/anoncoin_ar.ts \
-  qt/locale/anoncoin_be_BY.ts \
-  qt/locale/anoncoin_bg.ts \
-  qt/locale/anoncoin_bs.ts \
-  qt/locale/anoncoin_ca_ES.ts \
   qt/locale/anoncoin_ca.ts \
-  qt/locale/anoncoin_ca@valencia.ts \
-  qt/locale/anoncoin_cmn.ts \
-  qt/locale/anoncoin_cs.ts \
-  qt/locale/anoncoin_cy.ts \
   qt/locale/anoncoin_da.ts \
   qt/locale/anoncoin_de.ts \
   qt/locale/anoncoin_el_GR.ts \
   qt/locale/anoncoin_en.ts \
-  qt/locale/anoncoin_eo.ts \
-  qt/locale/anoncoin_es_CL.ts \
-  qt/locale/anoncoin_es_DO.ts \
-  qt/locale/anoncoin_es_MX.ts \
   qt/locale/anoncoin_es.ts \
-  qt/locale/anoncoin_es_UY.ts \
-  qt/locale/anoncoin_et.ts \
-  qt/locale/anoncoin_eu_ES.ts \
-  qt/locale/anoncoin_fa_IR.ts \
-  qt/locale/anoncoin_fa.ts \
   qt/locale/anoncoin_fi.ts \
-  qt/locale/anoncoin_fr_CA.ts \
-  qt/locale/anoncoin_fr.ts \
-  qt/locale/anoncoin_gl.ts \
-  qt/locale/anoncoin_gu_IN.ts \
+  qt/locale/anoncoin_fr_FR.ts \
   qt/locale/anoncoin_he.ts \
   qt/locale/anoncoin_hi_IN.ts \
-  qt/locale/anoncoin_hr.ts \
-  qt/locale/anoncoin_hu.ts \
   qt/locale/anoncoin_id_ID.ts \
   qt/locale/anoncoin_it.ts \
-  qt/locale/anoncoin_ja.ts \
+  qt/locale/anoncoin_ja_JP.ts \
   qt/locale/anoncoin_ka.ts \
-  qt/locale/anoncoin_kk_KZ.ts \
   qt/locale/anoncoin_ko_KR.ts \
-  qt/locale/anoncoin_ky.ts \
-  qt/locale/anoncoin_la.ts \
-  qt/locale/anoncoin_lt.ts \
-  qt/locale/anoncoin_lv_LV.ts \
-  qt/locale/anoncoin_mn.ts \
-  qt/locale/anoncoin_ms_MY.ts \
-  qt/locale/anoncoin_nb.ts \
-  qt/locale/anoncoin_nl.ts \
-  qt/locale/anoncoin_pam.ts \
+  qt/locale/anoncoin_nb_NO.ts \
+  qt/locale/anoncoin_no.ts \
   qt/locale/anoncoin_pl.ts \
   qt/locale/anoncoin_pt_BR.ts \
   qt/locale/anoncoin_pt_PT.ts \
   qt/locale/anoncoin_ro_RO.ts \
   qt/locale/anoncoin_ru.ts \
-  qt/locale/anoncoin_sah.ts \
   qt/locale/anoncoin_sk.ts \
-  qt/locale/anoncoin_sl_SI.ts \
-  qt/locale/anoncoin_sq.ts \
-  qt/locale/anoncoin_sr.ts \
-  qt/locale/anoncoin_sv.ts \
-  qt/locale/anoncoin_th_TH.ts \
-  qt/locale/anoncoin_tr.ts \
   qt/locale/anoncoin_uk.ts \
-  qt/locale/anoncoin_ur_PK.ts \
-  qt/locale/anoncoin_uz@Cyrl.ts \
-  qt/locale/anoncoin_vi.ts \
-  qt/locale/anoncoin_vi_VN.ts \
   qt/locale/anoncoin_zh_CN.ts \
   qt/locale/anoncoin_zh_HK.ts \
   qt/locale/anoncoin_zh_TW.ts
@@ -380,7 +337,7 @@ qt/anoncoinstrings.cpp: $(libanoncoin_server_a_SOURCES) $(libanoncoin_wallet_a_S
 	@test -n $(XGETTEXT) || echo "xgettext is required for updating translations"
 	$(AM_V_GEN) cd $(srcdir); XGETTEXT=$(XGETTEXT) ../share/qt/extract_strings_qt.py $^
 
-translate: qt/anoncoinstrings.cpp $(QT_FORMS_UI) $(QT_FORMS_UI) $(ANONCOIN_QT_CPP) $(ANONCOIN_QT_H) $(ANONCOIN_MM)
+translate: qt/anoncoinstrings.cpp $(QT_FORMS_UI) $(ANONCOIN_QT_CPP) $(ANONCOIN_QT_H) $(ANONCOIN_MM)
 	@test -n $(LUPDATE) || echo "lupdate is required for updating translations"
 	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts qt/locale/anoncoin_en.ts
 

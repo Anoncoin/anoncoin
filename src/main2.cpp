@@ -257,3 +257,120 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
     return true;
 }
 
+#if defined( HARD_FORK )
+//
+// minimum amount of work that could possibly be required nTime after
+// minimum work required was nBase
+//
+unsigned int ComputeMinWork(unsigned int nBase, int64 nTime)
+{
+    // Testnet has min-difficulty blocks
+    // after nTargetSpacing*2 time between blocks:
+    if (fTestNet && nTime > nTargetSpacing*2)
+        return bnProofOfWorkLimit.GetCompact();
+
+    CBigNum bnResult;
+    bnResult.SetCompact(nBase);
+    while (nTime > 0 && bnResult < bnProofOfWorkLimit)
+    {
+		// Maximum adjustment
+            bnResult = (bnResult * 100) / 50;
+        // ... in best-case exactly 4-times-normal target time
+        nTime -= nTargetTimespan*4;
+    }
+    if (bnResult > bnProofOfWorkLimit)
+        bnResult = bnProofOfWorkLimit;
+    return bnResult.GetCompact();
+}
+
+unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlock *pblock)
+{
+    unsigned int nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
+
+	if (pindexLast->nHeight+1 == 150)
+		return bnStartingDifficulty.GetCompact();
+
+	static const int64	BlocksTargetSpacing	= 1 * 60; // 1 minute
+	unsigned int	TimeDaySeconds	= 60 * 60 * 24;
+	int64	PastSecondsMin	= TimeDaySeconds * 0.1;
+	int64	PastSecondsMax	= TimeDaySeconds * 2.8;
+	uint64	PastBlocksMin	= PastSecondsMin / BlocksTargetSpacing;
+	uint64	PastBlocksMax	= PastSecondsMax / BlocksTargetSpacing;
+
+	uint64 TargetBlocksSpacingSeconds = BlocksTargetSpacing;
+
+
+	const CBlockIndex *BlockLastSolved	= pindexLast;
+const CBlockIndex *BlockReading	= pindexLast;
+uint64	PastBlocksMass	= 0;
+int64	PastRateActualSeconds	= 0;
+int64	PastRateTargetSeconds	= 0;
+double	PastRateAdjustmentRatio	= double(1);
+CBigNum	PastDifficultyAverage;
+CBigNum	PastDifficultyAveragePrev;
+double	EventHorizonDeviation;
+double	EventHorizonDeviationFast;
+double	EventHorizonDeviationSlow;
+
+    if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || (uint64)BlockLastSolved->nHeight < PastBlocksMin) { return bnProofOfWorkLimit.GetCompact(); }
+
+for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
+if (PastBlocksMax > 0 && i > PastBlocksMax) { break; }
+PastBlocksMass++;
+
+if (i == 1)	{ PastDifficultyAverage.SetCompact(BlockReading->nBits); }
+else	{ PastDifficultyAverage = ((CBigNum().SetCompact(BlockReading->nBits) - PastDifficultyAveragePrev) / i) + PastDifficultyAveragePrev; }
+PastDifficultyAveragePrev = PastDifficultyAverage;
+
+PastRateActualSeconds	= BlockLastSolved->GetBlockTime() - BlockReading->GetBlockTime();
+PastRateTargetSeconds	= TargetBlocksSpacingSeconds * PastBlocksMass;
+PastRateAdjustmentRatio	= double(1);
+if (PastRateActualSeconds < 0) { PastRateActualSeconds = 0; }
+if (PastRateActualSeconds != 0 && PastRateTargetSeconds != 0) {
+PastRateAdjustmentRatio	= double(PastRateTargetSeconds) / double(PastRateActualSeconds);
+}
+EventHorizonDeviation	= 1 + (0.7084 * pow((double(PastBlocksMass)/double(144)), -1.228));
+EventHorizonDeviationFast	= EventHorizonDeviation;
+EventHorizonDeviationSlow	= 1 / EventHorizonDeviation;
+
+if (PastBlocksMass >= PastBlocksMin) {
+if ((PastRateAdjustmentRatio <= EventHorizonDeviationSlow) || (PastRateAdjustmentRatio >= EventHorizonDeviationFast)) { assert(BlockReading); break; }
+}
+if (BlockReading->pprev == NULL) { assert(BlockReading); break; }
+BlockReading = BlockReading->pprev;
+}
+
+CBigNum bnNew(PastDifficultyAverage);
+if (PastRateActualSeconds != 0 && PastRateTargetSeconds != 0) {
+bnNew *= PastRateActualSeconds;
+bnNew /= PastRateTargetSeconds;
+}
+    if (bnNew > bnProofOfWorkLimit) { bnNew = bnProofOfWorkLimit; }
+
+    /// debug print
+    printf("Difficulty Retarget - Gravity Well\n");
+    printf("PastRateAdjustmentRatio = %g\n", PastRateAdjustmentRatio);
+    printf("Before: %08x %s\n", BlockLastSolved->nBits, CBigNum().SetCompact(BlockLastSolved->nBits).getuint256().ToString().c_str());
+    printf("After: %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+
+	return bnNew.GetCompact();
+}
+
+bool CheckProofOfWork(uint256 hash, unsigned int nBits)
+{
+    CBigNum bnTarget;
+    bnTarget.SetCompact(nBits);
+
+    // Check range
+    if (bnTarget <= 0 || bnTarget > bnProofOfWorkLimit)
+        return error("CheckProofOfWork() : nBits below minimum work");
+
+    // Check proof of work matches claimed amount
+    if (hash > bnTarget.getuint256())
+        return error("CheckProofOfWork() : hash doesn't match nBits");
+
+    return true;
+}
+
+#endif // defined( HARD_FORK )
+

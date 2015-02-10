@@ -139,6 +139,8 @@ Makefile
 src/leveldb/build_config.mk
 /doc/doxygen/
 libanoncoinconsensus.pc
+src/qt/paymentrequest.pb.cc
+src/qt/paymentrequest.pb.h
 
 # Add any other specific requirements, you may need, below this line...
 #

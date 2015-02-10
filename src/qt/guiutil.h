@@ -111,7 +111,7 @@ namespace GUIUtil
      */
 
     // Replace invalid default fonts with known good ones
-    void SubstituteFonts();
+    void SubstituteFonts(const QString& language);
 
     class ToolTipToRichTextFilter : public QObject
     {

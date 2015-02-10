@@ -67,6 +67,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 
     /* Display elements init */
     QDir translations(":translations");
+
     ui->lang->addItem(QString("(") + tr("default") + QString(")"), QVariant(""));
     foreach(const QString &langStr, translations.entryList())
     {

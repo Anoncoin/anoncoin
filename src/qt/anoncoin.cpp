@@ -86,17 +86,9 @@ static std::string Translate(const char* psz)
     return QCoreApplication::translate("anoncoin-core", psz).toStdString();
 }
 
-/** Set up translations */
-static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTranslator, QTranslator &translatorBase, QTranslator &translator)
+static QString GetLangTerritory()
 {
     QSettings settings;
-
-    // Remove old translators
-    QApplication::removeTranslator(&qtTranslatorBase);
-    QApplication::removeTranslator(&qtTranslator);
-    QApplication::removeTranslator(&translatorBase);
-    QApplication::removeTranslator(&translator);
-
     // Get desired locale (e.g. "de_DE")
     // 1) System default language
     QString lang_territory = QLocale::system().name();
@@ -106,6 +98,21 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
         lang_territory = lang_territory_qsettings;
     // 3) -lang command line argument
     lang_territory = QString::fromStdString(GetArg("-lang", lang_territory.toStdString()));
+    return lang_territory;
+}
+
+/** Set up translations */
+static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTranslator, QTranslator &translatorBase, QTranslator &translator)
+{
+    // Remove old translators
+    QApplication::removeTranslator(&qtTranslatorBase);
+    QApplication::removeTranslator(&qtTranslator);
+    QApplication::removeTranslator(&translatorBase);
+    QApplication::removeTranslator(&translator);
+
+    // Get desired locale (e.g. "de_DE")
+    // 1) System default language
+    QString lang_territory = GetLangTerritory();
 
     // Convert to "de" only by truncating "_DE"
     QString lang = lang_territory;
@@ -118,16 +125,14 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
     // Load e.g. qt_de.qm
     if (qtTranslatorBase.load("qt_" + lang, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         QApplication::installTranslator(&qtTranslatorBase);
-
     // Load e.g. qt_de_DE.qm
     if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         QApplication::installTranslator(&qtTranslator);
 
-    // Load e.g. anoncoin_de.qm (shortcut "de" needs to be defined in anoncoin.qrc)
+    // Load e.g. anoncoin_de.qm (shortcut "de" needs to be defined in anoncoin_locale.qrc)
     if (translatorBase.load(lang, ":/translations/"))
         QApplication::installTranslator(&translatorBase);
-
-    // Load e.g. anoncoin_de_DE.qm (shortcut "de_DE" needs to be defined in anoncoin.qrc)
+    // Load e.g. anoncoin_de_DE.qm (shortcut "de_DE" needs to be defined in anoncoin_locale.qrc)
     if (translator.load(lang_territory, ":/translations/"))
         QApplication::installTranslator(&translator);
 }
@@ -295,7 +300,6 @@ AnoncoinApplication::AnoncoinApplication(int &argc, char **argv):
     returnValue(0)
 {
     setQuitOnLastWindowClosed(false);
-    startThread();
 }
 
 AnoncoinApplication::~AnoncoinApplication()
@@ -346,6 +350,8 @@ void AnoncoinApplication::createSplashScreen(bool isaTestNet)
 
 void AnoncoinApplication::startThread()
 {
+    if(coreThread)
+        return;
     coreThread = new QThread(this);
     AnoncoinCoin *executor = new AnoncoinCoin();
     executor->moveToThread(coreThread);
@@ -366,12 +372,14 @@ void AnoncoinApplication::startThread()
 void AnoncoinApplication::requestInitialize()
 {
     LogPrintf("Requesting initialize\n");
+    startThread();
     emit requestedInitialize();
 }
 
 void AnoncoinApplication::requestShutdown()
 {
     LogPrintf("Requesting shutdown\n");
+    startThread();
     window->hide();
     window->setClientModel(0);
     pollShutdownTimer->stop();
@@ -403,8 +411,6 @@ void AnoncoinApplication::initializeResult(int retval)
         paymentServer->setOptionsModel(optionsModel);
 #endif
 
-        emit splashFinished(window);
-
         clientModel = new ClientModel(optionsModel);
         window->setClientModel(clientModel);
 
@@ -430,6 +436,8 @@ void AnoncoinApplication::initializeResult(int retval)
         {
             window->show();
         }
+        emit splashFinished(window);
+
 #ifdef ENABLE_WALLET
         // Now that initialization/startup is done, process any command-line
         // anoncoin: URIs or payment requests:
@@ -485,8 +493,7 @@ int main(int argc, char *argv[])
 #endif
 
     Q_INIT_RESOURCE(anoncoin);
-
-    GUIUtil::SubstituteFonts();
+    Q_INIT_RESOURCE(anoncoin_locale);
 
     AnoncoinApplication app(argc, argv);
 #if QT_VERSION > 0x050100
@@ -506,6 +513,7 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName(QAPP_ORG_NAME);
     QApplication::setOrganizationDomain(QAPP_ORG_DOMAIN);
     QApplication::setApplicationName(QAPP_APP_NAME_DEFAULT);
+    GUIUtil::SubstituteFonts(GetLangTerritory());
 
     /// 4. Initialization of translations, so that intro dialog is in user's language
     // Now that QSettings are accessible, initialize translations
@@ -542,6 +550,7 @@ int main(int argc, char *argv[])
         // Run wizard
         // runFirstRunWizard();
     }
+
     // Read config after it's potentional written by the wizard.
     try {
         ReadConfigFile(mapArgs, mapMultiArgs);
