@@ -1,4 +1,4 @@
-The following is a list of assets used in the bitcoin source and their proper attribution.
+The following is a list of assets used in the Anoncoin source and their proper attribution.
 
 [Wladimir van der Laan](https://github.com/laanwj)
 -----------------------
@@ -88,17 +88,3 @@ Everaldo (Everaldo Coelho)
 
 ### Assets Used
 	src/qt/res/icons/debugwindow.png
-
-Jonas Schnelli
------------------------
-
-### Info
-* Designer: Jonas Schnelli (based on the original bitcoin logo from Bitboy)
-* License: MIT
-
-### Assets Used
-	src/qt/res/icons/bitcoin.icns, src/qt/res/src/bitcoin.svg,
-	src/qt/res/src/bitcoin.ico, src/qt/res/src/bitcoin.png,
-	src/qt/res/src/bitcoin_testnet.png, docs/bitcoin_logo_doxygen.png,
-	src/qt/res/icons/toolbar.png, src/qt/res/icons/toolbar_testnet.png,
-	src/qt/res/images/splash.png, src/qt/res/images/splash_testnet.png

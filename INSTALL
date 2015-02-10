@@ -1,5 +1,25 @@
-Building Bitcoin
+Building Anoncoin from source
 
-See doc/build-*.md for instructions on building bitcoind,
-the intended-for-services, no-graphical-interface, reference
-implementation of Bitcoin.
+When all the required dependencies have already been built, compiling Anoncoin from source could be as simple as executing the following commands in the Anoncoin root directory
+
+./autogen.sh
+./configure
+make
+make install
+
+This will create the binaries src/anoncoind, src/anoncoin-cli, and src/qt/anoncoin-qt.
+
+To run the test suite, execute
+
+make check
+
+To build the OSX application Anoncoin.app and the Anoncoin.dmg disk image, execute
+
+make deploy
+    
+Detailed platform-specific build instructions can be found in the files doc/build-*.md
+
+If updating from 0.8.x to 0.9.x, it will be necessary to rebuild the block chain by executing anoncoind or anoncoin-qt with the reindex option
+
+src/qt/anoncoin-qt -reindex
+src/anoncoind -reindex

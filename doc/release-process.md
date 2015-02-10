@@ -1,5 +1,5 @@
 Release Process
-====================
+===============
 
 * update translations (ping wumpus, Diapolo or tcatm on IRC)
 * see https://github.com/bitcoin/bitcoin/blob/master/doc/translation_process.md#syncing-with-transifex

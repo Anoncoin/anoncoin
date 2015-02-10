@@ -1,129 +1,107 @@
-Mac OS X Build Instructions and Notes
-====================================
-This guide will show you how to build bitcoind(headless client) for OSX.
+Mac OS X Build Instructions
+===========================
+
+This guide describes how to build Anoncoin for OSX.
 
 Notes
 -----
 
-* Tested on OS X 10.6 through 10.9 on 64-bit Intel processors only.
-Older OSX releases or 32-bit processors are no longer supported.
+* This was tested using OS X 10.9 on a 64-bit Intel processor. Older OSX releases or 32-bit processors are no longer supported.
 
-* All of the commands should be executed in a Terminal application. The
-built-in one is located in `/Applications/Utilities`.
+* All of the commands should be executed in the terminal application. The built-in one is located in `/Applications/Utilities`.
 
-Preparation
------------
+* You need to install [XCode](https://developer.apple.com/xcode/) with all the options checked. Furthermore, you will need to install the XCode command line tools by executing the command <code>xcode-select --install</code> in the terminal.
+    
+* If you are building Anoncoin for your own use, the homebrew instructions below are probably the easiest and fastest. If you encounter any errors when installing anoncoin, the release build instructions are your best option.
 
-You need to install XCode with all the options checked so that the compiler
-and everything is available in /usr not just /Developer. XCode should be
-available on your OS X installation media, but if not, you can get the
-current version from https://developer.apple.com/xcode/. If you install
-Xcode 4.3 or later, you'll need to install its command line tools. This can
-be done in `Xcode > Preferences > Downloads > Components` and generally must
-be re-done or updated every time Xcode is updated.
+* The blockchain, the user <code>wallet.dat</code> file, and the <code>anoncoin.conf</code> configuration file are all located in the directory <code>~Library/Application\ Support/Anoncoin</code>.
 
-There's also an assumption that you already have `git` installed. If
-not, it's the path of least resistance to install [Github for Mac](https://mac.github.com/)
-(OS X 10.7+) or
-[Git for OS X](https://code.google.com/p/git-osx-installer/). It is also
-available via Homebrew.
-
-You will also need to install [Homebrew](http://brew.sh) in order to install library
-dependencies.
-
-The installation of the actual dependencies is covered in the Instructions
-sections below.
-
-Instructions: Homebrew
-----------------------
-
-#### Install dependencies using Homebrew
-
-        brew install autoconf automake libtool boost miniupnpc openssl pkg-config protobuf qt
-
-#### Installing berkeley-db4 using Homebrew
-
-The homebrew package for berkeley-db4 has been broken for some time.  It will install without Java though.
-
-Running this command takes you into brew's interactive mode, which allows you to configure, make, and install by hand:
-```
-$ brew install https://raw.github.com/mxcl/homebrew/master/Library/Formula/berkeley-db4.rb -–without-java 
-```
-
-These rest of these commands are run inside brew interactive mode:
-```
-/private/tmp/berkeley-db4-UGpd0O/db-4.8.30 $ cd ..
-/private/tmp/berkeley-db4-UGpd0O $ db-4.8.30/dist/configure --prefix=/usr/local/Cellar/berkeley-db4/4.8.30 --mandir=/usr/local/Cellar/berkeley-db4/4.8.30/share/man --enable-cxx
-/private/tmp/berkeley-db4-UGpd0O $ make
-/private/tmp/berkeley-db4-UGpd0O $ make install
-/private/tmp/berkeley-db4-UGpd0O $ exit
-```
-
-After exiting, you'll get a warning that the install is keg-only, which means it wasn't symlinked to `/usr/local`.  You don't need it to link it to build bitcoin, but if you want to, here's how:
-
-    $ brew --force link berkeley-db4
-
-
-### Building `bitcoind`
-
-1. Clone the github tree to get the source code and go into the directory.
-
-        git clone https://github.com/bitcoin/bitcoin.git
-        cd bitcoin
-
-2.  Build bitcoind:
-
-        ./autogen.sh
-        ./configure
-        make
-
-3.  It is also a good idea to build and run the unit tests:
-
-        make check
-
-4.  (Optional) You can also install bitcoind to your path:
-
-        make install
-
-Creating a release build
+Homebrew instructions
 ------------------------
-You can ignore this section if you are building `bitcoind` for your own use.
 
-bitcoind/bitcoin-cli binaries are not included in the Bitcoin-Qt.app bundle.
+If homebrew is not already installed, install it using the following command:
 
-If you are building `bitcoind` or `Bitcoin-Qt` for others, your build machine should be set up
-as follows for maximum compatibility:
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-All dependencies should be compiled with these flags:
+Start by installing the dependencies that are required for Anoncoin
 
- -mmacosx-version-min=10.6
- -arch x86_64
- -isysroot $(xcode-select --print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
+    brew install autoconf automake libtool boost miniupnpc openssl pkg-config protobuf qt
 
-Once dependencies are compiled, see release-process.md for how the Bitcoin-Qt.app
-bundle is packaged and signed to create the .dmg disk image that is distributed.
+The package berkeley-db4 is required, but the homebrew package has been broken for some time. Running the following command takes you into brew's interactive mode, which allows you to configure, make, and install berkeley-db4 by hand:
+
+    brew install https://raw.github.com/mxcl/homebrew/master/Library/Formula/berkeley-db4.rb -–without-java 
+
+The following commands are run in brew's interactive mode (where all text including, and to the left of, $ is ignored):
+
+    /private/tmp/berkeley-db4-UGpd0O/db-4.8.30 $ cd ..
+    /private/tmp/berkeley-db4-UGpd0O $ db-4.8.30/dist/configure --prefix=/usr/local/Cellar/berkeley-db4/4.8.30 --mandir=/usr/local/Cellar/berkeley-db4/4.8.30/share/man --enable-cxx
+    /private/tmp/berkeley-db4-UGpd0O $ make
+    /private/tmp/berkeley-db4-UGpd0O $ make install
+    /private/tmp/berkeley-db4-UGpd0O $ exit
+
+After exiting, you will get a warning that the install is keg-only, which means it wasn't symlinked to <code>/usr/local</code>.  You don't need it to link it to build anoncoin, but if you want to, execute this command
+
+    brew --force link berkeley-db4
+
+Now that the dependencies are build, we can start building Anoncoin usins the github source code. Execute the following commands in the terminal
+
+    git clone https://github.com/Anoncoin/anoncoin.git
+    cd anoncoin
+	./autogen.sh
+    ./configure
+    make
+    make install
+    make deploy
+
+This will create the binaries <code>src/anoncoind</code>, <code>src/anoncoin-cli</code>, <code>src/qt/anoncoin-qt</code>, the application <code>Anoncoin.app</code>, and the <code>Anoncoin.dmg</code> diskimage.
+
+Lastly, it is a good idea to check that everything is working correctly by running the test suite
+
+    make check
+
+Release build instructions
+--------------------------
+
+First, download the Anoncoin code, and create the make files using the commands
+
+    git clone https://github.com/Anoncoin/anoncoin.git
+    cd anoncoin
+    ./autogen.sh
+
+Next, change to the directory <code>depends</code> to start the process of building the required dependencies
+
+    cd depends
+    ./config.guess
+
+This last command should output a triplet that looks something like this: <code>x86_64-apple-darwin13.4.0</code>. Enter (changing the triplet if necessary)
+
+    make HOST=x86_64-apple-darwin13.4.0
+
+The dependencies should download and build. If there are no errors, continue to building the anoncoin binaries:
+
+    cd ..
+    ./configure --prefix=$PWD/depends/x86_64-apple-darwin13.4.0
+    make HOST=x86_64-apple-darwin13.4.0
+    make install
+    make deploy
+
+This will creat the binaries <code>src/anoncoind</code>, <code>src/anoncoin-cli</code>, <code>src/qt/anoncoin-qt</code>, the application <code>Anoncoin.app</code> and the <code>Anoncoin.dmg</code> diskimage.
+
+Lastly, it is a good idea to check that everything is working correctly by running the test suite
+
+    make check
 
 Running
 -------
 
-It's now available at `./bitcoind`, provided that you are still in the `src`
-directory. We have to first create the RPC configuration file, though.
+If on first execution you are updating from 0.8.x to 0.9.x, it will be necessary to rebuild the block chain by executing <code>anoncoind</code> or <code>anoncoin-qt</code> with the <code>reindex</code> option
 
-Run `./bitcoind` to get the filename where it should be put, or just try these
-commands:
+    src/qt/anoncoin-qt -reindex
+    src/anoncoind -reindex
 
-    echo -e "rpcuser=bitcoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
-    chmod 600 "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
+The following commands should get you started:
 
-The next time you run it, it will start downloading the blockchain, but it won't
-output anything while it's doing this. This process may take several hours;
-you can monitor its process by looking at the debug.log file, like this:
-
-    tail -f $HOME/Library/Application\ Support/Bitcoin/debug.log
-
-Other commands:
--------
-
-    ./bitcoind -daemon # to start the bitcoin daemon.
-    ./bitcoin-cli --help  # for a list of command-line options.
-    ./bitcoin-cli help    # When the daemon is running, to get a list of RPC commands
+* <code>anoncoin-qt</code> to start to Anoncoin wallet graphical interface.
+* <code>anoncoind -daemon</code> to start the Anoncoin daemon.
+* <code>anoncoin-cli --help</code> for a list of command-line options.
+* <code>bitcoin-cli help</code>  to get a list of RPC commands when the daemon is running.

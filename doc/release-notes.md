@@ -1,13 +1,12 @@
-Bitcoin Core version 0.9.3 is now available from:
+Anoncoin Core version 0.9.4 is now available from:
 
-  https://bitcoin.org/bin/0.9.3/
+  https://github.com/Anoncoin/anoncoin.git
 
-This is a new minor version release, bringing only bug fixes and updated
-translations. Upgrading to this release is recommended.
+This is a new major version release, and upgrading to this release is strongly recommended.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/bitcoin/bitcoin/issues
+  https://github.com/Anoncoin/anoncoin/issues
 
 Upgrading and downgrading
 ==========================
@@ -17,12 +16,11 @@ How to Upgrade
 
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
-installer (on Windows) or just copy over /Applications/Bitcoin-Qt (on Mac) or
-bitcoind/bitcoin-qt (on Linux).
+installer (on Windows) or just copy over /Applications/Anoncoin (on Mac) or
+anoncoind/anoncoin-qt (on Linux).
 
-If you are upgrading from version 0.7.2 or earlier, the first time you run
-0.9.3 your blockchain files will be re-indexed, which will take anywhere from 
-30 minutes to several hours, depending on the speed of your machine.
+If you are upgrading from version 0.8.5.6 or earlier, the first time you run
+0.9.4, you will need to re-indexed your block chain.
 
 Downgrading warnings
 --------------------
@@ -37,11 +35,10 @@ Running the old release with the -reindex option will rebuild the chainstate
 data structures and correct the problem.
 
 Also, the first time you run a 0.8.x release on a 0.9 wallet it will rescan
-the blockchain for missing spent coins, which will take a long time (tens
-of minutes on a typical machine).
+the blockchain for missing spent coins.
 
-0.9.3 Release notes
-=======================
+0.9.4 Release notes
+===================
 
 RPC:
 - Avoid a segfault on getblock if it can't read a block from disk
@@ -73,29 +70,17 @@ Miscellaneous:
 - Upgrade OpenSSL to 1.0.1i (see https://www.openssl.org/news/secadv_20140806.txt - just to be sure, no critical issues for Bitcoin Core)
 - Upgrade miniupnpc to 1.9.20140701
 - Fix boost detection in build system on some platforms
+- Updated Splash Screen
 
 Credits
 --------
 
 Thanks to everyone who contributed to this release:
 
-- Andrew Poelstra
-- Cory Fields
-- Gavin Andresen
-- Jeff Garzik
-- Johnathan Corgan
-- Julian Haight
-- Michael Ford
-- Pavel Vasin
-- Peter Todd
-- phantomcircuit
-- Pieter Wuille
-- Rose Toomey
-- Ruben Dario Ponticelli
-- shshshsh
-- Trevin Hofmann
-- Warren Togami
-- Wladimir J. van der Laan
-- Zak Wilcox
-
-As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/bitcoin/).
+- GroundRod
+- Meeh
+- K1773R
+- Lunokhod
+- Cryptoslave
+- Gnosis
+- Orignal
