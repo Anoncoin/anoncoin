@@ -1,5 +1,7 @@
 Gitian building
-================
+===============
+
+***[Please note that this is not yet fully implemented in Anoncoin]***
 
 *Setup instructions for a gitian build of Anoncoin using a Debian VM or physical system.*
 

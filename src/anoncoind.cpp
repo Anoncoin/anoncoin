@@ -21,9 +21,15 @@
  *
  * \section intro_sec Introduction
  *
- * This is the developer documentation of the reference client for an experimental new digital currency called Anoncoin (https://anoncoin.net/),
- * which enables instant payments to anyone, anywhere in the world. Anoncoin uses peer-to-peer technology to operate
- * with no central authority: managing transactions and issuing money are carried out collectively by the network.
+ * Anoncoin (ANC) is a peer-to-peer digital cryptocurrency that focuses on privacy and anonymity 
+ * for its users. Created in June 2013, it is the first and only currency to have built-in support 
+ * for both the I2P darknet and Tor network that conceal the IP address of the user. Anoncoin 
+ * will soon be implementing Zerocoin, which will allow users to make payments anonymously, 
+ * without revealing their anoncoin public addresses.
+ *
+ * This site contains the developer documentation of the Anoncoin code. Further information
+ * can be found on the Anoncoin web site (https://anoncoin.net/) and wiki 
+ * (https://wiki.anoncoin.net/).
  *
  * The software is a community-driven open source project, released under the MIT license.
  *

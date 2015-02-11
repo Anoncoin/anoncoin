@@ -29,6 +29,11 @@ Detailed platform-specific instructions can be found in these files:
 - [doc/build-osx.md](doc/build-osx.md)
 - [doc/build-msw.md](doc/build-msw.md)
 - [doc/build-unix.md](doc/build-unix.md)
+
+Pre-compiled Anoncoin binaries
+------------------------------
+
+Pre-compiled Anoncoin binaries can be downloaded either from the [anoncoin-binaries project](https://github.com/Anoncoin/anoncoin-binaries) or from the relevant links on the [Anoncoin wiki](https://wiki.anoncoin.net/Download). Please verify the gpg signatures and cehcksums before using these files.
     
 Development process
 -------------------

@@ -1,6 +1,8 @@
 Multiwallet Qt Development and Integration Strategy
 ===================================================
 
+***[Please note that this is not yet fully implemented in Anoncoin]***
+
 In order to support loading of multiple wallets in anoncoin-qt, a few changes in the UI architecture will be needed.
 Fortunately, only four of the files in the existing project are affected by this change.
 
