@@ -82,6 +82,7 @@ public:
         genesis.nNonce   = 347089008;
 
         hashGenesisBlock = genesis.GetHash();
+        printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[SCRYPT_ANC].GetCompact());
         assert(hashGenesisBlock == uint256("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
         assert(genesis.hashMerkleRoot == uint256("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
@@ -155,17 +156,16 @@ protected:
     CBlock genesis;
     vector<CAddress> vFixedSeeds;
 };
+// This initializes the 1st CMainParams object, used as the primary network type, under normal operating modes.
 static CMainParams mainParams;
 
 
 //
-// Testnet (v4)
+// Testnet.
 //
 class CTestNetParams : public CMainParams {
 public:
     CTestNetParams() {
-        strNetworkID = "testnet4";
-
         // The message start string is designed to be unlikely to occur in normal data.
         // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
         // a large 4-byte int at any alignment.
@@ -173,24 +173,36 @@ public:
         pchMessageStart[1] = 0xc4;
         pchMessageStart[2] = 0xb7;
         pchMessageStart[3] = 0xd4;
+
+        strNetworkID = "testnet";
+        strDataDir = "testnet";
+
         // GR Note: 1/26/2015 - New secp256k1 key values generated for testnet....
         vAlertPubKey = ParseHex("0442ccd085e52f7b74ee594826e36e417706af91ff7e7236a430b2dd16fe9f1a8132d0718e0bf5a3b7105354bf5bf954330097b21824c26c466836df9538f3d33e");
         // Private key for alert generation, anyone on the development and test team can use it:
         // "3082011302010104204b164c9765248427d1b13b9dc4f11107629485f0c61de070d89ebae308822e25a081a53081a2020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101a1440342000442ccd085e52f7b74ee594826e36e417706af91ff7e7236a430b2dd16fe9f1a8132d0718e0bf5a3b7105354bf5bf954330097b21824c26c466836df9538f3d33e"
+
         nDefaultPort = 19377;
         nRPCPort = 19376;
-        strDataDir = "testnet4";
+
+        // ToDo: Proof of work limits, for testnet need to remain very small...
+        bnProofOfWorkLimit[SCRYPT_ANC] = CBigNum(~uint256(0) >> 10);
+        bnProofOfWorkLimit[SHA256D_BTC] = CBigNum(~uint256(0) >> 10);
+        bnProofOfWorkLimit[PRIME_XPM] = CBigNum(~uint256(0) >> 10);
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1317798646;
-        genesis.nNonce = 385270584;
+        genesis.nTime = 1423700000;
+        genesis.nNonce = 100;
         hashGenesisBlock = genesis.GetHash();
-        // ToDo: This assertion fails @ runtime, need to do the math:
-        // assert(hashGenesisBlock == uint256("0xf5ae71e26c74beacc88382716aced69cddf3dffff24f384e1808905e0188f68f"));
 
+        printf("Testnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[SCRYPT_ANC].GetCompact());
+        // assert(hashGenesisBlock == uint256("0xc537f998795d3c014ad040a4f0593b701c3adf170cdc2b89be9b79b50f413055"));
+
+        // During intialization, the DNS and Fixed seed node vectors are filled up, as this class is derived from CMainParams.
+        // dump those here, and add any that might really be useful for testnet...
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed01.anoncoin.net"));
+        // vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed01.anoncoin.net"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(111);      // Anoncoin v8 compatible testnet Public keys use this value
         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
@@ -200,6 +212,9 @@ public:
     }
     virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };
+// Keep in mind, this is a class derived from CMainParams which is derived from CChainParams.  If your trying to debug startup code
+// you will see, the CMainParams object created twice, first from the creation of the static variable mainParams (above), then the
+// first CTestNetParams code get executed when this variable is created and initialized...
 static CTestNetParams testNetParams;
 
 
@@ -210,6 +225,7 @@ class CRegTestParams : public CTestNetParams {
 public:
     CRegTestParams() {
         strNetworkID = "regtest";
+        strDataDir = "regtest";
 
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
@@ -227,9 +243,9 @@ public:
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 19444;
         nRPCPort = 19443;
-        strDataDir = "regtest";
         // ToDo: This assertion fails @ runtime, need to do the math:
-        // assert(hashGenesisBlock == uint256("0x9372df8b4c0144d2238b73d65ce81b5eb37ec416c23fc29307b89de4b0493cf8"));
+        printf("RegTest Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[SCRYPT_ANC].GetCompact());
+        // assert(hashGenesisBlock == uint256("0x03ab995e27af2435ad33284ccb89095e6abe47d0846a4e8c34a3d0fc2d167ceb"));
 
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
     }
@@ -237,11 +253,18 @@ public:
     virtual bool RequireRPCPassword() const { return false; }
     virtual Network NetworkID() const { return CChainParams::REGTEST; }
 };
+
+// Keep in mind, this is a class derived from CTestNetParams which is derived from CMainParams which is derived from CChainParams.
+// If your trying to debug startup code you will see the CMainParams object created, then the CTestNetParams code get executed again
+// then finally when this variable is created and initialized you'll have the one being used for Regression testing...
 static CRegTestParams regTestParams;
 
-static CChainParams *pCurrentParams = &mainParams;
+// This pointer is now set in SelectParams, it was defaulting to mainParams, making debugging problems difficult,
+// now if any call is made before that, say to query the parameters via Param(), an assertion will fail there too...
+static CChainParams *pCurrentParams = 0;
 
 const CChainParams &Params() {
+    assert(pCurrentParams);
     return *pCurrentParams;
 }
 

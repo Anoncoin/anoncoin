@@ -1406,19 +1406,10 @@ void UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev)
     block.nTime = max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
 
     // Updating time can change work required on testnet:
+    // ToDo: Would this be a goood idea for RegTesting?  if (TestNet() || RegTest() )
     if (TestNet())
         block.nBits = GetNextWorkRequired(pindexPrev, &block);
 }
-
-
-
-
-
-
-
-
-
-
 
 void UpdateCoins(const CTransaction& tx, CValidationState &state, CCoinsViewCache &inputs, CTxUndo &txundo, int nHeight, const uint256 &txhash)
 {
@@ -3099,8 +3090,15 @@ string GetWarnings(string strFor)
     if (GetBoolArg("-testsafemode", false))
         strRPC = "test";
 
-    if (!CLIENT_VERSION_IS_RELEASE)
+    if (!CLIENT_VERSION_IS_RELEASE) {
+#if defined( HARDFORK_BLOCK )
+        stringstream ss;
+        ss << HARDFORK_BLOCK;
+        strStatusBar = "This is a HARDFORK pre-release test build, and will fork at block " + ss.str();
+#else
         strStatusBar = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications");
+#endif
+    }
 
     // Misc warnings like out of disk space and clock is wrong
     if (strMiscWarning != "")

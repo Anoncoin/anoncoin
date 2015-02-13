@@ -1,15 +1,15 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="cs" version="2.1">
 <context>
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
         <source>About Anoncoin Core</source>
-        <translation>À propos d&apos;Anoncoin Core</translation>
+        <translation>O Anoncoin Core</translation>
     </message>
     <message>
         <location line="+39"/>
         <source>&lt;b&gt;Anoncoin Core&lt;/b&gt; version</source>
-        <translation>Version d&apos;&lt;b&gt;Anoncoin Core&lt;/b&gt; </translation>
+        <translation>&lt;b&gt;Anoncoin Core&lt;/b&gt; verze</translation>
     </message>
     <message>
         <location line="+57"/>
@@ -20,11 +20,11 @@ Distributed under the MIT/X11 software license, see the accompanying file COPYIN
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/) and cryptographic software written by Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.</source>
         <translation>
-Ce logiciel est expérimental.
+Tohle je experimentální program.
 
-Distribué sous licence MIT/X11 d&apos;utilisation d&apos;un logiciel. Consultez le fichier joint COPYING ou http://www.opensource.org/licenses/mit-license.php.
+Šířen pod licencí MIT/X11, viz přiložený soubor COPYING nebo http://www.opensource.org/licenses/mit-license.php.
 
-Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos;être utilisés dans la boîte à outils OpenSSL (http://www.openssl.org/), un logiciel de chiffrement écrit par Eric Young (eay@cryptsoft.com) et un logiciel UPnP développé par Thomas Bernard.</translation>
+Tento produkt zahrnuje programy vyvinuté OpenSSL Projektem pro použití v OpenSSL Toolkitu (http://www.openssl.org/) a kryptografický program od Erika Younga (eay@cryptsoft.com) a program UPnP od Thomase Bernarda.</translation>
     </message>
     <message>
         <location filename="../utilitydialog.cpp" line="+30"/>
@@ -32,27 +32,27 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <location line="+1"/>
         <location line="+1"/>
         <source>Copyright</source>
-        <translation>Tous droits réservés</translation>
+        <translation>Copyright</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>The Anoncoin Core developers</source>
-        <translation>Les développeurs Anoncoin Core</translation>
+        <translation>Vývojáři Anoncoin Core</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The Bitcoin Core developers</source>
-        <translation>Les développeurs Bitcoin Core</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>The Litecoin Core developers</source>
-        <translation>Les développeurs Litecoin Core</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>The Primecoin developers</source>
-        <translation>Les développeurs Primecoin</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+12"/>
@@ -66,122 +66,122 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
     <message>
         <location filename="../forms/addressbookpage.ui" line="+30"/>
         <source>Double-click to edit address or label</source>
-        <translation>Double cliquer afin de modifier l&apos;adresse ou l&apos;étiquette</translation>
+        <translation>Dvojklikem myši začneš upravovat označení adresy</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Create a new address</source>
-        <translation>Créer une nouvelle adresse</translation>
+        <translation>Vytvoř novou adresu</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;New</source>
-        <translation>&amp;Nouveau</translation>
+        <translation>&amp;Nová</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Copy the currently selected address to the system clipboard</source>
-        <translation>Copier l&apos;adresse courante sélectionnée dans le presse-papier</translation>
+        <translation>Zkopíruj aktuálně vybranou adresu do systémové schránky</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Copy</source>
-        <translation>&amp;Copier</translation>
+        <translation>&amp;Kopíruj</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Delete the currently selected address from the list</source>
-        <translation>Effacer l&apos;adresse actuellement sélectionnée de la liste</translation>
+        <translation>Smaž zvolenou adresu ze seznamu</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Delete</source>
-        <translation>&amp;Supprimer</translation>
+        <translation>S&amp;maž</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>Export the data in the current tab to a file</source>
-        <translation>Exporter les données de l&apos;onglet courant vers un fichier</translation>
+        <translation>Exportuj data z tohoto panelu do souboru</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Export</source>
-        <translation>&amp;Exporter</translation>
+        <translation>&amp;Export</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>C&amp;lose</source>
-        <translation>&amp;Fermer</translation>
+        <translation>&amp;Zavřít</translation>
     </message>
     <message>
         <location filename="../addressbookpage.cpp" line="+45"/>
         <source>Choose the address to send coins to</source>
-        <translation>Choisir l&apos;adresse à laquelle envoyer des pièces</translation>
+        <translation>Zvol adresu, na kterou pošleš mince</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Choose the address to receive coins with</source>
-        <translation>Choisir l&apos;adresse avec laquelle recevoir des pîèces</translation>
+        <translation>Zvol adres na příjem mincí</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>C&amp;hoose</source>
-        <translation>C&amp;hoisir</translation>
+        <translation>&amp;Zvol</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Sending addresses</source>
-        <translation>Adresses d&apos;envoi</translation>
+        <translation>Odesílací adresy</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Receiving addresses</source>
-        <translation>Adresses de réception</translation>
+        <translation>Přijímací adresy</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>These are your Anoncoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Voici vos adresses Anoncoin pour envoyer des paiements. Vérifiez toujours le montant et l&apos;adresse du destinataire avant d&apos;envoyer des pièces.</translation>
+        <translation>Tohle jsou tvé Anoncoinové adresy pro posílání plateb. Před odesláním mincí si vždy zkontroluj částku a cílovou adresu.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>These are your Anoncoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Voici vos adresses Anoncoin pour recevoir des paiements. Il est recommandé d&apos;utiliser une nouvelle adresse de réception pour chaque transaction.</translation>
+        <translation>Tohle jsou tvé Anoncoinové adresy pro příjem plateb. Je doporučené používat pokaždé novou adresu pro každou transakci.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>&amp;Copy Address</source>
-        <translation>&amp;Copier l&apos;adresse</translation>
+        <translation>&amp;Kopíruj adresu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy &amp;Label</source>
-        <translation>Copier l&apos;é&amp;tiquette</translation>
+        <translation>Kopíruj &amp;označení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Modifier</translation>
+        <translation>&amp;Uprav</translation>
     </message>
     <message>
         <location line="+194"/>
         <source>Export Address List</source>
-        <translation>Exporter la liste d&apos;adresses</translation>
+        <translation>Exportuj seznam adres</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Comma separated file (*.csv)</source>
-        <translation>Valeurs séparées par des virgules (*.csv)</translation>
+        <translation>CSV formát (*.csv)</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Exporting Failed</source>
-        <translation>L&apos;exportation a échoué</translation>
+        <translation>Exportování selhalo</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>There was an error trying to save the address list to %1.</source>
-        <translation>Une erreur est survenue lors de l&apos;enregistrement de la liste d&apos;adresses vers %1.</translation>
+        <translation>Při ukládání seznamu adres do %1 se přihodila nějaká chyba.</translation>
     </message>
 </context>
 <context>
@@ -189,17 +189,17 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
     <message>
         <location filename="../addresstablemodel.cpp" line="+169"/>
         <source>Label</source>
-        <translation>Étiquette</translation>
+        <translation>Označení</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Address</source>
-        <translation>Adresse</translation>
+        <translation>Adresa</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>(no label)</source>
-        <translation>(aucune étiquette)</translation>
+        <translation>(bez označení)</translation>
     </message>
 </context>
 <context>
@@ -212,12 +212,12 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
     <message>
         <location line="+9"/>
         <source>Wallet</source>
-        <translation>Portefeuille</translation>
+        <translation>Peněženka</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Node</source>
-        <translation>Nœud</translation>
+        <translation>Uzel</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -228,342 +228,342 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
     <message>
         <location line="-290"/>
         <source>&amp;Overview</source>
-        <translation>&amp;Vue d&apos;ensemble</translation>
+        <translation>&amp;Přehled</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show general overview of wallet</source>
-        <translation>Afficher une vue d’ensemble du portefeuille</translation>
+        <translation>Zobraz celkový přehled peněženky</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>&amp;Send</source>
-        <translation>&amp;Envoyer</translation>
+        <translation>&amp;Pošli</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Send coins to a Anoncoin address</source>
-        <translation>Envoyer des pièces à une adresse Anoncoin</translation>
+        <translation>Pošli mince na Anoncoinovou adresu</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>&amp;Receive</source>
-        <translation>&amp;Recevoir</translation>
+        <translation>Při&amp;jmi</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Request payments (generates QR codes and anoncoin: URIs)</source>
-        <translation>Demander des paiements (génère des codes QR et des URIs anoncoin:)</translation>
+        <translation>Požaduj platby (generuje QR kódy a anoncoin: URI)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>&amp;Transactions</source>
-        <translation>&amp;Transactions</translation>
+        <translation>&amp;Transakce</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Browse transaction history</source>
-        <translation>Parcourir l&apos;historique des transactions</translation>
+        <translation>Procházej historii transakcí</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>E&amp;xit</source>
-        <translation>Q&amp;uitter</translation>
+        <translation>&amp;Konec</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Quit application</source>
-        <translation>Quitter l’application</translation>
+        <translation>Ukonči aplikaci</translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+2"/>
         <source>&amp;About Anoncoin Core</source>
-        <translation>À &amp;propos de Anoncoin Core</translation>
+        <translation>O &amp;Anoncoin Core</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show information about Anoncoin</source>
-        <translation>Afficher des informations à propos de Anoncoin</translation>
+        <translation>Zobraz informace o Anoncoinu</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+2"/>
         <source>About &amp;Qt</source>
-        <translation>À propos de &amp;Qt</translation>
+        <translation>O &amp;Qt</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show information about Qt</source>
-        <translation>Afficher des informations sur Qt</translation>
+        <translation>Zobraz informace o Qt</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Options...</source>
-        <translation>&amp;Options…</translation>
+        <translation>&amp;Možnosti...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Modify configuration options for Anoncoin</source>
-        <translation>Modifier les options de configuration de Anoncoin</translation>
+        <translation>Uprav nastavení Anoncoinu</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+2"/>
         <source>&amp;Show / Hide</source>
-        <translation>&amp;Afficher / Cacher</translation>
+        <translation>&amp;Zobraz/Skryj</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show or hide the main Window</source>
-        <translation>Afficher ou masquer la fenêtre principale</translation>
+        <translation>Zobraz nebo skryj hlavní okno</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Encrypt Wallet...</source>
-        <translation>&amp;Chiffrer le portefeuille...</translation>
+        <translation>Zaši&amp;fruj peněženku...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Encrypt the private keys that belong to your wallet</source>
-        <translation>Chiffrer les clefs privées de votre portefeuille</translation>
+        <translation>Zašifruj soukromé klíče ve své peněžence</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Backup Wallet...</source>
-        <translation>Sauvegarder le &amp;portefeuille...</translation>
+        <translation>&amp;Zazálohuj peněženku...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Backup wallet to another location</source>
-        <translation>Sauvegarder le portefeuille vers un autre emplacement</translation>
+        <translation>Zazálohuj peněženku na jiné místo</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Change Passphrase...</source>
-        <translation>&amp;Changer la phrase de passe...</translation>
+        <translation>Změň &amp;heslo...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Change the passphrase used for wallet encryption</source>
-        <translation>Modifier la phrase de passe utilisée pour le chiffrement du portefeuille</translation>
+        <translation>Změň heslo k šifrování peněženky</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Sign &amp;message...</source>
-        <translation>&amp;Signer le message...</translation>
+        <translation>Po&amp;depiš zprávu...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Sign messages with your Anoncoin addresses to prove you own them</source>
-        <translation>Signer les messages avec vos adresses Anoncoin pour prouver que vous les détenez</translation>
+        <translation>Podepiš zprávy svými Anoncoinovými adresami, čímž prokážeš, že jsi jejich vlastníkem</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Verify message...</source>
-        <translation>&amp;Vérifier un message...</translation>
+        <translation>&amp;Ověř zprávu...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Verify messages to ensure they were signed with specified Anoncoin addresses</source>
-        <translation>Vérifier les messages pour vous assurer qu&apos;ils ont été signés avec les adresses Anoncoin spécifiées</translation>
+        <translation>Ověř zprávy, aby ses ujistil, že byly podepsány danými Anoncoinovými adresami</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Debug window</source>
-        <translation>Fenêtre de &amp;débogage</translation>
+        <translation>&amp;Ladicí okno</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Open debugging and diagnostic console</source>
-        <translation>Ouvrir une console de débogage et de diagnostic</translation>
+        <translation>Otevři ladicí a diagnostickou konzoli</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Sending addresses...</source>
-        <translation>Adresses d&apos;&amp;envoi...</translation>
+        <translation>Od&amp;esílací adresy...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show the list of used sending addresses and labels</source>
-        <translation>Afficher la liste d&apos;adresses d&apos;envoi et d&apos;étiquettes utilisées</translation>
+        <translation>Ukaž seznam použitých odesílacích adres a jejich označení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Receiving addresses...</source>
-        <translation>Adresses de &amp;réception...</translation>
+        <translation>Př&amp;ijímací adresy...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show the list of used receiving addresses and labels</source>
-        <translation>Afficher la liste d&apos;adresses de réception et d&apos;étiquettes utilisées</translation>
+        <translation>Ukaž seznam použitých přijímacích adres a jejich označení</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Open &amp;URI...</source>
-        <translation>Ouvrir un &amp;URI...</translation>
+        <translation>Načíst &amp;URI...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Open a anoncoin: URI or payment request</source>
-        <translation>Ouvrir un URI anoncoin: ou une demande de paiement</translation>
+        <translation>Načti anoncoin: URI nebo platební požadavek</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Command-line options</source>
-        <translation>Options de ligne de &amp;commande</translation>
+        <translation>Ar&amp;gumenty z příkazové řádky</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show the Anoncoin Core help message to get a list with possible Anoncoin command-line options</source>
-        <translation>Afficher le message d&apos;aide de Anoncoin Core pour obtenir une liste des options de ligne de commande Anoncoin possibles.</translation>
+        <translation>Seznam argumentů Anoncoinu pro příkazovou řádku získáš v nápovědě Anoncoinu Core</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>&amp;File</source>
-        <translation>&amp;Fichier</translation>
+        <translation>&amp;Soubor</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>&amp;Settings</source>
-        <translation>&amp;Réglages</translation>
+        <translation>&amp;Nastavení</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>&amp;Help</source>
-        <translation>&amp;Aide</translation>
+        <translation>Ná&amp;pověda</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Tabs toolbar</source>
-        <translation>Barre d&apos;outils des onglets</translation>
+        <translation>Panel s listy</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Wallet is using I2P-network only!</source>
-        <translation>Le portefeuille utilise uniquement le réseau I2P!</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using Tor-network only</source>
-        <translation>Le portefeuille utilise uniquement le réseau Tor!</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using I2P and Tor networks (Darknet mode)</source>
-        <translation>Le portefeuille utilise les réseaux I2P et Tor (mode Darknet)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using I2P and Tor networks, also Tor as a proxy</source>
-        <translation>Le portefeuille utilise les réseaux I2P et Tor, également Tor comme Proxy</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using mixed or non-I2P (clear) network</source>
-        <translation>Le portefeuille utilise un réseau mixte ou non-I2P (transparent)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Wallet is running with a random generated I2P-address</source>
-        <translation>Le portefeuille fonctionne avec une adresse I2P générée aléatoirement</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is running with a static I2P-address</source>
-        <translation>Le portefeuille fonctionne avec une adresse I2P statique</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+70"/>
         <location line="+5"/>
         <source>Anoncoin client</source>
-        <translation>Client Anoncoin</translation>
+        <translation>Anoncoin klient</translation>
     </message>
     <message numerus="yes">
         <location line="+155"/>
         <source>%n active connection(s) to Anoncoin clearnet peers</source>
-        <translation><numerusform>%n connexions actives avec des pairs Anoncoin sur le réseau en clair</numerusform><numerusform>%n connexions actives avec des pairs Anoncoin sur le réseau en clair</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+16"/>
         <source>%n active connection(s) to I2P-Anoncoin network</source>
-        <translation><numerusform>%n connexions actives avec le réseau I2P-Anoncoin</numerusform><numerusform>%n connexions actives avec le réseau I2P-Anoncoin</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Synchronizing with network...</source>
-        <translation>Synchronisation avec le réseau en cours…</translation>
+        <translation>Synchronizuji se se sítí...</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Importing blocks from disk...</source>
-        <translation>Importation des blocs depuis le disque...</translation>
+        <translation>Importuji bloky z disku...</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Reindexing blocks on disk...</source>
-        <translation>Réindexation des blocs sur le disque...</translation>
+        <translation>Vytvářím nový index bloků na disku...</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No block source available...</source>
-        <translation>Aucune source de blocs disponible...</translation>
+        <translation>Není dostupný žádný zdroj bloků...</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Processed %1 blocks of transaction history.</source>
-        <translation>À traité %1 blocs de l&apos;historique des transactions.</translation>
+        <translation>Zpracováno %1 bloků transakční historie.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Up to date</source>
-        <translation>À jour</translation>
+        <translation>Aktuální</translation>
     </message>
     <message numerus="yes">
         <location line="+21"/>
         <source>%n hour(s)</source>
-        <translation><numerusform>%n heure</numerusform><numerusform>%n heures</numerusform></translation>
+        <translation><numerusform>hodinu</numerusform><numerusform>%n hodiny</numerusform><numerusform>%n hodin</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n day(s)</source>
-        <translation><numerusform>%n jour</numerusform><numerusform>%n jours</numerusform></translation>
+        <translation><numerusform>den</numerusform><numerusform>%n dny</numerusform><numerusform>%n dnů</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <location line="+6"/>
         <source>%n week(s)</source>
-        <translation><numerusform>%n semaine</numerusform><numerusform>%n semaines</numerusform></translation>
+        <translation><numerusform>týden</numerusform><numerusform>%n týdny</numerusform><numerusform>%n týdnů</numerusform></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 and %2</source>
-        <translation>%1 et %2</translation>
+        <translation>%1 a %2</translation>
     </message>
     <message numerus="yes">
         <location line="+0"/>
         <source>%n year(s)</source>
-        <translation><numerusform>%n an</numerusform><numerusform>%n ans</numerusform></translation>
+        <translation><numerusform>rok</numerusform><numerusform>%n roky</numerusform><numerusform>%n roků</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 behind</source>
-        <translation>%1 en retard</translation>
+        <translation>Stahuji ještě bloky transakcí za poslední %1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Catching up...</source>
-        <translation>Rattrapage en cours…</translation>
+        <translation>Stahuji...</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Last received block was generated %1 ago.</source>
-        <translation>Le dernier bloc reçu avait été généré il y a %1.</translation>
+        <translation>Poslední stažený blok byl vygenerován %1 zpátky.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Transactions after this will not yet be visible.</source>
-        <translation>Les transactions après ceci ne sont pas encore visibles.</translation>
+        <translation>Následné transakce ještě nebudou vidět.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -573,27 +573,27 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
     <message>
         <location line="+14"/>
         <source>Error</source>
-        <translation>Erreur</translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Warning</source>
-        <translation>Avertissement</translation>
+        <translation>Upozornění</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Information</source>
-        <translation>Information</translation>
+        <translation>Informace</translation>
     </message>
     <message>
         <location line="+79"/>
         <source>Sent transaction</source>
-        <translation>Transaction envoyée</translation>
+        <translation>Odeslané transakce</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Incoming transaction</source>
-        <translation>Transaction entrante</translation>
+        <translation>Příchozí transakce</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -602,21 +602,21 @@ Amount: %2
 Type: %3
 Address: %4
 </source>
-        <translation>Date : %1
-Montant : %2
-Type : %3
-Adresse : %4
+        <translation>Datum: %1
+Částka: %2
+Typ: %3
+Adresa: %4
 </translation>
     </message>
     <message>
         <location line="+69"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation>Le portefeuille est &lt;b&gt;chiffré&lt;/b&gt; et est actuellement &lt;b&gt;déverrouillé&lt;/b&gt;</translation>
+        <translation>Peněženka je &lt;b&gt;zašifrovaná&lt;/b&gt; a momentálně &lt;b&gt;odemčená&lt;/b&gt;</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation>Le portefeuille est &lt;b&gt;chiffré&lt;/b&gt; et actuellement &lt;b&gt;verrouillé&lt;/b&gt;</translation>
+        <translation>Peněženka je &lt;b&gt;zašifrovaná&lt;/b&gt; a momentálně &lt;b&gt;zamčená&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -624,93 +624,93 @@ Adresse : %4
     <message>
         <location filename="../forms/askpassphrasedialog.ui" line="+26"/>
         <source>Passphrase Dialog</source>
-        <translation>Dialogue de phrase de passe</translation>
+        <translation>Změna hesla</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Enter passphrase</source>
-        <translation>Saisir la phrase de passe</translation>
+        <translation>Zadej platné heslo</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>New passphrase</source>
-        <translation>Nouvelle phrase de passe</translation>
+        <translation>Zadej nové heslo</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Repeat new passphrase</source>
-        <translation>Répéter la phrase de passe</translation>
+        <translation>Totéž heslo ještě jednou</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="+41"/>
         <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
-        <translation>Saisir la nouvelle phrase de passe pour le portefeuille. &lt;br/&gt;Veuillez utiliser une phrase de passe de &lt;b&gt;10 caractères aléatoires ou plus&lt;/b&gt;, ou de &lt;b&gt;huit mots ou plus&lt;/b&gt;.</translation>
+        <translation>Zadej nové heslo k peněžence.&lt;br/&gt;Použij &lt;b&gt;alespoň 10 náhodných znaků&lt;/b&gt; nebo &lt;b&gt;alespoň osm slov&lt;/b&gt;.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Encrypt wallet</source>
-        <translation>Chiffrer le portefeuille</translation>
+        <translation>Zašifruj peněženku</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation>Cette opération nécessite votre phrase de passe pour déverrouiller le portefeuille.</translation>
+        <translation>K provedení této operace musíš zadat heslo k peněžence, aby se mohla odemknout.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Unlock wallet</source>
-        <translation>Déverrouiller le portefeuille</translation>
+        <translation>Odemkni peněženku</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
-        <translation>Cette opération nécessite votre phrase de passe pour déchiffrer le portefeuille.</translation>
+        <translation>K provedení této operace musíš zadat heslo k peněžence, aby se mohla dešifrovat.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Decrypt wallet</source>
-        <translation>Déchiffrer le portefeuille</translation>
+        <translation>Dešifruj peněženku</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Change passphrase</source>
-        <translation>Changer la phrase de passe</translation>
+        <translation>Změň heslo</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter the old and new passphrase to the wallet.</source>
-        <translation>Saisir l’ancienne phrase de passe pour le portefeuille ainsi que la nouvelle.</translation>
+        <translation>Zadej staré a nové heslo k peněžence.</translation>
     </message>
     <message>
         <location line="+46"/>
         <source>Confirm wallet encryption</source>
-        <translation>Confirmer le chiffrement du portefeuille</translation>
+        <translation>Potvrď zašifrování peněženky</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR ANONCOINS&lt;/b&gt;!</source>
-        <translation>Attention: si vous chiffrez votre portefeuille et perdez votre phrase de passe, vous allez &lt;b&gt;PERDRE TOUS VOS ANONCOINS&lt;/b&gt;!</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Are you sure you wish to encrypt your wallet?</source>
-        <translation>Êtes-vous sûr de vouloir chiffrer votre portefeuille ?</translation>
+        <translation>Jsi si jistý, že chceš peněženku zašifrovat?</translation>
     </message>
     <message>
         <location line="+9"/>
         <location line="+58"/>
         <source>Wallet encrypted</source>
-        <translation>Portefeuille chiffré</translation>
+        <translation>Peněženka je zašifrována</translation>
     </message>
     <message>
         <location line="-56"/>
         <source>Anoncoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your anoncoins from being stolen by malware infecting your computer.</source>
-        <translation>Anoncoin va à présent se fermer pour terminer le chiffrement. N&apos;oubliez pas que le chiffrement de votre portefeuille n&apos;est pas une protection totale contre le vol par des logiciels malveillants qui infecteraient votre ordinateur.</translation>
+        <translation>Anoncoin se teď ukončí, aby dokončil zašifrování. Pamatuj však, že pouhé zašifrování peněženky úplně nezabraňuje krádeži tvých anoncoinů malwarem, kterým se může počítač nakazit.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation>IMPORTANT : Toute sauvegarde précédente de votre fichier de portefeuille devrait être remplacée par le nouveau fichier de portefeuille chiffré. Pour des raisons de sécurité, les sauvegardes précédentes de votre fichier de portefeuille non chiffré deviendront inutilisables dès que vous commencerez à utiliser le nouveau portefeuille chiffré.</translation>
+        <translation>DŮLEŽITÉ: Všechny předchozí zálohy peněženky by měly být nahrazeny nově vygenerovanou, zašifrovanou peněženkou. Z bezpečnostních důvodů budou předchozí zálohy nešifrované peněženky nepoužitelné, jakmile začneš používat novou zašifrovanou peněženku.</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -718,46 +718,46 @@ Adresse : %4
         <location line="+42"/>
         <location line="+6"/>
         <source>Wallet encryption failed</source>
-        <translation>Le chiffrement du portefeuille a échoué</translation>
+        <translation>Zašifrování peněženky selhalo</translation>
     </message>
     <message>
         <location line="-54"/>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
-        <translation>Le chiffrement du portefeuille a échoué en raison d&apos;une erreur interne. Votre portefeuille n&apos;a pas été chiffré.</translation>
+        <translation>Zašifrování peněženky selhalo kvůli vnitřní chybě. Tvá peněženka tedy nebyla zašifrována.</translation>
     </message>
     <message>
         <location line="+7"/>
         <location line="+48"/>
         <source>The supplied passphrases do not match.</source>
-        <translation>Les phrases de passe saisies ne correspondent pas.</translation>
+        <translation>Zadaná hesla nejsou shodná.</translation>
     </message>
     <message>
         <location line="-37"/>
         <source>Wallet unlock failed</source>
-        <translation>Le déverrouillage du portefeuille a échoué</translation>
+        <translation>Odemčení peněženky selhalo</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+11"/>
         <location line="+19"/>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
-        <translation>La phrase de passe saisie pour déchiffrer le portefeuille était incorrecte.</translation>
+        <translation>Nezadal jsi správné heslo pro dešifrování peněženky.</translation>
     </message>
     <message>
         <location line="-20"/>
         <source>Wallet decryption failed</source>
-        <translation>Le déchiffrage du portefeuille a échoué</translation>
+        <translation>Dešifrování peněženky selhalo</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Wallet passphrase was successfully changed.</source>
-        <translation>La phrase de passe du portefeuille a été modifiée avec succès.</translation>
+        <translation>Heslo k peněžence bylo v pořádku změněno.</translation>
     </message>
     <message>
         <location line="+47"/>
         <location line="+24"/>
         <source>Warning: The Caps Lock key is on!</source>
-        <translation>Attention : la touche Verr. Maj. est activée !</translation>
+        <translation>Upozornění: Caps Lock je zapnutý!</translation>
     </message>
 </context>
 <context>
@@ -765,7 +765,7 @@ Adresse : %4
     <message>
         <location filename="../clientmodel.cpp" line="+143"/>
         <source>Network Alert</source>
-        <translation>Alerte réseau</translation>
+        <translation>Upozornění sítě</translation>
     </message>
 </context>
 <context>
@@ -773,291 +773,291 @@ Adresse : %4
     <message>
         <location filename="../forms/coincontroldialog.ui" line="+14"/>
         <source>Coin Control Address Selection</source>
-        <translation>Sélection de l&apos;adresse de contrôle des pièces</translation>
+        <translation>Volba adres v rámci ruční správy mincí</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>Quantity:</source>
-        <translation>Quantité :</translation>
+        <translation>Počet:</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Bytes:</source>
-        <translation>Octets :</translation>
+        <translation>Bajtů:</translation>
     </message>
     <message>
         <location line="+45"/>
         <source>Amount:</source>
-        <translation>Montant :</translation>
+        <translation>Částka:</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Priority:</source>
-        <translation>Priorité :</translation>
+        <translation>Priorita:</translation>
     </message>
     <message>
         <location line="+45"/>
         <source>Fee:</source>
-        <translation>Frais :</translation>
+        <translation>Poplatek:</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Low Output:</source>
-        <translation>Sortie faible :</translation>
+        <translation>Malý výstup:</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>After Fee:</source>
-        <translation>Après les frais :</translation>
+        <translation>Čistá částka:</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Change:</source>
-        <translation>Monnaie :</translation>
+        <translation>Drobné:</translation>
     </message>
     <message>
         <location line="+56"/>
         <source>(un)select all</source>
-        <translation>Tout (dé)sélectionner</translation>
+        <translation>(od)označit všechny</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Tree mode</source>
-        <translation>Mode arborescence</translation>
+        <translation>Zobrazit jako strom</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>List mode</source>
-        <translation>Mode liste</translation>
+        <translation>Vypsat jako seznam</translation>
     </message>
     <message>
         <location line="+53"/>
         <source>Amount</source>
-        <translation>Montant</translation>
+        <translation>Částka</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Address</source>
-        <translation>Adresse</translation>
+        <translation>Adresa</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Confirmations</source>
-        <translation>Confirmations</translation>
+        <translation>Potvrzení</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Confirmed</source>
-        <translation>Confirmée</translation>
+        <translation>Potvrzeno</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Priority</source>
-        <translation>Priorité</translation>
+        <translation>Priorita</translation>
     </message>
     <message>
         <location filename="../coincontroldialog.cpp" line="+42"/>
         <source>Copy address</source>
-        <translation>Copier l’adresse</translation>
+        <translation>Kopíruj adresu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy label</source>
-        <translation>Copier l’étiquette</translation>
+        <translation>Kopíruj její označení</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+26"/>
         <source>Copy amount</source>
-        <translation>Copier le montant</translation>
+        <translation>Kopíruj částku</translation>
     </message>
     <message>
         <location line="-25"/>
         <source>Copy transaction ID</source>
-        <translation>Copier l&apos;ID de la transaction</translation>
+        <translation>Kopíruj ID transakce</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Lock unspent</source>
-        <translation>Verrouiller ce qui n&apos;est pas dépensé</translation>
+        <translation>Zamkni neutracené</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Unlock unspent</source>
-        <translation>Déverrouiller ce qui n&apos;est pas dépensé</translation>
+        <translation>Odemkni k utracení</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Copy quantity</source>
-        <translation>Copier la quantité</translation>
+        <translation>Kopíruj počet</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Copy fee</source>
-        <translation>Copier les frais</translation>
+        <translation>Kopíruj poplatek</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy after fee</source>
-        <translation>Copier le montant après les frais</translation>
+        <translation>Kopíruj čistou částku</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy bytes</source>
-        <translation>Copier les octets</translation>
+        <translation>Kopíruj bajty</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy priority</source>
-        <translation>Copier la priorité</translation>
+        <translation>Kopíruj prioritu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy low output</source>
-        <translation>Copier la sortie faible</translation>
+        <translation>Kopíruj malý výstup</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy change</source>
-        <translation>Copier la monnaie</translation>
+        <translation>Kopíruj drobné</translation>
     </message>
     <message>
         <location line="+332"/>
         <source>highest</source>
-        <translation>la plus élevée</translation>
+        <translation>nejvyšší</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>higher</source>
-        <translation>plus élevée</translation>
+        <translation>vyšší</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>high</source>
-        <translation>élevée</translation>
+        <translation>vysoká</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>medium-high</source>
-        <translation>moyennement-élevée</translation>
+        <translation>vyšší střední</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>medium</source>
-        <translation>moyenne</translation>
+        <translation>střední</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>low-medium</source>
-        <translation>moyennement-basse</translation>
+        <translation>nižší střední</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>low</source>
-        <translation>basse</translation>
+        <translation>nízká</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>lower</source>
-        <translation>plus basse</translation>
+        <translation>nižší</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>lowest</source>
-        <translation>la plus basse</translation>
+        <translation>nejnižší</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>(%1 locked)</source>
-        <translation>(%1 verrouillé)</translation>
+        <translation>(%1 zamčeno)</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>none</source>
-        <translation>aucun</translation>
+        <translation>žádná</translation>
     </message>
     <message>
         <location line="+141"/>
         <source>Dust</source>
-        <translation>Poussière</translation>
+        <translation>Prach</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>yes</source>
-        <translation>oui</translation>
+        <translation>ano</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>no</source>
-        <translation>non</translation>
+        <translation>ne</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>This label turns red, if the transaction size is greater than 1000 bytes.</source>
-        <translation>Cette étiquette devient rouge si la taille de la transaction est plus grande que 1 000 octets.</translation>
+        <translation>Popisek zčervená, pokud je velikost transakce větší než 1000 bajtů.</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+5"/>
         <source>This means a fee of at least %1 per kB is required.</source>
-        <translation>Signifie que des frais d&apos;au moins 1% par ko sont requis.</translation>
+        <translation>To znamená, že je vyžadován poplatek alespoň %1 za kB.</translation>
     </message>
     <message>
         <location line="-4"/>
         <source>Can vary +/- 1 byte per input.</source>
-        <translation>Peut varier +/- 1 octet par entrée.</translation>
+        <translation>Může se lišit o +/– 1 bajt na každý vstup.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Transactions with higher priority are more likely to get included into a block.</source>
-        <translation>Les transactions à priorité plus haute sont plus à même d&apos;être incluses dans un bloc.</translation>
+        <translation>Transakce s vyšší prioritou mají větší šanci na zařazení do bloku.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This label turns red, if the priority is smaller than &quot;medium&quot;.</source>
-        <translation>Cette étiquette devient rouge si la priorité est plus basse que « moyenne »</translation>
+        <translation>Popisek zčervená, pokud je priorita menší než „střední“.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>This label turns red, if any recipient receives an amount smaller than %1.</source>
-        <translation>Cette étiquette devient rouge si un destinataire reçoit un montant inférieur à %1.</translation>
+        <translation>Popisek zčervená, pokud má některý příjemce obdržet částku menší než %1.</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+4"/>
         <source>This means a fee of at least %1 is required.</source>
-        <translation>Signifie que des frais d&apos;au moins %1 sont requis.</translation>
+        <translation>To znamená, že je vyžadován poplatek alespoň %1.</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Amounts below 0.546 times the minimum relay fee are shown as dust.</source>
-        <translation>Les montants inférieurs à 0,546 fois les frais minimums de relais sont affichés en tant que poussière.</translation>
+        <translation>Částky menší než 0,546násobek minimálního poplatku pro přenos jsou označovány jako prach.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>This label turns red, if the change is smaller than %1.</source>
-        <translation>Cette étiquette devient rouge si la monnaie rendue est inférieure à %1.</translation>
+        <translation>Popisek zčervená, pokud jsou drobné menší než %1.</translation>
     </message>
     <message>
         <location line="+43"/>
         <location line="+61"/>
         <source>(no label)</source>
-        <translation>(aucune étiquette)</translation>
+        <translation>(bez označení)</translation>
     </message>
     <message>
         <location line="-7"/>
         <source>change from %1 (%2)</source>
-        <translation>monnaie de %1 (%2)</translation>
+        <translation>drobné z %1 (%2)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>(change)</source>
-        <translation>(monnaie)</translation>
+        <translation>(drobné)</translation>
     </message>
 </context>
 <context>
@@ -1065,67 +1065,67 @@ Adresse : %4
     <message>
         <location filename="../forms/editaddressdialog.ui" line="+14"/>
         <source>Edit Address</source>
-        <translation>Modifier l&apos;adresse</translation>
+        <translation>Uprav adresu</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>&amp;Label</source>
-        <translation>&amp;Étiquette</translation>
+        <translation>&amp;Označení</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>The label associated with this address list entry</source>
-        <translation>L&apos;étiquette associée à cette entrée de la liste d&apos;adresses</translation>
+        <translation>Označení spojené s tímto záznamem v seznamu adres</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>&amp;Address</source>
-        <translation>&amp;Adresse</translation>
+        <translation>&amp;Adresa</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>The address associated with this address list entry. This can only be modified for sending addresses.</source>
-        <translation>L&apos;adresse associée à cette entrée de la liste d&apos;adresses. Ceci ne peut être modifié que pour les adresses d&apos;envoi.</translation>
+        <translation>Adresa spojená s tímto záznamem v seznamu adres. Lze upravovat jen pro odesílací adresy.</translation>
     </message>
     <message>
         <location filename="../editaddressdialog.cpp" line="+29"/>
         <source>New receiving address</source>
-        <translation>Nouvelle adresse de réception</translation>
+        <translation>Nová přijímací adresa</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>New sending address</source>
-        <translation>Nouvelle adresse d’envoi</translation>
+        <translation>Nová odesílací adresa</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Edit receiving address</source>
-        <translation>Modifier l’adresse de réception</translation>
+        <translation>Uprav přijímací adresu</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Edit sending address</source>
-        <translation>Modifier l’adresse d&apos;envoi</translation>
+        <translation>Uprav odesílací adresu</translation>
     </message>
     <message>
         <location line="+71"/>
         <source>The entered address &quot;%1&quot; is not a valid Anoncoin address.</source>
-        <translation>L&apos;adresse fournie « %1 » n&apos;est pas une adresse Anoncoin valide.</translation>
+        <translation>Zadaná adresa &quot;%1&quot; není platná Anoncoinová adresa.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The entered address &quot;%1&quot; is already in the address book.</source>
-        <translation>L’adresse fournie « %1 » est déjà présente dans le carnet d&apos;adresses.</translation>
+        <translation>Zadaná adresa &quot;%1&quot; už v adresáři je.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Could not unlock wallet.</source>
-        <translation>Impossible de déverrouiller le portefeuille.</translation>
+        <translation>Nemohu odemknout peněženku.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>New key generation failed.</source>
-        <translation>Échec de génération de la nouvelle clef.</translation>
+        <translation>Nepodařilo se mi vygenerovat nový klíč.</translation>
     </message>
 </context>
 <context>
@@ -1133,27 +1133,27 @@ Adresse : %4
     <message>
         <location filename="../intro.cpp" line="+69"/>
         <source>A new data directory will be created.</source>
-        <translation>Un nouveau répertoire de données sera créé.</translation>
+        <translation>Vytvoří se nový adresář pro data.</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>name</source>
-        <translation>nom</translation>
+        <translation>název</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Directory already exists. Add %1 if you intend to create a new directory here.</source>
-        <translation>Le répertoire existe déjà. Ajoutez %1 si vous voulez créer un nouveau répertoire ici.</translation>
+        <translation>Adresář už existuje. Přidej %1, pokud tady chceš vytvořit nový adresář.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Path already exists, and is not a directory.</source>
-        <translation>Le chemin existe déjà et n&apos;est pas un répertoire.</translation>
+        <translation>Taková cesta už existuje, ale není adresářem.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Cannot create data directory here.</source>
-        <translation>Impossible de créer un répertoire de données ici.</translation>
+        <translation>Tady nemůžu vytvořit adresář pro data.</translation>
     </message>
 </context>
 <context>
@@ -1161,7 +1161,7 @@ Adresse : %4
     <message>
         <location filename="../forms/helpmessagedialog.ui" line="+19"/>
         <source>Anoncoin Core - Command-line options</source>
-        <translation>Anoncoin Core - Options de ligne de commande</translation>
+        <translation>AnoncoinCore – Argumenty z příkazové řádky</translation>
     </message>
     <message>
         <location filename="../utilitydialog.cpp" line="+24"/>
@@ -1171,47 +1171,47 @@ Adresse : %4
     <message>
         <location line="+0"/>
         <source>version</source>
-        <translation>version</translation>
+        <translation>verze</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Usage:</source>
-        <translation>Utilisation :</translation>
+        <translation>Užití:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>command-line options</source>
-        <translation>options de ligne de commande</translation>
+        <translation>možnosti příkazové řádky</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>UI options</source>
-        <translation>Options de l&apos;interface utilisateur</translation>
+        <translation>Možnosti UI</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Choose data directory on startup (default: 0)</source>
-        <translation>Choisir un répertoire de données au démarrage (par défaut : 0)</translation>
+        <translation>Zvolit adresář pro data při startu (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
-        <translation>Définir la langue, par exemple « fr_CA » (par défaut : la langue du système)</translation>
+        <translation>Nastavit jazyk, například &quot;de_DE&quot; (výchozí: systémové nastavení)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Start minimized</source>
-        <translation>Démarrer minimisé</translation>
+        <translation>Nastartovat minimalizovaně</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set SSL root certificates for payment request (default: -system-)</source>
-        <translation>Définir les certificats SSL racine pour les requêtes de paiement (par défaut : -système-)</translation>
+        <translation>Nastavit kořenové SSL certifikáty pro platební požadavky (výchozí: -system-)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show splash screen on startup (default: 1)</source>
-        <translation>Afficher l&apos;écran d&apos;accueil au démarrage (par défaut : 1)</translation>
+        <translation>Zobrazit startovací obrazovku (výchozí: 1)</translation>
     </message>
 </context>
 <context>
@@ -1219,136 +1219,134 @@ Adresse : %4
     <message>
         <location filename="../forms/i2poptionswidget.ui" line="+14"/>
         <source>Form</source>
-        <translation>Formulaire</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Use I2P only (-onlynet=i2p)</source>
-        <translation>Utiliser I2P uniquement (-onlynet=i2p)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+20"/>
         <source>http://www.i2p2.i2p/i2cp.html#options</source>
-        <translation>http://www.i2p2.i2p/i2cp.html#options</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Help&lt;/a&gt;</source>
-        <translation>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Aide&lt;/a&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+20"/>
         <source>SAM host</source>
-        <translation>Hôte SAM</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+13"/>
         <source>127.0.0.1</source>
-        <translation>127.0.0.1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
         <source>SAM port</source>
-        <translation>Port SAM</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+37"/>
         <source>Tunnel name</source>
-        <translation>Nom du tunnel</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+19"/>
         <source>Anoncoin-client</source>
-        <translation>Client Anoncoin</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+20"/>
         <source>Current
 I2P-address...</source>
-        <translation>Adresse I2P
-actuelle…</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Generate
 I2P-address...</source>
-        <translation>Générer
-une adresse I2P…</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+14"/>
         <source>I2CP options of inbound tunnels</source>
-        <translation>Options pour tunnels entrants I2CP</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>inbound.quantity </source>
-        <translation>entrée.quantité</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+37"/>
         <source>inbound.length </source>
-        <translation>entrée.longueur</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+37"/>
         <source>inbound.lengthVariance</source>
-        <translation>entrée.varianceLongueur</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+34"/>
         <source>inbound.backupQuantity </source>
-        <translation>entrée.quantitéBackup</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+27"/>
         <source>inbound.allowZeroHop </source>
-        <translation>entrée.permettreZeroHop</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+31"/>
         <source>inbound.IPRestriction</source>
-        <translation>entrée.restrictionIP</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+65"/>
         <source>I2CP options of outbound tunnels</source>
-        <translation>Options pur tunnels sortants I2CP</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>outbound.quantity </source>
-        <translation>sortie.quantité</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.length </source>
-        <translation>sortie.longueur</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.lengthVariance</source>
-        <translation>sortie.varianceLongueur</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.backupQuantity</source>
-        <translation>sortie.quantitéBackup</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+27"/>
         <source>outbound.allowZeroHop </source>
-        <translation>sortie.permettreZeroHop</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+31"/>
         <source>outbound.IPRestriction</source>
-        <translation>sortie.restrictionIP</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.priority</source>
-        <translation>sortie.priorité</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1356,32 +1354,32 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/intro.ui" line="+14"/>
         <source>Welcome</source>
-        <translation>Bienvenue</translation>
+        <translation>Vítej</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Welcome to Anoncoin Core.</source>
-        <translation>Bienvenue à Anoncoin Core.</translation>
+        <translation>Vítej v Anoncoin Core.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>As this is the first time the program is launched, you can choose where Anoncoin Core will store its data.</source>
-        <translation>Comme c&apos;est la première fois que le logiciel est lancé, vous pouvez choisir où Anoncoin Core stockera ses données.</translation>
+        <translation>Tohle je poprvé, co spouštíš Anoncoin Core, takže si můžeš zvolit, kam bude ukládat svá data.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Anoncoin Core will download and store a copy of the Anoncoin block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Anoncoin Core va télécharger et stocker une copie de la chaîne de blocs Anoncoin. Au moins %1Go de données seront stockées dans ce répertoire et cela augmentera avec le temps. Le portefeuille sera également stocké dans ce répertoire.</translation>
+        <translation>Anoncoin Core bude stahovat kopii řetězce bloků. Proto bude potřeba do tohoto adresáře uložit nejméně %1 GB dat – toto číslo bude navíc v průběhu času pomalu růst. Tvá peněženka bude rovněž uložena v tomto adresáři.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Use the default data directory</source>
-        <translation>Utiliser le répertoire de données par défaut</translation>
+        <translation>Použij výchozí adresář pro data</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Use a custom data directory:</source>
-        <translation>Utiliser un répertoire de données personnalisé :</translation>
+        <translation>Použij tento adresář pro data:</translation>
     </message>
     <message>
         <location filename="../intro.cpp" line="+82"/>
@@ -1391,22 +1389,22 @@ une adresse I2P…</translation>
     <message>
         <location line="+1"/>
         <source>Error: Specified data directory &quot;%1&quot; cannot be created.</source>
-        <translation>Erreur: Donnée spécifiée dans le répertoire &quot;%1&quot; ne peut pas être créée</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+24"/>
         <source>Error</source>
-        <translation>Erreur</translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>GB of free space available</source>
-        <translation>Go d&apos;espace libre disponible</translation>
+        <translation>GB volného místa</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>(of %1GB needed)</source>
-        <translation>(sur %1Go nécessaires)</translation>
+        <translation>(z potřebných %1 GB)</translation>
     </message>
 </context>
 <context>
@@ -1414,27 +1412,27 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/openuridialog.ui" line="+14"/>
         <source>Open URI</source>
-        <translation>Ouvrir un URI</translation>
+        <translation>Načíst URI</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Open payment request from URI or file</source>
-        <translation>Ouvrir une demande de paiement à partir d&apos;un URI ou d&apos;un fichier</translation>
+        <translation>Načíst platební požadavek z URI nebo ze souboru</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>URI:</source>
-        <translation>URI :</translation>
+        <translation>URI:</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Select payment request file</source>
-        <translation>Choisir le fichier de demande de paiement</translation>
+        <translation>Vyber soubor platebního požadavku</translation>
     </message>
     <message>
         <location filename="../openuridialog.cpp" line="+48"/>
         <source>Select payment request file to open</source>
-        <translation>Choisir le fichier de demande de paiement à ouvrir</translation>
+        <translation>Vyber soubor platebního požadavku k načtení</translation>
     </message>
 </context>
 <context>
@@ -1442,259 +1440,259 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/optionsdialog.ui" line="+14"/>
         <source>Options</source>
-        <translation>Options</translation>
+        <translation>Možnosti</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>&amp;Main</source>
-        <translation>Réglages &amp;principaux</translation>
+        <translation>&amp;Hlavní</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Automatically start Anoncoin after logging in to the system.</source>
-        <translation>Démarrer Anoncoin automatiquement après avoir ouvert une session sur l&apos;ordinateur.</translation>
+        <translation>Automaticky spustí Anoncoin po přihlášení do systému.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Start Anoncoin on system login</source>
-        <translation>&amp;Démarrer Anoncoin lors de l&apos;ouverture d&apos;une session</translation>
+        <translation>S&amp;pustit Anoncoin po přihlášení do systému</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Size of &amp;database cache</source>
-        <translation>Taille du cache de la base de &amp;données</translation>
+        <translation>Velikost &amp;databázové cache</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>MB</source>
-        <translation>Mo</translation>
+        <translation>MB</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Number of script &amp;verification threads</source>
-        <translation>Nombre d&apos;exétrons de &amp;vérification de script</translation>
+        <translation>Počet vláken pro &amp;verifikaci skriptů</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>(0 = auto, &lt;0 = leave that many cores free)</source>
-        <translation>(0 = auto, &lt; 0 = laisser ce nombre de cœurs inutilisés)</translation>
+        <translation>(0 = automaticky, &lt;0 = nechat daný počet jader volný, výchozí: 0)</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>W&amp;allet</source>
-        <translation>&amp;Portefeuille</translation>
+        <translation>P&amp;eněženka</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Optional transaction fee per kB that helps make sure your transactions are processed quickly. Most transactions are 1 kB.</source>
-        <translation>Frais de transaction optionnel par ko qui aident à garantir un traitement rapide des transactions. La plupart des transactions utilisent 1 ko.</translation>
+        <translation>Dobrovolný transakční poplatek za každý započatý kB dopomáhá k rychlému zpracování tvých transakcí. Většina transakcí má do 1 kB.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Pay transaction &amp;fee</source>
-        <translation>Payer des &amp;frais de transaction</translation>
+        <translation>Platit &amp;transakční poplatek</translation>
     </message>
     <message>
         <location line="+44"/>
         <source>Expert</source>
-        <translation>Expert</translation>
+        <translation>Odborník</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Whether to show coin control features or not.</source>
-        <translation>Afficher ou non les fonctions de contrôle des pièces.</translation>
+        <translation>Zda ukazovat možnosti pro ruční správu mincí nebo ne.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Enable coin &amp;control features</source>
-        <translation>Activer les fonctions de &amp;contrôle des pièces </translation>
+        <translation>Povolit ruční správu &amp;mincí</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>If you disable the spending of unconfirmed change, the change from a transaction cannot be used until that transaction has at least one confirmation. This also affects how your balance is computed.</source>
-        <translation>Si vous désactivé la dépense de la monnaie non confirmée, la monnaie d&apos;une transaction ne peut pas être utilisée tant que cette transaction n&apos;a pas reçu au moins une confirmation. Ceci affecte aussi comment votre solde est calculé.</translation>
+        <translation>Pokud zakážeš utrácení ještě nepotvrzených drobných, nepůjde použít drobné z transakce, dokud nebude mít alespoň jedno potvrzení. Ovlivní to také výpočet stavu účtu.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Spend unconfirmed change</source>
-        <translation>&amp;Dépenser la monnaie non confirmée</translation>
+        <translation>&amp;Utrácet i ještě nepotvrzené drobné</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>&amp;Network</source>
-        <translation>&amp;Réseau</translation>
+        <translation>&amp;Síť</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Automatically open the Anoncoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Ouvrir le port du client Anoncoin automatiquement sur le routeur. Ceci ne fonctionne que si votre routeur supporte l&apos;UPnP et si la fonctionnalité est activée.</translation>
+        <translation>Automaticky otevře potřebný port na routeru. Tohle funguje jen za předpokladu, že tvůj router podporuje UPnP a že je UPnP povolené.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Map port using &amp;UPnP</source>
-        <translation>Mapper le port avec l&apos;&amp;UPnP</translation>
+        <translation>Namapovat port přes &amp;UPnP</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Connect to the Anoncoin network through a SOCKS proxy.</source>
-        <translation>Se connecter au réseau Anoncoin par un mandataire SOCKS.</translation>
+        <translation>Připojí se do Anoncoinové sítě přes SOCKS proxy.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Connect through SOCKS proxy (default proxy):</source>
-        <translation>Se &amp;connecter par un mandataire SOCKS (mandataire par défaut) :</translation>
+        <translation>&amp;Připojit přes SOCKS proxy (výchozí proxy):</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Proxy &amp;IP:</source>
-        <translation>&amp;IP du serveur mandataire :</translation>
+        <translation>&amp;IP adresa proxy:</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>IP address of the proxy (e.g. IPv4: 127.0.0.1 / IPv6: ::1)</source>
-        <translation>Adresse IP du mandataire (par ex. IPv4 : 127.0.0.1 / IPv6 : ::1)</translation>
+        <translation>IP adresa proxy (např. IPv4: 127.0.0.1/IPv6: ::1)</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>&amp;Port:</source>
-        <translation>&amp;Port :</translation>
+        <translation>Por&amp;t:</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Port of the proxy (e.g. 9050)</source>
-        <translation>Port du serveur mandataire (par ex. 9050)</translation>
+        <translation>Port proxy (např. 9050)</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>&amp;Window</source>
-        <translation>&amp;Fenêtre</translation>
+        <translation>O&amp;kno</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Show only a tray icon after minimizing the window.</source>
-        <translation>Afficher uniquement une icône système après minimisation.</translation>
+        <translation>Po minimalizaci okna zobrazí pouze ikonu v panelu.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Minimize to the tray instead of the taskbar</source>
-        <translation>&amp;Minimiser dans la barre système au lieu de la barre des tâches</translation>
+        <translation>&amp;Minimalizovávat do ikony v panelu</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Quit in the menu.</source>
-        <translation>Minimiser au lieu de quitter l&apos;application lorsque la fenêtre est fermée. Si cette option est activée, l&apos;application ne pourra être fermée qu&apos;en sélectionnant Quitter dans le menu.</translation>
+        <translation>Zavřením se aplikace minimalizuje. Pokud je tato volba zaškrtnuta, tak se aplikace ukončí pouze zvolením Konec v menu.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>M&amp;inimize on close</source>
-        <translation>M&amp;inimiser lors de la fermeture</translation>
+        <translation>Za&amp;vřením minimalizovat</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>&amp;Display</source>
-        <translation>&amp;Affichage</translation>
+        <translation>Zobr&amp;azení</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>User Interface &amp;language:</source>
-        <translation>&amp;Langue de l&apos;interface utilisateur :</translation>
+        <translation>&amp;Jazyk uživatelského rozhraní:</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>The user interface language can be set here. This setting will take effect after restarting Anoncoin.</source>
-        <translation>La langue de l&apos;interface utilisateur peut être définie ici. Ce réglage sera pris en compte après redémarrage de Anoncoin.</translation>
+        <translation>Tady lze nastavit jazyk uživatelského rozhraní. Nastavení se projeví až po restartování Anoncoinu.</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>&amp;Unit to show amounts in:</source>
-        <translation>&amp;Unité d&apos;affichage des montants :</translation>
+        <translation>J&amp;ednotka pro částky: </translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>Choisissez la sous-unité par défaut pour l&apos;affichage dans l&apos;interface et lors de l&apos;envoi de pièces.</translation>
+        <translation>Zvol výchozí podjednotku, která se bude zobrazovat v programu a při posílání mincí.</translation>
     </message>
     <message>
         <location line="+11"/>
         <location line="+13"/>
         <source>Third party URLs (e.g. a block explorer) that appear in the transactions tab as context menu items. %s in the URL is replaced by transaction hash. Multiple URLs are separated by vertical bar |.</source>
-        <translation>URL de tiers (par ex. un explorateur de blocs) apparaissant dans l&apos;onglet des transactions comme éléments du menu contextuel. %s dans l&apos;URL est remplacé par le hachage de la transaction. Les URL multiples sont séparées par une barre verticale |.</translation>
+        <translation>URL třetích stran (např. block exploreru), které se zobrazí v kontextovém menu v záložce Transakce. %s v URL se nahradí hashem transakce. Více URL odděl svislítkem |.</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Third party transaction URLs</source>
-        <translation>URL de transaction d&apos;un tiers</translation>
+        <translation>URL transakcí třetích stran</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Active command-line options that override above options:</source>
-        <translation>Options actives de ligne de commande qui annulent les options ci-dessus :</translation>
+        <translation>Aktivní argumenty z příkazové řádky, které přetloukly tato nastavení:</translation>
     </message>
     <message>
         <location line="+43"/>
         <source>Reset all client options to default.</source>
-        <translation>Réinitialiser toutes les options du client aux valeurs par défaut.</translation>
+        <translation>Vrátí všechny volby na výchozí hodnoty.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Reset Options</source>
-        <translation>&amp;Réinitialisation des options</translation>
+        <translation>&amp;Obnovit nastavení</translation>
     </message>
     <message>
         <location line="+61"/>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation>&amp;Budiž</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>&amp;Cancel</source>
-        <translation>A&amp;nnuler</translation>
+        <translation>&amp;Zrušit</translation>
     </message>
     <message>
         <location filename="../optionsdialog.cpp" line="+71"/>
         <source>default</source>
-        <translation>par défaut</translation>
+        <translation>výchozí</translation>
     </message>
     <message>
         <location line="+64"/>
         <source>none</source>
-        <translation>aucune</translation>
+        <translation>žádné</translation>
     </message>
     <message>
         <location line="+100"/>
         <source>Confirm options reset</source>
-        <translation>Confirmer la réinitialisation des options</translation>
+        <translation>Potvrzení obnovení nastavení</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+42"/>
         <source>Client restart required to activate changes.</source>
-        <translation>Le redémarrage du client est nécessaire pour activer les changements.</translation>
+        <translation>K aktivaci změn je potřeba restartovat klienta.</translation>
     </message>
     <message>
         <location line="-42"/>
         <source>Client will be shutdown, do you want to proceed?</source>
-        <translation>Le client sera arrêté, voulez-vous continuer?</translation>
+        <translation>Klient se vypne, chceš pokračovat?</translation>
     </message>
     <message>
         <location line="+46"/>
         <source>This change would require a client restart.</source>
-        <translation>Ce changement nécessite un redémarrage du client.</translation>
+        <translation>Tahle změna bude chtít restartovat klienta.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Warning</source>
-        <translation>Avertissement</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>This setting will take effect after restarting Anoncoin.</source>
-        <translation>Ce réglage prendra effet après redémarrage d&apos;Anoncoin</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+33"/>
         <source>The supplied proxy address is invalid.</source>
-        <translation>L&apos;adresse de serveur mandataire fournie est invalide.</translation>
+        <translation>Zadaná adresa proxy je neplatná.</translation>
     </message>
 </context>
 <context>
@@ -1702,99 +1700,99 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/overviewpage.ui" line="+14"/>
         <source>Form</source>
-        <translation>Formulaire</translation>
+        <translation>Formulář</translation>
     </message>
     <message>
         <location line="+43"/>
         <source>Balances</source>
-        <translation>Soldes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
         <location line="+372"/>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Anoncoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>Les informations affichées peuvent être obsolètes. Votre portefeuille est automatiquement synchronisé avec le réseau Anoncoin lorsque la connexion s&apos;établit, or ce processus n&apos;est pas encore terminé.</translation>
+        <translation>Zobrazené informace nemusí být aktuální. Tvá peněženka se automaticky sesynchronizuje s Anoncoinovou sítí, jakmile se s ní spojí. Zatím ale ještě není synchronizace dokončena.</translation>
     </message>
     <message>
         <location line="-327"/>
         <source>Unconfirmed transactions to watch-only addresses</source>
-        <translation>Transactions non confirmées aux adresses publiques (watch-only)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the spendable balance</source>
-        <translation>Total des transactions qui doivent encore être confirmées et qu&apos;il n&apos;est pas encore possible de dépenser</translation>
+        <translation>Celkem z transakcí, které ještě nejsou potvrzené a které se ještě nezapočítávají do celkového disponibilního stavu účtu</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
-        <translation>Solde miné dans des adresses publiques (watch-only) qui n&apos;est pas encore mature</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+42"/>
         <source>Total:</source>
-        <translation>Total :</translation>
+        <translation>Celkem:</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Mined balance that has not yet matured</source>
-        <translation>Le solde généré n&apos;est pas encore mûr</translation>
+        <translation>Vytěžené mince, které ještě nejsou zralé</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Immature:</source>
-        <translation>Immature :</translation>
+        <translation>Nedozráno:</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Your current total balance</source>
-        <translation>Votre solde total actuel</translation>
+        <translation>Celkový stav tvého účtu</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Current total balance in watch-only addresses</source>
-        <translation>Solde actuel total des adresses publiques (watch-only)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <source>Watch-only:</source>
-        <translation>Publique (watch-only):</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
         <source>Available:</source>
-        <translation>Disponible :</translation>
+        <translation>K dispozici:</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Your current spendable balance</source>
-        <translation>Votre solde actuel pouvant être dépensé</translation>
+        <translation>Aktuální disponibilní stav tvého účtu</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Your current balance in watch-only addresses</source>
-        <translation>Votre sold actuel dans des adresses publiques (watch-only)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <source>Pending:</source>
-        <translation>En attente :</translation>
+        <translation>Očekáváno:</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Spendable:</source>
-        <translation>Utilisable:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+49"/>
         <source>Recent transactions</source>
-        <translation>Transactions récentes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../overviewpage.cpp" line="+132"/>
         <location line="+1"/>
         <source>out of sync</source>
-        <translation>désynchronisé</translation>
+        <translation>nesynchronizováno</translation>
     </message>
 </context>
 <context>
@@ -1807,78 +1805,78 @@ une adresse I2P…</translation>
         <location line="+18"/>
         <location line="+16"/>
         <source>Payment request error</source>
-        <translation>Erreur de demande de paiement</translation>
+        <translation>Chyba platebního požadavku</translation>
     </message>
     <message>
         <location line="-347"/>
         <source>Cannot start anoncoin: click-to-pay handler</source>
-        <translation>Impossible de démarrer le gestionnaire de cliquer-pour-payer anoncoin :</translation>
+        <translation>Nemůžu spustit anoncoin: obsluha click-to-pay</translation>
     </message>
     <message>
         <location line="+104"/>
         <location line="+13"/>
         <source>URI handling</source>
-        <translation>Gestion des URIs</translation>
+        <translation>Zpracování URI</translation>
     </message>
     <message>
         <location line="-12"/>
         <source>Payment request fetch URL is invalid: %1</source>
-        <translation>L&apos;URL de récupération de la demande de paiement est invalide : %1</translation>
+        <translation>Zdrojová URL platebního požadavku není platná: %1</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>URI cannot be parsed! This can be caused by an invalid Anoncoin address or malformed URI parameters.</source>
-        <translation>L&apos;URI ne peut pas être analysé (parsé)! Cela peut être dû à une adresse Anoncoin invalide ou des paramêtres URI erronés.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+14"/>
         <source>Payment request file handling</source>
-        <translation>Gestion des fichiers de demande de paiement</translation>
+        <translation>Zpracování souboru platebního požadavku</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Payment request file cannot be read! This can be caused by an invalid payment request file.</source>
-        <translation>Le fichier de demande de paiement ne peut pas être lu! Cela peut être dû à un fichier de demande de paiement invalide.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+73"/>
         <source>Unverified payment requests to custom payment scripts are unsupported.</source>
-        <translation>Les demandes de paiements non vérifiées à des scripts de paiement personnalisés ne sont pas prises en charge.</translation>
+        <translation>Neověřené platební požadavky k uživatelským platebním skriptům nejsou podporované.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Requested payment amount of %1 is too small (considered dust).</source>
-        <translation>Le paiement demandé d&apos;un montant de %1 est trop faible (considéré comme de la poussière).</translation>
+        <translation>Požadovaná platební částka %1 je příliš malá (je považována za prach).</translation>
     </message>
     <message>
         <location line="+51"/>
         <source>Refund from %1</source>
-        <translation>Remboursement de %1</translation>
+        <translation>Vrácení peněz od %1</translation>
     </message>
     <message>
         <location line="+43"/>
         <source>Error communicating with %1: %2</source>
-        <translation>Erreur de communication avec %1 : %2</translation>
+        <translation>Chyba při komunikaci s %1: %2</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>Payment request cannot be parsed!</source>
-        <translation>La demande de paiement ne peut pas être analysée (parsée)!</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+11"/>
         <source>Bad response from server %1</source>
-        <translation>Mauvaise réponse du serveur %1</translation>
+        <translation>Chybná odpověď ze serveru %1</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Network request error</source>
-        <translation>Erreur de demande réseau</translation>
+        <translation>Chyba síťového požadavku</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Payment acknowledged</source>
-        <translation>Le paiement a été confirmé</translation>
+        <translation>Platba potvrzena</translation>
     </message>
 </context>
 <context>
@@ -1886,17 +1884,17 @@ une adresse I2P…</translation>
     <message>
         <location filename="../peertablemodel.cpp" line="+120"/>
         <source>Address/Hostname</source>
-        <translation>Adresse/Nom de l&apos;hôte</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>User Agent</source>
-        <translation>Agent utilisateur</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Ping Time</source>
-        <translation>Délai test ping</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1904,57 +1902,57 @@ une adresse I2P…</translation>
     <message>
         <location filename="../anoncoinunits.cpp" line="+175"/>
         <source>Amount</source>
-        <translation>Montant</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../guiutil.cpp" line="+102"/>
         <source>Enter a Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>Saisir une adresse Anoncoin (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <translation>Zadej Anoncoinovou adresu (např. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+697"/>
         <source>%1 d</source>
-        <translation>%1 j</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 h</source>
-        <translation>%1 h</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 m</source>
-        <translation>%1 m</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 s</source>
-        <translation>%1 s</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+17"/>
         <source>NETWORK</source>
-        <translation>RÉSEAU</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>UNKNOWN</source>
-        <translation>INCONNU</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>None</source>
-        <translation>Aucun</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>N/A</source>
-        <translation>N.D.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 ms</source>
-        <translation>%1 ms</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1962,22 +1960,22 @@ une adresse I2P…</translation>
     <message>
         <location filename="../receiverequestdialog.cpp" line="+37"/>
         <source>&amp;Save Image...</source>
-        <translation>&amp;Sauvegarder l&apos;image...</translation>
+        <translation>&amp;Ulož obrázek...</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Copy Image</source>
-        <translation>&amp;Copier l&apos;image</translation>
+        <translation>&amp;Kopíruj obrázek</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Save QR Code</source>
-        <translation>Sauvegarder le code QR</translation>
+        <translation>Ulož QR kód</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>PNG Image (*.png)</source>
-        <translation>Image PNG (*.png)</translation>
+        <translation>PNG obrázek (*.png)</translation>
     </message>
 </context>
 <context>
@@ -1985,22 +1983,22 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/rpcconsole.ui" line="+14"/>
         <source>Debug window</source>
-        <translation>Fenêtre de débogage</translation>
+        <translation>Ladicí okno</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>&amp;Information</source>
-        <translation>&amp;Informations</translation>
+        <translation>&amp;Informace</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>General</source>
-        <translation>Général</translation>
+        <translation>Obecné</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Client name</source>
-        <translation>Nom du client</translation>
+        <translation>Název klienta</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2027,239 +2025,239 @@ une adresse I2P…</translation>
         <location line="+23"/>
         <location line="+23"/>
         <source>N/A</source>
-        <translation>N.D.</translation>
+        <translation>N/A</translation>
     </message>
     <message>
         <location line="-967"/>
         <source>Client version</source>
-        <translation>Version du client</translation>
+        <translation>Verze klienta</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Using OpenSSL version</source>
-        <translation>Version d&apos;OpenSSL utilisée</translation>
+        <translation>Používaná verze OpenSSL</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Using BerkeleyDB version</source>
-        <translation>Version BerkeleyDB utilisée</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+26"/>
         <source>Build date</source>
-        <translation>Date de compilation</translation>
+        <translation>Datum kompilace</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Startup time</source>
-        <translation>Heure de démarrage</translation>
+        <translation>Čas spuštění</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Network</source>
-        <translation>Réseau</translation>
+        <translation>Síť</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Number of connections</source>
-        <translation>Nombre de connexions</translation>
+        <translation>Počet spojení</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Block chain</source>
-        <translation>Chaîne de blocs</translation>
+        <translation>Řetězec bloků</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Current number of blocks</source>
-        <translation>Nombre actuel de blocs</translation>
+        <translation>Aktuální počet bloků</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Last block time</source>
-        <translation>Horodatage du dernier bloc</translation>
+        <translation>Čas posledního bloku</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>Debug log file</source>
-        <translation>Journal de débogage</translation>
+        <translation>Soubor s ladicími záznamy</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Open the Anoncoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Ouvrir le journal de débogage de Anoncoin depuis le répertoire de données actuel. Ceci peut prendre quelques secondes pour les journaux de grande taille.</translation>
+        <translation>Otevři soubor s ladicími záznamy Anoncoinu z aktuálního datového adresáře. U velkých logů to může pár vteřin zabrat.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Open</source>
-        <translation>&amp;Ouvrir</translation>
+        <translation>&amp;Otevřít</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>&amp;Console</source>
-        <translation>&amp;Console</translation>
+        <translation>&amp;Konzole</translation>
     </message>
     <message>
         <location line="+49"/>
         <source>Clear console</source>
-        <translation>Nettoyer la console</translation>
+        <translation>Vyčistit konzoli</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>&amp;Network Traffic</source>
-        <translation>Trafic &amp;réseau</translation>
+        <translation>&amp;Síťový provoz</translation>
     </message>
     <message>
         <location line="+52"/>
         <source>&amp;Clear</source>
-        <translation>&amp;Nettoyer</translation>
+        <translation>&amp;Vyčistit</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Totals</source>
-        <translation>Totaux</translation>
+        <translation>Sumy</translation>
     </message>
     <message>
         <location line="+64"/>
         <source>Received</source>
-        <translation>Reçu(s)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+80"/>
         <source>Sent</source>
-        <translation>Envoyé(s)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+41"/>
         <source>&amp;Peers</source>
-        <translation>&amp;Pairs</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+39"/>
         <location filename="../rpcconsole.cpp" line="+244"/>
         <location line="+338"/>
         <source>Select a peer to view detailed information.</source>
-        <translation>Sélectionner un pair pour voir les informations détaillées.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <source>Direction</source>
-        <translation>Direction</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Version</source>
-        <translation>Version</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>User Agent</source>
-        <translation>Agent utilisateur</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Services</source>
-        <translation>Services</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Starting Height</source>
-        <translation>Hauteur de départ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Sync Height</source>
-        <translation>Hauteur synchronisée</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Ban Score</source>
-        <translation>Ban Score</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Connection Time</source>
-        <translation>Durée de connexion</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Send</source>
-        <translation>Dernier envoi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Receive</source>
-        <translation>Dernière réception</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Sent</source>
-        <translation>Bytes envoyés</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Received</source>
-        <translation>Bytes reçus</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Ping Time</source>
-        <translation>Délai du test ping</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-209"/>
         <source>Welcome to the Anoncoin RPC console.</source>
-        <translation>Bienvenue sur la console RPC de Anoncoin.</translation>
+        <translation>Vítej v Anoncoinové RPC konzoli.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
-        <translation>Utiliser les touches de curseur pour naviguer dans l&apos;historique et &lt;b&gt;Ctrl-L&lt;/b&gt; pour effacer l&apos;écran.</translation>
+        <translation>V historii se pohybuješ šipkami nahoru a dolů a pomocí &lt;b&gt;Ctrl-L&lt;/b&gt; čistíš obrazovku.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</source>
-        <translation>Taper &lt;b&gt;help&lt;/b&gt; pour afficher une vue générale des commandes proposées.</translation>
+        <translation>Napsáním &lt;b&gt;help&lt;/b&gt; si vypíšeš přehled dostupných příkazů.</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>In:</source>
-        <translation>Entrant :</translation>
+        <translation>Sem:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Out:</source>
-        <translation>Sortant :</translation>
+        <translation>Ven:</translation>
     </message>
     <message>
         <location line="+101"/>
         <source>%1 B</source>
-        <translation>%1 o</translation>
+        <translation>%1 B</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 KB</source>
-        <translation>%1 Ko</translation>
+        <translation>%1 kB</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 MB</source>
-        <translation>%1 Mo</translation>
+        <translation>%1 MB</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 GB</source>
-        <translation>%1 Go</translation>
+        <translation>%1 GB</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>%1 m</source>
-        <translation>%1 min</translation>
+        <translation>%1 m</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2269,39 +2267,39 @@ une adresse I2P…</translation>
     <message>
         <location line="+2"/>
         <source>%1 h %2 m</source>
-        <translation>%1 h %2 min</translation>
+        <translation>%1 h %2 m</translation>
     </message>
     <message>
         <location line="+91"/>
         <source>via %1</source>
-        <translation>via %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <location line="+1"/>
         <source>never</source>
-        <translation>jamais</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
         <source>Inbound</source>
-        <translation>Entrant</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Outbound</source>
-        <translation>Sortant</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+13"/>
         <source>Unknown</source>
-        <translation>Inconnu</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <location line="+1"/>
         <source>Fetching...</source>
-        <translation>Récupération…</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2309,105 +2307,105 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/receivecoinsdialog.ui" line="+34"/>
         <source>Reuse one of the previously used receiving addresses. Reusing addresses has security and privacy issues. Do not use this unless re-generating a payment request made before.</source>
-        <translation>Réutilise une adresse de réception précédemment utilisée. Réutiliser une adresse pose des problèmes de sécurité et de vie privée. N&apos;utilisez pas cette option sauf si vous générez à nouveau une demande de paiement déjà faite.</translation>
+        <translation>Recyklovat již dříve použité adresy. Recyklace adres má bezpečnostní rizika a narušuje soukromí. Nezaškrtávejte to, pokud znovu nevytváříte již dříve vytvořený platební požadavek.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>R&amp;euse an existing receiving address (not recommended)</source>
-        <translation>Ré&amp;utiliser une adresse de réception existante (non recommandé)</translation>
+        <translation>&amp;Recyklovat již existující adresy (nedoporučeno)</translation>
     </message>
     <message>
         <location line="+14"/>
         <location line="+23"/>
         <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Anoncoin network.</source>
-        <translation>Un message optionnel à joindre à la demande de paiement qui sera affiché à l&apos;ouverture de celle-ci. Note : le message ne sera pas envoyé avec le paiement par le réseau Anoncoin.</translation>
+        <translation>Volitelná zpráva, která se připojí k platebnímu požadavku a která se zobrazí, když se požadavek otevře. Poznámka: Tahle zpráva se neposílá s platbou po Anoncoinové síti.</translation>
     </message>
     <message>
         <location line="-20"/>
         <source>&amp;Message:</source>
-        <translation>M&amp;essage :</translation>
+        <translation>&amp;Zpráva:</translation>
     </message>
     <message>
         <location line="+13"/>
         <location line="+21"/>
         <source>An optional label to associate with the new receiving address.</source>
-        <translation>Un étiquette optionnelle à associer à la nouvelle adresse de réception</translation>
+        <translation>Volitelné označení, které se má přiřadit k nové adrese.</translation>
     </message>
     <message>
         <location line="-7"/>
         <source>Use this form to request payments. All fields are &lt;b&gt;optional&lt;/b&gt;.</source>
-        <translation>Utiliser ce formulaire pour demander des paiements. Tous les champs sont  &lt;b&gt;optionnels&lt;/b&gt;.</translation>
+        <translation>Tímto formulář můžeš požadovat platby. Všechna pole jsou &lt;b&gt;volitelná&lt;/b&gt;.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>&amp;Label:</source>
-        <translation>&amp;Étiquette :</translation>
+        <translation>&amp;Označení:</translation>
     </message>
     <message>
         <location line="+13"/>
         <location line="+22"/>
         <source>An optional amount to request. Leave this empty or zero to not request a specific amount.</source>
-        <translation>Un montant optionnel à demander. Laisser ceci vide ou à zéro pour ne pas demander de montant spécifique.</translation>
+        <translation>Volitelná částka, kterou požaduješ. Nech prázdné nebo nulové, pokud nepožaduješ konkrétní částku.</translation>
     </message>
     <message>
         <location line="-19"/>
         <source>&amp;Amount:</source>
-        <translation>&amp;Montant :</translation>
+        <translation>Čás&amp;tka:</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>&amp;Request payment</source>
-        <translation>&amp;Demande de paiement</translation>
+        <translation>&amp;Vyžádat platbu</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Clear all fields of the form.</source>
-        <translation>Effacer tous les champs du formulaire.</translation>
+        <translation>Promaž obsah ze všech formulářových políček.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Clear</source>
-        <translation>Effacer</translation>
+        <translation>Vyčistit</translation>
     </message>
     <message>
         <location line="+78"/>
         <source>Requested payments history</source>
-        <translation>Historique des paiements demandés</translation>
+        <translation>Historie vyžádaných plateb</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Show the selected request (does the same as double clicking an entry)</source>
-        <translation>Afficher la demande choisie (identique à un double-clic sur une entrée)</translation>
+        <translation>Zobraz zvolený požadavek (stejně tak můžeš přímo na něj dvakrát poklepat)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Show</source>
-        <translation>Afficher</translation>
+        <translation>Zobrazit</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Remove the selected entries from the list</source>
-        <translation>Enlever les entrées sélectionnées de la liste</translation>
+        <translation>Smaž zvolené požadavky ze seznamu</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Remove</source>
-        <translation>Enlever</translation>
+        <translation>Smazat</translation>
     </message>
     <message>
         <location filename="../receivecoinsdialog.cpp" line="+40"/>
         <source>Copy label</source>
-        <translation>Copier l’étiquette</translation>
+        <translation>Kopíruj její označení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy message</source>
-        <translation>Copier le message</translation>
+        <translation>Kopíruj zprávu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy amount</source>
-        <translation>Copier le montant</translation>
+        <translation>Kopíruj částku</translation>
     </message>
 </context>
 <context>
@@ -2415,32 +2413,32 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/receiverequestdialog.ui" line="+29"/>
         <source>QR Code</source>
-        <translation>Code QR</translation>
+        <translation>QR kód</translation>
     </message>
     <message>
         <location line="+46"/>
         <source>Copy &amp;URI</source>
-        <translation>Copier l&apos;&amp;URI</translation>
+        <translation>&amp;Kopíruj URI</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Copy &amp;Address</source>
-        <translation>Copier l&apos;&amp;adresse</translation>
+        <translation>Kopíruj &amp;adresu</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>&amp;Save Image...</source>
-        <translation>&amp;Sauvegarder l&apos;image...</translation>
+        <translation>&amp;Ulož obrázek...</translation>
     </message>
     <message>
         <location filename="../receiverequestdialog.cpp" line="+65"/>
         <source>Request payment to %1</source>
-        <translation>Demande de paiement à %1</translation>
+        <translation>Platební požadavek: %1</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Payment information</source>
-        <translation>Informations de paiement</translation>
+        <translation>Informace o platbě</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2450,32 +2448,32 @@ une adresse I2P…</translation>
     <message>
         <location line="+2"/>
         <source>Address</source>
-        <translation>Adresse</translation>
+        <translation>Adresa</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Amount</source>
-        <translation>Montant</translation>
+        <translation>Částka</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Label</source>
-        <translation>Étiquette</translation>
+        <translation>Označení</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Message</source>
-        <translation>Message</translation>
+        <translation>Zpráva</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Resulting URI too long, try to reduce the text for label / message.</source>
-        <translation>L&apos;URI résultant est trop long, essayez de réduire le texte d&apos;étiquette / de message.</translation>
+        <translation>Výsledná URI je příliš dlouhá, zkus zkrátit text označení/zprávy.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Error encoding URI into QR Code.</source>
-        <translation>Erreur d&apos;encodage de l&apos;URI en code QR.</translation>
+        <translation>Chyba při kódování URI do QR kódu.</translation>
     </message>
 </context>
 <context>
@@ -2483,37 +2481,37 @@ une adresse I2P…</translation>
     <message>
         <location filename="../recentrequeststablemodel.cpp" line="+26"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Label</source>
-        <translation>Étiquette</translation>
+        <translation>Označení</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Message</source>
-        <translation>Message</translation>
+        <translation>Zpráva</translation>
     </message>
     <message>
         <location line="+40"/>
         <source>(no label)</source>
-        <translation>(pas d&apos;étiquette)</translation>
+        <translation>(bez označení)</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>(no message)</source>
-        <translation>(pas de message)</translation>
+        <translation>(bez zprávy)</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>(no amount)</source>
-        <translation>(aucun montant)</translation>
+        <translation>(bez částky)</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Amount</source>
-        <translation>Montant</translation>
+        <translation>Částka</translation>
     </message>
 </context>
 <context>
@@ -2523,152 +2521,152 @@ une adresse I2P…</translation>
         <location filename="../sendcoinsdialog.cpp" line="+382"/>
         <location line="+84"/>
         <source>Send Coins</source>
-        <translation>Envoyer des pièces</translation>
+        <translation>Pošli mince</translation>
     </message>
     <message>
         <location line="+76"/>
         <source>Coin Control Features</source>
-        <translation>Fonctions de contrôle des pièces</translation>
+        <translation>Možnosti ruční správy mincí</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Inputs...</source>
-        <translation>Entrants...</translation>
+        <translation>Vstupy...</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>automatically selected</source>
-        <translation>choisi automatiquement</translation>
+        <translation>automaticky vybrané</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Insufficient funds!</source>
-        <translation>Fonds insuffisants !</translation>
+        <translation>Nedostatek prostředků!</translation>
     </message>
     <message>
         <location line="+89"/>
         <source>Quantity:</source>
-        <translation>Quantité :</translation>
+        <translation>Počet:</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Bytes:</source>
-        <translation>Octets :</translation>
+        <translation>Bajtů:</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>Amount:</source>
-        <translation>Montant :</translation>
+        <translation>Částka:</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Priority:</source>
-        <translation>Priorité :</translation>
+        <translation>Priorita:</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>Fee:</source>
-        <translation>Frais :</translation>
+        <translation>Poplatek:</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Low Output:</source>
-        <translation>Sortie faible</translation>
+        <translation>Malý výstup:</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>After Fee:</source>
-        <translation>Après les frais :</translation>
+        <translation>Čistá částka:</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Change:</source>
-        <translation>Monnaie :</translation>
+        <translation>Drobné:</translation>
     </message>
     <message>
         <location line="+44"/>
         <source>If this is activated, but the change address is empty or invalid, change will be sent to a newly generated address.</source>
-        <translation>Si ceci est actif mais l&apos;adresse de monnaie rendue est vide ou invalide, la monnaie sera envoyée vers une adresse nouvellement générée.</translation>
+        <translation>Pokud aktivováno, ale adresa pro drobné je prázdná nebo neplatná, tak se drobné pošlou na nově vygenerovanou adresu.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Custom change address</source>
-        <translation>Adresse personnalisée de monnaie rendue</translation>
+        <translation>Vlastní adresa pro drobné</translation>
     </message>
     <message>
         <location line="+121"/>
         <source>Confirm the send action</source>
-        <translation>Confirmer l’action d&apos;envoi</translation>
+        <translation>Potvrď odeslání</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>S&amp;end</source>
-        <translation>E&amp;nvoyer</translation>
+        <translation>P&amp;ošli</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Clear all fields of the form.</source>
-        <translation>Effacer tous les champs du formulaire.</translation>
+        <translation>Promaž obsah ze všech formulářových políček.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Clear &amp;All</source>
-        <translation>&amp;Tout nettoyer</translation>
+        <translation>Všechno s&amp;maž</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Send to multiple recipients at once</source>
-        <translation>Envoyer à plusieurs destinataires à la fois</translation>
+        <translation>Pošli více příjemcům naráz</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Add &amp;Recipient</source>
-        <translation>Ajouter un &amp;destinataire</translation>
+        <translation>Při&amp;dej příjemce</translation>
     </message>
     <message>
         <location line="+38"/>
         <source>Balance:</source>
-        <translation>Solde :</translation>
+        <translation>Stav účtu:</translation>
     </message>
     <message>
         <location filename="../sendcoinsdialog.cpp" line="-415"/>
         <source>Copy quantity</source>
-        <translation>Copier la quantité</translation>
+        <translation>Kopíruj počet</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy amount</source>
-        <translation>Copier le montant</translation>
+        <translation>Kopíruj částku</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy fee</source>
-        <translation>Copier les frais</translation>
+        <translation>Kopíruj poplatek</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy after fee</source>
-        <translation>Copier le montant après les frais</translation>
+        <translation>Kopíruj čistou částku</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy bytes</source>
-        <translation>Copier les octets</translation>
+        <translation>Kopíruj bajty</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy priority</source>
-        <translation>Copier la priorité</translation>
+        <translation>Kopíruj prioritu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy low output</source>
-        <translation>Copier la sortie faible</translation>
+        <translation>Kopíruj malý výstup</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy change</source>
-        <translation>Copier la monnaie</translation>
+        <translation>Kopíruj drobné</translation>
     </message>
     <message>
         <location line="+101"/>
@@ -2676,92 +2674,92 @@ une adresse I2P…</translation>
         <location line="+5"/>
         <location line="+4"/>
         <source>%1 to %2</source>
-        <translation>%1 à %2</translation>
+        <translation>%1 pro %2</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Are you sure you want to send?</source>
-        <translation>Êtes-vous sûr de vouloir envoyer ?</translation>
+        <translation>Jsi si jistý, že to chceš poslat?</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>added as transaction fee</source>
-        <translation>ajouté en tant que frais de transaction</translation>
+        <translation>přidán jako transakční poplatek</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Total Amount %1 (= %2)</source>
-        <translation>Montant total %1 (= %2)</translation>
+        <translation>Celková částka %1 (= %2)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>or</source>
-        <translation>ou</translation>
+        <translation>nebo</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Confirm send coins</source>
-        <translation>Confirmer l’envoi des pièces</translation>
+        <translation>Potvrď odeslání mincí</translation>
     </message>
     <message>
         <location line="+155"/>
         <source>Payment request expired</source>
-        <translation>La demande de paiement a expiré</translation>
+        <translation>Platební požadavek vypršel</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Invalid payment address %1</source>
-        <translation>Adresse de paiement invalide %1</translation>
+        <translation>Neplatná platební adresa %1</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation>L&apos;adresse du destinataire n’est pas valide, veuillez la vérifier.</translation>
+        <translation>Adresa příjemce je neplatná, překontroluj ji prosím.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation>Le montant à payer doit être supérieur à 0.</translation>
+        <translation>Odesílaná částka musí být větší než 0.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The amount exceeds your balance.</source>
-        <translation>Le montant dépasse votre solde.</translation>
+        <translation>Částka překračuje stav účtu.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation>Le montant dépasse votre solde lorsque les frais de transaction de %1 sont inclus.</translation>
+        <translation>Celková částka při připočítání poplatku %1 překročí stav účtu.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation>Adresse indentique trouvée, il n&apos;est possible d&apos;envoyer qu&apos;une fois à chaque adresse par opération d&apos;envoi.</translation>
+        <translation>Zaznamenána duplikovaná adresa; každá adresa může být v odesílané platbě pouze jednou.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Transaction creation failed!</source>
-        <translation>La création de la transaction a échoué !</translation>
+        <translation>Vytvoření transakce selhalo!</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>La transaction a été rejetée ! Ceci peut arriver si certaines pièces de votre portefeuille étaient déjà dépensées, par exemple si vous avez utilisé une copie de wallet.dat et que des pièces ont été dépensées dans la copie sans être marquées comme telles ici.</translation>
+        <translation>Transakce byla odmítnuta! Tohle může nastat, pokud nějaké mince z tvé peněženky už jednou byly utraceny, například pokud používáš kopii souboru wallet.dat a mince byly utraceny v druhé kopii, ale nebyly označeny jako utracené v této.</translation>
     </message>
     <message>
         <location line="+113"/>
         <source>Warning: Invalid Anoncoin address</source>
-        <translation>Attention : adresse Anoncoin invalide</translation>
+        <translation>Upozornění: Neplatná Anoncoinová adresa</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Warning: Unknown change address</source>
-        <translation>Attention : adresse de monnaie rendue inconnue</translation>
+        <translation>Upozornění: Neznámá adresa pro drobné</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>(no label)</source>
-        <translation>(pas d&apos;étiquette)</translation>
+        <translation>(bez označení)</translation>
     </message>
 </context>
 <context>
@@ -2769,22 +2767,22 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/sendcoinsentry.ui" line="+21"/>
         <source>This is a normal payment.</source>
-        <translation>Ceci est un paiement normal.</translation>
+        <translation>Tohle je normální platba.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Pay &amp;To:</source>
-        <translation>&amp;Payer à :</translation>
+        <translation>&amp;Komu:</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The address to send the payment to (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>L&apos;adresse à laquelle le paiement sera envoyé (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <translation>Adresa příjemce (např. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Choose previously used address</source>
-        <translation>Choisir une adresse déjà utilisée</translation>
+        <translation>Vyber již použitou adresu</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2794,7 +2792,7 @@ une adresse I2P…</translation>
     <message>
         <location line="+7"/>
         <source>Paste address from clipboard</source>
-        <translation>Coller l&apos;adresse depuis le presse-papier</translation>
+        <translation>Vlož adresu ze schránky</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2806,61 +2804,61 @@ une adresse I2P…</translation>
         <location line="+524"/>
         <location line="+536"/>
         <source>Remove this entry</source>
-        <translation>Enlever cette entrée</translation>
+        <translation>Smaž tento záznam</translation>
     </message>
     <message>
         <location line="-1044"/>
         <source>&amp;Label:</source>
-        <translation>É&amp;tiquette :</translation>
+        <translation>O&amp;značení:</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Enter a label for this address to add it to the list of used addresses</source>
-        <translation>Saisir une étiquette pour cette adresse afin de l&apos;ajouter à la liste d&apos;adresses utilisées</translation>
+        <translation>Zadej označení této adresy; obojí se ti pak uloží do adresáře</translation>
     </message>
     <message>
         <location line="+7"/>
         <location line="+521"/>
         <location line="+536"/>
         <source>A&amp;mount:</source>
-        <translation>&amp;Montant :</translation>
+        <translation>Čás&amp;tka:</translation>
     </message>
     <message>
         <location line="-1041"/>
         <source>Message:</source>
-        <translation>Message :</translation>
+        <translation>Zpráva:</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>A message that was attached to the anoncoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Anoncoin network.</source>
-        <translation>Un message qui était joint à l&apos;URI Anoncoin et qui sera stocké avec la transaction pour référence. Note : ce message ne sera pas envoyé par le réseau Anoncoin.</translation>
+        <translation>Zpráva, která byla připojena k anoncoin: URI a která se ti pro přehled uloží k transakci. Poznámka: Tahle zpráva se neposílá s platbou po Anoncoinové síti.</translation>
     </message>
     <message>
         <location line="+426"/>
         <source>This is an unverified payment request.</source>
-        <translation>Ceci est une demande de paiement non vérifiée.</translation>
+        <translation>Tohle je neověřený platební požadavek.</translation>
     </message>
     <message>
         <location line="+18"/>
         <location line="+532"/>
         <source>Pay To:</source>
-        <translation>Payer à :</translation>
+        <translation>Komu:</translation>
     </message>
     <message>
         <location line="-498"/>
         <location line="+536"/>
         <source>Memo:</source>
-        <translation>Mémo :</translation>
+        <translation>Poznámka:</translation>
     </message>
     <message>
         <location line="-56"/>
         <source>This is a verified payment request.</source>
-        <translation>Ceci est une demande de paiement vérifiée.</translation>
+        <translation>Tohle je ověřený platební požadavek.</translation>
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+31"/>
         <source>Enter a label for this address to add it to your address book</source>
-        <translation>Saisir une étiquette pour cette adresse afin de l’ajouter à votre carnet d’adresses</translation>
+        <translation>Zadej označení této adresy; obojí se ti pak uloží do adresáře</translation>
     </message>
 </context>
 <context>
@@ -2868,48 +2866,45 @@ une adresse I2P…</translation>
     <message>
         <location filename="../forms/i2pshowaddresses.ui" line="+20"/>
         <source>Dialog</source>
-        <translation>Dialogue</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <source>If you want to use a permanent I2P-address you have to set a &apos;mydestination&apos; option in the configuration file:</source>
-        <translation>Si vous voulez utiliser une adresse I2P permanente vous devez sélectionner l&apos;option &quot;mydestination&quot; dans le fichier de configuration:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
         <source>Ready to save parameter (If you want to use this address save this text in the configuration file and keep it secret):</source>
-        <translation>Prêt à enregistrer les paramètres (Si vous voulez utiliser cette adresse, sauvez ce texte dans le fichier de configuration et gardez-le secret):</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Address (you can publish it):</source>
-        <translation>Adresse (vous pouvez la publier):</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+20"/>
         <source>Short base32-address:</source>
-        <translation>Adresse base32 courte:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+22"/>
         <source>Copy &quot;mydestination&quot; parameter
 to the clipboard</source>
-        <translation>Copier le paramètre &quot;mydestination&quot; 
-dans le presse-papier</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Copy public address
 to the clipboard</source>
-        <translation>Copier l&apos;adresse publique 
-dans le presse-papier</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Copy b32-address
 to the clipboard</source>
-        <translation>Copier l&apos;adresse b32 
-dans le presse-papier</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2917,12 +2912,12 @@ dans le presse-papier</translation>
     <message>
         <location filename="../utilitydialog.cpp" line="+48"/>
         <source>Anoncoin Core is shutting down...</source>
-        <translation>Arrêt de Anoncoin Core...</translation>
+        <translation>Anoncoin Core se ukončuje...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do not shut down the computer until this window disappears.</source>
-        <translation>Ne pas fermer l&apos;ordinateur jusqu&apos;à la disparition de cette fenêtre.</translation>
+        <translation>Nevypínej počítač, dokud toto okno nezmizí.</translation>
     </message>
 </context>
 <context>
@@ -2930,28 +2925,28 @@ dans le presse-papier</translation>
     <message>
         <location filename="../forms/signverifymessagedialog.ui" line="+14"/>
         <source>Signatures - Sign / Verify a Message</source>
-        <translation>Signatures - Signer / Vérifier un message</translation>
+        <translation>Podpisy - podepsat/ověřit zprávu</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>&amp;Sign Message</source>
-        <translation>&amp;Signer un message</translation>
+        <translation>&amp;Podepiš zprávu</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>You can sign messages with your addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation>Vous pouvez signer des messages avec vos adresses pour prouver que vous les détenez. Faites attention de ne pas signer de vague car des attaques d&apos;hameçonnage peuvent essayer d&apos;usurper votre identité par votre signature. Ne signez que des déclarations entièrement détaillées et avec lesquelles vous serez d&apos;accord.</translation>
+        <translation>Podepsáním zprávy svými adresami můžeš prokázat, že je skutečně vlastníš. Buď opatrný a nepodepisuj nic vágního; například při phishingových útocích můžeš být lákán, abys něco takového podepsal. Podepisuj pouze zcela úplná a detailní prohlášení, se kterými souhlasíš.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The address to sign the message with (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>L&apos;adresse avec laquelle le message sera signé (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <translation>Adresa, kterou se zpráva podepíše (např. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+7"/>
         <location line="+210"/>
         <source>Choose previously used address</source>
-        <translation>Choisir une adresse précédemment utilisée</translation>
+        <translation>Vyber již použitou adresu</translation>
     </message>
     <message>
         <location line="-200"/>
@@ -2962,7 +2957,7 @@ dans le presse-papier</translation>
     <message>
         <location line="-200"/>
         <source>Paste address from clipboard</source>
-        <translation>Coller une adresse depuis le presse-papier</translation>
+        <translation>Vlož adresu ze schránky</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2972,84 +2967,84 @@ dans le presse-papier</translation>
     <message>
         <location line="+12"/>
         <source>Enter the message you want to sign here</source>
-        <translation>Saisir ici le message que vous désirez signer</translation>
+        <translation>Sem vepiš zprávu, kterou chceš podepsat</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Signature</source>
-        <translation>Signature</translation>
+        <translation>Podpis</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Copy the current signature to the system clipboard</source>
-        <translation>Copier la signature actuelle dans le presse-papier</translation>
+        <translation>Zkopíruj aktuálně vybraný podpis do systémové schránky</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Sign the message to prove you own this Anoncoin address</source>
-        <translation>Signer le message pour prouver que vous détenez cette adresse Anoncoin</translation>
+        <translation>Podepiš zprávu, čímž prokážeš, že jsi vlastníkem této Anoncoinové adresy</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sign &amp;Message</source>
-        <translation>Signer le &amp;message</translation>
+        <translation>Po&amp;depiš zprávu</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Reset all sign message fields</source>
-        <translation>Réinitialiser tous les champs de signature de message</translation>
+        <translation>Vymaž všechna pole formuláře pro podepsání zrávy</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+143"/>
         <source>Clear &amp;All</source>
-        <translation>&amp;Tout nettoyer</translation>
+        <translation>Všechno &amp;smaž</translation>
     </message>
     <message>
         <location line="-84"/>
         <source>&amp;Verify Message</source>
-        <translation>&amp;Vérifier un message</translation>
+        <translation>&amp;Ověř zprávu</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Enter the signing address, message (ensure you copy line breaks, spaces, tabs, etc. exactly) and signature below to verify the message. Be careful not to read more into the signature than what is in the signed message itself, to avoid being tricked by a man-in-the-middle attack.</source>
-        <translation>Saisir ci-dessous l&apos;adresse de signature, le message (assurez-vous d&apos;avoir copié exactement les retours à la ligne, les espaces, tabulations etc.) et la signature pour vérifier le message. Faire attention à ne pas déduire davantage de la signature que ce qui est contenu dans le message signé lui-même pour éviter d&apos;être trompé par une attaque d&apos;homme du milieu.</translation>
+        <translation>K ověření podpisu zprávy zadej podepisující adresu, zprávu (ověř si, že správně kopíruješ zalomení řádků, mezery, tabulátory apod.) a podpis. Dávej pozor na to, abys nezkopíroval do podpisu víc, než co je v samotné podepsané zprávě, abys nebyl napálen man-in-the-middle útokem.</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>The address the message was signed with (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>L&apos;adresse avec laquelle le message a été signé (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <translation>Adresa, kterou je zpráva podepsána (např. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+37"/>
         <source>Verify the message to ensure it was signed with the specified Anoncoin address</source>
-        <translation>Vérifier le message pour vous assurer qu&apos;il a bien été signé par l&apos;adresse Anoncoin spécifiée</translation>
+        <translation>Ověř zprávu, aby ses ujistil, že byla podepsána danou Anoncoinovou adresou</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Verify &amp;Message</source>
-        <translation>Vérifier le &amp;message</translation>
+        <translation>O&amp;věř zprávu</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Reset all verify message fields</source>
-        <translation>Réinitialiser tous les champs de vérification de message</translation>
+        <translation>Vymaž všechna pole formuláře pro ověření zrávy</translation>
     </message>
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+30"/>
         <source>Click &quot;Sign Message&quot; to generate signature</source>
-        <translation>Cliquez sur « Signer le message » pour générer la signature</translation>
+        <translation>Kliknutím na &quot;Podepiš zprávu&quot; vygeneruješ podpis</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter an Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>Entrer une adresse Anoncoin (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+83"/>
         <location line="+80"/>
         <source>The entered address is invalid.</source>
-        <translation>L&apos;adresse saisie est invalide.</translation>
+        <translation>Zadaná adresa je neplatná.</translation>
     </message>
     <message>
         <location line="-80"/>
@@ -3057,59 +3052,59 @@ dans le presse-papier</translation>
         <location line="+72"/>
         <location line="+8"/>
         <source>Please check the address and try again.</source>
-        <translation>Veuillez vérifier l&apos;adresse et réessayer.</translation>
+        <translation>Zkontroluj ji prosím a zkus to pak znovu.</translation>
     </message>
     <message>
         <location line="-80"/>
         <location line="+80"/>
         <source>The entered address does not refer to a key.</source>
-        <translation>L&apos;adresse saisie ne fait pas référence à une clef.</translation>
+        <translation>Zadaná adresa nepasuje ke klíči.</translation>
     </message>
     <message>
         <location line="-72"/>
         <source>Wallet unlock was cancelled.</source>
-        <translation>Le déverrouillage du portefeuille a été annulé.</translation>
+        <translation>Odemčení peněženky bylo zrušeno.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Private key for the entered address is not available.</source>
-        <translation>La clef privée n&apos;est pas disponible pour l&apos;adresse indiquée.</translation>
+        <translation>Soukromý klíč pro zadanou adresu není dostupný.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Message signing failed.</source>
-        <translation>La signature du message a échoué.</translation>
+        <translation>Podepisování zprávy selhalo.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Message signed.</source>
-        <translation>Le message a été signé.</translation>
+        <translation>Zpráv podepsána.</translation>
     </message>
     <message>
         <location line="+58"/>
         <source>The signature could not be decoded.</source>
-        <translation>La signature n&apos;a pu être décodée.</translation>
+        <translation>Podpis nejde dekódovat.</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+13"/>
         <source>Please check the signature and try again.</source>
-        <translation>Veuillez vérifier la signature et réessayer.</translation>
+        <translation>Zkontroluj ho prosím a zkus to pak znovu.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The signature did not match the message digest.</source>
-        <translation>La signature ne correspond pas à l&apos;empreinte du message.</translation>
+        <translation>Podpis se neshoduje s hašem zprávy.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Message verification failed.</source>
-        <translation>Échec de la vérification du message.</translation>
+        <translation>Ověřování zprávy selhalo.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Message verified.</source>
-        <translation>Message vérifié.</translation>
+        <translation>Zpráva ověřena.</translation>
     </message>
 </context>
 <context>
@@ -3117,7 +3112,7 @@ dans le presse-papier</translation>
     <message>
         <location filename="../splashscreen.cpp" line="+35"/>
         <source>ANONCOIN CORE DEVELOPERS</source>
-        <translation>LES DÉVELOPPEURS ANONCOIN CORE</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3125,7 +3120,7 @@ dans le presse-papier</translation>
     <message>
         <location filename="../trafficgraphwidget.cpp" line="+80"/>
         <source>KB/s</source>
-        <translation>Ko/s</translation>
+        <translation>kB/s</translation>
     </message>
 </context>
 <context>
@@ -3133,97 +3128,97 @@ dans le presse-papier</translation>
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="+29"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Ouvert pour %n bloc de plus</numerusform><numerusform>Ouvert pour %n blocs de plus</numerusform></translation>
+        <translation><numerusform>Otevřeno pro 1 další blok</numerusform><numerusform>Otevřeno pro %n další bloky</numerusform><numerusform>Otevřeno pro %n dalších bloků</numerusform></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Open until %1</source>
-        <translation>Ouvert jusqu&apos;à %1</translation>
+        <translation>Otřevřeno dokud %1</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>conflicted</source>
-        <translation>en conflit</translation>
+        <translation>kolidující</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1/offline</source>
-        <translation>%1/hors ligne</translation>
+        <translation>%1/offline</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1/unconfirmed</source>
-        <translation>%1/non confirmée</translation>
+        <translation>%1/nepotvrzeno</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 confirmations</source>
-        <translation>%1 confirmations</translation>
+        <translation>%1 potvrzení</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Status</source>
-        <translation>État</translation>
+        <translation>Stav</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>, has not been successfully broadcast yet</source>
-        <translation>, n’a pas encore été diffusée avec succès</translation>
+        <translation>, ještě nebylo rozesláno</translation>
     </message>
     <message numerus="yes">
         <location line="+2"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>, diffusée à travers %n nœud</numerusform><numerusform>, diffusée à travers %n nœuds</numerusform></translation>
+        <translation><numerusform>, rozesláno přes 1 uzel</numerusform><numerusform>, rozesláno přes %n uzly</numerusform><numerusform>, rozesláno přes %n uzlů</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Source</source>
-        <translation>Source</translation>
+        <translation>Zdroj</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Generated</source>
-        <translation>Généré</translation>
+        <translation>Vygenerováno</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+13"/>
         <location line="+72"/>
         <source>From</source>
-        <translation>De</translation>
+        <translation>Od</translation>
     </message>
     <message>
         <location line="-72"/>
         <source>unknown</source>
-        <translation>inconnu</translation>
+        <translation>neznámo</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+20"/>
         <location line="+69"/>
         <source>To</source>
-        <translation>À</translation>
+        <translation>Pro</translation>
     </message>
     <message>
         <location line="-87"/>
         <source>own address</source>
-        <translation>votre propre adresse</translation>
+        <translation>vlastní adresa</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+69"/>
         <source>watch-only</source>
-        <translation>Publique (watch-only)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-67"/>
         <source>label</source>
-        <translation>étiquette</translation>
+        <translation>označení</translation>
     </message>
     <message>
         <location line="+34"/>
@@ -3232,102 +3227,102 @@ dans le presse-papier</translation>
         <location line="+26"/>
         <location line="+53"/>
         <source>Credit</source>
-        <translation>Crédit</translation>
+        <translation>Příjem</translation>
     </message>
     <message numerus="yes">
         <location line="-142"/>
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>arrive à maturité dans %n bloc de plus</numerusform><numerusform>arrive à maturité dans %n blocs de plus</numerusform></translation>
+        <translation><numerusform>dozraje po jednom bloku</numerusform><numerusform>dozraje po %n blocích</numerusform><numerusform>dozraje po %n blocích</numerusform></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>not accepted</source>
-        <translation>refusé</translation>
+        <translation>neakceptováno</translation>
     </message>
     <message>
         <location line="+59"/>
         <location line="+25"/>
         <location line="+53"/>
         <source>Debit</source>
-        <translation>Débit</translation>
+        <translation>Výdaj</translation>
     </message>
     <message>
         <location line="-68"/>
         <source>Total debit</source>
-        <translation>Total débit</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Total credit</source>
-        <translation>Total crédit</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Transaction fee</source>
-        <translation>Frais de transaction</translation>
+        <translation>Transakční poplatek</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Net amount</source>
-        <translation>Montant net</translation>
+        <translation>Čistá částka</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+9"/>
         <source>Message</source>
-        <translation>Message</translation>
+        <translation>Zpráva</translation>
     </message>
     <message>
         <location line="-7"/>
         <source>Comment</source>
-        <translation>Commentaire</translation>
+        <translation>Komentář</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Transaction ID</source>
-        <translation>ID de la transaction</translation>
+        <translation>ID transakce</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Merchant</source>
-        <translation>Marchand</translation>
+        <translation>Obchodník</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Generated coins must mature %1 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Les pièces générées doivent mûrir pendant %1 blocs avant de pouvoir être dépensées. Lorsque vous avez généré ce bloc, il a été diffusé sur le réseau pour être ajouté à la chaîne de blocs. S’il échoue a intégrer la chaîne, son état sera modifié en « non accepté » et il ne sera pas possible de le dépenser. Ceci peut arriver occasionnellement si un autre nœud génère un bloc à quelques secondes du votre.</translation>
+        <translation>Vygenerované mince musí čekat %1 bloků, než mohou být utraceny. Když jsi vygeneroval tenhle blok, tak byl rozposlán do sítě, aby byl přidán do řetězce bloků. Pokud se mu nepodaří dostat se do řetězce, změní se na &quot;neakceptovaný&quot; a nepůjde utratit. To se občas může stát, pokud jiný uzel vygeneruje blok zhruba ve stejném okamžiku jako ty.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Debug information</source>
-        <translation>Informations de débogage</translation>
+        <translation>Ladicí informace</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Transaction</source>
-        <translation>Transaction</translation>
+        <translation>Transakce</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Inputs</source>
-        <translation>Entrants</translation>
+        <translation>Vstupy</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Amount</source>
-        <translation>Montant</translation>
+        <translation>Částka</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+1"/>
         <source>true</source>
-        <translation>vrai</translation>
+        <translation>true</translation>
     </message>
     <message>
         <location line="-1"/>
         <location line="+1"/>
         <source>false</source>
-        <translation>faux</translation>
+        <translation>false</translation>
     </message>
 </context>
 <context>
@@ -3335,12 +3330,12 @@ dans le presse-papier</translation>
     <message>
         <location filename="../forms/transactiondescdialog.ui" line="+14"/>
         <source>Transaction details</source>
-        <translation>Détails de la transaction</translation>
+        <translation>Detaily transakce</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>This pane shows a detailed description of the transaction</source>
-        <translation>Ce panneau affiche une description détaillée de la transaction</translation>
+        <translation>Toto okno zobrazuje detailní popis transakce</translation>
     </message>
 </context>
 <context>
@@ -3348,132 +3343,132 @@ dans le presse-papier</translation>
     <message>
         <location filename="../transactiontablemodel.cpp" line="+237"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Address</source>
-        <translation>Adresse</translation>
+        <translation>Adresa</translation>
     </message>
     <message numerus="yes">
         <location line="+55"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Ouvert pour %n bloc de plus</numerusform><numerusform>Ouvert pour %n blocs de plus</numerusform></translation>
+        <translation><numerusform>Otevřeno pro 1 další blok</numerusform><numerusform>Otevřeno pro %n další bloky</numerusform><numerusform>Otevřeno pro %n dalších bloků</numerusform></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Open until %1</source>
-        <translation>Ouvert jusqu&apos;à %1</translation>
+        <translation>Otřevřeno dokud %1</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Offline</source>
-        <translation>Hors ligne</translation>
+        <translation>Offline</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Unconfirmed</source>
-        <translation>Non confirmé</translation>
+        <translation>Nepotvrzeno</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Confirming (%1 of %2 recommended confirmations)</source>
-        <translation>Confirmation (%1 sur %2 confirmations recommandées)</translation>
+        <translation>Potvrzuje se (%1 z %2 doporučených potvrzení)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Confirmed (%1 confirmations)</source>
-        <translation>Confirmée (%1 confirmations)</translation>
+        <translation>Potvrzeno (%1 potvrzení)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Conflicted</source>
-        <translation>En conflit</translation>
+        <translation>V kolizi</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Immature (%1 confirmations, will be available after %2)</source>
-        <translation>Immature (%1 confirmations, sera disponible après %2)</translation>
+        <translation>Nedozráno (%1 potvrzení, bude k dispozici za %2)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>This block was not received by any other nodes and will probably not be accepted!</source>
-        <translation>Ce bloc n’a été reçu par aucun autre nœud et ne sera probablement pas accepté !</translation>
+        <translation>Tento blok nedostal žádný jiný uzel a pravděpodobně nebude akceptován!</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Generated but not accepted</source>
-        <translation>Généré mais pas accepté</translation>
+        <translation>Vygenerováno, ale neakceptováno</translation>
     </message>
     <message>
         <location line="+39"/>
         <source>Received with</source>
-        <translation>Reçue avec</translation>
+        <translation>Přijato do</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Received from</source>
-        <translation>Reçue de</translation>
+        <translation>Přijato od</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sent to</source>
-        <translation>Envoyée à</translation>
+        <translation>Posláno na</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Payment to yourself</source>
-        <translation>Paiement à vous-même</translation>
+        <translation>Platba sama sobě</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Mined</source>
-        <translation>Miné</translation>
+        <translation>Vytěženo</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>watch-only</source>
-        <translation>Publique (watch-only)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+15"/>
         <source>(n/a)</source>
-        <translation>(n.d)</translation>
+        <translation>(n/a)</translation>
     </message>
     <message>
         <location line="+209"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
-        <translation>État de la transaction. Laissez le pointeur de la souris sur ce champ pour voir le nombre de confirmations.</translation>
+        <translation>Stav transakce. Najetím myši na toto políčko si zobrazíš počet potvrzení.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Date and time that the transaction was received.</source>
-        <translation>Date et heure de réception de la transaction.</translation>
+        <translation>Datum a čas přijetí transakce.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Type of transaction.</source>
-        <translation>Type de transaction.</translation>
+        <translation>Druh transakce.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Whether or not a watch-only address is involved in this transaction.</source>
-        <translation>Si une adresse publique (watch-only) est impliquée dans cette transaction ou non.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Destination address of transaction.</source>
-        <translation>L’adresse de destination de la transaction.</translation>
+        <translation>Cílová adresa transakce.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Amount removed from or added to balance.</source>
-        <translation>Montant ajouté ou enlevé au solde.</translation>
+        <translation>Částka odečtená z nebo přičtená k účtu.</translation>
     </message>
 </context>
 <context>
@@ -3482,142 +3477,142 @@ dans le presse-papier</translation>
         <location filename="../transactionview.cpp" line="+68"/>
         <location line="+16"/>
         <source>All</source>
-        <translation>Toutes</translation>
+        <translation>Vše</translation>
     </message>
     <message>
         <location line="-15"/>
         <source>Today</source>
-        <translation>Aujourd’hui</translation>
+        <translation>Dnes</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This week</source>
-        <translation>Cette semaine</translation>
+        <translation>Tento týden</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This month</source>
-        <translation>Ce mois-ci</translation>
+        <translation>Tento měsíc</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Last month</source>
-        <translation>Le mois dernier</translation>
+        <translation>Minulý měsíc</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This year</source>
-        <translation>Cette année</translation>
+        <translation>Letos</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Range...</source>
-        <translation>Intervalle…</translation>
+        <translation>Rozsah...</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Received with</source>
-        <translation>Reçue avec</translation>
+        <translation>Přijato</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Sent to</source>
-        <translation>Envoyée à</translation>
+        <translation>Posláno</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>To yourself</source>
-        <translation>À vous-même</translation>
+        <translation>Sám sobě</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Mined</source>
-        <translation>Miné</translation>
+        <translation>Vytěženo</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Other</source>
-        <translation>Autres</translation>
+        <translation>Ostatní</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Enter address or label to search</source>
-        <translation>Saisir une adresse ou une étiquette à rechercher</translation>
+        <translation>Zadej adresu nebo označení pro její vyhledání</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Min amount</source>
-        <translation>Montant min.</translation>
+        <translation>Minimální částka</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>Copy address</source>
-        <translation>Copier l’adresse</translation>
+        <translation>Kopíruj adresu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy label</source>
-        <translation>Copier l’étiquette</translation>
+        <translation>Kopíruj její označení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy amount</source>
-        <translation>Copier le montant</translation>
+        <translation>Kopíruj částku</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy transaction ID</source>
-        <translation>Copier l&apos;ID de la transaction</translation>
+        <translation>Kopíruj ID transakce</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Edit label</source>
-        <translation>Modifier l’étiquette</translation>
+        <translation>Uprav označení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show transaction details</source>
-        <translation>Afficher les détails de la transaction</translation>
+        <translation>Zobraz detaily transakce</translation>
     </message>
     <message>
         <location line="+179"/>
         <source>Export Transaction History</source>
-        <translation>Exporter l&apos;historique des transactions</translation>
+        <translation>Exportuj transakční historii</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Comma separated file (*.csv)</source>
-        <translation>Valeurs séparées par des virgules (*.csv)</translation>
+        <translation>CSV formát (*.csv)</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Confirmed</source>
-        <translation>Confirmée</translation>
+        <translation>Potvrzeno</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Watch-only</source>
-        <translation>Publique (watch-only)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Label</source>
-        <translation>Étiquette</translation>
+        <translation>Označení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Address</source>
-        <translation>Adresse</translation>
+        <translation>Adresa</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3627,32 +3622,32 @@ dans le presse-papier</translation>
     <message>
         <location line="+3"/>
         <source>Exporting Failed</source>
-        <translation>L&apos;exportation a échoué</translation>
+        <translation>Exportování selhalo</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>There was an error trying to save the transaction history to %1.</source>
-        <translation>Une erreur est survenue lors de l&apos;enregistrement de l&apos;historique des transactions vers %1.</translation>
+        <translation>Při ukládání transakční historie do %1 se přihodila nějaká chyba.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Exporting Successful</source>
-        <translation>Exportation réussie</translation>
+        <translation>Úspěšně vyexportováno</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The transaction history was successfully saved to %1.</source>
-        <translation>L&apos;historique des transactions a été sauvegardée avec succès vers %1.</translation>
+        <translation>Transakční historie byla v pořádku uložena do %1.</translation>
     </message>
     <message>
         <location line="+109"/>
         <source>Range:</source>
-        <translation>Intervalle :</translation>
+        <translation>Rozsah:</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>to</source>
-        <translation>à</translation>
+        <translation>až</translation>
     </message>
 </context>
 <context>
@@ -3660,7 +3655,7 @@ dans le presse-papier</translation>
     <message>
         <location filename="../anoncoingui.cpp" line="+135"/>
         <source>Unit to show amounts in. Click to select another unit.</source>
-        <translation>Unité pour montrer les montants entrants. Cliquer pour sélectionner une autre unité.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3668,7 +3663,7 @@ dans le presse-papier</translation>
     <message>
         <location filename="../walletframe.cpp" line="+27"/>
         <source>No wallet has been loaded.</source>
-        <translation>Aucun portefeuille de chargé.</translation>
+        <translation>Žádná peněženka se nenačetla.</translation>
     </message>
 </context>
 <context>
@@ -3676,7 +3671,7 @@ dans le presse-papier</translation>
     <message>
         <location filename="../walletmodel.cpp" line="+286"/>
         <source>Send Coins</source>
-        <translation>Envoyer des pièces</translation>
+        <translation>Pošli mince</translation>
     </message>
 </context>
 <context>
@@ -3684,42 +3679,42 @@ dans le presse-papier</translation>
     <message>
         <location filename="../walletview.cpp" line="+45"/>
         <source>&amp;Export</source>
-        <translation>&amp;Exporter</translation>
+        <translation>&amp;Export</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Export the data in the current tab to a file</source>
-        <translation>Exporter les données de l&apos;onglet courant vers un fichier</translation>
+        <translation>Exportuj data z tohoto panelu do souboru</translation>
     </message>
     <message>
         <location line="+184"/>
         <source>Backup Wallet</source>
-        <translation>Sauvegarder le portefeuille</translation>
+        <translation>Záloha peněženky</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet Data (*.dat)</source>
-        <translation>Données de portefeuille (*.dat)</translation>
+        <translation>Data peněženky (*.dat)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Backup Failed</source>
-        <translation>Échec de la sauvegarde</translation>
+        <translation>Zálohování selhalo</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>There was an error trying to save the wallet data to %1.</source>
-        <translation>Une erreur est survenue lors de l&apos;enregistrement des données de portefeuille vers %1.</translation>
+        <translation>Při ukládání peněženky do %1 se přihodila nějaká chyba.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Backup Successful</source>
-        <translation>Sauvegarde réussie</translation>
+        <translation>Úspěšně zazálohováno</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The wallet data was successfully saved to %1.</source>
-        <translation>Les données de portefeuille ont été enregistrées avec succès vers %1</translation>
+        <translation>Data z peněženky byla v pořádku uložena do %1.</translation>
     </message>
 </context>
 <context>
@@ -3737,200 +3732,196 @@ If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
 for example: alertnotify=echo %%s | mail -s &quot;Anoncoin Alert&quot; admin@foo.com
 </source>
-        <translation>%s, vous devez définir un mot de passe rpc dans le fichier de configuration : 
+        <translation>%s, musíš nastavit rpcpassword v konfiguračním souboru:
 %s
-Il vous est conseillé d&apos;utiliser le mot de passe aléatoire suivant :
+Je vhodné použít následující náhodné heslo:
 rpcuser=anoncoinrpc
 rpcpassword=%s
-(vous n&apos;avez pas besoin de retenir ce mot de passe)
-Le nom d&apos;utilisateur et le mot de passe NE DOIVENT PAS être identiques.
-Si le fichier n&apos;existe pas, créez-le avec les droits de lecture accordés au propriétaire.
-Il est aussi conseillé de régler alertnotify pour être prévenu des problèmes ;
-par exemple : alertnotify=echo %%s | mail -s &quot;Alerte Anoncoin&quot; admin@foo.com
+(není potřeba si ho pamatovat)
+rpcuser a rpcpassword NESMÍ být stejné.
+Pokud konfigurační soubor ještě neexistuje, vytvoř ho tak, aby ho mohl číst pouze vlastník.
+Je také doporučeno si nastavit alertnotify, abys byl upozorněn na případné problémy;
+například: alertnotify=echo %%s | mail -s &quot;Anoncoin Alert&quot; admin@foo.com
 </translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</source>
-        <translation>Chiffrements acceptables (par défaut : TLSv1.2+HIGH : TLSv1+HIGH : !SSLv2 : !aNULL : !eNULL : !3DES : @STRENGTH)</translation>
+        <translation>Akceptovatelné šifry (výchozí: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation>Une erreur est survenue lors du réglage du port RPC %u pour écouter sur IPv4 : %s</translation>
+        <translation>Při nastavování naslouchacího RPC portu %i pro IPv4 nastala chyba: %s</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation>Une erreur est survenue lors du réglage du port RPC %u pour écouter sur IPv6, retour à IPv4 : %s</translation>
+        <translation>Při nastavování naslouchacího RPC portu %u pro IPv6 nastala chyba, vracím se k IPv4: %s</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>
-        <translation>Se lier à l&apos;adresse donnée et toujours l&apos;écouter. Utilisez la notation [host]:port pour l&apos;IPv6</translation>
+        <translation>Poslouchat na zadané adrese. Pro zápis IPv6 adresy použij notaci [adresa]:port</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Cannot obtain a lock on data directory %s. Anoncoin Core is probably already running.</source>
-        <translation>Impossible d’obtenir un verrou sur le répertoire de données %s. Anoncoin Core fonctionne probablement déjà.</translation>
+        <translation>Nedaří se mi získat zámek na datový adresář %s. Anoncoin Core pravděpodobně už jednou běží.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Continuously rate-limit free transactions to &lt;n&gt;*1000 bytes per minute (default:15)</source>
-        <translation>Limiter continuellement les transactions gratuites à &lt;n&gt;*1000 octets par minute (par défaut : 15)</translation>
+        <translation>Kontinuálně omezovat bezpoplatkové transakce na &lt;n&gt;*1000 bajtů za minutu (výchozí: 15)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Enter regression test mode, which uses a special chain in which blocks can be solved instantly.</source>
-        <translation>Passer en mode de test de régression qui utilise une chaîne spéciale dans laquelle les blocs sont résolus instantanément.</translation>
+        <translation>Přepnout do módu testování regresí, který používá speciální řetězec, ve kterém mohou být bloky okamžitě vyřešeny.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error: Listening for incoming connections failed (listen returned error %s)</source>
-        <translation>Erreur: L&apos;écoute de connexions entrantes a échoué (l&apos;écoute a retourné l&apos;erreur %s)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Erreur : La transaction a été rejetée ! Ceci peut arriver si certaines pièces de votre portefeuille étaient déjà dépensées, par exemple si vous avez utilisé une copie de wallet.dat et les pièces ont été dépensées avec cette copie sans être marquées comme tel ici.</translation>
+        <translation>Chyba: Transakce byla odmítnuta! Tohle může nastat, pokud nějaké mince z tvé peněženky už jednou byly utraceny, například pokud používáš kopii souboru wallet.dat a mince byly utraceny v druhé kopii, ale nebyly označeny jako utracené v této.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!</source>
-        <translation>Erreur : Cette transaction nécessite des frais de transaction d&apos;au moins %s en raison de son montant, de sa complexité ou de l&apos;utilisation de fonds reçus récemment !</translation>
+        <translation>Chyba: Tahle transakce vyžaduje transakční poplatek nejméně %s kvůli velikosti zasílané částky, komplexnosti nebo použití nedávno přijatých mincí!</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error: Unsupported argument -socks found. Setting SOCKS version isn&apos;t possible anymore, only SOCKS5 proxies are supported.</source>
-        <translation>Erreur: l&apos;argument non-supporté -socks trouvé. Il n&apos;est plus possible d&apos;utiliser la version SOCKS, uniquement les proxies SOCKS5 sont supportés.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>Execute command when a relevant alert is received or we see a really long fork (%s in cmd is replaced by message)</source>
-        <translation>Exécuter une commande lorsqu&apos;une alerte pertinente est reçue ou si nous voyons une bifurcation vraiment étendue (%s dans la commande est remplacé par le message)</translation>
+        <translation>Spustit příkaz, když přijde relevantní upozornění nebo když dojde k opravdu dlouhému rozštěpení řetezce bloků (%s se v příkazu nahradí zprávou)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
-        <translation>Exécuter la commande lorsqu&apos;une transaction de portefeuille change (%s dans la commande est remplacée par TxID)</translation>
+        <translation>Spustit příkaz, když se objeví transakce týkající se peněženky (%s se v příkazu nahradí za TxID)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
-        <translation>Exécuter la commande lorsque le meilleur bloc change (%s dans cmd est remplacé par le hachage du bloc)</translation>
+        <translation>Spustit příkaz, když se změní nejlepší blok (%s se v příkazu nahradí hashem bloku)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Fees smaller than this are considered zero fee (for transaction creation) (default:</source>
-        <translation>Les frais inférieurs à ce seuil sont considérés comme nuls (pour la création de transactions) (par défaut :</translation>
+        <translation>Poplatky menší než tato hodnota jsou považovány za nulové (pro vytváření transakcí) (výchozí:</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Flush database activity from memory pool to disk log every &lt;n&gt; megabytes (default: 100)</source>
-        <translation>Purger l’activité de la base de données de la zone de mémoire vers le journal sur disque tous les &lt;n&gt; mégaoctets (par défaut : 100)</translation>
+        <translation>Promítnout databázovou aktivitu z paměťového prostoru do záznamu na disku každých &lt;n&gt; megabajtů (výchozí: 100)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>How thorough the block verification of -checkblocks is (0-4, default: 3)</source>
-        <translation>Degré de profondeur de la vérification des blocs -checkblocks (0-4, par défaut : 3)</translation>
+        <translation>Jak moc důkladná má být verifikace bloků -checkblocks (0-4, výchozí: 3)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>In this mode -genproclimit controls how many blocks are generated immediately.</source>
-        <translation>Dans ce mode -genproclimit contrôle combien de blocs sont générés immédiatement.</translation>
+        <translation>V tomto módu -genproclimit určuje, kolik bloků je vygenerováno okamžitě.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9332 or testnet: 19332)</source>
-        <translation>Ecouter les connexions JSON-RPC sur &lt;port&gt; (par défaut: 9332 ou réseau test: 19332)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>Délai en secondes de refus de reconnexion pour les pairs présentant un mauvais comportement (par défaut : 86400)</translation>
+        <translation>Doba ve vteřinách, po kterou se nebudou moci zlobivé uzly znovu připojit (výchozí: 86400)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Output debugging information (default: 0, supplying &lt;category&gt; is optional)</source>
-        <translation>Extraire les informations de débogage (par défaut : 0, fournir &lt;category&gt; est optionnel)</translation>
+        <translation>Tisknout ladicí informace (výchozí: 0, zadání &lt;category&gt; je volitelné)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Query for peer addresses via DNS lookup, if low on addresses (default: 1 unless -connect)</source>
-        <translation>Requête pour adresses de pairs par recherche DNS, si peu d&apos;adresses (par défaut: 1 sauf si -connect)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: %d)</source>
-        <translation>Définir la taille maximale en octets des transactions prioritaires/à frais modiques (par défaut : %d)</translation>
+        <translation>Nastavit maximální velikost prioritních/nízkopoplatkových transakcí v bajtech (výchozí: %d)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Set the number of script verification threads (%u to %d, 0 = auto, &lt;0 = leave that many cores free, default: %d)</source>
-        <translation>Définir le nombre d&apos;exétrons de vérification des scripts (%u à %d, 0 = auto, &lt; 0 = laisser ce nombre de cœurs inutilisés, par défaut : %d)</translation>
+        <translation>Nastavení počtu vláken pro verifikaci skriptů (%u až %d, 0 = automaticky, &lt;0 = nechat daný počet jader volný, výchozí: 0)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Set the processor limit for when generation is on (-1 = unlimited, default: -1)</source>
-        <translation>Définir la limite processeur définissant quand la génération est en fonction (-1 = illimité, par défaut : -1)</translation>
+        <translation>Nastavit omezení procesoru pro zapnuté generování (-1 = bez omezení, výchozí: -1)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
-        <translation>Ceci est une pré-version de test - l&apos;utiliser à vos risques et périls - ne pas l&apos;utiliser pour miner ou pour des applications marchandes</translation>
+        <translation>Tohle je testovací verze – používej ji jen na vlastní riziko, ale rozhodně ji nepoužívej k těžbě nebo pro obchodní aplikace</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Unable to bind to %s on this computer. Anoncoin Core is probably already running.</source>
-        <translation>Impossible de se lier à %s sur cet ordinateur. Anoncoin Core fonctionne probablement déjà.</translation>
+        <translation>Nedaří se mi připojit na %s na tomhle počítači. Anoncoin Core už pravděpodobně jednou běží.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: -proxy)</source>
-        <translation>Utiliser un serveur mandataire SOCKS5 séparé pour atteindre les pairs par les services cachés de Tor (par défaut : -proxy)</translation>
+        <translation>Použít samostatnou SOCKS5 proxy ke spojení s peery přes skryté služby v Toru (výchozí: -proxy)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
-        <translation>Attention : -paytxfee est réglée sur un montant très élevé ! Il s&apos;agit des frais de transaction que vous payerez si vous envoyez une transaction.</translation>
+        <translation>Upozornění: -paytxfee je nastaveno velmi vysoko! Toto je transakční poplatek, který zaplatíš za každou poslanou transakci.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
-        <translation>Attention : Le réseau ne semble pas totalement d&apos;accord ! Quelques mineurs semblent éprouver des difficultés.</translation>
+        <translation>Upozornění: Síť podle všeho není v konzistentním stavu. Někteří těžaři jsou zřejmě v potížích.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.</source>
-        <translation>Attention : Nous ne semblons pas être en accord complet avec nos pairs ! Vous pourriez avoir besoin d&apos;effectuer une mise à niveau, ou d&apos;autres nœuds du réseau pourraient avoir besoin d&apos;effectuer une mise à niveau.</translation>
+        <translation>Upozornění: Nesouhlasím zcela se svými protiuzly! Možná potřebuji aktualizovat nebo ostatní uzly potřebují aktualizovat.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation>Avertissement : une erreur est survenue lors de la lecture de wallet.dat ! Toutes les clefs ont été lues correctement mais les données de transaction ou les entrées du carnet d&apos;adresses sont peut-être incorrectes ou manquantes.</translation>
+        <translation>Upozornění: nastala chyba při čtení souboru wallet.dat! Všechny klíče se přečetly správně, ale data o transakcích nebo záznamy v adresáři mohou chybět či být nesprávné.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation>Avertissement : wallet.dat corrompu, données récupérées ! Le fichier wallet.dat original a été enregistré en tant que wallet.{timestamp}.bak dans %s ; si votre solde ou transactions sont incorrects vous devriez effectuer une restauration depuis une sauvegarde.</translation>
+        <translation>Upozornění: soubor wallet.dat je poškozený, data jsou však zachráněna! Původní soubor wallet.dat je uložený jako wallet.{timestamp}.bak v %s. Pokud je stav tvého účtu nebo transakce nesprávné, zřejmě bys měl obnovit zálohu.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>
 If you want to use a permanent I2P-address you have to set options in the configuration file:
 Your Config file is: </source>
-        <translation>
-Si vous voulez utiliser une adresse I2P permanente vous devez sélectionner les options dans le fichier de configuration: 
-Votre fichier de configuration est:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>
 This is your Address + private key (save this text in the configuration file and keep it secret):
 </source>
-        <translation>
-Ceci est votre adresse + clef privée (enregistrez ce texte dans le fichier de configuration et gardez le secret):
-</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
@@ -3938,10 +3929,7 @@ Ceci est votre adresse + clef privée (enregistrez ce texte dans le fichier de c
 
 This is your Address (you can make it public):
 </source>
-        <translation>
-
-Ceci est votre adresse (vous pouvez la rendre publique):
-</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
@@ -3949,770 +3937,767 @@ Ceci est votre adresse (vous pouvez la rendre publique):
 
 Your Short base32-address:
 </source>
-        <translation>
-
-Votre adresse base32 courte:
-</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>(default: 1)</source>
-        <translation>(par défaut : 1)</translation>
+        <translation>(výchozí: 1)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>(default: wallet.dat)</source>
-        <translation>(par défaut : wallet.dat)</translation>
+        <translation>(výchozí: wallet.dat)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&lt;category&gt; can be:</source>
-        <translation>&lt;category&gt; peut être :</translation>
+        <translation>&lt;category&gt; může být:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Accept command line and JSON-RPC commands</source>
-        <translation>Accepter les commandes de JSON-RPC et de la ligne de commande</translation>
+        <translation>Akceptovat příkazy z příkazové řádky a přes JSON-RPC</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation>Accepter les connexions entrantes (par défaut : 1 si aucun -proxy ou -connect )</translation>
+        <translation>Přijímat spojení zvenčí (výchozí: 1, pokud není zadáno -proxy nebo -connect)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
-        <translation>Ajouter un nœud auquel se connecter et tenter de garder la connexion ouverte</translation>
+        <translation>Přidat uzel, ke kterému se připojit a snažit se spojení udržet</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
-        <translation>Autoriser les recherches DNS pour -addnode, -seednode et -connect</translation>
+        <translation>Povolit DNS dotazy pro -addnode (přidání uzlu), -seednode a -connect (připojení)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Allow JSON-RPC connections from specified IP address</source>
-        <translation>Autoriser les connexions JSON-RPC depuis l&apos;adresse IP spécifiée</translation>
+        <translation>Povolit JSON-RPC spojení ze specifikované IP adresy</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Always query for peer addresses via DNS lookup (default: 0)</source>
-        <translation>Toujours effectuer les requêtes pour adresses de pairs par recherche DNS (par défaut: 0)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Attempt to recover private keys from a corrupt wallet.dat</source>
-        <translation>Tenter de récupérer les clefs privées d&apos;un wallet.dat corrompu</translation>
+        <translation>Pokusit se zachránit soukromé klíče z poškozeného souboru wallet.dat</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Block creation options:</source>
-        <translation>Options de création de bloc :</translation>
+        <translation>Možnosti vytvoření bloku:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Cannot downgrade wallet</source>
-        <translation>Impossible de revenir à une version inférieure du portefeuille</translation>
+        <translation>Nemohu převést peněženku do staršího formátu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
-        <translation>Impossible de résoudre l&apos;adresse -bind : « %s »</translation>
+        <translation>Nemohu přeložit -bind adresu: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
-        <translation>Impossible de résoudre l&apos;adresse -externalip : « %s »</translation>
+        <translation>Nemohu přeložit -externalip adresu: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Cannot write default address</source>
-        <translation>Impossible d&apos;écrire l&apos;adresse par défaut</translation>
+        <translation>Nemohu napsat výchozí adresu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Clear list of wallet transactions (diagnostic tool; implies -rescan)</source>
-        <translation>Effacer la liste des transactions du portefeuille (outil de diagnostic, implique un nouveau balayage -rescan)</translation>
+        <translation>Smazat seznam transakcí peněženky (diagnostický nástroj; vynutí -rescan)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Connect only to the specified node(s)</source>
-        <translation>Ne se connecter qu&apos;au(x) nœud(s) spécifié(s)</translation>
+        <translation>Připojit se pouze k zadanému uzlu (příp. zadaným uzlům)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Connect through SOCKS5 proxy</source>
-        <translation>Se connecter au travers d&apos;un proxy SOCKS5</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Connect to a node to retrieve peer addresses, and disconnect</source>
-        <translation>Se connecter à un nœud pour obtenir des adresses de pairs puis se déconnecter</translation>
+        <translation>Připojit se k uzlu, získat adresy jeho protějšků a odpojit se</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Connecting to the I2P Router...</source>
-        <translation>Connexion au routeur I2P…</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Connection options:</source>
-        <translation>Options de connexion :</translation>
+        <translation>Možnosti připojení:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Corrupted block database detected</source>
-        <translation>Base corrompue de données des blocs détectée</translation>
+        <translation>Bylo zjištěno poškození databáze bloků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Debugging/Testing options:</source>
-        <translation>Options de test/de débogage :</translation>
+        <translation>Možnosti ladění/testování:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Disable safemode, override a real safe mode event (default: 0)</source>
-        <translation>Désactiver le mode sans échec, passer outre un événement sans échec réel (par défaut : 0)</translation>
+        <translation>Vypnout bezpečný režim (safemode), překrýt skutečnou událost bezpečného režimu (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
-        <translation>Découvrir sa propre adresse IP (par défaut : 1 lors de l&apos;écoute et si aucun -externalip)</translation>
+        <translation>Zjistit vlastní IP adresu (výchozí: 1, pokud naslouchá a není zadáno -externalip)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do not load the wallet and disable wallet RPC calls</source>
-        <translation>Ne pas charger le portefeuille et désactiver les appels RPC</translation>
+        <translation>Nenačítat peněženku a vypnout její RPC volání</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you want to rebuild the block database now?</source>
-        <translation>Voulez-vous reconstruire la base de données des blocs maintenant ?</translation>
+        <translation>Chceš přestavět databázi bloků hned teď?</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Done loading</source>
-        <translation>Chargement terminé</translation>
+        <translation>Načítání dokončeno</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error - Unable to Generate I2P Destination.</source>
-        <translation>Erreur - Impossible de générer la destination I2P.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Error - Unable to report I2P Destination.</source>
-        <translation>Erreur - Impossible de rapporter la destination I2P.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Error initializing block database</source>
-        <translation>Erreur lors de l&apos;initialisation de la base de données des blocs</translation>
+        <translation>Chyba při zakládání databáze bloků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error initializing wallet database environment %s!</source>
-        <translation>Erreur lors de l&apos;initialisation de l&apos;environnement de la base de données du portefeuille %s !</translation>
+        <translation>Chyba při vytváření databázového prostředí %s pro peněženku!</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error loading block database</source>
-        <translation>Erreur du chargement de la base de données des blocs</translation>
+        <translation>Chyba při načítání databáze bloků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error loading wallet.dat</source>
-        <translation>Erreur lors du chargement de wallet.dat</translation>
+        <translation>Chyba při načítání wallet.dat</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error loading wallet.dat: Wallet corrupted</source>
-        <translation>Erreur lors du chargement de wallet.dat : portefeuille corrompu</translation>
+        <translation>Chyba při načítání wallet.dat: peněženka je poškozená</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error loading wallet.dat: Wallet requires newer version of Anoncoin</source>
-        <translation>Erreur lors du chargement de wallet.dat : le portefeuille exige une version plus récente de Anoncoin</translation>
+        <translation>Chyba při načítání wallet.dat: peněženka vyžaduje novější verzi Anoncoinu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error opening block database</source>
-        <translation>Erreur lors de l&apos;ouverture de la base de données des blocs</translation>
+        <translation>Chyba při otevírání databáze bloků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error</source>
-        <translation>Erreur</translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: Disk space is low!</source>
-        <translation>Erreur : l&apos;espace disque est faible !</translation>
+        <translation>Problém: Na disku je málo místa!</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: Unsupported argument -tor found, use -onion.</source>
-        <translation>Erreur: Argument non-supporté -tor trouvé, utiliser -onion.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: Wallet locked, unable to create transaction!</source>
-        <translation>Erreur : Portefeuille verrouillé, impossible de créer la transaction !</translation>
+        <translation>Chyba: Peněženka je zamčená, nemohu vytvořit transakci!</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: system error: </source>
-        <translation>Erreur : erreur système :</translation>
+        <translation>Chyba: systémová chyba: </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation>Échec de l&apos;écoute sur un port quelconque. Utilisez -listen=0 si vous voulez ceci.</translation>
+        <translation>Nepodařilo se naslouchat na žádném portu. Použij -listen=0, pokud to byl tvůj záměr.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to read block info</source>
-        <translation>La lecture des informations de bloc a échoué</translation>
+        <translation>Nepodařilo se přečíst informace o bloku</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to read block</source>
-        <translation>La lecture du bloc a échoué</translation>
+        <translation>Nepodařilo se přečíst blok</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to sync block index</source>
-        <translation>La synchronisation de l&apos;index des blocs a échoué</translation>
+        <translation>Nepodařilo se sesynchronizovat index bloků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to write block index</source>
-        <translation>L&apos;&apos;écriture de l&apos;index des blocs a échoué</translation>
+        <translation>Nepodařilo se zapsat index bloků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to write block info</source>
-        <translation>L&apos;écriture des informations du bloc a échoué</translation>
+        <translation>Nepodařilo se zapsat informace o bloku</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to write block</source>
-        <translation>L&apos;écriture du bloc a échoué</translation>
+        <translation>Nepodařilo se zapsat blok</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to write file info</source>
-        <translation>L&apos;écriture des informations de fichier a échoué</translation>
+        <translation>Nepodařilo se zapsat informace o souboru</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to write to coin database</source>
-        <translation>L&apos;écriture dans la base de données des pièces a échoué</translation>
+        <translation>Selhal zápis do databáze mincí</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to write transaction index</source>
-        <translation>L&apos;écriture de l&apos;index des transactions a échoué</translation>
+        <translation>Nepodařilo se zapsat index transakcí</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Failed to write undo data</source>
-        <translation>L&apos;écriture des données d&apos;annulation a échoué</translation>
+        <translation>Nepodařilo se zapsat data o vracení změn</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Fee per kB to add to transactions you send</source>
-        <translation>Frais par ko à ajouter aux transactions que vous envoyez</translation>
+        <translation>Poplatek za kB, který se přidá ke každé odeslané transakci</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Fees smaller than this are considered zero fee (for relaying) (default:</source>
-        <translation>Les frais inférieurs à ce seuil sont considérés comme nuls (pour le relayage) (par défaut :</translation>
+        <translation>Poplatky menší než tato hodnota jsou považovány za nulové (pro přeposílání transakcí) (výchozí:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Force safe mode (default: 0)</source>
-        <translation>Forcer le mode sans échec (par défaut : 0)</translation>
+        <translation>Vynutit bezpečný mód (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Generate coins (default: 0)</source>
-        <translation>Générer des pièces (défaut : 0)</translation>
+        <translation>Generovat mince (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Generated an I2P destination for you.</source>
-        <translation>Une destination I2P a été générée pour vous.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>How many blocks to check at startup (default: 288, 0 = all)</source>
-        <translation>Nombre de blocs à vérifier au démarrage (par défaut : 288, 0 = tous)</translation>
+        <translation>Kolik bloků při startu zkontrolovat (výchozí: 288, 0 = všechny)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>If &lt;category&gt; is not supplied, output all debugging information.</source>
-        <translation>Si &lt;category&gt; n&apos;est pas indiqué, extraire toutes les données de débogage.</translation>
+        <translation>Pokud není &lt;category&gt; zadána, bude tisknout veškeré ladicí informace.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Importing...</source>
-        <translation>Importation...</translation>
+        <translation>Importuji...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Imports blocks from external blk000??.dat file</source>
-        <translation>Importe des blocs depuis un fichier blk000??.dat externe</translation>
+        <translation>Importovat bloky z externího souboru blk000??.dat</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Incorrect or no genesis block found. Wrong datadir for network?</source>
-        <translation>Bloc de genèse incorrect ou introuvable. Mauvais répertoire de données pour le réseau ?</translation>
+        <translation>Nemám žádný nebo jen špatný genesis blok. Není špatně nastavený datadir?</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Information</source>
-        <translation>Informations</translation>
+        <translation>Informace</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Initialization sanity check failed. Anoncoin Core is shutting down.</source>
-        <translation>Le test de santé d&apos;initialisation (sanity check) a échoué. Arrêt de Anoncoin Core.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Insufficient funds</source>
-        <translation>Fonds insuffisants</translation>
+        <translation>Nedostatek prostředků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Invalid -onion address: &apos;%s&apos;</source>
-        <translation>Adresse -onion invalide : « %s »</translation>
+        <translation>Neplatná -onion adresa: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
-        <translation>Adresse -proxy invalide : « %s »</translation>
+        <translation>Neplatná -proxy adresa: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Invalid amount for -minrelaytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>Montant invalide pour -minrelayfee=&lt;montant&gt; : « %s »</translation>
+        <translation>Neplatná částka pro -minrelaytxfee=&lt;částka&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Invalid amount for -mintxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>Montant invalide pour -mintxfee=&lt;montant&gt; : « %s »</translation>
+        <translation>Neplatná částka pro -mintxfee=&lt;částka&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>Montant invalide pour -paytxfee=&lt;montant&gt; : « %s »</translation>
+        <translation>Neplatná částka pro -paytxfee=&lt;částka&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Invalid amount</source>
-        <translation>Montant invalide</translation>
+        <translation>Neplatná částka</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Keep at most &lt;n&gt; unconnectable blocks in memory (default: %u)</source>
-        <translation>Garder au plus &lt;n&gt; blocs non-connectables en mémoire (par défaut : %u)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Keep at most &lt;n&gt; unconnectable transactions in memory (default: %u)</source>
-        <translation>Garder au plus &lt;n&gt; transactions non-connectables en mémoire (par défaut : %u)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Limit size of signature cache to &lt;n&gt; entries (default: 50000)</source>
-        <translation>Limiter la taille du cache des signatures à &lt;n&gt; entrées (par défaut : 50000)</translation>
+        <translation>Omezit velikost vyrovnávací paměti pro podpisy na &lt;n&gt; položek (výchozí: 50000)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Listen for connections on &lt;port&gt; (default: 9333 or testnet: 19333)</source>
-        <translation>Ecouter les connexions sur &lt;port&gt; (par défaut: 9333 ou réseau test: 19333)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Loading addresses...</source>
-        <translation>Chargement des adresses…</translation>
+        <translation>Načítám adresy...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Loading block index...</source>
-        <translation>Chargement de l’index des blocs…</translation>
+        <translation>Načítám index bloků...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Loading wallet...</source>
-        <translation>Chargement du portefeuille…</translation>
+        <translation>Načítám peněženku...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Log transaction priority and fee per kB when mining blocks (default: 0)</source>
-        <translation>Lors du minage, journaliser la priorité des transactions et les frais par ko (par défaut : 0) </translation>
+        <translation>Zaznamenávat během těžení bloků prioritu transakce a poplatek za kB (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Maintain a full transaction index (default: 0)</source>
-        <translation>Maintenir un index complet des transactions (par défaut : 0)</translation>
+        <translation>Spravovat úplný index transakcí (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Garder au plus &lt;n&gt; connexions avec les pairs (par défaut : 125)</translation>
+        <translation>Povolit nejvýše &lt;n&gt; připojení k uzlům (výchozí: 125)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
-        <translation>Tampon maximal de réception par connexion, &lt;n&gt;*1 000 octets (par défaut : 5000)</translation>
+        <translation>Maximální velikost přijímacího bufferu pro každé spojení, &lt;n&gt;*1000 bajtů (výchozí: 5000)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
-        <translation>Tampon maximal d&apos;envoi par connexion », &lt;n&gt;*1000 octets (par défaut : 1000)</translation>
+        <translation>Maximální velikost odesílacího bufferu pro každé spojení, &lt;n&gt;*1000 bajtů (výchozí: 1000)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Node relay options:</source>
-        <translation>Options de nœud de relais:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not enough file descriptors available.</source>
-        <translation>Pas assez de descripteurs de fichiers proposés.</translation>
+        <translation>Je nedostatek deskriptorů souborů.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Only accept block chain matching built-in checkpoints (default: 1)</source>
-        <translation>N&apos;accepter qu&apos;une chaîne de blocs correspondant aux points de vérification intégrés (par défaut : 1)</translation>
+        <translation>Uznávat pouze řetězec bloků, který odpovídá vnitřním kontrolním bodům (výchozí: 1)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Only connect to nodes in network &lt;net&gt; (ipv4, ipv6, onion or i2p)</source>
-        <translation>Se connecter uniquement aux nœuds du réseau &lt;net&gt; (ipv4, ipv6, onion or i2p)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Options:</source>
-        <translation>Options :</translation>
+        <translation>Možnosti:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Password for JSON-RPC connections</source>
-        <translation>Mot de passe pour les connexions JSON-RPC</translation>
+        <translation>Heslo pro JSON-RPC spojení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Prepend debug output with timestamp (default: 1)</source>
-        <translation>Ajouter l&apos;horodatage au début de la sortie de débogage (par défaut : 1)</translation>
+        <translation>Připojit před ladicí výstup časové razítko (výchozí: 1)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Print block on startup, if found in block index</source>
-        <translation>Imprimer le bloc au démarrage s&apos;il est trouvé dans l&apos;index des blocs</translation>
+        <translation>Vypsat při startu blok,pokud se nachází v indexu bloků</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Print block tree on startup (default: 0)</source>
-        <translation>Imprimer l&apos;arborescence des blocs au démarrage (par défaut : 0)</translation>
+        <translation>Vypsat při startu strom bloků (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>RPC SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation>Options RPC SSL: (se référer au Wiki de Bitcoin pour des instructions de configuration SSL)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>RPC server options:</source>
-        <translation>Options du serveur RPC :</translation>
+        <translation>Možnosti RPC serveru:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Randomly drop 1 of every &lt;n&gt; network messages</source>
-        <translation>Abandonner aléatoirement 1 message du réseau sur &lt;n&gt;</translation>
+        <translation>Náhodně zahazovat jednu z každých &lt;n&gt; síťových zpráv</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Randomly fuzz 1 of every &lt;n&gt; network messages</source>
-        <translation>Tester aléatoirement 1 message du réseau sur &lt;n&gt;</translation>
+        <translation>Náhodně pozměňovat jednu z každých &lt;n&gt; síťových zpráv</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Rebuild block chain index from current blk000??.dat files</source>
-        <translation>Reconstruire l&apos;index de la chaîne de blocs à partir des fichiers blk000??.dat courants</translation>
+        <translation>Znovu vytvořit index řetězce bloků z aktuálních blk000??.dat souborů</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Relay and mine data carrier transactions (default: 1)</source>
-        <translation>Relayer et miner les transactions de support de données (par défaut: 1)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Rescan the block chain for missing wallet transactions</source>
-        <translation>Réanalyser la chaîne de blocs pour les transactions de portefeuille manquantes</translation>
+        <translation>Přeskenovat řetězec bloků na chybějící transakce tvé pěněženky</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Rescanning...</source>
-        <translation>Nouvelle analyse…</translation>
+        <translation>Přeskenovávám...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Results also written to your debug.log file</source>
-        <translation>Résultats également écrits dans votre fichier debug.log</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Run a thread to flush wallet periodically (default: 1)</source>
-        <translation>Exécuter une tâche pour purger le portefeuille périodiquement (par défaut : 1) </translation>
+        <translation>Spustit vlákno pročišťující periodicky peněženku (výchozí: 1)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Run in the background as a daemon and accept commands</source>
-        <translation>Fonctionner en arrière-plan en tant que démon et accepter les commandes</translation>
+        <translation>Běžet na pozadí jako démon a akceptovat příkazy</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Send trace/debug info to console instead of debug.log file</source>
-        <translation>Envoyer les informations de débogage/trace à la console au lieu du fichier debug.log</translation>
+        <translation>Posílat stopovací/ladicí informace do konzole místo do souboru debug.log</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation>Fichier de certification du serveur (par défaut : server.cert)</translation>
+        <translation>Soubor se serverovým certifikátem (výchozí: server.cert)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Server private key (default: server.pem)</source>
-        <translation>Clef privée du serveur (par défaut : server.pem)</translation>
+        <translation>Soubor se serverovým soukromým klíčem (výchozí: server.pem)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set database cache size in megabytes (%d to %d, default: %d)</source>
-        <translation>Définir la taille du cache de la base de données en mégaoctets (%d to %d, default: %d)</translation>
+        <translation>Nastavit velikost databázové vyrovnávací paměti v megabajtech (%d až %d, výchozí: %d)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation>Définir la taille de la réserve de clefs à &lt;n&gt; (par défaut : 100)</translation>
+        <translation>Nastavit zásobník klíčů na velikost &lt;n&gt; (výchozí: 100)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set maximum block size in bytes (default: %d)</source>
-        <translation>Définir la taille minimale de bloc en octets (par défaut : %d)</translation>
+        <translation>Nastavit maximální velikost bloku v bajtech (výchozí: %d)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set minimum block size in bytes (default: 0)</source>
-        <translation>Définir la taille de bloc minimale en octets (par défaut : 0)</translation>
+        <translation>Nastavit minimální velikost bloku v bajtech (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set the number of threads to service RPC calls (default: 4)</source>
-        <translation>Définir le nombre d&apos;exétrons pour desservir les appels RPC (par défaut : 4)</translation>
+        <translation>Nastavení počtu vláken pro servisní RPC volání (výchozí: 4)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Sets the DB_PRIVATE flag in the wallet db environment (default: 1)</source>
-        <translation>Définit le drapeau DB_PRIVATE dans l&apos;environnement de la BD du portefeuille (par défaut : 1)</translation>
+        <translation>Nastavit příznak DB_PRIVATE v databázovém prostředí peněženky (výchozí: 1)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show all debugging options (usage: --help -help-debug)</source>
-        <translation>Montrer toutes les options de débogage (utilisation : --help --help-debug)</translation>
+        <translation>Zobrazit všechny možnosti ladění (užití: --help -help-debug)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show benchmark information (default: 0)</source>
-        <translation>Afficher les infos du test de performance (par défaut : 0)</translation>
+        <translation>Zobrazit výkonnostní informace (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
-        <translation>Réduire le fichier debug.log lors du démarrage du client (par défaut : 1 lorsque -debug n&apos;est pas présent)</translation>
+        <translation>Při spuštění klienta zmenšit soubor debug.log (výchozí: 1, pokud není zadáno -debug)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Signing transaction failed</source>
-        <translation>La signature de la transaction a échoué</translation>
+        <translation>Podepisování transakce selhalo</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Specify configuration file (default: anoncoin.conf)</source>
-        <translation>Spécifier le fichier de configuration (par défaut : anoncoin.conf)</translation>
+        <translation>Konfigurační soubor (výchozí: anoncoin.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Specify connection timeout in milliseconds (default: 20000)</source>
-        <translation>Spécifier le délai d&apos;attente de la connexion en millisecondes (par défaut: 20000)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Specify data directory</source>
-        <translation>Spécifier le répertoire de données</translation>
+        <translation>Adresář pro data</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Specify pid file (default: anoncoind.pid)</source>
-        <translation>Spécifier le fichier pid (par défaut : anoncoind.pid)</translation>
+        <translation>PID soubor (výchozí: anoncoind.pid)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Specify wallet file (within data directory)</source>
-        <translation>Spécifiez le fichier de portefeuille (dans le répertoire de données)</translation>
+        <translation>Udej název souboru s peněženkou (v rámci datového adresáře)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Specify your own public address</source>
-        <translation>Spécifier votre propre adresse publique</translation>
+        <translation>Specifikuj svou veřejnou adresu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Spend unconfirmed change when sending transactions (default: 1)</source>
-        <translation>Dépenser la monnaie non confirmée lors de l&apos;envoi de transactions (par défaut : 1)</translation>
+        <translation>Utrácet i ještě nepotvrzené drobné při posílání transakcí (výchozí: 1)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>System error: </source>
-        <translation>Erreur système :</translation>
+        <translation>Systémová chyba: </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This help message</source>
-        <translation>Ce message d&apos;aide</translation>
+        <translation>Tato nápověda</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>This is intended for regression testing tools and app development.</source>
-        <translation>Ceci est à l&apos;intention des outils de test de régression et du développement applicatif.</translation>
+        <translation>Tohle je určeno pro nástroje na regresní testování a vyvíjení aplikací.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>Seuil de déconnexion des pairs présentant un mauvais comportement (par défaut : 100)</translation>
+        <translation>Práh pro odpojování zlobivých uzlů (výchozí: 100)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>To use the %s option</source>
-        <translation>Pour utiliser l&apos;option %s</translation>
+        <translation>K použití volby %s</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Transaction amount too small</source>
-        <translation>Montant de la transaction trop bas</translation>
+        <translation>Částka v transakci je příliš malá</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Transaction amounts must be positive</source>
-        <translation>Les montants de transaction doivent être positifs</translation>
+        <translation>Částky v transakci musí být kladné</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Transaction too large</source>
-        <translation>Transaction trop volumineuse</translation>
+        <translation>Transace je příliš velká</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Unable to bind to %s on this computer (bind returned error %s)</source>
-        <translation>Impossible de se lier à %s sur cet ordinateur (bind a retourné l&amp;apos;erreur %s)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
-        <translation>Réseau inconnu spécifié sur -onlynet : « %s »</translation>
+        <translation>V -onlynet byla uvedena neznámá síť: &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Upgrade wallet to latest format</source>
-        <translation>Mettre à niveau le portefeuille vers le format le plus récent</translation>
+        <translation>Převést peněženku na nejnovější formát</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
-        <translation>Utiliser OpenSSL (https) pour les connexions JSON-RPC</translation>
+        <translation>Použít OpenSSL (https) pro JSON-RPC spojení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Use UPnP to map the listening port (default: 0)</source>
-        <translation>Utiliser l&apos;UPnP pour mapper le port d&apos;écoute (par défaut : 0)</translation>
+        <translation>Použít UPnP k namapování naslouchacího portu (výchozí: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
-        <translation>Utiliser l&apos;UPnP pour mapper le port d&apos;écoute (par défaut : 1 lors de l&apos;écoute)</translation>
+        <translation>Použít UPnP k namapování naslouchacího portu (výchozí: 1, pokud naslouchá)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Use the test network</source>
-        <translation>Utiliser le réseau de test</translation>
+        <translation>Použít testovací síť (testnet)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Username for JSON-RPC connections</source>
-        <translation>Nom d&apos;utilisateur pour les connexions JSON-RPC</translation>
+        <translation>Uživatelské jméno pro JSON-RPC spojení</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Verifying blocks...</source>
-        <translation>Vérification des blocs en cours...</translation>
+        <translation>Ověřuji bloky...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Verifying wallet...</source>
-        <translation>Vérification du portefeuille en cours...</translation>
+        <translation>Kontroluji peněženku...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet %s resides outside data directory %s</source>
-        <translation>Le portefeuille %s réside en dehors du répertoire de données %s</translation>
+        <translation>Peněženka %s se nachází mimo datový adresář %s</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet needed to be rewritten: restart Anoncoin to complete</source>
-        <translation>Le portefeuille devait être réécrit : redémarrer Anoncoin pour terminer l&apos;opération.</translation>
+        <translation>Soubor s peněženkou potřeboval přepsat: restartuj Anoncoin, aby se operace dokončila</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet options:</source>
-        <translation>Options du portefeuille :</translation>
+        <translation>Možnosti peněženky:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning</source>
-        <translation>Avertissement</translation>
+        <translation>Upozornění</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning: Deprecated argument -debugnet ignored, use -debug=net</source>
-        <translation>Attention : l&apos;argument obsolète -debugnet a été ignoré, utiliser -debug=net</translation>
+        <translation>Upozornění: Zastaralý argument -debugnet se ignoruje, použij -debug=net</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
-        <translation>Avertissement : cette version est obsolète, une mise à niveau est nécessaire !</translation>
+        <translation>Upozornění: tahle verze je zastaralá, měl bys ji aktualizovat!</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>You need to rebuild the database using -reindex to change -txindex</source>
-        <translation>Vous devez reconstruire la base de données en utilisant -reindex afin de modifier -txindex</translation>
+        <translation>Je třeba přestavět databázi použitím -reindex, aby bylo možné změnit -txindex</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Zapping all transactions from wallet...</source>
-        <translation>Supprimer toutes les transactions du portefeuille...</translation>
+        <translation>Vymazat všechny transakce z peněženky...</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>on startup</source>
-        <translation>au démarrage</translation>
+        <translation>při startu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>wallet.dat corrupt, salvage failed</source>
-        <translation>wallet.dat corrompu, la récupération a échoué</translation>
+        <translation>Soubor wallet.dat je poškozen, jeho záchrana se nezdařila</translation>
     </message>
 </context>
 </TS>

@@ -3,7 +3,7 @@ AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 0)
 define(_CLIENT_VERSION_MINOR, 9)
 define(_CLIENT_VERSION_REVISION, 4)
-define(_CLIENT_VERSION_BUILD, 3)
+define(_CLIENT_VERSION_BUILD, 4)
 define(_CLIENT_VERSION_IS_RELEASE, false)
 define(_COPYRIGHT_YEAR, 2015)
 
@@ -91,6 +91,13 @@ AC_ARG_ENABLE([i2psam],
   [enable i2psam (default is yes)])],
   [enable_i2psam=$enableval],
   [enable_i2psam=yes])
+
+# Enable hardfork
+AC_ARG_WITH([hardfork],
+  [AS_HELP_STRING([--with-hardfork=block],
+  [enables a hardfork of the blockchain (default is no)])],
+  [hardfork_block=$withval],
+  [hardfork_block=no])
 
 AC_ARG_WITH([miniupnpc],
   [AS_HELP_STRING([--with-miniupnpc],
@@ -787,7 +794,15 @@ AC_MSG_CHECKING([if i2psam module should be included])
 if test x$enable_i2psam != xno; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED([ENABLE_I2PSAM],[1],[Define to 1 to enable I2Psam interface functions])
+else
+  AC_MSG_RESULT(no)
+fi
 
+dnl enable hardfork
+AC_MSG_CHECKING([if a hardfork of the blockchain is required])
+if test x$hardfork_block != xno; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED([HARDFORK_BLOCK],[$hardfork_block],[Define to the block number when the hardfork will occur])
 else
   AC_MSG_RESULT(no)
 fi

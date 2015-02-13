@@ -5,6 +5,7 @@ noinst_LIBRARIES += qt/libanoncoinqt.a
 QT_TS = \
   qt/locale/anoncoin_ar.ts \
   qt/locale/anoncoin_ca.ts \
+  qt/locale/anoncoin_cs.ts \
   qt/locale/anoncoin_da.ts \
   qt/locale/anoncoin_de.ts \
   qt/locale/anoncoin_el_GR.ts \
@@ -20,13 +21,14 @@ QT_TS = \
   qt/locale/anoncoin_ka.ts \
   qt/locale/anoncoin_ko_KR.ts \
   qt/locale/anoncoin_nb_NO.ts \
-  qt/locale/anoncoin_no.ts \
   qt/locale/anoncoin_pl.ts \
   qt/locale/anoncoin_pt_BR.ts \
   qt/locale/anoncoin_pt_PT.ts \
   qt/locale/anoncoin_ro_RO.ts \
   qt/locale/anoncoin_ru.ts \
   qt/locale/anoncoin_sk.ts \
+  qt/locale/anoncoin_sv.ts \
+  qt/locale/anoncoin_tr.ts \
   qt/locale/anoncoin_uk.ts \
   qt/locale/anoncoin_zh_CN.ts \
   qt/locale/anoncoin_zh_HK.ts \
@@ -274,6 +276,7 @@ endif
 
 RES_IMAGES = \
   qt/res/images/about.png \
+  qt/res/images/aboutcmds.png \
   qt/res/images/i2pguy.png \
   qt/res/images/splash.png \
   qt/res/images/splash_testnet.png

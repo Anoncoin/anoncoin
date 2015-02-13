@@ -34,7 +34,8 @@ struct TestingSetup {
     boost::thread_group threadGroup;
 
     TestingSetup() {
-        fPrintToDebugLog = false; // don't want to write to debug.log file
+        fPrintToDebugLog = false;           // don't want to write to debug.log file
+        SelectParams(CChainParams::MAIN);   // Set our test to use the 'main' network parameters
         noui_connect();
 #ifdef ENABLE_WALLET
         bitdb.MakeMock();
