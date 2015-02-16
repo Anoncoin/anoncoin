@@ -42,17 +42,17 @@ Dette produktet inneholder programvare utviklet av OpenSSL Project for bruk i Op
     <message>
         <location line="+1"/>
         <source>The Bitcoin Core developers</source>
-        <translation type="unfinished"/>
+        <translation>Bitcoin Core utviklerne</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The Litecoin Core developers</source>
-        <translation type="unfinished"/>
+        <translation>Litecoin Core utviklerne</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The Primecoin developers</source>
-        <translation type="unfinished"/>
+        <translation>Primecoin utviklerne</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -441,37 +441,37 @@ Dette produktet inneholder programvare utviklet av OpenSSL Project for bruk i Op
     <message>
         <location line="+29"/>
         <source>Wallet is using I2P-network only!</source>
-        <translation type="unfinished"/>
+        <translation>Lommebok bruker kun I2P-nettverk!</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using Tor-network only</source>
-        <translation type="unfinished"/>
+        <translation>Lommebok bruker kun Tor-nettverk</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using I2P and Tor networks (Darknet mode)</source>
-        <translation type="unfinished"/>
+        <translation>Lommebok bruker I2P og Tor nettverk (Darknet modus)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using I2P and Tor networks, also Tor as a proxy</source>
-        <translation type="unfinished"/>
+        <translation>Lommebok bruker I2P og Tor nettverk, også Tor som proxy</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using mixed or non-I2P (clear) network</source>
-        <translation type="unfinished"/>
+        <translation>Lommebok bruker blanding eller ikke-I2P (klart) nettverk</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Wallet is running with a random generated I2P-address</source>
-        <translation type="unfinished"/>
+        <translation>Lommebok kjører med en tilfeldig generert I2P-adresse</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is running with a static I2P-address</source>
-        <translation type="unfinished"/>
+        <translation>Lommebok kjører med en fast I2P-adresse</translation>
     </message>
     <message>
         <location line="+70"/>
@@ -482,12 +482,12 @@ Dette produktet inneholder programvare utviklet av OpenSSL Project for bruk i Op
     <message numerus="yes">
         <location line="+155"/>
         <source>%n active connection(s) to Anoncoin clearnet peers</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n aktiv tilkobling til Anoncoin klarnett node</numerusform><numerusform>%n aktive tilkoblinger til Anoncoin klarnett noder</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+16"/>
         <source>%n active connection(s) to I2P-Anoncoin network</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n aktiv tilkobling til I2P-Anoncoin nettverk</numerusform><numerusform>%n aktive tilkoblinger til I2P-Anoncoin nettverk</numerusform></translation>
     </message>
     <message>
         <location line="+14"/>
@@ -689,7 +689,7 @@ Adresse: %4
     <message>
         <location line="+1"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR ANONCOINS&lt;/b&gt;!</source>
-        <translation type="unfinished"/>
+        <translation>Advarsel: Hvis du krypterer din lommebok og mister din adgangsfrase, vil du &lt;b&gt;MISTE ALLE DINE ANONCOINS&lt;/b&gt;!</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -1219,134 +1219,136 @@ Adresse: %4
     <message>
         <location filename="../forms/i2poptionswidget.ui" line="+14"/>
         <source>Form</source>
-        <translation type="unfinished"/>
+        <translation>Skjema</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Use I2P only (-onlynet=i2p)</source>
-        <translation type="unfinished"/>
+        <translation>Bruk kun I2P (-onlynet=i2p)</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>http://www.i2p2.i2p/i2cp.html#options</source>
-        <translation type="unfinished"/>
+        <translation>http://www.i2p2.i2p/i2cp.html#options</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Help&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Hjelp&lt;/a&gt;</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>SAM host</source>
-        <translation type="unfinished"/>
+        <translation>SAM vert</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>127.0.0.1</source>
-        <translation type="unfinished"/>
+        <translation>127.0.0.1</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>SAM port</source>
-        <translation type="unfinished"/>
+        <translation>SAM port</translation>
     </message>
     <message>
         <location line="+37"/>
         <source>Tunnel name</source>
-        <translation type="unfinished"/>
+        <translation>Tunell navn</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Anoncoin-client</source>
-        <translation type="unfinished"/>
+        <translation>Anoncoin-klient</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Current
 I2P-address...</source>
-        <translation type="unfinished"/>
+        <translation>Nåværende
+I2P-adresse...</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Generate
 I2P-address...</source>
-        <translation type="unfinished"/>
+        <translation>Generer
+I2P-adresse</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>I2CP options of inbound tunnels</source>
-        <translation type="unfinished"/>
+        <translation>I2CP alternativer av innkommende tuneller</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>inbound.quantity </source>
-        <translation type="unfinished"/>
+        <translation>inbound.quantity </translation>
     </message>
     <message>
         <location line="+37"/>
         <source>inbound.length </source>
-        <translation type="unfinished"/>
+        <translation>inbound.length </translation>
     </message>
     <message>
         <location line="+37"/>
         <source>inbound.lengthVariance</source>
-        <translation type="unfinished"/>
+        <translation>inbound.lengthVariance</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>inbound.backupQuantity </source>
-        <translation type="unfinished"/>
+        <translation>inbound.backupQuantity </translation>
     </message>
     <message>
         <location line="+27"/>
         <source>inbound.allowZeroHop </source>
-        <translation type="unfinished"/>
+        <translation>inbound.allowZeroHop </translation>
     </message>
     <message>
         <location line="+31"/>
         <source>inbound.IPRestriction</source>
-        <translation type="unfinished"/>
+        <translation>inbound.IPRestriction</translation>
     </message>
     <message>
         <location line="+65"/>
         <source>I2CP options of outbound tunnels</source>
-        <translation type="unfinished"/>
+        <translation>I2CP alternativer av utgående tuneller</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>outbound.quantity </source>
-        <translation type="unfinished"/>
+        <translation>outbound.quantity </translation>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.length </source>
-        <translation type="unfinished"/>
+        <translation>outbound.length </translation>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.lengthVariance</source>
-        <translation type="unfinished"/>
+        <translation>outbound.lengthVariance</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.backupQuantity</source>
-        <translation type="unfinished"/>
+        <translation>outbound.backupQuantity</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>outbound.allowZeroHop </source>
-        <translation type="unfinished"/>
+        <translation>outbound.allowZeroHop </translation>
     </message>
     <message>
         <location line="+31"/>
         <source>outbound.IPRestriction</source>
-        <translation type="unfinished"/>
+        <translation>outbound.IPRestriction</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>outbound.priority</source>
-        <translation type="unfinished"/>
+        <translation>outbound.priority</translation>
     </message>
 </context>
 <context>
@@ -1389,7 +1391,7 @@ I2P-address...</source>
     <message>
         <location line="+1"/>
         <source>Error: Specified data directory &quot;%1&quot; cannot be created.</source>
-        <translation type="unfinished"/>
+        <translation>Feil: Angitt datamappe &quot;%1&quot; kan ikke bli laget.</translation>
     </message>
     <message>
         <location line="+24"/>
@@ -1682,12 +1684,12 @@ I2P-address...</source>
     <message>
         <location line="+12"/>
         <source>Warning</source>
-        <translation type="unfinished"/>
+        <translation>Advarsel</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>This setting will take effect after restarting Anoncoin.</source>
-        <translation type="unfinished"/>
+        <translation>Denne innstillingen trer i kraft ved omstart av Anoncoin.</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -1705,7 +1707,7 @@ I2P-address...</source>
     <message>
         <location line="+43"/>
         <source>Balances</source>
-        <translation type="unfinished"/>
+        <translation>Saldo</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1716,7 +1718,7 @@ I2P-address...</source>
     <message>
         <location line="-327"/>
         <source>Unconfirmed transactions to watch-only addresses</source>
-        <translation type="unfinished"/>
+        <translation>Ubekreftede transaksjoner til watch-only adresser</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -1726,7 +1728,7 @@ I2P-address...</source>
     <message>
         <location line="+25"/>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
-        <translation type="unfinished"/>
+        <translation>Utvunnet saldo i watch-only adresser som ikke har modnet enda</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -1736,7 +1738,7 @@ I2P-address...</source>
     <message>
         <location line="+16"/>
         <source>Mined balance that has not yet matured</source>
-        <translation>Minet saldo har ikke modnet enda</translation>
+        <translation>Utvunnet saldo som ikke har modnet enda</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -1751,12 +1753,12 @@ I2P-address...</source>
     <message>
         <location line="+25"/>
         <source>Current total balance in watch-only addresses</source>
-        <translation type="unfinished"/>
+        <translation>Nåværende total saldo i Watch-only adresser</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Watch-only:</source>
-        <translation type="unfinished"/>
+        <translation>Watch-only:</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1771,7 +1773,7 @@ I2P-address...</source>
     <message>
         <location line="+25"/>
         <source>Your current balance in watch-only addresses</source>
-        <translation type="unfinished"/>
+        <translation>Din nåværende saldo i Watch-only adresser</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -1781,12 +1783,12 @@ I2P-address...</source>
     <message>
         <location line="+7"/>
         <source>Spendable:</source>
-        <translation type="unfinished"/>
+        <translation>Brukbare:</translation>
     </message>
     <message>
         <location line="+49"/>
         <source>Recent transactions</source>
-        <translation type="unfinished"/>
+        <translation>Siste transaksjoner</translation>
     </message>
     <message>
         <location filename="../overviewpage.cpp" line="+132"/>
@@ -1826,7 +1828,7 @@ I2P-address...</source>
     <message>
         <location line="+13"/>
         <source>URI cannot be parsed! This can be caused by an invalid Anoncoin address or malformed URI parameters.</source>
-        <translation type="unfinished"/>
+        <translation>URI kan ikke bli behandlet! Dette kan skyldes en feil Anoncoin adresse eller dårlig formaterte URI parameter.</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -1836,7 +1838,7 @@ I2P-address...</source>
     <message>
         <location line="+1"/>
         <source>Payment request file cannot be read! This can be caused by an invalid payment request file.</source>
-        <translation type="unfinished"/>
+        <translation>Betalingsforespørsel fil kan ikke bli lest! Dette kan skyldes feil betalingsforespørsel fil.</translation>
     </message>
     <message>
         <location line="+73"/>
@@ -1861,7 +1863,7 @@ I2P-address...</source>
     <message>
         <location line="+24"/>
         <source>Payment request cannot be parsed!</source>
-        <translation type="unfinished"/>
+        <translation>Betalingsforespørsel kan ikke bli behandlet!</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1884,17 +1886,17 @@ I2P-address...</source>
     <message>
         <location filename="../peertablemodel.cpp" line="+120"/>
         <source>Address/Hostname</source>
-        <translation type="unfinished"/>
+        <translation>Address/Hostname</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>User Agent</source>
-        <translation type="unfinished"/>
+        <translation>Bruker Agent</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Ping Time</source>
-        <translation type="unfinished"/>
+        <translation>Ping Tid</translation>
     </message>
 </context>
 <context>
@@ -1902,7 +1904,7 @@ I2P-address...</source>
     <message>
         <location filename="../anoncoinunits.cpp" line="+175"/>
         <source>Amount</source>
-        <translation type="unfinished"/>
+        <translation>Beløp</translation>
     </message>
     <message>
         <location filename="../guiutil.cpp" line="+102"/>
@@ -1912,47 +1914,47 @@ I2P-address...</source>
     <message>
         <location line="+697"/>
         <source>%1 d</source>
-        <translation type="unfinished"/>
+        <translation>%1 d</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 h</source>
-        <translation type="unfinished"/>
+        <translation>%1 h</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 m</source>
-        <translation type="unfinished"/>
+        <translation>%1 m</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 s</source>
-        <translation type="unfinished"/>
+        <translation>%1 s</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>NETWORK</source>
-        <translation type="unfinished"/>
+        <translation>NETTVERK</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>UNKNOWN</source>
-        <translation type="unfinished"/>
+        <translation>UKJENT</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>Ingen</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>N/A</source>
-        <translation type="unfinished"/>
+        <translation>N/A</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 ms</source>
-        <translation type="unfinished"/>
+        <translation>%1 ms</translation>
     </message>
 </context>
 <context>
@@ -2040,7 +2042,7 @@ I2P-address...</source>
     <message>
         <location line="+26"/>
         <source>Using BerkeleyDB version</source>
-        <translation type="unfinished"/>
+        <translation>Bruker BerkeleyDB versjon</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -2125,89 +2127,89 @@ I2P-address...</source>
     <message>
         <location line="+64"/>
         <source>Received</source>
-        <translation type="unfinished"/>
+        <translation>Mottatt</translation>
     </message>
     <message>
         <location line="+80"/>
         <source>Sent</source>
-        <translation type="unfinished"/>
+        <translation>Sendt</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>&amp;Peers</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Peers</translation>
     </message>
     <message>
         <location line="+39"/>
         <location filename="../rpcconsole.cpp" line="+244"/>
         <location line="+338"/>
         <source>Select a peer to view detailed information.</source>
-        <translation type="unfinished"/>
+        <translation>Velg en node for å se detaljert informasjon.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Direction</source>
-        <translation type="unfinished"/>
+        <translation>Retning</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Version</source>
-        <translation type="unfinished"/>
+        <translation>Versjon</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>User Agent</source>
-        <translation type="unfinished"/>
+        <translation>Bruker Agent</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Services</source>
-        <translation type="unfinished"/>
+        <translation>Tjenester</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Starting Height</source>
-        <translation type="unfinished"/>
+        <translation>Start Høyde</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Sync Height</source>
-        <translation type="unfinished"/>
+        <translation>Synkroniseringshøyde</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Ban Score</source>
-        <translation type="unfinished"/>
+        <translation>Ban Score</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Connection Time</source>
-        <translation type="unfinished"/>
+        <translation>Tilkoblingstid</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Send</source>
-        <translation type="unfinished"/>
+        <translation>Sist Sendt</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Receive</source>
-        <translation type="unfinished"/>
+        <translation>Sist Mottatt</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Sent</source>
-        <translation type="unfinished"/>
+        <translation>Sendt Bytes</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Received</source>
-        <translation type="unfinished"/>
+        <translation>Mottat Bytes</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Ping Time</source>
-        <translation type="unfinished"/>
+        <translation>Ping tid</translation>
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-209"/>
@@ -2272,34 +2274,34 @@ I2P-address...</source>
     <message>
         <location line="+91"/>
         <source>via %1</source>
-        <translation type="unfinished"/>
+        <translation>via %1</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+1"/>
         <source>never</source>
-        <translation type="unfinished"/>
+        <translation>aldri</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Inbound</source>
-        <translation type="unfinished"/>
+        <translation>Innkommende</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Outbound</source>
-        <translation type="unfinished"/>
+        <translation>Utgående</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Ukjent</translation>
     </message>
     <message>
         <location line="+2"/>
         <location line="+1"/>
         <source>Fetching...</source>
-        <translation type="unfinished"/>
+        <translation>Henter...</translation>
     </message>
 </context>
 <context>
@@ -2866,45 +2868,48 @@ I2P-address...</source>
     <message>
         <location filename="../forms/i2pshowaddresses.ui" line="+20"/>
         <source>Dialog</source>
-        <translation type="unfinished"/>
+        <translation>Dialog</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>If you want to use a permanent I2P-address you have to set a &apos;mydestination&apos; option in the configuration file:</source>
-        <translation type="unfinished"/>
+        <translation>Hvis du vil bruke en permanent I2P-adresse må du endre &apos;mydestination&apos; i konfigurasjonsfilen:</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Ready to save parameter (If you want to use this address save this text in the configuration file and keep it secret):</source>
-        <translation type="unfinished"/>
+        <translation>Klar til å lagre parameter (hvis du vil bruke denne adressen lagre denn teksten i konfigurasjonsfilen og hold det hemmelig)</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Address (you can publish it):</source>
-        <translation type="unfinished"/>
+        <translation>Adresse (du kan offentliggjøre den): </translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Short base32-address:</source>
-        <translation type="unfinished"/>
+        <translation>Kort base32-adresse:</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Copy &quot;mydestination&quot; parameter
 to the clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Kopier &quot;mydestination&quot; parameter
+til utklippstavlen</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Copy public address
 to the clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Kopier offentlig adresse
+til utklippstavlen</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Copy b32-address
 to the clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Kopier b32-adresse
+til utklippstavlen</translation>
     </message>
 </context>
 <context>
@@ -3038,7 +3043,7 @@ to the clipboard</source>
     <message>
         <location line="+2"/>
         <source>Enter an Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation type="unfinished"/>
+        <translation>Skriv inn en Anoncoin-adresse (f.eks. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+83"/>
@@ -3112,7 +3117,7 @@ to the clipboard</source>
     <message>
         <location filename="../splashscreen.cpp" line="+35"/>
         <source>ANONCOIN CORE DEVELOPERS</source>
-        <translation type="unfinished"/>
+        <translation>ANONCOIN CORE UTVIKLERE</translation>
     </message>
 </context>
 <context>
@@ -3213,7 +3218,7 @@ to the clipboard</source>
         <location line="+0"/>
         <location line="+69"/>
         <source>watch-only</source>
-        <translation type="unfinished"/>
+        <translation>watch-only</translation>
     </message>
     <message>
         <location line="-67"/>
@@ -3249,12 +3254,12 @@ to the clipboard</source>
     <message>
         <location line="-68"/>
         <source>Total debit</source>
-        <translation type="unfinished"/>
+        <translation>Total debet</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Total credit</source>
-        <translation type="unfinished"/>
+        <translation>Total kredit</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -3433,7 +3438,7 @@ to the clipboard</source>
     <message>
         <location line="+28"/>
         <source>watch-only</source>
-        <translation type="unfinished"/>
+        <translation>watch-only</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -3458,7 +3463,7 @@ to the clipboard</source>
     <message>
         <location line="+2"/>
         <source>Whether or not a watch-only address is involved in this transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Om en watch-only adresse er involvert i denne transasksjonen eller ikke.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3592,7 +3597,7 @@ to the clipboard</source>
     <message>
         <location line="+2"/>
         <source>Watch-only</source>
-        <translation type="unfinished"/>
+        <translation>Watch-only</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3655,7 +3660,7 @@ to the clipboard</source>
     <message>
         <location filename="../anoncoingui.cpp" line="+135"/>
         <source>Unit to show amounts in. Click to select another unit.</source>
-        <translation type="unfinished"/>
+        <translation>Enheter for å vise antall. Klikk for å velge en annen enhet.</translation>
     </message>
 </context>
 <context>
@@ -3781,7 +3786,7 @@ For eksempel: varselmelding=echo %%s | mail -s &quot;Anoncoin Varsel&quot; admin
     <message>
         <location line="+3"/>
         <source>Error: Listening for incoming connections failed (listen returned error %s)</source>
-        <translation type="unfinished"/>
+        <translation>Feil: Lytting etter innkommende tilkoblinger misslyktes (lytting returnerte feil %s)</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3796,7 +3801,7 @@ For eksempel: varselmelding=echo %%s | mail -s &quot;Anoncoin Varsel&quot; admin
     <message>
         <location line="+3"/>
         <source>Error: Unsupported argument -socks found. Setting SOCKS version isn&apos;t possible anymore, only SOCKS5 proxies are supported.</source>
-        <translation type="unfinished"/>
+        <translation>Feil: Ikke støttet argument -socks funnet. Å bestemme SOCKS versjon er ikke lenger mulig, kun SOCKS5 proxy er støttet.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3836,7 +3841,7 @@ For eksempel: varselmelding=echo %%s | mail -s &quot;Anoncoin Varsel&quot; admin
     <message>
         <location line="+3"/>
         <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9332 or testnet: 19332)</source>
-        <translation type="unfinished"/>
+        <translation>Lytt etter JSON-RPC tilkoblinger på &lt;port&gt; (standard: 9332 eller testnet: 19332)</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3851,7 +3856,7 @@ For eksempel: varselmelding=echo %%s | mail -s &quot;Anoncoin Varsel&quot; admin
     <message>
         <location line="+2"/>
         <source>Query for peer addresses via DNS lookup, if low on addresses (default: 1 unless -connect)</source>
-        <translation type="unfinished"/>
+        <translation>Spørr etter node adresser via DNS lookup, hvis det er lite adresser (standard: 1 med mindre -connect)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3913,14 +3918,19 @@ For eksempel: varselmelding=echo %%s | mail -s &quot;Anoncoin Varsel&quot; admin
         <source>
 If you want to use a permanent I2P-address you have to set options in the configuration file:
 Your Config file is: </source>
-        <translation type="unfinished"/>
+        <translation>
+Hvis du vil bruke en permanent I2P-adresse må du velge dette i din konfigurasjonsfil:
+Din konfigurasjonsfil er:</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>
 This is your Address + private key (save this text in the configuration file and keep it secret):
 </source>
-        <translation type="unfinished"/>
+        <translation>
+
+Dette er din Adresse + private nøkkel (lagre denne teksten i konfigurasjons filen og hold det hemmelig):
+</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3928,7 +3938,10 @@ This is your Address + private key (save this text in the configuration file and
 
 This is your Address (you can make it public):
 </source>
-        <translation type="unfinished"/>
+        <translation>
+
+Dette er din Adresse (du kan offentliggjøre den):
+</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3936,7 +3949,10 @@ This is your Address (you can make it public):
 
 Your Short base32-address:
 </source>
-        <translation type="unfinished"/>
+        <translation>
+
+Din korte base32-adresse:
+</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3981,7 +3997,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Always query for peer addresses via DNS lookup (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>Spørr altid etter node adresse via DNS lookup (standard: 0)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4026,7 +4042,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Connect through SOCKS5 proxy</source>
-        <translation type="unfinished"/>
+        <translation>Koble til gjennom SOCKS5 proxy</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4036,7 +4052,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Connecting to the I2P Router...</source>
-        <translation type="unfinished"/>
+        <translation>Kobler til I2P Ruteren...</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4081,12 +4097,12 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Error - Unable to Generate I2P Destination.</source>
-        <translation type="unfinished"/>
+        <translation>Feil - Ikke i stand til å generere i2P Destinasjon.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error - Unable to report I2P Destination.</source>
-        <translation type="unfinished"/>
+        <translation>Feil - Ikke i stand til å raportere i2P Destinasjon.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4136,7 +4152,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Error: Unsupported argument -tor found, use -onion.</source>
-        <translation type="unfinished"/>
+        <translation>Feil: Ikke støttet argument -tor funnet, bruk -onion.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4226,7 +4242,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Generated an I2P destination for you.</source>
-        <translation type="unfinished"/>
+        <translation>Generert en I2P destinasjon for deg.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4261,7 +4277,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Initialization sanity check failed. Anoncoin Core is shutting down.</source>
-        <translation type="unfinished"/>
+        <translation>Oppstart tilregnelighets sjekk mislyktes. Anoncoin Core lukker.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4301,12 +4317,12 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Keep at most &lt;n&gt; unconnectable blocks in memory (default: %u)</source>
-        <translation type="unfinished"/>
+        <translation>Behold maks &lt;n&gt; ikke tilkoblede blokker i minnet (standard: %u)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Keep at most &lt;n&gt; unconnectable transactions in memory (default: %u)</source>
-        <translation type="unfinished"/>
+        <translation>Behold maks &lt;n&gt; ikke tilkoblede transaksjoner i minnet (standard: %u)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4316,7 +4332,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Listen for connections on &lt;port&gt; (default: 9333 or testnet: 19333)</source>
-        <translation type="unfinished"/>
+        <translation>Lytt etter tilkobling på &lt;port&gt; (standard: 9333 eller testnet: 19333)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4361,7 +4377,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Node relay options:</source>
-        <translation type="unfinished"/>
+        <translation>Node videresendings innstillinger:</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4376,7 +4392,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Only connect to nodes in network &lt;net&gt; (ipv4, ipv6, onion or i2p)</source>
-        <translation type="unfinished"/>
+        <translation>Koble kun til noder i nettverk &lt;net&gt; (ipv4, ipv6, onion eller i2p)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4406,7 +4422,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>RPC SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation type="unfinished"/>
+        <translation>RPC SSL alternativer: (se Bitcoin Wiki for instruksjon om SSL oppsett)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4431,7 +4447,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Relay and mine data carrier transactions (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Videresend og utvinn databærer transaksjoner (standard: 1)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4446,7 +4462,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Results also written to your debug.log file</source>
-        <translation type="unfinished"/>
+        <translation>Resultat også lagret i din debug.log fil</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4531,7 +4547,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Specify connection timeout in milliseconds (default: 20000)</source>
-        <translation type="unfinished"/>
+        <translation>Spesifiser tilkoblings tidsavbrudd i millisekunder (standard: 20000)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4601,7 +4617,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Unable to bind to %s on this computer (bind returned error %s)</source>
-        <translation type="unfinished"/>
+        <translation>Ute av stand til å binde til %s på denne datamaskinen (binding returnerte feil %s)</translation>
     </message>
     <message>
         <location line="+1"/>

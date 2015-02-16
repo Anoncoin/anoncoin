@@ -89,7 +89,14 @@ void RPCTypeCheck(const Object& o,
 int64_t AmountFromValue(const Value& value)
 {
     double dAmount = value.get_real();
-    if (dAmount <= 0.0 || dAmount > 84000000.0)
+    // MAX_MONEY is an int64_t type multipled by COIN, also an int64_t type.  In order to calculate
+    // the Maximum amount allowed.  First convert max money into a whole number value & type cast it
+    // to double, after the fast integer math divide.  This max amount was originally a hard coded
+    // constant, from Bitcoin code.  Changes to the definition of MAX_MONEY was not fully supported,
+    // without this change also being done.  Now it should track that value whatever it is set to.
+    // Note: Wacho places to find those defs, so heres the tip:  See core.h for definition of MAX_MONEY
+    // and the definition of COIN is found in util.h, clear as a bell?
+    if (dAmount <= 0.0 || dAmount > (double)(MAX_MONEY / COIN))
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     int64_t nAmount = roundint64(dAmount * COIN);
     if (!MoneyRange(nAmount))

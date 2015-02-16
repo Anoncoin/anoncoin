@@ -820,7 +820,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
         vInOutPoints.insert(txin.prevout);
     }
 
-    /* ToDo: GRNotes: The following chunck of code was commented out in Anc 8.6, from what I can tell the genesis block
+    /* GR Notes 12/2014: The following chunck of code was commented out in Anc 8.6, from what I can tell the Genesis Block
      * has a string 95 bytes long, so this was failing with script size error, this important set of tests on the transaction
      * never got 'uncommented' and fixed so the following CheckTransaction code could run properly. Would like to keep it here now,
      * so setting the size limit higher, and get the client to start building the blockchain database properly....
@@ -828,7 +828,6 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
      */
     if (tx.IsCoinBase())
     {
-        // ToDo: Change or accept the new max script size here, 120 is arbitrary...
         if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 120)
             return state.DoS(100, error("CheckTransaction() : coinbase script size"),
                              REJECT_INVALID, "bad-cb-length");
@@ -863,11 +862,29 @@ int64_t GetMinFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree, 
             nMinFee = 0;
     }
 
-    // Litecoin
+    // <This code was ported> from Anoncoin v0.8.5.6, claims originally came from Litecoin
     // To limit dust spam, add nBaseFee for each output smaller than DUST_SOFT_LIMIT
     BOOST_FOREACH(const CTxOut& txout, tx.vout)
         if (txout.nValue < DUST_SOFT_LIMIT)
             nMinFee += nBaseFee;
+
+    // Raise the price as the block approaches full
+    // In the old code nBlockSize is known, and set to 1, except for mode GMF_RELAY, where
+    // the value is set to 1000.  Here in v9 we don't have that nBlockSize value given as
+    // a parameter, only nBytes. A new DEFINE'd variable in v9 is now used, called MAX_BLOCK_SIZE_GEN
+    // this also came from the old client, and can be found main.h.  So as we know
+    // the mode, we can run the same nMinFee calculations that was being used before,
+    // and have this function made to work, as was intended.
+    // Original code: unsigned int nNewBlockSize = nBlockSize + nBytes;
+    unsigned int nNewBlockSize = 1000 + nBytes;
+    // Original code: if (nBlockSize != 1 && nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2)
+    if( (mode == GMF_RELAY) && (nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2) )
+    {
+        if (nNewBlockSize >= MAX_BLOCK_SIZE_GEN)
+            return MAX_MONEY;
+        nMinFee *= MAX_BLOCK_SIZE_GEN / (MAX_BLOCK_SIZE_GEN - nNewBlockSize);
+    }
+    // ...end <this code was ported>
 
     if (!MoneyRange(nMinFee))
         nMinFee = MAX_MONEY;
@@ -1410,16 +1427,6 @@ void UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev)
         block.nBits = GetNextWorkRequired(pindexPrev, &block);
 }
 
-
-
-
-
-
-
-
-
-
-
 void UpdateCoins(const CTransaction& tx, CValidationState &state, CCoinsViewCache &inputs, CTxUndo &txundo, int nHeight, const uint256 &txhash)
 {
     bool ret;
@@ -1857,6 +1864,7 @@ void static UpdateTip(CBlockIndex *pindexNew) {
     // New best block
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
+    // if( chainActive.Height() % 1000   == 0)  Limit the log output allot with this if your debugging other things
     LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s progress=%f\n",
       chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), log(chainActive.Tip()->nChainWork.getdouble())/log(2.0), (unsigned long)chainActive.Tip()->nChainTx,
       DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
@@ -2235,6 +2243,26 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     if (block.vtx.empty() || block.vtx.size() > MAX_BLOCK_SIZE || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE)
         return state.DoS(100, error("CheckBlock() : size limits failed"),
                          REJECT_INVALID, "bad-blk-length");
+
+    // Litecoin: Special short-term limits to avoid 10,000 BDB lock limit:
+    if (block.nTime < 1376568000)  // stop enforcing 15 August 2013 00:00:00
+    {
+        if( block.nTime == 1376567999 )
+            LogPrintf( "\n\n\n\nEnd of Special CheckBlock() maxlocks test period.\n\n\n\n");
+        // Rule is: #unique txids referenced <= 4,500
+        // ... to prevent 10,000 BDB lock exhaustion on old clients
+        set<uint256> setTxIn;
+        for (size_t i = 0; i < block.vtx.size(); i++)
+        {
+            setTxIn.insert(block.vtx[i].GetHash());
+            if (i == 0) continue; // skip coinbase txin
+            BOOST_FOREACH(const CTxIn& txin, block.vtx[i].vin)
+                setTxIn.insert(txin.prevout.hash);
+        }
+        size_t nTxids = setTxIn.size();
+        if (nTxids > 4500)
+            return error("CheckBlock() : 15 August 2013 maxlocks violation");
+    }
 
     // Check proof of work matches claimed amount
     if (fCheckPOW && !CheckProofOfWork(block.GetPoWHash(), block.nBits))
@@ -3099,8 +3127,15 @@ string GetWarnings(string strFor)
     if (GetBoolArg("-testsafemode", false))
         strRPC = "test";
 
-    if (!CLIENT_VERSION_IS_RELEASE)
+    if (!CLIENT_VERSION_IS_RELEASE) {
+#if defined( HARDFORK_BLOCK )
+        stringstream ss;
+        ss << HARDFORK_BLOCK;
+        strStatusBar = "This is a HARDFORK pre-release test build, and will fork at block " + ss.str();
+#else
         strStatusBar = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications");
+#endif
+    }
 
     // Misc warnings like out of disk space and clock is wrong
     if (strMiscWarning != "")
@@ -3522,7 +3557,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             }
             // Do not store addresses outside our network
             if (fReachable)
-#ifdef ENABLE_I2PSAM
+#ifdef XXXENABLE_I2PSAM
             {
                     // Here we introduce a new concept starting with protocol version 70008, the idea of not keeping any clearnet
                     // nodes in our own copy of the peers address book....this means that once I2P is enabled, or set as the -onlynet

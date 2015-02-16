@@ -75,12 +75,10 @@ src/qt/test/moc*.cpp
 *.pyc
 *.o
 *.o-*
-*.patch
 .anoncoin
 *.a
 *.pb.cc
 *.pb.h
-
 *.log
 *.trs
 *.dmg
@@ -96,6 +94,7 @@ src/qt/test/moc*.cpp
 *.qm
 anoncoin-qt
 Anoncoin.app
+Anoncoin-Qt.app
 
 # Unit-tests
 Makefile.test

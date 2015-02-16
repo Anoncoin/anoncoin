@@ -701,7 +701,7 @@ void AnoncoinGUI::setNumI2PConnections(int count)
     case 7: case 8: case 9: i2pIcon = ":/icons/i2pconnect_3"; break;
     default: i2pIcon = ":/icons/i2pconnect_4"; break;
     }
-    labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(4*STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
     labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", count));
     i2pConnectCount = count;
 }

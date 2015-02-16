@@ -53,6 +53,7 @@
     </qresource>
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
+        <file alias="aboutcmds">res/images/aboutcmds.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="i2pguy">res/images/i2pguy.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>

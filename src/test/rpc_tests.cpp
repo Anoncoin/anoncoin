@@ -147,8 +147,8 @@ BOOST_AUTO_TEST_CASE(rpc_parse_monetary_values)
     BOOST_CHECK(AmountFromValue(ValueFromString("0.50000000")) == 50000000LL);
     BOOST_CHECK(AmountFromValue(ValueFromString("0.89898989")) == 89898989LL);
     BOOST_CHECK(AmountFromValue(ValueFromString("1.00000000")) == 100000000LL);
-    BOOST_CHECK(AmountFromValue(ValueFromString("20999999.9999999")) == 2099999999999990LL);
-    BOOST_CHECK(AmountFromValue(ValueFromString("20999999.99999999")) == 2099999999999999LL);
+    BOOST_CHECK(AmountFromValue(ValueFromString("2099999.9999999")) == 209999999999990LL);
+    BOOST_CHECK(AmountFromValue(ValueFromString("2099999.99999999")) == 209999999999999LL);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

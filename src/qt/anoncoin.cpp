@@ -3,12 +3,6 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <QApplication>
-#include <QMessageBox>
-#include <QFile>
-#include <QDir>
-#include <QTextStream>
-
 #include "anoncoingui.h"
 // Anoncoin-config.h has been loaded...
 
@@ -30,6 +24,7 @@
 #include "rpcserver.h"
 #include "ui_interface.h"
 #include "util.h"
+
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
@@ -42,9 +37,15 @@
 #include <QLocale>
 #include <QMessageBox>
 #include <QSettings>
+#include <QThread>
 #include <QTimer>
 #include <QTranslator>
-#include <QThread>
+
+// Needed for Stylesheet code
+#include <QFile>
+#include <QTextStream>
+// #include <QDir>
+
 
 #if defined(QT_STATICPLUGIN)
 #include <QtPlugin>
@@ -125,6 +126,7 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
     // Load e.g. qt_de.qm
     if (qtTranslatorBase.load("qt_" + lang, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         QApplication::installTranslator(&qtTranslatorBase);
+
     // Load e.g. qt_de_DE.qm
     if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         QApplication::installTranslator(&qtTranslator);
@@ -304,10 +306,13 @@ AnoncoinApplication::AnoncoinApplication(int &argc, char **argv):
 
 AnoncoinApplication::~AnoncoinApplication()
 {
-    LogPrintf("Stopping thread\n");
-    emit stopThread();
-    coreThread->wait();
-    LogPrintf("Stopped thread\n");
+    if(coreThread)
+    {
+        LogPrintf("Stopping thread\n");
+        emit stopThread();
+        coreThread->wait();
+        LogPrintf("Stopped thread\n");
+    }
 
     delete window;
     window = 0;

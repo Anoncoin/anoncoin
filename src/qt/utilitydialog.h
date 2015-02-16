@@ -49,9 +49,7 @@ public:
 
 private:
     Ui::HelpMessageDialog *ui;
-    QString header;
-    QString coreOptions;
-    QString uiOptions;
+    QString text;
 
 private slots:
     void on_okButton_accepted();
@@ -59,12 +57,16 @@ private slots:
 
 
 /** "Shutdown" window */
-class ShutdownWindow : public QObject
+class ShutdownWindow : public QWidget
 {
     Q_OBJECT
 
 public:
+    ShutdownWindow(QWidget *parent=0, Qt::WindowFlags f=0);
     static void showShutdownWindow(AnoncoinGUI *window);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // UTILITYDIALOG_H
