@@ -3,7 +3,7 @@
 //       Then develop the associated build script updates so it compiles & links in with everything else...
 //
 
-#define LOG_DIFFICULTY_RETARGETING
+// #define LOG_DIFFICULTY_RETARGETING
 
 // These legacy values define the Anoncoin block rate production and
 // are used throughout difficulty calculations as our target goals...
@@ -25,32 +25,31 @@ static const int nDifficultySwitchHeight4 = HARDFORK_BLOCK;
 /*
  *  Difficulty formula, Anoncoin - From the early months, when blocks were very new...
  */
-unsigned int static OldGetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const unsigned int nProofOfWorkLimit)
+unsigned int static OldGetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const CBigNum &bnProofOfWorkLimit)
 {
     if (pindexLast == NULL)             // If this is the Genesis block, we're done
-        return nProofOfWorkLimit;
+        return bnProofOfWorkLimit.GetCompact();
 
     // Anoncoin difficulty adjustment protocol switch (Thanks to FeatherCoin for this idea)
     static const int newTargetTimespan = 2050;
     int nHeight = pindexLast->nHeight + 1;
-    bool fNewDifficultyProtocol = (nHeight >= nDifficultySwitchHeight || TestNet());
-    bool fNewDifficultyProtocol2 = (nHeight >= nDifficultySwitchHeight2 || TestNet());
+    bool fNewDifficultyProtocol = nHeight >= nDifficultySwitchHeight;
+    bool fNewDifficultyProtocol2 = false;
+    int64_t nTargetTimespanCurrent = nTargetTimespan;
+    int64_t nInterval;
 
-    // Jump back to sqrt(2) as the factor of adjustment.
-    if (fNewDifficultyProtocol2) fNewDifficultyProtocol = false;
+    if( nHeight >= nDifficultySwitchHeight2 ) {         // Jump back to sqrt(2) as the factor of adjustment.
+        fNewDifficultyProtocol2 = true;
+        fNewDifficultyProtocol = false;
+    }
 
-    int64_t nTargetTimespanCurrent = fNewDifficultyProtocol ? (nTargetTimespan*4) : nTargetTimespan;
-    int64_t nInterval = nTargetTimespanCurrent / nTargetSpacing;
-
+    if( fNewDifficultyProtocol ) nTargetTimespanCurrent *= 4;
     if (fNewDifficultyProtocol2) nTargetTimespanCurrent = newTargetTimespan;
-    if (TestNet() && nHeight < (newTargetTimespan/205)+1) return pindexLast->nBits;
+    nInterval = nTargetTimespanCurrent / nTargetSpacing;
 
     // Only change once per interval, or at protocol switch height
-    if ((nHeight % nInterval != 0 && !fNewDifficultyProtocol2) &&
-        (nHeight != nDifficultySwitchHeight) && !TestNet())
-    {
+    if( nHeight % nInterval != 0 && !fNewDifficultyProtocol2 && nHeight != nDifficultySwitchHeight )
         return pindexLast->nBits;
-    }
 
     // Anoncoin: This fixes an issue where a 51% attack can change difficulty at will.
     // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
@@ -69,7 +68,6 @@ unsigned int static OldGetNextWorkRequired(const CBlockIndex* pindexLast, const 
     int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     int64_t nActualTimespanMax = fNewDifficultyProtocol ? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
     int64_t nActualTimespanMin = fNewDifficultyProtocol ? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
-    // LogPrintf("  nActualTimespan = %lld  before bounds\n", nActualTimespan);
     if (pindexLast->nHeight+1 >= nDifficultySwitchHeight2) {
         if (nActualTimespan < nActualTimespanMin)
             nActualTimespan = nActualTimespanMin;
@@ -91,13 +89,7 @@ unsigned int static OldGetNextWorkRequired(const CBlockIndex* pindexLast, const 
     CBigNum bnNew;
     bnNew.SetCompact(pindexLast->nBits);
     bnNew *= nActualTimespan;
-    if (fNewDifficultyProtocol2) {
-        bnNew /= nTargetTimespanCurrent;
-    } else {
-        bnNew /= nTargetTimespan;
-    }
-
-    CBigNum bnProofOfWorkLimit( nProofOfWorkLimit );                            // ToDo: Remove this variable requirement
+    bnNew /= fNewDifficultyProtocol2 ? nTargetTimespanCurrent : nTargetTimespan;
     if (bnNew > bnProofOfWorkLimit) bnNew = bnProofOfWorkLimit;
 
     // debug print
@@ -113,10 +105,15 @@ unsigned int static OldGetNextWorkRequired(const CBlockIndex* pindexLast, const 
 /*
  *  Difficulty formula, Anoncoin - kimoto gravity well, use of this ended early in 2015
  */
-unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const unsigned int nProofOfWorkLimit)
+unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const CBigNum &bnProofOfWorkLimit)
 {
-    uint64_t PastBlocksMin = (SECONDSPERDAY * 0.25) / nTargetSpacing;
-    uint64_t PastBlocksMax = (SECONDSPERDAY * 7) / nTargetSpacing;
+    // Unfortunately the KGW code used on the Anoncoin blockchain during this era, did not use our nTargetSpacing value for
+    // Target time calculations, but instead was hard coded at 3 minutes = 3 * 60 or 180 seconds.  So we simply ignore the
+    // nTargetSpacing value here, and calculate NextWorkRequired by using that value as the constant.
+    static const int64_t nTargetSpacingForKgw = 3 * 60; // 3 minutes
+
+    uint64_t PastBlocksMin = (SECONDSPERDAY * 0.25) / nTargetSpacingForKgw;
+    uint64_t PastBlocksMax = (SECONDSPERDAY * 7) / nTargetSpacingForKgw;
 
     const CBlockIndex *BlockLastSolved = pindexLast;
     const CBlockIndex *BlockReading = pindexLast;
@@ -133,7 +130,7 @@ unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, con
     double  EventHorizonDeviationSlow;
 
     if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || (uint64_t)BlockLastSolved->nHeight < PastBlocksMin)
-        return nProofOfWorkLimit;
+        return bnProofOfWorkLimit.GetCompact();
 
     for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
         if (PastBlocksMax > 0 && i > PastBlocksMax) { break; }
@@ -144,7 +141,7 @@ unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, con
         PastDifficultyAveragePrev = PastDifficultyAverage;
 
         PastRateActualSeconds = BlockLastSolved->GetBlockTime() - BlockReading->GetBlockTime();
-        PastRateTargetSeconds = nTargetSpacing * PastBlocksMass;
+        PastRateTargetSeconds = nTargetSpacingForKgw * PastBlocksMass;
         PastRateAdjustmentRatio = double(1);
         if (PastRateActualSeconds < 0) { PastRateActualSeconds = 0; }
         if (PastRateActualSeconds != 0 && PastRateTargetSeconds != 0)
@@ -167,13 +164,11 @@ unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, con
     }
 
     CBigNum bnNew(PastDifficultyAverage);
-    CBigNum bnProofOfWorkLimit( nProofOfWorkLimit );
-
     if (PastRateActualSeconds != 0 && PastRateTargetSeconds != 0) {
         bnNew *= PastRateActualSeconds;
         bnNew /= PastRateTargetSeconds;
     }
-    if (bnNew > bnProofOfWorkLimit) { bnNew = bnProofOfWorkLimit; }
+    if( bnNew > bnProofOfWorkLimit ) bnNew = bnProofOfWorkLimit;
 
     // debug print
 #if defined( LOG_DIFFICULTY_RETARGETING )
@@ -189,7 +184,7 @@ unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, con
 /*
  *  Difficulty formula, Anoncoin - Early in 2015, due to continous attack & weakness exploits known about the KGW difficulty algo, this was implemented as a solution
  */
-unsigned int static GetNextWorkRequiredAfterKgwFork(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const unsigned int nProofOfWorkLimit )
+unsigned int static GetNextWorkRequiredAfterKgwFork(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const CBigNum &bnProofOfWorkLimit )
 {
     // ToDo: Ask CryptoSlave about these values, the commented out values, came from elsewhere.  We could change them,
     //       or leave them (as I have done) the same as it has been since day one
@@ -211,7 +206,7 @@ unsigned int static GetNextWorkRequiredAfterKgwFork(const CBlockIndex* pindexLas
 	const CBlockIndex *BlockLastSolved = pindexLast;
 
     if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || (uint64_t)BlockLastSolved->nHeight < PastBlocksMin)
-        return nProofOfWorkLimit;
+        return bnProofOfWorkLimit.GetCompact();
 
     const CBlockIndex *BlockReading = pindexLast;
     for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
@@ -258,17 +253,15 @@ unsigned int static GetNextWorkRequiredAfterKgwFork(const CBlockIndex* pindexLas
         bnNew *= PastRateActualSeconds;
         bnNew /= PastRateTargetSeconds;
     }
-
-    CBigNum bnProofOfWorkLimit( nProofOfWorkLimit );                            // ToDo: Remove this variable requirement
-    if (bnNew > bnProofOfWorkLimit) { bnNew = bnProofOfWorkLimit; }
+    if( bnNew > bnProofOfWorkLimit ) bnNew = bnProofOfWorkLimit;
 
     // debug print
-#if defined( LOG_DIFFICULTY_RETARGETING )
+// #if defined( LOG_DIFFICULTY_RETARGETING )
     LogPrintf("Difficulty Retarget - post-Kimoto Gravity Well\n");
     LogPrintf("PastRateAdjustmentRatio = %g\n", PastRateAdjustmentRatio);
     LogPrintf("Before: %08x %s\n", BlockLastSolved->nBits, CBigNum().SetCompact(BlockLastSolved->nBits).getuint256().ToString().c_str());
     LogPrintf("After: %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
-#endif
+// #endif
 
 	return bnNew.GetCompact();
 }
@@ -279,6 +272,32 @@ unsigned int static GetNextWorkRequiredAfterKgwFork(const CBlockIndex* pindexLas
 // the rest of the source code for Anoncoin, everything above should be static and only
 // referenced from within this source code file.
 
+/*
+ * The workhorse routine, which oversees the blockchain Proof Of Work algorithms
+ */
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
+{
+    // Before we implement merged mining, there was no other ProofOfWorkLimit than the base Scrypt algo
+    // We now setup that variable, and pass it as a parameter to the various implementations of difficulty
+    // calculation, that have happened over the years...
+    const CBigNum &bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC );
+
+    assert(pindexLast);
+    if( TestNet() || pindexLast->nHeight > nDifficultySwitchHeight3 ) {
+#if defined( HARDFORK_BLOCK )
+        if( TestNet() || pindexLast->nHeight > nDifficultySwitchHeight4 ) {
+            return GetNextWorkRequiredAfterKgwFork(pindexLast, pblock, bnProofOfWorkLimit );
+        } else
+#endif
+        return GetNextWorkRequiredForKgw(pindexLast, pblock, bnProofOfWorkLimit );
+    } else
+        return OldGetNextWorkRequired(pindexLast, pblock, bnProofOfWorkLimit );
+}
+
+
+/*
+ * The primary routine, which determines Anoncoins mined value over time...
+ */
 int64_t GetBlockValue(int nHeight, int64_t nFees)
 {
     int64_t nSubsidy = 5 * COIN;
@@ -295,33 +314,16 @@ int64_t GetBlockValue(int nHeight, int64_t nFees)
     return nSubsidy + nFees;
 }
 
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
-{
-    // Before we implement merged mining, there was no other ProofOfWorkLimit than the base Scrypt algo
-    // We now setup that variable, and pass it as a parameter to the various implementations of difficulty
-    // calculation, that have happened over the years...
-    const CBigNum &bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC );
-    unsigned int nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
 
-    assert(pindexLast);
-    if (pindexLast->nHeight > nDifficultySwitchHeight3 ) {
-#if defined( HARDFORK_BLOCK )
-        if (pindexLast->nHeight > nDifficultySwitchHeight4 ) {
-            return GetNextWorkRequiredAfterKgwFork(pindexLast, pblock, nProofOfWorkLimit );
-        } else
-#endif
-        return GetNextWorkRequiredForKgw(pindexLast, pblock, nProofOfWorkLimit );
-    } else
-        return OldGetNextWorkRequired(pindexLast, pblock, nProofOfWorkLimit );
-}
-
-
+/*
+ * The primary routine, which verifies a claim of Proof Of Work
+ */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 {
     CBigNum bnTarget;
     bnTarget.SetCompact(nBits);
 
-    printf("CheckProofOfWork Hash: %s, nBits: %08x, Target: %08x, bnLimt: %08x \n", hash.ToString().c_str(), nBits, bnTarget.GetCompact(), Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC ).GetCompact());
+    // printf("CheckProofOfWork Hash: %s, nBits: %08x, Target: %08x, bnLimt: %08x \n", hash.ToString().c_str(), nBits, bnTarget.GetCompact(), Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC ).GetCompact());
     // ToDo: Which Algo?  After merge mining begins, which coins ProofOfWorkLimit
     // needs to be considered when evaluating someone else's claim about it.
     if (bnTarget <= 0 || bnTarget > Params().ProofOfWorkLimit( CChainParams::SCRYPT_ANC ))

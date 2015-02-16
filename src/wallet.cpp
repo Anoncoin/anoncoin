@@ -1382,12 +1382,12 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
                 // have upgraded to the 0.9 GetMinFee() rules. Until then, this avoids
                 // creating free transactions that have change outputs less than
                 // CENT anoncoins.
-                if (nFeeRet < CTransaction::nMinTxFee && nChange > 0 && nChange < CENT)
-                {
-                    int64_t nMoveToFee = min(nChange, CTransaction::nMinTxFee - nFeeRet);
-                    nChange -= nMoveToFee;
-                    nFeeRet += nMoveToFee;
-                }
+                // if (nFeeRet < CTransaction::nMinTxFee && nChange > 0 && nChange < CENT)
+                // {
+                //    int64_t nMoveToFee = min(nChange, CTransaction::nMinTxFee - nFeeRet);
+                //    nChange -= nMoveToFee;
+                //    nFeeRet += nMoveToFee;
+                // }
 
                 if (nChange > 0)
                 {

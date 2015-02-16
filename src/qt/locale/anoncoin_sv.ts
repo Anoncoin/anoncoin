@@ -1729,7 +1729,7 @@ I2P-adress</translation>
     <message>
         <location line="+25"/>
         <source>Mined balance in watch-only addresses that has not yet matured</source>
-        <translation type="unfinished"/>
+        <translation>&quot;Mineat&quot; saldo i &quot;watch-only&quot;-adresser som ännu inte mognat</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -1754,12 +1754,12 @@ I2P-adress</translation>
     <message>
         <location line="+25"/>
         <source>Current total balance in watch-only addresses</source>
-        <translation type="unfinished"/>
+        <translation>Totalt saldo i &quot;watch-only&quot;-adresser.</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Watch-only:</source>
-        <translation type="unfinished"/>
+        <translation>&quot;Watch-only&quot;</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1774,7 +1774,7 @@ I2P-adress</translation>
     <message>
         <location line="+25"/>
         <source>Your current balance in watch-only addresses</source>
-        <translation type="unfinished"/>
+        <translation>Nuvarande saldo i &quot;watch-only&quot;-adresser.</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -1789,7 +1789,7 @@ I2P-adress</translation>
     <message>
         <location line="+49"/>
         <source>Recent transactions</source>
-        <translation type="unfinished"/>
+        <translation>Senaste transaktionerna</translation>
     </message>
     <message>
         <location filename="../overviewpage.cpp" line="+132"/>
@@ -1829,7 +1829,7 @@ I2P-adress</translation>
     <message>
         <location line="+13"/>
         <source>URI cannot be parsed! This can be caused by an invalid Anoncoin address or malformed URI parameters.</source>
-        <translation type="unfinished"/>
+        <translation>URIn kan inte tolkas. Det kan bero på ogiltig Anoncoinadress eller felformerade URI-parametrar. </translation>
     </message>
     <message>
         <location line="+14"/>
@@ -2175,7 +2175,7 @@ I2P-adress</translation>
     <message>
         <location line="+23"/>
         <source>Sync Height</source>
-        <translation type="unfinished"/>
+        <translation>Synkningshöjd</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -2185,7 +2185,7 @@ I2P-adress</translation>
     <message>
         <location line="+23"/>
         <source>Connection Time</source>
-        <translation type="unfinished"/>
+        <translation>Anslutningstid</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -2884,7 +2884,7 @@ I2P-adress</translation>
     <message>
         <location line="+23"/>
         <source>Address (you can publish it):</source>
-        <translation type="unfinished"/>
+        <translation>Adress (går bra att offentliggöra):</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -2895,19 +2895,22 @@ I2P-adress</translation>
         <location line="+22"/>
         <source>Copy &quot;mydestination&quot; parameter
 to the clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Kopiera &quot;mydestination&quot;-parametern
+till urklipp</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Copy public address
 to the clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Kopiera den offentliga adressen
+till urklipp</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Copy b32-address
 to the clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Kopiera b32-adress
+till urklipp</translation>
     </message>
 </context>
 <context>
@@ -3041,7 +3044,7 @@ to the clipboard</source>
     <message>
         <location line="+2"/>
         <source>Enter an Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation type="unfinished"/>
+        <translation>Ange en Anoncoinadress (t.ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+83"/>
@@ -3216,7 +3219,7 @@ to the clipboard</source>
         <location line="+0"/>
         <location line="+69"/>
         <source>watch-only</source>
-        <translation type="unfinished"/>
+        <translation>&quot;watch-only&quot;</translation>
     </message>
     <message>
         <location line="-67"/>
@@ -3436,7 +3439,7 @@ to the clipboard</source>
     <message>
         <location line="+28"/>
         <source>watch-only</source>
-        <translation type="unfinished"/>
+        <translation>&quot;watch-only&quot;</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -3461,7 +3464,7 @@ to the clipboard</source>
     <message>
         <location line="+2"/>
         <source>Whether or not a watch-only address is involved in this transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Huruvida en &quot;watch-only&quot;-adress är involverad i denna transaktionen.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3595,7 +3598,7 @@ to the clipboard</source>
     <message>
         <location line="+2"/>
         <source>Watch-only</source>
-        <translation type="unfinished"/>
+        <translation>&quot;Watch-only&quot;</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3658,7 +3661,7 @@ to the clipboard</source>
     <message>
         <location filename="../anoncoingui.cpp" line="+135"/>
         <source>Unit to show amounts in. Click to select another unit.</source>
-        <translation type="unfinished"/>
+        <translation>Enhet att visa belopp här. Klicka för att byta till en annan enhet</translation>
     </message>
 </context>
 <context>
@@ -3932,7 +3935,10 @@ This is your Address + private key (save this text in the configuration file and
 
 This is your Address (you can make it public):
 </source>
-        <translation type="unfinished"/>
+        <translation>
+
+Detta är din adress (den går bra att offentliggöra)
+</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3940,7 +3946,10 @@ This is your Address (you can make it public):
 
 Your Short base32-address:
 </source>
-        <translation type="unfinished"/>
+        <translation>
+
+Din korta base32-adress
+</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -4030,7 +4039,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Connect through SOCKS5 proxy</source>
-        <translation type="unfinished"/>
+        <translation>Anslut genom en &quot;SOCKS5&quot;-proxy</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4040,7 +4049,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Connecting to the I2P Router...</source>
-        <translation type="unfinished"/>
+        <translation>Ansluten till I2P-routern...</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4085,12 +4094,12 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Error - Unable to Generate I2P Destination.</source>
-        <translation type="unfinished"/>
+        <translation>Fel - Kunde inte generera I2P-destination.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error - Unable to report I2P Destination.</source>
-        <translation type="unfinished"/>
+        <translation>Fel - Kunde inte rapportera I2P-destination.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4230,7 +4239,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Generated an I2P destination for you.</source>
-        <translation type="unfinished"/>
+        <translation>Genererade en I2P-destination åt dig</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4380,7 +4389,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>Only connect to nodes in network &lt;net&gt; (ipv4, ipv6, onion or i2p)</source>
-        <translation type="unfinished"/>
+        <translation>Anslut bara till noder i &lt;net&gt; (ipv4, ipv6, onion eller ip2)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4410,7 +4419,7 @@ Your Short base32-address:
     <message>
         <location line="+1"/>
         <source>RPC SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation type="unfinished"/>
+        <translation>RPC SSL-alternativ: (hänvisar till Bitcoin Wiki för vidare instruktioner)</translation>
     </message>
     <message>
         <location line="+1"/>

@@ -31,7 +31,8 @@ extern bool bSpendZeroConfChange;
 // -paytxfee default
 static const int64_t DEFAULT_TRANSACTION_FEE = 0;
 // -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
-static const int nHighTransactionFeeWarning = 0.01 * COIN;
+// This value is set to the same as v0.8.5.6 client has for -paytxfee upper limit warning
+static const int nHighTransactionFeeWarning = 0.25 * COIN;
 
 class CAccountingEntry;
 class CCoinControl;
