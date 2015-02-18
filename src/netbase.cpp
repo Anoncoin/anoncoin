@@ -626,6 +626,8 @@ static const unsigned char pchOnionCat[] = {0xFD,0x87,0xD8,0x7E,0xEB,0x43};
 bool CNetAddr::SetSpecial(const std::string &strName)
 {
 #ifdef ENABLE_I2PSAM
+    // ToDo: Any address that ends in b32.i2p should be valid here, as the router itself is used to lookup the base64 destination, it returns without an address
+    // if the string can not be found.  Furthermore that process can be so time consuming, it should be done in something like the dnsseed lookup thread.
     const bool isBase32Addr = isValidI2pB32( strName );
 
     if( isBase32Addr || isValidI2pAddress( strName ) )                      // Perhaps we've been given a full I2P native address
@@ -633,7 +635,9 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         std::string addr;
         if( isBase32Addr ) {
             addr = I2PSession::Instance().namingLookup(strName);            // This could take a very long while...
-            if( !isValidI2pAddress( addr ) ) return false;                  // Not something we can use
+            // If the address returned is a non-zero length string, the lookup was successful
+            if( !isValidI2pAddress( addr ) )
+                return false;                                               // Not something we can use
             // Otherwise the I2P router was able to convert it into a I2P address we can use, and it's now stored in 'addr'
         } else                                                              // It was a native I2P address
             addr = strName;                                                 // Prep for memcpy()

@@ -1,6 +1,6 @@
 ### Bootstrap the Blockchain Synchronization
 
-Normally the Anoncoin client will download the transaction and network information, called the blockchain, from the network by syncing with the other clients. This can be a process that can take multiple days as the [Anoncoin block chain](https://blockchain.info/charts/blocks-size) has grown to more than 15 gigabytes, and is growing almost a gigabyte every month. Luckily there is a safe and fast way to speed up this process. We’ll show you how to bootstrap your blockchain to bring your client up to speed in just a few simple steps.
+Normally the Anoncoin client will download the transaction and network information, called the blockchain, from the network by syncing with the other clients. This can be a process that can take multiple days as the Anoncoin block chain has grown, and is now more than 324 megabytes. Luckily there is a safe and fast way to speed up this process. We’ll show you how to bootstrap your blockchain to bring your client up to speed in just a few simple steps.
 
 ### Requirements
 
@@ -25,9 +25,9 @@ The torrent client installed will recognize the download of the torrent file. Sa
 ![Fig2](img/bootstrap2.png)
 
 ### Download the block chain directly from official repositories
-The Bittorent version, see above, of the block chain download is refreshed more often than the direct download available. If Bittorent is blocked on your network then you can use the direct download method. Be sure to only use official repositories as the link displayed below. This download will only update the client to March 2013.
+The Bittorent version, see above, of the block chain download is refreshed more often than the direct download available. If Bittorent is blocked on your network then you can use the direct download method. Be sure to only use official repositories as the link displayed below. This download will only update the client to Febuary 14th, 2015.
 
-Click [here](TODO: [define here]) to download or copy and paste the link below.
+Use https://github.com/Anoncoin/anoncoin-binaries to download or copy and paste the link below.
 
 	TODO: [define here]
 
@@ -35,7 +35,7 @@ The download page should look like this, with a countdown to the download. If it
 ![Fig3](img/bootstrap3.png)
 
 ### Importing the blockchain
-Exit the Anoncoin Client software if you have it running. Be sure not to have an actively used wallet in use. We are going to copy the download of the blockchain to the Anoncoin client data directory. You should run the client software at least once so it can generate the data directory. Copy the downloaded bootstrap.dat file into the Anoncoin data folder.
+Exit the Anoncoin Client software if you have it running. Be sure not to have an actively used wallet in use. We are going to copy the download of the blockchain to the Anoncoin client data directory. You should run the client software at least once so it can generate the data directory. Copy the downloaded bootstrap.dat file into the Anoncoin data folder, after unarchiving it.  Compression saves allot of bandwidth, but requires that one extra step.
 
 **For Windows users:**
 Open explorer, and type into the address bar:

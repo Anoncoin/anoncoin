@@ -797,13 +797,18 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // Initialize some stuff here alittle early, so if GenI2pDest is run, they will be setup with
     bool fValidI2pSession = false;
-    std:string myI2pBase32Key;
-    SAM::FullDestination myI2pKeys( GetArg("-i2p.mydestination.publickey", ""), GetArg("-i2p.mydestination.privatekey", ""), false /* isGenerated */ );
+    SAM::FullDestination myI2pKeys;
+    myI2pKeys.pub = "";
+    myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", "");
+    if( isValidI2pAddress(myI2pKeys.priv) ) {
+        myI2pKeys.pub = GetDestinationPublicKey( myI2pKeys.priv );
+        myI2pKeys.isGenerated = false;
+    } else
+        myI2pKeys.isGenerated = true;
     // If I2P is enabled, we have allot of work to do...
     if( IsI2PEnabled() ) {
         uiInterface.InitMessage(_("Connecting to the I2P Router..."));
         InitializeI2pSettings();                            // Make sure we have all our parameters loaded into configuration space, or set to default
-        myI2pBase32Key = GetArg("-i2p.mydestination.base32key", "");            // Localize a copy of our .b32.ip2 address too...
         // Now we can either use a static destination address, taken from anoncoin.conf values to create a Stream Session, or
         // generate a dynamic new one and initiate an I2P session stream that way...
         SAM::FullDestination retI2pKeys;                                        // Something we can compare our results too
@@ -822,11 +827,9 @@ bool AppInit2(boost::thread_group& threadGroup)
             retI2pKeys = I2PSession::Instance().getMyDestination();
             if( isValidI2pDestination( retI2pKeys ) ) {
                 myI2pKeys = retI2pKeys;                             // Ok we're going with them for this session.
-                myI2pBase32Key = I2PSession::GenerateB32AddressFromDestination( myI2pKeys.pub );
                 // At this point, we really need a hardset on the configuration parameters, as whatever was there is now wrong.
                 mapArgs[ "-i2p.mydestination.privatekey" ] = myI2pKeys.priv;
                 mapArgs[ "-i2p.mydestination.publickey" ] = myI2pKeys.pub;
-                mapArgs[ "-i2p.mydestination.base32key" ] = myI2pBase32Key;
                 fValidI2pSession = true;
             } else
                 LogPrintf( "Error - Unable to generate a valid I2P destination.  Result: ShutDown.\n" );
@@ -845,6 +848,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if( fGenI2pDest ) {
         if( fValidI2pSession ) {
+            string myI2pBase32Key = I2PSession::GenerateB32AddressFromDestination( myI2pKeys.pub );
             // DO NOT Put this code in, until AFTER the notification signals have been registered.
             // noui function is used if this is anoncoind, a function in anoncoingui.cpp is called for the anoncoin-qt
             bool bErr = uiInterface.ThreadSafeShowGeneratedI2PAddress(_("Generated an I2P destination for you."),
