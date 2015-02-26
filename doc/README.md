@@ -6,10 +6,11 @@ Copyright (c) 2013-2015 The Anoncoin Developers
 Pre-compiled Anoncoin binaries
 ------------------------------
 
-Pre-compiled Anoncoin binaries can be downloaded either from the [anoncoin-binaries project](https://github.com/Anoncoin/anoncoin-binaries) or from the relevant links on the [Anoncoin wiki](https://wiki.anoncoin.net/Download). Please verify the gpg signatures and cehcksums before using these files.
+Pre-compiled Anoncoin binaries can be downloaded either from the [anoncoin-binaries project](https://github.com/Anoncoin/anoncoin-binaries) or from the [Anoncoin web site](https://anoncoin.net/downloads/). For security, please verify the GPG signatures and SHA1/MD5 checksums before using these files.
 
-Building
---------
+Building from source
+--------------------
+
 The following files describe how to build Anoncoin from source on your native platform.
 
 - [OSX Build Notes](build-osx.md)
@@ -18,17 +19,17 @@ The following files describe how to build Anoncoin from source on your native pl
 
 Additional information
 ----------------------
-The following files contain additional information on the Anoncoin source code:
 
-- [User Files](files.md)
-- [Coding Guidelines](coding.md)
-- [Release Notes](release-notes.md)
-- [Release Process](release-process.md)
-- [Translation Process](translation_process.md)
-- [Unit Tests](unit-tests.md)
-- [Tor Support](tor.md)
+- [Description of the Anoncoin user files](files.md)
+- [Using a bootstrap file for faster initial synchronization](bootstrap.md)
+- [Release notes](release-notes.md)
+- [Release process](release-process.md)
+- [Translation process](translation_process.md)
+- [Unit tests](unit-tests.md)
+- [Tor support](tor.md)
 - [Making deterministic OSX disk images](osx-deterministic-build.md)
-- [Assets Attribution](assets-attribution.md)
+- [Assets attribution](assets-attribution.md)
+- [Coding guidelines](coding.md)
 
 Need Help?
 ----------
