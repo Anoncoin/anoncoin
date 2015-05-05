@@ -69,6 +69,7 @@ public:
         I2POutboundIPRestriction,   // int
         I2POutboundPriority,        // int
 #endif // ENABLE_I2PSAM
+        OurTheme,                   // QString
         OptionIDRowCount,
     };
 
@@ -87,6 +88,7 @@ public:
     int getDisplayUnit() { return nDisplayUnit; }
     QString getThirdPartyTxUrls() { return strThirdPartyTxUrls; }
     bool getProxySettings(QNetworkProxy& proxy) const;
+    QString getselectedTheme() { return selectedTheme; }
     bool getCoinControlFeatures() { return fCoinControlFeatures; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
 
@@ -101,6 +103,7 @@ private:
     QString language;
     int nDisplayUnit;
     QString strThirdPartyTxUrls;
+    QString selectedTheme;
     bool fCoinControlFeatures;
     /* settings that were overriden by command-line */
     QString strOverriddenByCommandLine;

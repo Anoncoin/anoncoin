@@ -14,6 +14,7 @@
 #include "guiutil.h"
 #include "monitoreddatamapper.h"
 #include "optionsmodel.h"
+#include "util.h"
 
 #include "main.h" // for CTransaction::nMinTxFee and MAX_SCRIPTCHECK_THREADS
 #include "netbase.h"
@@ -101,6 +102,28 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 
     ui->unit->setModel(new AnoncoinUnits(this));
     ui->transactionFee->setSingleStep(CTransaction::nMinTxFee);
+
+
+
+    // Populate theme items from sub-directories
+    QString ddDir = QString::fromStdString ( GetDataDir().string() );
+    QDir themeDir(ddDir);
+    if (!themeDir.cd("themes")) {
+        // if themes doesn't exist, create it
+        themeDir.mkdir("themes");
+        themeDir.cd("themes");
+    }
+    themeDir.setFilter(QDir::Dirs);
+    QStringList entries = themeDir.entryList();
+    for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry )
+    {
+        QString themeName=*entry;
+        if(themeName != tr(".") && themeName != tr(".."))
+        {
+            ui->activeTheme->addItem( themeName, QVariant(themeName));
+        }
+    }
+
 
     /* Widget-to-option mapper */
     mapper = new MonitoredDataMapper(this);
@@ -204,6 +227,7 @@ void OptionsDialog::setMapper()
     /* Display */
     mapper->addMapping(ui->lang, OptionsModel::Language);
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
+    mapper->addMapping(ui->activeTheme, OptionsModel::OurTheme);
     mapper->addMapping(ui->thirdPartyTxUrls, OptionsModel::ThirdPartyTxUrls);
 #ifdef ENABLE_I2PSAM
     tabI2P->setMapper(*mapper);

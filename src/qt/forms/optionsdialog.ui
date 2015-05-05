@@ -420,6 +420,30 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2_Display">
          <item>
+          <widget class="QLabel" name="activeThemeLabel">
+           <property name="text">
+            <string>&amp;Theme to display with:</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="buddy">
+            <cstring>activeTheme</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QValueComboBox" name="activeTheme">
+           <property name="toolTip">
+            <string>Choose the default theme to display use.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3_Display">
+         <item>
           <widget class="QLabel" name="unitLabel">
            <property name="text">
             <string>&amp;Unit to show amounts in:</string>
@@ -442,7 +466,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3_Display">
+        <layout class="QHBoxLayout" name="horizontalLayout_4_Display">
          <item>
           <widget class="QLabel" name="thirdPartyTxUrlsLabel">
            <property name="toolTip">
