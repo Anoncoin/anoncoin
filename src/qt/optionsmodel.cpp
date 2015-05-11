@@ -143,7 +143,9 @@ void OptionsModel::Init()
         addOverriddenOption("-lang");
 
     language = settings.value("language").toString();
-    selectedTheme = settings.value("selectedTheme", "").toString();
+    selectedTheme = settings.value("selectedTheme", "(default)").toString();
+    //printf("DEBUG: %s\n", selectedTheme.toAscii().data());
+    applyTheme();
 
     if (!selectedTheme.isEmpty())
         SoftSetArg("-theme", selectedTheme.toStdString());
@@ -243,7 +245,7 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
         case Language:
             return settings.value("language");
         case OurTheme:
-            return settings.value("selectedTheme", "");
+            return settings.value("selectedTheme");
         case CoinControlFeatures:
             return fCoinControlFeatures;
         case DatabaseCache:
@@ -480,14 +482,14 @@ bool applyTheme()
     QSettings settings;
     // template variables : key => value
     QMap<QString, QString> variables;
-    QString sTheme = settings.value("selectedTheme", "").toString();
+    QString sTheme = settings.value("selectedTheme", "(default)").toString();
     // The datadir is where the wallet and block are kept
     QString ddDir = QString::fromStdString ( GetDataDir().string() );
     // path to selected theme dir
     QString themeDir = ( ddDir + "/themes/" + sTheme );
 
     // if theme selected
-    if (sTheme != "") {
+    if ( (sTheme != "") && (sTheme != "(default)") ) {
         QFile qss(ddDir + "/themes/" + sTheme + "/styles.qss");
         // open qss stylesheet
         if (qss.open(QFile::ReadOnly))

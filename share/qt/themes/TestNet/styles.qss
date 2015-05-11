@@ -102,6 +102,7 @@ QToolBar QToolButton { /* all types of tool button */
 	color: $black;
 	padding: 4px 2px;
 	font-size: 14px;
+	width: 140%;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	border-bottom-left-radius: 0px;
