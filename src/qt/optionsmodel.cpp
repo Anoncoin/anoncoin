@@ -25,6 +25,7 @@
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QStringList>
+#include <QDir>
 #include <QFile>
 #if QT_VERSION < 0x050000
 #include <QUrl>
@@ -485,12 +486,12 @@ bool applyTheme()
     QString sTheme = settings.value("selectedTheme", "(default)").toString();
     // The datadir is where the wallet and block are kept
     QString ddDir = QString::fromStdString ( GetDataDir().string() );
-    // path to selected theme dir
-    QString themeDir = ( ddDir + "/themes/" + sTheme );
+    // path to selected theme dir, using native slashes
+    QString themeDir = QDir::toNativeSeparators( ddDir + "/themes/" + sTheme );
 
     // if theme selected
     if ( (sTheme != "") && (sTheme != "(default)") ) {
-        QFile qss(ddDir + "/themes/" + sTheme + "/styles.qss");
+        QFile qss(themeDir + QDir::separator() + "styles.qss");
         // open qss stylesheet
         if (qss.open(QFile::ReadOnly))
         {
