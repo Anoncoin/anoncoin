@@ -485,13 +485,13 @@ bool applyTheme()
     QMap<QString, QString> variables;
     QString sTheme = settings.value("selectedTheme", "(default)").toString();
     // The datadir is where the wallet and block are kept
-    QString ddDir = QString::fromStdString ( GetDataDir().string() );
+    QString ddDir = QDir::fromNativeSeparators( QString::fromStdString ( GetDataDir().string() ) );
     // path to selected theme dir, using native slashes
-    QString themeDir = QDir::toNativeSeparators( ddDir + "/themes/" + sTheme );
+    QString themeDir = ddDir + "/themes/" + sTheme;
 
     // if theme selected
     if ( (sTheme != "") && (sTheme != "(default)") ) {
-        QFile qss(themeDir + QDir::separator() + "styles.qss");
+        QFile qss(themeDir + "/styles.qss");
         // open qss stylesheet
         if (qss.open(QFile::ReadOnly))
         {
