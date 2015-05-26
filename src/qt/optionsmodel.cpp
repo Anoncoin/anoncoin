@@ -551,6 +551,24 @@ bool applyTheme()
                 QApplication::sendEvent(widget, &event);
             }
         }
+    } else if ( sTheme == "(default)" ) {
+        QFile qss(themeDir + "/styles.qss");
+        // open qss stylesheet
+        if (qss.open(QFile::ReadOnly))
+        {
+            // read stylesheet
+            QString styleSheet = QString(qss.readAll());
+            qss.close();
+            qApp->setStyleSheet(styleSheet);
+
+            // Promote style change
+            QWidgetList widgets = QApplication::allWidgets();
+            for (int i = 0; i < widgets.size(); ++i) {
+                QWidget *widget = widgets.at(i);
+                QEvent event(QEvent::StyleChange);
+                QApplication::sendEvent(widget, &event);
+            }
+        }
     } else {
         // If not theme name given - clear styles
         qApp->setStyleSheet(QString(""));

@@ -95,4 +95,7 @@
         <file alias="spinner-033">res/movies/spinner-033.png</file>
         <file alias="spinner-034">res/movies/spinner-034.png</file>
     </qresource>
+    <qresource prefix="/style">
+        <file alias="default">res/style/default.qss</file>
+    </qresource>
 </RCC>
