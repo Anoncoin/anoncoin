@@ -107,7 +107,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 
     // Populate theme items from sub-directories
     QString ddDir = QString::fromStdString ( GetDataDir().string() );
-    ui->activeTheme->addItem(QString("(") + tr("default") + QString(")"), QVariant(""));
+    ui->activeTheme->addItem(QString("(default)"), QVariant(""));
     QDir themeDir(ddDir);
     if (!themeDir.cd("themes")) {
         // if themes doesn't exist, create it

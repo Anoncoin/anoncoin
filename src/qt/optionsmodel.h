@@ -5,6 +5,8 @@
 #ifndef OPTIONSMODEL_H
 #define OPTIONSMODEL_H
 
+bool applyTheme();
+
 // Many builder specific things set in the config file, for any source files where we rely on moc_xxx files being generated
 // it is best to include the anoncoin-config.h in the header file itself.  Not the .cpp src file, because otherwise any
 // conditional compilation guidelines, which rely on the build configuration, will not be present in the moc_xxx files.

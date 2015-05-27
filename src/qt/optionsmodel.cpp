@@ -33,8 +33,6 @@
 #include <QStyle>
 #include <QTextStream>
 
-bool applyTheme();
-
 // Only needed because we have a temporary readonly on the i2p settings
 #ifdef NOTYET_ENABLE_I2PSAM
 #include <QMessageBox>
@@ -145,7 +143,7 @@ void OptionsModel::Init()
 
     language = settings.value("language").toString();
     selectedTheme = settings.value("selectedTheme", "(default)").toString();
-    //printf("DEBUG: %s\n", selectedTheme.toAscii().data());
+    settings.setValue("selectedTheme", selectedTheme);
     applyTheme();
 
     if (!selectedTheme.isEmpty())
@@ -489,6 +487,14 @@ bool applyTheme()
     // path to selected theme dir, using native slashes
     QString themeDir = ddDir + "/themes/" + sTheme;
 
+    // create it if needed
+    QDir themesDir(ddDir);
+    if (!themesDir.cd("themes")) {
+        // if themes doesn't exist, create it
+        themesDir.mkdir("themes");
+        themesDir.cd("themes");
+    }
+
     // if theme selected
     if ( (sTheme != "") && (sTheme != "(default)") ) {
         QFile qss(themeDir + "/styles.qss");
@@ -551,8 +557,11 @@ bool applyTheme()
                 QApplication::sendEvent(widget, &event);
             }
         }
-    } else if ( sTheme == "(default)" ) {
-        QFile qss(themeDir + "/styles.qss");
+    } else {
+        // Set it to "(default)"
+        QSettings settings;
+        settings.setValue("selectedTheme", QString("(default)") );
+        QFile qss(":style/default");
         // open qss stylesheet
         if (qss.open(QFile::ReadOnly))
         {
@@ -569,9 +578,6 @@ bool applyTheme()
                 QApplication::sendEvent(widget, &event);
             }
         }
-    } else {
-        // If not theme name given - clear styles
-        qApp->setStyleSheet(QString(""));
     }
 
     return true;
