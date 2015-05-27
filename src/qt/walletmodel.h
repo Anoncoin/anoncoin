@@ -121,6 +121,7 @@ public:
         Unlocked      // wallet->IsCrypted() && !wallet->IsLocked()
     };
 
+    CWallet *getWallet();
     OptionsModel *getOptionsModel();
     AddressTableModel *getAddressTableModel();
     TransactionTableModel *getTransactionTableModel();

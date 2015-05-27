@@ -5,6 +5,7 @@
 
 #include "walletview.h"
 
+#include "accountspage.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
 #include "anoncoingui.h"
@@ -17,6 +18,8 @@
 #include "signverifymessagedialog.h"
 #include "transactiontablemodel.h"
 #include "transactionview.h"
+#include "util.h"
+#include "wallet.h"
 #include "walletmodel.h"
 
 #include "ui_interface.h"
@@ -27,6 +30,8 @@
 #include <QHBoxLayout>
 #include <QProgressDialog>
 #include <QPushButton>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include <QVBoxLayout>
 
 WalletView::WalletView(QWidget *parent):
@@ -270,6 +275,7 @@ void WalletView::usedSendingAddresses()
     AddressBookPage *dlg = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::SendingTab, this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setModel(walletModel->getAddressTableModel());
+    dlg->setModal(true);
     dlg->show();
 }
 
@@ -280,6 +286,7 @@ void WalletView::usedReceivingAddresses()
     AddressBookPage *dlg = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::ReceivingTab, this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setModel(walletModel->getAddressTableModel());
+    dlg->setModal(true);
     dlg->show();
 }
 
@@ -304,4 +311,38 @@ void WalletView::showProgress(const QString &title, int nProgress)
     }
     else if (progressDialog)
         progressDialog->setValue(nProgress);
+}
+
+void WalletView::showAccountsPage()
+{
+    double amount;
+    accountsPage = new AccountsPage(this);
+    accountsPage->setModel(walletModel);
+
+    map<CTxDestination, int64_t> balances = walletModel->getWallet()->GetAddressBalances();
+    BOOST_FOREACH(set<CTxDestination> grouping, walletModel->getWallet()->GetAddressGroupings())
+    {
+        BOOST_FOREACH(CTxDestination address, grouping)
+        {
+            amount = (double)balances[address] / (double)COIN;
+
+            // Turn ofsorting while we are inserting rows
+            accountsPage->tableWidget->setSortingEnabled(false);
+            accountsPage->tableWidget->insertRow(0);
+            accountsPage->tableWidget->setItem(0, 0, new QTableWidgetItem( QString("")));
+            accountsPage->tableWidget->setItem(0, 1, new QTableWidgetItem( QString::fromStdString(CAnoncoinAddress(address).ToString()) ));
+            accountsPage->tableWidget->setItem(0, 2, new QTableWidgetItem( QString::number(amount) ));
+            {
+                LOCK(walletModel->getWallet()->cs_wallet);
+                if (walletModel->getWallet()->mapAddressBook.find(CAnoncoinAddress(address).Get()) != walletModel->getWallet()->mapAddressBook.end())
+                    accountsPage->tableWidget->setItem(0, 0, new QTableWidgetItem( QString::fromStdString(walletModel->getWallet()->mapAddressBook.find(CAnoncoinAddress(address).Get())->second.name) ));
+            }
+            accountsPage->tableWidget->setSortingEnabled(true);
+        }
+    }
+    accountsPage->setModel(walletModel);
+    accountsPage->setParent(this);
+    accountsPage->setModal(true);
+    accountsPage->setAttribute(Qt::WA_DeleteOnClose);
+    accountsPage->show();
 }

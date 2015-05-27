@@ -269,6 +269,20 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 
+    showAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Address Book"), this);
+    showAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
+    showAddressesAction->setToolTip(showAddressesAction->statusTip());
+    showAddressesAction->setCheckable(true);
+    showAddressesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    tabGroup->addAction(showAddressesAction);
+
+    showAccountsAction = new QAction(QIcon(":/icons/address-book"), tr("&Accounts"), this);
+    showAccountsAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
+    showAccountsAction->setToolTip(showAccountsAction->statusTip());
+    showAccountsAction->setCheckable(true);
+    showAccountsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+    tabGroup->addAction(showAccountsAction);
+
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -279,6 +293,10 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
+    connect(showAddressesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(showAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(usedSendingAddresses()));
+    connect(showAccountsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(showAccountsAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAccountsPage()));
 
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setStatusTip(tr("Quit application"));
@@ -307,6 +325,7 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     toggleHideAction->setStatusTip(tr("Show or hide the main Window"));
 
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
+
     encryptWalletAction->setStatusTip(tr("Encrypt the private keys that belong to your wallet"));
     encryptWalletAction->setCheckable(true);
     backupWalletAction = new QAction(QIcon(":/icons/filesave"), tr("&Backup Wallet..."), this);
@@ -325,7 +344,6 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     usedSendingAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
     usedReceivingAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Receiving addresses..."), this);
     usedReceivingAddressesAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
-
     openAction = new QAction(QIcon(":/icons/fileopen"), tr("Open &URI..."), this);
     openAction->setStatusTip(tr("Open a anoncoin: URI or payment request"));
 
@@ -408,6 +426,8 @@ void AnoncoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
+        toolbar->addAction(showAddressesAction);
+        toolbar->addAction(showAccountsAction);
         overviewAction->setChecked(true);
     }
 }
@@ -651,6 +671,11 @@ void AnoncoinGUI::gotoSendCoinsPage(QString addr)
 {
     sendCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
+}
+
+void AnoncoinGUI::gotoAccountsPage()
+{
+    if (walletFrame) walletFrame->gotoAccountsPage();
 }
 
 void AnoncoinGUI::gotoSignMessageTab(QString addr)

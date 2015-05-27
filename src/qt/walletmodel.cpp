@@ -357,6 +357,11 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction &tran
     return SendCoinsReturn(OK);
 }
 
+CWallet *WalletModel::getWallet()
+{
+    return wallet;
+}
+
 OptionsModel *WalletModel::getOptionsModel()
 {
     return optionsModel;
