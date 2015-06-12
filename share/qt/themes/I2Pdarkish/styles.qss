@@ -28,7 +28,7 @@
 * { gridline-color: $main-color-l1 }
 
 /* Dialog, Window */
-QDialog, QMainWindow {
+QDialog, QMainWindow, #transactionsPage {
         background: $main-color-xd;
 	background-image: url(_themesdir/camotile.png);
 	background-repeat: repeat-xy;
@@ -54,6 +54,7 @@ QStatusBar::item {
 /* Label */
 QLabel {
 	color: $text-color;
+        background: $main-color-xd;
 }
 
 QLabel[error="true"], QLabel[status="error"] {

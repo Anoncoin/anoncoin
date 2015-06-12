@@ -25,14 +25,13 @@ QWidget {
 }
 
 /* Dialog, Window */
-QDialog, QMainWindow {
+QDialog, QMainWindow, #transactionsPage {
 	background: $baseback;
-        background-image: url(_themesdir/static.png) repeat;
         font-size: 11px;
 }
 QMainWindow {
 	background: $basefield;
-        background-image: url(_themesdir/Anon-logo_200.png);
+        background-image: url(:icons/anoncoin);
 	background-position: bottom left;
 	background-repeat: no-repeat;
 	margin-left: 8px;
