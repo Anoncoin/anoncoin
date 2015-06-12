@@ -141,6 +141,13 @@ void WalletFrame::gotoAccountsPage()
         i.value()->showAccountsPage();
 }
 
+void WalletFrame::gotoAddressBookPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoAddressBookPage();
+}
+
 void WalletFrame::gotoSignMessageTab(QString addr)
 {
     WalletView *walletView = currentWalletView();

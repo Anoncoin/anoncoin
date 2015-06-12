@@ -16,6 +16,7 @@ class SendCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class AccountsPage;
+class AddressBookPage;
 class WalletModel;
 
 QT_BEGIN_NAMESPACE
@@ -63,6 +64,7 @@ private:
 
     TransactionView *transactionView;
     AccountsPage *accountsPage;
+    AddressBookPage *addressBookPage;
 
     QProgressDialog *progressDialog;
 
@@ -77,6 +79,8 @@ public slots:
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to account/amount page */
     void showAccountsPage();
+    /** Switch to account/amount page */
+    void gotoAddressBookPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

@@ -248,40 +248,40 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
     tabGroup->addAction(overviewAction);
 
+    showAccountsAction = new QAction(QIcon(":/icons/accounts"), tr("&Accounts"), this);
+    showAccountsAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
+    showAccountsAction->setToolTip(showAccountsAction->statusTip());
+    showAccountsAction->setCheckable(true);
+    showAccountsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
+    tabGroup->addAction(showAccountsAction);
+
     sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send"), this);
     sendCoinsAction->setStatusTip(tr("Send coins to a Anoncoin address"));
     sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
     sendCoinsAction->setCheckable(true);
-    sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
+    sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));
     tabGroup->addAction(sendCoinsAction);
 
     receiveCoinsAction = new QAction(QIcon(":/icons/receiving_addresses"), tr("&Receive"), this);
     receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and anoncoin: URIs)"));
     receiveCoinsAction->setToolTip(receiveCoinsAction->statusTip());
     receiveCoinsAction->setCheckable(true);
-    receiveCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));
+    receiveCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(receiveCoinsAction);
 
     historyAction = new QAction(QIcon(":/icons/history"), tr("&Transactions"), this);
     historyAction->setStatusTip(tr("Browse transaction history"));
     historyAction->setToolTip(historyAction->statusTip());
     historyAction->setCheckable(true);
-    historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
+    historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     tabGroup->addAction(historyAction);
 
     showAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Address Book"), this);
     showAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
     showAddressesAction->setToolTip(showAddressesAction->statusTip());
     showAddressesAction->setCheckable(true);
-    showAddressesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    showAddressesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     tabGroup->addAction(showAddressesAction);
-
-    showAccountsAction = new QAction(QIcon(":/icons/address-book"), tr("&Accounts"), this);
-    showAccountsAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
-    showAccountsAction->setToolTip(showAccountsAction->statusTip());
-    showAccountsAction->setCheckable(true);
-    showAccountsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
-    tabGroup->addAction(showAccountsAction);
 
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -294,7 +294,7 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
     connect(showAddressesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(showAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(usedSendingAddresses()));
+    connect(showAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAddressBookPage()));
     connect(showAccountsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(showAccountsAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAccountsPage()));
 
@@ -423,11 +423,11 @@ void AnoncoinGUI::createToolBars()
         QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
         toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         toolbar->addAction(overviewAction);
+        toolbar->addAction(showAccountsAction);
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
         toolbar->addAction(showAddressesAction);
-        toolbar->addAction(showAccountsAction);
         overviewAction->setChecked(true);
     }
 }
@@ -526,9 +526,11 @@ void AnoncoinGUI::removeAllWallets()
 void AnoncoinGUI::setWalletActionsEnabled(bool enabled)
 {
     overviewAction->setEnabled(enabled);
+    showAccountsAction->setEnabled(enabled);
     sendCoinsAction->setEnabled(enabled);
     receiveCoinsAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
+    showAddressesAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
@@ -655,6 +657,11 @@ void AnoncoinGUI::gotoOverviewPage()
     if (walletFrame) walletFrame->gotoOverviewPage();
 }
 
+void AnoncoinGUI::gotoAccountsPage()
+{
+    if (walletFrame) walletFrame->gotoAccountsPage();
+}
+
 void AnoncoinGUI::gotoHistoryPage()
 {
     historyAction->setChecked(true);
@@ -673,9 +680,9 @@ void AnoncoinGUI::gotoSendCoinsPage(QString addr)
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
 }
 
-void AnoncoinGUI::gotoAccountsPage()
+void AnoncoinGUI::gotoAddressBookPage()
 {
-    if (walletFrame) walletFrame->gotoAccountsPage();
+    if (walletFrame) walletFrame->gotoAddressBookPage();
 }
 
 void AnoncoinGUI::gotoSignMessageTab(QString addr)

@@ -15,6 +15,7 @@
 #include "csvmodelwriter.h"
 #include "editaddressdialog.h"
 #include "guiutil.h"
+#include "walletmodel.h"
 
 #include <QIcon>
 #include <QMenu>
@@ -94,7 +95,12 @@ AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget *parent) :
 
     connect(ui->tableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
 
-    connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(accept()));
+    if(parent == 0)
+    {
+        ui->closeButton->hide();
+    } else {
+        connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(accept()));
+    }
 }
 
 AddressBookPage::~AddressBookPage()
@@ -102,14 +108,16 @@ AddressBookPage::~AddressBookPage()
     delete ui;
 }
 
-void AddressBookPage::setModel(AddressTableModel *model)
+//QQ void AddressBookPage::setModel(AddressTableModel *model)
+void AddressBookPage::setModel(WalletModel *model)
 {
-    this->model = model;
+    this->model = model->getAddressTableModel();
     if(!model)
         return;
 
     proxyModel = new QSortFilterProxyModel(this);
-    proxyModel->setSourceModel(model);
+//QQ 
+    proxyModel->setSourceModel(model->getAddressTableModel());
     proxyModel->setDynamicSortFilter(true);
     proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -142,7 +150,7 @@ void AddressBookPage::setModel(AddressTableModel *model)
         this, SLOT(selectionChanged()));
 
     // Select row for newly created address
-    connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(selectNewAddress(QModelIndex,int,int)));
+    connect(model->getAddressTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(selectNewAddress(QModelIndex,int,int)));
 
     selectionChanged();
 }

@@ -128,7 +128,8 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
     {
         /* Choose existing receiving address */
         AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::ReceivingTab, this);
-        dlg.setModel(model->getAddressTableModel());
+        //QQ dlg.setModel(model->getAddressTableModel());
+        dlg.setModel(model);
         if(dlg.exec())
         {
             address = dlg.getReturnValue();

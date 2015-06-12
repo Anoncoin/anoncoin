@@ -56,6 +56,10 @@ AccountsPage::AccountsPage(QWidget *parent) :
     connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
 
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(accept()));
+    if(parent == 0)
+    {
+        ui->closeButton->hide();
+    }
 }
 
 AccountsPage::~AccountsPage()

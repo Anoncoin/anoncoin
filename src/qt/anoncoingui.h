@@ -199,6 +199,8 @@ private slots:
     void gotoVerifyMessageTab(QString addr = "");
     /** Display accounts and totals */
     void gotoAccountsPage();
+    /** Switch to address page */
+    void gotoAddressBookPage();
 
     /** Show open dialog */
     void openClicked();

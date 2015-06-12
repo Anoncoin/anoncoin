@@ -10,6 +10,7 @@
 
 class AddressTableModel;
 class OptionsModel;
+class WalletModel;
 
 namespace Ui {
     class AddressBookPage;
@@ -40,10 +41,11 @@ public:
         ForEditing  /**< Open address book for editing */
     };
 
-    explicit AddressBookPage(Mode mode, Tabs tab, QWidget *parent);
+    explicit AddressBookPage(Mode mode, Tabs tab, QWidget *parent = 0);
     ~AddressBookPage();
 
-    void setModel(AddressTableModel *model);
+    //void setModel(AddressTableModel *model);
+    void setModel(WalletModel *model);
     const QString &getReturnValue() const { return returnValue; }
 
 public slots:
@@ -83,6 +85,8 @@ private slots:
 
 signals:
     void sendCoins(QString addr);
+    // Fired when a message should be reported to the user
+    void message(const QString &title, const QString &message, unsigned int style);
 };
 
 #endif // ADDRESSBOOKPAGE_H
