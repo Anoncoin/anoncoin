@@ -53,7 +53,6 @@ void SendCoinsEntry::on_addressBookButton_clicked()
     if(!model)
         return;
     AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::SendingTab, this);
-    //QQ dlg.setModel(model->getAddressTableModel());
     dlg.setModel(model);
     if(dlg.exec())
     {

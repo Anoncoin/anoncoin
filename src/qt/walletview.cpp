@@ -61,7 +61,6 @@ WalletView::WalletView(QWidget *parent):
     accountsPage = new AccountsPage();
     receiveCoinsPage = new ReceiveCoinsDialog();
     sendCoinsPage = new SendCoinsDialog();
-    //QQa addressBookPage = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::SendingTab, this);
     addressBookPage = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::SendingTab);
 
     addWidget(overviewPage);
@@ -129,7 +128,6 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     accountsPage->setModel(walletModel);
     receiveCoinsPage->setModel(walletModel);
     sendCoinsPage->setModel(walletModel);
-    //QQ addressBookPage->setModel(walletModel->getAddressTableModel());
     addressBookPage->setModel(walletModel);
 
     if (walletModel)
@@ -304,7 +302,6 @@ void WalletView::usedReceivingAddresses()
         return;
     AddressBookPage *dlg = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::ReceivingTab, this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-    //QQ dlg->setModel(walletModel->getAddressTableModel());
     dlg->setModel(walletModel);
     dlg->setModal(true);
     dlg->show();
@@ -337,6 +334,7 @@ void WalletView::showAccountsPage()
 {
     double amount;
     setCurrentWidget(accountsPage);
+    accountsPage->tableWidget->clear();
 
     map<CTxDestination, int64_t> balances = walletModel->getWallet()->GetAddressBalances();
     BOOST_FOREACH(set<CTxDestination> grouping, walletModel->getWallet()->GetAddressGroupings())

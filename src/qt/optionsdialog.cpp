@@ -103,11 +103,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     ui->unit->setModel(new AnoncoinUnits(this));
     ui->transactionFee->setSingleStep(CTransaction::nMinTxFee);
 
-
-
     // Populate theme items from sub-directories
     QString ddDir = QString::fromStdString ( GetDataDir().string() );
-    ui->activeTheme->addItem(QString("(default)"), QVariant(""));
+    ui->activeTheme->addItem(QString("(default)"), QVariant("(default)"));
     QDir themeDir(ddDir);
     if (!themeDir.cd("themes")) {
         // if themes doesn't exist, create it
