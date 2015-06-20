@@ -21,6 +21,7 @@
 #include "i2pwrapper.h"
 #endif
 
+#include <QObject>
 #include <QApplication>
 #include <QNetworkProxy>
 #include <QSettings>
@@ -476,7 +477,7 @@ bool OptionsModel::isRestartRequired()
     return settings.value("fRestartRequired", false).toBool();
 }
 
-bool applyTheme()
+bool OptionsModel::applyTheme()
 {
     QSettings settings;
     // template variables : key => value
@@ -557,6 +558,10 @@ bool applyTheme()
                 QApplication::sendEvent(widget, &event);
             }
         }
+
+        // Set our icon search path
+        QIcon::setThemeName( sTheme );
+
     } else {
         // Set it to "(default)"
         QSettings settings;

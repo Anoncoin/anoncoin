@@ -15,10 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label_2">
-     <property name="styleSheet">
-      <string notr="true">QLabel { font-style:italic; }</string>
-     </property>
+    <widget class="QLabel" name="labelWelcome">
      <property name="text">
       <string>Welcome to Anoncoin Core.</string>
      </property>

@@ -83,9 +83,6 @@
               <bold>true</bold>
              </font>
             </property>
-            <property name="styleSheet">
-             <string notr="true">font-weight:bold;</string>
-            </property>
             <property name="text">
              <string>Coin Control Features</string>
             </property>
@@ -103,9 +100,6 @@
           </property>
           <item>
            <widget class="QPushButton" name="pushButtonCoinControl">
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
             <property name="text">
              <string>Inputs...</string>
             </property>

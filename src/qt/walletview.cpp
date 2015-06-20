@@ -290,7 +290,6 @@ void WalletView::usedSendingAddresses()
         return;
     AddressBookPage *dlg = new AddressBookPage(AddressBookPage::ForEditing, AddressBookPage::SendingTab, this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-    //dlg->setModel(walletModel->getAddressTableModel());
     dlg->setModel(walletModel);
     dlg->setModal(true);
     dlg->show();
@@ -330,11 +329,14 @@ void WalletView::showProgress(const QString &title, int nProgress)
         progressDialog->setValue(nProgress);
 }
 
-void WalletView::showAccountsPage()
+void WalletView::gotoAccountsPage()
 {
     double amount;
     setCurrentWidget(accountsPage);
     accountsPage->tableWidget->clear();
+    while ( accountsPage->tableWidget->rowCount() > 0 ) {
+        accountsPage->tableWidget->removeRow(0);
+    }
 
     map<CTxDestination, int64_t> balances = walletModel->getWallet()->GetAddressBalances();
     BOOST_FOREACH(set<CTxDestination> grouping, walletModel->getWallet()->GetAddressGroupings())

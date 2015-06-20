@@ -78,7 +78,7 @@ public slots:
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to account/amount page */
-    void showAccountsPage();
+    void gotoAccountsPage();
     /** Switch to account/amount page */
     void gotoAddressBookPage();
 

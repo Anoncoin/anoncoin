@@ -108,7 +108,7 @@ AddressBookPage::~AddressBookPage()
     delete ui;
 }
 
-//QQ void AddressBookPage::setModel(AddressTableModel *model)
+// void AddressBookPage::setModel(AddressTableModel *model)
 void AddressBookPage::setModel(WalletModel *model)
 {
     this->model = model->getAddressTableModel();
@@ -116,7 +116,6 @@ void AddressBookPage::setModel(WalletModel *model)
         return;
 
     proxyModel = new QSortFilterProxyModel(this);
-//QQ 
     proxyModel->setSourceModel(model->getAddressTableModel());
     proxyModel->setDynamicSortFilter(true);
     proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);

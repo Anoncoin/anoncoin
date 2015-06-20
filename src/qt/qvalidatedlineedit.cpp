@@ -7,6 +7,8 @@
 
 #include "anoncoinaddressvalidator.h"
 #include "guiconstants.h"
+#include <QObject>
+#include <QVariant>
 
 QValidatedLineEdit::QValidatedLineEdit(QWidget *parent) :
     QLineEdit(parent),
@@ -25,11 +27,12 @@ void QValidatedLineEdit::setValid(bool valid)
 
     if(valid)
     {
-        setStyleSheet("");
+
+        QLineEdit::setProperty("invalid", false);
     }
     else
     {
-        setStyleSheet(STYLE_INVALID);
+        parent()->setProperty("invalid", true);
     }
     this->valid = valid;
 }
