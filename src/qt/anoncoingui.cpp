@@ -33,6 +33,7 @@
 #include <QApplication>
 #include <QDateTime>
 #include <QDesktopWidget>
+#include <QDir>
 #include <QDragEnterEvent>
 #include <QIcon>
 #include <QLabel>
@@ -41,6 +42,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QObject>
 #include <QPoint>
 #include <QProgressBar>
 #include <QSettings>
@@ -49,6 +51,7 @@
 #include <QStyle>
 #include <QTimer>
 #include <QToolBar>
+#include <QToolButton>
 #include <QVBoxLayout>
 
 #ifdef ENABLE_I2PSAM
@@ -96,20 +99,20 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     if (!fIsTestnet)
     {
 #ifndef Q_OS_MAC
-        QApplication::setWindowIcon(QIcon(":icons/anoncoin"));
-        setWindowIcon(QIcon(":icons/anoncoin"));
+        QApplication::setWindowIcon(QIcon(":/icons/anoncoin"));
+        setWindowIcon(QIcon(":/icons/anoncoin"));
 #else
-        MacDockIconHandler::instance()->setIcon(QIcon(":icons/anoncoin"));
+        MacDockIconHandler::instance()->setIcon(QIcon(":/icons/anoncoin"));
 #endif
     }
     else
     {
         windowTitle += " " + tr("[testnet]");
 #ifndef Q_OS_MAC
-        QApplication::setWindowIcon(QIcon(":icons/anoncoin_testnet"));
-        setWindowIcon(QIcon(":icons/anoncoin_testnet"));
+        QApplication::setWindowIcon(QIcon(":/icons/anoncoin_testnet"));
+        setWindowIcon(QIcon(":/icons/anoncoin_testnet"));
 #else
-        MacDockIconHandler::instance()->setIcon(QIcon(":icons/anoncoin_testnet"));
+        MacDockIconHandler::instance()->setIcon(QIcon(":/icons/anoncoin_testnet"));
 #endif
     }
     setWindowTitle(windowTitle);
@@ -135,6 +138,14 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
          */
         setCentralWidget(rpcConsole);
     }
+
+    // Default search path for OS icons
+    // ... if we ever use Qt themes
+    QStringList my_icon_paths = QIcon::themeSearchPaths();
+    QString ddDir = QDir::fromNativeSeparators( QString::fromStdString ( GetDataDir().string() ) );
+    QString themeDir = ddDir + "/themes";
+    my_icon_paths.prepend( themeDir );
+    QIcon::setThemeSearchPaths(my_icon_paths);
 
     // Accept D&D of URIs
     setAcceptDrops(true);
@@ -201,7 +212,7 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     QString curStyle = QApplication::style()->metaObject()->className();
     if(curStyle == "QWindowsStyle" || curStyle == "QWindowsXPStyle")
     {
-        progressBar->setStyleSheet("QProgressBar { background-color: #e8e8e8; border: 1px solid grey; border-radius: 7px; padding: 1px; text-align: center; } QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #FF8000, stop: 1 orange); border-radius: 7px; margin: 0px; }");
+        progressBar->setProperty("windowsstyle", true);
     }
 
     statusBar()->addWidget(progressBarLabel);
@@ -248,12 +259,12 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
     tabGroup->addAction(overviewAction);
 
-    showAccountsAction = new QAction(QIcon(":/icons/accounts"), tr("&Accounts"), this);
-    showAccountsAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
-    showAccountsAction->setToolTip(showAccountsAction->statusTip());
-    showAccountsAction->setCheckable(true);
-    showAccountsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
-    tabGroup->addAction(showAccountsAction);
+    accountsAction = new QAction(QIcon(":/icons/accounts"), tr("&Accounts"), this);
+    accountsAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
+    accountsAction->setToolTip(accountsAction->statusTip());
+    accountsAction->setCheckable(true);
+    accountsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
+    tabGroup->addAction(accountsAction);
 
     sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send"), this);
     sendCoinsAction->setStatusTip(tr("Send coins to a Anoncoin address"));
@@ -276,12 +287,12 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     tabGroup->addAction(historyAction);
 
-    showAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Address Book"), this);
-    showAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
-    showAddressesAction->setToolTip(showAddressesAction->statusTip());
-    showAddressesAction->setCheckable(true);
-    showAddressesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
-    tabGroup->addAction(showAddressesAction);
+    addressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Address Book"), this);
+    accountsAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
+    addressesAction->setToolTip(addressesAction->statusTip());
+    addressesAction->setCheckable(true);
+    addressesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+    tabGroup->addAction(addressesAction);
 
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -293,10 +304,10 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-    connect(showAddressesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(showAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAddressBookPage()));
-    connect(showAccountsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(showAccountsAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAccountsPage()));
+    connect(addressesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(addressesAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAddressBookPage()));
+    connect(accountsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(accountsAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAccountsPage()));
 
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setStatusTip(tr("Quit application"));
@@ -421,13 +432,47 @@ void AnoncoinGUI::createToolBars()
     if(walletFrame)
     {
         QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
+        toolbar->setObjectName("maintoolbar");
         toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addAction(overviewAction);
-        toolbar->addAction(showAccountsAction);
-        toolbar->addAction(sendCoinsAction);
-        toolbar->addAction(receiveCoinsAction);
-        toolbar->addAction(historyAction);
-        toolbar->addAction(showAddressesAction);
+
+        QToolButton * tbButton;
+
+        tbButton = new QToolButton();
+        tbButton->setObjectName("toolbuttonOverview");
+        tbButton->setDefaultAction(overviewAction);
+        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        toolbar->addWidget(tbButton);
+
+        tbButton = new QToolButton();
+        tbButton->setObjectName("toolbuttonAccounts");
+        tbButton->setDefaultAction(accountsAction);
+        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        toolbar->addWidget(tbButton);
+
+        tbButton = new QToolButton();
+        tbButton->setObjectName("toolbuttonSendCoins");
+        tbButton->setDefaultAction(sendCoinsAction);
+        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        toolbar->addWidget(tbButton);
+
+        tbButton = new QToolButton();
+        tbButton->setObjectName("toolbuttonReceiveCoins");
+        tbButton->setDefaultAction(receiveCoinsAction);
+        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        toolbar->addWidget(tbButton);
+
+        tbButton = new QToolButton();
+        tbButton->setObjectName("toolbuttonHistory");
+        tbButton->setDefaultAction(historyAction);
+        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        toolbar->addWidget(tbButton);
+
+        tbButton = new QToolButton();
+        tbButton->setObjectName("toolbuttonAddresses");
+        tbButton->setDefaultAction(addressesAction);
+        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        toolbar->addWidget(tbButton);
+
         overviewAction->setChecked(true);
     }
 }
@@ -526,11 +571,11 @@ void AnoncoinGUI::removeAllWallets()
 void AnoncoinGUI::setWalletActionsEnabled(bool enabled)
 {
     overviewAction->setEnabled(enabled);
-    showAccountsAction->setEnabled(enabled);
+    accountsAction->setEnabled(enabled);
     sendCoinsAction->setEnabled(enabled);
     receiveCoinsAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
-    showAddressesAction->setEnabled(enabled);
+    addressesAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
@@ -659,6 +704,7 @@ void AnoncoinGUI::gotoOverviewPage()
 
 void AnoncoinGUI::gotoAccountsPage()
 {
+    accountsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoAccountsPage();
 }
 
@@ -682,6 +728,7 @@ void AnoncoinGUI::gotoSendCoinsPage(QString addr)
 
 void AnoncoinGUI::gotoAddressBookPage()
 {
+    addressesAction->setEnabled(true);
     if (walletFrame) walletFrame->gotoAddressBookPage();
 }
 
@@ -987,6 +1034,12 @@ bool AnoncoinGUI::eventFilter(QObject *object, QEvent *event)
         if (progressBarLabel->isVisible() || progressBar->isVisible())
             return true;
     }
+    if(event->type() == QEvent::Paint)
+    {
+        // Needed to keep the stylesheet tab icons from being overwritten
+        if(clientModel)
+            clientModel->getOptionsModel()->applyTheme();
+    }
     return QMainWindow::eventFilter(object, event);
 }
 
@@ -1159,7 +1212,6 @@ UnitDisplayStatusBarControl::UnitDisplayStatusBarControl():QLabel()
 {
     optionsModel = 0;
     createContextMenu();
-    setStyleSheet("font:11pt; color: #333333");
     setToolTip(tr("Unit to show amounts in. Click to select another unit."));
 }
 

@@ -19,9 +19,6 @@
      <property name="visible">
       <bool>false</bool>
      </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop:0 #F0D0A0, stop:1 #F8D488); color:#000000;</string>
-     </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>
@@ -65,9 +62,6 @@
               </property>
               <property name="toolTip">
                <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Anoncoin network after a connection is established, but this process has not completed yet.</string>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel { color: red; }</string>
               </property>
               <property name="text">
                <string notr="true">(out of sync)</string>
@@ -438,9 +432,6 @@
               <property name="toolTip">
                <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Anoncoin network after a connection is established, but this process has not completed yet.</string>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel { color: red; }</string>
-              </property>
               <property name="text">
                <string notr="true">(out of sync)</string>
               </property>
@@ -466,9 +457,6 @@
           </item>
           <item>
            <widget class="QListView" name="listTransactions">
-            <property name="styleSheet">
-             <string notr="true">QListView { background: transparent; }</string>
-            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>

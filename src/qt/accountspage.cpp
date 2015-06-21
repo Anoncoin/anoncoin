@@ -70,6 +70,9 @@ AccountsPage::~AccountsPage()
 void AccountsPage::setModel(WalletModel *model)
 {
     this->model = model;
+    QStringList horzHeaders;
+    horzHeaders << tr("Name") << tr("Account") << tr("Balance");
+    ui->tableWidget->setHorizontalHeaderLabels( horzHeaders );
     ui->tableWidget->sortByColumn(0, Qt::AscendingOrder);
 
     // Set column widths

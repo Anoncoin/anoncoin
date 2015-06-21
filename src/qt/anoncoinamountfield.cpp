@@ -80,9 +80,9 @@ bool AnoncoinAmountField::validate()
 void AnoncoinAmountField::setValid(bool valid)
 {
     if (valid)
-        amount->setStyleSheet("");
+        setProperty("valid", true);
     else
-        amount->setStyleSheet(STYLE_INVALID);
+        setProperty("valid", false);
 }
 
 QString AnoncoinAmountField::text() const

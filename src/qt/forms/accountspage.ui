@@ -47,6 +47,9 @@
      <attribute name="headerShowSortIndicator" stdset="0">
       <bool>true</bool>
      </attribute>
+     <attribute name="horizontalHeaderVisible">
+      <bool>true</bool>
+     </attribute>
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
      </attribute>

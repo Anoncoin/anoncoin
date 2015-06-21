@@ -604,10 +604,10 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog)
     l8->setText(AnoncoinUnits::formatWithUnit(nDisplayUnit, nChange));        // Change
 
     // turn labels "red"
-    l5->setStyleSheet((nBytes >= 1000) ? "color:red;" : "");                            // Bytes >= 1000
-    l6->setStyleSheet((dPriority > 0 && !AllowFree(dPriority)) ? "color:red;" : "");    // Priority < "medium"
-    l7->setStyleSheet((fLowOutput) ? "color:red;" : "");                                // Low Output = "yes"
-    l8->setStyleSheet((nChange > 0 && nChange < CENT) ? "color:red;" : "");             // Change < 0.01ANC
+    (nBytes >= 1000) ? l5->setProperty("error", true) : l5->setProperty("error", false);                         // Bytes >= 1000
+    (dPriority > 0 && !AllowFree(dPriority)) ? l6->setProperty("error", true) : l6->setProperty("error", false); // Priority < "medium"
+    (fLowOutput) ? l7->setProperty("error", true) : l7->setProperty("error", false);                             // Low Output = "yes"
+    (nChange > 0 && nChange < CENT) ? l8->setProperty("error", true) : l8->setProperty("error", false);          // Change < 0.01ANC
 
     // tool tips
     QString toolTip1 = tr("This label turns red, if the transaction size is greater than 1000 bytes.") + "<br /><br />";

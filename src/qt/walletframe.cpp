@@ -138,7 +138,7 @@ void WalletFrame::gotoAccountsPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->showAccountsPage();
+        i.value()->gotoAccountsPage();
 }
 
 void WalletFrame::gotoAddressBookPage()

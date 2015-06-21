@@ -168,7 +168,7 @@ void Intro::pickDataDirectory()
         /* If current default data directory does not exist, let the user choose one */
         Intro intro;
         intro.setDataDirectory(dataDir);
-        intro.setWindowIcon(QIcon(":icons/anoncoin"));
+        intro.setWindowIcon(QIcon(":/icons/anoncoin"));
 
         while(true)
         {
@@ -204,12 +204,12 @@ void Intro::setStatus(int status, const QString &message, quint64 bytesAvailable
     {
     case FreespaceChecker::ST_OK:
         ui->errorMessage->setText(message);
-        ui->errorMessage->setStyleSheet("");
+        ui->errorMessage->setProperty("error", false);
         break;
     case FreespaceChecker::ST_ERROR:
         ui->errorMessage->setText(tr("Error") + ": " + message);
-        ui->errorMessage->setStyleSheet("QLabel { color: #800000 }");
-        break;
+        ui->errorMessage->setProperty("error", true);
+    break;
     }
     /* Indicate number of bytes available */
     if(status == FreespaceChecker::ST_ERROR)
@@ -220,9 +220,9 @@ void Intro::setStatus(int status, const QString &message, quint64 bytesAvailable
         if(bytesAvailable < BLOCK_CHAIN_SIZE)
         {
             freeString += " " + tr("(of %1GB needed)").arg(BLOCK_CHAIN_SIZE/GB_BYTES);
-            ui->freeSpace->setStyleSheet("QLabel { color: #800000 }");
+            ui->freeSpace->setProperty("error", true);
         } else {
-            ui->freeSpace->setStyleSheet("");
+            ui->freeSpace->setProperty("error", false);
         }
         ui->freeSpace->setText(freeString + ".");
     }

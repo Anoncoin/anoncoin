@@ -41,11 +41,6 @@
 #include <QTimer>
 #include <QTranslator>
 
-// Needed for Stylesheet code
-#include <QFile>
-#include <QTextStream>
-// #include <QDir>
-
 
 #if defined(QT_STATICPLUGIN)
 #include <QtPlugin>
@@ -570,30 +565,6 @@ int main(int argc, char *argv[])
     // - Do this after parsing the configuration file, as the network can be switched there
     // - QSettings() will use the new application name after this, resulting in network-specific settings
     // - Needs to be done before createOptionsModel
-
-
-
-    // With this you can load a Qt Stylesheet file into the GUI to colorize or customize different objects.
-    // By Meeh & GroundRod edits to integrate into v0.9 code as default behavior to load <pathtodatadir>anoncoin.qss
-    // ToDo: Work in progress...
-    QString filename = GUIUtil::boostPathToQString( GetQtStyleFile());
-    QFile file(filename);
-    if( file.exists() ) {        // Check if the file exists
-        if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-            QTextStream in(&file);
-            QString content = "";
-            while (!in.atEnd())
-                content.append(in.readLine());
-            app.setStyleSheet(content);                 // Load the Stylesheet, not sure what conditions cause an error here, or how it's reported.
-        } else                                          // ...Unlikely the file couldn't be opened, this should never happen
-            QMessageBox::warning( NULL, AnoncoinGUI::tr("Failed to open stylesheet file."),
-                                  filename.toLocal8Bit().data(),
-                                  QMessageBox::Ok, QMessageBox::Ok );
-    } else if( mapArgs.count("-style") )                // ...unless the user specifically requested a given file, and it doesn't exist.  That would be odd.
-        QMessageBox::warning( NULL, AnoncoinGUI::tr("Failed to find stylesheet file."),
-                              filename.toLocal8Bit().data(),
-                              QMessageBox::Ok, QMessageBox::Ok );
-    // else don't worry about stylesheets, proceed without error...
 
     app.processEvents();
     app.setQuitOnLastWindowClosed(false);
