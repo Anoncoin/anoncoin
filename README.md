@@ -1,7 +1,7 @@
 The Anoncoin project developer documentation
 ============================================
 
-This branch of the Anoncoin project contains the developer documetation created by Doxygen.
+This branch of the Anoncoin project contains the developer documetation created by Doxygen. The Anoncoin Doxygen website can be accessed here: [anoncoin.github.io/anoncoin](http://anoncoin.github.io/anoncoin).
 
 For the most recent stable release of Anoncoin, use the branch [master](https://github.com/Anoncoin/anoncoin/tree/master).
 
