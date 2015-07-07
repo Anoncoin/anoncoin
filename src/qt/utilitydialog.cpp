@@ -32,8 +32,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     // Set current copyright year for all the crypos we're involved in mining and algos from...
     ui->copyrightLabel->setText(tr("Copyright") + QString(" &copy; 2013-%1 ").arg(COPYRIGHT_YEAR) + tr("The Anoncoin Core developers")
         + QString("<br>") + tr("Copyright") + QString(" &copy; 2009-%1 ").arg(2015) + tr("The Bitcoin Core developers")
-        + QString("<br>") + tr("Copyright") + QString(" &copy; 2011-%1 ").arg(2014) + tr("The Litecoin Core developers")
-        + QString("<br>") + tr("Copyright") + QString(" &copy; 2013 ") + tr("The Primecoin developers"));
+        + QString("<br>") + tr("Copyright") + QString(" &copy; 2011-%1 ").arg(2014) + tr("The Litecoin Core developers") );
 }
 
 void AboutDialog::setModel(ClientModel *model)

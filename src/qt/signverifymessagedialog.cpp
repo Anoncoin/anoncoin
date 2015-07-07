@@ -29,7 +29,7 @@ SignVerifyMessageDialog::SignVerifyMessageDialog(QWidget *parent) :
 #if QT_VERSION >= 0x040700
     ui->signatureOut_SM->setPlaceholderText(tr("Click \"Sign Message\" to generate signature"));
     // ToDo: ...make the e.g. look right
-    ui->addressIn_VM->setPlaceholderText(tr("Enter an Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
+    ui->addressIn_VM->setPlaceholderText(tr("Enter an Anoncoin address (e.g. AZhGrZf4UcNGQ1spYXKrrKeksvei9FGfyk)"));
 #endif
 
     GUIUtil::setupAddressWidget(ui->addressIn_SM, this);
