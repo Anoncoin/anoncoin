@@ -31,6 +31,9 @@
 #include <utility>
 #include <vector>
 
+#include <boost/unordered_map.hpp>
+
+
 class CBlockIndex;
 class CBloomFilter;
 class CInv;
@@ -95,11 +98,25 @@ static const unsigned char REJECT_DUST = 0x41;
 static const unsigned char REJECT_INSUFFICIENTFEE = 0x42;
 static const unsigned char REJECT_CHECKPOINT = 0x43;
 
+// New BlockIndex map concept, using boost unordered_map technology offers us a
+// faster block locator than std::map which uses a binary tree search, this does
+// it by hash, and we define it to use a very fast 'Cheap' hash, the lower 64bits
+// of the longer block hash we have anyway as the key.  Now throughout the code
+// you can simply reference the same old mapBLockIndex we keep in memory, create
+// BlockMap iterators as you need them, this really fast find function is another
+// great idea that came from bitcoin v10 development.  Thank goes to them from
+// this developer.....GR
+struct BlockHasher
+{
+    size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
+};
+
+typedef boost::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-extern std::map<uint256, CBlockIndex*> mapBlockIndex;
+extern BlockMap mapBlockIndex;
 extern uint64_t nLastBlockTx;
 extern uint64_t nLastBlockSize;
 extern const std::string strMessageMagic;
@@ -206,12 +223,6 @@ void Misbehaving(NodeId nodeid, int howmuch);
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransaction &tx, bool fLimitFree,
                         bool* pfMissingInputs, bool fRejectInsaneFee=false);
-
-
-
-
-
-
 
 
 struct CNodeStateStats {

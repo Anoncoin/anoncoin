@@ -62,66 +62,128 @@ Value ping(const Array& params, bool fHelp)
 
 Value destination(const Array& params, bool fHelp)
 {
-   if (fHelp || params.size() > 1)
+   if (fHelp || params.size() > 2)
         throw runtime_error(
-            "destination \"none|b32.i2p|base64\"\n"
-            "\nReturns I2P addresses and details about them. These are stored in your address manager, and returned as a json array of object(s).\n\n"
-            "  If a parameter is provided, only a destination that matches the b32.i2p or the base64 destination address will be returned.\n"
-            "  If no parameter is given all objects will be returned.  The first result pair is always the size of the address hash table\n"
-            "\nbResult:\n"
+            "destination \"none|match|tried|attempt|connect\" \"none|b32.i2p|base64|ip:port\"\n"
+            "\nReturns I2P destination details stored in your b32.i2p address manager lookup system.\n"
+            "\nArguments:\n"
+            "  If no arguments are provided, the command returns all the b32.i2p addresses.\n"
+            "  1st argument = \"match\" then a 2nd argument is also required.\n"
+            "  2nd argument = Any string. If a match is found in any of the address, source or base64 fields, that result will be returned.\n"
+            "  1st argument = \"tried\" then any destination that has been tried, will be returned.\n"
+            "  1st argument = \"attempt\" then any destination that has been attempted, will be returned.\n"
+            "  1st argument = \"connect\" then any destination that has been connected, will be returned.\n"
+            "\nResults are returned as a json array of object(s).\n"
+            "  The 1st result pair is the total size of the address hash map.\n"
+            "  The 2nd result pair is the number of objects which follow, as matching this query.  It can be zero, if no match was found.\n"
+            "\nResult:\n"
             "[\n"
             "  {\n"
-            "    \"totalsize\": nnn,                (numeric) The number of entries in the base32 lookup table and objects that follow, unless only one is looked up.\n"
+            "    \"tablesize\": nnn,             (numeric) The total number of destinations in the i2p address book\n"
+            "    \"matchsize\": nnn,             (numeric) The number of results returned, which matched your query\n"
             "  }\n"
             "  {\n"
-            "    \"address\":\"b32.i2p\",           (string)  Base32 hash of a i2p destination, a possible peer\n"
-            "    \"tried\": true|false,             (boolean) Has this address been tried\n"
-            "    \"attempts\": nnn,                 (numeric) The number of times it has been attempted\n"
-            "    \"lastconnect\": ttt,              (numeric) The time of a last successful connection\n"
-            "    \"source\":\"b32.i2p or ip:port\", (string)  The source of information about this address\n"
-            "    \"base64\":\"full i2p destination address\", (string)  The full Base64 string of this peers i2p address\n"
+            "    \"address\":\"b32.i2p\",        (string)  Base32 hash of a i2p destination, a possible peer\n"
+            "    \"tried\": true|false,          (boolean) Has this address been tried\n"
+            "    \"attempt\": nnn,               (numeric) The number of times it has been attempted\n"
+            "    \"connect\": ttt,               (numeric) The time of a last successful connection\n"
+            "    \"source\":\"b32.i2p|ip:port\", (string)  The source of information about this address\n"
+            "    \"base64\":\"destination\",     (string)  The full Base64 Public Key of this peers b32.i2p address\n"
             "  }\n"
             "  ,...\n"
             "]\n"
-
-            "\nExamples: the first 2 return all addresses, the later 2 returns a match on one address.\n"
+            "\nNOTE: This is a snapshot, if connected to the network then your peer list is changing all the time.\n"
+            "\nExamples: Return all addresses, or selected attributes, the last few match addresses, sources or base64 field.\n"
             + HelpExampleCli("destination", "")
             + HelpExampleRpc("destination", "")
-            + HelpExampleCli("destination", "vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
-            + HelpExampleRpc("destination", "vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
+            + HelpExampleCli("destination", "tried")
+            + HelpExampleRpc("destination", "attempt")
+            + HelpExampleCli("destination", "connect")
+            + HelpExampleRpc("destination", "match 215.49.103")
+            + HelpExampleCli("destination", "match vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
+            + HelpExampleRpc("destination", "match vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
         );
 
-    bool fMatchOne = false;
-    bool fMatchFound = false;
-    string sOneAddress;
+    bool fSelectedMatch = false;
+    bool fMatchStr = false;
+    bool fMatchTried = false;
+    bool fMatchAttempt = false;
+    bool fMatchConnect = false;
+    bool fUnknownCmd = false;
+    string sMatchStr;
     if( params.size() > 0 ) {                                   // Lookup the address and return the one object if found
-        string sOneAddress = params[1].get_str();
-        fMatchOne = true;
+        string sCmdStr = params[0].get_str();
+        if( sCmdStr == "match" ) {
+            if( params.size() > 1 ) {
+                sMatchStr = params[1].get_str();
+                fMatchStr = true;
+            } else
+                fUnknownCmd = true;
+        } else if( sCmdStr == "tried" )
+            fMatchTried = true;
+        else if( sCmdStr == "attempt" )
+            fMatchAttempt = true;
+        else if( sCmdStr == "connect")
+            fMatchConnect = true;
+        else
+            fUnknownCmd = true;
+        fSelectedMatch = true;
     }
-    vector<CDestinationStats> vecStats;
-    int nSize = addrman.CopyDestinationStats(vecStats);
 
     Array ret;
-    Object objSize;
-    objSize.push_back(Pair("totalsize", nSize));
-    ret.push_back(objSize);
-    BOOST_FOREACH(const CDestinationStats& stats, vecStats) {
-        if( fMatchOne && !fMatchFound ) {
-            if( sOneAddress == stats.sAddress || sOneAddress == stats.sBase64 )
-                fMatchFound = true;
+    // Load the vector with all the objects we have and return with
+    // the total number of addresses we have on file
+    vector<CDestinationStats> vecStats;
+    int nTableSize = addrman.CopyDestinationStats(vecStats);
+    if( !fUnknownCmd ) {       // If set, throw runtime error
+        for( int i = 0; i < 2; i++ ) {          // Loop through the data twice
+            bool fMatchFound = false;       // Assume no match
+            int nMatchSize = 0;             // the match counter
+            BOOST_FOREACH(const CDestinationStats& stats, vecStats) {
+                if( fSelectedMatch ) {
+                    if( fMatchStr ) {
+                        if( stats.sAddress.find(sMatchStr) != string::npos ||
+                            stats.sSource.find(sMatchStr) != string::npos ||
+                            stats.sBase64.find(sMatchStr) != string::npos )
+                                fMatchFound = true;
+                    } else if( fMatchTried ) {
+                        if( stats.fInTried ) fMatchFound = true;
+                    }
+                    else if( fMatchAttempt ) {
+                        if( stats.nAttempts > 0 ) fMatchFound = true;
+                    }
+                    else if( fMatchConnect ) {
+                        if( stats.nSuccessTime > 0 ) fMatchFound = true;
+                    }
+                } else          // Match everything
+                    fMatchFound = true;
+
+                if( i == 1 && fMatchFound ) {
+                    Object obj;
+                    obj.push_back(Pair("address", stats.sAddress));
+                    obj.push_back(Pair("tried", stats.fInTried));
+                    obj.push_back(Pair("attempts", stats.nAttempts));
+                    obj.push_back(Pair("connect", stats.nSuccessTime));
+                    obj.push_back(Pair("source", stats.sSource));
+                    obj.push_back(Pair("base64", stats.sBase64));
+                    ret.push_back(obj);
+                }
+                if( fMatchFound ) {
+                    nMatchSize++;
+                    fMatchFound = false;
+                }
+            }
+            // The 1st time we get a count of the matches, so we can list that first in the results,
+            // then we finally build the output objects, on the 2nd pass...and don't put this in there twice
+            if( i == 0 ) {
+                Object objSizes;
+                objSizes.push_back(Pair("tablesize", nTableSize));
+                objSizes.push_back(Pair("matchsize", nMatchSize));
+                ret.push_back(objSizes);                            // This is the 1st object put on the Array
+            }
         }
-        if( !fMatchOne || fMatchFound ) {
-            Object obj;
-            obj.push_back(Pair("address", stats.sAddress));
-            obj.push_back(Pair("tried", stats.fInTried));
-            obj.push_back(Pair("attempts", stats.nAttempts));
-            obj.push_back(Pair("lastconnect", stats.nSuccessTime));
-            obj.push_back(Pair("source", stats.sSource));
-            obj.push_back(Pair("base64", stats.sBase64));
-            ret.push_back(obj);
-            fMatchFound = false;
-        }
-    }
+    } else
+        throw runtime_error( "Unknown subcommand or argument missing" );
     return ret;
 }
 
@@ -592,19 +654,8 @@ Value sendalert(const Array& params, bool fHelp)
     sMsg << (CUnsignedAlert)alert;
     alert.vchMsg = vector<unsigned char>(sMsg.begin(), sMsg.end());
     vector<unsigned char> vchPrivKey = ParseHex(params[1].get_str());
-    if( vchPrivKey.size() == 0x20 ) {
+    if( vchPrivKey.size() == 0x20 )
         key.Set( vchPrivKey.begin(), vchPrivKey.end(), false );
-        CPrivKey nPK = key.GetPrivKey();
-
-        // Print out the private key here, from being set by SecretBytes...
-        std::string strKey;
-        for( size_t i=0; i<nPK.size(); i++ )
-            strKey += strprintf( "%02x", nPK[i] );
-        LogPrintf("SendAlert pass is the SecretBytes, Private Key Value is:\n%s\n", strKey);
-
-
-
-    }
     else if( !key.SetPrivKey( CPrivKey(vchPrivKey.begin(), vchPrivKey.end()), false ) )
         throw runtime_error( "Unable to verify alert Private key, check private key?\n");
 
