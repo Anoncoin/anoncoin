@@ -153,12 +153,15 @@ public:
             vFixedSeeds.push_back(addr);
         }
 #ifdef ENABLE_I2PSAM
-        // As of 12/26/2014, there are NO entries from above clearnet pnSeed array, only using I2P for fixed seeding, and the values are assumed to be
-        // full I2P destination addresses.
+        // As of 12/26/2014, there are NO entries for the above clearnet pnSeed array,
+        // only using I2P for fixed seeding now, the strings are base64 encoded I2P
+        // Destination addresses, and we set the port to 0.
         for (unsigned int i = 0; i < ARRAYLEN( I2pSeedAddresses ); i++ ) {
             const int64_t nOneWeek = 7*24*60*60;
-            CService aServiceSeed( I2pSeedAddresses[i] );
-            CAddress addr( aServiceSeed );
+            // Fixed seed nodes get our standard services bits set, this is after creating a CService obj with port 0,
+            // and a CNetAddr obj, where setspecial is called given the I2P Destination string so it is setup correctly
+            // with our new GarlicCat value for routing...
+            CAddress addr( CService( CNetAddr( I2pSeedAddresses[i] ), 0 ), NODE_NETWORK | NODE_BLOOM | NODE_I2P );
             addr.nTime = GetTime() - GetRand(nOneWeek) - nOneWeek;
             vFixedSeeds.push_back(addr);
         }

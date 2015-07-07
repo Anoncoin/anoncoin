@@ -98,4 +98,15 @@ bool IsI2POnly();
 bool IsI2PEnabled();
 bool IsBehindDarknet();
 
+struct Identity
+{
+    uint8_t publicKey[256];
+    uint8_t signingKey[128];
+    struct
+    {
+        uint8_t type;
+        uint16_t length;
+    } certificate;
+};
+
 #endif // I2PWRAPPER_H

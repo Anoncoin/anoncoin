@@ -3410,18 +3410,31 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         }
 
         // If there is still more data to receive, it should be "from" address nonce values
-        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", ::GetSerializeSize(addrFrom, SER_NETWORK, PROTOCOL_VERSION), vRecv.size() );
+        // if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", ::GetSerializeSize(addrFrom, SER_NETWORK, PROTOCOL_VERSION), vRecv.size() );
 
         if( !vRecv.empty() )
             vRecv >> addrFrom;
 
+        // Any peer with a lesser version than our newest level needs special attention.
+        // Starting with v70009 we introduce the concept of a GarlicCatagory address to
+        // the CNetAddr class private ip 16 byte array, its selected as a specific IP6
+        // formated address, one we can always identify as indicating an I2P address
+        // for backwards compatibility.  This is left out of the details received from
+        // any peer with a lesser version.  In future we'll change this again to a new
+        // protocol level, one which optimizes the storage required for new I2P Destination
+        // keys and optional certificate and go to a decoded base64 binary format.
+        if( pfrom->nVersion < PROTOCOL_VERSION ) {
+            if( addrMe.IsNativeI2P() ) addrMe.SetSpecial( addrMe.GetI2PDestination() );
+            if( addrFrom.IsNativeI2P() ) addrFrom.SetSpecial( addrFrom.GetI2PDestination() );
+        }
+
         // Now we should have the right address data for addrMe and addrFrom, with or without the Protocol 70007 clearnet version buggy brained builds.
-        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( nNonce ), vRecv.size() );
+        // if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( nNonce ), vRecv.size() );
 
         if( !vRecv.empty() )
             vRecv >> nNonce;
 
-        if( fProtocolError ) LogPrintf( "Size of next object =unknown, Remainder in buffer=%d\n", vRecv.size() );
+        // if( fProtocolError ) LogPrintf( "Size of next object =unknown, Remainder in buffer=%d\n", vRecv.size() );
 
         // If it is still not empty input, get us the subversion string as well, plus sanitize it
         if (!vRecv.empty()) {
@@ -3443,13 +3456,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             }
         }
 
-        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->nStartingHeight ), vRecv.size() );
+        // if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->nStartingHeight ), vRecv.size() );
 
         // Finally if there is still more data on the input stream, it should be the starting block height...
         if (!vRecv.empty())
             vRecv >> pfrom->nStartingHeight;
 
-        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->fRelayTxes ), vRecv.size() );
+        // if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->fRelayTxes ), vRecv.size() );
 
         // The last field possible is the optional Relay Tx value
         if (!vRecv.empty())
@@ -3471,6 +3484,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return true;
         }
 
+#ifdef ENABLE_I2PSAM
+        // Here if the node does not seem to support that I2P service, we stripe that bit off our serialization type for sending.
+        // If it does support that I2P service, then we set this stream send type to only have that stream type bit on.
+        // ToDo: Not 100% sure, but this may need to be done, BEFORE we possibly push our version back to the node we got this message from.
+        // Also double check : SetRecvStreamType()
+        pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
+#endif
+
         // Be shy and don't send version until we hear
         if (pfrom->fInbound)
             pfrom->PushVersion();
@@ -3484,16 +3505,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // We send that node back his protocol version, or our version, whichever is less...
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
-#ifdef ENABLE_I2PSAM
-        // Here if the node does not seem to support that I2P service, we stripe that bit off our serialization type for sending.
-        // If it does support that I2P service, then we set this stream send type to only have that stream type bit on.
-        // ToDo: Re-visit this code functionality, confirm its working as needed and expected.  Also: SetRecvStreamType()
-        pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
-#endif
         if (!pfrom->fInbound)
         {
             // Advertise our address
-            if (!fNoListen && !IsInitialBlockDownload())
+            if( ( pfrom->addr.IsI2P() || !fNoListen ) && !IsInitialBlockDownload() )
             {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if (addr.IsRoutable())
@@ -3561,6 +3576,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vector<CAddress> vAddrOk;
         int64_t nNow = GetAdjustedTime();
         int64_t nSince = nNow - 10 * 60;
+        if( pfrom->addr.IsI2P() && pfrom->nVersion < PROTOCOL_VERSION ) {
+            // Then we've a new problem, every address MAY have to be fixed
+            // we dont know which network they may have come, but if they
+            // have a valid I2P address field, lets fix those, so they
+            // work with our new protocol....
+            BOOST_FOREACH(CAddress& addr, vAddr)
+                if( addr.IsNativeI2P() ) addr.SetSpecial( addr.GetI2PDestination() );
+        }
+
         BOOST_FOREACH(CAddress& addr, vAddr)
         {
             boost::this_thread::interruption_point();
@@ -3569,6 +3593,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 addr.nTime = nNow - 5 * 24 * 60 * 60;
             pfrom->AddAddressKnown(addr);
             bool fReachable = IsReachable(addr);
+
             if (addr.nTime > nSince && !pfrom->fGetAddr && vAddr.size() <= 10 && addr.IsRoutable())
             {
                 // Relay to a limited number of other nodes
@@ -3598,20 +3623,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                         ((*mi).second)->PushAddress(addr);
                 }
             }
+
             // Do not store addresses outside our network
             if (fReachable)
-#ifdef XXXENABLE_I2PSAM
-            {
-                    // Here we introduce a new concept starting with protocol version 70008, the idea of not keeping any clearnet
-                    // nodes in our own copy of the peers address book....this means that once I2P is enabled, or set as the -onlynet
-                    // we're going to increasingly add only to our own interests by using and keeping track of the I2P network peers.
-                    if( !IsI2PEnabled() || addr.IsNativeI2P() )
-                        vAddrOk.push_back(addr);
-            }
-#else                                                           // Original Code
                 vAddrOk.push_back(addr);
-#endif
-
         }
         addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);
         if (vAddr.size() < 1000)
@@ -4291,7 +4306,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                         pnode->setAddrKnown.clear();
 
                     // Rebroadcast our address
-                    if (!fNoListen)
+                    if( pnode->addr.IsI2P() || !fNoListen)
                     {
                         CAddress addr = GetLocalAddress(&pnode->addr);
                         if (addr.IsRoutable())

@@ -93,15 +93,15 @@ namespace SAM
 
     SAM::SOCKET StreamSessionAdapter::accept(bool silent)
     {
-        SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().accept(silent);
-        // call Socket::release
+        SAM::RequestResult<std::auto_ptr<SAM::I2pSocket> > result = sessionHolder_->getSession().accept(silent);
+        // call I2pSocket::release
         return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
     }
 
     SAM::SOCKET StreamSessionAdapter::connect(const std::string& destination, bool silent)
     {
-        SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().connect(destination, silent);
-        // call Socket::release
+        SAM::RequestResult<std::auto_ptr<SAM::I2pSocket> > result = sessionHolder_->getSession().connect(destination, silent);
+        // call I2pSocket::release
         return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
     }
 

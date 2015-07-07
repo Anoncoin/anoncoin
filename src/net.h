@@ -452,11 +452,7 @@ public:
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
         if (addr.IsValid() && !setAddrKnown.count(addr))
-            // GR Note: This next commented out line, I think is the cause of allot grief & a coding bug in v0.8.5 and earlier builds
-            // See main.cpp for the fProtocol70007Bug flag and how to solve this abbreviated version message response.
-            // Original comment: if receiver doesn't support i2p-address we don't send it
-            // if ((this->nServices & NODE_I2P) || !addr.IsNativeI2P())
-                vAddrToSend.push_back(addr);
+            vAddrToSend.push_back(addr);
     }
 
 

@@ -84,6 +84,7 @@ class CNetAddr
         int GetReachabilityFrom(const CNetAddr *paddrPartner = NULL) const;
         void print() const;
 #ifdef ENABLE_I2PSAM
+        bool IsI2P() const;
         bool IsNativeI2P() const;
         std::string GetI2PDestination() const;
         std::string ToB32String() const;
@@ -171,6 +172,8 @@ bool Lookup(const char *pszName, std::vector<CService>& vAddr, int portDefault =
 bool LookupNumeric(const char *pszName, CService& addr, int portDefault = 0);
 bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout = nConnectTimeout);
 bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault = 0, int nTimeout = nConnectTimeout);
+bool SetI2pSocketOptions(SOCKET& hSocket);
+
 /** Return readable error string for a network error code */
 std::string NetworkErrorString(int err);
 #endif
