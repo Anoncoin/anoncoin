@@ -407,6 +407,12 @@ void AnoncoinApplication::requestShutdown()
 void AnoncoinApplication::initializeResult(int retval)
 {
     LogPrintf("Initialization result: %i\n", retval);
+
+    // Regardless of the initialization result, we can now load the i2p
+    // destination address information into the ShowI2PAddresses class
+    // now, and any parameter interaction will have finished.
+    window->UpdateI2PAddressDetails();
+
     // Set exit result: 0 if successful, 1 if failure
     returnValue = retval ? 0 : 1;
     if(retval)
@@ -454,6 +460,11 @@ void AnoncoinApplication::initializeResult(int retval)
                          window, SLOT(message(QString,QString,unsigned int)));
         QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
 #endif
+
+        // If the commandline included -generatei2pdestination, and the user selected 'APPLY' then that is the reason we
+        // are here, and can now show the generated destination details.
+        if( GetBoolArg( "-generatei2pdestination", false ) )
+            window->ShowI2pDestination();
     } else {
         quit(); // Exit main loop
     }

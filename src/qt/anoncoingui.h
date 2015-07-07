@@ -12,6 +12,7 @@
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
 #endif
+#include "i2pshowaddresses.h"
 
 #include <QLabel>
 #include <QMainWindow>
@@ -68,6 +69,8 @@ public:
     bool setCurrentWallet(const QString& name);
     void removeAllWallets();
 #endif
+    void UpdateI2PAddressDetails( void ) { i2pAddress->UpdateParameters(); }
+    void ShowI2pDestination( void ) { openI2pAddressAction->activate( QAction::Trigger ); }
 
 protected:
     void changeEvent(QEvent *e);
@@ -84,11 +87,6 @@ private:
     QLabel *labelEncryptionIcon;
     QLabel *labelConnectionsIcon;
     QLabel *labelBlocksIcon;
-#ifdef ENABLE_I2PSAM
-    QLabel* labelI2PConnections;
-    QLabel* labelI2POnly;
-    QLabel* labelI2PGenerated;
-#endif // ENABLE_I2PSAM
     QLabel *progressBarLabel;
     QProgressBar *progressBar;
 
@@ -116,13 +114,16 @@ private:
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
     RPCConsole *rpcConsole;
-
+#ifdef ENABLE_I2PSAM
+    QLabel* labelI2PConnections;
+    QLabel* labelI2POnly;
+    QLabel* labelI2PGenerated;
+    QAction *openI2pAddressAction;
+    ShowI2PAddresses *i2pAddress;
+#endif
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
     int spinnerFrame;
-#ifdef ENABLE_I2PSAM
-    int i2pConnectCount;        // Keep track of the number of I2P connections, so we can remove them from the clearnet amount
-#endif
     /** Create the main UI actions. */
     void createActions(bool fIsTestnet);
     /** Create the menu bar and sub-menus. */
@@ -149,6 +150,11 @@ signals:
 public slots:
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
+
+#ifdef ENABLE_I2PSAM
+    void setNumI2PConnections(int count);
+#endif
+
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count);
 
@@ -173,12 +179,6 @@ public slots:
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address);
 #endif
-
-#ifdef ENABLE_I2PSAM
-    /** Set number of I2P connections shown in the UI */
-    void setNumI2PConnections(int count);
-    void showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName);
-#endif // ENABLE_I2PSAM
 
 private slots:
 #ifdef ENABLE_WALLET

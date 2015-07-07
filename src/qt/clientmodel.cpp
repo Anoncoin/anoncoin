@@ -55,10 +55,18 @@ int ClientModel::getNumConnections(unsigned int flags) const
         return vNodes.size();
 
     int nNum = 0;
-    BOOST_FOREACH(CNode* pnode, vNodes)
-    if (flags & (pnode->fInbound ? CONNECTIONS_IN : CONNECTIONS_OUT))
-        nNum++;
-
+    bool fI2pSum = flags & CONNECTIONS_I2P_ALL;
+    // Set this flags outside the loop, its faster than recomputing them every iteration
+    bool fMatchI2pInbound = flags & CONNECTIONS_I2P_IN;
+    bool fMatchI2pOutbound = flags & CONNECTIONS_I2P_OUT;
+    BOOST_FOREACH(CNode* pnode, vNodes) {
+        if( fI2pSum && pnode->addr.IsI2P() ) {
+            if( pnode->fInbound ) {
+                if( fMatchI2pInbound ) nNum++;
+            } else if( fMatchI2pOutbound ) nNum++;
+        } else if(flags & (pnode->fInbound ? CONNECTIONS_IN : CONNECTIONS_OUT))
+            nNum++;
+    }
     return nNum;
 }
 
@@ -162,16 +170,6 @@ QString ClientModel::getNetworkName() const
 QString ClientModel::formatI2PNativeFullVersion() const
 {
     return QString::fromStdString(FormatI2PNativeFullVersion());
-}
-
-void ClientModel::updateNumI2PConnections(int numI2PConnections)
-{
-    emit numI2PConnectionsChanged(numI2PConnections);
-}
-
-int ClientModel::getNumI2PConnections() const
-{
-    return nI2PNodeCount;
 }
 
 QString ClientModel::getPublicI2PKey() const
@@ -295,14 +293,6 @@ static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConn
                               Q_ARG(int, newNumConnections));
 }
 
-#ifdef ENABLE_I2PSAM
-static void NotifyNumI2PConnectionsChanged(ClientModel *clientmodel, int newNumI2PConnections)
-{
-    QMetaObject::invokeMethod(clientmodel, "updateNumI2PConnections", Qt::QueuedConnection,
-                              Q_ARG(int, newNumI2PConnections));
-}
-#endif // ENABLE_I2PSAM
-
 static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, ChangeType status)
 {
     qDebug() << "NotifyAlertChanged : " + QString::fromStdString(hash.GetHex()) + " status=" + QString::number(status);
@@ -317,9 +307,6 @@ void ClientModel::subscribeToCoreSignals()
     uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this));
     uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.connect(boost::bind(NotifyAlertChanged, this, _1, _2));
-#ifdef ENABLE_I2PSAM
-    uiInterface.NotifyNumI2PConnectionsChanged.connect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
-#endif
 }
 
 void ClientModel::unsubscribeFromCoreSignals()
@@ -328,8 +315,5 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this));
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
-#ifdef ENABLE_I2PSAM
-    uiInterface.NotifyNumI2PConnectionsChanged.disconnect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
-#endif
 }
 
