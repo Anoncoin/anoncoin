@@ -3448,6 +3448,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // Start with getting a few things first, before the nightmare begins as what needs to happen with past protocols and address objects.
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
 
+        // Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
+        // Values like these have been found: 0xa224000000000083 &  0xa124000000000083
+        pfrom->addr.nServices &= 0xFF;         // Do it for the node copy too. Purge undefined service bits
+
         // If it's to old, its easy, just disconnect and your out of here.
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
@@ -3493,7 +3497,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             unsigned int nRemaining = vRecv.size();
             unsigned int nAddrWithI2P = ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION);
             // size_type nAddrWithIP = ::GetSerializeSize(addrMe, SER_NETWORK | SER_IPADDRONLY, PROTOCOL_VERSION);
-            LogPrint( "version", "from %s, so far we know nVersion=%d nServices=%lld nTime=%lld, and there are %d bytes left in the message.\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime, nRemaining );
+            LogPrint( "version", "node %s, so far we know nVersion=%d nServices=%d nTime=%d, and there are %d bytes left in the message.\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime, nRemaining );
             // On clearnet protocol 70009 assumes ip addresses only, so if the inbound version is larger than that, then
             // we need to switch the stream type to include those larger address objects, do it now, and do it for both recv/send streams.
             if( nRemaining > nAddrWithI2P * 2 ) {
@@ -3512,6 +3516,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if( !vRecv.empty() )
             vRecv >> addrFrom;
 
+        // Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
+        // Values like these have been found: 0xa224000000000083 &  0xa124000000000083
+        addrMe.nServices &= 0xFF;         // Purge undefined service bits
+        addrFrom.nServices &= 0xFF;       // Purge undefined service bits
+
         // Any peer with a lesser version than our newest level needs special attention.
         // So we keep our inhouse database correct when receiving i2p destination addresses.
         // Starting with v70009 we introduce the concept of a GarlicCat-agory address to
@@ -3528,13 +3537,30 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // As it came from the outside world, check everything and  fix it if necessary:
         if( pfrom->addr.IsNativeI2P() ) {
             addrMe.CheckAndSetGarlicCat();
-            addrFrom.CheckAndSetGarlicCat();
+            addrMe.SetPort( 0 );              // Make sure the CService port is set to ZERO so AddrMan's commands can work with matching.
+            //
+            // Nodes lie about their From address, even over i2p.  When that happens, CheckAndSetGarlicCat below returns false,
+            // as it was not able to correctly fix the addrFrom field.  In that case, we 'COULD' correct the address here, as we know
+            // from which i2p destination they connect from.  However, this now takes on a new and special role for dynamic i2p peers
+            // An option has been added to the anoncoin.conf file -i2p.mydestination.shareaddr which allows the user to set the behavior,
+            // the default is to share our destination if we are running with static, and not share it if a dynamic destination is being used.
+            // Allowing the user to decide, is done in the config file otherwise.
+            // This new feature, does not require rebuilding software just to change the setting.
+            addrFrom.SetPort( 0 );            // Make sure the CService port is set to ZERO, so AddrMan's commands can work with matching
+            bool fFromChanged = addrFrom.CheckAndSetGarlicCat();
+            if( (CService)pfrom->addr != (CService)addrFrom ) {
+                LogPrint( "version", "I2P Peer @ %s, protocol %d is reporting a different destination addrFrom=%s\n", pfrom->addr.ToString(), pfrom->nVersion, addrFrom.ToString() );
+            }
         } else {            // must be a clearnet address in the IP field, and not have a I2P address.
             // In the future this could be used to autoswitch the node to a more secure network, like I2P!
             // At the present time (March 2015) the development team opinion is: Being able to link an ip addresses to an i2p destination is a bad idea
             // These next 2 lines wipe out the I2P field, if anything was there.
             addrMe.SetI2pDestination( "" );
             addrFrom.SetI2pDestination( "" );
+            if( (CNetAddr)pfrom->addr != (CNetAddr)addrFrom )
+                LogPrint( "version", "Clearnet Peer @ %s, protocol %d is not reporting the same addrFrom=%s\n", pfrom->addr.ToString(), pfrom->nVersion, addrFrom.ToString() );
+            else if( !pfrom->fInbound && pfrom->addr.GetPort() != addrFrom.GetPort() )
+                LogPrint( "version", "Clearnet Peer @ %s, protocol %d matches ip addrFrom, but ports differ, addrFrom=%s\n", pfrom->addr.ToString(), pfrom->nVersion, addrFrom.ToString() );
         }
 
         // Now we should have the right address data for addrMe and addrFrom, with or without buggy brained builds.  If not, these LogPrintf lines help us debug it.
@@ -3659,27 +3685,62 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         {
             // Advertise our address, by doing this now after the version exchange, the other node may pass it on to nodes
             // connected to them, nearly right away, at which point we may soon start to see inbound connections to us.
-            // so we want to be sure an listen for them (we always do on i2p), and only if we're pretty sure we know what
+            // so we want to be sure and listen for them (we always do on i2p), and only if we're pretty sure we know what
             // our ip address is, on i2p we always know for sure, but over clearnet its only a maybe.
+            // NEW Parameter: If its over I2P, only push it if -i2p.mydestination.shareaddr=1 (true)
 #ifdef ENABLE_I2PSAM
             if( ( pfrom->addr.IsI2P() || !fNoListen ) && !IsInitialBlockDownload() )
 #else
             if( !fNoListen && !IsInitialBlockDownload() )
 #endif
             {
-                CAddress addr = GetLocalAddress(&pfrom->addr);
-                if( addr.IsRoutable() )             // Only push our local address if its routable.
-                    pfrom->PushAddress(addr);
+                // If its an i2p destination we needed to get in here, ignoring the fNoListen flag, now we can check
+                // to see if our destination is really shared or not
+                if( !pfrom->addr.IsI2P() || IsMyDestinationShared() ) {
+                    CAddress addr = GetLocalAddress(&pfrom->addr);
+                    if( addr.IsRoutable() )                         // One last check!  Is our local address routable?
+                        pfrom->PushAddress(addr);
+                }
             }
 
-            // Get recent addresses, if we're new and hungry for peers, lets get thousands of them...
+            // Get recent addresses, if we're new and hungry for peers, lets get them...
             if (pfrom->fOneShot || pfrom->nVersion >= MIN_PEER_PROTO_VERSION || addrman.size() < 1000)
             {
                 pfrom->PushMessage("getaddr");
                 pfrom->fGetAddr = true;
             }
-            addrman.Good(pfrom->addr);
+            // So at this point we're about to update the addrman, and know what the node services are, directly from them
+            // we can copy that into the CAddress object, before calling Good
+            pfrom->addr.nServices = pfrom->nServices;           // So addrman can update our records, if its needed.
+            // ToDo: if any changes to the port setting are needed, is complicated to figure out, diagnostic output being printed
+            addrman.Good(pfrom->addr);              // If its an outbound connection, it must always be in the addrman already
         } else {
+            // Lots of peers on cryptocoin networks lie about what address they are really from, this standard code from bitcoin
+            // allows them to do that, in many cases the peer does not yet know for sure what their ip address is.
+            // Happens all the time.
+            // When an inbound connection ip does not match the reported ip in that peer's version information address, their
+            // 'real' ip address is not added to AddrMan, marked as Good, and used later on to find connections by this peer
+            // or otherwise passed on. They have connected to the network, while keeping their destination secret.
+            // If they have collected lots of addresses, they can make plenty of outbound connections, without ever seeing an
+            // inbound connection, because no other peers know about them.
+            //
+            // Best guess this developer can come up with is that in some cases they do not want their ip address advertised.
+            // The code is left as is in Anoncoin v9.4, protocol 70009, for clearnet operation.  It's place and use in
+            // cryptocurrency history is left upto the informed mind to figure out why a peer is reporting a different ip...
+            //
+            // This behavior is also seen on the i2p network, peers reporting their addrFrom address incorrectly, this is a
+            // situation which at first glance, seemed really stupid to this developer.  I2P destinations are not a 'maybe'
+            // like on clearnet, except their is a case where the destination is not very useful longterm.  When the node
+            // is using a dynamically generated destination.
+            // After further investigation, it now seems like a great idea to implement this in our standard code,
+            // it offers a solution to what is a different problem, one where the peer is not running a static i2p address,
+            // and it would be best to NOT include their address in our addrman or pass it on to other peers anyway.  So
+            // starting with v9.5 software running protocol 70009+, it will now have a new parameter and option in the
+            // anoncoin.conf file.  That is....it will allow any user to override what is our new default behavior.
+            // For dynamic destinations, the 'from' field gets zero'd out before pushing our version message out.  When
+            // running a static i2p destination it will report it correctly and work as it should. If a user does want it
+            // advertised, they can choose to override this setting in the config file.  Independent of the static/dynamic
+            // destination selection.  See our anoncoin.conf.sample file for more details.
             if( ((CNetAddr)pfrom->addr) == (CNetAddr)addrFrom )
             {
                 addrman.Add(addrFrom, addrFrom);
@@ -3692,7 +3753,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         pfrom->fSuccessfullyConnected = true;
 
-        LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", pfrom->cleanSubVer, pfrom->nVersion, pfrom->nStartingHeight, addrMe.ToString(), addrFrom.ToString(), pfrom->addr.ToString());
+        LogPrintf("receive version message: %s: version %d, blocks=%d, services=%04x us=%s, them=%s, peer=%s\n", pfrom->cleanSubVer, pfrom->nVersion, pfrom->nStartingHeight, pfrom->nServices, addrMe.ToString(), addrFrom.ToString(), pfrom->addr.ToString());
 
         AddTimeData(pfrom->addr, nTime);
     }
@@ -3763,18 +3824,31 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         LogPrint( "net", "received %d addresses, serialized size %u bytes each, from peer: %s\n",
                    vAddr.size(), ::GetSerializeSize(pfrom->addr, pfrom->GetRecvStreamType(), pfrom->nVersion), pfrom->addr.ToString() );
 
+        // Fix problems with Addresses, before normal processing is done:
         // If any of those addresses are I2P destinations we introduce some new stress testing on them to confirm
-        // they are valid and setup correctly before added or sharing them with others.
-        // If the StreamType is IP only, our memory should have been cleared and zeroed out as the CAddress objects were
-        // created, as only the ip field is filled in when the addresses are deserialized. So in that case, the
-        // checks here are not needed.
-        BOOST_FOREACH(CAddress& addr, vAddr)
+        // they are valid and setup correctly before adding or sharing them with others.
+        // If the StreamType is IP only, our memory should have been cleared and zeroed out when the CAddress object
+        // was created, only the ip/port fields have been filled in when the address deserialized, but at times the port has been zeroed out
+        // if it is an NODE_I2P source, but claims its an ip address, we make sure the i2p field is zero.  If it is an i2p addr we make sure
+        // the garliccat ip addr has been setup correctly.
+        BOOST_FOREACH(CAddress& addr, vAddr) {
             if( fPossibleI2pAddrs ) {                       // So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
-                addr.CheckAndSetGarlicCat();                // Fix the address by adding the GarlicCat field
-                if( !addr.IsNativeI2P() )                   // This should not be necessary, but comparisons and everything else assumes it is zero if not native i2p address
+                addr.CheckAndSetGarlicCat();                // Fix the address by adding the GarlicCat field, if it came in not set correctly
+                if( addr.IsNativeI2P() )                    // For native I2P Addresses...
+                    addr.SetPort( 0 );                      // Make sure the CService port is set to ZERO so AddrMan's lookups can match I2P addresses correctly
+                else                                        // This should not be necessary, but comparisons and everything else assumes the i2p adddress area is zero for ip addrs
                     addr.SetI2pDestination( "" );           // Clears the I2P destination field, but leaves the ip field as it was found
             } else
                 assert( addr.GetI2pDestination() == "" );   // Only ip addresses came in, programming error if the i2p destination field is not zero
+            // Regardless of the node service type source of this address, if its an ip address, check and fix the port
+            if( !addr.IsNativeI2P() && addr.GetPort() == 0 ) { // Clearnet CAddress objects often get their ports zero'd out, due to our efforts to get i2p addrs to work?
+                // LogPrintf( "Set address %s port to default\n", addr.ToString() );
+                addr.SetPort( Params().GetDefaultPort() );    // So set it to the default port, so 'most' will match correctly in AddrMan lookups later on
+            }
+            // Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
+            // Values like these have been found: 0xa224000000000083 &  0xa124000000000083
+            addr.nServices &= 0xFF;         // Purge undefined service bits
+        }
 
         // Many routines, GetNetwork(), IsI2P() and others on an address, only work properly if the above GarlicCat field has been setup
         BOOST_FOREACH(CAddress& addr, vAddr)
@@ -3841,10 +3915,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             }
 
             // Do not store addresses outside our network, unless its an I2P destination, then we keep it
-            if( fReachable )
+            // The other special case is, if we're running i2ponly, then we only keep addresses that are also i2p
+            if( fReachable && (!IsI2POnly() || addr.IsI2P()) )
                 vAddrOk.push_back(addr);
         }
-        addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);         // Add the address to our book, marking it as 2hrs old
+        addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);         // Add the vector of addresses to our book, marking them as 2hrs old
         if (vAddr.size() < 1000)
             pfrom->fGetAddr = false;
         if (pfrom->fOneShot)
@@ -4125,7 +4200,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if (strCommand == "getaddr")
     {
         pfrom->vAddrToSend.clear();
-        vector<CAddress> vAddr = addrman.GetAddr();
+        bool fIpOnly = pfrom->addr.nServices & NODE_I2P != 0;
+        bool fI2pOnly = pfrom->addr.IsI2P();
+        vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
         BOOST_FOREACH(const CAddress &addr, vAddr)
             pfrom->PushAddress(addr);
     }
@@ -4534,10 +4611,14 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     if( !fNoListen )
 #endif
                     {
-                        CAddress addr = GetLocalAddress(&pnode->addr);
-                        // Only push our local address if its routable.
-                        if( addr.IsRoutable() )
-                            pnode->PushAddress(addr);
+                        // If its an i2p destination we needed to get in here, ignoring the fNoListen flag, now we can check
+                        // to see if our destination is really shared or not
+                        if( !pnode->addr.IsI2P() || IsMyDestinationShared() ) {
+                            CAddress addr = GetLocalAddress(&pnode->addr);
+                            // Only push our local address if its routable.
+                            if( addr.IsRoutable() )
+                                pnode->PushAddress(addr);
+                        }
                     }
                 }
             }
@@ -4558,9 +4639,19 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 {
                     vAddr.push_back(addr);
                     // I2P addresses are MUCH larger than IP addresses, a trickle set to 1K is over 1/2 megabyte of payload
-                    // over 33x larger per addr, so lets reduce that amount some, down by a factor of 2, at least.
-                    // if (vAddr.size() >= 1000)
-                    if (vAddr.size() >= 500)
+                    // over 33x larger per addr, so lets reduce that amount, down to what the max addrman will return
+                    // or 1000, whichever is less.  Any more than 1K, and various nodes will start marking ours as misbehaving.
+                    // This change however does not stop addrman from generating what is still a very huge list and payload to
+                    // send, it just breaks it up into smaller chunks.  See the variable ADDRMAN_GETADDR_MAX as defined in
+                    // addrman.h for what that value is set to, and more details.
+                    // Also see: The 'getaddr' message processing for details on restricting the results based on the nodes
+                    // network and service settings.
+                    // was if (vAddr.size() >= 1000)
+#if ADDRMAN_GETADDR_MAX < 1000
+                    if( vAddr.size() >= ADDRMAN_GETADDR_MAX )
+#else
+                    if( vAddr.size() >= 1000 )
+#endif
                     {
                         pto->PushMessage("addr", vAddr);
                         vAddr.clear();

@@ -302,7 +302,7 @@ public:
         // Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
         // During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
         // and may incorrectly report services depending on how they were built.  Some send full version address messages, and must have the
-        // stream type changed on the fly, before processing.  70008 has a bug, where then stream type is full size, but only contains an ip address
+        // stream type changed on the fly, before processing.  70008 has a bug, where the stream type is full size, but only contains an ip address
         // over clearnet.  Protocol 70006 builds for clearnet lie about their support of the NODE_I2P service, while in fact the address object size
         // is only large enough for an ip address.
         // If the address given to us is a non-null string, the caller needs to have evaluated and setup that string correctly before calling this.
@@ -482,6 +482,15 @@ public:
         // produces a debug.log Warning message error if detected.
         // All the real checking is done throughout the code where needed, and this
         // log entry should NEVER happen, or the programming hasn't been done properly.
+        //
+        // Update: It does however work correctly when tested in one case at least, a peer
+        // also on the same RFC1918() network, had finally broadcast its address to us,
+        // causing a AddrMan entry to be created, and stop the addrman.Connect warnings,
+        // about the peers address not being found, but connected to.  In this case, we had
+        // connected outbound via an addnode onetry command, so did not yet have its address,
+        // by it finally did advertise its address to us, so we finally got it stored and the
+        // warning messages stopped.  Its up to addrman to not rebroadcast private network
+        // addresses, which it does not send it response to getaddr commands.
         if (addr.IsValid() && !setAddrKnown.count(addr)) {
             if( !addr.IsRFC1918() || this->addr.IsRFC1918() )
                 vAddrToSend.push_back(addr);

@@ -659,15 +659,15 @@ bool CNetAddr::SetSpecial(const std::string &strName)
                 if( !addr.size() )                                          // If we couldn't find it, much more to do..
                     addr = I2PSession::Instance().namingLookup(strName);    // Expensive, but lets try, this could take a very long while...
                 else
-                    LogPrintf( "That Base64 i2p destination you needed, was found locally to match: %s\n", strName );
+                    LogPrintf( "The i2p destination %s was found locally.\n", strName );
                 // If the address returned is a non-zero length string, the lookup was successful
                 if( !isValidI2pAddress( addr ) ) {                          // Not sure why, but that shouldn't happen, could be a 'new' destination type we can't yet handle
-                    LogPrintf( "WARNING - After spending %llds looking, neither AddrMan or the I2P Router was able to find that address for you: %s\n", GetTime() - iNow, strName );
+                    LogPrintf( "After %d secs looking, even the i2p router was unable to locate %s\n", GetTime() - iNow, strName );
                     return false;                                           // Not some thing we can use
                 } // else  // Otherwise the AddrMan or I2P router was able to find an I2P destination for this address, and it's now stored in 'addr' as a base64 string
                     // LogPrintf( "AddrMan or I2P Router lookup found [%s] address as destination\n[%s]\n", strName, addr );
             } else {                                                        // Log should tell the user they have DNS turned off, so this can't work
-                LogPrintf( "WARNING - Unable to lookup [%s], No i2p router or dns=0 must be set\n", strName );
+                LogPrintf( "Unable to locate %s, no i2p router enabled or dns=0\n", strName );
                 return false;
             }
         } else                                                              // It was a native I2P address to begin with
@@ -1325,46 +1325,16 @@ unsigned short CService::GetPort() const
 
 bool operator==(const CService& a, const CService& b)
 {
-#ifdef ENABLE_I2PSAM
-    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
-        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
-            return a.GetI2pDestination() == b.GetI2pDestination();
-        } else                          // One is i2p the other is not
-            return false;               // So return that they are not the same
-    } else if( b.IsNativeI2P() )        // One is i2p the other is not
-        return false;                   // So return that they are not the same
-    else                                // Neither are I2P addresses, so use the original code
-#endif
     return (CNetAddr)a == (CNetAddr)b && a.port == b.port;
 }
 
 bool operator!=(const CService& a, const CService& b)
 {
-#ifdef ENABLE_I2PSAM
-    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
-        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
-            return a.GetI2pDestination() != b.GetI2pDestination();
-        } else                          // One is i2p the other is not
-            return true;                // So return that they are not the same
-    } else if( b.IsNativeI2P() )        // One is i2p the other is not
-        return true;                    // So return that they are not the same
-    else                                // Neither are I2P addresses, so use the original code
-#endif
-    return (CNetAddr)a != (CNetAddr)b || a.port != b.port;      // Use the original code
+    return (CNetAddr)a != (CNetAddr)b || a.port != b.port;
 }
 
 bool operator<(const CService& a, const CService& b)
 {
-#ifdef ENABLE_I2PSAM
-    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
-        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
-            return a.GetI2pDestination() < b.GetI2pDestination();
-        } else                          // One is i2p the other is not
-            return false;               // So return that they are not the same, I2P addresses are considered greater than IP addrs
-    } else if( b.IsNativeI2P() )        // One is i2p the other is not
-        return true;                    // So return that they are not the same, Addr 'a' is not I2P, but Addr 'b' is an I2P address
-    else                                // Neither are I2P addresses, so use the original code
-#endif
     return (CNetAddr)a < (CNetAddr)b || ((CNetAddr)a == (CNetAddr)b && a.port < b.port);
 }
 

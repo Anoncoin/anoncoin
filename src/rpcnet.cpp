@@ -64,15 +64,15 @@ Value destination(const Array& params, bool fHelp)
 {
    if (fHelp || params.size() > 2)
         throw runtime_error(
-            "destination \"none|match|tried|attempt|connect\" \"none|b32.i2p|base64|ip:port\"\n"
+            "destination \"none|match|good|attempt|connect\" \"none|b32.i2p|base64|ip:port\"\n"
             "\nReturns I2P destination details stored in your b32.i2p address manager lookup system.\n"
             "\nArguments:\n"
             "  If no arguments are provided, the command returns all the b32.i2p addresses.\n"
             "  1st argument = \"match\" then a 2nd argument is also required.\n"
             "  2nd argument = Any string. If a match is found in any of the address, source or base64 fields, that result will be returned.\n"
-            "  1st argument = \"tried\" then any destination that has been tried, will be returned.\n"
-            "  1st argument = \"attempt\" then any destination that has been attempted, will be returned.\n"
-            "  1st argument = \"connect\" then any destination that has been connected, will be returned.\n"
+            "  1st argument = \"good\" destinations that has been tried, connected and found to be good will be returned.\n"
+            "  1st argument = \"attempt\" destinations that have been attempted, will be returned.\n"
+            "  1st argument = \"connect\" destinations that have been connected to in the past, will be returned.\n"
             "\nResults are returned as a json array of object(s).\n"
             "  The 1st result pair is the total size of the address hash map.\n"
             "  The 2nd result pair is the number of objects which follow, as matching this query.  It can be zero, if no match was found.\n"
@@ -84,8 +84,9 @@ Value destination(const Array& params, bool fHelp)
             "  }\n"
             "  {\n"
             "    \"address\":\"b32.i2p\",        (string)  Base32 hash of a i2p destination, a possible peer\n"
-            "    \"tried\": true|false,          (boolean) Has this address been tried\n"
+            "    \"good\": true|false,           (boolean) Has this address been tried & found to be good\n"
             "    \"attempt\": nnn,               (numeric) The number of times it has been attempted\n"
+            "    \"lasttry\": ttt,               (numeric) The time of a last attempted connection (memory only)\n"
             "    \"connect\": ttt,               (numeric) The time of a last successful connection\n"
             "    \"source\":\"b32.i2p|ip:port\", (string)  The source of information about this address\n"
             "    \"base64\":\"destination\",     (string)  The full Base64 Public Key of this peers b32.i2p address\n"
@@ -96,7 +97,7 @@ Value destination(const Array& params, bool fHelp)
             "\nExamples: Return all addresses, or selected attributes, the last few match addresses, sources or base64 field.\n"
             + HelpExampleCli("destination", "")
             + HelpExampleRpc("destination", "")
-            + HelpExampleCli("destination", "tried")
+            + HelpExampleCli("destination", "good")
             + HelpExampleRpc("destination", "attempt")
             + HelpExampleCli("destination", "connect")
             + HelpExampleRpc("destination", "match 215.49.103")
@@ -119,7 +120,7 @@ Value destination(const Array& params, bool fHelp)
                 fMatchStr = true;
             } else
                 fUnknownCmd = true;
-        } else if( sCmdStr == "tried" )
+        } else if( sCmdStr == "good" )
             fMatchTried = true;
         else if( sCmdStr == "attempt" )
             fMatchAttempt = true;
@@ -161,8 +162,9 @@ Value destination(const Array& params, bool fHelp)
                 if( i == 1 && fMatchFound ) {
                     Object obj;
                     obj.push_back(Pair("address", stats.sAddress));
-                    obj.push_back(Pair("tried", stats.fInTried));
-                    obj.push_back(Pair("attempts", stats.nAttempts));
+                    obj.push_back(Pair("good", stats.fInTried));
+                    obj.push_back(Pair("attempt", stats.nAttempts));
+                    obj.push_back(Pair("lasttry", stats.nLastTry));
                     obj.push_back(Pair("connect", stats.nSuccessTime));
                     obj.push_back(Pair("source", stats.sSource));
                     obj.push_back(Pair("base64", stats.sBase64));
@@ -210,9 +212,9 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "\nbResult:\n"
             "[\n"
             "  {\n"
-            "    \"addr\":\"host:port\",      (string) The ip address and port of the peer\n"
-            "    \"addrlocal\":\"ip:port\",   (string) local address\n"
-            "    \"services\":\"xxxxxxxxxxxxxxxx\",   (string) The services offered\n"
+            "    \"addr\":\"host:port|b32.i2p\", (string) The ip address and port of the peer\n"
+            "    \"addrlocal\":\"ip:port|b32.i2p\", (string) local address\n"
+            "    \"services\":\"xxxx\",       (string) The services offered in hex\n"
             "    \"lastsend\": ttt,           (numeric) The time in seconds since epoch (Jan 1 1970 GMT) of the last send\n"
             "    \"lastrecv\": ttt,           (numeric) The time in seconds since epoch (Jan 1 1970 GMT) of the last receive\n"
             "    \"bytessent\": n,            (numeric) The total bytes sent\n"
@@ -220,7 +222,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "    \"conntime\": ttt,           (numeric) The connection time in seconds since epoch (Jan 1 1970 GMT)\n"
             "    \"pingtime\": n,             (numeric) ping time\n"
             "    \"pingwait\": n,             (numeric) ping wait\n"
-            "    \"version\": v,              (numeric) The peer version, such as 70008\n"
+            "    \"version\": v,              (numeric) The peer protocol version, such as 70009\n"
             "    \"subver\": \"/s:n.n.n.n/\", (string) The subversion string\n"
             "    \"inbound\": true|false,     (boolean) Inbound (true) or Outbound (false)\n"
             "    \"startingheight\": n,       (numeric) The starting height (block) of the peer\n"
@@ -247,7 +249,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("addr", stats.addrName));
         if (!(stats.addrLocal.empty()))
             obj.push_back(Pair("addrlocal", stats.addrLocal));
-        obj.push_back(Pair("services", strprintf("%016x", stats.nServices)));
+        obj.push_back(Pair("services", strprintf("%04x", stats.nServices)));
         obj.push_back(Pair("lastsend", stats.nLastSend));
         obj.push_back(Pair("lastrecv", stats.nLastRecv));
         obj.push_back(Pair("bytessent", stats.nSendBytes));
@@ -400,7 +402,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     BOOST_FOREACH(string& strAddNode, laddedNodes)
     {
         vector<CService> vservNode(0);
-        if(Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
+        if(Lookup(strAddNode.c_str(), vservNode, isStringI2pDestination(strAddNode) ? 0 : Params().GetDefaultPort(), fNameLookup, 0))
             laddedAddreses.push_back(make_pair(strAddNode, vservNode));
         else
         {
@@ -512,7 +514,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
             "  \"version\": xxxxx,           (numeric) the server version\n"
             "  \"subver\": \"/s:n.n.n.n/\",  (string)  this clients subversion string\n"
             "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
-            "  \"localservices\": xxxxxxxx,  (numeric) in Hex, the local service bits\n"
+            "  \"localservices\": xxxx,  (numeric) in Hex, the local service bits\n"
             "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
             "  \"connections\": xxxxx,       (numeric) the number of connections\n"
             "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in ixc/kb\n"
@@ -547,7 +549,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("version",        (int)CLIENT_VERSION));
     obj.push_back(Pair("subversion",     FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>())));
     obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
-    obj.push_back(Pair("localservices",  strprintf("%08x", nLocalServices)));
+    obj.push_back(Pair("localservices",  strprintf("%04x", nLocalServices)));
     obj.push_back(Pair("timeoffset",     GetTimeOffset()));
     obj.push_back(Pair("connections",    (int)vNodes.size()));
     obj.push_back(Pair("relayfee",       ValueFromAmount(CTransaction::nMinRelayTxFee)));
