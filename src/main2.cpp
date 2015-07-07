@@ -198,7 +198,7 @@ static const int64_t nDecreasingDifficultyLimit = ( nIntegratedTargetTimespan * 
 enum BlockMinedWith {
     BLOCK_VERSION_DEFAULT        = 3,           // Up the default block version by one, to version #3, and default to algo SCRYPT
     BLOCK_VERSION_SHA256D        = (1 << 8) | 3,// The next byte up, now represents the algo this block was mined with, if zero then it was SCRYPT and simply is a version 3 block
-    BLOCK_VERSION_ALGOS          = (7 << 8) | 3 // This mask can be used to expose the 3 bits in the byte above version #, allowing for up to 7 algos
+    BLOCK_VERSION_ALGOS          = (7 << 8) | 3 // This mask can be used to expose the 3 bits in the byte above version #, allowing for up to 7 algos + scrypt
 };
 
 // GetAlgo takes the simple nVersion field (int), found in every block, and decides which Algo was used for it.
@@ -268,15 +268,28 @@ unsigned int static GetNextWorkRequiredAfterKgw(const CBlockIndex* pindexLast, c
     int64_t nNewSetpoint = nLatestAvgMedian - nOlderAvgMedian;
     LogPrintf("  Integrated Setpoint = %lld using TimeMedian=%lld from block %d & TimeMedian=%lld from block %d\n", nNewSetpoint, nLatestAvgMedian, pindexLast->nHeight, nOlderAvgMedian, pindexFirst->nHeight);
     int64_t nTimespanDiff = (nNewSetpoint - nIntegratedTargetTimespan) / (ALGO_COUNT_BEING_USED + 1);
+
+    filesystem::path pathRetarget = GetDataDir() / "retarget.csv";
+    ofstream csvfile( pathRetarget.string().c_str(), ofstream::out | ofstream::app );
+    if (csvfile.is_open())
+    {
+        csvfile << GetAlgoName( algo ) << "," << GetTime() << "," << GetAdjustedTime() << ",";
+        csvfile << pindexLast->nHeight << "," << pindexLast->nTime << "," << nLatestAvgMedian << ",";
+        csvfile << pindexFirst->nHeight << "," << pindexFirst->nTime << "," << nOlderAvgMedian << ",";
+        csvfile << nTimespanDiff << "," << nNewSetpoint << ",";
+    }
+
     // Here now we finally have a new target time that will bring our integrated average block time back to what it should be with the differential added.
     nNewSetpoint = nIntegratedTargetTimespan + nTimespanDiff;
     LogPrintf("  Differential = %lld secs & New Setpoint = %lld before bound limits applied\n", nTimespanDiff, nNewSetpoint );
+    csvfile << nNewSetpoint << ",";
 
     // Limit adjustment step...
     if (nNewSetpoint < nIncreasingDifficultyLimit)
         nNewSetpoint = nIncreasingDifficultyLimit;
     if (nNewSetpoint > nDecreasingDifficultyLimit)
         nNewSetpoint = nDecreasingDifficultyLimit;
+    csvfile << nNewSetpoint << ",";
 
     // Global retarget
     CBigNum bnNew;
@@ -288,6 +301,10 @@ unsigned int static GetNextWorkRequiredAfterKgw(const CBlockIndex* pindexLast, c
     LogPrintf("  nNewSetpoint used after bounds = %lld\n", nNewSetpoint);
     LogPrintf("  Before: %08x %s\n", pindexLast->nBits, CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
     LogPrintf("  After : %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+
+    csvfile << pindexLast->nBits << "," << CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString() << ",";
+    csvfile << bnNew.GetCompact() << "," << bnNew.getuint256().ToString();
+    csvfile.close();
 
 	return bnNew.GetCompact();
 }
