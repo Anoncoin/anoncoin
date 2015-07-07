@@ -169,7 +169,11 @@ Value addnode(const Array& params, bool fHelp)
     if (strCommand == "onetry")
     {
         CAddress addr;
-        ConnectNode(addr, strNode.c_str());
+        // The Oneshot flag 'could' be true here...
+        // If it is true, then the node if connects, will be queried for addresses
+        // and disconnected, so for this command we call it set false, as we want
+        // stay connected if we can.
+        OpenNetworkConnection(addr, NULL, strNode.c_str(), false);
         return Value::null;
     }
 

@@ -501,7 +501,7 @@ void static AnoncoinMiner(CWallet *pwallet)
     unsigned int nExtraNonce = 0;
 
     try { while (true) {
-        if (Params().NetworkID() != CChainParams::REGTEST) {
+        if (BaseParams().NetworkID() != CBaseChainParams::REGTEST) {
             // Busy-wait for the network to come online so we don't waste time mining
             // on an obsolete chain. In regtest mode we expect to fly solo.
             while (vNodes.empty())
@@ -560,7 +560,7 @@ void static AnoncoinMiner(CWallet *pwallet)
 
                     // In regression test mode, stop mining after a block is found. This
                     // allows developers to controllably generate a block on demand.
-                    if (Params().NetworkID() == CChainParams::REGTEST)
+                    if (BaseParams().NetworkID() == CBaseChainParams::REGTEST)
                         throw boost::thread_interrupted();
 
                     break;
@@ -603,7 +603,7 @@ void static AnoncoinMiner(CWallet *pwallet)
 
             // Check for stop or if block needs to be rebuilt
             boost::this_thread::interruption_point();
-            if (vNodes.empty() && Params().NetworkID() != CChainParams::REGTEST)
+            if (vNodes.empty() && BaseParams().NetworkID() != CBaseChainParams::REGTEST)
                 break;
             if (pblock->nNonce >= 0xffff0000)
                 break;
@@ -639,7 +639,7 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
     static boost::thread_group* minerThreads = NULL;
 
     if (nThreads < 0) {
-        if (Params().NetworkID() == CChainParams::REGTEST)
+        if (BaseParams().NetworkID() == CBaseChainParams::REGTEST)
             nThreads = 1;
         else
             nThreads = boost::thread::hardware_concurrency();

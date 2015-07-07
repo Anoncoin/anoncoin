@@ -10,7 +10,7 @@
 #include "rpcprotocol.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "chainparams.h" // for Params().RPCPort()
+#include "chainparamsbase.h" // for Params().RPCPort()
 
 #include <stdint.h>
 
@@ -49,7 +49,7 @@ Object CallRPC(const string& strMethod, const Array& params)
 
     bool fWait = GetBoolArg("-rpcwait", false); // -rpcwait means try until server has started
     do {
-        bool fConnected = d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", itostr(Params().RPCPort())));
+        bool fConnected = d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", itostr(BaseParams().RPCPort())));
         if (fConnected) break;
         if (fWait)
             MilliSleep(1000);

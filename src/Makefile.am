@@ -88,6 +88,7 @@ ANONCOIN_CORE_H = \
   bignum.h \
   bloom.h \
   chainparams.h \
+  chainparamsbase.h \
   checkpoints.h \
   checkqueue.h \
   clientversion.h \
@@ -233,6 +234,7 @@ libanoncoin_util_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
 libanoncoin_util_a_SOURCES = \
   compat/glibc_sanity.cpp \
   compat/glibcxx_sanity.cpp \
+  chainparamsbase.cpp \
   clientversion.cpp \
   rpcprotocol.cpp \
   sync.cpp \
@@ -279,7 +281,6 @@ anoncoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 # anoncoin-cli binary #
 anoncoin_cli_LDADD = \
   $(LIBANONCOIN_CLI) \
-  $(LIBANONCOIN_COMMON) \
   $(LIBANONCOIN_UTIL) \
   $(BOOST_LIBS) \
   $(SSL_LIBS) \

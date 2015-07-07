@@ -1,4 +1,5 @@
 // Copyright (c) 2012 Pieter Wuille
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -93,6 +94,51 @@ CAddrInfo* CAddrMan::Find(const CNetAddr& addr, int *pnId)
     return NULL;
 }
 
+#ifdef ENABLE_I2PSAM
+/** \brief We sometimes have a vast reservoir of i2p destinations, b32.i2p addresses are simply the hash
+of those addresses, so we should be able to look them up here, if we already have the base64 string,
+we're done and never have to ask the router to lookup the destination.
+ *
+ * \param sB32addr const string&
+ * \return CAddrInfo*
+ *
+ */
+CAddrInfo* CAddrMan::LookupB32addr(const std::string& sB32addr)
+{
+    // Convert the string back into a hash, and look it up in the AddrMan map
+    if( isValidI2pB32(sB32addr) ) {
+        bool fValid;
+        std::vector<unsigned char> vchHash;
+        std::string sHash = sB32addr;
+        sHash.resize( sB32addr.size() - 8 );
+        vchHash = DecodeBase32( sHash.c_str(), &fValid );
+        uint256 uintHash( vchHash );        // Hate wasting time copying object, but vectors, strings and uint256 values dont always pass compiler checks otherwise
+        if( fValid ) {                      // Lookup the hash for a match, if found we have the CAddrInfo id
+            std::map<uint256, int>::iterator it = mapI2pHashes.find( uintHash );
+            if( it != mapI2pHashes.end() ) {
+                std::map<int, CAddrInfo>::iterator it2 = mapInfo.find((*it).second);
+                if (it2 != mapInfo.end())
+                    return &(*it2).second;
+            }
+        }
+    }
+    return NULL;
+}
+
+/** \brief Simply looks up the hash, if the id is found returns a pointer to the
+            CAddrInfo(CAddress(CService(CNetAddr()))) class object where the base64 string is stored
+ *
+ * \param sB32addr const string&
+ * \return string, null if not found or the Base64 destination string of give b32.i2p address
+ *
+ */
+std::string CAddrMan::GetI2pBase64Destination(const std::string& sB32addr)
+{
+    CAddrInfo* paddr = LookupB32addr(sB32addr);
+    return  paddr && paddr->IsI2P() ? paddr->GetI2pDestination() : std::string();
+}
+#endif // ENABLE_I2PSAM
+
 CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, int *pnId)
 {
     int nId = nIdCount++;
@@ -102,6 +148,12 @@ CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, in
     vRandom.push_back(nId);
     if (pnId)
         *pnId = nId;
+#ifdef ENABLE_I2PSAM
+    if( addr.IsI2P() ) {
+        uint256 hash = GetI2pDestinationHash( addr.GetI2pDestination() );
+        mapI2pHashes[hash] = nId;
+    }
+#endif
     return &mapInfo[nId];
 }
 
@@ -167,6 +219,13 @@ int CAddrMan::ShrinkNew(int nUBucket)
                 vRandom.pop_back();
                 mapAddr.erase(info);
                 mapInfo.erase(*it);
+#ifdef ENABLE_I2PSAM
+                if( info.IsI2P() ) {
+                    uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                    assert( mapI2pHashes.count(hash) );
+                    mapI2pHashes.erase(hash);
+                }
+#endif
                 nNew--;
             }
             vNew.erase(it);
@@ -196,6 +255,13 @@ int CAddrMan::ShrinkNew(int nUBucket)
         vRandom.pop_back();
         mapAddr.erase(info);
         mapInfo.erase(nOldest);
+#ifdef ENABLE_I2PSAM
+        if( info.IsI2P() ) {
+            uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
+            assert( mapI2pHashes.count(hash) ==  1);
+            mapI2pHashes.erase(hash);
+        }
+#endif
         nNew--;
     }
     vNew.erase(nOldest);

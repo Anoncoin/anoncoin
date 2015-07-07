@@ -14,6 +14,7 @@
 #include "config/anoncoin-config.h"
 #endif
 
+#include "chainparamsbase.h"
 #include "bignum.h"
 #include "uint256.h"
 
@@ -46,14 +47,6 @@ struct CDNSSeedData {
 class CChainParams
 {
 public:
-    enum Network {
-        MAIN,
-        TESTNET,
-        REGTEST,
-
-        MAX_NETWORK_TYPES
-    };
-
     enum Base58Type {
         PUBKEY_ADDRESS,
         SCRIPT_ADDRESS,
@@ -80,7 +73,6 @@ public:
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }
-    virtual Network NetworkID() const = 0;
     std::string NetworkIDString() const { return strNetworkID; }
     const vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
 #ifdef ENABLE_I2PSAM
@@ -88,7 +80,6 @@ public:
 #endif
     const std::vector<unsigned char> &Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     virtual const vector<CAddress>& FixedSeeds() const = 0;
-    int RPCPort() const { return nRPCPort; }
 protected:
     CChainParams() {}
 
@@ -98,7 +89,6 @@ protected:
     vector<unsigned char> vAlertPubKey;
     vector<unsigned char> vOldAlertPubKey;
     int nDefaultPort;
-    int nRPCPort;
     CBigNum bnProofOfWorkLimit[ MAX_ALGO_TYPES ];
     string strDataDir;
     vector<CDNSSeedData> vSeeds;
@@ -115,8 +105,11 @@ protected:
  */
 const CChainParams &Params();
 
+/** Return parameters for the given network. */
+CChainParams &Params(CBaseChainParams::Network network);
+
 /** Sets the params returned by Params() to those for the given network. */
-void SelectParams(CChainParams::Network network);
+void SelectParams(CBaseChainParams::Network network);
 
 /**
  * Looks for -regtest or -testnet and then calls SelectParams as appropriate.
@@ -126,11 +119,11 @@ bool SelectParamsFromCommandLine();
 
 inline bool TestNet() {
     // Note: it's deliberate that this returns "false" for regression test mode.
-    return Params().NetworkID() == CChainParams::TESTNET;
+    return BaseParams().NetworkID() == CBaseChainParams::TESTNET;
 }
 
 inline bool RegTest() {
-    return Params().NetworkID() == CChainParams::REGTEST;
+    return BaseParams().NetworkID() == CBaseChainParams::REGTEST;
 }
 #endif // header guard
 

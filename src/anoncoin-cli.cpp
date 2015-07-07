@@ -4,18 +4,13 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-// Many builder specific things set in the config file, don't forget to include it this way in your source files.
-#ifdef HAVE_CONFIG_H
-#include "config/anoncoin-config.h"
-#endif
-
+#include "clientversion.h"          // Including this file always also includes config/anoncoin-config.h which defines many specific build time parameters
+#include "chainparamsbase.h"
 #include "util.h"
 #include "init.h"
 #include "rpcclient.h"
 #include "rpcprotocol.h"
 #include "ui_interface.h" /* for _(...) */
-#include "chainparams.h"
-#include "clientversion.h"
 
 #include <boost/filesystem/operations.hpp>
 
@@ -41,7 +36,7 @@ static bool AppInitRPC(int argc, char* argv[])
         return false;
     }
     // Check for -testnet or -regtest parameter (TestNet() calls are only valid after this clause)
-    if (!SelectParamsFromCommandLine()) {
+    if (!SelectBaseParamsFromCommandLine()) {
         fprintf(stderr, "Error: Invalid combination of -regtest and -testnet.\n");
         return false;
     }

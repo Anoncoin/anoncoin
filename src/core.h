@@ -19,7 +19,7 @@ class CTransaction;
 /** No amount larger than this (in satoshi) is valid */
 // Original btc code: static const int64_t MAX_MONEY = 84000000 * COIN;
 // This value was set wrong in the the v0.8.5.6 client, v9 wallets starting with v9.4.5 builds use the following:
-static const int64_t MAX_MONEY = 3105155 * COIN;
+static const int64_t MAX_MONEY = 3105156 * COIN;
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 

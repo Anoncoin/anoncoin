@@ -43,9 +43,6 @@ using namespace boost;
 
 static const int MAX_OUTBOUND_CONNECTIONS = 24;
 
-bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
-
-
 //
 // Global state variables
 //
@@ -119,7 +116,11 @@ unsigned short GetListenPort()
 bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 {
     // ToDo: Check for IsTor() here as well?
+#ifdef ENABLE_I2PSAM
     if( !paddrPeer->IsI2P() && fNoListen)
+#else
+    if( fNoListen )
+#endif
         return false;
 
     int nBestScore = -1;
@@ -247,7 +248,7 @@ bool AddLocal(const CService& addr, int nScore)
     if (IsLimited(addr))
         return false;
 
-    LogPrintf("AddLocal(%s,%i)\n", addr.ToString(), nScore);
+    LogPrintf(addr.IsI2P() ? "Accepting I2P peers at: %s Score=%d\n" : "AddLocal(%s,%i)\n", addr.ToString(), nScore);
 
     {
         LOCK(cs_mapLocalHost);
@@ -489,7 +490,11 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
 
     // Connect
     SOCKET hSocket;
+#ifdef ENABLE_I2PSAM
+    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, isStringI2pDestination(string(pszDest)) ? 0 : Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
+#else
     if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
+#endif
     {
         addrman.Attempt(addrConnect);
 
@@ -1092,8 +1097,9 @@ void ThreadSocketHandler()
                         // When a '/n' return shows up we got their destination identity
                         // See this url for destination specifications https://geti2p.net/en/docs/spec/common-structures#struct_Destination
                         // Although over I2P Sam we get it as a base64 string.
-                        char *pNewLine = strchr( pchBuf, '/n' );
-                        if( pNewLine ) {                     // Yap the address is all here, lets make sure it looks correct as a base64 string
+                        char *pNewLine = strchr( pchBuf, '\n' );
+                        if( pNewLine ) {                     // Yap the address is all here, pNewLine would be null otherwise.
+                            // Lets make sure it looks correct as a base64 i2p destination string
                             if( strlen(pchBuf) == NATIVE_I2P_DESTINATION_SIZE + 1 ) // we're waiting for dest-hash + '\n' symbol
                             {
                                 // Fantastic if it checks out, we have another node!
@@ -1107,12 +1113,12 @@ void ThreadSocketHandler()
                                     closesocket(hI2PListenSocket);
                                 }
                             } else {
-                                LogPrintf("WARNING - Invalid incoming destination address length, size & data received (%d) [%s]\n", nBytes, pchBuf);
-                                closesocket(hI2PListenSocket);          // We'll
+                                LogPrintf("WARNING - New destination addresses not yet supported, size & data received (%d) [%s]", nBytes, pchBuf);
+                                closesocket(hI2PListenSocket);
                             }
                         } else {
                             LogPrintf("WARNING - No eol found in destination address from router, size & data received (%d) [%s]\n", nBytes, pchBuf);
-                            closesocket(hI2PListenSocket);          // We'll
+                            closesocket(hI2PListenSocket);
                         }
                     }
                     else if (nBytes == 0)
@@ -1386,29 +1392,21 @@ void ThreadDNSAddressSeed()
         LogPrintf("I2P DNS seed addresses...preferred\n");
         const vector<CDNSSeedData> &i2pvSeeds = Params().i2pDNSSeeds();
         BOOST_FOREACH(const CDNSSeedData &seed, i2pvSeeds) {
-//            if (HaveNameProxy()) {
-//                AddOneShot(seed.host);
-//            } else {
-                vector<CNetAddr> vaddr;
-                vector<CAddress> vAdd;
-                if (LookupHost(seed.host.c_str(), vaddr)) {
-                        assert( vaddr.size() == 1 );                // All this could ever be from what I could tell looking down into the lookup process
-                        CNetAddr& ip = vaddr[0];                    // Need to clean up the variable use here, if this is finalized code
-//                    BOOST_FOREACH(CNetAddr& ip, vaddr) {
-                        int nOneDay = 24*3600;
-                        CAddress addr = CAddress(CService(ip, 0));
-                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                        vAdd.push_back(addr);
-                        found++;
-//                    }
-                    // Lookup is very time expensive over I2P, (and satellite).
-                    // Handle it differently here, with that in mind.
-                    // Only add it if Lookup works, we don't need to again.
-                    // Also set the flag AllowLookup false, otherwise I2PSAM goes through the same process all over again in a few millisecs, because it was true.
-                    addrman.Add(vAdd, CNetAddr(seed.name, false));
-                }
-//              addrman.Add(vAdd, CNetAddr(seed.name, true));
-//            }
+            vector<CNetAddr> vaddr;
+            vector<CAddress> vAdd;
+            if (LookupHost(seed.host.c_str(), vaddr)) {
+                assert( vaddr.size() == 1 );                // All this could ever be...
+                CNetAddr& ip = vaddr[0];                    // Need to clean up the variable use here, if this is finalized code
+                int nOneDay = 24*3600;
+                CAddress addr = CAddress(CService(ip, 0));
+                addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                vAdd.push_back(addr);
+                found++;
+                // Lookup is very time expensive over I2P, (and satellite).
+                // With that in mind, only add it if Lookup worked, we don't need to again.
+                // Also set the flag AllowLookup false, otherwise I2PSAM goes through the same process all over again in a few millisecs, because it was true.
+                addrman.Add(vAdd, CNetAddr(seed.name, false));
+            }
         }
     }
     // If we are I2P only, clearnet seeds will do us no good, so no point in loading them.
@@ -1618,7 +1616,11 @@ void ThreadOpenAddedConnections()
         BOOST_FOREACH(string& strAddNode, lAddresses)
         {
             vector<CService> vservNode(0);
+#ifdef ENABLE_I2PSAM
+            if( Lookup(strAddNode.c_str(), vservNode, isStringI2pDestination(strAddNode) ? 0 : Params().GetDefaultPort(), fNameLookup, 0) )
+#else
             if(Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
+#endif
             {
                 lservAddressesToAdd.push_back(vservNode);
                 {
@@ -1900,14 +1902,14 @@ bool BindListenNativeI2P(SOCKET& hSocket)
 {
     if( !IsLimited( NET_NATIVE_I2P ) ) {
         hSocket = I2PSession::Instance().accept(false);
-//        if( !SetI2pSocketOptions(hSocket) || hSocket == INVALID_SOCKET )
-        if( hSocket == INVALID_SOCKET )
-            return false;
-        CService addrBind(I2PSession::Instance().getMyDestination().pub, 0 );
-        return AddLocal( addrBind, LOCAL_BIND );
+        if( SetI2pSocketOptions(hSocket) ) {
+            CService addrBind(I2PSession::Instance().getMyDestination().pub, 0 );
+            return AddLocal( addrBind, LOCAL_BIND );
+        } else
+            LogPrintf( "ERROR - Unable to set I2P Socket options to non-blocking, after I2P accept was issued.\n" );
     }
     else
-        LogPrintf( "ERROR - Unexpected I2P BIND request. Ignored, network access is limited\n" );
+        LogPrintf( "ERROR - Unexpected I2P BIND request. Ignored, network access is limited.\n" );
 
 }
 #endif // ENABLE_I2PSAM
@@ -1978,8 +1980,8 @@ void StartNode(boost::thread_group& threadGroup)
         if (!adb.Read(addrman))
             LogPrintf("Invalid or missing peers.dat; recreating\n");
     }
-    LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
-           addrman.size(), GetTimeMillis() - nStart);
+    LogPrintf("Loaded %i addresses from peers.dat in %dms and setup a %d entry address book table for b32.i2p destinations.\n",
+           addrman.size(), GetTimeMillis() - nStart, addrman.b32HashTableSize() );
     fAddressesInitialized = true;
 
     if (semOutbound == NULL) {

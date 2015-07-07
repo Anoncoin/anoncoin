@@ -38,8 +38,11 @@ enum Network
     NET_MAX,
 };
 
+class CAddrMan;
+
 extern int nConnectTimeout;
 extern bool fNameLookup;
+extern CAddrMan addrman;
 
 /** IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) */
 class CNetAddr
@@ -86,7 +89,7 @@ class CNetAddr
 #ifdef ENABLE_I2PSAM
         bool IsI2P() const;
         bool IsNativeI2P() const;
-        std::string GetI2PDestination() const;
+        std::string GetI2pDestination() const;
         std::string ToB32String() const;
 #endif
         CNetAddr(const struct in6_addr& pipv6Addr);
@@ -173,6 +176,7 @@ bool LookupNumeric(const char *pszName, CService& addr, int portDefault = 0);
 bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout = nConnectTimeout);
 bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault = 0, int nTimeout = nConnectTimeout);
 bool SetI2pSocketOptions(SOCKET& hSocket);
+void AddTimeData(const CNetAddr& ip, int64_t nTime);
 
 /** Return readable error string for a network error code */
 std::string NetworkErrorString(int err);

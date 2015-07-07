@@ -82,11 +82,13 @@ class I2PSession : private SAM::StreamSessionAdapter
 };
 
 void InitializeI2pSettings( void );
+bool isValidI2pDestination( const SAM::FullDestination& DestKeys );
 std::string GetDestinationPublicKey( const std::string& sDestinationPrivateKey );
 bool isValidI2pAddress( const std::string& I2pAddr );
-bool isValidI2pDestination( const SAM::FullDestination& DestKeys );
 bool isValidI2pB32( const std::string& B32Address );
+bool isStringI2pDestination( const std::string & strName );
 std::string B32AddressFromDestination(const std::string& destination);
+uint256 GetI2pDestinationHash( const std::string& destination );
 
 /**
  * Specific functions we need to implement I2P functionality

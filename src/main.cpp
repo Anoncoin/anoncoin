@@ -909,7 +909,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 
     // Rather not work on nonstandard transactions (unless -testnet/-regtest)
     string reason;
-    if (Params().NetworkID() == CChainParams::MAIN && !IsStandardTx(tx, reason))
+    if (BaseParams().NetworkID() == CBaseChainParams::MAIN && !IsStandardTx(tx, reason))
         return state.DoS(0,
                          error("AcceptToMemoryPool : nonstandard transaction: %s", reason),
                          REJECT_NONSTANDARD, reason);
@@ -970,7 +970,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
         }
 
         // Check for non-standard pay-to-script-hash in inputs
-        if (Params().NetworkID() == CChainParams::MAIN && !AreInputsStandard(tx, view))
+        if (BaseParams().NetworkID() == CBaseChainParams::MAIN && !AreInputsStandard(tx, view))
             return error("AcceptToMemoryPool: : nonstandard transaction input");
 
         // Note: if you modify this code to accept non-standard transactions, then
@@ -2358,27 +2358,21 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CDiskBlockPos* dbp)
         if (pcheckpoint && nHeight < pcheckpoint->nHeight)
             return state.DoS(100, error("AcceptBlock() : forked chain older than last checkpoint (height %d)", nHeight));
 
-        // Reject block.nVersion=1 blocks (mainnet >= 710000, testnet >= 400000)
-        if (block.nVersion < 2)
-        {
-            if ((!TestNet() && nHeight >= 710000) ||
-               (TestNet() && nHeight >= 400000))
-            {
-                return state.Invalid(error("AcceptBlock() : rejected nVersion=1 block"),
-                                     REJECT_OBSOLETE, "bad-version");
-            }
-        }
+        // Reject block.nVersion=1 blocks when 95% of the network has upgraded:
+        // ToDo: Have not checked the height where they ended, a safe guess, nothing more.  Researching it would be better.
+        if( block.nVersion < 2 && CBlockIndex::IsSuperMajority(2, pindexPrev, 950, 1000) )
+            return state.Invalid(error("AcceptBlock() : rejected nVersion=1 block"), REJECT_OBSOLETE, "bad-version");
+
         // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
         if (block.nVersion >= 2)
         {
-            if ((!TestNet() && nHeight >= 710000) ||
-               (TestNet() && nHeight >= 400000))
-            {
+            // if 750 of the last 1,000 blocks are version 2 or greater:
+            // To save on executing the 1000 block SuperMajority test all the time, after 300K don't bother any more they all should have it, or be rejected.
+            if( nHeight > 300000 || CBlockIndex::IsSuperMajority(2, pindexPrev, 750, 1000) ) {  // Enforce the rule
                 CScript expect = CScript() << nHeight;
                 if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
                     !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin()))
-                    return state.DoS(100, error("AcceptBlock() : block height mismatch in coinbase"),
-                                     REJECT_INVALID, "bad-cb-height");
+                        return state.DoS(100, error("AcceptBlock() : block height mismatch in coinbase"), REJECT_INVALID, "bad-cb-height");
             }
         }
     }
@@ -2409,6 +2403,21 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CDiskBlockPos* dbp)
             if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
                 pnode->PushInventory(CInv(MSG_BLOCK, hash));
     }
+
+#if defined( HARDFORK_BLOCK )
+    if (!IsInitialBlockDownload()) {
+        filesystem::path pathDifficulty = GetDataDir() / "difficulty.csv";
+        ofstream csvfile( pathDifficulty.string().c_str(), ofstream::out | ofstream::app );
+        if (csvfile.is_open())
+        {
+            csvfile << GetAdjustedTime() << "," << block.GetBlockTime() << ",";
+            csvfile << (int)chainActive.Height()<<",";
+            const CBlockIndex* blockindex = GetLastBlockIndexForAlgo( chainActive.Tip(),  GetAlgo( block.nVersion ) );
+            csvfile << (double)GetDifficulty(blockindex)<<"\n";
+            csvfile.close();
+        }
+    }
+#endif
 
     return true;
 }
@@ -3424,8 +3433,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // protocol level, one which optimizes the storage required for new I2P Destination
         // keys and optional certificate and go to a decoded base64 binary format.
         if( pfrom->nVersion < PROTOCOL_VERSION ) {
-            if( addrMe.IsNativeI2P() ) addrMe.SetSpecial( addrMe.GetI2PDestination() );
-            if( addrFrom.IsNativeI2P() ) addrFrom.SetSpecial( addrFrom.GetI2PDestination() );
+            if( addrMe.IsNativeI2P() ) addrMe.SetSpecial( addrMe.GetI2pDestination() );
+            if( addrFrom.IsNativeI2P() ) addrFrom.SetSpecial( addrFrom.GetI2pDestination() );
         }
 
         // Now we should have the right address data for addrMe and addrFrom, with or without the Protocol 70007 clearnet version buggy brained builds.
@@ -3439,11 +3448,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // If it is still not empty input, get us the subversion string as well, plus sanitize it
         if (!vRecv.empty()) {
             vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
-            pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
+            if( pfrom->strSubVer.size() < 3 )
+                pfrom->cleanSubVer = "/??:?/";
+            else
+                pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
         }
 
         // Disconnect certain incompatible clients
-        // ToDo: Disconnect nodes that report no or very tiny subver strings, or need to be cleaned just to pass.
+        // ToDo: At some point start disconnecting nodes that report no or very tiny subver strings, or need to be cleaned just to pass.
         const char *badSubVers[] = { "/potcoinseeder", "/reddcoinseeder", "/worldcoinseeder" };
         for (int x = 0; x < 3; x++)
         {
@@ -3508,7 +3520,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (!pfrom->fInbound)
         {
             // Advertise our address
+#ifdef ENABLE_I2PSAM
             if( ( pfrom->addr.IsI2P() || !fNoListen ) && !IsInitialBlockDownload() )
+#else
+            if( !fNoListen && !IsInitialBlockDownload() )
+#endif
             {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if (addr.IsRoutable())
@@ -3576,14 +3592,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vector<CAddress> vAddrOk;
         int64_t nNow = GetAdjustedTime();
         int64_t nSince = nNow - 10 * 60;
-        if( pfrom->addr.IsI2P() && pfrom->nVersion < PROTOCOL_VERSION ) {
+        // Any peer addresses should be checked, if their size could include I2P destination addresses,
+        // we don't know what they are sending us, could be clearnet ip's or full i2p base64 strings.
+        LogPrintf( "Received %d addresses from peer %s, each address serialization size is %u\n",
+                   vAddr.size(), pfrom->addr.ToString(), ::GetSerializeSize(pfrom->addr, SER_NETWORK, PROTOCOL_VERSION) );
+        // if( pfrom->addr.IsI2P() && pfrom->nVersion < PROTOCOL_VERSION ) {
             // Then we've a new problem, every address MAY have to be fixed
             // we dont know which network they may have come, but if they
             // have a valid I2P address field, lets fix those, so they
             // work with our new protocol....
             BOOST_FOREACH(CAddress& addr, vAddr)
-                if( addr.IsNativeI2P() ) addr.SetSpecial( addr.GetI2PDestination() );
-        }
+                if( addr.IsNativeI2P() ) addr.SetSpecial( addr.GetI2pDestination() );
+        // }
 
         BOOST_FOREACH(CAddress& addr, vAddr)
         {
@@ -4306,7 +4326,11 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                         pnode->setAddrKnown.clear();
 
                     // Rebroadcast our address
+#ifdef ENABLE_I2PSAM
                     if( pnode->addr.IsI2P() || !fNoListen)
+#else
+                    if( !fNoListen )
+#endif
                     {
                         CAddress addr = GetLocalAddress(&pnode->addr);
                         if (addr.IsRoutable())

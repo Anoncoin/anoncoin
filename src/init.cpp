@@ -129,6 +129,9 @@ void Shutdown()
 #endif
     StopNode();
     UnregisterNodeSignals(GetNodeSignals());
+#ifdef ENABLE_I2PSAM
+    if( IsI2PEnabled() ) I2PSession::Instance().stopForwardingAll();
+#endif
     {
         LOCK(cs_main);
 #ifdef ENABLE_WALLET

@@ -285,6 +285,15 @@ void InitializeI2pSettings( void ) {
     BuildI2pOptionsString();   // Now build the I2P options string that's need to open a session
 }
 
+bool isValidI2pDestination( const SAM::FullDestination& DestKeys ) {
+
+    // Perhaps we're given a I2P native public address, last 4 symbols of b64-destination must be AAAA
+    bool fPublic = ((DestKeys.pub.size() == NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.pub));
+    // ToDo: Add more checking on the private key, for now this will do...
+    bool fPrivate = ((DestKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.priv));
+    return fPublic && fPrivate;
+}
+
 std::string GetDestinationPublicKey( const std::string& sDestinationPrivateKey )
 {
     return( sDestinationPrivateKey.substr(0, NATIVE_I2P_DESTINATION_SIZE) );
@@ -296,22 +305,19 @@ bool isValidI2pAddress( const std::string& I2pAddr ) {
     return (I2pAddr.substr( NATIVE_I2P_DESTINATION_SIZE - 4, 4 ) == "AAAA");
 }
 
-bool isValidI2pDestination( const SAM::FullDestination& DestKeys ) {
-
-    // Perhaps we're given a I2P native public address, last 4 symbols of b64-destination must be AAAA
-    bool fPublic = ((DestKeys.pub.size() == NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.pub));
-    // ToDo: Add more checking on the private key, for now this will do...
-    bool fPrivate = ((DestKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.priv));
-    return fPublic && fPrivate;
-}
-
 bool isValidI2pB32( const std::string& B32Address ) {
     return (B32Address.size() == NATIVE_I2P_B32ADDR_SIZE) && (B32Address.substr(B32Address.size() - 8, 8) == ".b32.i2p");
 }
 
-std::string B32AddressFromDestination(const std::string& destination)
+bool isStringI2pDestination( const std::string & strName )
 {
-    std::string canonicalDest = destination;
+    return isValidI2pB32( strName ) || isValidI2pAddress( strName );
+}
+
+uint256 GetI2pDestinationHash( const std::string& destination )
+{
+    std::string canonicalDest = destination;                    // Copy the string locally, so we can modify it & its not a const
+
     for (size_t pos = canonicalDest.find_first_of('-'); pos != std::string::npos; pos = canonicalDest.find_first_of('-', pos))
         canonicalDest[pos] = '+';
     for (size_t pos = canonicalDest.find_first_of('~'); pos != std::string::npos; pos = canonicalDest.find_first_of('~', pos))
@@ -319,6 +325,12 @@ std::string B32AddressFromDestination(const std::string& destination)
     std::string rawHash = DecodeBase64(canonicalDest);
     uint256 hash;
     SHA256((const unsigned char*)rawHash.c_str(), rawHash.size(), (unsigned char*)&hash);
+    return hash;
+}
+
+std::string B32AddressFromDestination(const std::string& destination)
+{
+    uint256 hash = GetI2pDestinationHash( destination );
     std::string result = EncodeBase32(hash.begin(), hash.end() - hash.begin()) + ".b32.i2p";
     for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
         result.erase(pos, 1);

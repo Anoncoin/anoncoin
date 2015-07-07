@@ -59,7 +59,6 @@ public:
         vOldAlertPubKey = ParseHex("04b2941a448ab9860beb73fa2f600c09bf9fe4d18d5ff0b3957bf94c6d177d61f88660d7c0dd9adef984080ddea03c898039759f66c2011c111c4394692f814962");
 
         nDefaultPort = 9377;
-        nRPCPort = 9376;
 
         // As of March '15, SCRYPT is all that matters, future mining with a SHA256D algo may soon be supported as well, set those limits here.
         bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
@@ -169,8 +168,6 @@ public:
     }
 
     virtual const CBlock& GenesisBlock() const { return genesis; }
-    virtual Network NetworkID() const { return CChainParams::MAIN; }
-
     virtual const vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
 protected:
     CBlock genesis;
@@ -196,7 +193,6 @@ public:
         pchMessageStart[3] = 0x4b;
 
         strNetworkID = "testnet";
-        strDataDir = "testnet";
 
         // GR Note: 1/26/2015 - New secp256k1 key values generated for testnet....
         vAlertPubKey = ParseHex("0442ccd085e52f7b74ee594826e36e417706af91ff7e7236a430b2dd16fe9f1a8132d0718e0bf5a3b7105354bf5bf954330097b21824c26c466836df9538f3d33e");
@@ -204,7 +200,6 @@ public:
         // "3082011302010104204b164c9765248427d1b13b9dc4f11107629485f0c61de070d89ebae308822e25a081a53081a2020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f300604010004010704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101a1440342000442ccd085e52f7b74ee594826e36e417706af91ff7e7236a430b2dd16fe9f1a8132d0718e0bf5a3b7105354bf5bf954330097b21824c26c466836df9538f3d33e"
 
         nDefaultPort = 19377;
-        nRPCPort = 19376;
 
         // ToDo: Proof of work limits for testnet.  Adjust as needed...
         bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 17);
@@ -235,7 +230,6 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF);
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x35)(0x83)(0x94);
     }
-    virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };
 // Keep in mind, this is a class derived from CMainParams which is derived from CChainParams.  If your trying to debug startup code
 // you will see, the CMainParams object created twice, first from the creation of the static variable mainParams (above), then the
@@ -250,7 +244,6 @@ class CRegTestParams : public CTestNetParams {
 public:
     CRegTestParams() {
         strNetworkID = "regtest";
-        strDataDir = "regtest";
 
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
@@ -266,7 +259,6 @@ public:
         genesis.nNonce = 2;
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 19444;
-        nRPCPort = 19443;
 
         // printf("RegTest Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x03ab995e27af2435ad33284ccb89095e6abe47d0846a4e8c34a3d0fc2d167ceb"));
@@ -275,7 +267,6 @@ public:
     }
 
     virtual bool RequireRPCPassword() const { return false; }
-    virtual Network NetworkID() const { return CChainParams::REGTEST; }
 };
 
 // Keep in mind, this is a class derived from CTestNetParams which is derived from CMainParams which is derived from CChainParams.
@@ -292,21 +283,23 @@ const CChainParams &Params() {
     return *pCurrentParams;
 }
 
-void SelectParams(CChainParams::Network network) {
+CChainParams &Params(CBaseChainParams::Network network) {
     switch (network) {
-        case CChainParams::MAIN:
-            pCurrentParams = &mainParams;
-            break;
-        case CChainParams::TESTNET:
-            pCurrentParams = &testNetParams;
-            break;
-        case CChainParams::REGTEST:
-            pCurrentParams = &regTestParams;
-            break;
+        case CBaseChainParams::MAIN:
+            return mainParams;
+        case CBaseChainParams::TESTNET:
+            return testNetParams;
+        case CBaseChainParams::REGTEST:
+            return regTestParams;
         default:
             assert(false && "Unimplemented network");
-            return;
+            return mainParams;
     }
+}
+
+void SelectParams(CBaseChainParams::Network network) {
+    SelectBaseParams(network);
+    pCurrentParams = &Params(network);
 }
 
 bool SelectParamsFromCommandLine() {
@@ -318,11 +311,11 @@ bool SelectParamsFromCommandLine() {
     }
 
     if (fRegTest) {
-        SelectParams(CChainParams::REGTEST);
+        SelectParams(CBaseChainParams::REGTEST);
     } else if (fTestNet) {
-        SelectParams(CChainParams::TESTNET);
+        SelectParams(CBaseChainParams::TESTNET);
     } else {
-        SelectParams(CChainParams::MAIN);
+        SelectParams(CBaseChainParams::MAIN);
     }
     return true;
 }
