@@ -120,10 +120,6 @@ extern uint64_t nLocalHostNonce;
 extern CAddrMan addrman;
 extern int nMaxConnections;
 
-#ifdef ENABLE_I2PSAM
-extern int nI2PNodeCount;
-#endif
-
 extern std::vector<CNode*> vNodes;
 extern CCriticalSection cs_vNodes;
 extern std::map<CInv, CDataStream> mapRelay;
@@ -328,7 +324,8 @@ public:
         // We only need to do this until everyone upgrades to 70009 or better
         // If the address given to us is a string, we need to evaluate it, find out what network it is for
         // before doing this.
-        nStreamType = SER_NETWORK | ( (addrIn.GetNetwork() != NET_NATIVE_I2P) ? SER_IPADDRONLY : 0 );
+        // Yet at least this change make node creation allot more deterministic, and all the subclasses defined with the same stream type value
+        nStreamType = SER_NETWORK | ( (addrIn.GetNetwork() != NET_I2P) ? SER_IPADDRONLY : 0 );
         SetSendStreamType( nStreamType );
         SetRecvStreamType( nStreamType );
         ssSend.SetType( nStreamType );

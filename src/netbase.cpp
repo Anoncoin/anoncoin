@@ -58,7 +58,7 @@ enum Network ParseNetwork(std::string net) {
     if (net == "ipv6") return NET_IPV6;
     if (net == "tor" || net == "onion")  return NET_TOR;
 #ifdef ENABLE_I2PSAM
-    if (net == "i2p") return NET_NATIVE_I2P;
+    if (net == "i2p") return NET_I2P;
 #endif
     return NET_UNROUTABLE;
 }
@@ -70,7 +70,7 @@ std::string GetNetworkName(enum Network net) {
     case NET_IPV6: return "ipv6";
     case NET_TOR : return "tor";
 #ifdef ENABLE_I2PSAM
-    case NET_NATIVE_I2P: return "i2p";
+    case NET_I2P: return "i2p";
 #endif
 
     default: return "???";
@@ -824,12 +824,28 @@ bool CNetAddr::IsNativeI2P() const
     // In order for this to work however, it's important that the memory has been cleared when this object
     // was created.
     // ToDo: More work could be done here to confirm it will never mistakenly see a valid native i2p address.
-    return (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
+    return (i2pDest[0] != 0) && (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }
 
 std::string CNetAddr::GetI2pDestination() const
 {
-    return i2pDest[0] != 0 ? std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE) : std::string();
+    return IsNativeI2P() ? std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE) : std::string();
+}
+
+/** \brief Checks for a valid i2p destination, if the garlic field is not set correctly, it makes sure that field is set properly
+ *
+ * \param void
+ * \return bool true if the address object was changed
+ *
+ */
+bool CNetAddr::CheckAndSetGarlicCat( void )
+{
+    if( IsNativeI2P() && !IsI2P() ) {               // Fix the ip address field
+        memset(ip, 0, sizeof(ip));                  // Make sure the ip is completely zeroed out
+        memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
+        return true;
+    }
+    return false;
 }
 
 /** \brief Sets the i2pDest field to the callers given string
@@ -867,10 +883,16 @@ bool CNetAddr::IsLocal() const
     // This address is local if it is the same as the public key of the session we have open,
     // ToDo: Compare the destination address with the session mydestination, this works for
     // now (maybe), but should be done better with getting the info from the i2psam module
-    if( IsI2P() ) {
-        string sMyDest = GetArg("-i2p.mydestination.publickey", "");
-        return sMyDest == GetI2pDestination();
-    }
+    // NOTE:
+    // The problem with doing this here, is that AddLocal never makes it on i2p, because
+    // this address matches for the IsRouteable() test, causing it to fail.
+    // There are two IsLocal(), the other one takes a CService object and works with the
+    // mapLocal addresses, this one only stops the local ip addresses from getting into
+    // the address stream, and should NOT include a valid i2p destination.
+    // if( IsI2P() ) {
+    //    string sMyDest = GetArg("-i2p.mydestination.publickey", "");
+    //    return sMyDest == GetI2pDestination();
+    // }
 #endif
 
     // IPv4 loopback
@@ -956,7 +978,7 @@ enum Network CNetAddr::GetNetwork() const
         return NET_TOR;
 
 #ifdef ENABLE_I2PSAM
-    if (IsI2P()) return NET_NATIVE_I2P;
+    if (IsI2P()) return NET_I2P;
 #endif
 
     return NET_IPV6;
@@ -1049,7 +1071,7 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
 #ifdef ENABLE_I2PSAM
     if( IsI2P() ) {
         vchRet.resize(NATIVE_I2P_DESTINATION_SIZE + 1);
-        vchRet[0] = NET_NATIVE_I2P;
+        vchRet[0] = NET_I2P;
         memcpy(&vchRet[1], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
         return vchRet;
     }
@@ -1183,10 +1205,10 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         case NET_IPV6:   return fTunnel ? REACH_IPV6_WEAK : REACH_IPV6_STRONG; // only prefer giving our IPv6 address if it's not tunnelled
         }
 #ifdef ENABLE_I2PSAM
-    case NET_NATIVE_I2P:
+    case NET_I2P:
         switch(ourNet) {
         default:             return REACH_UNREACHABLE;
-        case NET_NATIVE_I2P: return REACH_PRIVATE;
+        case NET_I2P: return REACH_PRIVATE;
         }
 #endif
     case NET_TOR:
@@ -1212,7 +1234,7 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         case NET_IPV4:    return REACH_IPV4;
         case NET_TOR:     return REACH_PRIVATE; // either from Tor, or don't care about our address
 #ifdef ENABLE_I2PSAM
-        case NET_NATIVE_I2P: return REACH_PRIVATE;  // Same for i2p
+        case NET_I2P: return REACH_PRIVATE;  // Same for i2p
 #endif
         }
     }

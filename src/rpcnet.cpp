@@ -60,37 +60,68 @@ Value ping(const Array& params, bool fHelp)
     return Value::null;
 }
 
-Value destinations(const Array& params, bool fHelp)
+Value destination(const Array& params, bool fHelp)
 {
-   if (fHelp || params.size() != 0)
+   if (fHelp || params.size() > 1)
         throw runtime_error(
-            "destinations\n"
-            "\nReturns b32.i2p addresses and details about them, that can be found in the address manager, as a json array of objects.\n"
+            "destination \"none|b32.i2p|base64\"\n"
+            "\nReturns I2P addresses and details about them. These are stored in your address manager, and returned as a json array of object(s).\n\n"
+            "  If a parameter is provided, only a destination that matches the b32.i2p or the base64 destination address will be returned.\n"
+            "  If no parameter is given all objects will be returned.  The first result pair is always the size of the address hash table\n"
             "\nbResult:\n"
             "[\n"
+            "  {\n"
+            "    \"totalsize\": nnn,                (numeric) The number of entries in the base32 lookup table and objects that follow, unless only one is looked up.\n"
+            "  }\n"
             "  {\n"
             "    \"address\":\"b32.i2p\",           (string)  Base32 hash of a i2p destination, a possible peer\n"
             "    \"tried\": true|false,             (boolean) Has this address been tried\n"
             "    \"attempts\": nnn,                 (numeric) The number of times it has been attempted\n"
             "    \"lastconnect\": ttt,              (numeric) The time of a last successful connection\n"
             "    \"source\":\"b32.i2p or ip:port\", (string)  The source of information about this address\n"
-            "    \"base64\":\"i2p addr\",           (string)  The full Base64 string of this peers i2p address\n"
+            "    \"base64\":\"full i2p destination address\", (string)  The full Base64 string of this peers i2p address\n"
             "  }\n"
             "  ,...\n"
-            "}\n"
+            "]\n"
 
-            "\nExamples:\n"
-            + HelpExampleCli("destinations", "")
-            + HelpExampleRpc("destinations", "")
+            "\nExamples: the first 2 return all addresses, the later 2 returns a match on one address.\n"
+            + HelpExampleCli("destination", "")
+            + HelpExampleRpc("destination", "")
+            + HelpExampleCli("destination", "vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
+            + HelpExampleRpc("destination", "vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
         );
 
-    Array ret;
+    bool fMatchOne = false;
+    bool fMatchFound = false;
+    string sOneAddress;
+    if( params.size() > 0 ) {                                   // Lookup the address and return the one object if found
+        string sOneAddress = params[1].get_str();
+        fMatchOne = true;
+    }
     vector<CDestinationStats> vecStats;
-    Object obj;
+    int nSize = addrman.CopyDestinationStats(vecStats);
 
-    obj.push_back(Pair("address", "xxx.b32.i2p"));
-
-    ret.push_back(obj);
+    Array ret;
+    Object objSize;
+    objSize.push_back(Pair("totalsize", nSize));
+    ret.push_back(objSize);
+    BOOST_FOREACH(const CDestinationStats& stats, vecStats) {
+        if( fMatchOne && !fMatchFound ) {
+            if( sOneAddress == stats.sAddress || sOneAddress == stats.sBase64 )
+                fMatchFound = true;
+        }
+        if( !fMatchOne || fMatchFound ) {
+            Object obj;
+            obj.push_back(Pair("address", stats.sAddress));
+            obj.push_back(Pair("tried", stats.fInTried));
+            obj.push_back(Pair("attempts", stats.nAttempts));
+            obj.push_back(Pair("lastconnect", stats.nSuccessTime));
+            obj.push_back(Pair("source", stats.sSource));
+            obj.push_back(Pair("base64", stats.sBase64));
+            ret.push_back(obj);
+            fMatchFound = false;
+        }
+    }
     return ret;
 }
 
@@ -135,7 +166,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "    \"syncnode\": true|false     (boolean) if sync node\n"
             "  }\n"
             "  ,...\n"
-            "}\n"
+            "]\n"
 
             "\nExamples:\n"
             + HelpExampleCli("getpeerinfo", "")

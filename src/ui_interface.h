@@ -100,20 +100,6 @@ public:
 
     /** A wallet has been loaded. */
     boost::signals2::signal<void (CWallet* wallet)> LoadWallet;
-
-    /**
-     * Required signals to support the I2P interface
-     */
-#ifdef ENABLE_I2PSAM
-    boost::signals2::signal<bool (const std::string& caption,
-                                  const std::string& pub,
-                                  const std::string& priv,
-                                  const std::string& b32,
-                                  const std::string& configFileName),
-                                  boost::signals2::last_value<bool> > ThreadSafeShowGeneratedI2PAddress;
-
-    boost::signals2::signal<void (int newNumI2PConnections)> NotifyNumI2PConnectionsChanged;
-#endif // ENABLE_I2PSAM
 };
 
 extern CClientUIInterface uiInterface;

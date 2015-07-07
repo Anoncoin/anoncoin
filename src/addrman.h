@@ -267,6 +267,7 @@ protected:
     void Connected_(const CService &addr, int64_t nTime);
 
 #ifdef ENABLE_I2PSAM
+    void CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible );         // Used in Shrink twice
     CAddrInfo* LookupB32addr(const std::string& sB32addr);
 #endif
 
@@ -367,11 +368,14 @@ public:
                         info.nRefCount++;
                     }
 #ifdef ENABLE_I2PSAM
+                    if( info.CheckAndSetGarlicCat() )
+                        LogPrintf( "WARNING - Did not expect to need the GarlicCat field fixed for an I2P address while reading peers.dat\n" );
                     if( info.IsI2P() ) {
-                        assert( info.IsNativeI2P() );
                         uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                        LogPrintf( "Adding %s to b32hashMap\n", b32hash.GetHex() );
-                        am->mapI2pHashes[b32hash] = n;
+                        if( mapI2pHashes.count( b32hash ) == 0 )
+                            am->mapI2pHashes[b32hash] = n;
+                        else
+                            LogPrintf( "ERROR - Can't create a New base32 Hash in AddrMan for one that already exists\n");
                     }
 #endif
                 }
@@ -381,14 +385,6 @@ public:
                 {
                     CAddrInfo info;
                     READWRITE(info);
-#ifdef ENABLE_I2PSAM
-                    if( info.IsI2P() ) {
-                        assert( info.IsNativeI2P() );
-                        uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                        LogPrintf( "Adding %s to b32hashMap\n", b32hash.GetHex() );
-                        am->mapI2pHashes[b32hash] = am->nIdCount;
-                    }
-#endif
                     std::vector<int> &vTried = am->vvTried[info.GetTriedBucket(am->nKey)];
                     if (vTried.size() < ADDRMAN_TRIED_BUCKET_SIZE)
                     {
@@ -398,6 +394,17 @@ public:
                         am->mapInfo[am->nIdCount] = info;
                         am->mapAddr[info] = am->nIdCount;
                         vTried.push_back(am->nIdCount);
+#ifdef ENABLE_I2PSAM
+                        if( info.CheckAndSetGarlicCat() )
+                            LogPrintf( "WARNING2 - Did not expect to need the GarlicCat field fixed for an I2P address while reading peers.dat\n" );
+                        if( info.IsI2P() ) {
+                            uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                            if( mapI2pHashes.count( b32hash ) == 0 )
+                                am->mapI2pHashes[b32hash] = am->nIdCount;
+                            else
+                                LogPrintf( "ERROR2 - Can't create a Tried base32 Hash in AddrMan for one that already exists\n");
+                        }
+#endif
                         am->nIdCount++;
                     } else {
                         nLost++;

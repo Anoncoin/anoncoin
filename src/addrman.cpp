@@ -178,8 +178,10 @@ CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, in
     if( addr.IsI2P() ) {
         assert( addr.IsNativeI2P() );
         uint256 b32hash = GetI2pDestinationHash( addr.GetI2pDestination() );
-        LogPrintf( "Adding %s to b32hashMap\n", b32hash.GetHex() );
-        mapI2pHashes[b32hash] = nId;
+        if( mapI2pHashes.count( b32hash ) == 0 )
+            mapI2pHashes[b32hash] = nId;
+        else
+            LogPrintf( "ERROR - Can't create base32 Hash in AddrMan for one that already exists\n");
     }
 #endif
     return &mapInfo[nId];
@@ -229,6 +231,30 @@ int CAddrMan::SelectTried(int nKBucket)
     return nOldestPos;
 }
 
+#ifdef ENABLE_I2PSAM
+void CAddrMan::CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible )
+{
+    if( aTerrible.IsI2P() ) {
+        uint256 b32hash = GetI2pDestinationHash( aTerrible.GetI2pDestination() );
+        if( mapI2pHashes.count( b32hash ) == 1 ) {
+            int nID2 = mapI2pHashes[ b32hash ];
+            if( nID == nID2 )            // Yap this is the one they want to delete, and it exists
+                mapI2pHashes.erase( b32hash );
+            else {
+                LogPrintf( "ERROR - Attempted to erase a b32Hash, for which the ids are different id1=%d, id2=%d\n", nID, nID2 );
+                CAddrInfo &info2 = mapInfo[nID2];
+                aTerrible.print();
+                info2.print();
+            }
+        }
+        else {
+            LogPrintf( "ERROR - Can't remove a base32 Hash from AddrMan that does not exist ID=%d\n", nID );
+            aTerrible.print();
+        }
+    }
+}
+#endif // ENABLE_I2PSAM
+
 int CAddrMan::ShrinkNew(int nUBucket)
 {
     assert(nUBucket >= 0 && (unsigned int)nUBucket < vvNew.size());
@@ -243,19 +269,13 @@ int CAddrMan::ShrinkNew(int nUBucket)
         {
             if (--info.nRefCount == 0)
             {
+#ifdef ENABLE_I2PSAM
+                CheckAndDeleteB32Hash( *it, info );
+#endif
                 SwapRandom(info.nRandomPos, vRandom.size()-1);
                 vRandom.pop_back();
                 mapAddr.erase(info);
                 mapInfo.erase(*it);
-#ifdef ENABLE_I2PSAM
-                if( info.IsI2P() ) {
-                    uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                    std::map<uint256, int>::iterator it2 = mapI2pHashes.find( b32hash );
-                    LogPrintf( "Remove %s from b32hashMap\n", b32hash.GetHex() );
-                    assert( it2 != mapI2pHashes.end() );
-                    mapI2pHashes.erase(it2);
-                }
-#endif
                 nNew--;
             }
             vNew.erase(it);
@@ -281,19 +301,13 @@ int CAddrMan::ShrinkNew(int nUBucket)
     CAddrInfo &info = mapInfo[nOldest];
     if (--info.nRefCount == 0)
     {
+#ifdef ENABLE_I2PSAM
+        CheckAndDeleteB32Hash( nOldest, info );
+#endif
         SwapRandom(info.nRandomPos, vRandom.size()-1);
         vRandom.pop_back();
         mapAddr.erase(info);
         mapInfo.erase(nOldest);
-#ifdef ENABLE_I2PSAM
-        if( info.IsI2P() ) {
-            uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
-            std::map<uint256, int>::iterator it2 = mapI2pHashes.find( b32hash );
-            LogPrintf( "Remove %s from b32hashMap\n", b32hash.GetHex() );
-            assert( it2 != mapI2pHashes.end() );
-            mapI2pHashes.erase(it2);
-        }
-#endif
         nNew--;
     }
     vNew.erase(nOldest);
@@ -408,8 +422,18 @@ void CAddrMan::Good_(const CService &addr, int64_t nTime)
     MakeTried(info, nId, nUBucket);
 }
 
-bool CAddrMan::Add_(const CAddress &addr, const CNetAddr& source, int64_t nTimePenalty)
+bool CAddrMan::Add_(const CAddress &addrIn, const CNetAddr& source, int64_t nTimePenalty)
 {
+#ifdef ENABLE_I2PSAM
+    // We now need to check for an possibly modify the CAddress object for the garliccat field, so we make a local copy
+    CAddress addr = addrIn;
+    // Before we can add an address, even before we can test if its Routable, or use the Find command to match correctly,
+    // we need to make sure that any I2P addresses have the GarlicCat field setup correctly in the IP area of the
+    // CNetAddr portion of a given CAddress->CService->CNetAddr object, this should have already been done, but
+    // double checking it here also insures we do not get a polluted b32 hash map
+    if( addr.CheckAndSetGarlicCat() )
+        LogPrintf( "ERROR - Did not expect to need the GarlicCat field fixed for an I2P address while adding it to AddrMan\n" );
+#endif
     if( !addr.IsRoutable() )
         return false;
 

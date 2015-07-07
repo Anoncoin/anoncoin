@@ -10,8 +10,10 @@
 #endif
 
 #include "i2pwrapper.h"
-#include "util.h"
+
 #include "hash.h"
+#include "ui_interface.h"                                   // Include this if you want language translation capability in your source files
+#include "util.h"
 
 #include <boost/thread/shared_mutex.hpp>
 
@@ -60,7 +62,9 @@ namespace SAM
 
     void StreamSessionAdapter::SessionHolder::heal() const
     {
-        reborn(); // if we don't know how to heal it just reborn it
+        // Rebirth means a nightmare is taking place, don't do it
+        // if we don't know how to heal it just reborn it
+        //reborn();
     }
 
     void StreamSessionAdapter::SessionHolder::reborn() const
@@ -84,12 +88,18 @@ namespace SAM
             const std::string& maxVer        /*= SAM_DEFAULT_MAX_VER*/)
         : sessionHolder_(
               new SessionHolder(
-                  std::auto_ptr<SAM::StreamSession>(
-                      new SAM::StreamSession(nickname, SAMHost, SAMPort, myDestination, i2pOptions, minVer, maxVer))))
+                  std::auto_ptr<SAM::StreamSession>( new SAM::StreamSession(nickname, SAMHost, SAMPort, myDestination, i2pOptions, minVer, maxVer))))
     {}
 
     StreamSessionAdapter::~StreamSessionAdapter()
     {}
+
+    bool StreamSessionAdapter::isSick( void ) const
+    {
+        SAM::StreamSession& s = sessionHolder_->getSession();
+        // ToDo: Find out why it's sick and perhaps restart the session later, more than likely the socket would not open
+        return s.isSick();
+    }
 
     SAM::SOCKET StreamSessionAdapter::accept(bool silent)
     {
@@ -193,7 +203,12 @@ static std::string sOptions;
 
 I2PSession::I2PSession() : SAM::StreamSessionAdapter( sSession, sHost, uPort, sDestination, sOptions )
 {
-    ::sDestination = this->getMyDestination().priv;
+    // Specifically do not want to do the following line, now commented out.
+    // If we're later going to try again to start the session with the same values,
+    // this and everything else should be kept the same as initialization has set.
+    /* ::sDestination = this->getMyDestination().priv; */
+    // That line causes a command cycle on the session, when it should not, if the
+    // router connection failed to open.
 }
 
 I2PSession::~I2PSession()
@@ -363,10 +378,10 @@ std::string FormatI2PNativeFullVersion()
 // mud is right, the rest of it is now all wrong haha
 bool IsTorOnly()
 {
-    bool i2pOnly = false;
+    bool torOnly = false;
     const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "tor");
-    return i2pOnly;
+    torOnly = (onlyNets.size() == 1) && ( (onlyNets[0] == "tor") || (onlyNets[0] == "onion") );
+    return torOnly;
 }
 
 bool IsI2POnly()
@@ -382,10 +397,7 @@ bool IsI2POnly()
 // If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
 bool IsDarknetOnly()
 {
-    return IsI2POnly() || IsTorOnly() ||
-            (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) &&
-              (mapArgs.count("-i2p.options.enabled") && mapArgs["-i2p.options.enabled"] != "0")
-            );
+    return IsI2POnly() || IsTorOnly() || ( IsI2PEnabled() && ((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) );
 }
 
 // We now just check the -i2p.options.enabled parameter here, and return its value true or false
@@ -399,3 +411,29 @@ bool IsBehindDarknet()
     return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
 }
 
+std::string GenerateI2pDestinationMessage( const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName )
+{
+    std::string msg;
+
+    msg  = _("\nTo have a permanent I2P Destination address, you have to set options in anoncoin.conf:\n");
+    msg += _("Your Config file is: ");
+    msg += configFileName;
+
+    msg += _("\nYour I2P Destination Private Key anoncoin.conf file settings are:\n\n");
+    msg += strprintf( "[i2p.mydestination]\nstatic=1\nprivatekey=%s\n\n[i2p.options]\nenabled=1\n\n", priv );
+    msg += _("****** Save the above text at the end of your configuration file and keep it secret.\n");
+    msg += _("       Or start with our anoncoin.conf.sample file, which has even more settings.\n");
+
+    msg += _("\nThis is your I2P Public Key:\n");
+    msg += pub;
+    msg += _("\n\n**** You can advertise the Public Key, all I2P Routers will know how to locate it.\n");
+
+    msg += _("\nYour personal b32.i2p Destination:\n");
+    msg += b32;
+    msg += _("\n\n** Anoncoin peers now have built-in name resolution, once your on I2P for a few hours,\n");
+    msg += _("   most peers will likely be able to find you by this Base32 hash of the Public Key.\n");
+    msg += _("   Standard I2P network Routers are not as likely to find your destination with it.\n");
+    // msg += "\n\n";
+
+    return msg;
+}

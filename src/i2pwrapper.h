@@ -33,6 +33,7 @@ namespace SAM
             bool forward(const std::string& host, uint16_t port, bool silent);
             std::string namingLookup(const std::string& name) const;
             SAM::FullDestination destGenerate() const;
+            bool isSick( void )const;
 
             void stopForwarding(const std::string& host, uint16_t port);
             void stopForwardingAll();
@@ -96,6 +97,7 @@ bool IsTorOnly();
 bool IsI2POnly();
 bool IsI2PEnabled();
 bool IsBehindDarknet();
+std::string GenerateI2pDestinationMessage( const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName );
 
 struct Identity
 {
