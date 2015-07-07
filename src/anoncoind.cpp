@@ -21,14 +21,14 @@
  *
  * \section intro_sec Introduction
  *
- * Anoncoin (ANC) is a peer-to-peer digital cryptocurrency that focuses on privacy and anonymity 
- * for its users. Created in June 2013, it is the first and only currency to have built-in support 
- * for both the I2P darknet and Tor network that conceal the IP address of the user. Anoncoin 
- * will soon be implementing Zerocoin, which will allow users to make payments anonymously, 
+ * Anoncoin (ANC) is a peer-to-peer digital cryptocurrency that focuses on privacy and anonymity
+ * for its users. Created in June 2013, it is the first and only currency to have built-in support
+ * for both the I2P darknet and Tor network that conceal the IP address of the user. Anoncoin
+ * will soon be implementing Zerocoin, which will allow users to make payments anonymously,
  * without revealing their anoncoin public addresses.
  *
  * This site contains the developer documentation of the Anoncoin code. Further information
- * can be found on the Anoncoin web site (https://anoncoin.net/) and wiki 
+ * can be found on the Anoncoin web site (https://anoncoin.net/) and wiki
  * (https://wiki.anoncoin.net/).
  *
  * The software is a community-driven open source project, released under the MIT license.
@@ -65,13 +65,34 @@ bool AppInit(int argc, char* argv[])
     boost::thread* detectShutdownThread = NULL;
 
     bool fRet = false;
+
+    //
+    // Parameters
+    //
+    // If Qt is used, parameters/anoncoin.conf are parsed in qt/anoncoin.cpp's main()
+    ParseParameters(argc, argv);
+
+    // Process help and (ToDo: version) before taking care about datadir
+    if (mapArgs.count("-?") || mapArgs.count("--help"))
+    {
+        // First part of help message is specific to anoncoind / RPC client
+        std::string strUsage = _("Anoncoin Core Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n\n" +
+            _("Usage:") + "\n" +
+              "  anoncoind [options]                     " + _("Start Anoncoin Core Daemon") + "\n" +
+            _("Usage (deprecated, use anoncoin-cli):") + "\n" +
+              "  anoncoind [options] <command> [params]  " + _("Send command to Anoncoin Core") + "\n" +
+              "  anoncoind [options] help                " + _("List commands") + "\n" +
+              "  anoncoind [options] help <command>      " + _("Get help for a command") + "\n";
+
+        strUsage += "\n" + HelpMessage(HMM_ANONCOIND);
+        strUsage += "\n" + HelpMessageCli(false);
+
+        fprintf(stdout, "%s", strUsage.c_str());
+        return false;
+    }
+
     try
     {
-        //
-        // Parameters
-        //
-        // If Qt is used, parameters/anoncoin.conf are parsed in qt/anoncoin.cpp's main()
-        ParseParameters(argc, argv);
         if (!boost::filesystem::is_directory(GetDataDir(false)))
         {
             fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", mapArgs["-datadir"].c_str());
@@ -87,24 +108,6 @@ bool AppInit(int argc, char* argv[])
         // Check for -testnet or -regtest parameter (TestNet() calls are only valid after this clause)
         if (!SelectParamsFromCommandLine()) {
             fprintf(stderr, "Error: Invalid combination of -regtest and -testnet.\n");
-            return false;
-        }
-
-        if (mapArgs.count("-?") || mapArgs.count("--help"))
-        {
-            // First part of help message is specific to anoncoind / RPC client
-            std::string strUsage = _("Anoncoin Core Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n\n" +
-                _("Usage:") + "\n" +
-                  "  anoncoind [options]                     " + _("Start Anoncoin Core Daemon") + "\n" +
-                _("Usage (deprecated, use anoncoin-cli):") + "\n" +
-                  "  anoncoind [options] <command> [params]  " + _("Send command to Anoncoin Core") + "\n" +
-                  "  anoncoind [options] help                " + _("List commands") + "\n" +
-                  "  anoncoind [options] help <command>      " + _("Get help for a command") + "\n";
-
-            strUsage += "\n" + HelpMessage(HMM_ANONCOIND);
-            strUsage += "\n" + HelpMessageCli(false);
-
-            fprintf(stdout, "%s", strUsage.c_str());
             return false;
         }
 

@@ -61,6 +61,7 @@ void AddressCurrentlyConnected(const CService& addr);
 CNode* FindNode(const CNetAddr& ip);
 CNode* FindNode(const CService& ip);
 CNode* ConnectNode(CAddress addrConnect, const char *strDest = NULL);
+bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
 bool BindListenPort(const CService &bindAddr, std::string& strError=REF(std::string()));
@@ -112,18 +113,6 @@ bool IsReachable(enum Network net);
 bool IsReachable(const CNetAddr &addr);
 void SetReachable(enum Network net, bool fFlag = true);
 CAddress GetLocalAddress(const CNetAddr *paddrPeer = NULL);
-
-/**
- * Specific functions we need to implement I2P functionality
- */
-#ifdef ENABLE_I2PSAM
-std::string FormatI2PNativeFullVersion();
-bool IsDarknetOnly();
-bool IsTorOnly();
-bool IsI2POnly();
-bool IsI2PEnabled();
-bool IsBehindDarknet();
-#endif // ENABLE_I2PSAM
 
 extern bool fDiscover;
 extern uint64_t nLocalServices;
@@ -312,6 +301,12 @@ public:
       , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
 #endif
     {
+#ifdef ENABLE_I2PSAM
+        // We don't no the protocol version here yet, nor does the addrIn have it as a member variable anyway
+        // This line of code was left out for 70008, so it doesnt get set until later after the version message
+        // on inbound connections.
+        // if( addrIn->nVersion != 70008 ) ssSend.SetType(nSendStreamType);
+#endif
         nServices = 0;
         hSocket = hSocketIn;
         nRecvVersion = INIT_PROTO_VERSION;

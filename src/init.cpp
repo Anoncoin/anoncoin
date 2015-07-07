@@ -129,6 +129,9 @@ void Shutdown()
 #endif
     StopNode();
     UnregisterNodeSignals(GetNodeSignals());
+#ifdef ENABLE_I2PSAM
+    if( IsI2PEnabled() ) I2PSession::Instance().stopForwardingAll();
+#endif
     {
         LOCK(cs_main);
 #ifdef ENABLE_WALLET
@@ -236,7 +239,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -maxsendbuffer=<n>     " + _("Maximum per-connection send buffer, <n>*1000 bytes (default: 1000)") + "\n";
     strUsage += "  -onion=<ip:port>       " + _("Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: -proxy)") + "\n";
     strUsage += "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (ipv4, ipv6, onion or i2p)") + "\n";
-    strUsage += "  -port=<port>           " + _("Listen for connections on <port> (default: 9333 or testnet: 19333)") + "\n";
+    strUsage += "  -port=<port>           " + _("Listen for connections on <port> (default: 9377 or testnet: 19377)") + "\n";
     strUsage += "  -proxy=<ip:port>       " + _("Connect through SOCKS5 proxy") + "\n";
     strUsage += "  -seednode=<ip>         " + _("Connect to a node to retrieve peer addresses, and disconnect") + "\n";
     strUsage += "  -timeout=<n>           " + _("Specify connection timeout in milliseconds (default: 20000)") + "\n";
@@ -319,7 +322,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -server                " + _("Accept command line and JSON-RPC commands") + "\n";
     strUsage += "  -rpcuser=<user>        " + _("Username for JSON-RPC connections") + "\n";
     strUsage += "  -rpcpassword=<pw>      " + _("Password for JSON-RPC connections") + "\n";
-    strUsage += "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 9332 or testnet: 19332)") + "\n";
+    strUsage += "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 9376 or testnet: 19376)") + "\n";
     strUsage += "  -rpcallowip=<ip>       " + _("Allow JSON-RPC connections from specified IP address") + "\n";
     strUsage += "  -rpcthreads=<n>        " + _("Set the number of threads to service RPC calls (default: 4)") + "\n";
 
@@ -730,13 +733,21 @@ bool AppInit2(boost::thread_group& threadGroup)
             enum Network net = ParseNetwork(snet);
 
 #ifdef ENABLE_I2PSAM
-            if (net == NET_NATIVE_I2P) {
-                // Disable upnp, force listening and no discovery on I2P only.
+            if( net == NET_NATIVE_I2P ) {
+                // Who knows what the user wants, we'll assume they have nothing set for this
+                // and disable upnp, turn listening and discovery off.  The rest of our code
+                // now does not care what these settings are and should work with any values.
+                // for I2P only and no clearnet interaction with the outside IP world is a good start.
 #ifdef USE_UPNP
-                SoftSetBoolArg("-upnp", false);
+                if( SoftSetBoolArg("-upnp", false) )
+                    LogPrintf("AppInit2 : parameter interaction: -onlynet=i2p -> setting -upnp=0\n");
 #endif
-                SoftSetBoolArg("-listen",true);
-                SoftSetBoolArg("-discover",false);
+                if( SoftSetBoolArg("-listen",false) )
+                    LogPrintf("AppInit2 : parameter interaction: -onlynet=i2p -> setting -listen=0\n");
+                if( SoftSetBoolArg("-discover",false) )
+                    LogPrintf("AppInit2 : parameter interaction: -onlynet=i2p -> setting -discover=0\n");
+                if( SoftSetBoolArg("-i2p.options.enabled", true ) )
+                    LogPrintf("AppInit2 : parameter interaction: -onlynet=i2p -> setting -i2p.options.enabled=1 and assume I2p router default settings\n");
             }
 #endif // ENABLE_I2PSAM
 
@@ -784,6 +795,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     // At this point we really want to try and use I2P, however if the user has selected it, we may have to override the configuration
     // file setting, and disable I2P completely, so no errors are generated or access to I2PSAM is ever attempted.
     // Hard set override the enable flag to false.
+
+    // ToDo: Need to create a HardSetBoolArg function to help override values correctly, as it is these may create duplicates
     if( IsLimited( NET_NATIVE_I2P ) )
         mapArgs[ "-i2p.options.enabled" ] = "0";
 
@@ -792,7 +805,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     bool fGenI2pDest = GetBoolArg("-generatei2pdestination", false);
     if( fGenI2pDest ) {                                             // Hard set these 2 values
         mapArgs[ "-i2p.options.enabled" ] = "1";
-        mapArgs[ "-i2p.options.static" ] = "0";
+        mapArgs[ "-i2p.mydestination.static" ] = "0";
     }
 
     // Initialize some stuff here alittle early, so if GenI2pDest is run, they will be setup with
@@ -812,16 +825,17 @@ bool AppInit2(boost::thread_group& threadGroup)
         // Now we can either use a static destination address, taken from anoncoin.conf values to create a Stream Session, or
         // generate a dynamic new one and initiate an I2P session stream that way...
         SAM::FullDestination retI2pKeys;                                        // Something we can compare our results too
-        if( GetBoolArg( "-i2p.options.static", false ) ) {      // Running static mode, if this is true, upto the user to make sure our destination has been set
+        if( GetBoolArg( "-i2p.mydestination.static", false ) ) {      // Running static mode, if this is true, upto the user to make sure our destination has been set
             LogPrintf( "Attempting to create an I2P Sam session.  With a static destination...\n" );
             if( isValidI2pDestination( myI2pKeys ) ) {          // Here we check to make sure the values look right
                 retI2pKeys = I2PSession::Instance().getMyDestination();
-                if( retI2pKeys.priv == myI2pKeys.priv && retI2pKeys.pub == myI2pKeys.pub && retI2pKeys.isGenerated == false )
+                if( retI2pKeys.priv == myI2pKeys.priv && retI2pKeys.pub == myI2pKeys.pub && retI2pKeys.isGenerated == false ) {
+                    mapArgs[ "-i2p.mydestination.publickey" ] = myI2pKeys.pub;
                     fValidI2pSession = true;
-                else
+                } else
                   LogPrintf( "Error - Static Destination mismatch.  Result: ShutDown.\n" );
             } else
-                LogPrintf( "Error - invalid I2P keys. Check your configuration file.  Result: ShutDown\n" );
+                LogPrintf( "Error - invalid I2P key. Check your configuration file.  Result: ShutDown\n" );
         } else {                                                // Generate new destination keys/address
             LogPrintf( "Attempting to create an I2P Sam session.  With a dynamic destination...\n" );
             retI2pKeys = I2PSession::Instance().getMyDestination();
@@ -875,6 +889,13 @@ bool AppInit2(boost::thread_group& threadGroup)
     fNameLookup = GetBoolArg("-dns", true);
 
     bool fBound = false;
+#ifdef ENABLE_I2PSAM
+    // Regardless of users choice on binding, listening, discover or dns,
+    // if I2P is not limited, then we always try to bind our node & accept
+    // inbound peer connections over i2p
+    if (!IsLimited(NET_NATIVE_I2P))
+        fBound = BindListenNativeI2P();
+#endif
     if (!fNoListen) {
         if (mapArgs.count("-bind")) {
             BOOST_FOREACH(std::string strBind, mapMultiArgs["-bind"]) {
@@ -891,11 +912,6 @@ bool AppInit2(boost::thread_group& threadGroup)
             fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound ? BF_REPORT_ERROR : BF_NONE);
         }
 
-#ifdef ENABLE_I2PSAM
-        // Regardless of users choice on binding or not, if I2P is not limited, then we always try to bind our node to listen on the I2P socket
-        if (!IsLimited(NET_NATIVE_I2P))
-            fBound |= BindListenNativeI2P();
-#endif
         if (!fBound)
             return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
     }

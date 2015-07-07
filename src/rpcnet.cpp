@@ -11,13 +11,11 @@
 #include "protocol.h"
 #include "sync.h"
 #include "util.h"
-#include "version.h"
+#include "alert.h"
+#include "base58.h"
 
 #include <boost/foreach.hpp>
 #include "json/json_spirit_value.h"
-/* #include "anoncoinrpc.h" */
-#include "alert.h"
-#include "base58.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -93,8 +91,8 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "    \"conntime\": ttt,           (numeric) The connection time in seconds since epoch (Jan 1 1970 GMT)\n"
             "    \"pingtime\": n,             (numeric) ping time\n"
             "    \"pingwait\": n,             (numeric) ping wait\n"
-            "    \"version\": v,              (numeric) The peer version, such as 7001\n"
-            "    \"subver\": \"/Satoshi:0.8.5/\",  (string) The string version\n"
+            "    \"version\": v,              (numeric) The peer version, such as 70008\n"
+            "    \"subver\": \"/s:n.n.n.n/\", (string) The subversion string\n"
             "    \"inbound\": true|false,     (boolean) Inbound (true) or Outbound (false)\n"
             "    \"startingheight\": n,       (numeric) The starting height (block) of the peer\n"
             "    \"banscore\": n,             (numeric) The ban score\n"
@@ -162,8 +160,8 @@ Value addnode(const Array& params, bool fHelp)
             "1. \"node\"     (string, required) The node (see getpeerinfo for nodes)\n"
             "2. \"command\"  (string, required) 'add' to add a node to the list, 'remove' to remove a node from the list, 'onetry' to try a connection to the node once\n"
             "\nExamples:\n"
-            + HelpExampleCli("addnode", "\"192.168.0.6:9333\" \"onetry\"")
-            + HelpExampleRpc("addnode", "\"192.168.0.6:9333\", \"onetry\"")
+            + HelpExampleCli("addnode", "\"192.168.0.6:9377\" \"onetry\"")
+            + HelpExampleRpc("addnode", "\"192.168.0.6:9377\", \"onetry\"")
         );
 
     string strNode = params[0].get_str();
@@ -171,7 +169,11 @@ Value addnode(const Array& params, bool fHelp)
     if (strCommand == "onetry")
     {
         CAddress addr;
-        ConnectNode(addr, strNode.c_str());
+        // The Oneshot flag 'could' be true here...
+        // If it is true, then the node if connects, will be queried for addresses
+        // and disconnected, so for this command we call it set false, as we want
+        // stay connected if we can.
+        OpenNetworkConnection(addr, NULL, strNode.c_str(), false);
         return Value::null;
     }
 
@@ -216,7 +218,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
             "    \"connected\" : true|false,          (boolean) If connected\n"
             "    \"addresses\" : [\n"
             "       {\n"
-            "         \"address\" : \"192.168.0.201:9333\",  (string) The anoncoin server host and port\n"
+            "         \"address\" : \"192.168.0.201:9377\",  (string) The anoncoin server host and port\n"
             "         \"connected\" : \"outbound\"           (string) connection, inbound or outbound\n"
             "       }\n"
             "       ,...\n"
@@ -359,6 +361,17 @@ static Array GetNetworksInfo()
     return networks;
 }
 
+static const string SingleAlertSubVersionsString( const std::set<std::string>& setVersions )
+{
+    std::string strSetSubVer;
+    BOOST_FOREACH(std::string str, setVersions) {
+        if(strSetSubVer.size())                 // Must be more than one
+            strSetSubVer += " or ";
+        strSetSubVer += str;
+    }
+    return strSetSubVer;
+}
+
 Value getnetworkinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -368,22 +381,32 @@ Value getnetworkinfo(const Array& params, bool fHelp)
             "\nResult:\n"
             "{\n"
             "  \"version\": xxxxx,           (numeric) the server version\n"
+            "  \"subver\": \"/s:n.n.n.n/\",  (string)  this clients subversion string\n"
             "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
-            "  \"localservices\": \"xxxxxxxxxxxxxxxx\",   (string) the services we offer to the network\n"
+            "  \"localservices\": xxxxxxxx,  (numeric) in Hex, the local service bits\n"
             "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
             "  \"connections\": xxxxx,       (numeric) the number of connections\n"
-            "  \"networks\": [               (array) information per network\n"
-            "      \"name\": \"xxx\",        (string) network (ipv4, ipv6 or onion)\n"
-            "      \"limited\": xxx,         (boolean) is the network limited using -onlynet?\n"
-            "      \"reachable\": xxx,       (boolean) is the network reachable?\n"
-            "      \"proxy\": \"host:port\"  (string) the proxy that is used for this network, or empty if none\n"
-            "    },\n"
-            "  ],\n"
-            "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in btc/kb\n"
+            "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in ixc/kb\n"
+            "  \"networkconnections\": [,    (array)  the state of each possible network connection type\n"
+            "    \"name\": \"xxx\",          (string) network name\n"
+            "    \"limited\" : true|false,   (boolean) if service is limited\n"
+            "    \"reachable\" : true|false, (boolean) if service is reachable\n"
+            "    \"proxy\": \"host:port\",   (string, optional) the proxy used by the server\n"
+            "  ]\n"
             "  \"localaddresses\": [,        (array) list of local addresses\n"
             "    \"address\": \"xxxx\",      (string) network address\n"
             "    \"port\": xxx,              (numeric) network port\n"
             "    \"score\": xxx              (numeric) relative score\n"
+            "  ]\n"
+            "  \"alerts\": [,                (array) list of alerts on network\n"
+            "    \"alertid\": \"xxx\",       (numeric) the ID number for this alert\n"
+            "    \"priority\": xxx,          (numeric) the alert priority\n"
+            "    \"minver\": xxx             (numeric) the minimum protocol version this effects\n"
+            "    \"maxver\": xxx             (numeric) the maximum protocol version this effects\n"
+            "    \"subvers\": \"/s:n.n.n.n/\",(string) null=all or the client version(s) this effects\n"
+            "    \"relayuntil\": xxx         (numeric) relay this alert to other nodes until this time\n"
+            "    \"expiration\": xxx         (numeric) when this alert will expire\n"
+            "    \"statusbar\": \"xxxx\",    (string) status bar & tooltip string displayed\n"
             "  ]\n"
             "}\n"
             "\nExamples:\n"
@@ -392,15 +415,14 @@ Value getnetworkinfo(const Array& params, bool fHelp)
         );
 
     Object obj;
-    obj.push_back(Pair("version",       (int)CLIENT_VERSION));
-    obj.push_back(Pair("subversion",
-        FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>())));
+    obj.push_back(Pair("version",        (int)CLIENT_VERSION));
+    obj.push_back(Pair("subversion",     FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>())));
     obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
-    obj.push_back(Pair("localservices",       strprintf("%016x", nLocalServices)));
-    obj.push_back(Pair("timeoffset",    GetTimeOffset()));
-    obj.push_back(Pair("connections",   (int)vNodes.size()));
-    obj.push_back(Pair("networks",      GetNetworksInfo()));
-    obj.push_back(Pair("relayfee",      ValueFromAmount(CTransaction::nMinRelayTxFee)));
+    obj.push_back(Pair("localservices",  strprintf("%08x", nLocalServices)));
+    obj.push_back(Pair("timeoffset",     GetTimeOffset()));
+    obj.push_back(Pair("connections",    (int)vNodes.size()));
+    obj.push_back(Pair("relayfee",       ValueFromAmount(CTransaction::nMinRelayTxFee)));
+    obj.push_back(Pair("networkconnections",GetNetworksInfo()));
     Array localAddresses;
     {
         LOCK(cs_mapLocalHost);
@@ -414,7 +436,164 @@ Value getnetworkinfo(const Array& params, bool fHelp)
         }
     }
     obj.push_back(Pair("localaddresses", localAddresses));
+
+    // Add in the list of alerts currently on the network
+    Array localAlerts;
+    if( !mapAlerts.empty() ) {
+          // Parse all the alerts, and prepare a JSON response list
+          LOCK(cs_mapAlerts);
+          for( map<uint256, CAlert>::iterator mi = mapAlerts.begin(); mi != mapAlerts.end(); mi++ ) {
+               const CAlert& alert = (*mi).second;
+               Object rec;
+               rec.push_back( Pair("AlertID", alert.nID) );
+               rec.push_back( Pair("Priority", alert.nPriority) );
+               rec.push_back( Pair("MinVer", alert.nMinVer) );
+               rec.push_back( Pair("MaxVer", alert.nMaxVer) );
+               rec.push_back( Pair("SubVer", SingleAlertSubVersionsString(alert.setSubVer)) );
+               rec.push_back( Pair("RelayUntil", alert.nRelayUntil) );
+               rec.push_back( Pair("Expiration", alert.nExpiration) );
+               rec.push_back( Pair("StatusBar", alert.strStatusBar) );
+               localAlerts.push_back(rec);
+          }
+    }
+    obj.push_back(Pair("alerts", localAlerts));
+
     return obj;
+}
+
+// Only build this code in preleases or test builds
+#if CLIENT_VERSION_IS_RELEASE != true
+//
+// This allows our developers to notify all nodes of any issues on the Anoncoin network
+//
+Value sendalert(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 7)
+        throw runtime_error(
+            "sendalert <message> <privatekey> <minver> <maxver> <subvers> <priority> <id> [relaydays] [expiredays] [cancelupto]\n"
+            "<message> is the alert text message\n"
+            "<privatekey> is hex string of alert private key\n"
+            "<minver> is the minimum applicable protocol version\n"
+            "<maxver> is the maximum applicable protocol version\n"
+            "<subvers> if not null, a specific set of client version(s) (see BIP14 for specs)\n"
+            "<priority> is integer priority number\n"
+            "<id> is the alert id you have assigned\n"
+            "[relaydays]  relay this alert for this many days\n"
+            "[expiredays] expire this alert in this many days\n"
+            "[cancelupto] cancels all alert id's up to this number\n"
+            "Returns JSON result if successful.");
+
+    CAlert alert;
+    CKey key;
+
+    alert.strStatusBar = params[0].get_str();
+    alert.nMinVer = params[2].get_int();
+    alert.nMaxVer = params[3].get_int();
+
+    // We need to parse out the subversion strings as per BIP14 and create a
+    // set of matchable versions this alert is targeted for.  A null string
+    // indicates all version, 1st we do a small bit of user input verification.
+    // So this should work if the string is null, if there is one version string,
+    // or more, separated by '/' as per the specification.
+    string strSetSubVers = params[4].get_str();
+    if( strSetSubVers.size() ) {
+        // The 1st and last chars need to be a '/' or it was not entered correctly
+        if( strSetSubVers[0] == '/'  && strSetSubVers[ strSetSubVers.size() - 1 ] == '/' ) {
+            std::string::size_type iPos = 1, iLast;     // We have at least one likely good string
+            while( ( iLast = strSetSubVers.find('/',iPos--) ) != std::string::npos ) {
+                alert.setSubVer.insert( strSetSubVers.substr(iPos,++iLast-iPos));
+                iPos = iLast;
+            }
+        } else
+            throw runtime_error( "Invalid client subversion(s) string, see BIP14 for specifications\n");
+    }
+    // else We're done, the set of subver strings defaults to null on creation.
+    alert.nPriority = params[5].get_int();
+    alert.nID = params[6].get_int();
+    if (params.size() > 9)
+        alert.nCancel = params[9].get_int();
+    alert.nVersion = PROTOCOL_VERSION;
+
+    // Relay and don't expire this alert for one year, or the number of days given
+    const int64_t i64AlertNow = GetAdjustedTime();
+
+    alert.nRelayUntil = ( params.size() > 7 ) ? params[7].get_int() : 365;
+    alert.nRelayUntil *= 24*60*60;       // One day in seconds
+    alert.nRelayUntil += i64AlertNow;
+
+    alert.nExpiration = ( params.size() > 8 ) ? params[8].get_int() : 365;
+    alert.nExpiration *= 24*60*60;       // One day in seconds
+    alert.nExpiration += i64AlertNow;
+
+    CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
+    sMsg << (CUnsignedAlert)alert;
+    alert.vchMsg = vector<unsigned char>(sMsg.begin(), sMsg.end());
+
+    // From https://bitcointalk.org/index.php?topic=50330.40:
+    //
+    // CKey::GetPrivKey and CKey::SetPrivKey are accessor methods for the 279-byte DES private key.
+    // CKey::GetSecret and CKey::SetSecret are accessor methods for the 32-byte private key.
+    //
+    // Those of you who are interested in the OpenSSL calls needed, it's all spelled out in key.h
+    //
+    //  If the SendAlert user is giving us the 32 byte secret code & we already know the public key, so...
+    //  Setup an object with the correct value for the private key, otherwise we'll assume they are giving us the
+    //  private key as the string value, and use that to create the key object.
+    //  Either of the above must be given, before this code can sign and then process the alert.
+    //
+    // There are various code fragments below that are commented out for release builds. Helpful however, for debugging
+    // changes to the code and/or keys being used.  Otherwise not needed
+    //
+    //  Move the SendAlert 2nd parmeter chars into a vector, whichever it is, can assume it's being given to us as hex pairs
+    vector<unsigned char> vchPrivKey = ParseHex(params[1].get_str());
+
+    if( vchPrivKey.size() == 32 ) {         // Then we're given only a 32-byte private key multipler
+        key.Set( vchPrivKey.begin(), vchPrivKey.end(), false );
+        CPrivKey nPK = key.GetPrivKey();    // This calls openssl & sets the key structure up correctly.
+        // Print out the private key here, from being set by SecretBytes...
+        std::string strKey;
+        for( size_t i=0; i<nPK.size(); i++ )
+            strKey += strprintf( "%02x", nPK[i] );
+        LogPrintf("SendAlert pass is the SecretBytes, Private Key Value is:\n%s\n", strKey);
+    }
+    else if( !key.SetPrivKey( CPrivKey(vchPrivKey.begin(), vchPrivKey.end()), false ) )
+        throw runtime_error( "Unable to verify alert Private key, check private key?\n");
+    else
+        LogPrintf("SendAlert pass is the PrivateKey.\n");
+
+    // Sign the message & set the alert vchSig string...
+    if (!key.Sign(Hash(alert.vchMsg.begin(), alert.vchMsg.end()), alert.vchSig))
+        throw runtime_error( "Unable to sign alert, check private key?\n");
+    else if(!alert.ProcessAlert())
+        throw runtime_error( "Failed to process alert.\n");
+    //
+    // If you need to, Print out the CAlert structure, into the log file here:
+    alert.print();
+    //
+    // After we've called alert.ProcessAlert(), the public key will have been used to verify the
+    // signature of the (now) signed alert message, or a runtime_error would have been returned.
+
+    // Relay alert to the other nodes
+    {
+        LOCK(cs_vNodes);
+        BOOST_FOREACH(CNode* pnode, vNodes)
+            alert.RelayTo(pnode);
+    }
+    // At this point, the Anoncoin network will be flooded with the alert message before very much time has passed.
+
+    Object res;
+    res.push_back( Pair("AlertID", alert.nID) );
+    res.push_back( Pair("Priority", alert.nPriority) );
+    res.push_back( Pair("Version", alert.nVersion) );
+    res.push_back( Pair("MinVer", alert.nMinVer) );
+    res.push_back( Pair("MaxVer", alert.nMaxVer) );
+    res.push_back( Pair("SubVer", SingleAlertSubVersionsString(alert.setSubVer)) );
+    res.push_back( Pair("RelayUntil", alert.nRelayUntil) );
+    res.push_back( Pair("Expiration", alert.nExpiration) );
+    res.push_back( Pair("StatusBar", alert.strStatusBar) );
+    if (alert.nCancel > 0)
+        res.push_back( Pair("Cancel", alert.nCancel) );
+    return res;
 }
 
 Value makekeypair(const Array& params, bool fHelp)
@@ -447,3 +626,5 @@ Value makekeypair(const Array& params, bool fHelp)
     result.push_back(Pair("PrivateKey", CAnoncoinSecret(key).ToString()));
     return result;
 }
+
+#endif  // !CLIENT_VERSION_IS_RELEASE

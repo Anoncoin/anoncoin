@@ -171,21 +171,26 @@ string CRPCTable::help(string strCommand) const
             continue;
 #endif
 
-        try
+#if CLIENT_VERSION_IS_RELEASE != true
+        if( strMethod != "makekeypair" && strMethod != "sendalert" )
+#endif
         {
-            Array params;
-            rpcfn_type pfn = pcmd->actor;
-            if (setDone.insert(pfn).second)
-                (*pfn)(params, true);
-        }
-        catch (std::exception& e)
-        {
-            // Help text is returned in an exception
-            string strHelp = string(e.what());
-            if (strCommand == "")
-                if (strHelp.find('\n') != string::npos)
-                    strHelp = strHelp.substr(0, strHelp.find('\n'));
-            strRet += strHelp + "\n";
+            try
+            {
+                Array params;
+                rpcfn_type pfn = pcmd->actor;
+                if (setDone.insert(pfn).second)
+                    (*pfn)(params, true);
+            }
+            catch (std::exception& e)
+            {
+                // Help text is returned in an exception
+                string strHelp = string(e.what());
+                if (strCommand == "")
+                    if (strHelp.find('\n') != string::npos)
+                        strHelp = strHelp.substr(0, strHelp.find('\n'));
+                strRet += strHelp + "\n";
+            }
         }
     }
     if (strRet == "")
@@ -281,6 +286,11 @@ static const CRPCCommand vRPCCommands[] =
     { "validateaddress",        &validateaddress,        true,      false,      false }, /* uses wallet if enabled */
     { "verifymessage",          &verifymessage,          false,     false,      false },
 
+#if CLIENT_VERSION_IS_RELEASE != true
+    { "makekeypair",            &makekeypair,            true,     	false,		false },
+    { "sendalert",              &sendalert,              false,     false,      false },
+#endif
+
 #ifdef ENABLE_WALLET
     /* Wallet */
     { "addmultisigaddress",     &addmultisigaddress,     false,     false,      true },
@@ -310,8 +320,6 @@ static const CRPCCommand vRPCCommands[] =
     { "listreceivedbyaddress",  &listreceivedbyaddress,  false,     false,      true },
     { "listsinceblock",         &listsinceblock,         false,     false,      true },
     { "listtransactions",       &listtransactions,       false,     false,      true },
-    { "makekeypair",            &makekeypair,            true,     	false,		true },
-    { "dumpprivkey",            &dumpprivkey,            true,      false,      true },
     { "listunspent",            &listunspent,            false,     false,      true },
     { "lockunspent",            &lockunspent,            false,     false,      true },
     { "move",                   &movecmd,                false,     false,      true },
@@ -574,7 +582,7 @@ void StartRPCThreads()
     // Try a dual IPv6/IPv4 socket, falling back to separate IPv4 and IPv6 sockets
     const bool loopback = !mapArgs.count("-rpcallowip");
     asio::ip::address bindAddress = loopback ? asio::ip::address_v6::loopback() : asio::ip::address_v6::any();
-    ip::tcp::endpoint endpoint(bindAddress, GetArg("-rpcport", Params().RPCPort()));
+    ip::tcp::endpoint endpoint(bindAddress, GetArg("-rpcport", BaseParams().RPCPort()));
     boost::system::error_code v6_only_error;
 
     bool fListening = false;
@@ -909,7 +917,7 @@ std::string HelpExampleCli(string methodname, string args){
 
 std::string HelpExampleRpc(string methodname, string args){
     return "> curl --user myusername --data-binary '{\"jsonrpc\": \"1.0\", \"id\":\"curltest\", "
-        "\"method\": \"" + methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:9332/\n";
+        "\"method\": \"" + methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:9376/\n";
 }
 
 const CRPCTable tableRPC;

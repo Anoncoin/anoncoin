@@ -87,7 +87,12 @@ enum
 #endif
 };
 
-/** A CService with information about it as peer */
+/** A CService class structure with information about it as a peer... what a mess.
+    The v8 client became split lobed for brains, with one version running on clearnet,
+    and another build type running on I2P.  We need a way to communicate with both,
+    so this class now offers part of the solution as to what serialized address data needs
+    to be read or written to the version running on the other end & attempting to be a peer.
+ */
 class CAddress : public CService
 {
     public:
@@ -104,14 +109,13 @@ class CAddress : public CService
                  pthis->Init();
              if (nType & SER_DISK)
                  READWRITE(nVersion);
-             if ((nType & SER_DISK) ||
-                 (nVersion >= CADDR_TIME_VERSION && !(nType & SER_GETHASH)))
+             if ((nType & SER_DISK) || (nVersion >= CADDR_TIME_VERSION && !(nType & SER_GETHASH)))
                  READWRITE(nTime);
              READWRITE(nServices);
              READWRITE(*pip);
             )
 
-        void print() const;
+        // void print() const; Nobody wrote a routine for this, use CService via inheretance
 
     // TODO: make private (improves encapsulation)
     public:

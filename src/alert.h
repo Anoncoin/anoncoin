@@ -3,9 +3,8 @@
 // Copyright (c) 2013-2014 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef _ANONCOINALERT_H_
-#define _ANONCOINALERT_H_ 1
+#define _ANONCOINALERT_H_
 
 #include "serialize.h"
 #include "sync.h"
@@ -106,5 +105,4 @@ public:
      */
     static CAlert getAlertByHash(const uint256 &hash);
 };
-
-#endif
+#endif // header guard

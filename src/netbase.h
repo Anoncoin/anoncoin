@@ -38,8 +38,11 @@ enum Network
     NET_MAX,
 };
 
+class CAddrMan;
+
 extern int nConnectTimeout;
 extern bool fNameLookup;
+extern CAddrMan addrman;
 
 /** IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) */
 class CNetAddr
@@ -56,7 +59,7 @@ class CNetAddr
         explicit CNetAddr(const std::string &strIp, bool fAllowLookup = false);
         void Init();
         void SetIP(const CNetAddr& ip);
-        bool SetSpecial(const std::string &strName); // for Tor addresses
+        bool SetSpecial(const std::string &strName); // for Tor & I2P addresses
         bool IsIPv4() const;    // IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
         bool IsIPv6() const;    // IPv6 address (not mapped IPv4, not Tor)
         bool IsRFC1918() const; // IPv4 private networks (10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12)
@@ -84,8 +87,10 @@ class CNetAddr
         int GetReachabilityFrom(const CNetAddr *paddrPartner = NULL) const;
         void print() const;
 #ifdef ENABLE_I2PSAM
+        bool IsI2P() const;
         bool IsNativeI2P() const;
-        std::string GetI2PDestination() const;
+        std::string GetI2pDestination() const;
+        std::string ToB32String() const;
 #endif
         CNetAddr(const struct in6_addr& pipv6Addr);
         bool GetIn6Addr(struct in6_addr* pipv6Addr) const;
@@ -132,9 +137,6 @@ class CService : public CNetAddr
         std::string ToString() const;
         std::string ToStringPort() const;
         std::string ToStringIPPort() const;
-#ifdef ENABLE_I2PSAM
-        std::string ToStringI2pPort() const;
-#endif
         void print() const;
 
         CService(const struct in6_addr& ipv6Addr, unsigned short port);
@@ -173,6 +175,9 @@ bool Lookup(const char *pszName, std::vector<CService>& vAddr, int portDefault =
 bool LookupNumeric(const char *pszName, CService& addr, int portDefault = 0);
 bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout = nConnectTimeout);
 bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault = 0, int nTimeout = nConnectTimeout);
+bool SetI2pSocketOptions(SOCKET& hSocket);
+void AddTimeData(const CNetAddr& ip, int64_t nTime);
+
 /** Return readable error string for a network error code */
 std::string NetworkErrorString(int err);
 #endif

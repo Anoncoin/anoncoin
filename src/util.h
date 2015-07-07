@@ -13,6 +13,7 @@
 
 #include "compat.h"
 #include "serialize.h"
+#include "sync.h"
 #include "tinyformat.h"
 
 #include <cstdio>
@@ -33,7 +34,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread.hpp>
 
-class CNetAddr;
 class uint256;
 
 static const int64_t COIN = 100000000;
@@ -104,6 +104,10 @@ extern std::string strMiscWarning;
 extern bool fNoListen;
 extern bool fLogTimestamps;
 extern volatile bool fReopenDebugLog;
+
+// The code needed access to these was moved to netbase.cpp temporarily at least
+extern CCriticalSection cs_nTimeOffset;
+extern int64_t nTimeOffset;
 
 void RandAddSeed();
 void RandAddSeedPerfmon();
@@ -200,7 +204,6 @@ int64_t GetTime();
 void SetMockTime(int64_t nMockTimeIn);
 int64_t GetAdjustedTime();
 int64_t GetTimeOffset();
-void AddTimeData(const CNetAddr& ip, int64_t nTime);
 void runCommand(std::string strCommand);
 
 

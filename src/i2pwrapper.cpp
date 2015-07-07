@@ -93,15 +93,15 @@ namespace SAM
 
     SAM::SOCKET StreamSessionAdapter::accept(bool silent)
     {
-        SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().accept(silent);
-        // call Socket::release
+        SAM::RequestResult<std::auto_ptr<SAM::I2pSocket> > result = sessionHolder_->getSession().accept(silent);
+        // call I2pSocket::release
         return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
     }
 
     SAM::SOCKET StreamSessionAdapter::connect(const std::string& destination, bool silent)
     {
-        SAM::RequestResult<std::auto_ptr<SAM::Socket> > result = sessionHolder_->getSession().connect(destination, silent);
-        // call Socket::release
+        SAM::RequestResult<std::auto_ptr<SAM::I2pSocket> > result = sessionHolder_->getSession().connect(destination, silent);
+        // call I2pSocket::release
         return result.isOk ? result.value->release() : SAM_INVALID_SOCKET;
     }
 
@@ -251,7 +251,7 @@ void static BuildI2pOptionsString( void ) {
 // but if they are not set, then this insures that they are created with good values
 // SoftSetArg will return a bool, if you care to know if the parameter was changed or not.
 void InitializeI2pSettings( void ) {
-    SoftSetBoolArg( "-i2p.options.static", false );
+    SoftSetBoolArg( "-i2p.mydestination.static", false );
     SoftSetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
     SoftSetArg( "-i2p.options.samport", "7656" );                   /* SAM_DEFAULT_PORT */
     SoftSetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT );
@@ -275,7 +275,7 @@ void InitializeI2pSettings( void ) {
     sHost = GetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
     // Critical to check here, if we are in dynamic destination mode, the intial session destination MUSTBE default too.
     //  Which may not be what the user has set in the anoncoin.conf file.
-    if( GetBoolArg( "-i2p.options.static", false ) )            // GetBoolArg returns true if the .static variable is true
+    if( GetBoolArg( "-i2p.mydestination.static", false ) )            // GetBoolArg returns true if the .static variable is true
         sDestination = GetArg( "-i2p.mydestination.privatekey", SAM_GENERATE_MY_DESTINATION );
     // It's important here that sDestination be setup correctly, for soon when an initial Session object is about to be
     // created.  When that happens, this variable is used to create the SAM session, upon which, after it's opened,
@@ -283,6 +283,15 @@ void InitializeI2pSettings( void ) {
     // dynamically generated or statically set.  ToDo: Move sDestination into the Session class
 
     BuildI2pOptionsString();   // Now build the I2P options string that's need to open a session
+}
+
+bool isValidI2pDestination( const SAM::FullDestination& DestKeys ) {
+
+    // Perhaps we're given a I2P native public address, last 4 symbols of b64-destination must be AAAA
+    bool fPublic = ((DestKeys.pub.size() == NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.pub));
+    // ToDo: Add more checking on the private key, for now this will do...
+    bool fPrivate = ((DestKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.priv));
+    return fPublic && fPrivate;
 }
 
 std::string GetDestinationPublicKey( const std::string& sDestinationPrivateKey )
@@ -296,22 +305,19 @@ bool isValidI2pAddress( const std::string& I2pAddr ) {
     return (I2pAddr.substr( NATIVE_I2P_DESTINATION_SIZE - 4, 4 ) == "AAAA");
 }
 
-bool isValidI2pDestination( const SAM::FullDestination& DestKeys ) {
-
-    // Perhaps we're given a I2P native public address, last 4 symbols of b64-destination must be AAAA
-    bool fPublic = ((DestKeys.pub.size() == NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.pub));
-    // ToDo: Add more checking on the private key, for now this will do...
-    bool fPrivate = ((DestKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.priv));
-    return fPublic && fPrivate;
-}
-
 bool isValidI2pB32( const std::string& B32Address ) {
     return (B32Address.size() == NATIVE_I2P_B32ADDR_SIZE) && (B32Address.substr(B32Address.size() - 8, 8) == ".b32.i2p");
 }
 
-std::string B32AddressFromDestination(const std::string& destination)
+bool isStringI2pDestination( const std::string & strName )
 {
-    std::string canonicalDest = destination;
+    return isValidI2pB32( strName ) || isValidI2pAddress( strName );
+}
+
+uint256 GetI2pDestinationHash( const std::string& destination )
+{
+    std::string canonicalDest = destination;                    // Copy the string locally, so we can modify it & its not a const
+
     for (size_t pos = canonicalDest.find_first_of('-'); pos != std::string::npos; pos = canonicalDest.find_first_of('-', pos))
         canonicalDest[pos] = '+';
     for (size_t pos = canonicalDest.find_first_of('~'); pos != std::string::npos; pos = canonicalDest.find_first_of('~', pos))
@@ -319,8 +325,60 @@ std::string B32AddressFromDestination(const std::string& destination)
     std::string rawHash = DecodeBase64(canonicalDest);
     uint256 hash;
     SHA256((const unsigned char*)rawHash.c_str(), rawHash.size(), (unsigned char*)&hash);
+    return hash;
+}
+
+std::string B32AddressFromDestination(const std::string& destination)
+{
+    uint256 hash = GetI2pDestinationHash( destination );
     std::string result = EncodeBase32(hash.begin(), hash.end() - hash.begin()) + ".b32.i2p";
     for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
         result.erase(pos, 1);
     return result;
 }
+
+/**
+ * Functions we need for I2P functionality
+ */
+std::string FormatI2PNativeFullVersion() {
+    // We need to NOT talk to the SAM module if I2P is unavailable
+    return IsI2PEnabled() ? I2PSession::Instance().getSAMVersion() : "?.??";
+}
+
+// GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
+// in the end, put them back here in net.cpp for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
+// within our net.h header, where netbase.h is included as a dependency....clear as mud?
+bool IsTorOnly() {
+    bool i2pOnly = false;
+    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "tor");
+    return i2pOnly;
+}
+
+bool IsI2POnly()
+{
+    bool i2pOnly = false;
+    if (mapArgs.count("-onlynet")) {
+        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
+    }
+    return i2pOnly;
+}
+
+// If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
+bool IsDarknetOnly() {
+    return IsI2POnly() || IsTorOnly() ||
+            (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) &&
+              (mapArgs.count("-i2p.options.enabled") && mapArgs["-i2p.options.enabled"] != "0")
+            );
+}
+
+// Basically we override the -i2p.options.enabled flag here, if we are running -onlynet=i2p....
+bool IsI2PEnabled() {
+    return  GetBoolArg("-i2p.options.enabled", false) || IsI2POnly();
+}
+
+bool IsBehindDarknet() {
+    return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
+}
+

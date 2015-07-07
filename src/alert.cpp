@@ -110,13 +110,12 @@ bool CAlert::IsInEffect() const
 bool CAlert::Cancels(const CAlert& alert) const
 {
     if (!IsInEffect())
-        return false; // this was a no-op before 31403
+        return false;
     return (alert.nID <= nCancel || setCancel.count(alert.nID));
 }
 
 bool CAlert::AppliesTo(int nVersion, std::string strSubVerIn) const
 {
-    // TODO: rework for client-version-embedded-in-strSubVer ?
     return (IsInEffect() &&
             nMinVer <= nVersion && nVersion <= nMaxVer &&
             (setSubVer.empty() || setSubVer.count(strSubVerIn)));
@@ -148,9 +147,11 @@ bool CAlert::RelayTo(CNode* pnode) const
 bool CAlert::CheckSignature() const
 {
     CPubKey key(Params().AlertKey());
-    if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
-        return error("CAlert::CheckSignature() : verify signature failed");
-
+    if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig)) {
+        CPubKey oldkey(Params().OldAlertKey());
+        if (!oldkey.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
+            return error("CAlert::CheckSignature() : verify signature failed");
+    }
     // Now unserialize the data
     CDataStream sMsg(vchMsg, SER_NETWORK, PROTOCOL_VERSION);
     sMsg >> *(CUnsignedAlert*)this;
@@ -206,7 +207,7 @@ bool CAlert::ProcessAlert(bool fThread)
             const CAlert& alert = (*mi).second;
             if (Cancels(alert))
             {
-                LogPrint("alert", "cancelling alert %d\n", alert.nID);
+                LogPrint("alert", "canceling alert %d\n", alert.nID);
                 uiInterface.NotifyAlertChanged((*mi).first, CT_DELETED);
                 mapAlerts.erase(mi++);
             }
@@ -220,13 +221,13 @@ bool CAlert::ProcessAlert(bool fThread)
                 mi++;
         }
 
-        // Check if this alert has been cancelled
+        // Check if this alert has been canceled
         BOOST_FOREACH(PAIRTYPE(const uint256, CAlert)& item, mapAlerts)
         {
             const CAlert& alert = item.second;
             if (alert.Cancels(*this))
             {
-                LogPrint("alert", "alert already cancelled by %d\n", alert.nID);
+                LogPrint("alert", "alert already canceled by %d\n", alert.nID);
                 return false;
             }
         }
@@ -240,7 +241,7 @@ bool CAlert::ProcessAlert(bool fThread)
             std::string strCmd = GetArg("-alertnotify", "");
             if (!strCmd.empty())
             {
-                // Alert text should be plain ascii coming from a trusted source, but to
+                // Alert text should be plain ASCII coming from a trusted source, but to
                 // be safe we first strip anything not in safeChars, then add single quotes around
                 // the whole string before passing it to the shell:
                 std::string singleQuote("'");

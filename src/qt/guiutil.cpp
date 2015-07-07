@@ -99,7 +99,7 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
 
     widget->setFont(anoncoinAddressFont());
 #if QT_VERSION >= 0x040700
-    widget->setPlaceholderText(QObject::tr("Enter a Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
+    widget->setPlaceholderText(QObject::tr("Enter a Anoncoin address (e.g. AZhGrZf4UcNGQ1spYXKrrKeksvei9FGfyk)"));
 #endif
     widget->setValidator(new AnoncoinAddressEntryValidator(parent));
     widget->setCheckValidator(new AnoncoinAddressCheckValidator(parent));
@@ -827,21 +827,23 @@ QString formatServicesStr(quint64 mask)
 {
     QStringList strList;
 
-    // Just scan the last 8 bits for now.
-    for (int i = 0; i < 8; i++) {
+    // Scan 32 bits, tried 64 but that caused double entries to appear in the peertable
+    // ToDo: figure out why that didn't work as I thought the service
+    // bits was 64 bits wide....perhaps not.
+    for (int i = 0; i < 32; i++) {
         uint64_t check = 1 << i;
         if (mask & check)
         {
             switch (check)
             {
             case NODE_NETWORK:
-                strList.append(QObject::tr("CLEARNET"));
+                strList.append(QObject::tr("FULL_BLOCKS"));
                 break;
             case NODE_BLOOM:
-                strList.append(QObject::tr("BLOOM"));
+                strList.append(QObject::tr("BLOOM_FILTER"));
                 break;
             case NODE_I2P:
-                strList.append(QObject::tr("I2PNET"));
+                strList.append(QObject::tr("I2P_ROUTER"));
                 break;
             default:
                 strList.append(QString("%1[%2]").arg(QObject::tr("UNKNOWN")).arg(check));

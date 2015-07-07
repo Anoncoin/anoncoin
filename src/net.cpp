@@ -43,9 +43,6 @@ using namespace boost;
 
 static const int MAX_OUTBOUND_CONNECTIONS = 24;
 
-bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
-
-
 //
 // Global state variables
 //
@@ -64,8 +61,16 @@ bool fAddressesInitialized = false;
 
 
 #ifdef ENABLE_I2PSAM
+// Starting with protocol 70009, NODE_I2P should probably no longer be set as default, as it indicates this node is available on i2p.
+// which we do not know until after initialization if that is true or not.
 uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
-static std::vector<SOCKET> vhI2PListenSocket;                   // We maintain a seperate vector for I2P network SOCKET's
+
+// For i2p these are 'real OS sockets, created for us after accept has been issued to the I2P SAM module.  Initially we have only one,
+// and know exactly what the destination address is for us.
+// So as soon as initialized we immediately start 'accepting' other nodes that want to talk through it to us, as well as advertise it frequently
+// to nodes we care connected to via I2P.
+// This differs greatly from the IP world and how the rest of the code here works for clearnet.
+static std::vector<SOCKET> vhI2PListenSocket;                   // We maintain a separate vector for I2P network SOCKET's
 int nI2PNodeCount = 0;                                          // And a count of the active nodes we're connected with
 #else
 uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM;            // Standard services declaration
@@ -110,7 +115,12 @@ unsigned short GetListenPort()
 // find 'best' local address for a particular peer
 bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 {
-    if (fNoListen)
+    // ToDo: Check for IsTor() here as well?
+#ifdef ENABLE_I2PSAM
+    if( !paddrPeer->IsI2P() && fNoListen)
+#else
+    if( fNoListen )
+#endif
         return false;
 
     int nBestScore = -1;
@@ -228,14 +238,17 @@ bool AddLocal(const CService& addr, int nScore)
 {
     if (!addr.IsRoutable())
         return false;
-
-    if (!fDiscover && nScore < LOCAL_MANUAL)
+#ifdef ENABLE_I2PSAM
+    if( !addr.IsI2P() && !fDiscover && nScore < LOCAL_MANUAL)
+#else                                                               // Original code
+    if (fDiscover && nScore < LOCAL_MANUAL)
+#endif
         return false;
 
     if (IsLimited(addr))
         return false;
 
-    LogPrintf("AddLocal(%s,%i)\n", addr.ToString(), nScore);
+    LogPrintf(addr.IsI2P() ? "Accepting I2P peers at: %s Score=%d\n" : "AddLocal(%s,%i)\n", addr.ToString(), nScore);
 
     {
         LOCK(cs_mapLocalHost);
@@ -477,7 +490,11 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
 
     // Connect
     SOCKET hSocket;
+#ifdef ENABLE_I2PSAM
+    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, isStringI2pDestination(string(pszDest)) ? 0 : Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
+#else
     if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
+#endif
     {
         addrman.Attempt(addrConnect);
 
@@ -501,7 +518,7 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
             LOCK(cs_vNodes);
             vNodes.push_back(pnode);
 #ifdef ENABLE_I2PSAM
-            if (addrConnect.IsNativeI2P()) ++nI2PNodeCount;
+            if (addrConnect.IsI2P()) ++nI2PNodeCount;
 #endif
         }
 
@@ -549,6 +566,15 @@ void CNode::PushVersion()
     CAddress addrMe = GetLocalAddress(&addr);
     RAND_bytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
     LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), addrYou.ToString(), addr.ToString());
+    // Before we can push our addresses to old peer software, we need to reformat them for the node
+    // ToDo: This may not be needed...
+    //if( this->nVersion < PROTOCOL_VERSION ) {
+    //    // Fix the address structure if they are i2p addresses
+    //    if( ( GetSendStreamType() & SER_IPADDRONLY ) == 0 ) {
+    //        addrYou.ZeroOutIP();
+    //        addrMe.ZeroOutIP();
+    //    }
+    //}
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
                 nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight, true);
 }
@@ -637,7 +663,7 @@ bool CNode::ReceiveMsgBytes(const char *pch, unsigned int nBytes)
         // get current incomplete message, or create a new one
         if (vRecvMsg.empty() ||
             vRecvMsg.back().complete())
-            vRecvMsg.push_back(CNetMessage(SER_NETWORK, nRecvVersion));
+            vRecvMsg.push_back(CNetMessage(nRecvStreamType, nRecvVersion));
 
         CNetMessage& msg = vRecvMsg.back();
 
@@ -843,9 +869,8 @@ void ThreadSocketHandler()
                         pnode->Release();
                     vNodesDisconnected.push_back(pnode);
 #ifdef ENABLE_I2PSAM
-                    if (pnode->addr.IsNativeI2P()) --nI2PNodeCount;
+                    if (pnode->addr.IsI2P()) --nI2PNodeCount;
 #endif
-
                 }
             }
         }
@@ -994,107 +1019,112 @@ void ThreadSocketHandler()
         //
         // ToDo: Double check me, all of this net.cpp code for I2PSAM should be looked over again.
 #ifdef ENABLE_I2PSAM
-        if (!IsI2POnly()) {
+        if( !IsI2POnly() ) {
 #endif // Without I2P onlynet, execute the original code
             BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket)
-            if (hListenSocket != INVALID_SOCKET && FD_ISSET(hListenSocket, &fdsetRecv))
-            {
-                struct sockaddr_storage sockaddr;
-                socklen_t len = sizeof(sockaddr);
-                SOCKET hSocket = accept(hListenSocket, (struct sockaddr*)&sockaddr, &len);
-                CAddress addr;
-                int nInbound = 0;
+                if (hListenSocket != INVALID_SOCKET && FD_ISSET(hListenSocket, &fdsetRecv))
+                {
+                    struct sockaddr_storage sockaddr;
+                    socklen_t len = sizeof(sockaddr);
+                    SOCKET hSocket = accept(hListenSocket, (struct sockaddr*)&sockaddr, &len);
+                    CAddress addr;
+                    int nInbound = 0;
 
-                if (hSocket != INVALID_SOCKET)
-                    if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
-                        LogPrintf("Warning: Unknown socket family\n");
+                    if (hSocket != INVALID_SOCKET)
+                        if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
+                            LogPrintf("Warning: Unknown socket family\n");
 
-                {
-                    LOCK(cs_vNodes);
-                    BOOST_FOREACH(CNode* pnode, vNodes)
-                        if (pnode->fInbound)
-                            nInbound++;
-                }
-
-                if (hSocket == INVALID_SOCKET)
-                {
-                    int nErr = WSAGetLastError();
-                    if (nErr != WSAEWOULDBLOCK)
-                        LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
-                }
-                else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS)
-                {
-                    closesocket(hSocket);
-                }
-                else if (CNode::IsBanned(addr))
-                {
-                    LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
-                    closesocket(hSocket);
-                }
-                else
-                {
-                    LogPrint("net", "accepted connection %s\n", addr.ToString());
-                    CNode* pnode = new CNode(hSocket, addr, "", true);
-                    pnode->AddRef();
                     {
                         LOCK(cs_vNodes);
-                        vNodes.push_back(pnode);
+                        BOOST_FOREACH(CNode* pnode, vNodes)
+                            if (pnode->fInbound)
+                                nInbound++;
+                    }
+
+                    if (hSocket == INVALID_SOCKET)
+                    {
+                        int nErr = WSAGetLastError();
+                        if (nErr != WSAEWOULDBLOCK)
+                            LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
+                    }
+                    else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS)
+                    {
+                        closesocket(hSocket);
+                    }
+                    else if (CNode::IsBanned(addr))
+                    {
+                        LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
+                        closesocket(hSocket);
+                    }
+                    else
+                    {
+                        LogPrint("net", "accepted connection %s\n", addr.ToString());
+                        CNode* pnode = new CNode(hSocket, addr, "", true);
+                        pnode->AddRef();
+                        {
+                            LOCK(cs_vNodes);
+                            vNodes.push_back(pnode);
+                        }
                     }
                 }
-            }
 #ifdef ENABLE_I2PSAM
         }
         //
-        // Accept new I2P connections
+        // Accept new incoming I2P connections
         //
         {
-            bool haveInvalids = false;
-            for (std::vector<SOCKET>::iterator it = vhI2PListenSocket.begin(); it != vhI2PListenSocket.end(); ++it)
+            std::vector<SOCKET>::iterator it = vhI2PListenSocket.begin();       // Start at the beginning of the list of listening sockets
+            // As long as the router is still up & there are some sockets to listen on, keep trying to accept new connections
+            while( !IsLimited( NET_NATIVE_I2P ) &&  it != vhI2PListenSocket.end() )
             {
                 SOCKET& hI2PListenSocket = *it;
-                if (hI2PListenSocket == INVALID_SOCKET)
-                {
-                    if (haveInvalids)
-                        it = vhI2PListenSocket.erase(it) - 1;
-                    else
-                        BindListenNativeI2P(hI2PListenSocket);
-                    haveInvalids = true;
+                if( hI2PListenSocket == INVALID_SOCKET ) {
+                    it = vhI2PListenSocket.erase(it);
+                    if( !BindListenNativeI2P() )
+                        break;
+                    it = vhI2PListenSocket.begin();             // Start over from the beginning
+                    continue;
                 }
-                else if (FD_ISSET(hI2PListenSocket, &fdsetRecv))
+                // At this point we have a valid socket setup to accept inbound connections, lets see if anyone is knocking...
+                if (FD_ISSET(hI2PListenSocket, &fdsetRecv))
                 {
-                    const size_t bufSize = NATIVE_I2P_DESTINATION_SIZE + 1;
+                    const size_t bufSize = 1024;            // Same as i2pd has set on the other end
                     char pchBuf[bufSize];
-                    memset(pchBuf, 0, bufSize);
+                    memset(pchBuf, 0, bufSize);             // Yap someone is trying, lets find out who
                     int nBytes = recv(hI2PListenSocket, pchBuf, sizeof(pchBuf), MSG_DONTWAIT);
                     if (nBytes > 0)
                     {
-                        // ToDo: This is not correct,
-                        // <orignal> this line must be fixed ASAP
-                        // https://geti2p.net/en/docs/spec/common-structures#struct_Destination
-                        if (nBytes == NATIVE_I2P_DESTINATION_SIZE + 1) // we're waiting for dest-hash + '\n' symbol
-                        {
-                            std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
-                            CAddress addr;
-                            if (addr.SetSpecial(incomingAddr) && addr.IsNativeI2P())
+                        // When a '/n' return shows up we got their destination identity
+                        // See this url for destination specifications https://geti2p.net/en/docs/spec/common-structures#struct_Destination
+                        // Although over I2P Sam we get it as a base64 string.
+                        char *pNewLine = strchr( pchBuf, '\n' );
+                        if( pNewLine ) {                     // Yap the address is all here, pNewLine would be null otherwise.
+                            // Lets make sure it looks correct as a base64 i2p destination string
+                            if( strlen(pchBuf) == NATIVE_I2P_DESTINATION_SIZE + 1 ) // we're waiting for dest-hash + '\n' symbol
                             {
-                                AddIncomingI2pConnection(hI2PListenSocket, addr);
-                            }
-                            else
-                            {
-                                LogPrintf("Invalid incoming destination hash received (%s)\n", incomingAddr.c_str());
+                                // Fantastic if it checks out, we have another node!
+                                // The socket will be bound to that and used for message communications
+                                std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
+                                CAddress addr;
+                                if( addr.SetSpecial(incomingAddr) && addr.IsI2P() )
+                                    AddIncomingI2pConnection(hI2PListenSocket, addr);
+                                else {
+                                    LogPrintf("WARNING - Invalid incoming destination address, unable to setup node.  Received (%s)\n", incomingAddr.c_str());
+                                    closesocket(hI2PListenSocket);
+                                }
+                            } else {
+                                LogPrintf("WARNING - New destination addresses not yet supported, size & data received (%d) [%s]", nBytes, pchBuf);
                                 closesocket(hI2PListenSocket);
                             }
-                        }
-                        else
-                        {
-                            LogPrintf("Invalid incoming destination hash size received (%d)\n", nBytes);
+                        } else {
+                            LogPrintf("WARNING - No eol found in destination address from router, size & data received (%d) [%s]\n", nBytes, pchBuf);
                             closesocket(hI2PListenSocket);
                         }
                     }
                     else if (nBytes == 0)
                     {
-                        // socket closed gracefully
-                        LogPrintf("I2P listen socket closed\n");
+                        // socket closed gracefully, but why?  This shouldn't have happened
+                        LogPrintf("WARNING - I2P listen socket was closed unexpectedly, with no data received.  Will attempt to open a new one.\n");
                         closesocket(hI2PListenSocket);
                     }
                     else if (nBytes < 0)
@@ -1104,12 +1134,15 @@ void ThreadSocketHandler()
                         if (nErr == WSAEWOULDBLOCK || nErr == WSAEMSGSIZE || nErr == WSAEINTR || nErr == WSAEINPROGRESS)
                             continue;
 
-                        LogPrintf("I2P listen socket recv error %d\n", nErr);
+                        LogPrintf("WARNING - I2P listen socket recv error %d, Will attempt to open a new one.\n", nErr);
                         closesocket(hI2PListenSocket);
                     }
-                    hI2PListenSocket = INVALID_SOCKET;  // we've saved this socket in a CNode or closed it, so we can safety reset it anyway
-                    BindListenNativeI2P(hI2PListenSocket);
-                }
+                    // We now need to invalidate that socket from accepting new inbound connections,
+                    // it was either closed do to an error, or hopefully a new node was added to our peers list as inbound.
+                    // It will be sweep away and erased, then a new acceptor added later
+                    *it++ = INVALID_SOCKET;
+                } else                                      // Just keep looking
+                    it++;
             }
         }
 #endif  // ENABLE_I2PSAM
@@ -1359,29 +1392,21 @@ void ThreadDNSAddressSeed()
         LogPrintf("I2P DNS seed addresses...preferred\n");
         const vector<CDNSSeedData> &i2pvSeeds = Params().i2pDNSSeeds();
         BOOST_FOREACH(const CDNSSeedData &seed, i2pvSeeds) {
-//            if (HaveNameProxy()) {
-//                AddOneShot(seed.host);
-//            } else {
-                vector<CNetAddr> vaddr;
-                vector<CAddress> vAdd;
-                if (LookupHost(seed.host.c_str(), vaddr)) {
-                        assert( vaddr.size() == 1 );                // All this could ever be from what I could tell looking down into the lookup process
-                        CNetAddr& ip = vaddr[0];                    // Need to clean up the variable use here, if this is finalized code
-//                    BOOST_FOREACH(CNetAddr& ip, vaddr) {
-                        int nOneDay = 24*3600;
-                        CAddress addr = CAddress(CService(ip, 0));
-                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                        vAdd.push_back(addr);
-                        found++;
-//                    }
-                    // Lookup is very time expensive over I2P, (and satellite).
-                    // Handle it differently here, with that in mind.
-                    // Only add it if Lookup works, we don't need to again.
-                    // Also set the flag AllowLookup false, otherwise I2PSAM goes through the same process all over again in a few millisecs, because it was true.
-                    addrman.Add(vAdd, CNetAddr(seed.name, false));
-                }
-//              addrman.Add(vAdd, CNetAddr(seed.name, true));
-//            }
+            vector<CNetAddr> vaddr;
+            vector<CAddress> vAdd;
+            if (LookupHost(seed.host.c_str(), vaddr)) {
+                assert( vaddr.size() == 1 );                // All this could ever be...
+                CNetAddr& ip = vaddr[0];                    // Need to clean up the variable use here, if this is finalized code
+                int nOneDay = 24*3600;
+                CAddress addr = CAddress(CService(ip, 0));
+                addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                vAdd.push_back(addr);
+                found++;
+                // Lookup is very time expensive over I2P, (and satellite).
+                // With that in mind, only add it if Lookup worked, we don't need to again.
+                // Also set the flag AllowLookup false, otherwise I2PSAM goes through the same process all over again in a few millisecs, because it was true.
+                addrman.Add(vAdd, CNetAddr(seed.name, false));
+            }
         }
     }
     // If we are I2P only, clearnet seeds will do us no good, so no point in loading them.
@@ -1425,7 +1450,7 @@ void DumpAddresses()
     CAddrDB adb;
     adb.Write(addrman);
 
-    LogPrint("net", "Flushed %d addresses to peers.dat  %dms\n",
+    LogPrint("net", "Flushed %d addresses to peers.dat  %lldms\n",
            addrman.size(), GetTimeMillis() - nStart);
 }
 
@@ -1538,13 +1563,11 @@ void ThreadOpenConnections()
 
             if(
 #ifdef ENABLE_I2PSAM
-                !addr.IsNativeI2P() &&
+                !addr.IsI2P() &&
 #endif
                 // do not allow non-default ports, unless after 50 invalid addresses selected already
-                addr.GetPort() != Params().GetDefaultPort() &&
-                nTries < 50
-            )
-                continue;
+                addr.GetPort() != Params().GetDefaultPort() && nTries < 50 )
+                    continue;
 
             addrConnect = addr;
             break;
@@ -1593,7 +1616,11 @@ void ThreadOpenAddedConnections()
         BOOST_FOREACH(string& strAddNode, lAddresses)
         {
             vector<CService> vservNode(0);
+#ifdef ENABLE_I2PSAM
+            if( Lookup(strAddNode.c_str(), vservNode, isStringI2pDestination(strAddNode) ? 0 : Params().GetDefaultPort(), fNameLookup, 0) )
+#else
             if(Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
+#endif
             {
                 lservAddressesToAdd.push_back(vservNode);
                 {
@@ -1860,51 +1887,6 @@ bool BindListenPort(const CService &addrBind, string& strError)
 
 #ifdef ENABLE_I2PSAM
 /**
- * Functions we need for I2P functionality
- */
-std::string FormatI2PNativeFullVersion() {
-    // We need to NOT talk to the SAM module if I2P is unavailable
-    return IsI2PEnabled() ? I2PSession::Instance().getSAMVersion() : "?.??";
-}
-
-// GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
-// in the end, put them back here in net.cpp for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
-// within our net.h header, where netbase.h is included as a dependency....clear as mud?
-bool IsTorOnly() {
-    bool i2pOnly = false;
-    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "tor");
-    return i2pOnly;
-}
-
-bool IsI2POnly()
-{
-    bool i2pOnly = false;
-    if (mapArgs.count("-onlynet")) {
-        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
-    }
-    return i2pOnly;
-}
-
-// If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
-bool IsDarknetOnly() {
-    return IsI2POnly() || IsTorOnly() ||
-            (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) &&
-              (mapArgs.count("-i2p.options.enabled") && mapArgs["-i2p.options.enabled"] != "0")
-            );
-}
-
-// Basically we override the -i2p.options.enabled flag here, if we are running -onlynet=i2p....
-bool IsI2PEnabled() {
-    return  GetBoolArg("-i2p.options.enabled", false) || IsI2POnly();
-}
-
-bool IsBehindDarknet() {
-    return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
-}
-
-/**
  * I2P Specific socket listen binding functions
  */
 bool BindListenNativeI2P()
@@ -1918,15 +1900,17 @@ bool BindListenNativeI2P()
 
 bool BindListenNativeI2P(SOCKET& hSocket)
 {
-    hSocket = I2PSession::Instance().accept(false);
+    if( !IsLimited( NET_NATIVE_I2P ) ) {
+        hSocket = I2PSession::Instance().accept(false);
+        if( SetI2pSocketOptions(hSocket) ) {
+            CService addrBind(I2PSession::Instance().getMyDestination().pub, 0 );
+            return AddLocal( addrBind, LOCAL_BIND );
+        } else
+            LogPrintf( "ERROR - Unable to set I2P Socket options to non-blocking, after I2P accept was issued.\n" );
+    }
+    else
+        LogPrintf( "ERROR - Unexpected I2P BIND request. Ignored, network access is limited.\n" );
 
-    if ( hSocket == INVALID_SOCKET ) return false;
-    CService addrBind(I2PSession::Instance().getMyDestination().pub, 0);
-// ToDo: Check this code carefully.  Changed it some so it would work.  I2P onlynet means fDiscover(maybe) false.  AddLocal needs LOCAL_MANUAL or it will return false and not set
-//    if (addrBind.IsRoutable() && fDiscover)
-        // AddLocal(addrBind, LOCAL_BIND);
-    // return true;
-    return AddLocal(addrBind, LOCAL_MANUAL);
 }
 #endif // ENABLE_I2PSAM
 
@@ -1996,8 +1980,8 @@ void StartNode(boost::thread_group& threadGroup)
         if (!adb.Read(addrman))
             LogPrintf("Invalid or missing peers.dat; recreating\n");
     }
-    LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
-           addrman.size(), GetTimeMillis() - nStart);
+    LogPrintf("Loaded %i addresses from peers.dat in %dms and setup a %d entry address book table for b32.i2p destinations.\n",
+           addrman.size(), GetTimeMillis() - nStart, addrman.b32HashTableSize() );
     fAddressesInitialized = true;
 
     if (semOutbound == NULL) {

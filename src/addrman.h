@@ -1,9 +1,14 @@
 // Copyright (c) 2012 Pieter Wuille
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef _ANONCOIN_ADDRMAN
 #define _ANONCOIN_ADDRMAN 1
+
+// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Included here in the header, we need ENABLE_I2PSAM some...
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include "netbase.h"
 #include "protocol.h"
@@ -197,6 +202,10 @@ private:
     // list of "new" buckets
     std::vector<std::set<int> > vvNew;
 
+#ifdef ENABLE_I2PSAM
+    std::map<uint256, int> mapI2pHashes;
+#endif
+
 protected:
 
     // Find an entry.
@@ -244,6 +253,10 @@ protected:
 
     // Mark an entry as currently-connected-to.
     void Connected_(const CService &addr, int64_t nTime);
+
+#ifdef ENABLE_I2PSAM
+    CAddrInfo* LookupB32addr(const std::string& sB32addr);
+#endif
 
 public:
 
@@ -317,13 +330,16 @@ public:
                         READWRITE(nIndex);
                     }
                 }
-            } else {
+            } else {                                        // Reading...
                 int nUBuckets = 0;
                 READWRITE(nUBuckets);
                 am->nIdCount = 0;
                 am->mapInfo.clear();
                 am->mapAddr.clear();
                 am->vRandom.clear();
+#ifdef ENABLE_I2PSAM
+                am->mapI2pHashes.clear();
+#endif
                 am->vvTried = std::vector<std::vector<int> >(ADDRMAN_TRIED_BUCKET_COUNT, std::vector<int>(0));
                 am->vvNew = std::vector<std::set<int> >(ADDRMAN_NEW_BUCKET_COUNT, std::set<int>());
                 for (int n = 0; n < am->nNew; n++)
@@ -338,6 +354,12 @@ public:
                         am->vvNew[info.GetNewBucket(am->nKey)].insert(n);
                         info.nRefCount++;
                     }
+#ifdef ENABLE_I2PSAM
+                    if( info.IsI2P() ) {
+                        uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                        am->mapI2pHashes[hash] = n;
+                    }
+#endif
                 }
                 am->nIdCount = am->nNew;
                 int nLost = 0;
@@ -354,6 +376,12 @@ public:
                         am->mapInfo[am->nIdCount] = info;
                         am->mapAddr[info] = am->nIdCount;
                         vTried.push_back(am->nIdCount);
+#ifdef ENABLE_I2PSAM
+                        if( info.IsI2P() ) {
+                            uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                            am->mapI2pHashes[hash] = am->nIdCount;
+                        }
+#endif
                         am->nIdCount++;
                     } else {
                         nLost++;
@@ -396,6 +424,16 @@ public:
     {
         return vRandom.size();
     }
+
+#ifdef ENABLE_I2PSAM
+    // Return the number of (unique) addresses in all tables.
+    int b32HashTableSize()
+    {
+        return mapI2pHashes.size();
+    }
+
+    std::string GetI2pBase64Destination(const std::string& sB32addr);
+#endif
 
     // Consistency check
     void Check()

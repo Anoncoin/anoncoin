@@ -10,7 +10,7 @@
 #include "rpcprotocol.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "chainparams.h" // for Params().RPCPort()
+#include "chainparamsbase.h" // for Params().RPCPort()
 
 #include <stdint.h>
 
@@ -49,7 +49,7 @@ Object CallRPC(const string& strMethod, const Array& params)
 
     bool fWait = GetBoolArg("-rpcwait", false); // -rpcwait means try until server has started
     do {
-        bool fConnected = d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", itostr(Params().RPCPort())));
+        bool fConnected = d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", itostr(BaseParams().RPCPort())));
         if (fConnected) break;
         if (fWait)
             MilliSleep(1000);
@@ -162,6 +162,15 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "verifychain", 1 },
     { "keypoolrefill", 0 },
     { "getrawmempool", 0 },
+#if CLIENT_VERSION_IS_RELEASE != true
+    { "sendalert", 2 },
+    { "sendalert", 3 },
+    { "sendalert", 5 },
+    { "sendalert", 6 },
+    { "sendalert", 7 },
+    { "sendalert", 8 },
+    { "sendalert", 9 },
+#endif
 };
 
 class CRPCConvertTable
@@ -298,7 +307,7 @@ std::string HelpMessageCli(bool mainProgram)
     }
 
     strUsage += "  -rpcconnect=<ip>       " + _("Send commands to node running on <ip> (default: 127.0.0.1)") + "\n";
-    strUsage += "  -rpcport=<port>        " + _("Connect to JSON-RPC on <port> (default: 9332 or testnet: 19332)") + "\n";
+    strUsage += "  -rpcport=<port>        " + _("Connect to JSON-RPC on <port> (default: 9376 or testnet: 19376)") + "\n";
     strUsage += "  -rpcwait               " + _("Wait for RPC server to start") + "\n";
 
     if(mainProgram)

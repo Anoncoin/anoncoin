@@ -436,20 +436,41 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     uint256 hash = pblock->GetPoWHash();
     uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
 
-    if (hash > hashTarget)
-        return false;
-
     //// debug print
-    LogPrintf("AnoncoinMiner:\n");
-    LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
-    pblock->print();
-    LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
+    LogPrintf("AnoncoinMiner: proof-of-work found.");
+    LogPrintf("\n  hash  : %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
+
+    // This is really a double check on the hash, we would not be here if it had not already been checked, and found to be valid.
+    // The way this is done however, is different, this time we are actually using the block data in a POW recalculation, if any
+    // memory problems had occurred while mining, that might show up here...
+    // Plus its now a way for us to initialize some blocks on TestNet that are fairly evenly spaced in time, before switching on
+    // some new algos or difficulty retargeting systems...
+    if( hash > hashTarget ) {
+        return error( "Unexpected mining check failed, 2nd level proof of work did not confirm block as mined.");
+        // ToDo: May want to raise an assertion here, this should not be happening....
+    }
+
+    // If we are initializing a new blockchain for algo/pow testing, we try to space those initial blocks near our target time span, regardless of mining horse power,
+    // unless it is to small, or the testnet difficulty set to high, then this concept will need to be adjusted...
+    // Note: Don't do this inside of cs_main being locked.
+    if( TestNet() ) {
+        CBlockIndex* pindexPrev = chainActive.Tip();
+        uint64_t nTimeDiff = (uint64_t)(pblock->nTime - pindexPrev->nTime);
+        // For the 1st 22 blocks and if the spacing is less than 90% of the target spacing
+        if( pindexPrev->nHeight <= 22 && nTimeDiff < (nTargetSpacing * 90)/100 ) {
+            LogPrintf( "Initial TestNet block mined %lld seconds to soon, ignored.\n", nTimeDiff );
+            return false;       // So we re-build the block and try again
+        }
+    }
 
     // Found a solution
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
             return error("AnoncoinMiner : generated block is stale");
+
+        pblock->print();
+        LogPrintf("generated %s\n\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
         // Remove key from key pool
         reservekey.KeepKey();
@@ -480,7 +501,7 @@ void static AnoncoinMiner(CWallet *pwallet)
     unsigned int nExtraNonce = 0;
 
     try { while (true) {
-        if (Params().NetworkID() != CChainParams::REGTEST) {
+        if (BaseParams().NetworkID() != CBaseChainParams::REGTEST) {
             // Busy-wait for the network to come online so we don't waste time mining
             // on an obsolete chain. In regtest mode we expect to fly solo.
             while (vNodes.empty())
@@ -511,12 +532,14 @@ void static AnoncoinMiner(CWallet *pwallet)
 
         FormatHashBuffers(pblock, pmidstate, pdata, phash1);
 
-        unsigned int& nBlockTime = *(unsigned int*)(pdata + 64 + 4);
-        unsigned int& nBlockBits = *(unsigned int*)(pdata + 64 + 8);
+        // unsigned int& nBlockTime = *(unsigned int*)(pdata + 64 + 4);
+        // unsigned int& nBlockBits = *(unsigned int*)(pdata + 64 + 8);
 
         //
         // Search
         //
+        bool fSolutionFound = false;
+        bool fBlockAccepted = false;
         int64_t nStart = GetTime();
         uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
         while (true)
@@ -530,19 +553,21 @@ void static AnoncoinMiner(CWallet *pwallet)
                 if (thash <= hashTarget)
                 {
                     // Found a solution
+                    fSolutionFound = true;
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                    CheckWork(pblock, *pwallet, reservekey);
+                    fBlockAccepted = CheckWork(pblock, *pwallet, reservekey);
                     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
                     // In regression test mode, stop mining after a block is found. This
                     // allows developers to controllably generate a block on demand.
-                    if (Params().NetworkID() == CChainParams::REGTEST)
+                    if (BaseParams().NetworkID() == CBaseChainParams::REGTEST)
                         throw boost::thread_interrupted();
 
                     break;
                 }
                 pblock->nNonce += 1;
                 nHashesDone += 1;
+                // In this inner loop, we calculate 256 hashes, as fast as can be done, looking for a solution
                 if ((pblock->nNonce & 0xFF) == 0)
                     break;
             }
@@ -578,7 +603,7 @@ void static AnoncoinMiner(CWallet *pwallet)
 
             // Check for stop or if block needs to be rebuilt
             boost::this_thread::interruption_point();
-            if (vNodes.empty() && Params().NetworkID() != CChainParams::REGTEST)
+            if (vNodes.empty() && BaseParams().NetworkID() != CBaseChainParams::REGTEST)
                 break;
             if (pblock->nNonce >= 0xffff0000)
                 break;
@@ -586,16 +611,20 @@ void static AnoncoinMiner(CWallet *pwallet)
                 break;
             if (pindexPrev != chainActive.Tip())
                 break;
+            if( fSolutionFound && !fBlockAccepted ) // Something went wrong, so rebuild a new block and try again
+                break;
 
             // Update nTime every few seconds
             UpdateTime(*pblock, pindexPrev);
-            nBlockTime = ByteReverse(pblock->nTime);
-            if (TestNet())
-            {
+            // nBlockTime = ByteReverse(pblock->nTime);  I don't see this being used anywhere
+
+            // ToDo: Why is this needed or used, commenting out until understanding why this must be done here for testnet
+            // if (TestNet())
+            // {
                 // Changing pblock->nTime can change work required on testnet:
-                nBlockBits = ByteReverse(pblock->nBits);
-                hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-            }
+            //    nBlockBits = ByteReverse(pblock->nBits);
+            //    hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+            // }
         }
     } }
     catch (boost::thread_interrupted)
@@ -610,7 +639,7 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
     static boost::thread_group* minerThreads = NULL;
 
     if (nThreads < 0) {
-        if (Params().NetworkID() == CChainParams::REGTEST)
+        if (BaseParams().NetworkID() == CBaseChainParams::REGTEST)
             nThreads = 1;
         else
             nThreads = boost::thread::hardware_concurrency();

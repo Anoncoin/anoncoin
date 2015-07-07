@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -196,10 +196,10 @@ bool PaymentServer::ipcParseCommandLine(int argc, char* argv[])
             {
                 CAnoncoinAddress address(r.address.toStdString());
 
-                SelectParams(CChainParams::MAIN);
+                SelectParams(CBaseChainParams::MAIN);
                 if (!address.IsValid())
                 {
-                    SelectParams(CChainParams::TESTNET);
+                    SelectParams(CBaseChainParams::TESTNET);
                 }
             }
         }
@@ -211,9 +211,9 @@ bool PaymentServer::ipcParseCommandLine(int argc, char* argv[])
             if (readPaymentRequest(arg, request))
             {
                 if (request.getDetails().network() == "main")
-                    SelectParams(CChainParams::MAIN);
+                    SelectParams(CBaseChainParams::MAIN);
                 else
-                    SelectParams(CChainParams::TESTNET);
+                    SelectParams(CBaseChainParams::TESTNET);
             }
         }
         else
