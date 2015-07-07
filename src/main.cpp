@@ -2359,21 +2359,20 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CDiskBlockPos* dbp)
             return state.DoS(100, error("AcceptBlock() : forked chain older than last checkpoint (height %d)", nHeight));
 
         // Reject block.nVersion=1 blocks when 95% of the network has upgraded:
-        // ToDo: Have not checked the height where they ended, a safe guess, nothing more.  Researching it would be better.
-        if( block.nVersion < 2 && CBlockIndex::IsSuperMajority(2, pindexPrev, 950, 1000) )
-            return state.Invalid(error("AcceptBlock() : rejected nVersion=1 block"), REJECT_OBSOLETE, "bad-version");
+        // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority was
+        // set to always return false.
+        //if( block.nVersion < 2 && CBlockIndex::IsSuperMajority(2, pindexPrev, 950, 1000) )
+            //return state.Invalid(error("AcceptBlock() : rejected nVersion=1 block"), REJECT_OBSOLETE, "bad-version");
 
         // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
-        if (block.nVersion >= 2)
-        {
+        if (block.nVersion >= 2) {
             // if 750 of the last 1,000 blocks are version 2 or greater:
-            // To save on executing the 1000 block SuperMajority test all the time, after 300K don't bother any more they all should have it, or be rejected.
-            if( nHeight > 300000 || CBlockIndex::IsSuperMajority(2, pindexPrev, 750, 1000) ) {  // Enforce the rule
+//            if( CBlockIndex::IsSuperMajority(2, pindexPrev, 750, 1000) ) {  // Enforce the rule if true
                 CScript expect = CScript() << nHeight;
                 if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
                     !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin()))
                         return state.DoS(100, error("AcceptBlock() : block height mismatch in coinbase"), REJECT_INVALID, "bad-cb-height");
-            }
+//            }
         }
     }
 
@@ -2858,6 +2857,8 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
     CBlockIndex* pindexFailure = NULL;
     int nGoodTransactions = 0;
     CValidationState state;
+    int nHeightOfLastV1block = 0;
+    int nCountOfLastV1block = 0;
     for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev)
     {
         boost::this_thread::interruption_point();
@@ -2867,6 +2868,12 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         // check level 0: read from disk
         if (!ReadBlockFromDisk(block, pindex))
             return error("VerifyDB() : *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
+
+        if( block.nVersion < 2 ) {
+            nCountOfLastV1block++;
+            if( nHeightOfLastV1block < pindex->nHeight ) nHeightOfLastV1block = pindex->nHeight;
+        }
+
         // check level 1: verify block validity
         if (nCheckLevel >= 1 && !CheckBlock(block, state))
             return error("VerifyDB() : *** found bad block at %d, hash=%s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
@@ -2892,6 +2899,8 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
                 nGoodTransactions += block.vtx.size();
         }
     }
+    LogPrintf( "The height of the last Version 1 block was %d, and there were %d of them.\n", nHeightOfLastV1block, nCountOfLastV1block );
+
     if (pindexFailure)
         return error("VerifyDB() : *** coin database inconsistencies found (last %i blocks, %i good transactions before that)\n", chainActive.Height() - pindexFailure->nHeight + 1, nGoodTransactions);
 
@@ -3390,17 +3399,27 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
+
+        // Protocol 70009 uses only IP addresses on initiating connections over clearnet, and only full size i2p destinations
+        // over the i2p network, with the ip field set to the new GarlicCat field (an IP6/48) specifier.
+        // Processing inbound messages, one can expect the same
+
+        // If the peer protocol version was 70008, then the inbound addresses are always full size, which
+        // if we're connecting over a clearnet connection will mean the wrong stream type has been set in the ssSend DataStream
+        // for some reason this cause the larger packet to be provided.
+        // if( pfrom->nVersion == 70008 ) ssSend.SetType( SER_NETWORK );
+
         // Because we are getting a version message that may NOT have the expected stream type setup correctly,
-        // the data go into an abortion.  We need to not get the addrMe value from the data stream until after
+        // the data causes an exception to be thrown.  We need to not get the addrMe value from the data stream until after
         // some additional checking....
-        // At least one peer seen reports NO services, another as version 70006, we'll try
-        if( pfrom->nVersion < 70008 ) {
+        if( pfrom->nVersion < 70010 ) {
             if( vRecv.size() < ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION) ) {         // If the remaining buffer size is less than the size of the next object serialized size, it will throw an error
                 LogPrintf( "ProcessMessage: Version from %s incomplete.  So far we know nVersion=%d nServices=%lld nTime=%lld Reverting stream type to IP only.\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime );
-                pfrom->SetSendStreamType(pfrom->GetSendStreamType() | SER_IPADDRONLY);
-                pfrom->SetRecvStreamType(pfrom->GetRecvStreamType() | SER_IPADDRONLY);
+                pfrom->SetSendStreamType(SER_NETWORK | SER_IPADDRONLY);
+                pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
                 fProtocolError = true;                              // Protocol bugs are a huge job to debug, version 70007 works two different ways.
             }
+            if( pfrom->nVersion == 70009 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK);
             vRecv >> addrMe;                // Try it now anyway, or throw the error
 
         } else
@@ -3424,6 +3443,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if( !vRecv.empty() )
             vRecv >> addrFrom;
 
+        if( pfrom->nVersion == 70009 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
+
         // Any peer with a lesser version than our newest level needs special attention.
         // Starting with v70009 we introduce the concept of a GarlicCatagory address to
         // the CNetAddr class private ip 16 byte array, its selected as a specific IP6
@@ -3432,7 +3453,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // any peer with a lesser version.  In future we'll change this again to a new
         // protocol level, one which optimizes the storage required for new I2P Destination
         // keys and optional certificate and go to a decoded base64 binary format.
-        if( pfrom->nVersion < PROTOCOL_VERSION ) {
+        if( pfrom->nVersion < PROTOCOL_VERSION + 1) {
             if( addrMe.IsNativeI2P() ) addrMe.SetSpecial( addrMe.GetI2pDestination() );
             if( addrFrom.IsNativeI2P() ) addrFrom.SetSpecial( addrFrom.GetI2pDestination() );
         }
@@ -3482,38 +3503,28 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         else
             pfrom->fRelayTxes = true;
 
-        if( pfrom->fInbound && addrMe.IsRoutable() )
-        {
-            pfrom->addrLocal = addrMe;
-            SeenLocal(addrMe);
-        }
-
-        // Disconnect if we connected to ourself
-        if (nNonce == nLocalHostNonce && nNonce > 1)
-        {
+        if (nNonce == nLocalHostNonce && nNonce > 1) {                                      // Disconnect if we connected to ourself
             LogPrintf("connected to self at %s, disconnecting\n", pfrom->addr.ToString());
             pfrom->fDisconnect = true;
             return true;
         }
 
-#ifdef ENABLE_I2PSAM
-        // Here if the node does not seem to support that I2P service, we stripe that bit off our serialization type for sending.
-        // If it does support that I2P service, then we set this stream send type to only have that stream type bit on.
-        // ToDo: Not 100% sure, but this may need to be done, BEFORE we possibly push our version back to the node we got this message from.
-        // Also double check : SetRecvStreamType()
-        pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
-#endif
+        pfrom->addrLocal = addrMe;                                                          // Always assign the nodes local address
+        if( pfrom->fInbound && addrMe.IsRoutable() )
+            SeenLocal(addrMe);                                                              // If inbound score seen & advertise ourselves
 
-        // Be shy and don't send version until we hear
+        // If it was inbound, we've been shy and don't send our version until we hear from them.
+        // We did that when creating this node in the 1st place, see net.h
+        // So now that we have their version, we can push ours so they know who we are too, after this all kind of things can happen
         if (pfrom->fInbound)
             pfrom->PushVersion();
 
         // This flag, fClient gets set TRUE, only if the other node is NOT a full node supporting network services
         pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
 
-
         // Change version
         pfrom->PushMessage("verack");
+
         // We send that node back his protocol version, or our version, whichever is less...
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
