@@ -96,6 +96,7 @@ bool IsDarknetOnly();
 bool IsTorOnly();
 bool IsI2POnly();
 bool IsI2PEnabled();
+bool IsMyDestinationShared();
 bool IsBehindDarknet();
 std::string GenerateI2pDestinationMessage( const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName );
 

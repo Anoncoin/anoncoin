@@ -406,6 +406,11 @@ bool IsI2PEnabled()
     return GetBoolArg("-i2p.options.enabled", false);
 }
 
+bool IsMyDestinationShared()
+{
+    return GetBoolArg("-i2p.mydestination.shareaddr", false);
+}
+
 bool IsBehindDarknet()
 {
     return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
