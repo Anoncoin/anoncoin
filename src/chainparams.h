@@ -66,9 +66,9 @@ public:
     };
 
     enum MinedWithAlgo {
-        SCRYPT_ANC,             // Always needs to be the default, and compatible with blocks on the chain from genesis onward...
-        SHA256D_BTC,
-        PRIME_XPM,
+        ALGO_SCRYPT,             // Anoncoin native is this, always needs to be the default, and compatible with blocks on the chain from genesis onward...
+        ALGO_SHA256D,
+        ALGO_PRIME,
 
         MAX_ALGO_TYPES
     };
@@ -77,7 +77,7 @@ public:
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
-    const CBigNum& ProofOfWorkLimit( MinedWithAlgo mwa = SCRYPT_ANC ) const { return bnProofOfWorkLimit[ mwa ]; }
+    const CBigNum& ProofOfWorkLimit( MinedWithAlgo mwa = ALGO_SCRYPT ) const { return bnProofOfWorkLimit[ mwa ]; }
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }

@@ -22,7 +22,7 @@ onlynet=i2p
 # cases you want this on, or the program will not respond to your RPC commands.
 server=1
 
-# In most cases, when running anoncoind, the daemon option is best. 
+# In most cases, when running anoncoind, the daemon option is best.
 # The wallet then runs on your system as a service...
 daemon=1
 
@@ -34,7 +34,7 @@ txindex=1
 
 # Default binds often connect to your loopback adapter 127.0.0.1, and never allow any inbound connections,
 # perhaps despite your best efforts at configuring a local network to allow them.  If your behind a router
-# and have setup port forwarding properly, setting this bind value can solve your last remaining hurdle, 
+# and have setup port forwarding properly, setting this bind value can solve your last remaining hurdle,
 # to getting inbound peers connected.  Specifically telling this software to 'bind' with a static
 # ip address, one you will have assigned this node on your local network.
 # Assuming a local net of 192.168.... fill in the .xx.xx below with your values:
@@ -50,11 +50,9 @@ txindex=1
 
 # The following new values are needed to run anoncoin i2p modes of operation.
 #
-# If you have generated a static I2P Destination, set the private key here:  
+# If you have generated a static I2P Destination, set the private key here:
 [i2p.mydestination]
 # privatekey=kvGu5BRTohvsGsNqkQW5glv.....
-# publickey=kvGu5BRTohvsGsNqkQW5glv....1RXwMAAPlL3mYVAAAA
-# base32key=ntmn7mwa6tpm7beaz35cljhggdl75537ixt4nno2i47kllcrkhpa.b32.i2p
 
 [i2p.options]
 enabled=1

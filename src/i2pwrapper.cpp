@@ -285,6 +285,11 @@ void InitializeI2pSettings( void ) {
     BuildI2pOptionsString();   // Now build the I2P options string that's need to open a session
 }
 
+std::string GetDestinationPublicKey( const std::string& sDestinationPrivateKey )
+{
+    return( sDestinationPrivateKey.substr(0, NATIVE_I2P_DESTINATION_SIZE) );
+}
+
 // This test should pass for both public and private keys, as the first part of the private key is the public key.
 bool isValidI2pAddress( const std::string& I2pAddr ) {
     if( I2pAddr.size() < NATIVE_I2P_DESTINATION_SIZE ) return false;

@@ -82,7 +82,7 @@ class I2PSession : private SAM::StreamSessionAdapter
 };
 
 void InitializeI2pSettings( void );
-
+std::string GetDestinationPublicKey( const std::string& sDestinationPrivateKey );
 bool isValidI2pAddress( const std::string& I2pAddr );
 bool isValidI2pDestination( const SAM::FullDestination& DestKeys );
 bool isValidI2pB32( const std::string& B32Address );
