@@ -295,14 +295,43 @@ public:
     // Whether a ping is requested.
     bool fPingQueued;
 
-    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
-#ifdef ENABLE_I2PSAM
-      , nSendStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
-      , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
-#endif
+    // The original line we started with:
+    // CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
+    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(1250)
+        // The setAddrKnown keeps the most recently used (mruset) CAddress objects.  What is set here is the limit on how many addresses we've seen, gotten
+        // as a source from or routed to as known by this node.  Each day, this set is cleared and restarted from scratch, but as I2P addresses make the
+        // objects so much larger in size we're now limiting it to 1/4 of that original amount, as was designed in the v9 code base we started from and
+        // only considered IP addresses as part of the objects.  We''l try 1250.  Still over 600KB/node if every node had every mru slot filled.  If you had
+        // say 50 nodes connected that would be >34MB's of memory to store just these 1250/ea values.
+// #ifdef ENABLE_I2PSAM
+        // The original code here, commented out below never worked very well.  One of the main reasons is that addrIn.nServices & NODE_I2P is checked, on
+        // outbound connections this depends on the state of the services listed for that node in our peers.dat lookup.  Initially that is always incorrect
+        // if the service bits indicated in the past that the node was NODE_I2P capable.  We need a new deterministic way to always initiate outbound connections
+        // regardless of what the last reported value was from any given node.  One thing we can always know is what network the address is for.  There are
+        // several possibly ways to know this, one is the the address i2p or not, with IsI2P() or IsNativeI2P() calls, another might be which network the address
+        // is for, which fits better with the thought process you need to have here, in order to better understand how this will and should work.
+        // A GetNetwork() call for any given addrIn object, makes the check on if the address is routable, is it IsIPv4(), v6(), Tor() or IsI2P() or any other
+        // network we wish to create, such as IPv4Priv(), as one possibility..  We know what the past protocols are expecting, depending on this address
+        // destination, so we can ALWAYS initialize this correctly for an outbound peer connection attempt, and not base it on what the past nServices bits
+        // were at all for this node in the past.   A much better strategy, and one 70009 is going to use.
+        // For inbound connections, we know nothing more about what the other peer details are, until the version message arrives, the only thing we know is
+        // that a socket was opened after accepting a connection, and again what the address it was from, such as the same list of possible network specifiers
+        // as for outbound connections.
+        // The only other case where a new CNode is created and this class member code activated is for creating a new local host address(s).  Something we can
+        // surely deal with in a deterministic manner.
+
+      // , nSendStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
+      // , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
+// #endif
     {
 #ifdef ENABLE_I2PSAM
-        ssSend.SetType(nSendStreamType);
+        // We only need to do this until everyone upgrades to 70009 or better
+        // If the address given to us is a string, we need to evaluate it, find out what network it is for
+        // before doing this.
+        nStreamType = SER_NETWORK | (addrIn.GetNetwork() != NET_NATIVE_I2P) ? SER_IPADDRONLY : 0;
+        SetSendStreamType( nStreamType );
+        SetRecvStreamType( nStreamType );
+        ssSend.SetType( nStreamType );
 #endif
         nServices = 0;
         hSocket = hSocketIn;
@@ -344,7 +373,7 @@ public:
             id = nLastNodeId++;
         }
 
-        // Be shy and don't send version until we hear
+        // Be shy and don't send version until we hear, unless its valid and outbound, then we go ahead and push our version...
         if (hSocket != INVALID_SOCKET && !fInbound)
             PushVersion();
 
@@ -365,6 +394,8 @@ public:
 
 private:
 #ifdef ENABLE_I2PSAM
+    int nStreamType;        // New stream type need only be one value.  After everyone upgrades to 70009, we can eliminate it completely.
+    // We'll keep the separate Send/Recv Types for now, in the future we will always switch both together at the same time, so no need for 2
     int nSendStreamType;
     int nRecvStreamType;
 #endif
@@ -390,6 +421,18 @@ public:
             it->hdrbuf.SetType(nRecvStreamType);
             it->vRecv.SetType(nRecvStreamType);
         }
+    }
+
+    void SetStreamType( const int nType )
+    {
+        nStreamType = nType;
+        SetSendStreamType( nStreamType );
+        SetRecvStreamType( nStreamType );
+    }
+
+    void SetStreamTypeBasedOnServices()
+    {
+        SetStreamType( SER_NETWORK | (nServices & NODE_I2P) ? 0 : SER_IPADDRONLY );
     }
 
     int GetSendStreamType() const { return nSendStreamType; }

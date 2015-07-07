@@ -478,7 +478,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 #endif
 
     // ********************************************************* Step 2: parameter interactions
-
+    // LogPrintf( "\nAppInit2 : parameter interactions only tell you what other values will be assumed & required.\n" );
+    // LogPrintf( "Any values you set on the command line or in a config file will override those suggestions.\n" );
     if (mapArgs.count("-bind")) {
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified
@@ -747,7 +748,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 if( SoftSetBoolArg("-discover",false) )
                     LogPrintf("AppInit2 : parameter interaction: -onlynet=i2p -> setting -discover=0\n");
                 if( SoftSetBoolArg("-i2p.options.enabled", true ) )
-                    LogPrintf("AppInit2 : parameter interaction: -onlynet=i2p -> setting -i2p.options.enabled=1 and assume I2p router default settings\n");
+                    LogPrintf("AppInit2 : parameter interaction: -onlynet=i2p -> setting -i2p.options.enabled=1 and assume I2P router default settings\n");
             }
 #endif // ENABLE_I2PSAM
 

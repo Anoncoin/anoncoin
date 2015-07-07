@@ -941,16 +941,12 @@ bool CNetAddr::IsValid() const
 
 bool CNetAddr::IsRoutable() const
 {
-    // By allowing RFC1918 addresses you can have routes setup for connections on your local ipv4 network, this is BAD in general
-    // as it means your local addresses could possibly start getting SHARED with other peers when you are once again connected
-    // to an outside network, however newer builds will detect this and reject sharing those addresses because they are outside.
-    // plus code has been added to main, which Does check for RFC1918 addresses and not share them when picking ones to send
-    // out in getaddr requests.
-#if CLIENT_VERSION_IS_RELEASE != true
+    // By allowing RFC1918 addresses you can have routes setup for connections on your local ipv4 network, this is BAD if done
+    // improperly, and is actually complicated to solve if you want to allow local private networks to share p2p data, but
+    // not have it shared externally.  However our newest builds detect this, reject sharing those private addresses outside
+    // yet allow p2p exchange to work well over the private network with separate destinations on each side.
     bool fDetermined = IsValid() && !(IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
-#else
-    bool fDetermined = IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
-#endif
+    // bool fDetermined = IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
     // LogPrintf( "Is this address %s routable? %s  It appears it is Valid=%s, Local=%s, I2P=%s\n", ToString(), fDetermined ? "YES" : "NO", IsValid() ? "1" : "0", IsLocal() ? "1" : "0", IsI2P() ? "1" : "0");
     // LogPrintf( "RFC1918=%s RFC3927=%s RFC4862=%s RFC4193=%s RFC4843=%s\n", IsRFC1918() ? "1" : "0", IsRFC3927() ? "1" : "0", IsRFC4862() ? "1" : "0", IsRFC4193() ? "1" : "0", IsRFC4843() ? "1" : "0" );
     return fDetermined;
@@ -1393,12 +1389,13 @@ std::vector<unsigned char> CService::GetKey() const
      std::vector<unsigned char> vKey;
 
 #ifdef ENABLE_I2PSAM
-     if (IsNativeI2P())
-     {
-         vKey.resize(NATIVE_I2P_DESTINATION_SIZE);
-         memcpy(&vKey[0], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
-         return vKey;
-     }
+    if (IsNativeI2P())
+    {
+        assert( IsI2P() );
+        vKey.resize(NATIVE_I2P_DESTINATION_SIZE);
+        memcpy(&vKey[0], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
+        return vKey;
+    }
 #endif
      vKey.resize(18);
      memcpy(&vKey[0], ip, 16);
