@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -51,16 +51,19 @@ namespace Checkpoints
         (125000, uint256("0x52a933553dda61b4af6a418f10ce563f0c84df93619ec97f8f360f9ecc51cf5b"))
         (150000, uint256("0xb1dc241da3e8e7d4ca2df75187d66f4f096840634667b987a7b60d5dde92853c"))
         (210000, uint256("0xb9c2c5030199a87cb99255551b7f67bff6adf3ef2caf97258b93b417d14f9051"))
+        (314123, uint256("0x45236d336950cb1ce679b88d03ed6ceb26cbcdd85f0e3ac4c98e7e005962f65c"))
         ;
+
     static const CCheckpointData data = {
         &mapCheckpoints,
-        1376885874, // * UNIX timestamp of last checkpoint block
-        1859062,   // * total number of transactions between genesis and last checkpoint
+        1423978231, // * UNIX timestamp of last checkpoint block
+        545487,     // * total number of transactions between genesis and last checkpoint
                     //   (the tx=... number in the SetBestChain debug.log lines)
-        7000.0     // * estimated number of transactions per day after checkpoint
+         580.0      // * estimated number of transactions per day after checkpoint
     };
 
-    // Testnet or RegTest checkpoints, same as the genesis block, est. tx/day = 480 blocks x 1 transaction
+    // Testnet or RegTest checkpoints, same as the genesis block,
+    // Anoncoin est. tx/day = 480 blocks x 1 transaction for 3min/block
     static MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
         ( 0, uint256("0x66d320494074f837363642a0c848ead1dbbbc9f7b854f8cda1f3eabbf08eb48c"))
@@ -147,7 +150,7 @@ namespace Checkpoints
         return checkpoints.rbegin()->first;
     }
 
-    CBlockIndex* GetLastCheckpoint(const std::map<uint256, CBlockIndex*>& mapBlockIndex)
+    CBlockIndex* GetLastCheckpoint()
     {
         if (!fEnabled)
             return NULL;
@@ -157,7 +160,7 @@ namespace Checkpoints
         BOOST_REVERSE_FOREACH(const MapCheckpoints::value_type& i, checkpoints)
         {
             const uint256& hash = i.second;
-            std::map<uint256, CBlockIndex*>::const_iterator t = mapBlockIndex.find(hash);
+            BlockMap::const_iterator t = mapBlockIndex.find(hash);
             if (t != mapBlockIndex.end())
                 return t->second;
         }
