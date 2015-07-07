@@ -297,7 +297,8 @@ public:
         BN_bin2bn(vchSecretIn, 32, bnSecret);
         BN_add(bnSecret, bnSecret, bnTweak);
         BN_nnmod(bnSecret, bnSecret, bnOrder, ctx);
-        if (BN_is_zero(bnSecret))
+        // ToDo: Clang reports the following line as having warning: key.cpp:300:30: note: remove extraneous parentheses around the comparison to silence this warning
+        if( BN_is_zero(bnSecret) == true )
             ret = false; // ridiculously unlikely
         int nBits = BN_num_bits(bnSecret);
         memset(vchSecretOut, 0, 32);

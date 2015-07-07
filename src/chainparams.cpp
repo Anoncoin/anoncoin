@@ -47,10 +47,10 @@ public:
         nDefaultPort = 9377;
         nRPCPort = 9376;
 
-        // As of Feb '15, SCRYPT_ANC is all that matters, future merge-mining with Bitcoin & Primecoin will what to have those limits set here.
-        bnProofOfWorkLimit[SCRYPT_ANC] = CBigNum().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
-        bnProofOfWorkLimit[SHA256D_BTC] = CBigNum(~uint256(0) >> 32);       // Bitcoin difficulty is very high (taken from 9.99 code 12/2014
-        bnProofOfWorkLimit[PRIME_XPM] = CBigNum(~uint256(0) >> 20);         // Need to confirm this value, as defined in Primecoin code
+        // As of Feb '15, SCRYPT is all that matters, future merge-mining with Bitcoin & Primecoin will what to have those limits set here.
+        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
+        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 32);           // ToDo: Bitcoin difficulty is very high (taken from 9.99 code 12/2014)
+        bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 20);             // ToDo: PRIME Proof of work limit needs research, typically same as Primecoin.
 
         // Anoncoin Genesis block details:
         //2ca51355580bb293fe369c5f34954069c263e9a9e8d70945ebb4c38f05778558
@@ -80,7 +80,7 @@ public:
         genesis.nNonce   = 347089008;
 
         hashGenesisBlock = genesis.GetHash();
-        // printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[SCRYPT_ANC].GetCompact());
+        // printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
         assert(genesis.hashMerkleRoot == uint256("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
@@ -184,10 +184,10 @@ public:
         nDefaultPort = 19377;
         nRPCPort = 19376;
 
-        // ToDo: Proof of work limits for testnet.  Adjust as needed, not sure what the v0.8.5.6 client has for a value, SCRYPT_ANC is all that matters at this time.
-        bnProofOfWorkLimit[SCRYPT_ANC] = CBigNum(~uint256(0) >> 10);
-        bnProofOfWorkLimit[SHA256D_BTC] = CBigNum(~uint256(0) >> 10);
-        bnProofOfWorkLimit[PRIME_XPM] = CBigNum(~uint256(0) >> 10);
+        // ToDo: Proof of work limits for testnet.  Adjust as needed, not sure what the v0.8.5.6 client has for a value, SCRYPT is all that matters at this time.
+        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 10);
+        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 10);
+        bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 10);
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         // These values have been set to the same as the v0.8.5.6 client had, so testing should be possible with that client, although maynot be required.
@@ -196,7 +196,7 @@ public:
         hashGenesisBlock = genesis.GetHash();
 
         // This Genesis block hash matches the v0.8.5.6 client builds
-        // printf("Testnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[SCRYPT_ANC].GetCompact());
+        // printf("Testnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x66d320494074f837363642a0c848ead1dbbbc9f7b854f8cda1f3eabbf08eb48c"));
 
         // During intialization, the DNS and Fixed seed node vectors are filled up as the class is derived from CMainParams, so has a copy of those values.
@@ -237,9 +237,9 @@ public:
         pchMessageStart[3] = 0xda;
 
         // ToDo: Proof of work limits, for regression testing are very small, more than likely these should work
-        bnProofOfWorkLimit[SCRYPT_ANC] = CBigNum(~uint256(0) >> 1);
-        bnProofOfWorkLimit[SHA256D_BTC] = CBigNum(~uint256(0) >> 1);
-        bnProofOfWorkLimit[PRIME_XPM] = CBigNum(~uint256(0) >> 1);
+        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 1);
+        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 1);
+        bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 1);
 
         genesis.nTime = 1296688602;
         genesis.nBits = 0x207fffff;
@@ -248,7 +248,7 @@ public:
         nDefaultPort = 19444;
         nRPCPort = 19443;
 
-        // printf("RegTest Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[SCRYPT_ANC].GetCompact());
+        // printf("RegTest Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x03ab995e27af2435ad33284ccb89095e6abe47d0846a4e8c34a3d0fc2d167ceb"));
 
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
