@@ -149,7 +149,7 @@ CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, in
     if (pnId)
         *pnId = nId;
 #ifdef ENABLE_I2PSAM
-    if( addr.IsI2P() ) {
+    if( addr.IsI2P() && addr.IsNativeI2P() ) {
         uint256 hash = GetI2pDestinationHash( addr.GetI2pDestination() );
         mapI2pHashes[hash] = nId;
     }
@@ -220,10 +220,17 @@ int CAddrMan::ShrinkNew(int nUBucket)
                 mapAddr.erase(info);
                 mapInfo.erase(*it);
 #ifdef ENABLE_I2PSAM
-                if( info.IsI2P() ) {
+                if( info.IsI2P() && info.IsNativeI2P() ) {
                     uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                    assert( mapI2pHashes.count(hash) );
-                    mapI2pHashes.erase(hash);
+                    // assert( mapI2pHashes.count(hash) );
+                    // The above assertion is failing, I think because the addresses are indicating a zero'd out i2p destination?
+                    // and have already been deleted.  We need to check for that case, and not erase an entry that is not there.
+                    // Nope they are unique hash values that have been added to the system, but do not have an associated entry
+                    // in the mapI2pHashes vector, why?
+                    if( mapI2pHashes.count(hash) )
+                        mapI2pHashes.erase(hash);
+                    else
+                        LogPrintf( "ERROR - Unexpected I2P Address hash not found in AddrMan for %s\n", hash.GetHex() );
                 }
 #endif
                 nNew--;
@@ -256,10 +263,15 @@ int CAddrMan::ShrinkNew(int nUBucket)
         mapAddr.erase(info);
         mapInfo.erase(nOldest);
 #ifdef ENABLE_I2PSAM
-        if( info.IsI2P() ) {
+        if( info.IsI2P() && info.IsNativeI2P() ) {
             uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-            assert( mapI2pHashes.count(hash) ==  1);
-            mapI2pHashes.erase(hash);
+            // assert( mapI2pHashes.count(hash) ==  1);
+            // The above assertion is failing, I think because the addresses are indicating a zero'd out i2p destination, and have already been deleted.
+            // we need to check for that case, and not erase an entry that is not there.
+            if( mapI2pHashes.count(hash) )
+                mapI2pHashes.erase(hash);
+            else
+                LogPrintf( "ERROR2 - Unexpected I2P Address hash not found in AddrMan for %s\n", hash.GetHex() );
         }
 #endif
         nNew--;
@@ -378,8 +390,18 @@ void CAddrMan::Good_(const CService &addr, int64_t nTime)
 
 bool CAddrMan::Add_(const CAddress &addr, const CNetAddr& source, int64_t nTimePenalty)
 {
-    if (!addr.IsRoutable())
+    // Its really important that we do not allow addresses in, which are in the
+    // IP6 catagory used for our GarlicCat value, which are not native I2P destinations,
+    // otherwise it would be possibly to confuse our software into believing that those
+    // ip addresses where an indication of a valid i2p address. while really being zero
+    // or any other possible value that the person wanted to try and send.
+    // Turns out that IsRoutable() DOES allow this to happen, so we need to add more
+    // safeguards to check that the i2p field is a valid base64 destination.
+    if( !addr.IsRoutable() || (addr.IsI2P() && !addr.IsNativeI2P()) ) {
+        if( addr.IsI2P() && !addr.IsNativeI2P() )
+            LogPrintf( "ERROR - Found an Address containing the GarlicCat, yet it is not a native I2P destination: %s\n", addr.ToString() );
         return false;
+    }
 
     bool fNew = false;
     int nId;

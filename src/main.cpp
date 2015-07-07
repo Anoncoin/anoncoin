@@ -3415,7 +3415,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // Start with getting a few things first, before the nightmare begins as what needs to happen with past protocols and address objects.
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
 
-        // If it's to old, thats easy disconnect and your out of here.
+        // If it's to old, its easy, just disconnect and your out of here.
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             // relay alerts prior to disconnection
@@ -3445,36 +3445,17 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // the 2 ip addresses (addMe,addrFrom).  We need to not get the addrMe value from the data stream until after
         // some additional checking.... try to figure out what to have our streams set to while dealing with these problems.
         if( (pfrom->nVersion < 70009 ) && (pfrom->addr.GetNetwork() != NET_NATIVE_I2P) ) {
-            size_type nRemaining = vRecv.size();
-            size_type nAddrWithI2P = ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION);
+            unsigned int nRemaining = vRecv.size();
+            unsigned int nAddrWithI2P = ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION);
             // size_type nAddrWithIP = ::GetSerializeSize(addrMe, SER_NETWORK | SER_IPADDRONLY, PROTOCOL_VERSION);
-            LogPrintf( "ProcessMessage: So far we know nVersion=%d nServices=%lld nTime=%lld, and there are %d bytes left in the version message\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime, nRemaining );
+            LogPrintf( "ProcessVersion: From %s So far we know nVersion=%d nServices=%lld nTime=%lld, and there are %d bytes left in the message.\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime, nRemaining );
             // On clearnet protocol 70009 assumes ip addresses only, so if the inbound version is larger than that, then
             // we need to switch the stream type to include those larger address objects
-            if( nRemaining > nAddrWithI2P * 2 )
-                pnode->SetStreamType( SER_NETWORK );
-
-
-            // If a 70007 node 'thinks' we are a node address that supports the NODE_I2P service, then it starts out
-            // by sending us a version message with a full size IP/I2P address object, even though we maybe on clearnet
-            // and think it should only contain an IP address from that peer.  This can be detected now, and the stream
-            // type changed before we read that address information
-            // if( pfrom->nVersion < 70008 ) ) {
-                if( nRemaining < nAddrWithI2P * 2 ) {                           // If we're on clearnet this could mean we have the wrong stream type set
-                    pfrom->SetSendStreamType(SER_NETWORK | SER_IPADDRONLY);
-                    pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
-                    LogPrintf( "ProcessMessage: Switch stream type to IP only for peer %s.\n", pfrom->addr.ToString() );
-                    fBadProtocol = true;                              // Protocol bugs are a huge job to debug, v70007 works differently depending on build.
-                }
-            // }
-
-            // If the peer protocol version was 70008, then the inbound addresses are always full size, however the data within
-            // the message themselves is only ip information when sent over a clearnet connection.  If we're connecting that way
-            // it means the wrong stream type has been set in the ssSend DataStream field from that node.  At least until AFTER it
-            // responds to our response. (if this is an outbound connection attempt by it) its version message will not have its
-            // ssSend datastream field type set to anything other than full size, even though the data itself will only be 2 ip
-            // addresses without the i2p destinations.  This gets corrected on once it pushes it version message.
-            if( !pfrom->fInbound && pfrom->nVersion == 70008 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK);     // Fix the received data stream type, before getting addresses
+            if( nRemaining > nAddrWithI2P * 2 ) {
+                pfrom->SetStreamType( SER_NETWORK );
+                LogPrintf( "ProcessVersion: Switched stream type to full destination addresses.\n" );
+                fBadProtocol = true;                              // Protocol bugs are a huge job to debug, v70007 works differently depending on build.
+            }
             vRecv >> addrMe;                                        // Try it now anyway, or throw the error
 
         } else
@@ -3588,7 +3569,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // IP and I2P information.
         // Also see: SetRecvStreamType() in the verack message
         if( pfrom->nVersion < 70009 ) {
+            LogPrintf( "ProcessVersion: from %s, Sending stream type was %08x ", pfrom->addr.ToString(), pfrom->GetSendStreamType() );
             pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
+            LogPrintf( "now set to %08x\n", pfrom->GetSendStreamType() );
+        }
 #endif
 
         // If this message was inbound, they've sent us a version, so we should now send ours back.
@@ -3691,13 +3675,21 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // sendstream is switched (if need be, based on the nodes service options), however it was
         // in older protocols, so sticking with it here now as well in v70009.
         if( pfrom->nVersion < 70009 ) {
+            LogPrintf( "ProcessVersionAck: from %s, Receiver stream type was %08x ", pfrom->addr.ToString(), pfrom->GetRecvStreamType() );
             pfrom->SetRecvStreamType( pfrom->GetRecvStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
+            LogPrintf( "now set to %08x\n", pfrom->GetRecvStreamType() );
+        }
 #endif
     }
 
 
     else if (strCommand == "addr")
     {
+        // Nodes lie about the services they support, in some cases we receive addresses that are not serialized properly, even though the node
+        // claims to support NODE_I2P it sends us only IP address payloads.  An attempt was made to double check the vRecv buffers version type
+        // even it lies, so they must not be compiled to even include the i2p address payload.  The 1st error that hits on the CDatastream
+        // read now is the only place we can finally detect the error and correct the stream type and services for these type of
+        // nodes...
         vector<CAddress> vAddr;
         vRecv >> vAddr;
 
@@ -3708,8 +3700,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             Misbehaving(pfrom->GetId(), 20);
             return error("message addr size() = %u", vAddr.size());
         }
-        // If the senders software is operating incorrectly, due to streamtype settings in software being wrong or something
-        // we more than likely generated the error above, with >1K addresses.
 
         // Store the new addresses
         vector<CAddress> vAddrOk;
@@ -4397,8 +4387,28 @@ bool ProcessMessages(CNode* pfrom)
             pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
             if (strstr(e.what(), "end of data"))
             {
-                // Allow exceptions from under-length message on vRecv
-                LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught, normally caused by a message being shorter than its stated length\n", strCommand, nMessageSize, e.what());
+                // If this happens the node is compiled with bad code,  the services we've gotten from them in the version exchange is wrong,
+                // and we need to fix the stream type.  They must be claiming NODE_I2P but are not supporting it.
+                // Log the reason and action or not, taken...
+                unsigned int nStreamIpOnlyType = vRecv.GetType() & SER_IPADDRONLY;
+                unsigned int nNodeStreamType = pfrom->GetRecvStreamType();
+                if( nStreamIpOnlyType != SER_IPADDRONLY ) {
+                    uint64_t nServices = pfrom->nServices & NODE_I2P;
+                    if( nServices ) {
+                        pfrom->nServices &= ~NODE_I2P;              // Strip out the old bit
+                        pfrom->nServices |= ~nServices & NODE_I2P;  // Invert the NODE_I2P service bit and store back the corrected value
+                        // Do the same bit flipping thing with the stream type, as we did above for the services bit
+                        nNodeStreamType &= ~SER_IPADDRONLY;
+                        nNodeStreamType |= ~nStreamIpOnlyType & SER_IPADDRONLY;
+                        LogPrintf( "Error Processing (%s, %u bytes): Node %s lied about the services it supports, correcting it & stream type.\n", strCommand, nMessageSize, pfrom->addr.ToString() );
+                        LogPrintf( "  Node Stream type changed from %08x to %08x\n", pfrom->GetRecvStreamType(), nNodeStreamType );
+                        pfrom->SetStreamType( nNodeStreamType );
+                    } else
+                        LogPrintf( "Error Processing (%s, %u bytes): Node %s address stream type likely mismatched, no corrective action taken.\n", strCommand, nMessageSize, pfrom->addr.ToString() );
+                    Misbehaving(pfrom->GetId(), 10);
+                } else
+                    // Allow exceptions from under-length message on vRecv
+                    LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught, normally caused by a message being shorter than its stated length\n", strCommand, nMessageSize, e.what());
             }
             else if (strstr(e.what(), "size too large"))
             {

@@ -328,7 +328,7 @@ public:
         // We only need to do this until everyone upgrades to 70009 or better
         // If the address given to us is a string, we need to evaluate it, find out what network it is for
         // before doing this.
-        nStreamType = SER_NETWORK | (addrIn.GetNetwork() != NET_NATIVE_I2P) ? SER_IPADDRONLY : 0;
+        nStreamType = SER_NETWORK | ( (addrIn.GetNetwork() != NET_NATIVE_I2P) ? SER_IPADDRONLY : 0 );
         SetSendStreamType( nStreamType );
         SetRecvStreamType( nStreamType );
         ssSend.SetType( nStreamType );
@@ -394,10 +394,13 @@ public:
 
 private:
 #ifdef ENABLE_I2PSAM
-    int nStreamType;        // New stream type need only be one value.  After everyone upgrades to 70009, we can eliminate it completely.
+    // A bug exists in older software, where the stream types are defined as integers, and they should be 'unsigned', this causes the
+    // code used to treat ~SER_TYPENAME values to be treated as negative numbers and produce the 'wrong' results when setting the
+    // stream type values.  Another bug.
+    unsigned int nStreamType;        // Our stream type need only be one value.  After everyone upgrades to 70009, we can eliminate the other two.
     // We'll keep the separate Send/Recv Types for now, in the future we will always switch both together at the same time, so no need for 2
-    int nSendStreamType;
-    int nRecvStreamType;
+    unsigned int nSendStreamType;
+    unsigned int nRecvStreamType;
 #endif
     // Network usage totals
     static CCriticalSection cs_totalBytesRecv;

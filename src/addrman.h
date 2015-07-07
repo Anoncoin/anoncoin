@@ -356,6 +356,7 @@ public:
                     }
 #ifdef ENABLE_I2PSAM
                     if( info.IsI2P() ) {
+                        assert( info.IsNativeI2P() );
                         uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
                         am->mapI2pHashes[hash] = n;
                     }
@@ -378,6 +379,7 @@ public:
                         vTried.push_back(am->nIdCount);
 #ifdef ENABLE_I2PSAM
                         if( info.IsI2P() ) {
+                            assert( info.IsNativeI2P() );
                             uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
                             am->mapI2pHashes[hash] = am->nIdCount;
                         }

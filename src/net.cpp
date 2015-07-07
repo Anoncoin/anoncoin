@@ -30,6 +30,7 @@
 #endif
 
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
 
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
@@ -1671,30 +1672,38 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     // Initiate outbound network connection
     //
     boost::this_thread::interruption_point();
-    if (!strDest)
-        if (IsLocal(addrConnect) ||
-            FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) ||
-            FindNode(addrConnect.ToStringIPPort().c_str()))
+    string sDestination;                        // If a strDest pointer is give, we store the modified result here before connecting a new node.
+    if (!strDest) {
+        if( IsLocal(addrConnect) || FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) || FindNode(addrConnect.ToStringIPPort().c_str()) )
             return false;
+    }
 #ifdef ENABLE_I2PSAM
-    else {
-    // ToDo:
-    // Before we print out a string (ConnectNode() and create the node, for any given string, we need to clean up the input, if for example it's in square brackets
-    // or if its a full base64 string we need to make it a b32.i2p address before creating the node address string for comparison in FindNode even.
-    // The problem is with strDest's that are full base64 addresses, is we don't want to do a reverse lookup of a b32.i2p address if we already know the value.
-    // The best solution is to create a CAdress object and store the result in the addrman, so it gets always found as a b32.i2p address locally.  Then we could
-    // continue on here with a strDest value that is the converted string of those base64 Destinations given to us.
-        if( IsStrI2pDestination( string( strDest ) ) ) {
-            CAddress addr( strDest )
-            addrman.Add( addr, CNetAddr("127.0.0.1"));
+    else {                                  // A string was given
+        // Before we print out a string (ConnectNode() and create the node, for any given string, we need to clean up the input, if for example it's in square brackets
+        // or if its a full base64 string we need to make it a b32.i2p address before creating the node address string for comparison in FindNode even.
+        // One big problem is when strDest is a full base64 address, we don't want to do a reverse lookup of a b32.i2p address for it over the network, if we already know
+        // the value. The best solution is to create a CAdress object and store the result in addrman, that way it and we know about it, and can always find that b32.i2p address
+        // again right away, which we'll soon need to open a new network connection.  After all this, we can continue on, with a strDest value that is the b32.i2p address of that
+        // given input string, and the rest of the code will not know the difference.
+
+        std::string strHost(strDest);   // Remove any square brackets now, right away before they cause us any comparison errors
+        if( boost::algorithm::starts_with(strHost, "[") && boost::algorithm::ends_with(strHost, "]") )
+            strHost = strHost.substr(1, strHost.size() - 2);
+
+        if( isValidI2pAddress( strHost ) ) {                        // In this case we have a full base64 i2p destination given to us
+            CAddress addr( CService(CNetAddr(strDest),0) );
+            addrman.Add( addr, CNetAddr("127.0.0.1") );             // The source must have been from us locally here & no time penalty need be applied
+            strHost = B32AddressFromDestination( strHost );
         }
+        sDestination = strHost;                                     // Regardless of any modifications, ipxx or b32.i2p we now need the new non-const variable setup.
+        // Which of couse was defined as a const, so we can't
     }
 #endif // ENABLE_I2PSAM
 
-    if (strDest && FindNode(strDest))
+    if( sDestination.size() && FindNode(sDestination.c_str()) )
         return false;
 
-    CNode* pnode = ConnectNode(addrConnect, strDest);
+    CNode* pnode = ConnectNode( addrConnect, sDestination.size() ? sDestination.c_str() : NULL );
     boost::this_thread::interruption_point();
 
     if (!pnode)
