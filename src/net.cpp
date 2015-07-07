@@ -226,11 +226,18 @@ void static AdvertizeLocal()
     {
         if (pnode->fSuccessfullyConnected)
         {
-            CAddress addrLocal = GetLocalAddress(&pnode->addr);
-            if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
-            {
-                pnode->PushAddress(addrLocal);
-                pnode->addrLocal = addrLocal;
+            // If its an i2p destination more than likely the node has the correct
+            // destination, even if it was the one we created dynamically, so we should
+            // not need to check this here and not send it if its not shared, as it would
+            // not do so anyway.  ToDo: Investigate and remove this next line of code
+            // if its not needed.
+            if( !pnode->addr.IsI2P() || IsMyDestinationShared() ) {
+                CAddress addrLocal = GetLocalAddress(&pnode->addr);
+                if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
+                {
+                    pnode->PushAddress(addrLocal);
+                    pnode->addrLocal = addrLocal;
+                }
             }
         }
     }
@@ -510,6 +517,14 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
     if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
 #endif
     {
+        // Regardless of the outcome, while trying to connect, mark it as an Attempt
+        // This will not work however until ConnectSocketByName has been called for i2p addresses,
+        // during an addnode or any command calling ConnectNode with a string.
+        // So first we mark it here, now that a socket was successfully created.  Later on, if the version handshake happens
+        // addrman.Add/Good will get called to finish updates on the address (or not)
+        // ToDo: Investigate how an issue here should best be solved.  When addnode xxx onetry is executed, and its not a full i2p destination
+        // there will be no entry found in addrman for that connection attempt, if the address is not one already there.
+        // The attempt fails, and returns false.
         addrman.Attempt(addrConnect);
 
         LogPrint("net", "connected %s\n", pszDest ? pszDest : addrConnect.ToString());
@@ -536,10 +551,13 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         pnode->nTimeConnected = GetTime();
         return pnode;
     }
-    else
-    {
-        return NULL;
-    }
+    else                    // Still log the attempt
+        // This works once ConnectSocketByName has been called for i2p addresses, during an addnode (which it has above)
+        // The addrConnect object will have been correctly setup.
+        addrman.Attempt(addrConnect);
+        // Note Bitcoin v10 has code regarding the case of a proxy connection failure, more than likely this relates to tor, so its another ToDo for us as well:
+
+    return NULL;
 }
 
 void CNode::CloseSocketDisconnect()
@@ -574,7 +592,7 @@ void CNode::PushVersion()
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0",0)));
-    CAddress addrMe = GetLocalAddress(&addr);
+    CAddress addrMe = ( !addr.IsI2P() || IsMyDestinationShared() ) ? GetLocalAddress(&addr) : CAddress(CService("0.0.0.0",0),0);
     RAND_bytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
     LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), addrYou.ToString(), addr.ToString());
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
@@ -1361,10 +1379,11 @@ void MapPort(bool)
  */
 void ThreadDNSAddressSeed()
 {
-    // goal: only query DNS seeds if address need is acute
+    // goal: only query DNS seeds if address need is acute, give i2p at least 60 seconds to have 2 peer connected
     if ((addrman.size() > 0) &&
         (!GetBoolArg("-forcednsseed", false))) {
-        MilliSleep(11 * 1000);
+        // MilliSleep(11 * 1000);
+        MilliSleep(60 * 1000);
 
         LOCK(cs_vNodes);
         if (vNodes.size() >= 2) {
@@ -1373,6 +1392,7 @@ void ThreadDNSAddressSeed()
         }
     }
 
+    const int nOneDay = 24*3600;
     int found = 0;
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
 //    LogPrintf("DNS seeds temporary disabled\n");
@@ -1381,27 +1401,26 @@ void ThreadDNSAddressSeed()
 #ifdef ENABLE_I2PSAM
     // If I2P is enabled, we need to process those too...
     if( IsI2PEnabled() ) {
-        LogPrintf("I2P DNS seed addresses...preferred\n");
+        LogPrintf("Loading b32.i2p destination seednodes...\n");
         const vector<CDNSSeedData> &i2pvSeeds = Params().i2pDNSSeeds();
+        vector<CAddress> vAdd;
         BOOST_FOREACH(const CDNSSeedData &seed, i2pvSeeds) {
-            vector<CNetAddr> vaddr;
-            vector<CAddress> vAdd;
-            if (LookupHost(seed.host.c_str(), vaddr)) {
-                assert( vaddr.size() == 1 );                // All this could ever be...
-                CNetAddr& ip = vaddr[0];                    // Need to clean up the variable use here, if this is finalized code
-                int nOneDay = 24*3600;
-                CAddress addr = CAddress(CService(ip, 0));
-                addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                vAdd.push_back(addr);
+            CAddress addrSeed;
+            // Lookup the b32.i2p destination, if it returns true, then the full Base64 destination is loaded,
+            // the GarlicCat field is set, & the port=0, the seed was on file locally or looked up over the router.
+            if( addrSeed.SetSpecial( seed.host ) ) {
+                addrSeed.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                vAdd.push_back(addrSeed);
                 found++;
-                // Lookup is very time expensive over I2P, (and satellite).
-                // With that in mind, only add it if Lookup worked, we don't need to again.
-                // Also set the flag AllowLookup false, otherwise I2PSAM goes through the same process all over again in a few millisecs, because it was true.
-                addrman.Add(vAdd, CNetAddr(seed.name, false));
-            }
+            }   // If the seed could not be found, Skip it
         }
+        // Set the source to anything other than the same b32.i2p destination (as is done in chainparams.cpp,
+        // doing that will cause addrman to think the services are correct, and alter them to these incorrect values,
+        // if its already on file.
+        addrman.Add( vAdd, CNetAddr("127.0.0.1") );
     }
-    // If we are I2P only, clearnet seeds will do us no good, so no point in loading them.
+
+    // ToDo: Figure if if this should be I2P only or ??, clearnet seeds will do us no good in various cases...
     if( IsDarknetOnly() )                                                           // Do what we normally would do on clearnet
         LogPrintf("Clearnet DNS seeds disabled, Running Darknet only mode.\n");
     else
@@ -1496,16 +1515,17 @@ void ThreadOpenConnections()
         CSemaphoreGrant grant(*semOutbound);
         boost::this_thread::interruption_point();
 
-        // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
+        // Add seed nodes right away, b32.i2p address lookup takes a long time, and we have full
+        // destination base64 addresses in the code, put them in addrman, so it can start looking.
         // As we have no clearnet fixed seeds, this is pointless unless the i2p network is available
 #ifdef ENABLE_I2PSAM
-        if( addrman.size() == 0 && (GetTime() - nStart > 60) && IsI2PEnabled() ) {
+        if( addrman.size() == 0 && IsI2PEnabled() ) {
 #else
         if( addrman.size() == 0 && (GetTime() - nStart > 60) ) {
 #endif
             static bool done = false;
             if (!done) {
-                LogPrintf("Adding fixed seed nodes as DNS doesn't seem to be available.\n");
+                LogPrintf("Adding fixed i2p destination seednodes...\n");
                 addrman.Add(Params().FixedSeeds(), CNetAddr("127.0.0.1"));
                 done = true;
             }
@@ -1691,16 +1711,20 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
 
         if( isValidI2pAddress( strHost ) ) {                        // In this case we have a full base64 i2p destination given to us
             // When addr object below is created, it will cause LookupHost->LookupIntern->SetSpecial to happen
-            // for the full i2p destination, so no lookup will be done for this case.
+            // for a full i2p destination string, no lookup will be done for this case, and we actually add a new entry into addrman
+            // if it wasn't there already.
             CAddress addr( CService( CNetAddr(strHost), 0) );
             // Now we create a hash map entry for this destination object, the source must have been from us locally here, if we're given a string
-            // All sources of an OpenNetworkConnection with a string value would be from us in configuration, console entry, or an rpc client. Locally
-            // the source is us, and 127.0.0.1 is easier than a full i2p destination address as the source.
+            // All sources of an OpenNetworkConnection with a string value would be from us in configuration, console entry, or an rpc client.
+            // Locally 127.0.0.1 is MUCH easier to use as the source addr, than using any i2p address, a long base64 destination or in the case
+            // of a b32.i2p address, it will cause a lookup when the CNetAddr object is created.  Complicated.
             // Anyway, no time penalty need be applied in the addrman parameter options, which is default when called.
+            //
             // addnode onetry calls this routine directly, the rest of the addnode commands place entries into a 'vAddedNode' vector, and create
             // CAddress objects directly from the values, bypassing this code from running as expected.
-            // ToDo: Figure out and fix that problem
+            // ToDo: Figure out and fix any problems there if needed.
             addrman.Add( addr, CNetAddr("127.0.0.1") );
+            // Our goal here is to ALWAYS be giving the FindNode/ConnectNode commands b32.i2p destinations, so that they work as expected.
             sBase32OrIP = B32AddressFromDestination( strHost );
         } else
             sBase32OrIP = strHost;                                     // Regardless of any modifications, ipxx or b32.i2p we now need the new non-const variable setup.
