@@ -293,39 +293,23 @@ public:
 
     // The original line we started with:
     // CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
+    // As i2p addrs are MUCH larger than ip addresses, we're reducing the most-recently-used(mru) setAddrKnown to 1250, to have a much smaller memory profile per node.
+    //
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(1250)
-        // The setAddrKnown keeps the most recently used (mruset) CAddress objects.  What is set here is the limit on how many addresses we've seen, gotten
-        // as a source from or routed to as known by this node.  Each day, this set is cleared and restarted from scratch, but as I2P addresses make the
-        // objects so much larger in size we're now limiting it to 1/4 of that original amount, as was designed in the v9 code base we started from and
-        // only considered IP addresses as part of the objects.  We''l try 1250.  Still over 600KB/node if every node had every mru slot filled.  If you had
-        // say 50 nodes connected that would be >34MB's of memory to store just these 1250/ea values.
-// #ifdef ENABLE_I2PSAM
-        // The original code here, commented out below never worked very well.  One of the main reasons is that addrIn.nServices & NODE_I2P is checked, on
-        // outbound connections this depends on the state of the services listed for that node in our peers.dat lookup.  Initially that is always incorrect
-        // if the service bits indicated in the past that the node was NODE_I2P capable.  We need a new deterministic way to always initiate outbound connections
-        // regardless of what the last reported value was from any given node.  One thing we can always know is what network the address is for.  There are
-        // several possibly ways to know this, one is the the address i2p or not, with IsI2P() or IsNativeI2P() calls, another might be which network the address
-        // is for, which fits better with the thought process you need to have here, in order to better understand how this will and should work.
-        // A GetNetwork() call for any given addrIn object, makes the check on if the address is routable, is it IsIPv4(), v6(), Tor() or IsI2P() or any other
-        // network we wish to create, such as IPv4Priv(), as one possibility..  We know what the past protocols are expecting, depending on this address
-        // destination, so we can ALWAYS initialize this correctly for an outbound peer connection attempt, and not base it on what the past nServices bits
-        // were at all for this node in the past.   A much better strategy, and one 70009 is going to use.
-        // For inbound connections, we know nothing more about what the other peer details are, until the version message arrives, the only thing we know is
-        // that a socket was opened after accepting a connection, and again what the address it was from, such as the same list of possible network specifiers
-        // as for outbound connections.
-        // The only other case where a new CNode is created and this class member code activated is for creating a new local host address(s).  Something we can
-        // surely deal with in a deterministic manner.
-
-      // , nSendStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
-      // , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
-// #endif
     {
 #ifdef ENABLE_I2PSAM
-        // We only need to do this until everyone upgrades to 70009 or better
-        // If the address given to us is a string, we need to evaluate it, find out what network it is for
-        // before doing this.
-        // Yet at least this change make node creation allot more deterministic, and all the subclasses defined with the same stream type value
-        nStreamType = SER_NETWORK | ( (addrIn.GetNetwork() != NET_I2P) ? SER_IPADDRONLY : 0 );
+        // Protocol 70009 changes the node creation process so it is deterministic.
+        // Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
+        // During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
+        // and may incorrectly report services depending on how they were built.  Some send full version address messages, and must have the
+        // stream type changed on the fly, before processing.  70008 has a bug, where then stream type is full size, but only contains an ip address
+        // over clearnet.  Protocol 70006 builds for clearnet lie about their support of the NODE_I2P service, while in fact the address object size
+        // is only large enough for an ip address.
+        // If the address given to us is a non-null string, the caller needs to have evaluated and setup that string correctly before calling this.
+        // It is no longer meaningful, and should be abandoned as an input parameter, it only serves to confusion and cloud the many issues involved
+        // in the node creation process.  Here it is assigned to the addrName field, which maybe useful in debugging problems, if it shows up incorrectly.
+        // Also note, all the subclasses vRecv, ssSend & hdrbuf get defined here  the same stream type during this initialization.
+        nStreamType = SER_NETWORK | (addrIn.IsNativeI2P() ? 0 : SER_IPADDRONLY);
         SetSendStreamType( nStreamType );
         SetRecvStreamType( nStreamType );
         ssSend.SetType( nStreamType );
@@ -502,7 +486,7 @@ public:
             if( !addr.IsRFC1918() || this->addr.IsRFC1918() )
                 vAddrToSend.push_back(addr);
             else
-                LogPrintf( "WARNING - Are you on a private ip4v network? Not pushing your address to %s  Your local address is %s\n", this->addr.ToString(), addr.ToString() );
+                LogPrintf( "WARNING - Not pushing your private address %s to peer %s\n", addr.ToString(), this->addr.ToString() );
         }
     }
 

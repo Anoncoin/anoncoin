@@ -188,11 +188,11 @@ unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, con
 #define ALGO_COUNT_BEING_USED 1
 #define MULTIALGO_AVERAGING_INTERVAL (CBlockIndex::nMedianTimeSpan - 1)         // in blocks (10) This value is one less nMedianTimeSpan...
 #define MULTIALGO_TARGET_SPACING  ALGO_COUNT_BEING_USED * (nTargetSpacing/2)    // in seconds, Anoncoin with 1 algo = target spacing is 90 seconds
-                                                                                // Note: nTargetSpacing is defined elsewhere in the code as 180 seconds
+                                                                                // nTargetSpacing is now defined in main.h, and has been 180 seconds (3mins) since KGW era
 
 static const int64_t nIntegratedTargetTimespan = MULTIALGO_AVERAGING_INTERVAL * MULTIALGO_TARGET_SPACING;   // in Seconds 10x2x90 = 1800 or 900 for 1 algo
-static const int64_t nIncreasingDifficultyLimit = ( nIntegratedTargetTimespan * (100 - 12) ) / 100;         // Adjustment limit per retarget can be 12%
-static const int64_t nDecreasingDifficultyLimit = ( nIntegratedTargetTimespan * (100 + 16) ) / 100;         // Adjustment limit per retarget can be 16%
+static const int64_t nIncreasingDifficultyLimit = ( nIntegratedTargetTimespan * (1000 - 120) ) / 1000;      // in Seconds the adjustment limit per retarget, set to 12%
+static const int64_t nDecreasingDifficultyLimit = ( nIntegratedTargetTimespan * (1000 + 160) ) / 1000;      // in Seconds the adjustment limit per retarget, set to 16%
 
 // New Block version type #3 definitions we'll be using
 enum BlockMinedWith {

@@ -136,7 +136,7 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
             int nScore = (*it).second.nScore;
             int nReachability = (*it).first.GetReachabilityFrom(paddrPeer);
 
-            // Pick this local address, if they are both IPv4 private networks...
+            // Pick this local address, if they are both IPv4 private network addrs...
             if( nReachability == 4 && (*it).first.IsRFC1918() && paddrPeer->IsRFC1918() ) nReachability = 99;
             // LogPrintf( "Reachability from %s is %d with a score of %d\n", (*it).first.ToString(), nReachability, nScore );
 
@@ -149,6 +149,7 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
             }
         }
     }
+    if( nBestScore >= 0 && addr.IsRFC1918() && !paddrPeer->IsRFC1918() ) return false;      // We don't want to give a remote peer our local network address
     return nBestScore >= 0;
 }
 
@@ -262,7 +263,7 @@ bool AddLocal(const CService& addr, int nScore)
         return false;
         // { LogPrintf( "Failed to AddLocal Reason 3\n" ); return false; }
 
-    LogPrintf(addr.IsI2P() ? "Accepting I2P peers at: %s Score=%d\n" : "AddLocal(%s,%i)\n", addr.ToString(), nScore);
+    LogPrintf( "AddLocal(%s,%i)\n", addr.ToString(), nScore );
 
     {
         LOCK(cs_mapLocalHost);
@@ -801,7 +802,7 @@ static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
     {
         int nErr = WSAGetLastError();
         if (nErr != WSAEWOULDBLOCK)
-            LogPrintf("socket error accept failed: %d\n", nErr);
+            LogPrintf("I2P socket error accept failed: %d\n", nErr);
     }
     else if (nInbound >= GetArg("-maxconnections", 125) - MAX_OUTBOUND_CONNECTIONS)
     {
@@ -818,6 +819,9 @@ static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
     }
     else
     {
+        // At this point, the CAddress object has been correctly setup, the garlic field installed, the port zero'd out
+        // and the native i2p destination address verified.  So we can simply add a new node and know that the correct stream
+        // type and associated logic will all work correctly.
         LogPrintf("accepted connection %s\n", addr.ToString().c_str());
         CNode* pnode = new CNode(hSocket, addr, "", true);
         pnode->AddRef();
@@ -899,6 +903,11 @@ void ThreadSocketHandler()
             }
         }
 
+        // This is a really big event for Anoncoin-QT programmers,
+        // fires off lots of activity to update the node count in client subsections.
+        // Reduced allot of complexity we had, which tracked node counds for i2p as
+        // well as ip based nodes, now all that is done in QT directly, all it needs
+        // here is to know the count changed.
         if(vNodes.size() != nPrevNodeCount) {
             nPrevNodeCount = vNodes.size();
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
@@ -1082,7 +1091,8 @@ void ThreadSocketHandler()
                         char *pNewLine = strchr( pchBuf, '\n' );
                         if( pNewLine ) {                     // Yap the address is all here, pNewLine would be null otherwise.
                             // Lets make sure it looks correct as a base64 i2p destination string
-                            if( strlen(pchBuf) == NATIVE_I2P_DESTINATION_SIZE + 1 ) // we're waiting for dest-hash + '\n' symbol
+                            // We've been waiting for a valid base64 string, followed by a '\n' character, we got that.
+                            if( strlen(pchBuf) == NATIVE_I2P_DESTINATION_SIZE + 1 )
                             {
                                 // Fantastic if it checks out, we have another node!
                                 // The socket will be bound to that and used for message communications

@@ -7,6 +7,7 @@
 #ifndef ANONCOIN_UINT256_H
 #define ANONCOIN_UINT256_H
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
@@ -30,6 +31,19 @@ protected:
     enum { WIDTH=BITS/32 };
     uint32_t pn[WIDTH];
 public:
+
+    bool IsNull() const
+    {
+        for (int i = 0; i < WIDTH; i++)
+            if (pn[i] != 0)
+                return false;
+        return true;
+    }
+
+    void SetNull()
+    {
+        memset(pn, 0, sizeof(pn));
+    }
 
     bool operator!() const
     {
