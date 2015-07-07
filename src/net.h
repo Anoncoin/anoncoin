@@ -113,18 +113,6 @@ bool IsReachable(const CNetAddr &addr);
 void SetReachable(enum Network net, bool fFlag = true);
 CAddress GetLocalAddress(const CNetAddr *paddrPeer = NULL);
 
-/**
- * Specific functions we need to implement I2P functionality
- */
-#ifdef ENABLE_I2PSAM
-std::string FormatI2PNativeFullVersion();
-bool IsDarknetOnly();
-bool IsTorOnly();
-bool IsI2POnly();
-bool IsI2PEnabled();
-bool IsBehindDarknet();
-#endif // ENABLE_I2PSAM
-
 extern bool fDiscover;
 extern uint64_t nLocalServices;
 extern uint64_t nLocalHostNonce;
@@ -312,6 +300,12 @@ public:
       , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
 #endif
     {
+#ifdef ENABLE_I2PSAM
+        // We don't no the protocol version here yet, nor does the addrIn have it as a member variable anyway
+        // This line of code was left out for 70008, so it doesnt get set until later after the version message
+        // on inbound connections.
+        // if( addrIn->nVersion != 70008 ) ssSend.SetType(nSendStreamType);
+#endif
         nServices = 0;
         hSocket = hSocketIn;
         nRecvVersion = INIT_PROTO_VERSION;
@@ -458,7 +452,11 @@ public:
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
         if (addr.IsValid() && !setAddrKnown.count(addr))
-            vAddrToSend.push_back(addr);
+            // GR Note: This next commented out line, I think is the cause of allot grief & a coding bug in v0.8.5 and earlier builds
+            // See main.cpp for the fProtocol70007Bug flag and how to solve this abbreviated version message response.
+            // Original comment: if receiver doesn't support i2p-address we don't send it
+            // if ((this->nServices & NODE_I2P) || !addr.IsNativeI2P())
+                vAddrToSend.push_back(addr);
     }
 
 

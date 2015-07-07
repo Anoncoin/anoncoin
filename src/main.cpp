@@ -1287,10 +1287,11 @@ void CheckForkWarningConditions()
     // (we assume we don't get stuck on a fork before the last checkpoint)
     if (IsInitialBlockDownload())
         return;
-
+    // Adjusted this based on what Anoncoin needs for values.  ToDo: Confirm with team
     // If our best fork is no longer within 72 blocks (+/- 12 hours if no one mines it)
     // of our head, drop it
-    if (pindexBestForkTip && chainActive.Height() - pindexBestForkTip->nHeight >= 72)
+    // if (pindexBestForkTip && chainActive.Height() - pindexBestForkTip->nHeight >= 72)
+    if (pindexBestForkTip && chainActive.Height() - pindexBestForkTip->nHeight >= 240)
         pindexBestForkTip = NULL;
 
     if (pindexBestForkTip || (pindexBestInvalid && pindexBestInvalid->nChainWork > chainActive.Tip()->nChainWork + (chainActive.Tip()->GetBlockWork() * 6).getuint256()))
@@ -1348,9 +1349,11 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
     // or a chain that is entirely longer than ours and invalid (note that this should be detected by both)
     // We define it this way because it allows us to only store the highest fork tip (+ base) which meets
     // the 7-block condition and from this always have the most-likely-to-cause-warning fork
+    // ToDo: Confirm with team the new value(s) are what we want to use...
     if (pfork && (!pindexBestForkTip || (pindexBestForkTip && pindexNewForkTip->nHeight > pindexBestForkTip->nHeight)) &&
             pindexNewForkTip->nChainWork - pfork->nChainWork > (pfork->GetBlockWork() * 7).getuint256() &&
-            chainActive.Height() - pindexNewForkTip->nHeight < 72)
+//            chainActive.Height() - pindexNewForkTip->nHeight < 72)
+            chainActive.Height() - pindexNewForkTip->nHeight < 240)
     {
         pindexBestForkTip = pindexNewForkTip;
         pindexBestForkBase = pfork;
@@ -1416,15 +1419,6 @@ void static InvalidBlockFound(CBlockIndex *pindex, const CValidationState &state
         setBlockIndexValid.erase(pindex);
         InvalidChainFound(pindex);
     }
-}
-
-void UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev)
-{
-    block.nTime = max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
-
-    // Updating time can change work required on testnet:
-    if (TestNet())
-        block.nBits = GetNextWorkRequired(pindexPrev, &block);
 }
 
 void UpdateCoins(const CTransaction& tx, CValidationState &state, CCoinsViewCache &inputs, CTxUndo &txundo, int nHeight, const uint256 &txhash)
@@ -3135,7 +3129,11 @@ string GetWarnings(string strFor)
 #else
         strStatusBar = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications");
 #endif
+        // The piority of this message remains @ 0, yet if nothing else is found, it will be displayed by default for pre-release or hardfork builds.
     }
+
+    // These nPriority values set an upper limit on what should be used by the development team, when issuing alert messages,
+    // as they are more important than anything else to this client's user..
 
     // Misc warnings like out of disk space and clock is wrong
     if (strMiscWarning != "")
@@ -3156,6 +3154,10 @@ string GetWarnings(string strFor)
     }
 
     // Alerts
+    //
+    // Any network wide alerts that have shown up, and have a greater priority than what is listed above, will now be checked and the highest
+    // priority one is picked & shown to the user.
+    // NOTE: If two alerts have the same priority, it will be the 1st one found, that gets shown to the user.
     {
         LOCK(cs_mapAlerts);
         BOOST_FOREACH(PAIRTYPE(const uint256, CAlert)& item, mapAlerts)
@@ -3373,11 +3375,28 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return false;
         }
 
+        bool fProtocolError = false;
         int64_t nTime;
         CAddress addrMe;
         CAddress addrFrom;
         uint64_t nNonce = 1;
-        vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
+        vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
+        // Because we are getting a version message that may NOT have the expected stream type setup correctly,
+        // the data go into an abortion.  We need to not get the addrMe value from the data stream until after
+        // some additional checking....
+        // At least one peer seen reports NO services, another as version 70006, we'll try
+        if( pfrom->nVersion < 70008 ) {
+            if( vRecv.size() < ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION) ) {         // If the remaining buffer size is less than the size of the next object serialized size, it will throw an error
+                LogPrintf( "ProcessMessage: Version from %s incomplete.  So far we know nVersion=%d nServices=%lld nTime=%lld Reverting stream type to IP only.\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime );
+                pfrom->SetSendStreamType(pfrom->GetSendStreamType() | SER_IPADDRONLY);
+                pfrom->SetRecvStreamType(pfrom->GetRecvStreamType() | SER_IPADDRONLY);
+                fProtocolError = true;                              // Protocol bugs are a huge job to debug, version 70007 works two different ways.
+            }
+            vRecv >> addrMe;                // Try it now anyway, or throw the error
+
+        } else
+            vRecv >> addrMe;
+
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             // relay alerts prior to disconnection
@@ -3390,16 +3409,28 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return true;
         }
 
-        if (pfrom->nVersion == 10300)
-            pfrom->nVersion = 300;
-        if (!vRecv.empty())
-            vRecv >> addrFrom >> nNonce;
+        // If there is still more data to receive, it should be "from" address nonce values
+        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", ::GetSerializeSize(addrFrom, SER_NETWORK, PROTOCOL_VERSION), vRecv.size() );
+
+        if( !vRecv.empty() )
+            vRecv >> addrFrom;
+
+        // Now we should have the right address data for addrMe and addrFrom, with or without the Protocol 70007 clearnet version buggy brained builds.
+        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( nNonce ), vRecv.size() );
+
+        if( !vRecv.empty() )
+            vRecv >> nNonce;
+
+        if( fProtocolError ) LogPrintf( "Size of next object =unknown, Remainder in buffer=%d\n", vRecv.size() );
+
+        // If it is still not empty input, get us the subversion string as well, plus sanitize it
         if (!vRecv.empty()) {
             vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
             pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
         }
 
         // Disconnect certain incompatible clients
+        // ToDo: Disconnect nodes that report no or very tiny subver strings, or need to be cleaned just to pass.
         const char *badSubVers[] = { "/potcoinseeder", "/reddcoinseeder", "/worldcoinseeder" };
         for (int x = 0; x < 3; x++)
         {
@@ -3412,14 +3443,21 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             }
         }
 
+        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->nStartingHeight ), vRecv.size() );
+
+        // Finally if there is still more data on the input stream, it should be the starting block height...
         if (!vRecv.empty())
             vRecv >> pfrom->nStartingHeight;
+
+        if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->fRelayTxes ), vRecv.size() );
+
+        // The last field possible is the optional Relay Tx value
         if (!vRecv.empty())
             vRecv >> pfrom->fRelayTxes; // set to true after we get the first filter* message
         else
             pfrom->fRelayTxes = true;
 
-        if (pfrom->fInbound && addrMe.IsRoutable())
+        if( pfrom->fInbound && addrMe.IsRoutable() )
         {
             pfrom->addrLocal = addrMe;
             SeenLocal(addrMe);
@@ -3437,14 +3475,19 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (pfrom->fInbound)
             pfrom->PushVersion();
 
+        // This flag, fClient gets set TRUE, only if the other node is NOT a full node supporting network services
         pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
 
 
         // Change version
         pfrom->PushMessage("verack");
+        // We send that node back his protocol version, or our version, whichever is less...
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
 #ifdef ENABLE_I2PSAM
+        // Here if the node does not seem to support that I2P service, we stripe that bit off our serialization type for sending.
+        // If it does support that I2P service, then we set this stream send type to only have that stream type bit on.
+        // ToDo: Re-visit this code functionality, confirm its working as needed and expected.  Also: SetRecvStreamType()
         pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
 #endif
         if (!pfrom->fInbound)
@@ -3465,7 +3508,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             }
             addrman.Good(pfrom->addr);
         } else {
-            if (((CNetAddr)pfrom->addr) == (CNetAddr)addrFrom)
+            if( ((CNetAddr)pfrom->addr) == (CNetAddr)addrFrom )
             {
                 addrman.Add(addrFrom, addrFrom);
                 addrman.Good(addrFrom);
@@ -4272,7 +4315,6 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 if (pto->setAddrKnown.insert(addr).second)
                 {
                     vAddr.push_back(addr);
-                    // receiver rejects addr messages larger than 1000
                     if (vAddr.size() >= 1000)
                     {
                         pto->PushMessage("addr", vAddr);

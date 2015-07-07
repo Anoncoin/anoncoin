@@ -114,6 +114,9 @@ extern unsigned int nCoinCacheSize;
 // Minimum disk space required - used in CheckDiskSpace()
 static const uint64_t nMinDiskSpace = 52428800;
 
+// Anoncoin target block time in seconds is 3 minutes * 60 secs/min, has been since KGW era...
+static const int64_t nTargetSpacing = 180;
+
 
 class CCoinsDB;
 class CBlockTreeDB;

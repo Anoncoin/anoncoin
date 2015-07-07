@@ -251,7 +251,7 @@ void static BuildI2pOptionsString( void ) {
 // but if they are not set, then this insures that they are created with good values
 // SoftSetArg will return a bool, if you care to know if the parameter was changed or not.
 void InitializeI2pSettings( void ) {
-    SoftSetBoolArg( "-i2p.options.static", false );
+    SoftSetBoolArg( "-i2p.mydestination.static", false );
     SoftSetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
     SoftSetArg( "-i2p.options.samport", "7656" );                   /* SAM_DEFAULT_PORT */
     SoftSetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT );
@@ -275,7 +275,7 @@ void InitializeI2pSettings( void ) {
     sHost = GetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
     // Critical to check here, if we are in dynamic destination mode, the intial session destination MUSTBE default too.
     //  Which may not be what the user has set in the anoncoin.conf file.
-    if( GetBoolArg( "-i2p.options.static", false ) )            // GetBoolArg returns true if the .static variable is true
+    if( GetBoolArg( "-i2p.mydestination.static", false ) )            // GetBoolArg returns true if the .static variable is true
         sDestination = GetArg( "-i2p.mydestination.privatekey", SAM_GENERATE_MY_DESTINATION );
     // It's important here that sDestination be setup correctly, for soon when an initial Session object is about to be
     // created.  When that happens, this variable is used to create the SAM session, upon which, after it's opened,
@@ -324,3 +324,49 @@ std::string B32AddressFromDestination(const std::string& destination)
         result.erase(pos, 1);
     return result;
 }
+
+/**
+ * Functions we need for I2P functionality
+ */
+std::string FormatI2PNativeFullVersion() {
+    // We need to NOT talk to the SAM module if I2P is unavailable
+    return IsI2PEnabled() ? I2PSession::Instance().getSAMVersion() : "?.??";
+}
+
+// GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
+// in the end, put them back here in net.cpp for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
+// within our net.h header, where netbase.h is included as a dependency....clear as mud?
+bool IsTorOnly() {
+    bool i2pOnly = false;
+    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "tor");
+    return i2pOnly;
+}
+
+bool IsI2POnly()
+{
+    bool i2pOnly = false;
+    if (mapArgs.count("-onlynet")) {
+        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
+    }
+    return i2pOnly;
+}
+
+// If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
+bool IsDarknetOnly() {
+    return IsI2POnly() || IsTorOnly() ||
+            (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) &&
+              (mapArgs.count("-i2p.options.enabled") && mapArgs["-i2p.options.enabled"] != "0")
+            );
+}
+
+// Basically we override the -i2p.options.enabled flag here, if we are running -onlynet=i2p....
+bool IsI2PEnabled() {
+    return  GetBoolArg("-i2p.options.enabled", false) || IsI2POnly();
+}
+
+bool IsBehindDarknet() {
+    return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
+}
+

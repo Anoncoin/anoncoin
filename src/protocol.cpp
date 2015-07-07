@@ -76,8 +76,6 @@ bool CMessageHeader::IsValid() const
     return true;
 }
 
-
-
 CAddress::CAddress() : CService()
 {
     Init();

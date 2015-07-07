@@ -43,14 +43,27 @@ public:
         pchMessageStart[1] = 0xca;
         pchMessageStart[2] = 0xba;
         pchMessageStart[3] = 0xda;
-        vAlertPubKey = ParseHex("04b2941a448ab9860beb73fa2f600c09bf9fe4d18d5ff0b3957bf94c6d177d61f88660d7c0dd9adef984080ddea03c898039759f66c2011c111c4394692f814962");
+
+        /** \brief
+         * Starting with Anoncoin v0.9.4.5, the following vAlertPubKey ECDSA (Elliptical Curve DSA) value will be used as the public key
+         * for generating new alerts on the Anoncoin Network. The private key is not available, nor is it in the hands of
+         * just one individual. This change will however allow the current development team to generate Alert messages as required.
+         * As of 3/3/2015  Holders of the new private key are: K1773R, Lunokhod, Cryptoslave and myself GroundRod.
+         * If an alert is necessary, it can be used to quickly inform all the nodes of an important development or software upgrade.
+         *
+         */
+        vAlertPubKey = ParseHex("04c6db35c11724e526f6725cc5bd5293b4bc9382397856e1bcef7111fb44ce357fd12442b34c496d937a348c1dca1e36ae0c0e128905eb3d301433887e8f0b4536");
+
+        // Effective 3/3/2015, the following Alert key is no longer being used & has been replaced.
+        // One last build of the v8 client is being prepared to support the new Alert key above, that is version 0.8.5.7.
+        vOldAlertPubKey = ParseHex("04b2941a448ab9860beb73fa2f600c09bf9fe4d18d5ff0b3957bf94c6d177d61f88660d7c0dd9adef984080ddea03c898039759f66c2011c111c4394692f814962");
+
         nDefaultPort = 9377;
         nRPCPort = 9376;
 
-        // As of Feb '15, SCRYPT is all that matters, future merge-mining with Bitcoin & Primecoin will what to have those limits set here.
+        // As of March '15, SCRYPT is all that matters, future mining with a SHA256D algo may soon be supported as well, set those limits here.
         bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
-        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 32);           // ToDo: Bitcoin difficulty is very high (taken from 9.99 code 12/2014)
-        bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 20);             // ToDo: PRIME Proof of work limit needs research, typically same as Primecoin.
+        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 32);       // ToDo: Bitcoin difficulty is very high (taken from 9.99 code 12/2014)
 
         // Anoncoin Genesis block details:
         //2ca51355580bb293fe369c5f34954069c263e9a9e8d70945ebb4c38f05778558
@@ -111,10 +124,16 @@ public:
         i2pvSeeds.push_back(CDNSSeedData("xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p", "xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p")); // Cryptoslave's seednode
 #endif // ENABLE_I2PSAM
 
-        base58Prefixes[PUBKEY_ADDRESS] = list_of(23);           // Anoncoin addresses start with A
-        base58Prefixes[SCRIPT_ADDRESS] = list_of(5);
+        // Because the prefix bytes are attached to a base256 encoding (ie, binary) of known width,  they affect the leading cinquantoctal digit of the corresponding base58
+        // representation of the same number.  The 23 below, is why mainnet pay-to-pubkey txouts always start with the letter A
+        base58Prefixes[PUBKEY_ADDRESS] = list_of(23);           // the pay-to-pubkey prefix byte
+        base58Prefixes[SCRIPT_ADDRESS] = list_of(5);            // the pay-to-script-hash prefix byte
         base58Prefixes[SECRET_KEY] =     list_of(151);          // Anoncoin secret keys are the Public Key + 128
-        // ToDo: The following two values need to be checked, and confirmed as correct, for what we want Anoncoin values to be
+        // What we have here are the same as Bitcoin values, and explained below as follows:
+        // The four-byte prefixes correspond to cinquantoctal prefixes 'xpub' and 'xprv' on mainnet and 'tpub' and 'tprv' on testnet.
+        // Somebody with far too much time to invest in encoding transformations figured out what range of numeric values would start
+        // with 'xpub' and 'xpriv' etc when converted to base58 from a binary number 4 bytes wider than a key value, then exactly which
+        // four bytes to prefix to ensure that the base256 representation always yields a number in that range.
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E);
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4);
 
@@ -184,10 +203,9 @@ public:
         nDefaultPort = 19377;
         nRPCPort = 19376;
 
-        // ToDo: Proof of work limits for testnet.  Adjust as needed, not sure what the v0.8.5.6 client has for a value, SCRYPT is all that matters at this time.
-        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 10);
-        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 10);
-        bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 10);
+        // ToDo: Proof of work limits for testnet.  Adjust as needed...
+        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 17);
+        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 20);
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         // These values have been set to the same as the v0.8.5.6 client had, so testing should be possible with that client, although maynot be required.
@@ -210,7 +228,7 @@ public:
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(111);      // Anoncoin v8 compatible testnet Public keys use this value
         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
-        base58Prefixes[SECRET_KEY]     = list_of(239);      // Anoncoin testnet secret keys are the Public Key + 128
+        base58Prefixes[SECRET_KEY]     = list_of(239);      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF);
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x35)(0x83)(0x94);
     }
@@ -239,7 +257,6 @@ public:
         // ToDo: Proof of work limits, for regression testing are very small, more than likely these should work
         bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 1);
         bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 1);
-        bnProofOfWorkLimit[ALGO_PRIME] = CBigNum(~uint256(0) >> 1);
 
         genesis.nTime = 1296688602;
         genesis.nBits = 0x207fffff;

@@ -20,7 +20,7 @@ static const int INIT_PROTO_VERSION = 209;
 // ToDo: For now we can set this to an old value (random), and try to sync
 // with the network, once a hard fork is certain and we are ready to upgrade
 // we need to set this to a value we can support.
-static const int MIN_PEER_PROTO_VERSION = 70007;
+static const int MIN_PEER_PROTO_VERSION = 70006;
 
 // nTime field added to CAddress, starting with this version;
 // if possible, avoid requesting addresses nodes older than this

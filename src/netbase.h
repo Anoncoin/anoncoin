@@ -56,7 +56,7 @@ class CNetAddr
         explicit CNetAddr(const std::string &strIp, bool fAllowLookup = false);
         void Init();
         void SetIP(const CNetAddr& ip);
-        bool SetSpecial(const std::string &strName); // for Tor addresses
+        bool SetSpecial(const std::string &strName); // for Tor & I2P addresses
         bool IsIPv4() const;    // IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
         bool IsIPv6() const;    // IPv6 address (not mapped IPv4, not Tor)
         bool IsRFC1918() const; // IPv4 private networks (10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12)
@@ -86,6 +86,7 @@ class CNetAddr
 #ifdef ENABLE_I2PSAM
         bool IsNativeI2P() const;
         std::string GetI2PDestination() const;
+        std::string ToB32String() const;
 #endif
         CNetAddr(const struct in6_addr& pipv6Addr);
         bool GetIn6Addr(struct in6_addr* pipv6Addr) const;
@@ -132,9 +133,6 @@ class CService : public CNetAddr
         std::string ToString() const;
         std::string ToStringPort() const;
         std::string ToStringIPPort() const;
-#ifdef ENABLE_I2PSAM
-        std::string ToStringI2pPort() const;
-#endif
         void print() const;
 
         CService(const struct in6_addr& ipv6Addr, unsigned short port);

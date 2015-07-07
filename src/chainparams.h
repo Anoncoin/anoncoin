@@ -3,7 +3,6 @@
 // Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef ANONCOIN_CHAIN_PARAMS_H
 #define ANONCOIN_CHAIN_PARAMS_H
 
@@ -68,7 +67,6 @@ public:
     enum MinedWithAlgo {
         ALGO_SCRYPT,             // Anoncoin native is this, always needs to be the default, and compatible with blocks on the chain from genesis onward...
         ALGO_SHA256D,
-        ALGO_PRIME,
 
         MAX_ALGO_TYPES
     };
@@ -76,6 +74,7 @@ public:
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
+    const vector<unsigned char>& OldAlertKey() const { return vOldAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
     const CBigNum& ProofOfWorkLimit( MinedWithAlgo mwa = ALGO_SCRYPT ) const { return bnProofOfWorkLimit[ mwa ]; }
     virtual const CBlock& GenesisBlock() const = 0;
@@ -97,6 +96,7 @@ protected:
     MessageStartChars pchMessageStart;
     // Raw pub key bytes for the broadcast alert signing key.
     vector<unsigned char> vAlertPubKey;
+    vector<unsigned char> vOldAlertPubKey;
     int nDefaultPort;
     int nRPCPort;
     CBigNum bnProofOfWorkLimit[ MAX_ALGO_TYPES ];
@@ -132,5 +132,5 @@ inline bool TestNet() {
 inline bool RegTest() {
     return Params().NetworkID() == CChainParams::REGTEST;
 }
+#endif // header guard
 
-#endif

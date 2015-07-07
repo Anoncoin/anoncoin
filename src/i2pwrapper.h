@@ -88,4 +88,14 @@ bool isValidI2pDestination( const SAM::FullDestination& DestKeys );
 bool isValidI2pB32( const std::string& B32Address );
 std::string B32AddressFromDestination(const std::string& destination);
 
+/**
+ * Specific functions we need to implement I2P functionality
+ */
+std::string FormatI2PNativeFullVersion();
+bool IsDarknetOnly();
+bool IsTorOnly();
+bool IsI2POnly();
+bool IsI2PEnabled();
+bool IsBehindDarknet();
+
 #endif // I2PWRAPPER_H

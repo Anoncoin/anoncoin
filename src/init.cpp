@@ -236,7 +236,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -maxsendbuffer=<n>     " + _("Maximum per-connection send buffer, <n>*1000 bytes (default: 1000)") + "\n";
     strUsage += "  -onion=<ip:port>       " + _("Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: -proxy)") + "\n";
     strUsage += "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (ipv4, ipv6, onion or i2p)") + "\n";
-    strUsage += "  -port=<port>           " + _("Listen for connections on <port> (default: 9333 or testnet: 19333)") + "\n";
+    strUsage += "  -port=<port>           " + _("Listen for connections on <port> (default: 9377 or testnet: 19377)") + "\n";
     strUsage += "  -proxy=<ip:port>       " + _("Connect through SOCKS5 proxy") + "\n";
     strUsage += "  -seednode=<ip>         " + _("Connect to a node to retrieve peer addresses, and disconnect") + "\n";
     strUsage += "  -timeout=<n>           " + _("Specify connection timeout in milliseconds (default: 20000)") + "\n";
@@ -319,7 +319,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -server                " + _("Accept command line and JSON-RPC commands") + "\n";
     strUsage += "  -rpcuser=<user>        " + _("Username for JSON-RPC connections") + "\n";
     strUsage += "  -rpcpassword=<pw>      " + _("Password for JSON-RPC connections") + "\n";
-    strUsage += "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 9332 or testnet: 19332)") + "\n";
+    strUsage += "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 9376 or testnet: 19376)") + "\n";
     strUsage += "  -rpcallowip=<ip>       " + _("Allow JSON-RPC connections from specified IP address") + "\n";
     strUsage += "  -rpcthreads=<n>        " + _("Set the number of threads to service RPC calls (default: 4)") + "\n";
 
@@ -792,7 +792,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     bool fGenI2pDest = GetBoolArg("-generatei2pdestination", false);
     if( fGenI2pDest ) {                                             // Hard set these 2 values
         mapArgs[ "-i2p.options.enabled" ] = "1";
-        mapArgs[ "-i2p.options.static" ] = "0";
+        mapArgs[ "-i2p.mydestination.static" ] = "0";
     }
 
     // Initialize some stuff here alittle early, so if GenI2pDest is run, they will be setup with
@@ -812,7 +812,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         // Now we can either use a static destination address, taken from anoncoin.conf values to create a Stream Session, or
         // generate a dynamic new one and initiate an I2P session stream that way...
         SAM::FullDestination retI2pKeys;                                        // Something we can compare our results too
-        if( GetBoolArg( "-i2p.options.static", false ) ) {      // Running static mode, if this is true, upto the user to make sure our destination has been set
+        if( GetBoolArg( "-i2p.mydestination.static", false ) ) {      // Running static mode, if this is true, upto the user to make sure our destination has been set
             LogPrintf( "Attempting to create an I2P Sam session.  With a static destination...\n" );
             if( isValidI2pDestination( myI2pKeys ) ) {          // Here we check to make sure the values look right
                 retI2pKeys = I2PSession::Instance().getMyDestination();

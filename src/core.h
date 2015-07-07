@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,9 +17,10 @@
 class CTransaction;
 
 /** No amount larger than this (in satoshi) is valid */
-// This value is set to the same as used in the v0.8.5.6 client
 // Original btc code: static const int64_t MAX_MONEY = 84000000 * COIN;
-static const int64_t MAX_MONEY = 4200000 * COIN;
+// This value was set wrong in the the v0.8.5.6 client, v9 wallets starting with v9.4.5 builds use the following:
+static const int64_t MAX_MONEY = 3105155 * COIN;
+
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 /** An outpoint - a combination of a transaction hash and an index n into its vout */
@@ -484,5 +485,4 @@ struct CBlockLocator
         return vHave.empty();
     }
 };
-
-#endif
+#endif // header guard

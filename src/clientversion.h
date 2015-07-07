@@ -2,7 +2,6 @@
 // Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef ANONCOIN_CLIENTVERSION_H
 #define ANONCOIN_CLIENTVERSION_H
 
@@ -24,7 +23,7 @@
 #define CLIENT_VERSION_MAJOR       0
 #define CLIENT_VERSION_MINOR       9
 #define CLIENT_VERSION_REVISION    4
-#define CLIENT_VERSION_BUILD       4
+#define CLIENT_VERSION_BUILD       5
 
 // Set to true for release, false for prerelease or test build
 #define CLIENT_VERSION_IS_RELEASE  false
@@ -36,19 +35,6 @@
 #define COPYRIGHT_YEAR 2015
 
 #endif //HAVE_CONFIG_H
-
-// Regardless of HAVE_CONFIG_H's state, these need to be declared, if they are not already.
-//
-// primecoin client version - ToDo: GR note - Needs review - copied these in so anc will compile the 'developer' branch.
-//                                            They should go here though, for ease in future upgrades.  IMO LightCoin should also be listed
-#if !defined(HAVE_PRIMECOIN_CONFIG_H)
-#define HAVE_PRIMECOIN_CONFIG_H
-
-#define PRIMECOIN_VERSION_MAJOR 0
-#define PRIMECOIN_VERSION_MINOR 1
-#define PRIMECOIN_VERSION_REVISION 2
-#define PRIMECOIN_VERSION_BUILD 0
-#endif
 
 /**
  * Converts the parameter X to a string after macro replacement on X has been performed.
@@ -85,11 +71,6 @@ extern const std::string CLIENT_DATE;
 std::string FormatFullVersion();
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
 
-static const int PRIMECOIN_VERSION =
-                           1000000 * PRIMECOIN_VERSION_MAJOR
-                         +   10000 * PRIMECOIN_VERSION_MINOR
-                         +     100 * PRIMECOIN_VERSION_REVISION
-                         +       1 * PRIMECOIN_VERSION_BUILD;
 
 #endif // WINDRES_PREPROC
 

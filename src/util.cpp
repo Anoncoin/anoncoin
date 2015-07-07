@@ -1219,6 +1219,8 @@ void ShrinkDebugFile()
 //  - Median of other nodes clocks
 //  - The user (asking the user to fix the system clock if the first two disagree)
 //
+// ToDo: GrNotes: Anoncoin may have other options to explore, as in I2P related queries, or ntp servers, why are they not looked at, needs investigation
+// We do not yet have a unit test network, v10 does and this aspect is now at least partially done...
 static int64_t nMockTime = 0;  // For unit testing
 
 int64_t GetTime()

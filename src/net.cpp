@@ -64,6 +64,8 @@ bool fAddressesInitialized = false;
 
 
 #ifdef ENABLE_I2PSAM
+// Starting with protocol 70009, NODE_I2P should probably no longer be set as default, as it indicates this node is available on i2p.
+// which we do not know until after initialization if that is true or not.
 uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
 static std::vector<SOCKET> vhI2PListenSocket;                   // We maintain a seperate vector for I2P network SOCKET's
 int nI2PNodeCount = 0;                                          // And a count of the active nodes we're connected with
@@ -637,7 +639,7 @@ bool CNode::ReceiveMsgBytes(const char *pch, unsigned int nBytes)
         // get current incomplete message, or create a new one
         if (vRecvMsg.empty() ||
             vRecvMsg.back().complete())
-            vRecvMsg.push_back(CNetMessage(SER_NETWORK, nRecvVersion));
+            vRecvMsg.push_back(CNetMessage(nRecvStreamType, nRecvVersion));
 
         CNetMessage& msg = vRecvMsg.back();
 
@@ -1425,7 +1427,7 @@ void DumpAddresses()
     CAddrDB adb;
     adb.Write(addrman);
 
-    LogPrint("net", "Flushed %d addresses to peers.dat  %dms\n",
+    LogPrint("net", "Flushed %d addresses to peers.dat  %lldms\n",
            addrman.size(), GetTimeMillis() - nStart);
 }
 
@@ -1541,10 +1543,8 @@ void ThreadOpenConnections()
                 !addr.IsNativeI2P() &&
 #endif
                 // do not allow non-default ports, unless after 50 invalid addresses selected already
-                addr.GetPort() != Params().GetDefaultPort() &&
-                nTries < 50
-            )
-                continue;
+                addr.GetPort() != Params().GetDefaultPort() && nTries < 50 )
+                    continue;
 
             addrConnect = addr;
             break;
@@ -1860,51 +1860,6 @@ bool BindListenPort(const CService &addrBind, string& strError)
 
 #ifdef ENABLE_I2PSAM
 /**
- * Functions we need for I2P functionality
- */
-std::string FormatI2PNativeFullVersion() {
-    // We need to NOT talk to the SAM module if I2P is unavailable
-    return IsI2PEnabled() ? I2PSession::Instance().getSAMVersion() : "?.??";
-}
-
-// GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
-// in the end, put them back here in net.cpp for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
-// within our net.h header, where netbase.h is included as a dependency....clear as mud?
-bool IsTorOnly() {
-    bool i2pOnly = false;
-    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-    i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "tor");
-    return i2pOnly;
-}
-
-bool IsI2POnly()
-{
-    bool i2pOnly = false;
-    if (mapArgs.count("-onlynet")) {
-        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
-    }
-    return i2pOnly;
-}
-
-// If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
-bool IsDarknetOnly() {
-    return IsI2POnly() || IsTorOnly() ||
-            (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) &&
-              (mapArgs.count("-i2p.options.enabled") && mapArgs["-i2p.options.enabled"] != "0")
-            );
-}
-
-// Basically we override the -i2p.options.enabled flag here, if we are running -onlynet=i2p....
-bool IsI2PEnabled() {
-    return  GetBoolArg("-i2p.options.enabled", false) || IsI2POnly();
-}
-
-bool IsBehindDarknet() {
-    return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
-}
-
-/**
  * I2P Specific socket listen binding functions
  */
 bool BindListenNativeI2P()
@@ -1918,15 +1873,22 @@ bool BindListenNativeI2P()
 
 bool BindListenNativeI2P(SOCKET& hSocket)
 {
-    hSocket = I2PSession::Instance().accept(false);
+    if( !IsLimited( NET_NATIVE_I2P ) ) {
+        hSocket = I2PSession::Instance().accept(false);
 
-    if ( hSocket == INVALID_SOCKET ) return false;
-    CService addrBind(I2PSession::Instance().getMyDestination().pub, 0);
-// ToDo: Check this code carefully.  Changed it some so it would work.  I2P onlynet means fDiscover(maybe) false.  AddLocal needs LOCAL_MANUAL or it will return false and not set
-//    if (addrBind.IsRoutable() && fDiscover)
+        if ( hSocket == INVALID_SOCKET ) return false;
+        CService addrBind(I2PSession::Instance().getMyDestination().pub, I2PSession::Instance().getSAMPort() );
+        // ToDo: Check this code carefully.  Changed it some so it would work.
+        // I2P onlynet means fDiscover(maybe) false.
+        // AddLocal needs LOCAL_MANUAL or it will return false and not set
+        // if (addrBind.IsRoutable() && fDiscover)
         // AddLocal(addrBind, LOCAL_BIND);
-    // return true;
-    return AddLocal(addrBind, LOCAL_MANUAL);
+        // return true;
+        return AddLocal(addrBind, LOCAL_MANUAL);
+    }
+    else
+        LogPrintf( "ERROR - Unexpected I2P BIND request. Ignored, network access is limited\n" );
+
 }
 #endif // ENABLE_I2PSAM
 

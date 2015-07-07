@@ -60,26 +60,28 @@ namespace Checkpoints
         7000.0     // * estimated number of transactions per day after checkpoint
     };
 
+    // Testnet or RegTest checkpoints, same as the genesis block, est. tx/day = 480 blocks x 1 transaction
     static MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
-        ( 546, uint256("0xa0fea99a6897f531600c8ae53367b126824fd6a847b2b2b73817a95b8e27e602"))
+        ( 0, uint256("0x66d320494074f837363642a0c848ead1dbbbc9f7b854f8cda1f3eabbf08eb48c"))
         ;
     static const CCheckpointData dataTestnet = {
         &mapCheckpointsTestnet,
-        1365458829,
-        547,
-        576
+        1373625296,
+        0,
+        480
     };
 
+    // Initial checkpoint map for Anoncoin Regression tests is the genesis block
     static MapCheckpoints mapCheckpointsRegtest =
         boost::assign::map_list_of
-        ( 0, uint256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"))
+        ( 0, uint256("0x03ab995e27af2435ad33284ccb89095e6abe47d0846a4e8c34a3d0fc2d167ceb"))
         ;
     static const CCheckpointData dataRegtest = {
         &mapCheckpointsRegtest,
+        1296688602,
         0,
-        0,
-        0
+        480
     };
 
     const CCheckpointData &Checkpoints() {

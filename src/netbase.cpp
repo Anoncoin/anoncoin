@@ -780,9 +780,9 @@ bool CNetAddr::IsTor() const
 #ifdef ENABLE_I2PSAM
 bool CNetAddr::IsNativeI2P() const
 {
-    // For unsigned char [] it's quicker here to just do a memory comparision .verses. conversion to a string.
+    // For unsigned char [] it's quicker here to just do a memory comparison .verses. conversion to a string.
     // In order for this to work however, it's important that the memory has been cleared when this object
-    // was created.  ToDo: investigate this and confirm it will never mistakely see a valid native i2p address.
+    // was created.  ToDo: investigate this and confirm it will never mistakenly see a valid native i2p address.
     static const unsigned char pchAAAA[] = {'A','A','A','A'};
     return (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }
@@ -791,12 +791,26 @@ std::string CNetAddr::GetI2PDestination() const
 {
     return std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE);
 }
+
+// Convert this netaddress objects native i2p address into a b32.i2p address
+std::string CNetAddr::ToB32String() const
+{
+    return B32AddressFromDestination( GetI2PDestination() );
+}
+
+extern bool IsI2PEnabled();                         // So we don't have to include net.h in netbase.cpp just for this one function, used below
 #endif // ENABLE_I2PSAM
 
 bool CNetAddr::IsLocal() const
 {
 #ifdef ENABLE_I2PSAM
-    if (IsNativeI2P()) return false;
+    // This address is local if it is the same as the public key of the session we have open
+    if( IsNativeI2P() ) {
+        if( ::IsI2PEnabled() )
+            return I2PSession::Instance().getMyDestination().pub == GetI2PDestination();
+        else
+            LogPrintf( "WARNING - Detected Native I2P address in IsLocal(), while SAM session is closed. Peer: %s\n", ToStringIP() );
+    }
 #endif
 
     // IPv4 loopback
@@ -887,7 +901,7 @@ std::string CNetAddr::ToStringIP() const
 {
 #ifdef ENABLE_I2PSAM
     if (IsNativeI2P())
-        return GetI2PDestination();
+        return ToB32String();
 #endif
     if (IsTor())
         return EncodeBase32(&ip[6], 10) + ".onion";
@@ -917,6 +931,7 @@ std::string CNetAddr::ToString() const
 bool operator==(const CNetAddr& a, const CNetAddr& b)
 {
 #ifdef ENABLE_I2PSAM
+    // LogPrintf( "WARNING - CNetAddr object equals comparison of both addresses maybe invalid\n");
     return (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, NATIVE_I2P_DESTINATION_SIZE) == 0);
 #else                                               // Use the original code
     return (memcmp(a.ip, b.ip, 16) == 0);
@@ -926,6 +941,7 @@ bool operator==(const CNetAddr& a, const CNetAddr& b)
 bool operator!=(const CNetAddr& a, const CNetAddr& b)
 {
 #ifdef ENABLE_I2PSAM
+    // LogPrintf( "WARNING - CNetAddr object not equals comparison of both addresses maybe invalid\n");
     return (memcmp(a.ip, b.ip, 16) != 0 || memcmp(a.i2pDest, b.i2pDest, NATIVE_I2P_DESTINATION_SIZE) != 0);
 #else                                               // Use the original code
     return (memcmp(a.ip, b.ip, 16) != 0);
@@ -935,6 +951,7 @@ bool operator!=(const CNetAddr& a, const CNetAddr& b)
 bool operator<(const CNetAddr& a, const CNetAddr& b)
 {
 #ifdef ENABLE_I2PSAM
+    // LogPrintf( "WARNING - CNetAddr object less than comparison of both addresses maybe invalid\n");
     return (memcmp(a.ip, b.ip, 16) < 0 || (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, NATIVE_I2P_DESTINATION_SIZE) < 0));
 #else                                               // Use the original code
     return (memcmp(a.ip, b.ip, 16) < 0);
@@ -1021,7 +1038,11 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
         nBits = 4;
     }
     // for he.net, use /36 groups
+    // ToDo: Figure out why this different between the Anoncoin v0.8.5.5 and v0.8.5.6 versions.
+    // the line from v0.8.5.5 is now commented out.  Bitcoin v10 has the same value as Anoncoin v0.8.5.6, so using that.
+    // Which is correct?
     else if (GetByte(15) == 0x20 && GetByte(14) == 0x01 && GetByte(13) == 0x04 && GetByte(12) == 0x70)
+    // else if (GetByte(15) == 0x20 && GetByte(14) == 0x11 && GetByte(13) == 0x04 && GetByte(12) == 0x70)
         nBits = 36;
     // for the rest of the IPv6 network, use /32 groups
     else
@@ -1225,29 +1246,48 @@ unsigned short CService::GetPort() const
 bool operator==(const CService& a, const CService& b)
 {
 #ifdef ENABLE_I2PSAM
-    return (CNetAddr)a == (CNetAddr)b && (a.port == b.port || (a.IsNativeI2P() && b.IsNativeI2P()));
-#else                                                           // Use the original code
-    return (CNetAddr)a == (CNetAddr)b && a.port == b.port;
+    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
+        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
+            return a.GetI2PDestination() == b.GetI2PDestination();
+        } else                          // One is i2p the other is not
+            return false;               // So return that they are not the same
+    } else if( b.IsNativeI2P() )        // One is i2p the other is not
+        return false;                   // So return that they are not the same
+    else                                // Neither are I2P addresses, so use the original code
 #endif
+    return (CNetAddr)a == (CNetAddr)b && a.port == b.port;
 }
 
 bool operator!=(const CService& a, const CService& b)
 {
 #ifdef ENABLE_I2PSAM
-    return (CNetAddr)a != (CNetAddr)b || !(a.port == b.port || (a.IsNativeI2P() && b.IsNativeI2P()));
-#else                                                           // Use the original code
-    return (CNetAddr)a != (CNetAddr)b || a.port != b.port;
+    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
+        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
+            return a.GetI2PDestination() != b.GetI2PDestination();
+        } else                          // One is i2p the other is not
+            return true;                // So return that they are not the same
+    } else if( b.IsNativeI2P() )        // One is i2p the other is not
+        return true;                    // So return that they are not the same
+    else                                // Neither are I2P addresses, so use the original code
 #endif
+    return (CNetAddr)a != (CNetAddr)b || a.port != b.port;      // Use the original code
 }
 
 bool operator<(const CService& a, const CService& b)
 {
 #ifdef ENABLE_I2PSAM
-    return (CNetAddr)a < (CNetAddr)b || ((CNetAddr)a == (CNetAddr)b && (a.port < b.port) && !(a.IsNativeI2P() && b.IsNativeI2P()));
-#else                                                           // Use the original code
-    return (CNetAddr)a < (CNetAddr)b || ((CNetAddr)a == (CNetAddr)b && a.port < b.port);
+    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
+        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
+            return a.GetI2PDestination() < b.GetI2PDestination();
+        } else                          // One is i2p the other is not
+            return false;               // So return that they are not the same, I2P addresses are considered greater than IP addrs
+    } else if( b.IsNativeI2P() )        // One is i2p the other is not
+        return true;                    // So return that they are not the same, Addr 'a' is not I2P, but Addr 'b' is an I2P address
+    else                                // Neither are I2P addresses, so use the original code
 #endif
+    return (CNetAddr)a < (CNetAddr)b || ((CNetAddr)a == (CNetAddr)b && a.port < b.port);
 }
+
 
 bool CService::GetSockAddr(struct sockaddr* paddr, socklen_t *addrlen) const
 {
@@ -1301,29 +1341,14 @@ std::string CService::ToStringPort() const
     return strprintf("%u", port);
 }
 
-#ifdef ENABLE_I2PSAM
-std::string CService::ToStringI2pPort() const
-{
-    if( IsNativeI2P() ) {
-        // Convert native i2p addresses to b32.i2p addresses
-        // ToDo: Check and/or finish this, got interupted.
-        std::string samPort = strprintf( "%u", GetArg("-i2p.options.samport", "7656") );
-        return "[" + B32AddressFromDestination( GetI2PDestination() ) + "]:" + samPort;
-    }
-    else
-        return "Unknown address";
-}
-#endif // ENABLE_I2PSAM
-
 std::string CService::ToStringIPPort() const
 {
-#ifdef ENABLE_I2PSAM
-    std:string PortStr = IsNativeI2P() ? GetArg("-i2p.options.samport", "7656") : ToStringPort();
-#else
     std:string PortStr = ToStringPort();
+#ifdef ENABLE_I2PSAM
+    return ( IsIPv4() || IsTor() || IsNativeI2P() ) ? ToStringIP() + ":" + PortStr : "[" + ToStringIP() + "]:" + PortStr;
+#else
+    return ( IsIPv4() || IsTor() ) ? ToStringIP() + ":" + PortStr : "[" + ToStringIP() + "]:" + PortStr;
 #endif
-    return ( IsIPv4() || IsTor() ) ? ToStringIP() + ":" + PortStr :
-                                     "[" + ToStringIP() + "]:" + PortStr;
 }
 
 std::string CService::ToString() const

@@ -60,6 +60,7 @@ void ShutdownRPCMining()
 // Return average network hashes per second based on the last 'lookup' blocks,
 // or from the last difficulty change if 'lookup' is nonpositive.
 // If 'height' is nonnegative, compute the estimate at the time when a given block was found.
+// ToDo: This needs to be redone for Anoncoin
 Value GetNetworkHashPS(int lookup, int height) {
     CBlockIndex *pb = chainActive.Tip();
 
