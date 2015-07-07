@@ -545,6 +545,7 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
 
 #ifdef ENABLE_I2PSAM
     if( addrDest.IsI2P() ) {
+        assert( addrDest.IsNativeI2P() );
         SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2pDestination(), false/*, streamSocket*/);
         if( SetI2pSocketOptions(streamSocket) ) {
             hSocketRet = streamSocket;
@@ -644,17 +645,27 @@ bool CNetAddr::SetSpecial(const std::string &strName)
     {                                                                       // We're given a possible valid .b32.i2p address or a native I2P destination
         string addr;
         if( isValidI2pB32( strName ) ) {
-            // 1st try our new local address book for the lookup
+            // 1st try our new local address book for the lookup....
+            // NOTE: Adding this line of code was extremely expensive for the developer, it broke the build system, which could no longer link
+            // and create the Anoncoin-cli executable.  It requires that you link in the addrman.cpp/h module, as its now included here in netbase,
+            // This had  never been done until now.  You will be required to upgrade your code to support the chainparamsbase.cpp/h module concept,
+            // and remove all references to chainparams.cpp/h in your build script, if your going to try and just add this one line of code.
+            //  Upgrading your source base to v10 technology was the solution, but very time consuming, expensive and stressful.  It may appear to
+            // be just one line of code, but it is not nearly as simple as that when your starting from and working with a v9 source code base.
+            // ...GR
             addr = addrman.GetI2pBase64Destination( strName );
             if( IsI2PEnabled() && fNameLookup ) {                           // Check for dns set, we should at least log the error, if not.
-                if( addr == "" )                                            // We got it locally so were done
+                int64_t iNow = GetTime();
+                if( !addr.size() )                                          // If we couldn't find it, much more to do..
                     addr = I2PSession::Instance().namingLookup(strName);    // Expensive, but lets try, this could take a very long while...
+                else
+                    LogPrintf( "That Base64 i2p destination you needed, was found locally to match: %s\n", strName );
                 // If the address returned is a non-zero length string, the lookup was successful
                 if( !isValidI2pAddress( addr ) ) {                          // Not sure why, but that shouldn't happen, could be a 'new' destination type we can't yet handle
-                    LogPrintf( "WARNING - I2P Router [%s] address not found.\n", strName );
+                    LogPrintf( "WARNING - After spending %llds looking, neither AddrMan or the I2P Router was able to find that address for you: %s\n", GetTime() - iNow, strName );
                     return false;                                           // Not some thing we can use
-                } else  // Otherwise the I2P router was able to find an I2P destination for this address, and it's now stored in 'addr' as a base64 string
-                    LogPrintf( "I2P Router lookup found [%s] address as destination\n[%s]\n", strName, addr );
+                } // else  // Otherwise the AddrMan or I2P router was able to find an I2P destination for this address, and it's now stored in 'addr' as a base64 string
+                    // LogPrintf( "AddrMan or I2P Router lookup found [%s] address as destination\n[%s]\n", strName, addr );
             } else {                                                        // Log should tell the user they have DNS turned off, so this can't work
                 LogPrintf( "WARNING - Unable to lookup [%s], No i2p router or dns=0 must be set\n", strName );
                 return false;
@@ -816,16 +827,39 @@ bool CNetAddr::IsI2P() const
 
 bool CNetAddr::IsNativeI2P() const
 {
+    static const unsigned char pchAAAA[] = {'A','A','A','A'};
     // For unsigned char [] it's quicker here to just do a memory comparison .verses. conversion to a string.
     // In order for this to work however, it's important that the memory has been cleared when this object
-    // was created.  ToDo: investigate this and confirm it will never mistakenly see a valid native i2p address.
-    static const unsigned char pchAAAA[] = {'A','A','A','A'};
+    // was created.
+    // ToDo: More work could be done here to confirm it will never mistakenly see a valid native i2p address.
     return (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }
 
 std::string CNetAddr::GetI2pDestination() const
 {
-    return std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE);
+    return i2pDest[0] != 0 ? std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE) : std::string();
+}
+
+/** \brief Sets the i2pDest field to the callers given string
+    The ip field is not touched, if the parameter given is zero length, otherwise it is set to the GarlicCat
+ *
+ * \param sDestination const std::string
+ * \return bool true if the address is now set to a valid i2p destination, otherwise false
+ *
+ */
+bool CNetAddr::SetI2pDestination( const std::string& sDestination )
+{
+    size_t iSize = sDestination.size();
+    if( iSize ) {
+        Init();
+        memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
+    } else          // First & always if we're given some non-zero value, Make sure the whole field is zeroed out
+        memset(i2pDest, 0, NATIVE_I2P_DESTINATION_SIZE);
+
+    // Copy what the caller wants put there, up to the max size
+    // Its not going to be valid, if the size is wrong, but do it anyway
+    if( iSize ) memcpy( i2pDest, sDestination.c_str(), iSize < NATIVE_I2P_DESTINATION_SIZE ? iSize : NATIVE_I2P_DESTINATION_SIZE );
+    return (iSize == NATIVE_I2P_DESTINATION_SIZE) && IsNativeI2P();
 }
 
 // Convert this netaddress objects native i2p address into a b32.i2p address
@@ -843,7 +877,7 @@ bool CNetAddr::IsLocal() const
     // now (maybe), but should be done better with getting the info from the i2psam module
     if( IsI2P() ) {
         string sMyDest = GetArg("-i2p.mydestination.publickey", "");
-        return sMyDest != GetI2pDestination();
+        return sMyDest == GetI2pDestination();
     }
 #endif
 
@@ -907,11 +941,19 @@ bool CNetAddr::IsValid() const
 
 bool CNetAddr::IsRoutable() const
 {
-#ifdef ENABLE_I2PSAM
-    return ( IsI2P() && IsNativeI2P() ) || (IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || (IsRFC4193() && !IsTor()) || IsRFC4843() || IsLocal()));
-#else                   // Original code
-    return IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || (IsRFC4193() && !IsTor()) || IsRFC4843() || IsLocal());
+    // By allowing RFC1918 addresses you can have routes setup for connections on your local ipv4 network, this is BAD in general
+    // as it means your local addresses could possibly start getting SHARED with other peers when you are once again connected
+    // to an outside network, however newer builds will detect this and reject sharing those addresses because they are outside.
+    // plus code has been added to main, which Does check for RFC1918 addresses and not share them when picking ones to send
+    // out in getaddr requests.
+#if CLIENT_VERSION_IS_RELEASE != true
+    bool fDetermined = IsValid() && !(IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
+#else
+    bool fDetermined = IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
 #endif
+    // LogPrintf( "Is this address %s routable? %s  It appears it is Valid=%s, Local=%s, I2P=%s\n", ToString(), fDetermined ? "YES" : "NO", IsValid() ? "1" : "0", IsLocal() ? "1" : "0", IsI2P() ? "1" : "0");
+    // LogPrintf( "RFC1918=%s RFC3927=%s RFC4862=%s RFC4193=%s RFC4843=%s\n", IsRFC1918() ? "1" : "0", IsRFC3927() ? "1" : "0", IsRFC4862() ? "1" : "0", IsRFC4193() ? "1" : "0", IsRFC4843() ? "1" : "0" );
+    return fDetermined;
 }
 
 enum Network CNetAddr::GetNetwork() const

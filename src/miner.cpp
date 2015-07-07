@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -616,15 +616,6 @@ void static AnoncoinMiner(CWallet *pwallet)
 
             // Update nTime every few seconds
             UpdateTime(*pblock, pindexPrev);
-            // nBlockTime = ByteReverse(pblock->nTime);  I don't see this being used anywhere
-
-            // ToDo: Why is this needed or used, commenting out until understanding why this must be done here for testnet
-            // if (TestNet())
-            // {
-                // Changing pblock->nTime can change work required on testnet:
-            //    nBlockBits = ByteReverse(pblock->nBits);
-            //    hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-            // }
         }
     } }
     catch (boost::thread_interrupted)

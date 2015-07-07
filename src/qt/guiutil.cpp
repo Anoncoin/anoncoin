@@ -843,7 +843,7 @@ QString formatServicesStr(quint64 mask)
                 strList.append(QObject::tr("BLOOM_FILTER"));
                 break;
             case NODE_I2P:
-                strList.append(QObject::tr("I2P_ROUTER"));
+                strList.append(QObject::tr("I2P_NODE"));
                 break;
             default:
                 strList.append(QString("%1[%2]").arg(QObject::tr("UNKNOWN")).arg(check));

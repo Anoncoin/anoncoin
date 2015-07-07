@@ -6,7 +6,7 @@
 // #define LOG_DEBUG_OUTPUT
 
 // This value defines the Anoncoin block rate production, difficulty calculations and Proof Of Work functions should use this as the goal...
-// nTargetSpacing = 180;      and the definition has been moved to main.h for global visibility
+// nTargetSpacing = 180;      and the definition has been moved to main.h for global visibility Anoncoin is 3 minute spacing
 
 // Difficulty Protocols have changed over time, at specific points in Anoncoin's history
 // the following SwitchHeight values are those blocks where an event occurred which
@@ -182,42 +182,9 @@ unsigned int static GetNextWorkRequiredForKgw(const CBlockIndex* pindexLast, con
     return bnNew.GetCompact();
 }
 
-// K1773R and Cryptoslave eyes only...
-// It maybe that all these comments in the code below get deleted before posting it to github, leaving the readers to figure it out on their own,
-// have not made a decision on that yet.  Nor has this code yet been testnet'd by me here locally, we are fiddling with the values used and even considering the possibility
-// of switching to the mining of two algos, SHA256D in addition to Scrypt, have not looked into the hours required yet to complete that task, and implement a new version #3 block
-// type as proposed by the code below, the work done for that so far, is only the tip of the iceberg, as far as getting the full implementation of a new block header type to work
-// across the board...
-//
-// K1773R wanted you to see the link, and shortened text description below, when we last talked, it had not been discovered yet.  Cryptoslave found an important
-// explanation of why DigiByte has a larger value (16%) for decreasing the difficulty adjustment, than the limit imposed for increasing (8%) a difficulty
-// adjustment.  Until now, we could not figure out if it was a coding mistake, or why it seemed backwards.  The full link is definitely worth reading, if your
-// interested in the topic.
-//
-#if defined( HARDFORK_BLOCK )
-/***
- * http://www.reddit.com/r/Digibyte/comments/213t7b/what_is_digishield_how_it_works_to_retarget/
- *
- * The secret to DigiShield is an asymmetrical approach to difficulty re-targeting. With DigiShield, the difficulty is allowed to decrease in larger movements
- * than it is allowed to increase from block to block. This keeps a blockchain from getting "stuck" i.e., not finding the next block for several hours following
- * a major drop in the net hash of coin. It is all a balancing act. You need to allow the difficulty to increase enough between blocks to catch up to a sudden
- * spike in net hash, but not enough to accidentally send the difficulty sky high when two miners get lucky and find blocks back to back. The same thing occurs
- * with difficulty decreases. Since it takes much longer to find the next block, you need to allow it to drop quicker than it increases.
- *
- * We found that the difficulty needed to be able to decrease by a larger magnitude than it was allowed to increase. When the difficulty was allowed to increase
- * or decrease at the same rate with larger orders of magnitude, some very bad oscillations occurred along with some crazy high difficulties when two lucky blocks
- * were found quickly back to back. The asymmetrical adjustments keep the difficulty from going to high to fast, but allow it to drop much quicker after a large
- * hash down swing as it takes a much longer time to discover the next two blocks for the difficulty adjustment to occur.
- * You don't want to let the difficulty go to high to fast, but you need to give it enough room to catch up quickly. The same thing goes with down swings, since
- * it takes longer to discover new blocks you need to give it more room to go down, but not enough to send it to the floor.
- *
- **/
 
-// MultiAlgo Target contants.
-// #define ALGO_COUNT_BEING_USED CChainParams::MAX_ALGO_TYPES
-// static const int64_t nTargetTimespan = SECONDSPERDAY / 10;              // in Seconds, 8640  ToDo: Setting this to 1/10 of a day is arbitary, consider alternatives..
-// static const int64_t nInterval = nTargetTimespan / nTargetSpacing;      // in Blocks, 48
-// static const int64_t nLocalDifficultyAdjustment = 4;                 // Used in per algo diff adjs, as a percentage: 4%
+#if defined( HARDFORK_BLOCK )
+
 #define ALGO_COUNT_BEING_USED 1
 #define MULTIALGO_AVERAGING_INTERVAL (CBlockIndex::nMedianTimeSpan - 1)         // in blocks (10) This value is one less nMedianTimeSpan...
 #define MULTIALGO_TARGET_SPACING  ALGO_COUNT_BEING_USED * (nTargetSpacing/2)    // in seconds, Anoncoin with 1 algo = target spacing is 90 seconds
@@ -229,7 +196,7 @@ static const int64_t nDecreasingDifficultyLimit = ( nIntegratedTargetTimespan * 
 
 // New Block version type #3 definitions we'll be using
 enum BlockMinedWith {
-    BLOCK_VERSION_DEFAULT        = 3,           // Merged mined blocks, up the default block version by one, to version #3, and default to algo SCRYPT
+    BLOCK_VERSION_DEFAULT        = 3,           // Up the default block version by one, to version #3, and default to algo SCRYPT
     BLOCK_VERSION_SHA256D        = (1 << 8) | 3,// The next byte up, now represents the algo this block was mined with, if zero then it was SCRYPT and simply is a version 3 block
     BLOCK_VERSION_ALGOS          = (7 << 8) | 3 // This mask can be used to expose the 3 bits in the byte above version #, allowing for up to 7 algos
 };
@@ -270,9 +237,6 @@ const CBlockIndex* GetLastBlockIndexForAlgo(const CBlockIndex* pindex, CChainPar
 
 const CBlockIndex* GetLastBlockIndexForAlgo(const CBlockIndex* pindex, CChainParams::MinedWithAlgo mwa)
 {
-    // Here we walk back the linked block list, trying to find the newest one mined with the Algo parameter provided.
-    // As there were no other mined block types before the hardfork, its pointless to keep looking if that algo is
-    // not Scrypt...
     while( pindex && (mwa == CChainParams::ALGO_SCRYPT || pindex->nHeight > HARDFORK_BLOCK) )
     {
         if( GetBlockAlgo( pindex ) == mwa )
@@ -283,51 +247,32 @@ const CBlockIndex* GetLastBlockIndexForAlgo(const CBlockIndex* pindex, CChainPar
 }
 
 /*
- *  Difficulty formula, Anoncoin - Early in 2015, due to continous attack & weakness exploits known about the KGW difficulty algo, this was implemented as a solution
+ *  Difficulty formula, Anoncoin - Early in 2015, due to continuous attack & weakness exploits known about the KGW difficulty algo, this was implemented as a solution
  */
 unsigned int static GetNextWorkRequiredAfterKgw(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const CBigNum &bnProofOfWorkLimit )
 {
-    CChainParams::MinedWithAlgo algo = CChainParams::ALGO_SCRYPT;      // Temporary variable for now with just one algo
+    CChainParams::MinedWithAlgo algo = CChainParams::ALGO_SCRYPT;       // Temporary variable for now with just one algo
 
-    // find first block in averaging interval
-    // Setup pindexFirst by going back until we point at the block which is MULTIALGO_AVERAGING_INTERVAL seconds ago, more algos multiplies this value by that interval
-    const CBlockIndex* pindexFirst = pindexLast;
+    const CBlockIndex* pindexFirst = pindexLast;                        // find first block in averaging interval
     for (int i = 0; pindexFirst && i < ALGO_COUNT_BEING_USED * MULTIALGO_AVERAGING_INTERVAL; i++)
         pindexFirst = pindexFirst->pprev;
 
-    // Setup pPrevBlockSameAlgo to point at the last block mined with this Algo, for single algo mining this will be the previous block
-    // So this simply sets up pPrevBlockSameAlgo to point at the same pindexLast block.
     const CBlockIndex* pPrevBlockSameAlgo = GetLastBlockIndexForAlgo(pindexLast, algo);
-    if( pindexFirst == NULL || pPrevBlockSameAlgo == NULL )         // Not must more we can do then...
-        return bnProofOfWorkLimit.GetCompact();                 // not enough blocks available
+    if( pindexFirst == NULL || pPrevBlockSameAlgo == NULL )             // Not much more we can do then...
+        return bnProofOfWorkLimit.GetCompact();                         // not enough blocks available
 
     LogPrintf("AncSheild-P1v0.1 RETARGET: Integrating constants in seconds: TimeSpan=%lld, Difficulty UpLimit=%lld, DownLimit=%lld\n", nIntegratedTargetTimespan, nIncreasingDifficultyLimit, nDecreasingDifficultyLimit );
-
     // Use medians to prevent time-warp attacks
-    // Basically we're setting up a controlled feedback loop here, based on integrating past block times & calculating a derivative on the rate of change,
-    // for a faster response time, while keeping each adjustment step within an upper and lower bounds limit.
-    //
-    // Here we calculate the Median time, using the most recent 11 blocks, and again for what it was before that. (aka ~ the last hour for Anoncoin and one algo)
-    // We take these two values & subtract them, to get the relative recent performance into an absolute term called nNewSetpoint, which we then proceed to finish calculating...
     int64_t nLatestAvgMedian = pindexLast->GetMedianTimePast();
     int64_t nOlderAvgMedian = pindexFirst->GetMedianTimePast();
-    int64_t nNewSetpoint = nLatestAvgMedian - nOlderAvgMedian;       // In a perfect world, nNewSetpoint should approach our target timespan
+    int64_t nNewSetpoint = nLatestAvgMedian - nOlderAvgMedian;
     LogPrintf("  Integrated Setpoint = %lld using TimeMedian=%lld from block %d & TimeMedian=%lld from block %d\n", nNewSetpoint, nLatestAvgMedian, pindexLast->nHeight, nOlderAvgMedian, pindexFirst->nHeight);
-
-    // This next line of code calculates the difference between the real timespan and the target timespan, as a signed +/- value, using fast integer math.
-    // Picking the right constant to scale this differential value (we are dividing the amount here by 2 with one algo) is a challenge.  We want the
-    // difficulty shield to have a fast response time as mining conditions change, yet not have it endlessly oscillate when mining difficulty would otherwise
-    // be running smooth.  To small of a value and the retarget will not response as fast as it could to a sudden change in mining difficulty, if the value
-    // is too large, it can easily cause it to always hit the upper bound, then snap to the lower bound limit and vise-versa.
     int64_t nTimespanDiff = (nNewSetpoint - nIntegratedTargetTimespan) / (ALGO_COUNT_BEING_USED + 1);
-
     // Here now we finally have a new target time that will bring our integrated average block time back to what it should be with the differential added.
     nNewSetpoint = nIntegratedTargetTimespan + nTimespanDiff;
     LogPrintf("  Differential = %lld secs & New Setpoint = %lld before bound limits applied\n", nTimespanDiff, nNewSetpoint );
 
     // Limit adjustment step...
-    // Now we limit that new difficulty adjustment by a predetermined upper and lower maximum amount of possible adjustment for the next block's difficulty
-    // Under stressful mining difficulty changes, the values programmed will increase the difficulty twice as fast as it will decay back to a lower difficulty level.
     if (nNewSetpoint < nIncreasingDifficultyLimit)
         nNewSetpoint = nIncreasingDifficultyLimit;
     if (nNewSetpoint > nDecreasingDifficultyLimit)
@@ -335,43 +280,14 @@ unsigned int static GetNextWorkRequiredAfterKgw(const CBlockIndex* pindexLast, c
 
     // Global retarget
     CBigNum bnNew;
-    // Start with what the previous block (of same algo) had for difficulty, multiply it by our new calculated setpoint timespan desired & divide by the target goal.
-    // that is our new difficulty, unless its less that what Anoncoin can allow as the absolute minimum difficulty on the network aka ProofOfWorkLimit
-    // This is done with bignums, upgrade to the new v10 arith_uint256 class is the plan...
     bnNew.SetCompact(pPrevBlockSameAlgo->nBits);
     bnNew *= nNewSetpoint;
     bnNew /= nIntegratedTargetTimespan;
 
-#if ALGO_COUNT_BEING_USED > 1
-    // Per-algo retarget
-    int nAdjustments = pPrevBlockSameAlgo->nHeight - pindexLast->nHeight + CChainParams::MAX_ALGO_TYPES - 1;
-    if (nAdjustments > 0)
-    {
-        for (int i = 0; i < nAdjustments; i++)
-        {
-            bnNew /= 100 + nLocalDifficultyAdjustment;
-            bnNew *= 100;
-        }
-    }
-    if (nAdjustments < 0)
-    {
-        for (int i = 0; i < -nAdjustments; i++)
-        {
-            bnNew *= 100 + nLocalDifficultyAdjustment;
-            bnNew /= 100;
-        }
-    }
-#endif
-
     if( bnNew > bnProofOfWorkLimit ) bnNew = bnProofOfWorkLimit;
-
-    // debug print
-// #if defined( LOG_DEBUG_OUTPUT )
-    // LogPrintf("  nTargetTimespan = %lld    nNewSetpoint after bounds = %lld\n", nTargetTimespan, nNewSetpoint);
     LogPrintf("  nNewSetpoint used after bounds = %lld\n", nNewSetpoint);
     LogPrintf("  Before: %08x %s\n", pindexLast->nBits, CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
     LogPrintf("  After : %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
-// #endif
 
 	return bnNew.GetCompact();
 }
@@ -380,27 +296,18 @@ unsigned int static GetNextWorkRequiredAfterKgw(const CBlockIndex* pindexLast, c
 
 // The following function are all that is seen from the outside world and used throughout
 // the rest of the source code for Anoncoin, everything above should be static and only
-// referenced from within this source code file.
+// referenced from within this file.
 
 /*
  * The workhorse routine, which oversees the blockchain Proof Of Work algorithms
  */
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-    // Before we implement merged mining, there was no other ProofOfWorkLimit than the base Scrypt algo
-    // We now setup that variable, and pass it as a parameter to the various implementations of difficulty
-    // calculation, that have happened over the years...
     const CBigNum &bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
     assert(pindexLast);
     if( TestNet() || pindexLast->nHeight > nDifficultySwitchHeight3 ) {
 #if defined( HARDFORK_BLOCK )
-        // For Testnet first we mine some default blocks.  These are forced to be spaced near or after our target timespan in miner.cpp
-        // regardless of the ProofOfWorkLimit initially set. This nHeight value has
-        // been choosen, to have enough blocks to start with, so that the new algo can look back in time, and at
-        // least have something to work with.
-        // Also doing it this way can be helpful for tuning the chainparam value picked as the limit,
-        // and/or the miners you will be using to testnet with.  We want things to start out in the right ball park with the first blocks generated....
         if( TestNet() && pindexLast->nHeight <= 22 )
             return bnProofOfWorkLimit.GetCompact();
         if( pindexLast->nHeight > nDifficultySwitchHeight4 || TestNet() ) {             // Otherwise this new algo will happen at the hardfork block value you have set for mainnet.
@@ -441,9 +348,6 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
     CBigNum bnTarget;
     bnTarget.SetCompact(nBits);
 
-    // printf("CheckProofOfWork Hash: %s, nBits: %08x, Target: %08x, bnLimt: %08x \n", hash.ToString().c_str(), nBits, bnTarget.GetCompact(), Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ).GetCompact());
-    // ToDo: Which Algo?  After merge mining begins, which coins ProofOfWorkLimit
-    // needs to be considered when evaluating someone else's claim about it.
     if (bnTarget <= 0 || bnTarget > Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ))
         return error("CheckProofOfWork() : nBits below minimum work");
 
@@ -483,16 +387,6 @@ void UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev)
         LogPrintf( (pindexPrev->nHeight <= CBlockIndex::nMedianTimeSpan) ? "New blocktime since last block %lld (blocks 1-11)\n" : "New blocktime since last median %lld\n", block.nTime - nMedianTimePast );
         nLastReportTime = block.nTime;
     }
-
-    // Updating time can change work required on testnet:
-    // That maybe true, have found that comment and this code in many other crypto coin sources,
-    // and if using an rpc call for testnet mining, to getwork or getblocktemplate, this may yet be required.
-    // For Anoncoin on testnet, initially here just using the built-in miner, which
-    // calls this code right after UpdateTime() is set, so using that to mine with this no longer makes sense to me.
-    // We can better control TestNet() operation there, than in this function....
-    // ToDo: yet to be determined if this is needed...
-    // if (TestNet())
-        // block.nBits = GetNextWorkRequired(pindexPrev, &block);
 }
 
 double GetDifficulty(const CBlockIndex* blockindex)

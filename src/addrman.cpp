@@ -573,7 +573,8 @@ void CAddrMan::GetAddr_(std::vector<CAddress> &vAddr)
         assert(mapInfo.count(vRandom[n]) == 1);
 
         const CAddrInfo& ai = mapInfo[vRandom[n]];
-        if (!ai.IsTerrible())
+        // Don't send terrible addresses or ip4 private network addresses in response to GetAddr requests
+        if( !ai.IsTerrible() && !ai.IsRFC1918() )
             vAddr.push_back(ai);
     }
 }

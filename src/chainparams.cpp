@@ -139,6 +139,7 @@ public:
         // Convert the pnSeeds array into usable address objects.
         // ToDo: Generate some usable ip (IPv4) addresses for the pnSeed array  See: contrib/seeds/ for details...
         // Or Not: ...as we migrate to I2P for everything, this becomes less of a feature we even care about.
+        // WARNING - Because there are no clearnet seeds, there is a line of code to not load fixed entries unless i2p is enabled.
         for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
         {
             // Only connect to one or two seed nodes because once it connects,

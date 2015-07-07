@@ -61,8 +61,11 @@ bool fAddressesInitialized = false;
 
 
 #ifdef ENABLE_I2PSAM
-// Starting with protocol 70009, NODE_I2P should probably no longer be set as default, as it indicates this node is available on i2p.
-// which we do not know until after initialization if that is true or not.
+// Starting with protocol 70008, NODE_I2P is always set.  This is what will be sent to all peers when trying to make connections.
+// It probably should not be used this way, and in the future default values (should) indicate if this node is available on i2p.
+// at the moment, with a working router.  Something we do not know until after initialization if that is true or not.
+// For now the purpose of that service bit is to indicate on clearnet if we can send/receive full i2p addresses, which of course
+// we can, so it is the default setting for that reason, about to release protocol 70009 as the developer is typing this.
 uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
 
 // For i2p these are 'real OS sockets, created for us after accept has been issued to the I2P SAM module.  Initially we have only one,
@@ -116,8 +119,9 @@ unsigned short GetListenPort()
 bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 {
     // ToDo: Check for IsTor() here as well?
+    // LogPrintf( "Finding best local address for %s\n", paddrPeer->ToString() );
 #ifdef ENABLE_I2PSAM
-    if( !paddrPeer->IsI2P() && fNoListen)
+    if( !paddrPeer->IsI2P() && fNoListen )
 #else
     if( fNoListen )
 #endif
@@ -131,9 +135,15 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
         {
             int nScore = (*it).second.nScore;
             int nReachability = (*it).first.GetReachabilityFrom(paddrPeer);
+
+            // Pick this local address, if they are both IPv4 private networks...
+            if( nReachability == 4 && (*it).first.IsRFC1918() && paddrPeer->IsRFC1918() ) nReachability = 99;
+            // LogPrintf( "Reachability from %s is %d with a score of %d\n", (*it).first.ToString(), nReachability, nScore );
+
             if (nReachability > nBestReachability || (nReachability == nBestReachability && nScore > nBestScore))
             {
                 addr = CService((*it).first, (*it).second.nPort);
+                // addr.print();
                 nBestReachability = nReachability;
                 nBestScore = nScore;
             }
@@ -238,15 +248,20 @@ bool AddLocal(const CService& addr, int nScore)
 {
     if (!addr.IsRoutable())
         return false;
+        // { LogPrintf( "Failed to AddLocal Reason 1\n" ); return false; }
 #ifdef ENABLE_I2PSAM
-    if( !addr.IsI2P() && !fDiscover && nScore < LOCAL_MANUAL)
+    if( !addr.IsI2P() && !fDiscover && nScore < LOCAL_MANUAL )
 #else                                                               // Original code
     if (fDiscover && nScore < LOCAL_MANUAL)
 #endif
         return false;
+        // { LogPrintf( "Failed to AddLocal Reason 2\n" ); return false; }
 
-    if (IsLimited(addr))
+
+    if ( IsLimited(addr))
         return false;
+        // { LogPrintf( "Failed to AddLocal Reason 3\n" ); return false; }
+
 
     LogPrintf(addr.IsI2P() ? "Accepting I2P peers at: %s Score=%d\n" : "AddLocal(%s,%i)\n", addr.ToString(), nScore);
 
@@ -566,15 +581,6 @@ void CNode::PushVersion()
     CAddress addrMe = GetLocalAddress(&addr);
     RAND_bytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
     LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), addrYou.ToString(), addr.ToString());
-    // Before we can push our addresses to old peer software, we need to reformat them for the node
-    // ToDo: This may not be needed...
-    //if( this->nVersion < PROTOCOL_VERSION ) {
-    //    // Fix the address structure if they are i2p addresses
-    //    if( ( GetSendStreamType() & SER_IPADDRONLY ) == 0 ) {
-    //        addrYou.ZeroOutIP();
-    //        addrMe.ZeroOutIP();
-    //    }
-    //}
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
                 nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight, true);
 }
@@ -1106,7 +1112,7 @@ void ThreadSocketHandler()
                                 // The socket will be bound to that and used for message communications
                                 std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
                                 CAddress addr;
-                                if( addr.SetSpecial(incomingAddr) && addr.IsI2P() )
+                                if( addr.SetI2pDestination(incomingAddr) )
                                     AddIncomingI2pConnection(hI2PListenSocket, addr);
                                 else {
                                     LogPrintf("WARNING - Invalid incoming destination address, unable to setup node.  Received (%s)\n", incomingAddr.c_str());
@@ -1505,7 +1511,12 @@ void ThreadOpenConnections()
         boost::this_thread::interruption_point();
 
         // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
-        if (addrman.size() == 0 && (GetTime() - nStart > 60)) {
+        // As we have no clearnet fixed seeds, this is pointless unless the i2p network is available
+#ifdef ENABLE_I2PSAM
+        if( addrman.size() == 0 && (GetTime() - nStart > 60) && IsI2PEnabled() ) {
+#else
+        if( addrman.size() == 0 && (GetTime() - nStart > 60) ) {
+#endif
             static bool done = false;
             if (!done) {
                 LogPrintf("Adding fixed seed nodes as DNS doesn't seem to be available.\n");
@@ -1980,7 +1991,7 @@ void StartNode(boost::thread_group& threadGroup)
         if (!adb.Read(addrman))
             LogPrintf("Invalid or missing peers.dat; recreating\n");
     }
-    LogPrintf("Loaded %i addresses from peers.dat in %dms and setup a %d entry address book table for b32.i2p destinations.\n",
+    LogPrintf("Loaded %i addresses from peers.dat in %dms and setup a %d entry address book for b32.i2p destinations.\n",
            addrman.size(), GetTimeMillis() - nStart, addrman.b32HashTableSize() );
     fAddressesInitialized = true;
 

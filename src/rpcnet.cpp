@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -461,11 +461,8 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     return obj;
 }
 
-// Only build this code in preleases or test builds
 #if CLIENT_VERSION_IS_RELEASE != true
-//
-// This allows our developers to notify all nodes of any issues on the Anoncoin network
-//
+
 Value sendalert(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 7)
@@ -514,7 +511,6 @@ Value sendalert(const Array& params, bool fHelp)
         alert.nCancel = params[9].get_int();
     alert.nVersion = PROTOCOL_VERSION;
 
-    // Relay and don't expire this alert for one year, or the number of days given
     const int64_t i64AlertNow = GetAdjustedTime();
 
     alert.nRelayUntil = ( params.size() > 7 ) ? params[7].get_int() : 365;
@@ -528,50 +524,27 @@ Value sendalert(const Array& params, bool fHelp)
     CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
     sMsg << (CUnsignedAlert)alert;
     alert.vchMsg = vector<unsigned char>(sMsg.begin(), sMsg.end());
-
-    // From https://bitcointalk.org/index.php?topic=50330.40:
-    //
-    // CKey::GetPrivKey and CKey::SetPrivKey are accessor methods for the 279-byte DES private key.
-    // CKey::GetSecret and CKey::SetSecret are accessor methods for the 32-byte private key.
-    //
-    // Those of you who are interested in the OpenSSL calls needed, it's all spelled out in key.h
-    //
-    //  If the SendAlert user is giving us the 32 byte secret code & we already know the public key, so...
-    //  Setup an object with the correct value for the private key, otherwise we'll assume they are giving us the
-    //  private key as the string value, and use that to create the key object.
-    //  Either of the above must be given, before this code can sign and then process the alert.
-    //
-    // There are various code fragments below that are commented out for release builds. Helpful however, for debugging
-    // changes to the code and/or keys being used.  Otherwise not needed
-    //
-    //  Move the SendAlert 2nd parmeter chars into a vector, whichever it is, can assume it's being given to us as hex pairs
     vector<unsigned char> vchPrivKey = ParseHex(params[1].get_str());
-
-    if( vchPrivKey.size() == 32 ) {         // Then we're given only a 32-byte private key multipler
+    if( vchPrivKey.size() == 0x20 ) {
         key.Set( vchPrivKey.begin(), vchPrivKey.end(), false );
-        CPrivKey nPK = key.GetPrivKey();    // This calls openssl & sets the key structure up correctly.
+        CPrivKey nPK = key.GetPrivKey();
+
         // Print out the private key here, from being set by SecretBytes...
         std::string strKey;
         for( size_t i=0; i<nPK.size(); i++ )
             strKey += strprintf( "%02x", nPK[i] );
         LogPrintf("SendAlert pass is the SecretBytes, Private Key Value is:\n%s\n", strKey);
+
+
+
     }
     else if( !key.SetPrivKey( CPrivKey(vchPrivKey.begin(), vchPrivKey.end()), false ) )
         throw runtime_error( "Unable to verify alert Private key, check private key?\n");
-    else
-        LogPrintf("SendAlert pass is the PrivateKey.\n");
 
-    // Sign the message & set the alert vchSig string...
     if (!key.Sign(Hash(alert.vchMsg.begin(), alert.vchMsg.end()), alert.vchSig))
         throw runtime_error( "Unable to sign alert, check private key?\n");
     else if(!alert.ProcessAlert())
         throw runtime_error( "Failed to process alert.\n");
-    //
-    // If you need to, Print out the CAlert structure, into the log file here:
-    alert.print();
-    //
-    // After we've called alert.ProcessAlert(), the public key will have been used to verify the
-    // signature of the (now) signed alert message, or a runtime_error would have been returned.
 
     // Relay alert to the other nodes
     {
@@ -580,7 +553,6 @@ Value sendalert(const Array& params, bool fHelp)
             alert.RelayTo(pnode);
     }
     // At this point, the Anoncoin network will be flooded with the alert message before very much time has passed.
-
     Object res;
     res.push_back( Pair("AlertID", alert.nID) );
     res.push_back( Pair("Priority", alert.nPriority) );

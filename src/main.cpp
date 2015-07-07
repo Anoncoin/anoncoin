@@ -2358,21 +2358,21 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CDiskBlockPos* dbp)
         if (pcheckpoint && nHeight < pcheckpoint->nHeight)
             return state.DoS(100, error("AcceptBlock() : forked chain older than last checkpoint (height %d)", nHeight));
 
-        // Reject block.nVersion=1 blocks when 95% of the network has upgraded:
-        // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority was
-        // set to always return false.
-        //if( block.nVersion < 2 && CBlockIndex::IsSuperMajority(2, pindexPrev, 950, 1000) )
-            //return state.Invalid(error("AcceptBlock() : rejected nVersion=1 block"), REJECT_OBSOLETE, "bad-version");
-
-        // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
-        if (block.nVersion >= 2) {
-            // if 750 of the last 1,000 blocks are version 2 or greater:
-//            if( CBlockIndex::IsSuperMajority(2, pindexPrev, 750, 1000) ) {  // Enforce the rule if true
-                CScript expect = CScript() << nHeight;
-                if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
-                    !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin()))
-                        return state.DoS(100, error("AcceptBlock() : block height mismatch in coinbase"), REJECT_INVALID, "bad-cb-height");
-//            }
+        // Reject block.nVersion=1 blocks
+        // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority test was
+        // set to always return false.  As of 3/15/2015 in the last 10000 blocks over 700 where version 1 blocks
+#if defined( HARDFORK_BLOCK )
+        if( block.nVersion < 2 && nHeight > HARDFORK_BLOCK )                // We'll start enforcing the new rule
+            return state.Invalid(error("AcceptBlock() : rejected nVersion=1 block"), REJECT_OBSOLETE, "bad-version");
+#endif
+        // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height, there was one block
+        // way back at block index 222353, which doesn't pass this smell test, other than that the chain appears clean.
+        // While loading the bootstrap...
+        if( block.nVersion >= 2 && nHeight != 222353 ) {                    // Enforce the rule if true now
+            CScript expect = CScript() << nHeight;
+            if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
+                !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin()))
+                    return state.DoS(100, error("AcceptBlock() : block height mismatch in coinbase"), REJECT_INVALID, "bad-cb-height");
         }
     }
 
@@ -2859,6 +2859,8 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
     CValidationState state;
     int nHeightOfLastV1block = 0;
     int nCountOfLastV1block = 0;
+    // int nHeightOfLastV2FailedRuleBlock = 0;
+    // int nCountOfLastV2FailedRuleBlock = 0;
     for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev)
     {
         boost::this_thread::interruption_point();
@@ -2872,7 +2874,15 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         if( block.nVersion < 2 ) {
             nCountOfLastV1block++;
             if( nHeightOfLastV1block < pindex->nHeight ) nHeightOfLastV1block = pindex->nHeight;
-        }
+        } // else {  Think we're done with this test code, ToDo: remove from source master
+            // Check for failed V2 coinbase rule
+            // V2 blocks should ALL start with a coinbase that has a serialized block height
+            //CScript expect = CScript() << pindex->nHeight;
+            //if( block.vtx[0].vin[0].scriptSig.size() < expect.size() || !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin()) ) {
+                //if( nHeightOfLastV2FailedRuleBlock < pindex->nHeight ) nHeightOfLastV2FailedRuleBlock = pindex->nHeight;
+                //nCountOfLastV2FailedRuleBlock++;
+            //}
+        //}
 
         // check level 1: verify block validity
         if (nCheckLevel >= 1 && !CheckBlock(block, state))
@@ -2899,7 +2909,8 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
                 nGoodTransactions += block.vtx.size();
         }
     }
-    LogPrintf( "The height of the last Version 1 block was %d, and there were %d of them.\n", nHeightOfLastV1block, nCountOfLastV1block );
+    LogPrintf( "The height of the last V1 block was %d, and there were %d of them.\n", nHeightOfLastV1block, nCountOfLastV1block );
+    // LogPrintf( "The height of the last V2 block that has a mismatch in the coinbase height was %d, and there were %d of them.\n", nHeightOfLastV2FailedRuleBlock, nCountOfLastV2FailedRuleBlock );
 
     if (pindexFailure)
         return error("VerifyDB() : *** coin database inconsistencies found (last %i blocks, %i good transactions before that)\n", chainActive.Height() - pindexFailure->nHeight + 1, nGoodTransactions);
@@ -3398,33 +3409,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrMe;
         CAddress addrFrom;
         uint64_t nNonce = 1;
+
+        // Start with getting a few things first, before the nightmare begins as what needs to happen with past protocols and address objects.
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
 
-        // Protocol 70009 uses only IP addresses on initiating connections over clearnet, and only full size i2p destinations
-        // over the i2p network, with the ip field set to the new GarlicCat field (an IP6/48) specifier.
-        // Processing inbound messages, one can expect the same
-
-        // If the peer protocol version was 70008, then the inbound addresses are always full size, which
-        // if we're connecting over a clearnet connection will mean the wrong stream type has been set in the ssSend DataStream
-        // for some reason this cause the larger packet to be provided.
-        // if( pfrom->nVersion == 70008 ) ssSend.SetType( SER_NETWORK );
-
-        // Because we are getting a version message that may NOT have the expected stream type setup correctly,
-        // the data causes an exception to be thrown.  We need to not get the addrMe value from the data stream until after
-        // some additional checking....
-        if( pfrom->nVersion < 70010 ) {
-            if( vRecv.size() < ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION) ) {         // If the remaining buffer size is less than the size of the next object serialized size, it will throw an error
-                LogPrintf( "ProcessMessage: Version from %s incomplete.  So far we know nVersion=%d nServices=%lld nTime=%lld Reverting stream type to IP only.\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime );
-                pfrom->SetSendStreamType(SER_NETWORK | SER_IPADDRONLY);
-                pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
-                fProtocolError = true;                              // Protocol bugs are a huge job to debug, version 70007 works two different ways.
-            }
-            if( pfrom->nVersion == 70009 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK);
-            vRecv >> addrMe;                // Try it now anyway, or throw the error
-
-        } else
-            vRecv >> addrMe;
-
+        // If it's to old, thats easy disconnect and your out of here.
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             // relay alerts prior to disconnection
@@ -3437,28 +3426,73 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return true;
         }
 
+
+        // Protocol 70009 uses only IP addresses on initiating connections over clearnet, and only full size i2p destinations
+        // over the i2p network, with the ip field set to the new GarlicCat field (an IP6/48) specifier.
+        // For processing inbound connection messages, one can expect the same other than that one detail it should work the
+        // same as older versions, with the exception of 70008, which needs a correction for that to work properly and will
+        // quickly be abandoned as a 'buggy' prerelease test version.
+
+        // If the peer protocol version was 70008, then the inbound addresses are always full size, however the data within
+        // the message themselves is only ip information when sent over a clearnet connection.
+        // if we're connecting that way it means the wrong stream type has been set in the ssSend DataStream field for the node.
+        // at least until AFTER it responds to our response. (if this is an outbound connection attempt by it) its version
+        // message will not have its ssSend datastream field type set to anything other than full size, even though the data
+        // itself will only be 2 ip addresses without the i2p destinations.
+
+        // Because we are getting a version message that may NOT have the expected stream type setup correctly,
+        // the data causes an exception to be thrown, if we are expecting an i2p address, yet the version message itself is
+        // much shorter, having only 2 ip addresses.  We need to not get the addrMe value from the data stream until after
+        // some additional checking.... try to figure out what to have our streams set to while dealing with these problems.
+        if( pfrom->nVersion < 70009 ) {
+            if( vRecv.size() < ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION) ) {         // If the remaining buffer size is less than the size of the next object serialized size, it will throw an error
+                LogPrintf( "ProcessMessage: Version from %s incomplete.  So far we know nVersion=%d nServices=%lld nTime=%lld Reverting stream type to IP only.\n", pfrom->addr.ToString(), pfrom->nVersion, pfrom->nServices, nTime );
+                // Try forcing the stream type to be IP only, and hope for the best outcome
+                pfrom->SetSendStreamType(SER_NETWORK | SER_IPADDRONLY);
+                pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
+                fProtocolError = true;                              // Protocol bugs are a huge job to debug, version 70007 works two different ways.
+            }
+            if( pfrom->nVersion == 70008 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK);     // Fix the received data stream type, before getting addresses
+            vRecv >> addrMe;                                        // Try it now anyway, or throw the error
+
+        } else
+            vRecv >> addrMe;
+
         // If there is still more data to receive, it should be "from" address nonce values
         // if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", ::GetSerializeSize(addrFrom, SER_NETWORK, PROTOCOL_VERSION), vRecv.size() );
 
         if( !vRecv.empty() )
             vRecv >> addrFrom;
 
-        if( pfrom->nVersion == 70009 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
+        // At this point we got the incorrect big objects, and now have the rest of the data and the
+        // two ip addresses in the right memory location, problem solved.  Here now immediately
+        // setting back our receiver to be ip only mode, later on in the verack message we will again
+        // set the receiver stream up based on what the 70007 code was using.
+        // Not expecting to receive anything else from these peers atm, except a verack followed by other
+        // messages, possibly getaddr's or blocks, those should all happen after verack, so I don't think
+        // this is really necessary, perhaps a needless change to the setting.
+        if( pfrom->nVersion == 70008 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
 
         // Any peer with a lesser version than our newest level needs special attention.
-        // Starting with v70009 we introduce the concept of a GarlicCatagory address to
-        // the CNetAddr class private ip 16 byte array, its selected as a specific IP6
-        // formated address, one we can always identify as indicating an I2P address
-        // for backwards compatibility.  This is left out of the details received from
-        // any peer with a lesser version.  In future we'll change this again to a new
-        // protocol level, one which optimizes the storage required for new I2P Destination
-        // keys and optional certificate and go to a decoded base64 binary format.
-        if( pfrom->nVersion < PROTOCOL_VERSION + 1) {
-            if( addrMe.IsNativeI2P() ) addrMe.SetSpecial( addrMe.GetI2pDestination() );
-            if( addrFrom.IsNativeI2P() ) addrFrom.SetSpecial( addrFrom.GetI2pDestination() );
-        }
+        // So we keep our inhouse database correct when receiving i2p destination addresses.
+        // Starting with v70009 we introduce the concept of a GarlicCat-agory address to
+        // the CNetAddr object classes private ip 16 byte array field, its value is now
+        // selected as a specific IP6/48 formated address, one we can always identify as
+        // indicating an I2P address.  This is left out of the details received from
+        // any peer with a lesser version.  In the future we'll change this again to a new
+        // protocol level, one which optimizes the storage required for I2P Destination
+        // keys (& possible optional certificate), without even using the base64 format
+        // anymore.
+        // NO conditional on this, as it came from the outside world:
+        // if( pfrom->nVersion < 70009 ) {
+        // Whenever we receive these addresses, if its an i2p destination, the ip address should be the GarlicCat, if not, set it up correctly
+        // we count on it after this, and a peer could be trying to send us anything...
+        if( addrMe.IsNativeI2P() && !addrMe.IsI2P() ) addrMe.SetI2pDestination( addrMe.GetI2pDestination() );
+        if( addrFrom.IsNativeI2P() && !addrMe.IsI2P() ) addrFrom.SetI2pDestination( addrFrom.GetI2pDestination() );
+        //}
+        // ToDo: Possibly more checking in the future to validate those above addresses...
 
-        // Now we should have the right address data for addrMe and addrFrom, with or without the Protocol 70007 clearnet version buggy brained builds.
+        // Now we should have the right address data for addrMe and addrFrom, with or without the Protocol 70007/8 clearnet version buggy brained builds.
         // if( fProtocolError ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( nNonce ), vRecv.size() );
 
         if( !vRecv.empty() )
@@ -3513,9 +3547,22 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if( pfrom->fInbound && addrMe.IsRoutable() )
             SeenLocal(addrMe);                                                              // If inbound score seen & advertise ourselves
 
+#ifdef ENABLE_I2PSAM
+        // Here if the node does not seem to support that I2P service, we keep the IP only setting for our send stream.
+        // Both versions 70008 and 70007 work this way.  But have this code in different places.
+        // If it does support that I2P service, then we (should) switch to sending full CNetAddr objects with contain both the
+        // IP and I2P information.
+        // Also see: SetRecvStreamType() in the verack message
+        // Protocol 70009 likes this idea, and will stick to doing the same.  And doing it BEFORE we send back our version
+        pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
+#endif
+
         // If it was inbound, we've been shy and don't send our version until we hear from them.
         // We did that when creating this node in the 1st place, see net.h
         // So now that we have their version, we can push ours so they know who we are too, after this all kind of things can happen
+        // V9 clients (protocols > 70007) always have NODE_I2P set, its important as older (versions <=70007) that are running on
+        // clearnet, will not response with addresses otherwise.  They simply don't send it if the address is not an i2p destination
+        // and the peer (us) do not indicate supporting the NODE_I2P service.
         if (pfrom->fInbound)
             pfrom->PushVersion();
 
@@ -3538,12 +3585,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 #endif
             {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
-                if (addr.IsRoutable())
+                // Only push our local address if its routable.  Or if its set to a private
+                // ipv4 network address, then only push it if the node is also a private ip4v
+                // network address...
+                if (addr.IsRoutable() && (!addr.IsRFC1918() || pfrom->addr.IsRFC1918()) )
                     pfrom->PushAddress(addr);
             }
 
             // Get recent addresses
-            if (pfrom->fOneShot || pfrom->nVersion >= CADDR_TIME_VERSION || addrman.size() < 1000)
+            if (pfrom->fOneShot || pfrom->nVersion >= MIN_PEER_PROTO_VERSION || addrman.size() < 1000)
             {
                 pfrom->PushMessage("getaddr");
                 pfrom->fGetAddr = true;
@@ -3580,6 +3630,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     {
         pfrom->SetRecvVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 #ifdef ENABLE_I2PSAM
+        // Older protocols < 70008 may not always have NODE_I2P in their services, if not we make sure
+        // our stream type for receiving stays IP only.  Why we wait to switch the receiver stream after
+        // the verack makes no sense to this developer, this should be done at the same time as the
+        // sendstream is switched (if need be, based on the nodes service options), however it was
+        // in older protocols, so sticking with it here now as well in v70009.
         pfrom->SetRecvStreamType( pfrom->GetRecvStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
 #endif
     }
@@ -3591,41 +3646,74 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vRecv >> vAddr;
 
         // Don't want addr from older versions unless seeding
-        if (pfrom->nVersion < CADDR_TIME_VERSION && addrman.size() > 1000)
+        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && addrman.size() > 1000)
             return true;
-        if (vAddr.size() > 1000)
-        {
+        if (vAddr.size() > 1000) {
             Misbehaving(pfrom->GetId(), 20);
             return error("message addr size() = %u", vAddr.size());
         }
+        // If the senders software is operating incorrectly, due to streamtype settings in software being wrong or something
+        // we more than likely generated the error above, with >1K addresses.
 
         // Store the new addresses
         vector<CAddress> vAddrOk;
         int64_t nNow = GetAdjustedTime();
-        int64_t nSince = nNow - 10 * 60;
-        // Any peer addresses should be checked, if their size could include I2P destination addresses,
-        // we don't know what they are sending us, could be clearnet ip's or full i2p base64 strings.
-        LogPrintf( "Received %d addresses from peer %s, each address serialization size is %u\n",
-                   vAddr.size(), pfrom->addr.ToString(), ::GetSerializeSize(pfrom->addr, SER_NETWORK, PROTOCOL_VERSION) );
-        // if( pfrom->addr.IsI2P() && pfrom->nVersion < PROTOCOL_VERSION ) {
-            // Then we've a new problem, every address MAY have to be fixed
-            // we dont know which network they may have come, but if they
-            // have a valid I2P address field, lets fix those, so they
-            // work with our new protocol....
-            BOOST_FOREACH(CAddress& addr, vAddr)
-                if( addr.IsNativeI2P() ) addr.SetSpecial( addr.GetI2pDestination() );
-        // }
+        int64_t nSince = nNow - 10 * 60;                    // Set to 10 minutes ago
+        bool fStreamI2pType = (pfrom->GetRecvStreamType() & SER_IPADDRONLY ) == 0;
+        // Hopefully that stream type was set correctly before we do this, it should have been done in the verack message
 
+        // Any peer addresses should be checked, as their size could include I2P destination addresses,
+        // we don't know what they are sending us, could be clearnet ip's or full i2p base64 destinations,
+        // perhaps with or without the correct GarlicCat field set in the ip address space....
+        LogPrintf( "Received %d addresses, serialized size %u bytes each, from peer: %s\n",
+                   vAddr.size(), ::GetSerializeSize(pfrom->addr, pfrom->GetRecvStreamType(), pfrom->nVersion), pfrom->addr.ToString() );
+
+        // If any of those addresses are I2P destinations we introduce some new stress testing on them to confirm
+        // they are valid and setup correctly before added or sharing them with others.
+        // If the StreamType is IP only, our memory should have been cleared and zeroed out as the CAddress objects were
+        // created, as only the ip field is filled in when the addresses are deserialized. So in that case, the
+        // checks here are not needed.
+        BOOST_FOREACH(CAddress& addr, vAddr)
+            if( fStreamI2pType ) {                          // So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
+                if( addr.IsNativeI2P() && !addr.IsI2P() )
+                    addr.SetI2pDestination( addr.GetI2pDestination() );// Fix the address by adding the GarlicCat field
+                else
+                    addr.SetI2pDestination( "" );           // Clears the I2P destination field, but leaves the ip field as it was found
+            } else
+                assert( addr.GetI2pDestination() == "" );   // Only ip addresses came in, programming error if the i2p destination field is not zero
+
+        // addr.GetNetwork(), IsI2P() and others for any given address, only work correctly, if the above GarlicCat field has been setup
         BOOST_FOREACH(CAddress& addr, vAddr)
         {
             boost::this_thread::interruption_point();
 
+            bool fI2pAddr = addr.GetNetwork() == NET_NATIVE_I2P;
+            // IsReachable looks at this nodes configuration, if this address is for a network that
+            // is outside of how this node is configuration atm, then it will be false.
+            bool fReachable = IsReachable(addr) || fI2pAddr;
+            // We're now going to start having all the folks on clearnet help us out.  While at the
+            // same time not destroy the beautiful random way this works.  Sharing good I2P addresses
+            // is something we want to have done by all peers, regardless of any personal benefit to
+            // those running on clearnet only.  Could really help out those of us running mixed mode,
+            // which in turn, will filter over into helping those out on i2p only as well.
+            // The only conditional in IsRoutable() which considers the local node setup, is a call to IsLocal(),
+            // those addresses will not be included in a valid routable address to send here.  Which is fine.
+
+            // All other considerations are just validity checks on the addresses themselves for being good
+            // ones, except for what is now allowed, which are RFC1918 addresses, we do not want those to be
+            // sent out and shared over a clearnet or i2p connection to peers.
+            // See the IsRoutable() method in netbase.cpp for why we don't want RFC1918 addresses to be
+            // included here.  PushAddress() double checks that, with a debug.log entry if caught.
+            bool fRoutable = addr.IsRoutable() && !addr.IsRFC1918();
+
+            // Set the time on this address to be 5 days old, if their time is all screwed up
             if (addr.nTime <= 100000000 || addr.nTime > nNow + 10 * 60)
                 addr.nTime = nNow - 5 * 24 * 60 * 60;
-            pfrom->AddAddressKnown(addr);
-            bool fReachable = IsReachable(addr);
+            pfrom->AddAddressKnown(addr);               // Mark this address as known by the peer
 
-            if (addr.nTime > nSince && !pfrom->fGetAddr && vAddr.size() <= 10 && addr.IsRoutable())
+            // Here if its just a few addresses, really new and routeable we pay special attention
+            // and forward them randomly to our peers.
+            if( addr.nTime > nSince && !pfrom->fGetAddr && vAddr.size() <= 10 && fRoutable )
             {
                 // Relay to a limited number of other nodes
                 {
@@ -3641,7 +3729,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                     multimap<uint256, CNode*> mapMix;
                     BOOST_FOREACH(CNode* pnode, vNodes)
                     {
-                        if (pnode->nVersion < CADDR_TIME_VERSION)
+                        if (pnode->nVersion < MIN_PEER_PROTO_VERSION)
                             continue;
                         unsigned int nPointer;
                         memcpy(&nPointer, &pnode, sizeof(nPointer));
@@ -3649,17 +3737,22 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                         hashKey = Hash(BEGIN(hashKey), END(hashKey));
                         mapMix.insert(make_pair(hashKey, pnode));
                     }
-                    int nRelayNodes = fReachable ? 2 : 1; // limited relaying of addresses outside our network(s)
-                    for (multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && nRelayNodes-- > 0; ++mi)
-                        ((*mi).second)->PushAddress(addr);
+                    int nRelayNodes = fReachable ? 2 : 1;   // limited relaying of addresses outside our network(s)
+                    if( fI2pAddr ) nRelayNodes *= 2;        // If its an I2P address double the number of peers we share it with
+                    for (multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && nRelayNodes-- > 0; ++mi) {
+                        CNode* pToNode = ((*mi).second);    // Local copy of the node pointer, this time whom we are relaying it too...
+                        // If its not an I2P addr, push it, if it is, consider the stream type of that peer before doing that.
+                        if( !addr.IsI2P() || ( (pToNode->GetRecvStreamType() & SER_IPADDRONLY) == 0 ) )
+                            pToNode->PushAddress(addr);
+                    }
                 }
             }
 
-            // Do not store addresses outside our network
-            if (fReachable)
+            // Do not store addresses outside our network, unless its an I2P destination, then we keep it
+            if( fReachable || fI2pAddr )
                 vAddrOk.push_back(addr);
         }
-        addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);
+        addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);         // Add the address to our book, marking it as 2hrs old
         if (vAddr.size() < 1000)
             pfrom->fGetAddr = false;
         if (pfrom->fOneShot)
@@ -4344,7 +4437,10 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 #endif
                     {
                         CAddress addr = GetLocalAddress(&pnode->addr);
-                        if (addr.IsRoutable())
+                        // Only push our local address if its routable.  Or if its set to a private
+                        // ipv4 network address, then only push it if the node is also a private ip4v
+                        // network address...
+                        if (addr.IsRoutable() && (!addr.IsRFC1918() || pnode->addr.IsRFC1918()) )
                             pnode->PushAddress(addr);
                     }
                 }
@@ -4365,7 +4461,11 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 if (pto->setAddrKnown.insert(addr).second)
                 {
                     vAddr.push_back(addr);
-                    if (vAddr.size() >= 1000)
+                    // I2P addresses are MUCH larger than IP addresses, a trickle set to 1K is over 1/2 megabyte of payload
+                    // over 33x larger per addr, so lets reduce that amount by alot, down by a factor of 4. still over 8x larger than IPs
+                    // but large enough to be a considerable number.
+                    // if (vAddr.size() >= 1000)
+                    if (vAddr.size() >= 250)
                     {
                         pto->PushMessage("addr", vAddr);
                         vAddr.clear();

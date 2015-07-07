@@ -905,7 +905,11 @@ bool AppInit2(boost::thread_group& threadGroup)
                 fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
             }
         }
+#ifdef ENABLE_I2PSAM
+        else if( !fBound ) {    // Added another test, we may already be bound to an I2P listening port and don't want any clearnet binds for listening
+#else                           // original code
         else {
+#endif
             struct in_addr inaddr_any;
             inaddr_any.s_addr = INADDR_ANY;
             fBound |= Bind(CService(in6addr_any, GetListenPort()), BF_NONE);
@@ -921,7 +925,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             CService addrLocal(strAddr, GetListenPort(), fNameLookup);
             if (!addrLocal.IsValid())
                 return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr));
-            AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
+            AddLocal(addrLocal, LOCAL_MANUAL);
         }
     }
 

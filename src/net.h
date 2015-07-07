@@ -302,10 +302,7 @@ public:
 #endif
     {
 #ifdef ENABLE_I2PSAM
-        // We don't no the protocol version here yet, nor does the addrIn have it as a member variable anyway
-        // This line of code was left out for 70008, so it doesnt get set until later after the version message
-        // on inbound connections.
-        // if( addrIn->nVersion != 70008 ) ssSend.SetType(nSendStreamType);
+        ssSend.SetType(nSendStreamType);
 #endif
         nServices = 0;
         hSocket = hSocketIn;
@@ -452,8 +449,18 @@ public:
         // Known checking here is only to save space from duplicates.
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
-        if (addr.IsValid() && !setAddrKnown.count(addr))
-            vAddrToSend.push_back(addr);
+
+        // An Additional double check now allows us to share private network IP4v addresses
+        // only with those peers that are also on and using a private network.  This check
+        // produces a debug.log Warning message error if detected.
+        // All the real checking is done throughout the code where needed, and this
+        // log entry should NEVER happen, or the programming hasn't been done properly.
+        if (addr.IsValid() && !setAddrKnown.count(addr)) {
+            if( !addr.IsRFC1918() || this->addr.IsRFC1918() )
+                vAddrToSend.push_back(addr);
+            else
+                LogPrintf( "WARNING - Are you on a private ip4v network? Not pushing your address to %s  Your local address is %s\n", this->addr.ToString(), addr.ToString() );
+        }
     }
 
 
