@@ -1672,8 +1672,9 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     // Initiate outbound network connection
     //
     boost::this_thread::interruption_point();
-    string sDestination;                        // If a strDest pointer is give, we store the modified result here before connecting a new node.
-    if (!strDest) {
+    string sBase32OrIP;                         // If a strDest pointer is give, we store the modified result here before connecting a new node.
+
+    if (!strDest) {                         // If a string was not given, just do what we normally would given a CAddress object
         if( IsLocal(addrConnect) || FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) || FindNode(addrConnect.ToStringIPPort().c_str()) )
             return false;
     }
@@ -1691,19 +1692,27 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
             strHost = strHost.substr(1, strHost.size() - 2);
 
         if( isValidI2pAddress( strHost ) ) {                        // In this case we have a full base64 i2p destination given to us
-            CAddress addr( CService(CNetAddr(strDest),0) );
-            addrman.Add( addr, CNetAddr("127.0.0.1") );             // The source must have been from us locally here & no time penalty need be applied
-            strHost = B32AddressFromDestination( strHost );
-        }
-        sDestination = strHost;                                     // Regardless of any modifications, ipxx or b32.i2p we now need the new non-const variable setup.
-        // Which of couse was defined as a const, so we can't
+            // When addr object below is created, it will cause LookupHost->LookupIntern->SetSpecial to happen
+            // for the full i2p destination, so no lookup will be done for this case.
+            CAddress addr( CService( CNetAddr(strHost), 0) );
+            // Now we create a hash map entry for this destination object, the source must have been from us locally here, if we're given a string
+            // All sources of an OpenNetworkConnection with a string value would be from us in configuration, console entry, or an rpc client. Locally
+            // the source is us, and 127.0.0.1 is easier than a full i2p destination address as the source.
+            // Anyway, no time penalty need be applied in the addrman parameter options, which is default when called.
+            // addnode onetry calls this routine directly, the rest of the addnode commands place entries into a 'vAddedNode' vector, and create
+            // CAddress objects directly from the values, bypassing this code from running as expected.
+            // ToDo: Figure out and fix that problem
+            addrman.Add( addr, CNetAddr("127.0.0.1") );
+            sBase32OrIP = B32AddressFromDestination( strHost );
+        } else
+            sBase32OrIP = strHost;                                     // Regardless of any modifications, ipxx or b32.i2p we now need the new non-const variable setup.
     }
 #endif // ENABLE_I2PSAM
 
-    if( sDestination.size() && FindNode(sDestination.c_str()) )
+    if( sBase32OrIP.size() && FindNode( sBase32OrIP.c_str() ) )
         return false;
 
-    CNode* pnode = ConnectNode( addrConnect, sDestination.size() ? sDestination.c_str() : NULL );
+    CNode* pnode = ConnectNode( addrConnect, sBase32OrIP.size() ? sBase32OrIP.c_str() : NULL );
     boost::this_thread::interruption_point();
 
     if (!pnode)

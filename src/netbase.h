@@ -90,7 +90,7 @@ class CNetAddr
         bool IsI2P() const;
         bool IsNativeI2P() const;
         std::string GetI2pDestination() const;
-        bool SetI2pDestination( const std::string& sDestination );
+        bool SetI2pDestination( const std::string& sBase64Dest );
         std::string ToB32String() const;
 #endif
         CNetAddr(const struct in6_addr& pipv6Addr);

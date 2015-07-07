@@ -22,6 +22,18 @@
 
 #include <openssl/rand.h>
 
+/** Extended statistics about our B32.I2P address table */
+class CDestinationStats
+{
+public:
+    std::string sAddress;
+    bool fInTried;
+    int nAttempts;
+    int64_t nSuccessTime;
+    std::string sSource;
+    std::string sBase64;
+};
+
 /** Extended statistics about a CAddress */
 class CAddrInfo : public CAddress
 {
@@ -357,8 +369,9 @@ public:
 #ifdef ENABLE_I2PSAM
                     if( info.IsI2P() ) {
                         assert( info.IsNativeI2P() );
-                        uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                        am->mapI2pHashes[hash] = n;
+                        uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                        LogPrintf( "Adding %s to b32hashMap\n", b32hash.GetHex() );
+                        am->mapI2pHashes[b32hash] = n;
                     }
 #endif
                 }
@@ -368,6 +381,14 @@ public:
                 {
                     CAddrInfo info;
                     READWRITE(info);
+#ifdef ENABLE_I2PSAM
+                    if( info.IsI2P() ) {
+                        assert( info.IsNativeI2P() );
+                        uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                        LogPrintf( "Adding %s to b32hashMap\n", b32hash.GetHex() );
+                        am->mapI2pHashes[b32hash] = am->nIdCount;
+                    }
+#endif
                     std::vector<int> &vTried = am->vvTried[info.GetTriedBucket(am->nKey)];
                     if (vTried.size() < ADDRMAN_TRIED_BUCKET_SIZE)
                     {
@@ -377,13 +398,6 @@ public:
                         am->mapInfo[am->nIdCount] = info;
                         am->mapAddr[info] = am->nIdCount;
                         vTried.push_back(am->nIdCount);
-#ifdef ENABLE_I2PSAM
-                        if( info.IsI2P() ) {
-                            assert( info.IsNativeI2P() );
-                            uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                            am->mapI2pHashes[hash] = am->nIdCount;
-                        }
-#endif
                         am->nIdCount++;
                     } else {
                         nLost++;
@@ -428,13 +442,14 @@ public:
     }
 
 #ifdef ENABLE_I2PSAM
-    // Return the number of (unique) addresses in all tables.
+    // Return the number of (unique) b32.i2p addresses in the hash table
     int b32HashTableSize()
     {
         return mapI2pHashes.size();
     }
 
     std::string GetI2pBase64Destination(const std::string& sB32addr);
+    int CopyDestinationStats( std::vector<CDestinationStats>& vStats );
 #endif
 
     // Consistency check

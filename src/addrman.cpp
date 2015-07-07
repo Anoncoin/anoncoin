@@ -137,6 +137,32 @@ std::string CAddrMan::GetI2pBase64Destination(const std::string& sB32addr)
     CAddrInfo* paddr = LookupB32addr(sB32addr);
     return  paddr && paddr->IsI2P() ? paddr->GetI2pDestination() : std::string();
 }
+
+// Returns the number of entries processed
+int CAddrMan::CopyDestinationStats( std::vector<CDestinationStats>& vStats )
+{
+    int nSize = 0;
+    vStats.clear();
+    vStats.reserve( mapI2pHashes.size() );
+    for( std::map<uint256, int>::iterator it = mapI2pHashes.begin(); it != mapI2pHashes.end(); it++) {
+        CDestinationStats stats;
+        std::map<int, CAddrInfo>::iterator it2 = mapInfo.find((*it).second);
+        if (it2 != mapInfo.end()) {
+            CAddrInfo* paddr = &(*it2).second;
+            stats.sAddress = paddr->ToString();
+            stats.fInTried = paddr->fInTried;
+            stats.nAttempts = paddr->nAttempts;
+            stats.nSuccessTime = paddr->nLastSuccess;
+            stats.sSource = paddr->source.ToString();
+            stats.sBase64 = paddr->GetI2pDestination();
+            nSize++;
+            vStats.push_back( stats );
+        }
+    }
+    assert( mapI2pHashes.size() == nSize );
+    return nSize;
+}
+
 #endif // ENABLE_I2PSAM
 
 CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, int *pnId)
@@ -149,9 +175,11 @@ CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, in
     if (pnId)
         *pnId = nId;
 #ifdef ENABLE_I2PSAM
-    if( addr.IsI2P() && addr.IsNativeI2P() ) {
-        uint256 hash = GetI2pDestinationHash( addr.GetI2pDestination() );
-        mapI2pHashes[hash] = nId;
+    if( addr.IsI2P() ) {
+        assert( addr.IsNativeI2P() );
+        uint256 b32hash = GetI2pDestinationHash( addr.GetI2pDestination() );
+        LogPrintf( "Adding %s to b32hashMap\n", b32hash.GetHex() );
+        mapI2pHashes[b32hash] = nId;
     }
 #endif
     return &mapInfo[nId];
@@ -220,17 +248,12 @@ int CAddrMan::ShrinkNew(int nUBucket)
                 mapAddr.erase(info);
                 mapInfo.erase(*it);
 #ifdef ENABLE_I2PSAM
-                if( info.IsI2P() && info.IsNativeI2P() ) {
-                    uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                    // assert( mapI2pHashes.count(hash) );
-                    // The above assertion is failing, I think because the addresses are indicating a zero'd out i2p destination?
-                    // and have already been deleted.  We need to check for that case, and not erase an entry that is not there.
-                    // Nope they are unique hash values that have been added to the system, but do not have an associated entry
-                    // in the mapI2pHashes vector, why?
-                    if( mapI2pHashes.count(hash) )
-                        mapI2pHashes.erase(hash);
-                    else
-                        LogPrintf( "ERROR - Unexpected I2P Address hash not found in AddrMan for %s\n", hash.GetHex() );
+                if( info.IsI2P() ) {
+                    uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                    std::map<uint256, int>::iterator it2 = mapI2pHashes.find( b32hash );
+                    LogPrintf( "Remove %s from b32hashMap\n", b32hash.GetHex() );
+                    assert( it2 != mapI2pHashes.end() );
+                    mapI2pHashes.erase(it2);
                 }
 #endif
                 nNew--;
@@ -263,15 +286,12 @@ int CAddrMan::ShrinkNew(int nUBucket)
         mapAddr.erase(info);
         mapInfo.erase(nOldest);
 #ifdef ENABLE_I2PSAM
-        if( info.IsI2P() && info.IsNativeI2P() ) {
-            uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-            // assert( mapI2pHashes.count(hash) ==  1);
-            // The above assertion is failing, I think because the addresses are indicating a zero'd out i2p destination, and have already been deleted.
-            // we need to check for that case, and not erase an entry that is not there.
-            if( mapI2pHashes.count(hash) )
-                mapI2pHashes.erase(hash);
-            else
-                LogPrintf( "ERROR2 - Unexpected I2P Address hash not found in AddrMan for %s\n", hash.GetHex() );
+        if( info.IsI2P() ) {
+            uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+            std::map<uint256, int>::iterator it2 = mapI2pHashes.find( b32hash );
+            LogPrintf( "Remove %s from b32hashMap\n", b32hash.GetHex() );
+            assert( it2 != mapI2pHashes.end() );
+            mapI2pHashes.erase(it2);
         }
 #endif
         nNew--;
@@ -390,18 +410,8 @@ void CAddrMan::Good_(const CService &addr, int64_t nTime)
 
 bool CAddrMan::Add_(const CAddress &addr, const CNetAddr& source, int64_t nTimePenalty)
 {
-    // Its really important that we do not allow addresses in, which are in the
-    // IP6 catagory used for our GarlicCat value, which are not native I2P destinations,
-    // otherwise it would be possibly to confuse our software into believing that those
-    // ip addresses where an indication of a valid i2p address. while really being zero
-    // or any other possible value that the person wanted to try and send.
-    // Turns out that IsRoutable() DOES allow this to happen, so we need to add more
-    // safeguards to check that the i2p field is a valid base64 destination.
-    if( !addr.IsRoutable() || (addr.IsI2P() && !addr.IsNativeI2P()) ) {
-        if( addr.IsI2P() && !addr.IsNativeI2P() )
-            LogPrintf( "ERROR - Found an Address containing the GarlicCat, yet it is not a native I2P destination: %s\n", addr.ToString() );
+    if( !addr.IsRoutable() )
         return false;
-    }
 
     bool fNew = false;
     int nId;

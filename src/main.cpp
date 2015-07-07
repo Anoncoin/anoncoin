@@ -3445,6 +3445,17 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // the 2 ip addresses (addMe,addrFrom).  We need to not get the addrMe value from the data stream until after
         // some additional checking.... try to figure out what to have our streams set to while dealing with these problems.
         if( (pfrom->nVersion < 70009 ) && (pfrom->addr.GetNetwork() != NET_NATIVE_I2P) ) {
+            // If the peer protocol version was 70008, then the inbound addresses are always full size, however the data within
+            // the message themselves is only ip information when sent over a clearnet connection.  If we're connecting that way
+            // it means the wrong stream type has been set in the ssSend DataStream field from that node.  At least until AFTER it
+            // responds to our response. (if this is an outbound connection attempt by it) its version message will not have its
+            // ssSend datastream field type set to anything other than full size, even though the data itself will only be 2 ip
+            // addresses without the i2p destinations.  This gets corrected on once it pushes it version message.
+
+            // Earlier protocol version also send us larger version message addresses all the time, if they think we support the
+            // NODE_I2P service they start out right away trying to connect to us with that full size address object, this code
+            // now works for all those cases, no special version checking required.....other than knowing its less that 70009.
+            // Protocol 70006 lies about its services on clearnet, and is handled later on in this code.
             unsigned int nRemaining = vRecv.size();
             unsigned int nAddrWithI2P = ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION);
             // size_type nAddrWithIP = ::GetSerializeSize(addrMe, SER_NETWORK | SER_IPADDRONLY, PROTOCOL_VERSION);
@@ -3467,23 +3478,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if( !vRecv.empty() )
             vRecv >> addrFrom;
 
-        // At this point we got the incorrect big objects, and now have the rest of the data and the
-        // two ip addresses in the right memory location, problem solved.  Except if they have made
-        // and outbound connection to us, we do not know what service type they have set for us.
-        // It is not deterministic.  We can only guess.  The guess we are going to use is that
-        // they got our address from another peer, one that has it set correctly to a service
-        // of NODE_I2P.  Any outbound connections from that node, made by addnode, connect or
-        // seednode parameters will not have that bit set for us, and our guess will be wrong.
-
-        // Here now immediately
-        // setting back our receiver to be ip only mode, later on in the verack message we will again
-        // set the receiver stream up based on what the 70007 code was using.
-        // Not expecting to receive anything else from these peers atm, except a verack followed by other
-        // messages, possibly getaddr's or blocks, those should all happen after verack, so I don't think
-        // this is really necessary, perhaps a needless change to the setting.
-        // if( pfrom->fInbound
-        // if( pfrom->nVersion == 70008 && !pfrom->addr.IsNativeI2P() ) pfrom->SetRecvStreamType(SER_NETWORK | SER_IPADDRONLY);
-
         // Any peer with a lesser version than our newest level needs special attention.
         // So we keep our inhouse database correct when receiving i2p destination addresses.
         // Starting with v70009 we introduce the concept of a GarlicCat-agory address to
@@ -3496,10 +3490,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // anymore.
 
         // Whenever we receive these addresses, if its an i2p destination, the ip address should be the GarlicCat, if not, set it up correctly,
-        // as we count on it after this, and a peer could be trying to send us anything...
-        // As it came from the outside world, always check for this, and fix it if necessary:
-        if( addrMe.IsNativeI2P() && !addrMe.IsI2P() ) addrMe.SetI2pDestination( addrMe.GetI2pDestination() );
-        if( addrFrom.IsNativeI2P() && !addrMe.IsI2P() ) addrFrom.SetI2pDestination( addrFrom.GetI2pDestination() );
+        // as we count on it after this, and a peer could be trying to send us anything... So if we're not on I2P make sure these fields are blank
+        // As it came from the outside world, check everything and  fix it if necessary:
+        if( pfrom->addr.GetNetwork() == NET_NATIVE_I2P ) {
+            if( addrMe.IsNativeI2P() && !addrMe.IsI2P() ) addrMe.SetI2pDestination( addrMe.GetI2pDestination() );
+            if( addrFrom.IsNativeI2P() && !addrMe.IsI2P() ) addrFrom.SetI2pDestination( addrFrom.GetI2pDestination() );
+        } else {            // For now, must be a clearnet address in the IP field, and not have a I2P address.
+            // In the future this could be used to autoswitch the node to a more secure network, like I2P!
+            // At the present time (March 2015)the development team agrees, being able to link ip addresses to i2p destinations
+            // is not a desirable option.
+            addrMe.SetI2pDestination( "" );
+            addrFrom.SetI2pDestination( "" );
+        }
 
         // Now we should have the right address data for addrMe and addrFrom, with or without buggy brained builds.  If not, these LogPrintf lines help us debug it.
         // if( fBadProtocol ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( nNonce ), vRecv.size() );
@@ -3568,10 +3570,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // If it does support that I2P service, then we (should) switch to sending full CNetAddr objects with contain both the
         // IP and I2P information.
         // Also see: SetRecvStreamType() in the verack message
-        if( pfrom->nVersion < 70009 ) {
-            LogPrintf( "ProcessVersion: from %s, Sending stream type was %08x ", pfrom->addr.ToString(), pfrom->GetSendStreamType() );
-            pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
-            LogPrintf( "now set to %08x\n", pfrom->GetSendStreamType() );
+        if( (pfrom->nVersion < 70009) && (pfrom->addr.GetNetwork() != NET_NATIVE_I2P) ) {
+            // Protocol 70006 builds on clearnet lie, they do not even have the i2p address space built into their wallet software and report NODE_I2P as a service
+            // which they can not offer.  Fix that now and don't bother changing the stream type
+            if( pfrom->nVersion == 70006 ) {
+                pfrom->nServices &= ~NODE_I2P;
+                LogPrintf( "ProcessVersion: Node %s lies about the services it supports, correcting it before continuing.\n", pfrom->addr.ToString() );
+            }
+            else {
+                LogPrintf( "ProcessVersion: from %s, Sending stream type was %08x ", pfrom->addr.ToString(), pfrom->GetSendStreamType() );
+                pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY));
+                LogPrintf( "now set to %08x\n", pfrom->GetSendStreamType() );
+            }
         }
 #endif
 
@@ -3602,12 +3612,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
         // We still only exchange ip addresses in the version messages if on clearnet with Protocol 70009, This makes the handshake
-        // deterministic.  Not based at all on services, which may have been a lie, depending on how the information was obtained.
+        // deterministic.  Not based at all on services, which may have been a lie, depending on how the information was obtained,
+        // or the software was build (70006).
         // We must not change our send stream type, until after our version is pushed on inbound connections, because
         // the other node does not yet know for sure, whom we are and what services we really support.
         // If our connection was outbound, then the peer is now responding with it's version.  We do not want to change our receiver
         // stream type until after that handshake has been made.
-        // So at this point we always send/receive to other 70009 peers with full ip/i2p destination stream types.  BUT ONLY if they
+        // So at this point we always send/receive to other 70009+ peers with full ip/i2p destination stream types.  BUT ONLY if they
         // are NOW reporting that they support the NODE_I2P service.  This allows for the development of other software & services
         // one's that use the new protocol, but do not claim to support it, for whatever reason.  While at the same time, working for
         // all the various ways we can have inbound/outbound connections to peers using this software.
@@ -3674,10 +3685,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // the verack makes no sense to this developer, this should be done at the same time as the
         // sendstream is switched (if need be, based on the nodes service options), however it was
         // in older protocols, so sticking with it here now as well in v70009.
-        if( pfrom->nVersion < 70009 ) {
-            LogPrintf( "ProcessVersionAck: from %s, Receiver stream type was %08x ", pfrom->addr.ToString(), pfrom->GetRecvStreamType() );
-            pfrom->SetRecvStreamType( pfrom->GetRecvStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
-            LogPrintf( "now set to %08x\n", pfrom->GetRecvStreamType() );
+        if( (pfrom->nVersion < 70009) && (pfrom->addr.GetNetwork() != NET_NATIVE_I2P) ) {
+            // Protocol 70006 builds on clearnet lie, they do not even have the i2p address space built into their wallet software
+            // and report NODE_I2P as a service which they can not offer.  That has already been fixed in the version message,
+            // and we do nothing here for those builds.
+            if( pfrom->nVersion != 70006 ) {
+                LogPrintf( "ProcessVersionAck: from %s, Receiver stream type was %08x ", pfrom->addr.ToString(), pfrom->GetRecvStreamType() );
+                pfrom->SetRecvStreamType( pfrom->GetRecvStreamType() & ( (pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
+                LogPrintf( "now set to %08x\n", pfrom->GetRecvStreamType() );
+            }
         }
 #endif
     }
@@ -3689,11 +3705,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // claims to support NODE_I2P it sends us only IP address payloads.  An attempt was made to double check the vRecv buffers version type
         // even it lies, so they must not be compiled to even include the i2p address payload.  The 1st error that hits on the CDatastream
         // read now is the only place we can finally detect the error and correct the stream type and services for these type of
-        // nodes...
+        // nodes.  No special checking is done there atm, it's been learned that Protocols 70006 are the nodes that are not setup properly,
+        // so actions have been taken to design the problem away before an error is generated...
         vector<CAddress> vAddr;
         vRecv >> vAddr;
 
-        // Don't want addr from older versions unless seeding
+        // Don't want addr from older versions...
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && addrman.size() > 1000)
             return true;
         if (vAddr.size() > 1000) {
@@ -3705,8 +3722,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vector<CAddress> vAddrOk;
         int64_t nNow = GetAdjustedTime();
         int64_t nSince = nNow - 10 * 60;                    // Set to 10 minutes ago
-        bool fStreamI2pType = (pfrom->GetRecvStreamType() & SER_IPADDRONLY ) == 0;
-        // Hopefully that stream type was set correctly before we do this, it should have been done in the verack message
+        // bool fPossibleI2pAddrs = (pfrom->nServices & NODE_I2P ) != 0;
+        // Hopefully the services supported by the peer show it supports I2P addresses. (services can lie), look at the stream type for now
+        bool fPossibleI2pAddrs = (pfrom->GetRecvStreamType() & SER_IPADDRONLY ) == 0;
+        // Hopefully that stream type was set correctly before we do this, it should have been done correctly before this message is processed.
 
         // Any peer addresses should be checked, as their size could include I2P destination addresses,
         // we don't know what they are sending us, could be clearnet ip's or full i2p base64 destinations,
@@ -3720,7 +3739,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // created, as only the ip field is filled in when the addresses are deserialized. So in that case, the
         // checks here are not needed.
         BOOST_FOREACH(CAddress& addr, vAddr)
-            if( fStreamI2pType ) {                          // So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
+            if( fPossibleI2pAddrs ) {                        // So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
                 if( addr.IsNativeI2P() && !addr.IsI2P() )
                     addr.SetI2pDestination( addr.GetI2pDestination() );// Fix the address by adding the GarlicCat field
                 else
@@ -3728,26 +3747,30 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             } else
                 assert( addr.GetI2pDestination() == "" );   // Only ip addresses came in, programming error if the i2p destination field is not zero
 
-        // addr.GetNetwork(), IsI2P() and others for any given address, only work correctly, if the above GarlicCat field has been setup
+        // Many routines, GetNetwork(), IsI2P() and others on an address, only work properly if the above GarlicCat field has been setup
         BOOST_FOREACH(CAddress& addr, vAddr)
         {
             boost::this_thread::interruption_point();
 
-            bool fI2pAddr = addr.GetNetwork() == NET_NATIVE_I2P;
+            bool fI2pAddr = addr.IsI2P();
             // IsReachable looks at this nodes configuration, if this address is for a network that
-            // is outside of how this node is configuration atm, then it will be false.
+            // is outside of how this node is configuration atm, then it will be false.  If there
+            // is a local address available for the network which this addresses is for, then it
+            // returns true.  Regardless, we consider all I2P addresses to be reachable, so they
+            // are passed on and shared with all nodes.
             bool fReachable = IsReachable(addr) || fI2pAddr;
             // We're now going to start having all the folks on clearnet help us out.  While at the
             // same time not destroy the beautiful random way this works.  Sharing good I2P addresses
             // is something we want to have done by all peers, regardless of any personal benefit to
             // those running on clearnet only.  Could really help out those of us running mixed mode,
             // which in turn, will filter over into helping those out on i2p only as well.
-            // The only conditional in IsRoutable() which considers the local node setup, is a call to IsLocal(),
-            // those addresses will not be included in a valid routable address to send here.  Which is fine.
+            // The only additional item considered IsRoutable() looks at this node's setup, a call to IsLocal(),
+            // makes sure those addresses will not be included in a valid routable address to sent here.
 
-            // All other considerations are just validity checks on the addresses themselves for being good
-            // ones, except for what is now allowed, which are RFC1918 addresses, we do not want those to be
-            // sent out and shared over a clearnet or i2p connection to peers.
+            // Any other considerations in IsRoutable() are just validity checks on the addresses
+            // themselves for being good ones or not, except for what is now allowed, which are RFC1918
+            // addresses, we do not want those to be sent out and shared over a clearnet or i2p
+            // connection to peers.
             // See the IsRoutable() method in netbase.cpp for why we don't want RFC1918 addresses to be
             // included here.  PushAddress() double checks that, with a debug.log entry if caught.
             bool fRoutable = addr.IsRoutable() && !addr.IsRFC1918();
@@ -3787,15 +3810,16 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                     if( fI2pAddr ) nRelayNodes *= 2;        // If its an I2P address double the number of peers we share it with
                     for (multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && nRelayNodes-- > 0; ++mi) {
                         CNode* pToNode = ((*mi).second);    // Local copy of the node pointer, this time whom we are relaying it too...
-                        // If its not an I2P addr, push it, if it is, consider the stream type of that peer before doing that.
-                        if( !addr.IsI2P() || ( (pToNode->GetRecvStreamType() & SER_IPADDRONLY) == 0 ) )
+                        // If its not an I2P addr push it, if it is, consider the services that peer is capable of, before doing that.
+                        if( !addr.IsI2P() || ( (pToNode->nServices & NODE_I2P) != 0 ) )
                             pToNode->PushAddress(addr);
                     }
                 }
             }
 
             // Do not store addresses outside our network, unless its an I2P destination, then we keep it
-            if( fReachable || fI2pAddr )
+            // if( fReachable || fI2pAddr )
+            if( fReachable )
                 vAddrOk.push_back(addr);
         }
         addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);         // Add the address to our book, marking it as 2hrs old
@@ -4387,28 +4411,8 @@ bool ProcessMessages(CNode* pfrom)
             pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
             if (strstr(e.what(), "end of data"))
             {
-                // If this happens the node is compiled with bad code,  the services we've gotten from them in the version exchange is wrong,
-                // and we need to fix the stream type.  They must be claiming NODE_I2P but are not supporting it.
-                // Log the reason and action or not, taken...
-                unsigned int nStreamIpOnlyType = vRecv.GetType() & SER_IPADDRONLY;
-                unsigned int nNodeStreamType = pfrom->GetRecvStreamType();
-                if( nStreamIpOnlyType != SER_IPADDRONLY ) {
-                    uint64_t nServices = pfrom->nServices & NODE_I2P;
-                    if( nServices ) {
-                        pfrom->nServices &= ~NODE_I2P;              // Strip out the old bit
-                        pfrom->nServices |= ~nServices & NODE_I2P;  // Invert the NODE_I2P service bit and store back the corrected value
-                        // Do the same bit flipping thing with the stream type, as we did above for the services bit
-                        nNodeStreamType &= ~SER_IPADDRONLY;
-                        nNodeStreamType |= ~nStreamIpOnlyType & SER_IPADDRONLY;
-                        LogPrintf( "Error Processing (%s, %u bytes): Node %s lied about the services it supports, correcting it & stream type.\n", strCommand, nMessageSize, pfrom->addr.ToString() );
-                        LogPrintf( "  Node Stream type changed from %08x to %08x\n", pfrom->GetRecvStreamType(), nNodeStreamType );
-                        pfrom->SetStreamType( nNodeStreamType );
-                    } else
-                        LogPrintf( "Error Processing (%s, %u bytes): Node %s address stream type likely mismatched, no corrective action taken.\n", strCommand, nMessageSize, pfrom->addr.ToString() );
-                    Misbehaving(pfrom->GetId(), 10);
-                } else
-                    // Allow exceptions from under-length message on vRecv
-                    LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught, normally caused by a message being shorter than its stated length\n", strCommand, nMessageSize, e.what());
+                // Allow exceptions from under-length message on vRecv
+                LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught, normally caused by a message being shorter than its stated length\n", strCommand, nMessageSize, e.what());
             }
             else if (strstr(e.what(), "size too large"))
             {

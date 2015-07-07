@@ -113,7 +113,7 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
         // The problem is:  if SetSpecial returns false, we don't know why it failed or what happen
         else if( isStringI2pDestination( strName ) ) {
             // LogPrintf( "...." );  so SetSpecial now has extensive logging support of errors, need more put it here
-            return false;   // we're done here, a dns seed node could not be found or any other b32.i2p address failed to be found
+            return false;   // we're done here, a dns seed node could not be found or any I2P type destination address failed to be found
         }
 #endif
     }
@@ -675,7 +675,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         // If we make it here 'addr' has i2p destination address as a base 64 string...
         // Now we can build the output array of bytes as we need for protocol 70009+ by using the concept of a IP6 string we call pchGarlicCat
         memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
-        memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);         // So now copy it to our CNetAddr obect variable
+        memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);         // So now copy it to our CNetAddr object variable
         return true;                                                        // Special handling taken care of
     }
 #endif // ENABLE_I2PSAM
@@ -725,18 +725,10 @@ CNetAddr::CNetAddr(const char *pszIp, bool fAllowLookup)
 CNetAddr::CNetAddr(const std::string &strIp, bool fAllowLookup)
 {
     Init();
-#ifdef XXXXXXXENABLE_I2PSAM
-    // Don't think this is needed anymore, LookupHost->LookupIntern->SetSpecial anyway
-    // isValidI2pAddress call is needed for fixed seed i2p addresses, see: chainparam.cpp
-    if( isStringI2pDestination( strIp ) )
-        SetSpecial( strIp );
-    else
-#endif
-    {
-        std::vector<CNetAddr> vIP;
-        if (LookupHost(strIp.c_str(), vIP, 1, fAllowLookup))
-            *this = vIP[0];
-    }
+    std::vector<CNetAddr> vIP;
+    // LookupHost->LookupIntern->SetSpecial happens for i2p destinations
+    if (LookupHost(strIp.c_str(), vIP, 1, fAllowLookup))
+        *this = vIP[0];
 }
 
 unsigned int CNetAddr::GetByte(int n) const
@@ -843,13 +835,13 @@ std::string CNetAddr::GetI2pDestination() const
 /** \brief Sets the i2pDest field to the callers given string
     The ip field is not touched, if the parameter given is zero length, otherwise it is set to the GarlicCat
  *
- * \param sDestination const std::string
+ * \param sBase64Dest const std::string
  * \return bool true if the address is now set to a valid i2p destination, otherwise false
  *
  */
-bool CNetAddr::SetI2pDestination( const std::string& sDestination )
+bool CNetAddr::SetI2pDestination( const std::string& sBase64Dest )
 {
-    size_t iSize = sDestination.size();
+    size_t iSize = sBase64Dest.size();
     if( iSize ) {
         Init();
         memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
@@ -858,7 +850,7 @@ bool CNetAddr::SetI2pDestination( const std::string& sDestination )
 
     // Copy what the caller wants put there, up to the max size
     // Its not going to be valid, if the size is wrong, but do it anyway
-    if( iSize ) memcpy( i2pDest, sDestination.c_str(), iSize < NATIVE_I2P_DESTINATION_SIZE ? iSize : NATIVE_I2P_DESTINATION_SIZE );
+    if( iSize ) memcpy( i2pDest, sBase64Dest.c_str(), iSize < NATIVE_I2P_DESTINATION_SIZE ? iSize : NATIVE_I2P_DESTINATION_SIZE );
     return (iSize == NATIVE_I2P_DESTINATION_SIZE) && IsNativeI2P();
 }
 

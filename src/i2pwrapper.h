@@ -12,7 +12,6 @@
 #define I2P_SESSION_NAME_DEFAULT        "Anoncoin-client"
 #define NATIVE_I2P_DESTINATION_SIZE     516
 #define NATIVE_I2P_B32ADDR_SIZE         60
-#define NATIVE_I2P_NET_STRING           "i2p"
 
 namespace SAM
 {
@@ -81,9 +80,7 @@ class I2PSession : private SAM::StreamSessionAdapter
         I2PSession& operator=(const I2PSession&);
 };
 
-void InitializeI2pSettings( void );
-bool isValidI2pDestination( const SAM::FullDestination& DestKeys );
-std::string GetDestinationPublicKey( const std::string& sDestinationPrivateKey );
+void InitializeI2pSettings( const bool fGenerated );
 bool isValidI2pAddress( const std::string& I2pAddr );
 bool isValidI2pB32( const std::string& B32Address );
 bool isStringI2pDestination( const std::string & strName );

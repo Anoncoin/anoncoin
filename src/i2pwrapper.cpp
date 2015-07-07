@@ -205,14 +205,16 @@ std::string I2PSession::GenerateB32AddressFromDestination(const std::string& des
     return ::B32AddressFromDestination(destination);
 }
 
-void static FormatBoolI2POptionsString( std::string& I2pOptions, const std::string& I2pSamName, const std::string& confParamName ) {
+void static FormatBoolI2POptionsString( std::string& I2pOptions, const std::string& I2pSamName, const std::string& confParamName )
+{
     bool fConfigValue = GetArg( confParamName, true );
 
     if (!I2pOptions.empty()) I2pOptions += " ";                             // seperate the parameters with <whitespace>
     I2pOptions += I2pSamName + "=" + (fConfigValue ? "true" : "false");     // I2P router wants the words...
 }
 
-void static FormatIntI2POptionsString( std::string& I2pOptions, const std::string& I2pSamName, const std::string& confParamName ) {
+void static FormatIntI2POptionsString( std::string& I2pOptions, const std::string& I2pSamName, const std::string& confParamName )
+{
     int64_t i64ConfigValue = GetArg( confParamName, 0 );
 
     if (!I2pOptions.empty()) I2pOptions += " ";                     // seperate the parameters with <whitespace>
@@ -221,7 +223,8 @@ void static FormatIntI2POptionsString( std::string& I2pOptions, const std::strin
     I2pOptions += I2pSamName + "=" + oss.str();                     // I2P router wants the chars....
 }
 
-void static BuildI2pOptionsString( void ) {
+void static BuildI2pOptionsString( void )
+{
     std::string OptStr;
 
     FormatIntI2POptionsString(OptStr, SAM_NAME_INBOUND_QUANTITY       , "-i2p.options.inbound.quantity" );
@@ -250,24 +253,44 @@ void static BuildI2pOptionsString( void ) {
 // These should not override any loaded from the anoncoin.conf file,
 // but if they are not set, then this insures that they are created with good values
 // SoftSetArg will return a bool, if you care to know if the parameter was changed or not.
-void InitializeI2pSettings( void ) {
-    SoftSetBoolArg( "-i2p.mydestination.static", false );
-    SoftSetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
-    SoftSetArg( "-i2p.options.samport", "7656" );                   /* SAM_DEFAULT_PORT */
-    SoftSetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT );
-    SoftSetArg( "-i2p.options.inbound.quantity", "3" );             /* SAM_DEFAULT_INBOUND_QUANTITY */
-    SoftSetArg( "-i2p.options.inbound.length", "3" );               /* SAM_DEFAULT_INBOUND_LENGTH */
-    SoftSetArg( "-i2p.options.inbound.lengthvariance", "0" );       /* SAM_DEFAULT_INBOUND_LENGTHVARIANCE */
-    SoftSetArg( "-i2p.options.inbound.backupquantity", "1" );       /* SAM_DEFAULT_INBOUND_BACKUPQUANTITY */
-    SoftSetBoolArg( "-i2p.options.inbound.allowzerohop", SAM_DEFAULT_INBOUND_ALLOWZEROHOP );
-    SoftSetArg( "-i2p.options.inbound.iprestriction", "2" );        /* SAM_DEFAULT_INBOUND_IPRESTRICTION */
-    SoftSetArg( "-i2p.options.outbound.quantity", "3" );            /* SAM_DEFAULT_OUTBOUND_QUANTITY */
-    SoftSetArg( "-i2p.options.outbound.length", "3" );              /* SAM_DEFAULT_OUTBOUND_LENGTH */
-    SoftSetArg( "-i2p.options.outbound.lengthvariance", "0" );      /* SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE */
-    SoftSetArg( "-i2p.options.outbound.backupquantity", "1" );      /* SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY */
-    SoftSetBoolArg( "-i2p.options.outbound.allowzerohop", SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP );
-    SoftSetArg( "-i2p.options.outbound.iprestriction", "2" );       /* SAM_DEFAULT_OUTBOUND_IPRESTRICTION */
-    SoftSetArg( "-i2p.options.outbound.priority", "0" );            /* SAM_DEFAULT_OUTBOUND_PRIORITY */
+void InitializeI2pSettings( const bool fGenerated )
+{
+    if( SoftSetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS ) )    // Returns true if the param was undefined and setting its value was possible
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.samhost=%s\n", SAM_DEFAULT_ADDRESS );
+    if( SoftSetArg( "-i2p.options.samport", "7656" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.samport=%d\n", SAM_DEFAULT_PORT );
+    if( SoftSetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.sessionname=%s\n", I2P_SESSION_NAME_DEFAULT );
+    if( SoftSetArg( "-i2p.options.inbound.quantity", "3" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.inbound.quantity=%d\n", SAM_DEFAULT_INBOUND_QUANTITY );
+    if( SoftSetArg( "-i2p.options.inbound.length", "3" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.inbound.length=%d\n", SAM_DEFAULT_INBOUND_LENGTH );
+    if( SoftSetArg( "-i2p.options.inbound.lengthvariance", "0" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.inbound.lengthvariance=%d\n", SAM_DEFAULT_INBOUND_LENGTHVARIANCE );
+    if( SoftSetArg( "-i2p.options.inbound.backupquantity", "1" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.inbound.backupquantity=%d\n", SAM_DEFAULT_INBOUND_BACKUPQUANTITY );
+    if( SoftSetBoolArg( "-i2p.options.inbound.allowzerohop", SAM_DEFAULT_INBOUND_ALLOWZEROHOP ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.inbound.allowzerohop=%d\n", SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP ? 1 : 0 );
+    if( SoftSetArg( "-i2p.options.inbound.iprestriction", "2" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.inbound.iprestriction=%d\n", SAM_DEFAULT_INBOUND_IPRESTRICTION );
+    if( SoftSetArg( "-i2p.options.outbound.quantity", "3" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.outbound.quantity=%d\n", SAM_DEFAULT_OUTBOUND_QUANTITY );
+    if( SoftSetArg( "-i2p.options.outbound.length", "3" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.outbound.length=%d\n", SAM_DEFAULT_OUTBOUND_LENGTH );
+    if( SoftSetArg( "-i2p.options.outbound.lengthvariance", "0" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.outbound.lengthvariance=%d\n", SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE );
+    if( SoftSetArg( "-i2p.options.outbound.backupquantity", "1" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.outbound.backupquantity=%d\n", SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY );
+    if( SoftSetBoolArg( "-i2p.options.outbound.allowzerohop", SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.outbound.allowzerohop=%d\n", SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP ? 1 : 0 );
+    if( SoftSetArg( "-i2p.options.outbound.iprestriction", "2" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.outbound.iprestriction=%d\n", SAM_DEFAULT_OUTBOUND_IPRESTRICTION );
+    if( SoftSetArg( "-i2p.options.outbound.priority", "0" ) )
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.options.enabled -> setting -i2p.options.outbound.priority=%d\n", SAM_DEFAULT_OUTBOUND_PRIORITY );
+
+    // Only need this as a reminder for those folks running v0.9.4.4 or older builds
+    if( !SoftSetBoolArg("-i2p.options.static", false) )           // Returns true if the param was undefined and setting its value was possible
+        LogPrintf( "AppInit2 : PLEASE REMOVE -i2p.options.static= FROM YOUR CONFIGURATION FILE - It has moved to the [i2p.mydestination] section.\n" );
 
     // Setup parameters required to open a new SAM session
     uPort = (uint16_t)GetArg( "-i2p.options.samport", SAM_DEFAULT_PORT );
@@ -275,8 +298,8 @@ void InitializeI2pSettings( void ) {
     sHost = GetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS );
     // Critical to check here, if we are in dynamic destination mode, the intial session destination MUSTBE default too.
     //  Which may not be what the user has set in the anoncoin.conf file.
-    if( GetBoolArg( "-i2p.mydestination.static", false ) )            // GetBoolArg returns true if the .static variable is true
-        sDestination = GetArg( "-i2p.mydestination.privatekey", SAM_GENERATE_MY_DESTINATION );
+    // If the .static i2p destination is to be used, set it now, if not set the TRANSIENT value so the router generates it for us
+    sDestination = fGenerated ? SAM_GENERATE_MY_DESTINATION : GetArg( "-i2p.mydestination.privatekey", "" );
     // It's important here that sDestination be setup correctly, for soon when an initial Session object is about to be
     // created.  When that happens, this variable is used to create the SAM session, upon which, after it's opened,
     // the variable is updated to reflect that ACTUAL destination being used.  Whatever that value maybe,
@@ -285,27 +308,15 @@ void InitializeI2pSettings( void ) {
     BuildI2pOptionsString();   // Now build the I2P options string that's need to open a session
 }
 
-bool isValidI2pDestination( const SAM::FullDestination& DestKeys ) {
-
-    // Perhaps we're given a I2P native public address, last 4 symbols of b64-destination must be AAAA
-    bool fPublic = ((DestKeys.pub.size() == NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.pub));
-    // ToDo: Add more checking on the private key, for now this will do...
-    bool fPrivate = ((DestKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE) && isValidI2pAddress( DestKeys.priv));
-    return fPublic && fPrivate;
-}
-
-std::string GetDestinationPublicKey( const std::string& sDestinationPrivateKey )
-{
-    return( sDestinationPrivateKey.substr(0, NATIVE_I2P_DESTINATION_SIZE) );
-}
-
 // This test should pass for both public and private keys, as the first part of the private key is the public key.
-bool isValidI2pAddress( const std::string& I2pAddr ) {
+bool isValidI2pAddress( const std::string& I2pAddr )
+{
     if( I2pAddr.size() < NATIVE_I2P_DESTINATION_SIZE ) return false;
     return (I2pAddr.substr( NATIVE_I2P_DESTINATION_SIZE - 4, 4 ) == "AAAA");
 }
 
-bool isValidI2pB32( const std::string& B32Address ) {
+bool isValidI2pB32( const std::string& B32Address )
+{
     return (B32Address.size() == NATIVE_I2P_B32ADDR_SIZE) && (B32Address.substr(B32Address.size() - 8, 8) == ".b32.i2p");
 }
 
@@ -322,16 +333,16 @@ uint256 GetI2pDestinationHash( const std::string& destination )
         canonicalDest[pos] = '+';
     for (size_t pos = canonicalDest.find_first_of('~'); pos != std::string::npos; pos = canonicalDest.find_first_of('~', pos))
         canonicalDest[pos] = '/';
-    std::string rawHash = DecodeBase64(canonicalDest);
-    uint256 hash;
-    SHA256((const unsigned char*)rawHash.c_str(), rawHash.size(), (unsigned char*)&hash);
-    return hash;
+    std::string rawDest = DecodeBase64(canonicalDest);
+    uint256 b32hash;
+    SHA256((const unsigned char*)rawDest.c_str(), rawDest.size(), (unsigned char*)&b32hash);
+    return b32hash;
 }
 
 std::string B32AddressFromDestination(const std::string& destination)
 {
-    uint256 hash = GetI2pDestinationHash( destination );
-    std::string result = EncodeBase32(hash.begin(), hash.end() - hash.begin()) + ".b32.i2p";
+    uint256 b32hash = GetI2pDestinationHash( destination );
+    std::string result = EncodeBase32(b32hash.begin(), b32hash.end() - b32hash.begin()) + ".b32.i2p";
     for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
         result.erase(pos, 1);
     return result;
@@ -340,15 +351,18 @@ std::string B32AddressFromDestination(const std::string& destination)
 /**
  * Functions we need for I2P functionality
  */
-std::string FormatI2PNativeFullVersion() {
+std::string FormatI2PNativeFullVersion()
+{
     // We need to NOT talk to the SAM module if I2P is unavailable
     return IsI2PEnabled() ? I2PSession::Instance().getSAMVersion() : "?.??";
 }
 
 // GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
-// in the end, put them back here in net.cpp for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
+// in the end, put them here for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
 // within our net.h header, where netbase.h is included as a dependency....clear as mud?
-bool IsTorOnly() {
+// mud is right, the rest of it is now all wrong haha
+bool IsTorOnly()
+{
     bool i2pOnly = false;
     const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
     i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "tor");
@@ -360,25 +374,28 @@ bool IsI2POnly()
     bool i2pOnly = false;
     if (mapArgs.count("-onlynet")) {
         const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
+        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "i2p");
     }
     return i2pOnly;
 }
 
 // If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
-bool IsDarknetOnly() {
+bool IsDarknetOnly()
+{
     return IsI2POnly() || IsTorOnly() ||
             (((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) &&
               (mapArgs.count("-i2p.options.enabled") && mapArgs["-i2p.options.enabled"] != "0")
             );
 }
 
-// Basically we override the -i2p.options.enabled flag here, if we are running -onlynet=i2p....
-bool IsI2PEnabled() {
-    return  GetBoolArg("-i2p.options.enabled", false) || IsI2POnly();
+// We now just check the -i2p.options.enabled parameter here, and return its value true or false
+bool IsI2PEnabled()
+{
+    return GetBoolArg("-i2p.options.enabled", false);
 }
 
-bool IsBehindDarknet() {
+bool IsBehindDarknet()
+{
     return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
 }
 

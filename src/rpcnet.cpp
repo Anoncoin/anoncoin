@@ -13,6 +13,7 @@
 #include "util.h"
 #include "alert.h"
 #include "base58.h"
+#include "addrman.h"
 
 #include <boost/foreach.hpp>
 #include "json/json_spirit_value.h"
@@ -59,6 +60,40 @@ Value ping(const Array& params, bool fHelp)
     return Value::null;
 }
 
+Value destinations(const Array& params, bool fHelp)
+{
+   if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "destinations\n"
+            "\nReturns b32.i2p addresses and details about them, that can be found in the address manager, as a json array of objects.\n"
+            "\nbResult:\n"
+            "[\n"
+            "  {\n"
+            "    \"address\":\"b32.i2p\",           (string)  Base32 hash of a i2p destination, a possible peer\n"
+            "    \"tried\": true|false,             (boolean) Has this address been tried\n"
+            "    \"attempts\": nnn,                 (numeric) The number of times it has been attempted\n"
+            "    \"lastconnect\": ttt,              (numeric) The time of a last successful connection\n"
+            "    \"source\":\"b32.i2p or ip:port\", (string)  The source of information about this address\n"
+            "    \"base64\":\"i2p addr\",           (string)  The full Base64 string of this peers i2p address\n"
+            "  }\n"
+            "  ,...\n"
+            "}\n"
+
+            "\nExamples:\n"
+            + HelpExampleCli("destinations", "")
+            + HelpExampleRpc("destinations", "")
+        );
+
+    Array ret;
+    vector<CDestinationStats> vecStats;
+    Object obj;
+
+    obj.push_back(Pair("address", "xxx.b32.i2p"));
+
+    ret.push_back(obj);
+    return ret;
+}
+
 static void CopyNodeStats(std::vector<CNodeStats>& vstats)
 {
     vstats.clear();
@@ -71,6 +106,7 @@ static void CopyNodeStats(std::vector<CNodeStats>& vstats)
         vstats.push_back(stats);
     }
 }
+
 
 Value getpeerinfo(const Array& params, bool fHelp)
 {
