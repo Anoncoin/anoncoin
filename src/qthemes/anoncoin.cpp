@@ -48,12 +48,6 @@
 #include <QTimer>
 #include <QTranslator>
 
-// Needed for Stylesheet code
-#include <QFile>
-#include <QTextStream>
-// #include <QDir>
-
-
 #if defined(QT_STATICPLUGIN)
 #include <QtPlugin>
 #if QT_VERSION < 0x050000

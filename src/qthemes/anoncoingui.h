@@ -18,6 +18,7 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include <QAction>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMap>
@@ -59,7 +60,7 @@ class QMainToolAction : public QAction
     Q_OBJECT
 
 public:
-    QMainToolAction( const QString& sDefaultIcon, const QString& sDefaultText, const QString& sDefaultTip, const int nShortCutKey, AnoncoinGUI* pParentIn );
+    QMainToolAction( const QString& sDefaultIcon, const QString& sDefaultText, const QString& sDefaultTip, const int nShortCutKey, AnoncoinGUI* pGUI );
     QIcon& GetDefaultIcon() { return ourDefaultIcon; }
 
 protected:
@@ -67,7 +68,7 @@ protected:
 
 private:
     int nOurKey;
-    AnoncoinGUI* pOurParent;
+    AnoncoinGUI* pMainWindow;
     QString strOurName;
     QIcon ourDefaultIcon;
     // QIcon ourStyledIcon;
@@ -84,7 +85,7 @@ class QMainToolButton : public QToolButton
     Q_OBJECT
 
 public:
-    QMainToolButton( const QString& sNameIn, QMainToolAction* pActionIn, AnoncoinGUI* pParentIn );
+    QMainToolButton( const QString& sNameIn, QMainToolAction* pActionIn, AnoncoinGUI* pGUI );
     // ~QMainToolButton();
 
     void RestoreDefaultIcon();
@@ -284,6 +285,7 @@ public slots:
     /** Switch to one of the main toolbar pages, this can be connected to whatever signal you might want to watch and simulates the MainWindow
         effect of pressing the tab button for that view.  Pass it Qt::Key_1 -> Qt::Key_6 values depending on which one you want */
     void gotoPage( const int nKey );
+    void gotoHistoryPage( void );
 
 #endif // ENABLE_WALLET
 

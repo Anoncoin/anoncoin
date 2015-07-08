@@ -34,7 +34,6 @@
 
 #include <iostream>
 
-#include <QAction>
 #include <QApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -44,24 +43,22 @@
 #include <QFile>
 #include <QIcon>
 #include <QKeySequence>
-#include <QLabel>
 #include <QListWidget>
-#include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QObject>
-#include <QPoint>
 #include <QProgressBar>
 #include <QProgressDialog>
 #include <QSettings>
 #include <QStackedWidget>
 #include <QStatusBar>
 #include <QStyle>
+#include <QTextStream>
 #include <QTimer>
 #include <QToolBar>
-#include <QToolButton>
 #include <QVBoxLayout>
+
 
 #ifdef ENABLE_I2PSAM
 #include "i2pshowaddresses.h"
@@ -297,11 +294,11 @@ AnoncoinGUI::~AnoncoinGUI()
 #endif
 }
 
-QMainToolAction::QMainToolAction( const QString& sDefaultIcon, const QString& sDefaultText, const QString& sDefaultTip, const int nShortCutKey, AnoncoinGUI* pParentIn ) :
-     QAction( pParentIn ),
+QMainToolAction::QMainToolAction( const QString& sDefaultIcon, const QString& sDefaultText, const QString& sDefaultTip, const int nShortCutKey, AnoncoinGUI* pGUI ) :
+     QAction( pGUI ),
      ourDefaultIcon( sDefaultIcon ),
      nOurKey( nShortCutKey ),
-     pOurParent( pParentIn )
+     pMainWindow( pGUI )
 {
     strOurName = "Action:" + sDefaultText;  // Used for debugging only
     setIcon( ourDefaultIcon );
@@ -337,13 +334,13 @@ bool QMainToolAction::event(QEvent *pEvent)
 //! Should this happen, we send our parent the message, so that all aspects of the application can be normalized.
 void QMainToolAction::showNormalIfMinimized()
 {
-    pOurParent->showNormalIfMinimized();
+    pMainWindow->showNormalIfMinimized();
 }
 
 void QMainToolAction::gotoPage()
 {
     //! We tell our parent about this new request, using the Short cut key as the index to identify whom we are.
-    pOurParent->gotoPage( nOurKey );
+    pMainWindow->gotoPage( nOurKey );
 }
 
 void AnoncoinGUI::createActions(bool fIsTestnet)
@@ -440,12 +437,11 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     pWalletClearViewsAction = new QAction( QIcon(":/icons/eye_plus"), tr("Clears your Wallet Views..."), this );
     pWalletClearViewsAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
 
-    pWalletRestartCoreAction = new QAction( QIcon(":/icons/eye_plus"), tr("Restart Core with Wallet..."), this );
-    pWalletRestartCoreAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
-
     pWalletUpdateViewAction = new QAction( QIcon(":/icons/eye_plus"), tr("Update a Wallet View..."), this );
     pWalletUpdateViewAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
 
+    pWalletRestartCoreAction = new QAction( QIcon(":/icons/eye_plus"), tr("Restart Core with Wallet..."), this );
+    pWalletRestartCoreAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
 
     //! Connect up all signals and slots that are triggered when actions are selected. NOTE: This has already been done for Toolbar button actions
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -492,8 +488,8 @@ void AnoncoinGUI::createMenuBar()
         file->addSeparator();
         file->addAction(pWalletAddViewAction);
         file->addAction(pWalletClearViewsAction);
-        file->addAction(pWalletRestartCoreAction);
         file->addAction(pWalletUpdateViewAction);
+        file->addAction(pWalletRestartCoreAction);
         file->addAction(backupWalletAction);
         file->addSeparator();
         file->addAction(signMessageAction);
@@ -527,11 +523,11 @@ void AnoncoinGUI::createMenuBar()
     help->addAction(aboutQtAction);
 }
 
-QMainToolButton::QMainToolButton( const QString& sNameIn, QMainToolAction* pActionIn, AnoncoinGUI* pParentIn) :
-     QToolButton( pParentIn ),
+QMainToolButton::QMainToolButton( const QString& sNameIn, QMainToolAction* pActionIn, AnoncoinGUI* pGUI) :
+     QToolButton( pGUI ),
      strOurName( sNameIn ),
      pAction( pActionIn ),
-     pMainWindow( pParentIn )
+     pMainWindow( pGUI )
 {
     setObjectName(strOurName);
     setDefaultAction(pAction);
@@ -868,6 +864,14 @@ void AnoncoinGUI::gotoPage( const int nKey )
             default: buttonOverview->setChecked(true); walletFrame->gotoOverviewPage();
         }
     }
+}
+//! When external events want to trigger a toolbar tab button to switch pages, only the setChecked need be done to change the view, such
+//! as when the user clicks on the overview page transactions. Here this slot handler deals with switching the user to that tab, and lets
+//! the  normal code (above) handle the final activities and details of passing it on to the walletFrame for further processing.
+// Page(Qt::Key_5)
+void AnoncoinGUI::gotoHistoryPage( void )
+{
+    historyAction->trigger();
 }
 
 void AnoncoinGUI::gotoSignMessageTab(QString addr)
@@ -1546,7 +1550,7 @@ bool AnoncoinGUI::applyTheme()
     }
 
     if( fReadDefault ) {
-        QFile qss(":style/default");
+        QFile qss(":/style/default");
         // open qss stylesheet
         if (qss.open(QFile::ReadOnly)) {
             // read stylesheet
