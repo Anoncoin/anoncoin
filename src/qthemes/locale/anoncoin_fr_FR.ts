@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" version="2.0">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -16,26 +16,20 @@
         <source>
 This is experimental software.
 
-Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
+Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/) and cryptographic software written by Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.</source>
-        <translation>
-Ce logiciel est expérimental.
-
-Distribué sous licence MIT/X11 d&apos;utilisation d&apos;un logiciel. Consultez le fichier joint COPYING ou http://www.opensource.org/licenses/mit-license.php.
-
-Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos;être utilisés dans la boîte à outils OpenSSL (http://www.openssl.org/), un logiciel de chiffrement écrit par Eric Young (eay@cryptsoft.com) et un logiciel UPnP développé par Thomas Bernard.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../utilitydialog.cpp" line="+30"/>
-        <location line="+1"/>
+        <location filename="../utilitydialog.cpp" line="+33"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Copyright</source>
         <translation>Tous droits réservés</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-2"/>
         <source>The Anoncoin Core developers</source>
         <translation>Les développeurs Anoncoin Core</translation>
     </message>
@@ -50,15 +44,99 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>Les développeurs Litecoin Core</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>The Primecoin developers</source>
-        <translation>Les développeurs Primecoin</translation>
-    </message>
-    <message>
         <location line="+12"/>
         <location line="+2"/>
         <source>(%1-bit)</source>
         <translation>(%1-bit)</translation>
+    </message>
+</context>
+<context>
+    <name>AccountsPage</name>
+    <message>
+        <location filename="../forms/accountspage.ui" line="+55"/>
+        <source>Name</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Balance</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Copy the currently selected address to the system clipboard</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;Copy</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Export the data in the current tab to a file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;Export</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+17"/>
+        <location filename="../accountspage.cpp" line="+34"/>
+        <source>C&amp;lose</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../accountspage.cpp" line="-2"/>
+        <source>Accounts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>These are your Anoncoin addresses for receiving payments.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;Copy Address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy &amp;Label</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy &amp;Balance</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+108"/>
+        <source>Export Address List</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Comma separated file (*.csv)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Exporting Failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>There was an error trying to save the address list to %1.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -114,7 +192,7 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>&amp;Fermer</translation>
     </message>
     <message>
-        <location filename="../addressbookpage.cpp" line="+45"/>
+        <location filename="../addressbookpage.cpp" line="+47"/>
         <source>Choose the address to send coins to</source>
         <translation>Choisir l&apos;adresse à laquelle envoyer des pièces</translation>
     </message>
@@ -164,7 +242,7 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>&amp;Modifier</translation>
     </message>
     <message>
-        <location line="+194"/>
+        <location line="+212"/>
         <source>Export Address List</source>
         <translation>Exporter la liste d&apos;adresses</translation>
     </message>
@@ -205,7 +283,7 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
 <context>
     <name>AnoncoinGUI</name>
     <message>
-        <location filename="../anoncoingui.cpp" line="+82"/>
+        <location filename="../anoncoingui.cpp" line="+112"/>
         <source>Anoncoin Core</source>
         <translation>Anoncoin Core</translation>
     </message>
@@ -221,12 +299,12 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
     </message>
     <message>
         <location line="+14"/>
-        <location line="+427"/>
+        <location line="+484"/>
         <source>[testnet]</source>
         <translation>[testnet]</translation>
     </message>
     <message>
-        <location line="-290"/>
+        <location line="-334"/>
         <source>&amp;Overview</source>
         <translation>&amp;Vue d&apos;ensemble</translation>
     </message>
@@ -237,6 +315,11 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
     </message>
     <message>
         <location line="+6"/>
+        <source>&amp;Accounts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>&amp;Send</source>
         <translation>&amp;Envoyer</translation>
     </message>
@@ -266,7 +349,12 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>Parcourir l&apos;historique des transactions</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+6"/>
+        <source>&amp;Address Book</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>E&amp;xit</source>
         <translation>Q&amp;uitter</translation>
     </message>
@@ -324,7 +412,7 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>&amp;Chiffrer le portefeuille...</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Encrypt the private keys that belong to your wallet</source>
         <translation>Chiffrer les clefs privées de votre portefeuille</translation>
     </message>
@@ -379,12 +467,58 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>Ouvrir une console de débogage et de diagnostic</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>&amp;I2P Destination details</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Shows your private I2P Destination details</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>&amp;Sending addresses...</source>
         <translation>Adresses d&apos;&amp;envoi...</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+114"/>
+        <source>Node is using I2P-network only!</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Node is using Tor-network only</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Node is using I2P and Tor networks (Darknet mode)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Node is using I2P and Tor networks, also Tor as a proxy</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Node is using mixed or non-I2P (clear) network</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Node is running with a dynamic (random) I2P destination</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Node is running with a static I2P destination</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="-209"/>
+        <location line="+71"/>
         <source>Show the list of used sending addresses and labels</source>
         <translation>Afficher la liste d&apos;adresses d&apos;envoi et d&apos;étiquettes utilisées</translation>
     </message>
@@ -394,12 +528,13 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>Adresses de &amp;réception...</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-100"/>
+        <location line="+101"/>
         <source>Show the list of used receiving addresses and labels</source>
         <translation>Afficher la liste d&apos;adresses de réception et d&apos;étiquettes utilisées</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+1"/>
         <source>Open &amp;URI...</source>
         <translation>Ouvrir un &amp;URI...</translation>
     </message>
@@ -414,7 +549,7 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>Options de ligne de &amp;commande</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Show the Anoncoin Core help message to get a list with possible Anoncoin command-line options</source>
         <translation>Afficher le message d&apos;aide de Anoncoin Core pour obtenir une liste des options de ligne de commande Anoncoin possibles.</translation>
     </message>
@@ -429,7 +564,7 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>&amp;Réglages</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
@@ -439,58 +574,23 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>Barre d&apos;outils des onglets</translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Wallet is using I2P-network only!</source>
-        <translation>Le portefeuille utilise uniquement le réseau I2P!</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Wallet is using Tor-network only</source>
-        <translation>Le portefeuille utilise uniquement le réseau Tor!</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Wallet is using I2P and Tor networks (Darknet mode)</source>
-        <translation>Le portefeuille utilise les réseaux I2P et Tor (mode Darknet)</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Wallet is using I2P and Tor networks, also Tor as a proxy</source>
-        <translation>Le portefeuille utilise les réseaux I2P et Tor, également Tor comme Proxy</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Wallet is using mixed or non-I2P (clear) network</source>
-        <translation>Le portefeuille utilise un réseau mixte ou non-I2P (transparent)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Wallet is running with a random generated I2P-address</source>
-        <translation>Le portefeuille fonctionne avec une adresse I2P générée aléatoirement</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Wallet is running with a static I2P-address</source>
-        <translation>Le portefeuille fonctionne avec une adresse I2P statique</translation>
-    </message>
-    <message>
-        <location line="+70"/>
+        <location line="+140"/>
         <location line="+5"/>
         <source>Anoncoin client</source>
         <translation>Client Anoncoin</translation>
     </message>
     <message numerus="yes">
-        <location line="+155"/>
+        <location line="+162"/>
         <source>%n active connection(s) to Anoncoin clearnet peers</source>
         <translation><numerusform>%n connexions actives avec des pairs Anoncoin sur le réseau en clair</numerusform><numerusform>%n connexions actives avec des pairs Anoncoin sur le réseau en clair</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location line="+16"/>
+        <location line="+23"/>
         <source>%n active connection(s) to I2P-Anoncoin network</source>
         <translation><numerusform>%n connexions actives avec le réseau I2P-Anoncoin</numerusform><numerusform>%n connexions actives avec le réseau I2P-Anoncoin</numerusform></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+17"/>
         <source>Synchronizing with network...</source>
         <translation>Synchronisation avec le réseau en cours…</translation>
     </message>
@@ -586,7 +686,14 @@ Ce produit comprend des logiciels développés par le projet OpenSSL afin d&apos
         <translation>Information</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+39"/>
+        <source>A new I2P Destination was generated.
+Details have been written to your debug.log file.
+Do you want to continue or shutdown?</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+53"/>
         <source>Sent transaction</source>
         <translation>Transaction envoyée</translation>
     </message>
@@ -609,7 +716,7 @@ Adresse : %4
 </translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+68"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
         <translation>Le portefeuille est &lt;b&gt;chiffré&lt;/b&gt; et est actuellement &lt;b&gt;déverrouillé&lt;/b&gt;</translation>
     </message>
@@ -763,7 +870,7 @@ Adresse : %4
 <context>
     <name>ClientModel</name>
     <message>
-        <location filename="../clientmodel.cpp" line="+143"/>
+        <location filename="../clientmodel.cpp" line="+153"/>
         <source>Network Alert</source>
         <translation>Alerte réseau</translation>
     </message>
@@ -861,7 +968,7 @@ Adresse : %4
         <translation>Priorité</translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="+42"/>
+        <location filename="../coincontroldialog.cpp" line="+43"/>
         <source>Copy address</source>
         <translation>Copier l’adresse</translation>
     </message>
@@ -1159,11 +1266,6 @@ Adresse : %4
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <location filename="../forms/helpmessagedialog.ui" line="+19"/>
-        <source>Anoncoin Core - Command-line options</source>
-        <translation>Anoncoin Core - Options de ligne de commande</translation>
-    </message>
-    <message>
         <location filename="../utilitydialog.cpp" line="+24"/>
         <source>Anoncoin Core</source>
         <translation>Anoncoin Core</translation>
@@ -1174,7 +1276,23 @@ Adresse : %4
         <translation>version</translation>
     </message>
     <message>
+        <location line="+5"/>
         <location line="+2"/>
+        <source>(%1-bit)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>About Anoncoin Core</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Command-line options</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Usage:</source>
         <translation>Utilisation :</translation>
     </message>
@@ -1212,143 +1330,6 @@ Adresse : %4
         <location line="+1"/>
         <source>Show splash screen on startup (default: 1)</source>
         <translation>Afficher l&apos;écran d&apos;accueil au démarrage (par défaut : 1)</translation>
-    </message>
-</context>
-<context>
-    <name>I2POptionsWidget</name>
-    <message>
-        <location filename="../forms/i2poptionswidget.ui" line="+14"/>
-        <source>Form</source>
-        <translation>Formulaire</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Use I2P only (-onlynet=i2p)</source>
-        <translation>Utiliser I2P uniquement (-onlynet=i2p)</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>http://www.i2p2.i2p/i2cp.html#options</source>
-        <translation>http://www.i2p2.i2p/i2cp.html#options</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Help&lt;/a&gt;</source>
-        <translation>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Aide&lt;/a&gt;</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>SAM host</source>
-        <translation>Hôte SAM</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>127.0.0.1</source>
-        <translation>127.0.0.1</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>SAM port</source>
-        <translation>Port SAM</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>Tunnel name</source>
-        <translation>Nom du tunnel</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Anoncoin-client</source>
-        <translation>Client Anoncoin</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Current
-I2P-address...</source>
-        <translation>Adresse I2P
-actuelle…</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Generate
-I2P-address...</source>
-        <translation>Générer
-une adresse I2P…</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>I2CP options of inbound tunnels</source>
-        <translation>Options pour tunnels entrants I2CP</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>inbound.quantity </source>
-        <translation>entrée.quantité</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>inbound.length </source>
-        <translation>entrée.longueur</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>inbound.lengthVariance</source>
-        <translation>entrée.varianceLongueur</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>inbound.backupQuantity </source>
-        <translation>entrée.quantitéBackup</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>inbound.allowZeroHop </source>
-        <translation>entrée.permettreZeroHop</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>inbound.IPRestriction</source>
-        <translation>entrée.restrictionIP</translation>
-    </message>
-    <message>
-        <location line="+65"/>
-        <source>I2CP options of outbound tunnels</source>
-        <translation>Options pur tunnels sortants I2CP</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>outbound.quantity </source>
-        <translation>sortie.quantité</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>outbound.length </source>
-        <translation>sortie.longueur</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>outbound.lengthVariance</source>
-        <translation>sortie.varianceLongueur</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>outbound.backupQuantity</source>
-        <translation>sortie.quantitéBackup</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>outbound.allowZeroHop </source>
-        <translation>sortie.permettreZeroHop</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>outbound.IPRestriction</source>
-        <translation>sortie.restrictionIP</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>outbound.priority</source>
-        <translation>sortie.priorité</translation>
     </message>
 </context>
 <context>
@@ -1536,13 +1517,13 @@ une adresse I2P…</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the Anoncoin network through a SOCKS proxy.</source>
-        <translation>Se connecter au réseau Anoncoin par un mandataire SOCKS.</translation>
+        <source>Connect to the Anoncoin network through a SOCKS5 proxy.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
-        <source>&amp;Connect through SOCKS proxy (default proxy):</source>
-        <translation>Se &amp;connecter par un mandataire SOCKS (mandataire par défaut) :</translation>
+        <source>&amp;Connect through SOCKS5 proxy (default proxy):</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+9"/>
@@ -1606,6 +1587,16 @@ une adresse I2P…</translation>
     </message>
     <message>
         <location line="+11"/>
+        <source>&amp;Theme to display with:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Choose the default display theme to use.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>&amp;Unit to show amounts in:</source>
         <translation>&amp;Unité d&apos;affichage des montants :</translation>
     </message>
@@ -1651,48 +1642,38 @@ une adresse I2P…</translation>
         <translation>A&amp;nnuler</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.cpp" line="+71"/>
+        <location filename="../optionsdialog.cpp" line="+69"/>
         <source>default</source>
         <translation>par défaut</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+80"/>
         <source>none</source>
         <translation>aucune</translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+81"/>
         <source>Confirm options reset</source>
         <translation>Confirmer la réinitialisation des options</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+42"/>
+        <location line="+29"/>
         <source>Client restart required to activate changes.</source>
         <translation>Le redémarrage du client est nécessaire pour activer les changements.</translation>
     </message>
     <message>
-        <location line="-42"/>
+        <location line="-29"/>
         <source>Client will be shutdown, do you want to proceed?</source>
         <translation>Le client sera arrêté, voulez-vous continuer?</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+33"/>
         <source>This change would require a client restart.</source>
         <translation>Ce changement nécessite un redémarrage du client.</translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Warning</source>
-        <translation>Avertissement</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>This setting will take effect after restarting Anoncoin.</source>
-        <translation>Ce réglage prendra effet après redémarrage d&apos;Anoncoin</translation>
-    </message>
-    <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>The supplied proxy address is invalid.</source>
         <translation>L&apos;adresse de serveur mandataire fournie est invalide.</translation>
     </message>
@@ -1800,7 +1781,7 @@ une adresse I2P…</translation>
 <context>
     <name>PaymentServer</name>
     <message>
-        <location filename="../paymentserver.cpp" line="+293"/>
+        <location filename="../paymentserver.cpp" line="+296"/>
         <location line="+206"/>
         <location line="+13"/>
         <location line="+95"/>
@@ -1902,17 +1883,17 @@ une adresse I2P…</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../anoncoinunits.cpp" line="+175"/>
+        <location filename="../anoncoinunits.cpp" line="+191"/>
         <source>Amount</source>
         <translation>Montant</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="+102"/>
-        <source>Enter a Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>Saisir une adresse Anoncoin (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <location filename="../guiutil.cpp" line="+109"/>
+        <source>Enter a Anoncoin address (e.g. %1)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+697"/>
+        <location line="+713"/>
         <source>%1 d</source>
         <translation>%1 j</translation>
     </message>
@@ -1932,9 +1913,19 @@ une adresse I2P…</translation>
         <translation>%1 s</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>NETWORK</source>
-        <translation>RÉSEAU</translation>
+        <location line="+19"/>
+        <source>FULL_BLOCKS</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>BLOOM_FILTER</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>I2P_NODE</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
@@ -2141,7 +2132,7 @@ une adresse I2P…</translation>
     </message>
     <message>
         <location line="+39"/>
-        <location filename="../rpcconsole.cpp" line="+244"/>
+        <location filename="../rpcconsole.cpp" line="+240"/>
         <location line="+338"/>
         <source>Select a peer to view detailed information.</source>
         <translation>Sélectionner un pair pour voir les informations détaillées.</translation>
@@ -2481,7 +2472,7 @@ une adresse I2P…</translation>
 <context>
     <name>RecentRequestsTableModel</name>
     <message>
-        <location filename="../recentrequeststablemodel.cpp" line="+26"/>
+        <location filename="../recentrequeststablemodel.cpp" line="+27"/>
         <source>Date</source>
         <translation>Date</translation>
     </message>
@@ -2778,8 +2769,8 @@ une adresse I2P…</translation>
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to send the payment to (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>L&apos;adresse à laquelle le paiement sera envoyé (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <source>The address to send the payment to (e.g. AZhGrZf4UcNGQ1spYXKrrKeksvei9FGfyk)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
@@ -2867,55 +2858,70 @@ une adresse I2P…</translation>
     <name>ShowI2PAddresses</name>
     <message>
         <location filename="../forms/i2pshowaddresses.ui" line="+20"/>
-        <source>Dialog</source>
-        <translation>Dialogue</translation>
+        <source>Private I2P Destination Details</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
-        <source>If you want to use a permanent I2P-address you have to set a &apos;mydestination&apos; option in the configuration file:</source>
-        <translation>Si vous voulez utiliser une adresse I2P permanente vous devez sélectionner l&apos;option &quot;mydestination&quot; dans le fichier de configuration:</translation>
+        <source>Setup a permanent I2P destination as soon as possible, so other peers can find you again on the network.  In order to do that you need to set the &quot;i2p.mydestination.privatekey&quot; parameter in your config file.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
-        <source>Ready to save parameter (If you want to use this address save this text in the configuration file and keep it secret):</source>
-        <translation>Prêt à enregistrer les paramètres (Si vous voulez utiliser cette adresse, sauvez ce texte dans le fichier de configuration et gardez-le secret):</translation>
+        <source>Your default configuration file is located here: </source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+23"/>
-        <source>Address (you can publish it):</source>
-        <translation>Adresse (vous pouvez la publier):</translation>
+        <location line="+16"/>
+        <source>You have to set &quot;i2p.options.enable=1&quot; in your config file or on the commandline,
+in order to have Anoncoin access the I2P network.  This checkbox indicates that setting.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>You also want to have set &quot;i2p.mydestination.static=1&quot; in your config file, this checkbox indicates
+that setting.  If this is newly generated it will be false, and the destination discarded once you shut down.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Keep the above destination secret, you can publish those below this line.
+Your I2P Public Key:  *This makes the I2P router to router connections possible.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Your I2P b32.i2p destination address:  *Anoncoin Core instant peer lookup uses these.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Copy &quot;privatekey&quot; parameter
+to the clipboard</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+20"/>
-        <source>Short base32-address:</source>
-        <translation>Adresse base32 courte:</translation>
+        <source>Copy &quot;publickey&quot; destination
+to the clipboard</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+22"/>
-        <source>Copy &quot;mydestination&quot; parameter
+        <location line="+17"/>
+        <source>Copy your b32.i2p destination
 to the clipboard</source>
-        <translation>Copier le paramètre &quot;mydestination&quot; 
-dans le presse-papier</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Copy public address
-to the clipboard</source>
-        <translation>Copier l&apos;adresse publique 
-dans le presse-papier</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Copy b32-address
-to the clipboard</source>
-        <translation>Copier l&apos;adresse b32 
-dans le presse-papier</translation>
+        <location line="+30"/>
+        <source>OK</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <location filename="../utilitydialog.cpp" line="+48"/>
+        <location filename="../utilitydialog.cpp" line="+45"/>
         <source>Anoncoin Core is shutting down...</source>
         <translation>Arrêt de Anoncoin Core...</translation>
     </message>
@@ -2944,8 +2950,8 @@ dans le presse-papier</translation>
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to sign the message with (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>L&apos;adresse avec laquelle le message sera signé (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <source>The address to sign the message with (e.g. AZhGrZf4UcNGQ1spYXKrrKeksvei9FGfyk)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
@@ -3017,8 +3023,8 @@ dans le presse-papier</translation>
     </message>
     <message>
         <location line="+21"/>
-        <source>The address the message was signed with (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>L&apos;adresse avec laquelle le message a été signé (par ex. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <source>The address the message was signed with (e.g. AZhGrZf4UcNGQ1spYXKrrKeksvei9FGfyk)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+37"/>
@@ -3042,8 +3048,8 @@ dans le presse-papier</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Enter an Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
-        <translation>Entrer une adresse Anoncoin (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+        <source>Enter an Anoncoin address (e.g. AZhGrZf4UcNGQ1spYXKrrKeksvei9FGfyk)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+83"/>
@@ -3131,7 +3137,7 @@ dans le presse-papier</translation>
 <context>
     <name>TransactionDesc</name>
     <message numerus="yes">
-        <location filename="../transactiondesc.cpp" line="+29"/>
+        <location filename="../transactiondesc.cpp" line="+31"/>
         <source>Open for %n more block(s)</source>
         <translation><numerusform>Ouvert pour %n bloc de plus</numerusform><numerusform>Ouvert pour %n blocs de plus</numerusform></translation>
     </message>
@@ -3346,7 +3352,7 @@ dans le presse-papier</translation>
 <context>
     <name>TransactionTableModel</name>
     <message>
-        <location filename="../transactiontablemodel.cpp" line="+237"/>
+        <location filename="../transactiontablemodel.cpp" line="+230"/>
         <source>Date</source>
         <translation>Date</translation>
     </message>
@@ -3361,7 +3367,7 @@ dans le presse-papier</translation>
         <translation>Adresse</translation>
     </message>
     <message numerus="yes">
-        <location line="+55"/>
+        <location line="+58"/>
         <source>Open for %n more block(s)</source>
         <translation><numerusform>Ouvert pour %n bloc de plus</numerusform><numerusform>Ouvert pour %n blocs de plus</numerusform></translation>
     </message>
@@ -3446,7 +3452,7 @@ dans le presse-papier</translation>
         <translation>(n.d)</translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+210"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>État de la transaction. Laissez le pointeur de la souris sur ce champ pour voir le nombre de confirmations.</translation>
     </message>
@@ -3658,7 +3664,7 @@ dans le presse-papier</translation>
 <context>
     <name>UnitDisplayStatusBarControl</name>
     <message>
-        <location filename="../anoncoingui.cpp" line="+135"/>
+        <location filename="../anoncoingui.cpp" line="+110"/>
         <source>Unit to show amounts in. Click to select another unit.</source>
         <translation>Unité pour montrer les montants entrants. Cliquer pour sélectionner une autre unité.</translation>
     </message>
@@ -3674,7 +3680,7 @@ dans le presse-papier</translation>
 <context>
     <name>WalletModel</name>
     <message>
-        <location filename="../walletmodel.cpp" line="+286"/>
+        <location filename="../walletmodel.cpp" line="+277"/>
         <source>Send Coins</source>
         <translation>Envoyer des pièces</translation>
     </message>
@@ -3682,7 +3688,7 @@ dans le presse-papier</translation>
 <context>
     <name>WalletView</name>
     <message>
-        <location filename="../walletview.cpp" line="+45"/>
+        <location filename="../walletview.cpp" line="+51"/>
         <source>&amp;Export</source>
         <translation>&amp;Exporter</translation>
     </message>
@@ -3692,7 +3698,7 @@ dans le presse-papier</translation>
         <translation>Exporter les données de l&apos;onglet courant vers un fichier</translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="+202"/>
         <source>Backup Wallet</source>
         <translation>Sauvegarder le portefeuille</translation>
     </message>
@@ -3725,82 +3731,27 @@ dans le presse-papier</translation>
 <context>
     <name>anoncoin-core</name>
     <message>
-        <location filename="../anoncoinstrings.cpp" line="+12"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
-%s
-It is recommended you use the following random password:
-rpcuser=anoncoinrpc
-rpcpassword=%s
-(you do not need to remember this password)
-The username and password MUST NOT be the same.
-If the file does not exist, create it with owner-readable-only file permissions.
-It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;Anoncoin Alert&quot; admin@foo.com
-</source>
-        <translation>%s, vous devez définir un mot de passe rpc dans le fichier de configuration : 
-%s
-Il vous est conseillé d&apos;utiliser le mot de passe aléatoire suivant :
-rpcuser=anoncoinrpc
-rpcpassword=%s
-(vous n&apos;avez pas besoin de retenir ce mot de passe)
-Le nom d&apos;utilisateur et le mot de passe NE DOIVENT PAS être identiques.
-Si le fichier n&apos;existe pas, créez-le avec les droits de lecture accordés au propriétaire.
-Il est aussi conseillé de régler alertnotify pour être prévenu des problèmes ;
-par exemple : alertnotify=echo %%s | mail -s &quot;Alerte Anoncoin&quot; admin@foo.com
-</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</source>
-        <translation>Chiffrements acceptables (par défaut : TLSv1.2+HIGH : TLSv1+HIGH : !SSLv2 : !aNULL : !eNULL : !3DES : @STRENGTH)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation>Une erreur est survenue lors du réglage du port RPC %u pour écouter sur IPv4 : %s</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation>Une erreur est survenue lors du réglage du port RPC %u pour écouter sur IPv6, retour à IPv4 : %s</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location filename="../anoncoinstrings.cpp" line="+37"/>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>
         <translation>Se lier à l&apos;adresse donnée et toujours l&apos;écouter. Utilisez la notation [host]:port pour l&apos;IPv6</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+10"/>
         <source>Cannot obtain a lock on data directory %s. Anoncoin Core is probably already running.</source>
         <translation>Impossible d’obtenir un verrou sur le répertoire de données %s. Anoncoin Core fonctionne probablement déjà.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Continuously rate-limit free transactions to &lt;n&gt;*1000 bytes per minute (default:15)</source>
-        <translation>Limiter continuellement les transactions gratuites à &lt;n&gt;*1000 octets par minute (par défaut : 15)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+13"/>
         <source>Enter regression test mode, which uses a special chain in which blocks can be solved instantly.</source>
         <translation>Passer en mode de test de régression qui utilise une chaîne spéciale dans laquelle les blocs sont résolus instantanément.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>Error: Listening for incoming connections failed (listen returned error %s)</source>
         <translation>Erreur: L&apos;écoute de connexions entrantes a échoué (l&apos;écoute a retourné l&apos;erreur %s)</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Erreur : La transaction a été rejetée ! Ceci peut arriver si certaines pièces de votre portefeuille étaient déjà dépensées, par exemple si vous avez utilisé une copie de wallet.dat et les pièces ont été dépensées avec cette copie sans être marquées comme tel ici.</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!</source>
-        <translation>Erreur : Cette transaction nécessite des frais de transaction d&apos;au moins %s en raison de son montant, de sa complexité ou de l&apos;utilisation de fonds reçus récemment !</translation>
-    </message>
-    <message>
-        <location line="+3"/>
         <source>Error: Unsupported argument -socks found. Setting SOCKS version isn&apos;t possible anymore, only SOCKS5 proxies are supported.</source>
         <translation>Erreur: l&apos;argument non-supporté -socks trouvé. Il n&apos;est plus possible d&apos;utiliser la version SOCKS, uniquement les proxies SOCKS5 sont supportés.</translation>
     </message>
@@ -3815,52 +3766,17 @@ par exemple : alertnotify=echo %%s | mail -s &quot;Alerte Anoncoin&quot; admin@f
         <translation>Exécuter la commande lorsqu&apos;une transaction de portefeuille change (%s dans la commande est remplacée par TxID)</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
-        <translation>Exécuter la commande lorsque le meilleur bloc change (%s dans cmd est remplacé par le hachage du bloc)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Fees smaller than this are considered zero fee (for transaction creation) (default:</source>
-        <translation>Les frais inférieurs à ce seuil sont considérés comme nuls (pour la création de transactions) (par défaut :</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Flush database activity from memory pool to disk log every &lt;n&gt; megabytes (default: 100)</source>
-        <translation>Purger l’activité de la base de données de la zone de mémoire vers le journal sur disque tous les &lt;n&gt; mégaoctets (par défaut : 100)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>How thorough the block verification of -checkblocks is (0-4, default: 3)</source>
-        <translation>Degré de profondeur de la vérification des blocs -checkblocks (0-4, par défaut : 3)</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+20"/>
         <source>In this mode -genproclimit controls how many blocks are generated immediately.</source>
         <translation>Dans ce mode -genproclimit contrôle combien de blocs sont générés immédiatement.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9332 or testnet: 19332)</source>
-        <translation>Ecouter les connexions JSON-RPC sur &lt;port&gt; (par défaut: 9332 ou réseau test: 19332)</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>Délai en secondes de refus de reconnexion pour les pairs présentant un mauvais comportement (par défaut : 86400)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Output debugging information (default: 0, supplying &lt;category&gt; is optional)</source>
-        <translation>Extraire les informations de débogage (par défaut : 0, fournir &lt;category&gt; est optionnel)</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+23"/>
         <source>Query for peer addresses via DNS lookup, if low on addresses (default: 1 unless -connect)</source>
         <translation>Requête pour adresses de pairs par recherche DNS, si peu d&apos;adresses (par défaut: 1 sauf si -connect)</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+8"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: %d)</source>
         <translation>Définir la taille maximale en octets des transactions prioritaires/à frais modiques (par défaut : %d)</translation>
     </message>
@@ -3870,32 +3786,17 @@ par exemple : alertnotify=echo %%s | mail -s &quot;Alerte Anoncoin&quot; admin@f
         <translation>Définir le nombre d&apos;exétrons de vérification des scripts (%u à %d, 0 = auto, &lt; 0 = laisser ce nombre de cœurs inutilisés, par défaut : %d)</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Set the processor limit for when generation is on (-1 = unlimited, default: -1)</source>
-        <translation>Définir la limite processeur définissant quand la génération est en fonction (-1 = illimité, par défaut : -1)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
-        <translation>Ceci est une pré-version de test - l&apos;utiliser à vos risques et périls - ne pas l&apos;utiliser pour miner ou pour des applications marchandes</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+24"/>
         <source>Unable to bind to %s on this computer. Anoncoin Core is probably already running.</source>
         <translation>Impossible de se lier à %s sur cet ordinateur. Anoncoin Core fonctionne probablement déjà.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: -proxy)</source>
-        <translation>Utiliser un serveur mandataire SOCKS5 séparé pour atteindre les pairs par les services cachés de Tor (par défaut : -proxy)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+14"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
         <translation>Attention : -paytxfee est réglée sur un montant très élevé ! Il s&apos;agit des frais de transaction que vous payerez si vous envoyez une transaction.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
         <translation>Attention : Le réseau ne semble pas totalement d&apos;accord ! Quelques mineurs semblent éprouver des difficultés.</translation>
     </message>
@@ -3915,54 +3816,9 @@ par exemple : alertnotify=echo %%s | mail -s &quot;Alerte Anoncoin&quot; admin@f
         <translation>Avertissement : wallet.dat corrompu, données récupérées ! Le fichier wallet.dat original a été enregistré en tant que wallet.{timestamp}.bak dans %s ; si votre solde ou transactions sont incorrects vous devriez effectuer une restauration depuis une sauvegarde.</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>
-If you want to use a permanent I2P-address you have to set options in the configuration file:
-Your Config file is: </source>
-        <translation>
-Si vous voulez utiliser une adresse I2P permanente vous devez sélectionner les options dans le fichier de configuration: 
-Votre fichier de configuration est:</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>
-This is your Address + private key (save this text in the configuration file and keep it secret):
-</source>
-        <translation>
-Ceci est votre adresse + clef privée (enregistrez ce texte dans le fichier de configuration et gardez le secret):
-</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>
-
-This is your Address (you can make it public):
-</source>
-        <translation>
-
-Ceci est votre adresse (vous pouvez la rendre publique):
-</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>
-
-Your Short base32-address:
-</source>
-        <translation>
-
-Votre adresse base32 courte:
-</translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+42"/>
         <source>(default: 1)</source>
         <translation>(par défaut : 1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>(default: wallet.dat)</source>
-        <translation>(par défaut : wallet.dat)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3980,24 +3836,341 @@ Votre adresse base32 courte:
         <translation>Accepter les connexions entrantes (par défaut : 1 si aucun -proxy ou -connect )</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
         <translation>Ajouter un nœud auquel se connecter et tenter de garder la connexion ouverte</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
         <translation>Autoriser les recherches DNS pour -addnode, -seednode et -connect</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Allow JSON-RPC connections from specified IP address</source>
-        <translation>Autoriser les connexions JSON-RPC depuis l&apos;adresse IP spécifiée</translation>
+        <location line="-220"/>
+        <source>       Or start with our anoncoin.conf.sample file, which has even more settings.
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>      Setting them there, before starting your node, allows Cli to always work with whatever configuration your using atm.)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>      Then only anoncoin-cli &lt;command&gt; &lt;params&gt; need be entered on the command line, to use this utility.)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>   Standard I2P network Routers are not as likely to find your destination with it.
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>   most peers will likely be able to find you by this Base32 hash of the Public Key.
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>****** Save the above text at the end of your configuration file and keep it secret.
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Allow JSON-RPC connections from specified source. Valid for &lt;ip&gt; are a single IP (e.g. 1.2.3.4), a network/netmask (e.g. 1.2.3.4/255.255.255.0) or a network/CIDR (e.g. 1.2.3.4/24). This option can be specified multiple times</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>An error occurred while setting up the RPC address %s port %u for listening: %s</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Bind to given address and whitelist peers connecting to it. Use [host]:port notation for IPv6</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Bind to given address to listen for JSON-RPC connections. Use [host]:port notation for IPv6. This option can be specified multiple times (default: bind to all interfaces)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Continuously rate-limit free transactions to &lt;n&gt;*1000 bytes per minute (default:%u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Distributed under the MIT software license, see the accompanying file COPYING or &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Enter regression test mode, which uses a special chain in which blocks can be solved instantly. This is intended for regression testing tools and app development.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Error loading wallet.dat: Wallet requires newer version of Anoncoin Core</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Execute command when the best block changes (%s in cmd is replaced by the real block hash)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Fees (in ANC/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Fees (in ANC/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Flush database activity from memory pool to disk log every &lt;n&gt; megabytes (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>How thorough the block verification of -checkblocks is (0-4, default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: &apos;%s&apos; (must be at least the minrelay fee of %s to prevent stuck transactions)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Log transaction priority and fee per kB when mining blocks (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Maintain a full transaction index, used by the getrawtransaction rpc call (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Maximum total fees to use in a single wallet transaction, setting too low may abort large transactions (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Note: If not otherwise specified, any of the above settings found in your configuration file, will be used to make the connection.)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Number of seconds to keep misbehaving peers from reconnecting (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Output debugging information (default: %u, supplying &lt;category&gt; is optional)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Output only the hex-encoded transaction id of the resultant transaction.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Require high priority for relaying free or low-fee transactions (default:%u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Set enabled=1 in the [i2p.options] section of your anoncoin.conf file to use onlynet=i2p</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Set the number of threads for coin generation if enabled (-1 = all cores, default: %d)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit &lt;https://www.openssl.org/&gt; and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>To use anoncoind, or the -server option to anoncoin-qt, you must set an rpcpassword in the configuration file:
+%s
+It is recommended you use the following random password:
+rpcuser=anoncoinrpc
+rpcpassword=%s
+(you do not need to remember this password)
+The username and password MUST NOT be the same.
+If the file does not exist, create it with owner-readable-only file permissions.
+It is also recommended to set alertnotify so you are notified of problems;
+for example: alertnotify=echo %%s | mail -s &quot;Anoncoin Alert&quot; admin@foo.com
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Unable to obtain I2P SAM Session for the -generatei2pdestination command</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Unable to run -generatei2pdestination, see the debug.log for possible solutions to fix the problem.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Bitcoin Core will not work properly.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Whitelist peers connecting from the given netmask or IP address. Can be specified multiple times.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Whitelisted peers cannot be DoS banned and their transactions are always relayed, even if they are already in the mempool, useful e.g. for a gateway</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
+%s
+If the file does not exist, create it with owner-readable-only file permissions.
+If server was started with other than the default data directory, you must specify that location too. Try -help.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>
+This is your I2P Public Key:
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>
+To have a permanent I2P Destination address, you have to set options in anoncoin.conf:
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>
+Your I2P Destination Private Key anoncoin.conf file settings are:
+
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>
+Your personal b32.i2p Destination:
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>
+
+** Anoncoin peers now have built-in name resolution, once your on I2P for a few hours,
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>
+
+**** You can advertise the Public Key, all I2P Routers will know how to locate it.
+</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>(default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Accept public REST requests (default: %u)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
-        <source>Always query for peer addresses via DNS lookup (default: 0)</source>
-        <translation>Toujours effectuer les requêtes pour adresses de pairs par recherche DNS (par défaut: 0)</translation>
+        <source>Acceptable ciphers (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Add address-based output to TX</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Add input to TX</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Add raw script output to TX</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Add zero or more signatures to transaction</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Always query for peer addresses via DNS lookup (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Anoncoin Core Daemon</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Anoncoin Core RPC client version</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Anoncoin Core anoncoin-tx utility version</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Anoncoin is running on clearnet!</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4008,6 +4181,11 @@ Votre adresse base32 courte:
         <location line="+1"/>
         <source>Block creation options:</source>
         <translation>Options de création de bloc :</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Building cross reference...</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4026,13 +4204,28 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Cannot resolve -whitebind address: &apos;%s&apos;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Cannot write default address</source>
         <translation>Impossible d&apos;écrire l&apos;adresse par défaut</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Checking proof-of-work too...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Clear list of wallet transactions (diagnostic tool; implies -rescan)</source>
         <translation>Effacer la liste des transactions du portefeuille (outil de diagnostic, implique un nouveau balayage -rescan)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Commands:</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4043,6 +4236,11 @@ Votre adresse base32 courte:
         <location line="+1"/>
         <source>Connect through SOCKS5 proxy</source>
         <translation>Se connecter au travers d&apos;un proxy SOCKS5</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Connect to JSON-RPC on &lt;port&gt; (default: %u or testnet: %u)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4061,8 +4259,28 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Copyright (C) 2013-%i The Anoncoin Core Developers</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Corrupted block database detected</source>
         <translation>Base corrompue de données des blocs détectée</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Could not parse -rpcbind value %s as network address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Create hex-encoded anoncoin transaction</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Create new, empty TX.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4071,11 +4289,221 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
-        <source>Disable safemode, override a real safe mode event (default: 0)</source>
-        <translation>Désactiver le mode sans échec, passer outre un événement sans échec réel (par défaut : 0)</translation>
+        <source>Delete input N from TX</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
+        <source>Delete output N from TX</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Disable safemode, override a real safe mode event (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Finishing block index setup...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Force safe mode (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Generated I2P Destination</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Get help for a command</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>How many blocks to check at startup (default: %u, 0 = all)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Invalid netmask specified in -whitelist: &apos;%s&apos;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Limit size of signature cache to &lt;n&gt; entries (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>List commands</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: %u or testnet: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Listen for connections on &lt;port&gt; (default: %u or testnet: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Load JSON file FILENAME into register NAME</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Maintain at most &lt;n&gt; connections to peers (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Need to specify a port with -whitebind: &apos;%s&apos;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Only accept block chain matching built-in checkpoints (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Prepend debug output with timestamp (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>RPC SSL options: (see the Wiki for SSL setup instructions)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Register Commands:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Relay and mine data carrier transactions (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Run a thread to flush wallet periodically (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Send transactions as zero-fee transactions if possible (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Server certificate file (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Server private key (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set TX lock time to N</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set TX version to N</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Set key pool size to &lt;n&gt; (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Set minimum block size in bytes (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set register NAME to given JSON-STRING</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set the number of threads to service RPC calls (default: %d)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Sets the DB_PRIVATE flag in the wallet db environment (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Specify configuration file (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Specify connection timeout in milliseconds (minimum: 1, default: %d)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Specify pid file (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Spend unconfirmed change when sending transactions (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Start Anoncoin Core Daemon</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Stop running after importing blocks from disk (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Threshold for disconnecting misbehaving peers (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Use UPnP to map the listening port (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Wallet needed to be rewritten: restart Anoncoin Core to complete</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="-129"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
         <translation>Découvrir sa propre adresse IP (par défaut : 1 lors de l&apos;écoute et si aucun -externalip)</translation>
     </message>
@@ -4093,16 +4521,6 @@ Votre adresse base32 courte:
         <location line="+1"/>
         <source>Done loading</source>
         <translation>Chargement terminé</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error - Unable to Generate I2P Destination.</source>
-        <translation>Erreur - Impossible de générer la destination I2P.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error - Unable to report I2P Destination.</source>
-        <translation>Erreur - Impossible de rapporter la destination I2P.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4131,13 +4549,13 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Anoncoin</source>
-        <translation>Erreur lors du chargement de wallet.dat : le portefeuille exige une version plus récente de Anoncoin</translation>
+        <source>Error opening block database</source>
+        <translation>Erreur lors de l&apos;ouverture de la base de données des blocs</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Error opening block database</source>
-        <translation>Erreur lors de l&apos;ouverture de la base de données des blocs</translation>
+        <source>Error reading from database, shutting down.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4156,58 +4574,13 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
-        <source>Error: Wallet locked, unable to create transaction!</source>
-        <translation>Erreur : Portefeuille verrouillé, impossible de créer la transaction !</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error: system error: </source>
-        <translation>Erreur : erreur système :</translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
         <translation>Échec de l&apos;écoute sur un port quelconque. Utilisez -listen=0 si vous voulez ceci.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Failed to read block info</source>
-        <translation>La lecture des informations de bloc a échoué</translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Failed to read block</source>
         <translation>La lecture du bloc a échoué</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to sync block index</source>
-        <translation>La synchronisation de l&apos;index des blocs a échoué</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write block index</source>
-        <translation>L&apos;&apos;écriture de l&apos;index des blocs a échoué</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write block info</source>
-        <translation>L&apos;écriture des informations du bloc a échoué</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write block</source>
-        <translation>L&apos;écriture du bloc a échoué</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write file info</source>
-        <translation>L&apos;écriture des informations de fichier a échoué</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Failed to write to coin database</source>
-        <translation>L&apos;écriture dans la base de données des pièces a échoué</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4221,36 +4594,21 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Fee (in ANC/kB) to add to transactions you send (default: %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Fee per kB to add to transactions you send</source>
         <translation>Frais par ko à ajouter aux transactions que vous envoyez</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Fees smaller than this are considered zero fee (for relaying) (default:</source>
-        <translation>Les frais inférieurs à ce seuil sont considérés comme nuls (pour le relayage) (par défaut :</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Force safe mode (default: 0)</source>
-        <translation>Forcer le mode sans échec (par défaut : 0)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Generate coins (default: 0)</source>
         <translation>Générer des pièces (défaut : 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Generated an I2P destination for you.</source>
-        <translation>Une destination I2P a été générée pour vous.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>How many blocks to check at startup (default: 288, 0 = all)</source>
-        <translation>Nombre de blocs à vérifier au démarrage (par défaut : 288, 0 = tous)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>If &lt;category&gt; is not supplied, output all debugging information.</source>
         <translation>Si &lt;category&gt; n&apos;est pas indiqué, extraire toutes les données de débogage.</translation>
     </message>
@@ -4263,6 +4621,11 @@ Votre adresse base32 courte:
         <location line="+1"/>
         <source>Imports blocks from external blk000??.dat file</source>
         <translation>Importe des blocs depuis un fichier blk000??.dat externe</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Include IP addresses in debug output (default: %u)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4286,6 +4649,11 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Internal ERROR - Invalid BlockIndex</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Invalid -onion address: &apos;%s&apos;</source>
         <translation>Adresse -onion invalide : « %s »</translation>
     </message>
@@ -4293,6 +4661,11 @@ Votre adresse base32 courte:
         <location line="+1"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
         <translation>Adresse -proxy invalide : « %s »</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invalid amount for -maxtxfee=&lt;amount&gt;: &apos;%s&apos;</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4306,36 +4679,21 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos; (must be at least %s)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
         <translation>Montant invalide pour -paytxfee=&lt;montant&gt; : « %s »</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Invalid amount</source>
-        <translation>Montant invalide</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Keep at most &lt;n&gt; unconnectable blocks in memory (default: %u)</source>
-        <translation>Garder au plus &lt;n&gt; blocs non-connectables en mémoire (par défaut : %u)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Keep at most &lt;n&gt; unconnectable transactions in memory (default: %u)</source>
         <translation>Garder au plus &lt;n&gt; transactions non-connectables en mémoire (par défaut : %u)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Limit size of signature cache to &lt;n&gt; entries (default: 50000)</source>
-        <translation>Limiter la taille du cache des signatures à &lt;n&gt; entrées (par défaut : 50000)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Listen for connections on &lt;port&gt; (default: 9333 or testnet: 19333)</source>
-        <translation>Ecouter les connexions sur &lt;port&gt; (par défaut: 9333 ou réseau test: 19333)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+6"/>
         <source>Loading addresses...</source>
         <translation>Chargement des adresses…</translation>
     </message>
@@ -4350,32 +4708,7 @@ Votre adresse base32 courte:
         <translation>Chargement du portefeuille…</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Log transaction priority and fee per kB when mining blocks (default: 0)</source>
-        <translation>Lors du minage, journaliser la priorité des transactions et les frais par ko (par défaut : 0) </translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Maintain a full transaction index (default: 0)</source>
-        <translation>Maintenir un index complet des transactions (par défaut : 0)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Garder au plus &lt;n&gt; connexions avec les pairs (par défaut : 125)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
-        <translation>Tampon maximal de réception par connexion, &lt;n&gt;*1 000 octets (par défaut : 5000)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
-        <translation>Tampon maximal d&apos;envoi par connexion », &lt;n&gt;*1000 octets (par défaut : 1000)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Node relay options:</source>
         <translation>Options de nœud de relais:</translation>
     </message>
@@ -4385,12 +4718,7 @@ Votre adresse base32 courte:
         <translation>Pas assez de descripteurs de fichiers proposés.</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Only accept block chain matching built-in checkpoints (default: 1)</source>
-        <translation>N&apos;accepter qu&apos;une chaîne de blocs correspondant aux points de vérification intégrés (par défaut : 1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Only connect to nodes in network &lt;net&gt; (ipv4, ipv6, onion or i2p)</source>
         <translation>Se connecter uniquement aux nœuds du réseau &lt;net&gt; (ipv4, ipv6, onion or i2p)</translation>
     </message>
@@ -4405,29 +4733,19 @@ Votre adresse base32 courte:
         <translation>Mot de passe pour les connexions JSON-RPC</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Prepend debug output with timestamp (default: 1)</source>
-        <translation>Ajouter l&apos;horodatage au début de la sortie de débogage (par défaut : 1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Print block on startup, if found in block index</source>
         <translation>Imprimer le bloc au démarrage s&apos;il est trouvé dans l&apos;index des blocs</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Print block tree on startup (default: 0)</source>
-        <translation>Imprimer l&apos;arborescence des blocs au démarrage (par défaut : 0)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>RPC SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation>Options RPC SSL: (se référer au Wiki de Bitcoin pour des instructions de configuration SSL)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>RPC server options:</source>
         <translation>Options du serveur RPC :</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>RPC support for HTTP persistent connections (default: %d)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4445,12 +4763,7 @@ Votre adresse base32 courte:
         <translation>Reconstruire l&apos;index de la chaîne de blocs à partir des fichiers blk000??.dat courants</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Relay and mine data carrier transactions (default: 1)</source>
-        <translation>Relayer et miner les transactions de support de données (par défaut: 1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Rescan the block chain for missing wallet transactions</source>
         <translation>Réanalyser la chaîne de blocs pour les transactions de portefeuille manquantes</translation>
     </message>
@@ -4460,19 +4773,29 @@ Votre adresse base32 courte:
         <translation>Nouvelle analyse…</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Results also written to your debug.log file</source>
-        <translation>Résultats également écrits dans votre fichier debug.log</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Run a thread to flush wallet periodically (default: 1)</source>
-        <translation>Exécuter une tâche pour purger le portefeuille périodiquement (par défaut : 1) </translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Run in the background as a daemon and accept commands</source>
         <translation>Fonctionner en arrière-plan en tant que démon et accepter les commandes</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>SSL options: (see the Wiki for SSL setup instructions)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Select JSON output</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send command to Anoncoin Core</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send commands to node running on &lt;ip&gt; (default: %s)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4480,54 +4803,19 @@ Votre adresse base32 courte:
         <translation>Envoyer les informations de débogage/trace à la console au lieu du fichier debug.log</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Server certificate file (default: server.cert)</source>
-        <translation>Fichier de certification du serveur (par défaut : server.cert)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Server private key (default: server.pem)</source>
-        <translation>Clef privée du serveur (par défaut : server.pem)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+6"/>
         <source>Set database cache size in megabytes (%d to %d, default: %d)</source>
         <translation>Définir la taille du cache de la base de données en mégaoctets (%d to %d, default: %d)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation>Définir la taille de la réserve de clefs à &lt;n&gt; (par défaut : 100)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Set maximum block size in bytes (default: %d)</source>
         <translation>Définir la taille minimale de bloc en octets (par défaut : %d)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Set minimum block size in bytes (default: 0)</source>
-        <translation>Définir la taille de bloc minimale en octets (par défaut : 0)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Set the number of threads to service RPC calls (default: 4)</source>
-        <translation>Définir le nombre d&apos;exétrons pour desservir les appels RPC (par défaut : 4)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Sets the DB_PRIVATE flag in the wallet db environment (default: 1)</source>
-        <translation>Définit le drapeau DB_PRIVATE dans l&apos;environnement de la BD du portefeuille (par défaut : 1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Show all debugging options (usage: --help -help-debug)</source>
         <translation>Montrer toutes les options de débogage (utilisation : --help --help-debug)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show benchmark information (default: 0)</source>
-        <translation>Afficher les infos du test de performance (par défaut : 0)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -4540,27 +4828,12 @@ Votre adresse base32 courte:
         <translation>La signature de la transaction a échoué</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Specify configuration file (default: anoncoin.conf)</source>
-        <translation>Spécifier le fichier de configuration (par défaut : anoncoin.conf)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Specify connection timeout in milliseconds (default: 20000)</source>
-        <translation>Spécifier le délai d&apos;attente de la connexion en millisecondes (par défaut: 20000)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Specify data directory</source>
         <translation>Spécifier le répertoire de données</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Specify pid file (default: anoncoind.pid)</source>
-        <translation>Spécifier le fichier pid (par défaut : anoncoind.pid)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Specify wallet file (within data directory)</source>
         <translation>Spécifiez le fichier de portefeuille (dans le répertoire de données)</translation>
     </message>
@@ -4570,19 +4843,19 @@ Votre adresse base32 courte:
         <translation>Spécifier votre propre adresse publique</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Spend unconfirmed change when sending transactions (default: 1)</source>
-        <translation>Dépenser la monnaie non confirmée lors de l&apos;envoi de transactions (par défaut : 1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>System error: </source>
-        <translation>Erreur système :</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>This help message</source>
         <translation>Ce message d&apos;aide</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This is a pre-release test build - use at your own risk</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This is experimental software.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4590,17 +4863,7 @@ Votre adresse base32 courte:
         <translation>Ceci est à l&apos;intention des outils de test de régression et du développement applicatif.</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>Seuil de déconnexion des pairs présentant un mauvais comportement (par défaut : 100)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>To use the %s option</source>
-        <translation>Pour utiliser l&apos;option %s</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Transaction amount too small</source>
         <translation>Montant de la transaction trop bas</translation>
     </message>
@@ -4621,8 +4884,18 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Unable to create I2P SAM session</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
         <translation>Réseau inconnu spécifié sur -onlynet : « %s »</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Update hex-encoded anoncoin transaction</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4631,16 +4904,16 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Usage:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
         <translation>Utiliser OpenSSL (https) pour les connexions JSON-RPC</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Use UPnP to map the listening port (default: 0)</source>
-        <translation>Utiliser l&apos;UPnP pour mapper le port d&apos;écoute (par défaut : 0)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
         <translation>Utiliser l&apos;UPnP pour mapper le port d&apos;écoute (par défaut : 1 lors de l&apos;écoute)</translation>
     </message>
@@ -4661,8 +4934,18 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
+        <source>Verifying latest blocks...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Verifying wallet...</source>
         <translation>Vérification du portefeuille en cours...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Wait for RPC server to start</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4670,12 +4953,7 @@ Votre adresse base32 courte:
         <translation>Le portefeuille %s réside en dehors du répertoire de données %s</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart Anoncoin to complete</source>
-        <translation>Le portefeuille devait être réécrit : redémarrer Anoncoin pour terminer l&apos;opération.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Wallet options:</source>
         <translation>Options du portefeuille :</translation>
     </message>
@@ -4686,18 +4964,28 @@ Votre adresse base32 courte:
     </message>
     <message>
         <location line="+1"/>
-        <source>Warning: Deprecated argument -debugnet ignored, use -debug=net</source>
-        <translation>Attention : l&apos;argument obsolète -debugnet a été ignoré, utiliser -debug=net</translation>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
         <translation>Avertissement : cette version est obsolète, une mise à niveau est nécessaire !</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Warning: Unsupported argument -benchmark ignored, use -debug=bench.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Warning: Unsupported argument -debugnet ignored, use -debug=net.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>You need to rebuild the database using -reindex to change -txindex</source>
         <translation>Vous devez reconstruire la base de données en utilisant -reindex afin de modifier -txindex</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Your Config file is: </source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -4708,6 +4996,11 @@ Votre adresse base32 courte:
         <location line="+1"/>
         <source>on startup</source>
         <translation>au démarrage</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>version</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>

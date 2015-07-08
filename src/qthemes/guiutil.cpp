@@ -1,18 +1,20 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "guiutil.h"
+// Anoncoin-config.h has been loaded...
 
 #include "anoncoinaddressvalidator.h"
 #include "anoncoinunits.h"
 #include "qvalidatedlineedit.h"
 #include "walletmodel.h"
 
-#include "core.h"
 #include "init.h"
+#include "main.h"           // for ::minRelayTxFee
 #include "protocol.h"
+#include "transaction.h"
 #include "util.h"
 
 #ifdef WIN32
@@ -65,6 +67,9 @@ static boost::filesystem::detail::utf8_codecvt_facet utf8;
 
 #if defined(Q_OS_MAC)
 extern double NSAppKitVersionNumber;
+#if !defined(NSAppKitVersionNumber10_8)
+#define NSAppKitVersionNumber10_8 1187
+#endif
 #if !defined(NSAppKitVersionNumber10_9)
 #define NSAppKitVersionNumber10_9 1265
 #endif
@@ -99,7 +104,9 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
 
     widget->setFont(anoncoinAddressFont());
 #if QT_VERSION >= 0x040700
-    widget->setPlaceholderText(QObject::tr("Enter a Anoncoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
+    // We don't want translators to use own addresses in translations
+    // and this is the only place, where this address is supplied.
+    widget->setPlaceholderText(QObject::tr("Enter a Anoncoin address (e.g. %1)").arg("AZhGrZf4UcNGQ1spYXKrrKeksvei9FGfyk"));
 #endif
     widget->setValidator(new AnoncoinAddressEntryValidator(parent));
     widget->setCheckValidator(new AnoncoinAddressCheckValidator(parent));
@@ -220,9 +227,9 @@ QString formatAnoncoinURI(const SendCoinsRecipient &info)
 bool isDust(const QString& address, qint64 amount)
 {
     CTxDestination dest = CAnoncoinAddress(address.toStdString()).Get();
-    CScript script; script.SetDestination(dest);
+    CScript script = GetScriptForDestination(dest);
     CTxOut txOut(amount, script);
-    return txOut.IsDust(CTransaction::nMinRelayTxFee);
+    return txOut.IsDust(::minRelayTxFee);
 }
 
 QString HtmlEscape(const QString& str, bool fMultiLine)
@@ -379,12 +386,6 @@ void openDebugLogfile()
         QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
 }
 
-ToolTipToRichTextFilter::ToolTipToRichTextFilter(int size_threshold, QObject *parent) :
-    QObject(parent), size_threshold(size_threshold)
-{
-
-}
-
 void SubstituteFonts(const QString& language)
 {
 #if defined(Q_OS_MAC)
@@ -419,6 +420,12 @@ void SubstituteFonts(const QString& language)
     }
 #endif
 #endif
+}
+
+ToolTipToRichTextFilter::ToolTipToRichTextFilter(int size_threshold, QObject *parent) :
+    QObject(parent), size_threshold(size_threshold)
+{
+
 }
 
 bool ToolTipToRichTextFilter::eventFilter(QObject *obj, QEvent *evt)
@@ -827,21 +834,23 @@ QString formatServicesStr(quint64 mask)
 {
     QStringList strList;
 
-    // Just scan the last 8 bits for now.
-    for (int i = 0; i < 8; i++) {
+    // Scan 32 bits, tried 64 but that caused double entries to appear in the peertable
+    // ToDo: figure out why that didn't work as I thought the service
+    // bits was 64 bits wide....perhaps not.
+    for (int i = 0; i < 32; i++) {
         uint64_t check = 1 << i;
         if (mask & check)
         {
             switch (check)
             {
             case NODE_NETWORK:
-                strList.append(QObject::tr("CLEARNET"));
+                strList.append(QObject::tr("FULL_BLOCKS"));
                 break;
             case NODE_BLOOM:
-                strList.append(QObject::tr("BLOOM"));
+                strList.append(QObject::tr("BLOOM_FILTER"));
                 break;
             case NODE_I2P:
-                strList.append(QObject::tr("I2PNET"));
+                strList.append(QObject::tr("I2P_NODE"));
                 break;
             default:
                 strList.append(QString("%1[%2]").arg(QObject::tr("UNKNOWN")).arg(check));

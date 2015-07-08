@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactiondesc.h"
@@ -12,10 +12,12 @@
 #include "db.h"
 #include "main.h"
 #include "paymentserver.h"
+#include "timedata.h"
 #include "transactionrecord.h"
 #include "ui_interface.h"
 #include "wallet.h"
 #include "script.h"
+#include "sync.h"
 
 #include <stdint.h>
 #include <string>

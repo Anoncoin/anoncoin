@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
@@ -25,7 +25,8 @@
 AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddressBookPage),
-    model(0),
+    pAddressTableModel(0),
+    pWalletModel(0),
     mode(mode),
     tab(tab)
 {
@@ -108,50 +109,62 @@ AddressBookPage::~AddressBookPage()
     delete ui;
 }
 
-// void AddressBookPage::setModel(AddressTableModel *model)
-void AddressBookPage::setModel(WalletModel *model)
+// Original code: void AddressBookPage::setModel(AddressTableModel *model)
+// Over use of the variable name 'model' here causes problems with code readability, re-labeling them to be more descriptive is helpful.
+void AddressBookPage::setModel(WalletModel *pWalletModelIn)
 {
-    this->model = model->getAddressTableModel();
-    if(!model)
-        return;
+    // This WalletModel reference pointer is not currently used for anything, however is now being stored in the class object
+    // variables, and available for future reference, what is important is that the pAddressTableModel pointer is kept and that
+    // is what is used throughout the rest of this class methods definitions. (See below)
+    pWalletModel = pWalletModelIn;
+    if( pWalletModel ) {
+        // As more than one of these AddressBookPages exist, it is important that we connect THIS objects
+        // pAddressTableModel pointer to the rowsInserted signal, and not simply call the wallets
+        // getAddressTableModel() method to find out what that is.  Each AddressBookPage MUST have a local
+        // copy of the pointer to the AddressTableModel.  Then signals and slots connections will build correctly
+        // and work when new transactions are added.  So it is now stored separately from the WalletModel pointer.
+        //
+        // Without this variable, a bug caused by not having it, shows up right away as crashing the software,
+        // when you try to test mine coins on a Windows build with QT5 lib.
+        pAddressTableModel = pWalletModelIn->getAddressTableModel();
+        if( pAddressTableModel ) {
+            proxyModel = new QSortFilterProxyModel(this);
+            proxyModel->setSourceModel(pAddressTableModel);
+            proxyModel->setDynamicSortFilter(true);
+            proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+            proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+            switch(tab) {
+                case ReceivingTab:
+                    // Receive filter
+                    proxyModel->setFilterRole(AddressTableModel::TypeRole);
+                    proxyModel->setFilterFixedString(AddressTableModel::Receive);
+                    break;
+                case SendingTab:
+                    // Send filter
+                    proxyModel->setFilterRole(AddressTableModel::TypeRole);
+                    proxyModel->setFilterFixedString(AddressTableModel::Send);
+                    break;
+            }
+            ui->tableView->setModel(proxyModel);
+            ui->tableView->sortByColumn(0, Qt::AscendingOrder);
 
-    proxyModel = new QSortFilterProxyModel(this);
-    proxyModel->setSourceModel(model->getAddressTableModel());
-    proxyModel->setDynamicSortFilter(true);
-    proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-    proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    switch(tab)
-    {
-    case ReceivingTab:
-        // Receive filter
-        proxyModel->setFilterRole(AddressTableModel::TypeRole);
-        proxyModel->setFilterFixedString(AddressTableModel::Receive);
-        break;
-    case SendingTab:
-        // Send filter
-        proxyModel->setFilterRole(AddressTableModel::TypeRole);
-        proxyModel->setFilterFixedString(AddressTableModel::Send);
-        break;
-    }
-    ui->tableView->setModel(proxyModel);
-    ui->tableView->sortByColumn(0, Qt::AscendingOrder);
-
-    // Set column widths
+            // Set column widths
 #if QT_VERSION < 0x050000
-    ui->tableView->horizontalHeader()->setResizeMode(AddressTableModel::Label, QHeaderView::Stretch);
-    ui->tableView->horizontalHeader()->setResizeMode(AddressTableModel::Address, QHeaderView::ResizeToContents);
+            ui->tableView->horizontalHeader()->setResizeMode(AddressTableModel::Label, QHeaderView::Stretch);
+            ui->tableView->horizontalHeader()->setResizeMode(AddressTableModel::Address, QHeaderView::ResizeToContents);
 #else
-    ui->tableView->horizontalHeader()->setSectionResizeMode(AddressTableModel::Label, QHeaderView::Stretch);
-    ui->tableView->horizontalHeader()->setSectionResizeMode(AddressTableModel::Address, QHeaderView::ResizeToContents);
+            ui->tableView->horizontalHeader()->setSectionResizeMode(AddressTableModel::Label, QHeaderView::Stretch);
+            ui->tableView->horizontalHeader()->setSectionResizeMode(AddressTableModel::Address, QHeaderView::ResizeToContents);
 #endif
 
-    connect(ui->tableView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-        this, SLOT(selectionChanged()));
+            connect(ui->tableView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
 
-    // Select row for newly created address
-    connect(model->getAddressTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(selectNewAddress(QModelIndex,int,int)));
+            //! Select row for newly created address, this connection MUST use a local object pointer to the Model.
+            connect(pAddressTableModel, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(selectNewAddress(QModelIndex,int,int)));
 
-    selectionChanged();
+            selectionChanged();
+        }
+    }
 }
 
 void AddressBookPage::on_copyAddress_clicked()
@@ -166,7 +179,7 @@ void AddressBookPage::onCopyLabelAction()
 
 void AddressBookPage::onEditAction()
 {
-    if(!model)
+    if(!pAddressTableModel)
         return;
 
     if(!ui->tableView->selectionModel())
@@ -179,7 +192,7 @@ void AddressBookPage::onEditAction()
         tab == SendingTab ?
         EditAddressDialog::EditSendingAddress :
         EditAddressDialog::EditReceivingAddress, this);
-    dlg.setModel(model);
+    dlg.setModel(pAddressTableModel);
     QModelIndex origIndex = proxyModel->mapToSource(indexes.at(0));
     dlg.loadRow(origIndex.row());
     dlg.exec();
@@ -187,14 +200,14 @@ void AddressBookPage::onEditAction()
 
 void AddressBookPage::on_newAddress_clicked()
 {
-    if(!model)
+    if(!pAddressTableModel)
         return;
 
     EditAddressDialog dlg(
         tab == SendingTab ?
         EditAddressDialog::NewSendingAddress :
         EditAddressDialog::NewReceivingAddress, this);
-    dlg.setModel(model);
+    dlg.setModel(pAddressTableModel);
     if(dlg.exec())
     {
         newAddressToSelect = dlg.getAddress();
@@ -305,7 +318,7 @@ void AddressBookPage::contextualMenu(const QPoint &point)
 
 void AddressBookPage::selectNewAddress(const QModelIndex &parent, int begin, int /*end*/)
 {
-    QModelIndex idx = proxyModel->mapFromSource(model->index(begin, AddressTableModel::Address, parent));
+    QModelIndex idx = proxyModel->mapFromSource(pAddressTableModel->index(begin, AddressTableModel::Address, parent));
     if(idx.isValid() && (idx.data(Qt::EditRole).toString() == newAddressToSelect))
     {
         // Select row of newly created address, once

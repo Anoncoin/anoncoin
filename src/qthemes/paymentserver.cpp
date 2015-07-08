@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "paymentserver.h"
@@ -8,6 +8,7 @@
 #include "anoncoinunits.h"
 #include "guiconstants.h"
 #include "guiutil.h"
+// Anoncoin-config.h has been loaded...
 #include "optionsmodel.h"
 
 #include "base58.h"
@@ -18,6 +19,7 @@
 
 #include <openssl/x509.h>
 #include <openssl/x509_vfy.h>
+
 #include <QApplication>
 #include <QByteArray>
 #include <QDataStream>
@@ -46,6 +48,7 @@
 #endif
 
 using namespace boost;
+using namespace std;
 
 const int ANONCOIN_IPC_CONNECT_TIMEOUT = 1000; // milliseconds
 const QString ANONCOIN_IPC_PREFIX("anoncoin:");
@@ -196,10 +199,10 @@ bool PaymentServer::ipcParseCommandLine(int argc, char* argv[])
             {
                 CAnoncoinAddress address(r.address.toStdString());
 
-                SelectParams(CChainParams::MAIN);
+                SelectParams(CBaseChainParams::MAIN);
                 if (!address.IsValid())
                 {
-                    SelectParams(CChainParams::TESTNET);
+                    SelectParams(CBaseChainParams::TESTNET);
                 }
             }
         }
@@ -211,9 +214,9 @@ bool PaymentServer::ipcParseCommandLine(int argc, char* argv[])
             if (readPaymentRequest(arg, request))
             {
                 if (request.getDetails().network() == "main")
-                    SelectParams(CChainParams::MAIN);
+                    SelectParams(CBaseChainParams::MAIN);
                 else
-                    SelectParams(CChainParams::TESTNET);
+                    SelectParams(CBaseChainParams::TESTNET);
             }
         }
         else
@@ -504,7 +507,7 @@ bool PaymentServer::processPaymentRequest(PaymentRequestPlus& request, SendCoins
 
         // Extract and check amounts
         CTxOut txOut(sendingTo.second, sendingTo.first);
-        if (txOut.IsDust(CTransaction::nMinRelayTxFee)) {
+        if (txOut.IsDust(::minRelayTxFee)) {
             QString msg = tr("Requested payment amount of %1 is too small (considered dust).")
                 .arg(AnoncoinUnits::formatWithUnit(optionsModel->getDisplayUnit(), sendingTo.second));
 

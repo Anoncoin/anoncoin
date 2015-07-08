@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "intro.h"
@@ -209,7 +209,7 @@ void Intro::setStatus(int status, const QString &message, quint64 bytesAvailable
     case FreespaceChecker::ST_ERROR:
         ui->errorMessage->setText(tr("Error") + ": " + message);
         ui->errorMessage->setProperty("error", true);
-    break;
+        break;
     }
     /* Indicate number of bytes available */
     if(status == FreespaceChecker::ST_ERROR)

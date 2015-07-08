@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef ADDRESSBOOKPAGE_H
@@ -45,7 +45,7 @@ public:
     ~AddressBookPage();
 
     //void setModel(AddressTableModel *model);
-    void setModel(WalletModel *model);
+    void setModel(WalletModel *pWalletModelIn);
     const QString &getReturnValue() const { return returnValue; }
 
 public slots:
@@ -53,7 +53,8 @@ public slots:
 
 private:
     Ui::AddressBookPage *ui;
-    AddressTableModel *model;
+    AddressTableModel *pAddressTableModel;
+    WalletModel *pWalletModel;
     Mode mode;
     Tabs tab;
     QString returnValue;

@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "accountspage.h"
@@ -48,13 +48,11 @@ AccountsPage::AccountsPage(QWidget *parent) :
     contextMenu->addAction(copyBalanceAction);
     contextMenu->addSeparator();
 
-    // Connect signals for context menu actions
+    // Connect signals for actions
     connect(copyAddressAction, SIGNAL(triggered()), this, SLOT(on_copyAddress_clicked()));
     connect(copyLabelAction, SIGNAL(triggered()), this, SLOT(onCopyLabelAction()));
     connect(copyBalanceAction, SIGNAL(triggered()), this, SLOT(onCopyBalanceAction()));
-
     connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
-
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(accept()));
     if(parent == 0)
     {

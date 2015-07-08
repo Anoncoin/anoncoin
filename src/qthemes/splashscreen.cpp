@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 // Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
@@ -43,15 +43,15 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     else {
         newPixmap     = QPixmap(":/images/splash");
     }
-	
+
 	QFont initfont;
 	initfont.setFamily("Courier New,Courier,Monaco,Andale Mono,Arial");
-	initfont.setPixelSize(12);	
-	    
+	initfont.setPixelSize(12);
+
     QPainter pixPaint(&newPixmap);
     pixPaint.setPen(QColor(250,250,250));
     pixPaint.setFont(initfont);
-    
+
     QFontMetrics fm = pixPaint.fontMetrics();
 
     // draw version
@@ -70,7 +70,7 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     //    int testnetAddTextWidth  = fm.width(testnetAddText);
     //    pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
     //}
-	
+
     pixPaint.end();
 
     this->setPixmap(newPixmap);
@@ -98,7 +98,7 @@ static void InitMessage(SplashScreen *splash, const std::string &message)
 
 	std::string message_cr;
 	message_cr = message + "\n";
-	
+
     QMetaObject::invokeMethod(splash, "showMessage",
         Qt::QueuedConnection,
         Q_ARG(QString, QString::fromStdString(message_cr)),

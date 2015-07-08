@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "coincontroldialog.h"
@@ -15,6 +15,7 @@
 
 #include "coincontrol.h"
 #include "main.h"
+#include "transaction.h"
 #include "wallet.h"
 
 #include <QApplication>
@@ -442,7 +443,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog)
     qint64 nPayAmount = 0;
     bool fLowOutput = false;
     bool fDust = false;
-    CTransaction txDummy;
+    CMutableTransaction txDummy;
     foreach(const qint64 &amount, CoinControlDialog::payAmounts)
     {
         nPayAmount += amount;
@@ -454,7 +455,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog)
 
             CTxOut txout(amount, (CScript)vector<unsigned char>(24, 0));
             txDummy.vout.push_back(txout);
-            if (txout.IsDust(CTransaction::nMinRelayTxFee))
+            if (txout.IsDust(::minRelayTxFee))
                fDust = true;
         }
     }
@@ -537,18 +538,18 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog)
         {
             nChange = nAmount - nPayFee - nPayAmount;
 
-            // if sub-cent change is required, the fee must be raised to at least CTransaction::nMinTxFee
-            if (nPayFee < CTransaction::nMinTxFee && nChange > 0 && nChange < CENT)
+            // if sub-cent change is required, the fee must be raised to at least tx_nMinTxFee
+            if (nPayFee < tx_nMinTxFee && nChange > 0 && nChange < CENT)
             {
-                if (nChange < CTransaction::nMinTxFee) // change < 0.0001 => simply move all change to fees
+                if (nChange < tx_nMinTxFee) // change < 0.0001 => simply move all change to fees
                 {
                     nPayFee += nChange;
                     nChange = 0;
                 }
                 else
                 {
-                    nChange = nChange + nPayFee - CTransaction::nMinTxFee;
-                    nPayFee = CTransaction::nMinTxFee;
+                    nChange = nChange + nPayFee - tx_nMinTxFee;
+                    nPayFee = tx_nMinTxFee;
                 }
             }
 
@@ -556,7 +557,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog)
             if (nChange > 0 && nChange < CENT)
             {
                 CTxOut txout(nChange, (CScript)vector<unsigned char>(24, 0));
-                if (txout.IsDust(CTransaction::nMinRelayTxFee))
+                if (txout.IsDust(::minRelayTxFee))
                 {
                     nPayFee += nChange;
                     nChange = 0;
@@ -611,19 +612,19 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog)
 
     // tool tips
     QString toolTip1 = tr("This label turns red, if the transaction size is greater than 1000 bytes.") + "<br /><br />";
-    toolTip1 += tr("This means a fee of at least %1 per kB is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, CTransaction::nMinTxFee)) + "<br /><br />";
+    toolTip1 += tr("This means a fee of at least %1 per kB is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, tx_nMinTxFee)) + "<br /><br />";
     toolTip1 += tr("Can vary +/- 1 byte per input.");
 
     QString toolTip2 = tr("Transactions with higher priority are more likely to get included into a block.") + "<br /><br />";
     toolTip2 += tr("This label turns red, if the priority is smaller than \"medium\".") + "<br /><br />";
-    toolTip2 += tr("This means a fee of at least %1 per kB is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, CTransaction::nMinTxFee));
+    toolTip2 += tr("This means a fee of at least %1 per kB is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, tx_nMinTxFee));
 
     QString toolTip3 = tr("This label turns red, if any recipient receives an amount smaller than %1.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, CENT)) + "<br /><br />";
-    toolTip3 += tr("This means a fee of at least %1 is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, CTransaction::nMinTxFee)) + "<br /><br />";
+    toolTip3 += tr("This means a fee of at least %1 is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, tx_nMinTxFee)) + "<br /><br />";
     toolTip3 += tr("Amounts below 0.546 times the minimum relay fee are shown as dust.");
 
     QString toolTip4 = tr("This label turns red, if the change is smaller than %1.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, CENT)) + "<br /><br />";
-    toolTip4 += tr("This means a fee of at least %1 is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, CTransaction::nMinTxFee));
+    toolTip4 += tr("This means a fee of at least %1 is required.").arg(AnoncoinUnits::formatWithUnit(nDisplayUnit, tx_nMinTxFee));
 
     l5->setToolTip(toolTip1);
     l6->setToolTip(toolTip2);
