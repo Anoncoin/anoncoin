@@ -1,18 +1,23 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #ifndef OPTIONSDIALOG_H
 #define OPTIONSDIALOG_H
 
-#include <QDialog>
+// Many builder specific things set in the config file, for any source files where we rely on moc_xxx files being generated
+// it is best to include the anoncoin-config.h in the header file itself.  Not the .cpp src file, because otherwise any
+// conditional compilation guidelines, which rely on the build configuration, will not be present in the moc_xxx files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
-#include "i2poptionswidget.h"
+#include <QDialog>
 
 class MonitoredDataMapper;
 class OptionsModel;
 class QValidatedLineEdit;
+class AnoncoinGUI;
 
 namespace Ui {
 class OptionsDialog;
@@ -24,10 +29,9 @@ class OptionsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit OptionsDialog(QWidget *parent);
+    explicit OptionsDialog(AnoncoinGUI* parent, bool enableWallet);
     ~OptionsDialog();
 
-    void setClientModel(ClientModel* clientModel);
     void setModel(OptionsModel *model);
     void setMapper();
 
@@ -46,7 +50,6 @@ private slots:
     void on_cancelButton_clicked();
 
     void showRestartWarning(bool fPersistent = false);
-    void showRestartWarning_I2P();
     void clearStatusLabel();
     void updateDisplayUnit();
     void doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort);
@@ -59,9 +62,6 @@ private:
     OptionsModel *model;
     MonitoredDataMapper *mapper;
     bool fProxyIpValid;
-    // Settings for the I2P options widget, operated from its own tab
-    bool fRestartWarningDisplayed_I2P;
-    I2POptionsWidget* tabI2P;
 };
 
 #endif // OPTIONSDIALOG_H

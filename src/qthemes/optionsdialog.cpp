@@ -1,24 +1,22 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
-
 #include "optionsdialog.h"
+// Anoncoin-config.h has been loaded...
 #include "ui_optionsdialog.h"
 
+#include "anoncoingui.h"
 #include "anoncoinunits.h"
 #include "guiutil.h"
 #include "monitoreddatamapper.h"
 #include "optionsmodel.h"
-#include "util.h"
 
-#include "main.h" // for CTransaction::nMinTxFee and MAX_SCRIPTCHECK_THREADS
+#include "main.h" // for tx_nMinTxFee and MAX_SCRIPTCHECK_THREADS
 #include "netbase.h"
 #include "txdb.h" // for -dbcache defaults
+#include "util.h"
 
 #include <QDir>
 #include <QIntValidator>
@@ -26,16 +24,12 @@
 #include <QMessageBox>
 #include <QTimer>
 
-OptionsDialog::OptionsDialog(QWidget *parent) :
+OptionsDialog::OptionsDialog(AnoncoinGUI* parent, bool enableWallet) :
     QDialog(parent),
     ui(new Ui::OptionsDialog),
     model(0),
     mapper(0),
     fProxyIpValid(true)
-#ifdef ENABLE_I2PSAM
-    , fRestartWarningDisplayed_I2P(false)
-    , tabI2P(new I2POptionsWidget()) // Add the I2P OptionsWidget tab
-#endif
 {
     ui->setupUi(this);
     GUIUtil::restoreWindowGeometry("nOptionsDialogWindow", this->size(), this);
@@ -66,9 +60,13 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tabWindow));
 #endif
 
+    /* remove Wallet tab in case of -disablewallet */
+    if (!enableWallet) {
+        ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tabWallet));
+    }
+
     /* Display elements init */
     QDir translations(":translations");
-
     ui->lang->addItem(QString("(") + tr("default") + QString(")"), QVariant(""));
     foreach(const QString &langStr, translations.entryList())
     {
@@ -101,28 +99,26 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 #endif
 
     ui->unit->setModel(new AnoncoinUnits(this));
-    ui->transactionFee->setSingleStep(CTransaction::nMinTxFee);
+    ui->transactionFee->setSingleStep(tx_nMinTxFee);
 
-    // Populate theme items from sub-directories
-    QString ddDir = QString::fromStdString ( GetDataDir().string() );
     ui->activeTheme->addItem(QString("(default)"), QVariant("(default)"));
-    QDir themeDir(ddDir);
-    if (!themeDir.cd("themes")) {
-        // if themes doesn't exist, create it
-        themeDir.mkdir("themes");
-        themeDir.cd("themes");
-    }
-    themeDir.setFilter(QDir::Dirs);
-    QStringList entries = themeDir.entryList();
-    for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry )
-    {
-        QString themeName=*entry;
-        if(themeName != tr(".") && themeName != tr(".."))
+    // Populate theme items from sub-directories, if they are available
+    boost::filesystem::path themeDirPath;
+    if( parent->GetThemeDataPath( themeDirPath ) ) {
+        QDir themeDir( GUIUtil::boostPathToQString(themeDirPath) );
+        themeDir.setFilter(QDir::Dirs);
+        QStringList entries = themeDir.entryList();
+        for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry )
         {
-            ui->activeTheme->addItem( themeName, QVariant(themeName));
+            QString themeName=*entry;
+            // ToDo: Translation on the . and .. directory entries is needed here?  Really??  Should be standard for every Windows folder
+            // if(themeName != tr(".") && themeName != tr(".."))
+            if(themeName != "." && themeName != "..")
+            {
+                ui->activeTheme->addItem( themeName, QVariant(themeName));
+            }
         }
     }
-
 
     /* Widget-to-option mapper */
     mapper = new MonitoredDataMapper(this);
@@ -131,9 +127,6 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 
     /* setup/change UI elements when proxy IP is invalid/valid */
     connect(this, SIGNAL(proxyIpChecks(QValidatedLineEdit *, int)), this, SLOT(doProxyIpChecks(QValidatedLineEdit *, int)));
-#ifdef ENABLE_I2PSAM
-    ui->tabWidget->addTab(tabI2P, QString("I2P"));
-#endif
 }
 
 OptionsDialog::~OptionsDialog()
@@ -179,24 +172,7 @@ void OptionsDialog::setModel(OptionsModel *model)
     /* Display */
     connect(ui->lang, SIGNAL(valueChanged()), this, SLOT(showRestartWarning()));
     connect(ui->thirdPartyTxUrls, SIGNAL(textChanged(const QString &)), this, SLOT(showRestartWarning()));
-#ifdef ENABLE_I2PSAM
-    QObject::connect(tabI2P, SIGNAL(settingsChanged()), this, SLOT(showRestartWarning_I2P()));
-#endif
 }
-
-#ifdef ENABLE_I2PSAM
-// ToDo: Double check me. Ported from v0.8.6 anoncoin code, all things related to tabI2P created here,
-//       and the associated i2poptionswidget.  Would prefer to see it simplely added as a widget tab,
-//       in the optionsdialog.ui base file, then remove i2poptionswidget.ui from the build dependancies
-//       and remove some of the code changes that were required here to upgrade to 0.9.4.
-//
-// GR Note: Needed to add this override, guess to implement the dynamic tab created for I2P configuraton
-//
-void OptionsDialog::setClientModel(ClientModel* clientModel)
-{
-    if (clientModel) tabI2P->setModel(clientModel);
-}
-#endif // ENABLE_I2PSAM
 
 void OptionsDialog::setMapper()
 {
@@ -228,9 +204,6 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
     mapper->addMapping(ui->activeTheme, OptionsModel::OurTheme);
     mapper->addMapping(ui->thirdPartyTxUrls, OptionsModel::ThirdPartyTxUrls);
-#ifdef ENABLE_I2PSAM
-    tabI2P->setMapper(*mapper);
-#endif
 }
 
 void OptionsDialog::enableOkButton()
@@ -261,23 +234,10 @@ void OptionsDialog::on_resetButton_clicked()
 
         if(btnRetVal == QMessageBox::Cancel)
             return;
-#ifdef ENABLE_I2PSAM
-        /* disable restart warning messages display */
-        // ToDo: Check that this overall model functionality is correct.
-        // GR Note: The code behavior here is different between 0.8.5.6 and 0.9.3, or I'm not understanding what
-        // was added and/or changed.
-        // Not sure if this fRestartWarningDisplayed_I2P flag matters give the app quits. and I didn't setup any
-        // special resetwarning flags for the lang or proxy tabs....
-        fRestartWarningDisplayed_I2P = true;
-#endif
+
         /* reset all options and close GUI */
         model->Reset();
         QApplication::quit();
-
-#ifdef ENABLE_I2PSAM
-        /* re-enable restart warning messages display */
-        fRestartWarningDisplayed_I2P = false;
-#endif
     }
 }
 
@@ -308,17 +268,6 @@ void OptionsDialog::showRestartWarning(bool fPersistent)
         QTimer::singleShot(10000, this, SLOT(clearStatusLabel()));
     }
 }
-
-#ifdef ENABLE_I2PSAM
-void OptionsDialog::showRestartWarning_I2P()
-{
-    if(!fRestartWarningDisplayed_I2P)
-    {
-        QMessageBox::warning(this, tr("Warning"), tr("This setting will take effect after restarting Anoncoin."), QMessageBox::Ok);
-        fRestartWarningDisplayed_I2P = true;
-    }
-}
-#endif // ENABLE_I2PSAM
 
 void OptionsDialog::clearStatusLabel()
 {

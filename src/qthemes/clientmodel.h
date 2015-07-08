@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef CLIENTMODEL_H
@@ -38,6 +38,9 @@ enum NumConnections {
     CONNECTIONS_NONE = 0,
     CONNECTIONS_IN   = (1U << 0),
     CONNECTIONS_OUT  = (1U << 1),
+    CONNECTIONS_I2P_IN  = (1U << 2),
+    CONNECTIONS_I2P_OUT = (1U << 3),
+    CONNECTIONS_I2P_ALL = (CONNECTIONS_I2P_OUT | CONNECTIONS_I2P_IN),
     CONNECTIONS_ALL  = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
@@ -84,8 +87,6 @@ public:
      * Public functions needed for handling the I2P Config and operational settings
      */
     QString formatI2PNativeFullVersion() const;
-    int getNumI2PConnections() const;
-
     QString getPublicI2PKey() const;
     QString getPrivateI2PKey() const;
     bool isI2PAddressGenerated() const;
@@ -112,34 +113,32 @@ private:
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
 
-/**
- * Note signal functions like this are created here in the header file, yet no source implmentation
- * will be found in the developer code.  It's upto the build process to create moc_xx files, from which
- * is generated sufficant information that QT runs & the linker is able to create an execuable.
+/** Keep in mind...
+ * Note signal functions like this are created here in the header file, yet no source implementation
+ * will be found in the developer code.  It's up-to the build process to create moc_xx files, from which
+ * is generated sufficient information that QT runs & the linker is able to create an executable.
  */
 signals:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count);
     void alertsChanged(const QString &warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
-#ifdef ENABLE_I2PSAM
-    void numI2PConnectionsChanged(int count);               // When the I2P connection # changes, this signal is generated
-#endif
+
     //! Fired when a message should be reported to the user
     void message(const QString &title, const QString &message, unsigned int style);
 
-/**
-*  From: https://qt-project.org/doc/qt-5-snapshot/signalsandslots.html
-*  A slot is a function that is called in response to a particular signal. Qt's widgets have many pre-defined slots,
-*  but it is common practice to subclass widgets and add slots so that you can handle the signals that you are interested in...
-*/
+    // Show progress dialog e.g. for verifychain
+    void showProgress(const QString &title, int nProgress);
+
+/** Keep in mind...
+ * From: https://qt-project.org/doc/qt-5-snapshot/signalsandslots.html
+ * A slot is a function that is called in response to a particular signal. Qt's widgets have many pre-defined slots,
+ * but it is common practice to subclass widgets and add slots so that you can handle the signals that you are interested in...
+ */
 public slots:
     void updateTimer();
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
-#ifdef ENABLE_I2PSAM
-    void updateNumI2PConnections(int numI2PConnections);  // For I2P connection count updates, emit an numI2PConnectionsChanged signal
-#endif
 };
 
 #endif // CLIENTMODEL_H

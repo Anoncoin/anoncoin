@@ -1,11 +1,12 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "optionsmodel.h"
 // Anoncoin-config.h has been loaded...
 
+#include "anoncoingui.h"
 #include "anoncoinunits.h"
 #include "guiutil.h"
 
@@ -21,25 +22,13 @@
 #include "i2pwrapper.h"
 #endif
 
-#include <QObject>
 #include <QApplication>
+#include <QDebug>
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QStringList>
-#include <QDir>
-#include <QFile>
 #if QT_VERSION < 0x050000
 #include <QUrl>
-#endif
-#include <QStyle>
-#include <QTextStream>
-
-// Only needed because we have a temporary readonly on the i2p settings
-#ifdef NOTYET_ENABLE_I2PSAM
-#include <QMessageBox>
-            QMessageBox::warning( NULL, "Notice - Upgrade in progress",
-                                  "Values are now for read-only purposes only",
-                                  QMessageBox::Ok, QMessageBox::Ok );
 #endif
 
 OptionsModel::OptionsModel(QObject *parent) :
@@ -143,34 +132,13 @@ void OptionsModel::Init()
         addOverriddenOption("-lang");
 
     language = settings.value("language").toString();
+
+    //! Theme Selection
     selectedTheme = settings.value("selectedTheme", "(default)").toString();
     settings.setValue("selectedTheme", selectedTheme);
-    applyTheme();
 
-    if (!selectedTheme.isEmpty())
-        SoftSetArg("-theme", selectedTheme.toStdString());
-#ifdef ENABLE_I2PSAM
-    // Initialize our options model parameters for I2P session variables, from what has already been set, primarily from the variables in anoncoin.conf
-    // ToDo: These have become read-only, yet the interface still needs to be changed.
-    I2PUseI2POnly = IsI2POnly();
-    I2PSAMHost = QString::fromStdString( GetArg( "-i2p.options.samhost", SAM_DEFAULT_ADDRESS ) );
-    I2PSAMPort = (int)GetArg( "-i2p.options.samport", SAM_DEFAULT_PORT );
-    I2PSessionName = QString::fromStdString( GetArg( "-i2p.options.sessionname", I2P_SESSION_NAME_DEFAULT ) );
-
-    i2pInboundQuantity        = (int)GetArg( "-i2p.options.inbound.quantity"        , SAM_DEFAULT_INBOUND_QUANTITY );
-    i2pInboundLength          = (int)GetArg( "-i2p.options.inbound.length"          , SAM_DEFAULT_INBOUND_LENGTH );
-    i2pInboundLengthVariance  = (int)GetArg( "-i2p.options.inbound.lengthvariance"  , SAM_DEFAULT_INBOUND_LENGTHVARIANCE );
-    i2pInboundBackupQuantity  = (int)GetArg( "-i2p.options.inbound.backupquantity"  , SAM_DEFAULT_INBOUND_BACKUPQUANTITY );
-    i2pInboundAllowZeroHop    = GetBoolArg( "-i2p.options.inbound.allowzerohop"     , SAM_DEFAULT_INBOUND_ALLOWZEROHOP );
-    i2pInboundIPRestriction   = (int)GetArg( "-i2p.options.inbound.iprestriction"   , SAM_DEFAULT_INBOUND_IPRESTRICTION );
-    i2pOutboundQuantity       = (int)GetArg( "-i2p.options.outbound.quantity"       , SAM_DEFAULT_OUTBOUND_QUANTITY );
-    i2pOutboundLength         = (int)GetArg( "-i2p.options.outbound.length"         , SAM_DEFAULT_OUTBOUND_LENGTH );
-    i2pOutboundLengthVariance = (int)GetArg( "-i2p.options.outbound.lengthvariance" , SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE );
-    i2pOutboundBackupQuantity = (int)GetArg( "-i2p.options.outbound.backupquantity" , SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY );
-    i2pOutboundAllowZeroHop   = GetBoolArg( "-i2p.options.outbound.allowzerohop"    , SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP );
-    i2pOutboundIPRestriction  = (int)GetArg( "-i2p.options.outbound.iprestriction"  , SAM_DEFAULT_OUTBOUND_IPRESTRICTION );
-    i2pOutboundPriority       = (int)GetArg( "-i2p.options.outbound.priority"       , SAM_DEFAULT_OUTBOUND_PRIORITY );
-#endif // ENABLE_I2PSAM
+    // This is not needed or used for anything, but does give access to the information within Core, should it be needed.
+    SoftSetArg("-theme", selectedTheme.toStdString());
 }
 
 void OptionsModel::Reset()
@@ -252,42 +220,6 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("nDatabaseCache");
         case ThreadsScriptVerif:
             return settings.value("nThreadsScriptVerif");
-#ifdef ENABLE_I2PSAM
-        case eI2PUseI2POnly:
-            return QVariant( I2PUseI2POnly );
-        case eI2PSAMHost:
-            return QVariant( I2PSAMHost );
-        case eI2PSAMPort:
-            return QVariant( I2PSAMPort );
-        case eI2PSessionName:
-            return QVariant( I2PSessionName );
-        case I2PInboundQuantity:
-            return QVariant(i2pInboundQuantity);
-        case I2PInboundLength:
-            return QVariant(i2pInboundLength);
-        case I2PInboundLengthVariance:
-            return QVariant(i2pInboundLengthVariance);
-        case I2PInboundBackupQuantity:
-            return QVariant(i2pInboundBackupQuantity);
-        case I2PInboundAllowZeroHop:
-            return QVariant(i2pInboundAllowZeroHop);
-        case I2PInboundIPRestriction:
-            return QVariant(i2pInboundIPRestriction);
-        case I2POutboundQuantity:
-            return QVariant(i2pOutboundQuantity);
-        case I2POutboundLength:
-            return QVariant(i2pOutboundLength);
-        case I2POutboundLengthVariance:
-            return QVariant(i2pOutboundLengthVariance);
-        case I2POutboundBackupQuantity:
-            return QVariant(i2pOutboundBackupQuantity);
-        case I2POutboundAllowZeroHop:
-            return QVariant(i2pOutboundAllowZeroHop);
-        case I2POutboundIPRestriction:
-            return QVariant(i2pOutboundIPRestriction);
-        case I2POutboundPriority:
-            return QVariant(i2pOutboundPriority);
-#endif // ENABLE_I2PSAM
         default:
             return QVariant();
         }
@@ -295,7 +227,7 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
     return QVariant();
 }
 
-// write QSettings values
+//! Write QSettings values, NOTE: Theme changes do not happen until this is done
 bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
     bool successful = true; /* set to false on parse error */
@@ -383,7 +315,10 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case OurTheme:
             settings.setValue("selectedTheme", value);
-            applyTheme();
+            qDebug() << "Selected Theme changed to " << value.toString();
+            if( pMainWindow ) {
+                pMainWindow->applyTheme();
+            }
             break;
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();
@@ -402,35 +337,11 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 setRestartRequired(true);
             }
             break;
-#ifdef ENABLE_I2PSAM
-        case eI2PUseI2POnly:
-        case eI2PSAMHost:
-        case eI2PSAMPort:
-        case eI2PSessionName:
-        case I2PInboundQuantity:
-        case I2PInboundLength:
-        case I2PInboundLengthVariance:
-        case I2PInboundBackupQuantity:
-        case I2PInboundAllowZeroHop:
-        case I2PInboundIPRestriction:
-        case I2POutboundQuantity:
-        case I2POutboundLength:
-        case I2POutboundLengthVariance:
-        case I2POutboundBackupQuantity:
-        case I2POutboundAllowZeroHop:
-        case I2POutboundIPRestriction:
-        case I2POutboundPriority:
-            break;
-#endif // ENABLE_I2PSAM
         default:
             break;
         }
     }
-// ToDo: Finish fixing this so that it is readonly or removed
-#ifdef ENABLE_I2PSAM
-    if( index.row() < eI2PUseI2POnly )
-#endif
-        emit dataChanged(index, index);
+    emit dataChanged(index, index);
 
     return successful;
 }
@@ -477,113 +388,3 @@ bool OptionsModel::isRestartRequired()
     return settings.value("fRestartRequired", false).toBool();
 }
 
-bool OptionsModel::applyTheme()
-{
-    QSettings settings;
-    // template variables : key => value
-    QMap<QString, QString> variables;
-    QString sTheme = settings.value("selectedTheme", "(default)").toString();
-    // The datadir is where the wallet and block are kept
-    QString ddDir = QDir::fromNativeSeparators( QString::fromStdString ( GetDataDir().string() ) );
-    // path to selected theme dir, using native slashes
-    QString themeDir = ddDir + "/themes/" + sTheme;
-
-    // create it if needed
-    QDir themesDir(ddDir);
-    if (!themesDir.cd("themes")) {
-        // if themes doesn't exist, create it
-        themesDir.mkdir("themes");
-        themesDir.cd("themes");
-    }
-
-    // if theme selected
-    if ( (sTheme != "") && (sTheme != "(default)") ) {
-        QFile qss(themeDir + "/styles.qss");
-        // open qss stylesheet
-        if (qss.open(QFile::ReadOnly))
-        {
-            // read stylesheet
-            QString styleSheet = QString(qss.readAll());
-            QTextStream in(&qss);
-            // rewind
-            in.seek(0);
-            bool readingVariables = false;
-
-            // seek for variables
-            while(!in.atEnd()) {
-                QString line = in.readLine();
-                // variables starts here
-                if (line == "/** [VARS]") {
-                    readingVariables = true;
-                }
-                // variables end here
-                if (line == "[/VARS] */") {
-                    break;
-                }
-                // if we're reading variables - store them in a map
-                // Idea came from ZeeWolf's themes in Hyperstake
-                if (readingVariables == true) {
-                    // skip empty lines
-                    if (line.length()>3 && line.contains('=')) {
-                        QStringList fields = line.split("=");
-                        QString var = fields.at(0).trimmed();
-                        QString value = fields.at(1).trimmed();
-                        variables[var] = value;
-                    }
-                }
-            }
-
-            // For simpler use we replace "_themesdir" in the
-            // stylesheet with the appropriate path.
-            styleSheet.replace("_themesdir", themeDir);
-
-            QMapIterator<QString, QString> variable(variables);
-            variable.toBack();
-            // iterate backwards to prevent overwriting variables
-            while (variable.hasPrevious()) {
-                variable.previous();
-                // replace variables
-                styleSheet.replace(variable.key(), variable.value());
-            }
-
-            qss.close();
-
-            qApp->setStyleSheet(styleSheet);
-
-            // Promote style change
-            QWidgetList widgets = QApplication::allWidgets();
-            for (int i = 0; i < widgets.size(); ++i) {
-                QWidget *widget = widgets.at(i);
-                QEvent event(QEvent::StyleChange);
-                QApplication::sendEvent(widget, &event);
-            }
-        }
-
-        // Set our icon search path
-        QIcon::setThemeName( sTheme );
-
-    } else {
-        // Set it to "(default)"
-        QSettings settings;
-        settings.setValue("selectedTheme", QString("(default)") );
-        QFile qss(":style/default");
-        // open qss stylesheet
-        if (qss.open(QFile::ReadOnly))
-        {
-            // read stylesheet
-            QString styleSheet = QString(qss.readAll());
-            qss.close();
-            qApp->setStyleSheet(styleSheet);
-
-            // Promote style change
-            QWidgetList widgets = QApplication::allWidgets();
-            for (int i = 0; i < widgets.size(); ++i) {
-                QWidget *widget = widgets.at(i);
-                QEvent event(QEvent::StyleChange);
-                QApplication::sendEvent(widget, &event);
-            }
-        }
-    }
-
-    return true;
-}

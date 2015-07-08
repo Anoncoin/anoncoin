@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef ANONCOINGUI_H
@@ -13,24 +13,29 @@
 #include "config/anoncoin-config.h"
 #endif
 
+#include "amount.h"
+#include "i2pshowaddresses.h"
+
+#include <boost/filesystem/path.hpp>
+
 #include <QLabel>
 #include <QMainWindow>
 #include <QMap>
 #include <QMenu>
 #include <QPoint>
 #include <QSystemTrayIcon>
+#include <QToolButton>
 
 class ClientModel;
 class Notificator;
 class OptionsModel;
 class RPCConsole;
 class SendCoinsRecipient;
+class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
-
 class CWallet;
-
-class UnitDisplayStatusBarControl;
+class AnoncoinGUI;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -38,7 +43,61 @@ class QLabel;
 class QMenu;
 class QPoint;
 class QProgressBar;
+class QProgressDialog;
+class QMainToolAction;
 QT_END_NAMESPACE
+
+//! These subclasses deal with the Main Page Toolbar buttons and actions, they were developed primarily to deal with the
+//! Theme changes we want to offer and the fact that the Icons will not stay changed after an update.  As the icon used
+//! is associated with the actions, not the toolbar button that was also sub classed and both now handle the processing
+//! required to configure and initialize those aspects of our interface and allow quick customization in the future.
+//! Keeping a changed style icon and having it stick to the correct image is not an easy programming task, as the action/
+//! icon default loaded from our built-in resources and connected during initialization is what it wants to fall back
+//! to thus ignoring the newly selected Theme icon whenever clicked upon.
+class QMainToolAction : public QAction
+{
+    Q_OBJECT
+
+public:
+    QMainToolAction( const QString& sDefaultIcon, const QString& sDefaultText, const QString& sDefaultTip, const int nShortCutKey, AnoncoinGUI* pParentIn );
+    QIcon& GetDefaultIcon() { return ourDefaultIcon; }
+
+protected:
+    bool event(QEvent *pEvent);
+
+private:
+    int nOurKey;
+    AnoncoinGUI* pOurParent;
+    QString strOurName;
+    QIcon ourDefaultIcon;
+    // QIcon ourStyledIcon;
+
+    ~QMainToolAction() { disconnect(); }
+
+private slots:
+    void showNormalIfMinimized();
+    void gotoPage();
+};
+
+class QMainToolButton : public QToolButton
+{
+    Q_OBJECT
+
+public:
+    QMainToolButton( const QString& sNameIn, QMainToolAction* pActionIn, AnoncoinGUI* pParentIn );
+    // ~QMainToolButton();
+
+    void RestoreDefaultIcon();
+
+protected:
+    bool event(QEvent* pEvent);
+
+private:
+    QString strOurName;
+    QMainToolAction* pAction;
+    AnoncoinGUI* pMainWindow;
+};
+
 
 /**
   Anoncoin GUI main class. This class represents the main window of the Anoncoin UI. It communicates with both the client and
@@ -50,6 +109,7 @@ class AnoncoinGUI : public QMainWindow
 
 public:
     static const QString DEFAULT_WALLET;
+    bool fShutdownInProgress;
 
     explicit AnoncoinGUI(bool fIsTestnet = false, QWidget *parent = 0);
     ~AnoncoinGUI();
@@ -59,6 +119,10 @@ public:
     */
     void setClientModel(ClientModel *clientModel);
 
+    //! Handles details for shutting down and hiding all the application windows, system tray icon etc.  This is called after quit() has for sure been called,
+    //! but there is yet time to handle various event processing
+    void ShutdownMainWindow();
+
 #ifdef ENABLE_WALLET
     /** Set the wallet model.
         The wallet model represents a anoncoin wallet, and offers access to the list of transactions, address book and sending
@@ -67,7 +131,23 @@ public:
     bool addWallet(const QString& name, WalletModel *walletModel);
     bool setCurrentWallet(const QString& name);
     void removeAllWallets();
+#endif // ENABLE_WALLET
+    bool enableWallet;
+#ifdef ENABLE_I2PSAM
+    void UpdateI2PAddressDetails( void ) { i2pAddress->UpdateParameters(); }
+    void ShowI2pDestination( void ) { openI2pAddressAction->activate( QAction::Trigger ); }
 #endif
+    //! When themes change, we must first restore the main toolbar buttons Icons to their default values, Then if the theme designer decides they
+    //! will be changed to some new style, if not the defaults will be restored with this call.
+    void RestoreDefaultIcons();
+    //! The theme data path varies greatly with OS and is searched for in various places.  If needed, one is created and once that has been done
+    //! and logged to the debug.log file, this method always returns the same path regardless of theme selection and network (main,testnet,regtest).
+    bool GetThemeDataPath( boost::filesystem::path& themeDirPathOut );
+    //! Allows any other part of the software to discover what the current stylesheet is defined as
+    const QString& getCurrentStyleSheet() { return strCurrentStyleSheet; }
+    //! This method actually does all the heavy processing to import, parse and update the system with a new theme.
+    bool applyTheme();
+
 
 protected:
     void changeEvent(QEvent *e);
@@ -84,27 +164,20 @@ private:
     QLabel *labelEncryptionIcon;
     QLabel *labelConnectionsIcon;
     QLabel *labelBlocksIcon;
-#ifdef ENABLE_I2PSAM
-    QLabel* labelI2PConnections;
-    QLabel* labelI2POnly;
-    QLabel* labelI2PGenerated;
-#endif // ENABLE_I2PSAM
     QLabel *progressBarLabel;
     QProgressBar *progressBar;
+    QProgressDialog *progressDialog;
 
     QMenuBar *appMenuBar;
-    QAction *overviewAction;
-    QAction *historyAction;
+    QToolBar *appToolBar;
+
     QAction *quitAction;
-    QAction *sendCoinsAction;
     QAction *usedSendingAddressesAction;
     QAction *usedReceivingAddressesAction;
-    QAction *addressesAction;
-    QAction *accountsAction;
+
     QAction *signMessageAction;
     QAction *verifyMessageAction;
     QAction *aboutAction;
-    QAction *receiveCoinsAction;
     QAction *optionsAction;
     QAction *toggleHideAction;
     QAction *encryptWalletAction;
@@ -115,16 +188,44 @@ private:
     QAction *openAction;
     QAction *showHelpMessageAction;
 
+    QAction *pWalletAddViewAction;
+    QAction *pWalletClearViewsAction;
+    QAction *pWalletRestartCoreAction;
+    QAction *pWalletUpdateViewAction;
+
+    QMainToolAction *accountsAction;
+    QMainToolAction *addressesAction;
+    QMainToolAction *historyAction;
+    QMainToolAction *overviewAction;
+    QMainToolAction *receiveCoinsAction;
+    QMainToolAction *sendCoinsAction;
+
+    QMainToolButton *buttonAccounts;
+    QMainToolButton *buttonAddresses;
+    QMainToolButton *buttonHistory;
+    QMainToolButton *buttonOverview;
+    QMainToolButton *buttonReceiveCoins;
+    QMainToolButton *buttonSendCoins;
+
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
     RPCConsole *rpcConsole;
-
+#ifdef ENABLE_I2PSAM
+    QLabel* labelI2PConnections;
+    QLabel* labelI2POnly;
+    QLabel* labelI2PGenerated;
+    QAction *openI2pAddressAction;
+    ShowI2PAddresses *i2pAddress;
+#endif
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
     int spinnerFrame;
-#ifdef ENABLE_I2PSAM
-    int i2pConnectCount;        // Keep track of the number of I2P connections, so we can remove them from the clearnet amount
-#endif
+
+    //! The current themes resulting parsed and filled out StyleSheet, if needed this can be used to update the display or debugging.
+    QString strCurrentStyleSheet;
+    //! The Initial default list of paths used for finding Icons, Theme changes start with this and add what is required for the current selection
+    QStringList strlistDefaultIconPaths;
+
     /** Create the main UI actions. */
     void createActions(bool fIsTestnet);
     /** Create the menu bar and sub-menus. */
@@ -151,6 +252,9 @@ signals:
 public slots:
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
+#ifdef ENABLE_I2PSAM
+    void setNumI2PConnections(int count);
+#endif
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count);
 
@@ -162,6 +266,8 @@ public slots:
        @param[in] ret       pointer to a bool that will be modified to whether Ok was clicked (modal only)
     */
     void message(const QString &title, const QString &message, unsigned int style, bool *ret = NULL);
+    /** Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHidden is true */
+    void showNormalIfMinimized(bool fToggleHidden = false);
 
 #ifdef ENABLE_WALLET
     /** Set the encryption status as shown in the UI.
@@ -174,37 +280,30 @@ public slots:
 
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address);
-#endif
 
-#ifdef ENABLE_I2PSAM
-    /** Set number of I2P connections shown in the UI */
-    void setNumI2PConnections(int count);
-    void showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName);
-#endif // ENABLE_I2PSAM
+    /** Switch to one of the main toolbar pages, this can be connected to whatever signal you might want to watch and simulates the MainWindow
+        effect of pressing the tab button for that view.  Pass it Qt::Key_1 -> Qt::Key_6 values depending on which one you want */
+    void gotoPage( const int nKey );
+
+#endif // ENABLE_WALLET
 
 private slots:
 #ifdef ENABLE_WALLET
-    /** Switch to overview (home) page */
-    void gotoOverviewPage();
-    /** Switch to history (transactions) page */
-    void gotoHistoryPage();
-    /** Switch to receive coins page */
-    void gotoReceiveCoinsPage();
-    /** Switch to send coins page */
-    void gotoSendCoinsPage(QString addr = "");
-
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
-    /** Display accounts and totals */
-    void gotoAccountsPage();
-    /** Switch to address page */
-    void gotoAddressBookPage();
 
     /** Show open dialog */
     void openClicked();
-#endif
+
+    //! New Multiwallet menu options
+    void walletAddViewClicked();
+    void walletClearViewsClicked();
+    void walletRestartCoreClicked();
+    void walletUpdateViewClicked();
+
+#endif // ENABLE_WALLET
     /** Show configuration dialog */
     void optionsClicked();
     /** Show about dialog */
@@ -216,13 +315,14 @@ private slots:
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 #endif
 
-    /** Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHidden is true */
-    void showNormalIfMinimized(bool fToggleHidden = false);
     /** Simply calls showNormalIfMinimized(true) for use in SLOT() macro */
     void toggleHidden();
 
-    /** called by a timer to check if fRequestShutdown has been set **/
+    /** called by a timer to check if fRequestShutdown has been set within the Core */
     void detectShutdown();
+
+    /** Show progress dialog e.g. for verifychain */
+    void showProgress(const QString &title, int nProgress);
 };
 
 class UnitDisplayStatusBarControl : public QLabel
@@ -241,6 +341,7 @@ protected:
 private:
     OptionsModel *optionsModel;
     QMenu* menu;
+
     /** Shows context menu with Display Unit options by the mouse coordinates */
     void onDisplayUnitsClicked(const QPoint& point);
     /** Creates context menu, its actions, and wires up all the relevant signals for mouse events. */

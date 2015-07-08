@@ -1,9 +1,10 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientmodel.h"
+// Anoncoin-config.h has been loaded...
 
 #include "guiconstants.h"
 #include "peertablemodel.h"
@@ -11,6 +12,7 @@
 #include "alert.h"
 #include "chainparams.h"
 #include "checkpoints.h"
+#include "clientversion.h"
 #include "main.h"
 #include "net.h"
 #include "ui_interface.h"
@@ -55,10 +57,18 @@ int ClientModel::getNumConnections(unsigned int flags) const
         return vNodes.size();
 
     int nNum = 0;
-    BOOST_FOREACH(CNode* pnode, vNodes)
-    if (flags & (pnode->fInbound ? CONNECTIONS_IN : CONNECTIONS_OUT))
-        nNum++;
-
+    bool fI2pSum = flags & CONNECTIONS_I2P_ALL;
+    // Set this flags outside the loop, its faster than recomputing them every iteration
+    bool fMatchI2pInbound = flags & CONNECTIONS_I2P_IN;
+    bool fMatchI2pOutbound = flags & CONNECTIONS_I2P_OUT;
+    BOOST_FOREACH(CNode* pnode, vNodes) {
+        if( fI2pSum && pnode->addr.IsI2P() ) {
+            if( pnode->fInbound ) {
+                if( fMatchI2pInbound ) nNum++;
+            } else if( fMatchI2pOutbound ) nNum++;
+        } else if(flags & (pnode->fInbound ? CONNECTIONS_IN : CONNECTIONS_OUT))
+            nNum++;
+    }
     return nNum;
 }
 
@@ -162,16 +172,6 @@ QString ClientModel::getNetworkName() const
 QString ClientModel::formatI2PNativeFullVersion() const
 {
     return QString::fromStdString(FormatI2PNativeFullVersion());
-}
-
-void ClientModel::updateNumI2PConnections(int numI2PConnections)
-{
-    emit numI2PConnectionsChanged(numI2PConnections);
-}
-
-int ClientModel::getNumI2PConnections() const
-{
-    return nI2PNodeCount;
 }
 
 QString ClientModel::getPublicI2PKey() const
@@ -282,10 +282,12 @@ QString ClientModel::formatClientStartupTime() const
 }
 
 // Handlers for core signals
-static void NotifyBlocksChanged(ClientModel *clientmodel)
+static void ShowProgress(ClientModel *clientmodel, const std::string &title, int nProgress)
 {
-    // This notification is too frequent. Don't trigger a signal.
-    // Don't remove it, though, as it might be useful later.
+    // emits signal "showProgress"
+    QMetaObject::invokeMethod(clientmodel, "showProgress", Qt::QueuedConnection,
+                              Q_ARG(QString, QString::fromStdString(title)),
+                              Q_ARG(int, nProgress));
 }
 
 static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConnections)
@@ -294,14 +296,6 @@ static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConn
     QMetaObject::invokeMethod(clientmodel, "updateNumConnections", Qt::QueuedConnection,
                               Q_ARG(int, newNumConnections));
 }
-
-#ifdef ENABLE_I2PSAM
-static void NotifyNumI2PConnectionsChanged(ClientModel *clientmodel, int newNumI2PConnections)
-{
-    QMetaObject::invokeMethod(clientmodel, "updateNumI2PConnections", Qt::QueuedConnection,
-                              Q_ARG(int, newNumI2PConnections));
-}
-#endif // ENABLE_I2PSAM
 
 static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, ChangeType status)
 {
@@ -314,22 +308,16 @@ static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, Ch
 void ClientModel::subscribeToCoreSignals()
 {
     // Connect signals to client
-    uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this));
+    uiInterface.ShowProgress.connect(boost::bind(ShowProgress, this, _1, _2));
     uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.connect(boost::bind(NotifyAlertChanged, this, _1, _2));
-#ifdef ENABLE_I2PSAM
-    uiInterface.NotifyNumI2PConnectionsChanged.connect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
-#endif
 }
 
 void ClientModel::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
-    uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this));
+    uiInterface.ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
-#ifdef ENABLE_I2PSAM
-    uiInterface.NotifyNumI2PConnectionsChanged.disconnect(boost::bind(NotifyNumI2PConnectionsChanged, this, _1));
-#endif
 }
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "anoncoingui.h"
@@ -15,10 +15,15 @@
 #include "optionsmodel.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
+#include "walletaddviewdialog.h"
+#include "walletclearviewsdialog.h"
+#include "walletrestartcoredialog.h"
+#include "walletupdateviewdialog.h"
+
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
-#endif
+#endif // ENABLE_WALLET
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -32,10 +37,13 @@
 #include <QAction>
 #include <QApplication>
 #include <QDateTime>
+#include <QDebug>
 #include <QDesktopWidget>
 #include <QDir>
 #include <QDragEnterEvent>
+#include <QFile>
 #include <QIcon>
+#include <QKeySequence>
 #include <QLabel>
 #include <QListWidget>
 #include <QMenu>
@@ -45,6 +53,7 @@
 #include <QObject>
 #include <QPoint>
 #include <QProgressBar>
+#include <QProgressDialog>
 #include <QSettings>
 #include <QStackedWidget>
 #include <QStatusBar>
@@ -56,7 +65,7 @@
 
 #ifdef ENABLE_I2PSAM
 #include "i2pshowaddresses.h"
-#endif // ENABLE_I2PSAM
+#endif
 
 #if QT_VERSION < 0x050000
 #include <QUrl>
@@ -71,24 +80,54 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     QMainWindow(parent),
     clientModel(0),
     walletFrame(0),
+    unitDisplayControl(0),
+    labelEncryptionIcon(0),
+    labelConnectionsIcon(0),
+    labelBlocksIcon(0),
+    progressBarLabel(0),
+    progressBar(0),
+    progressDialog(0),
+    appMenuBar(0),
+    appToolBar(0),
+    overviewAction(0),
+    historyAction(0),
+    quitAction(0),
+    sendCoinsAction(0),
+    usedSendingAddressesAction(0),
+    usedReceivingAddressesAction(0),
+    signMessageAction(0),
+    verifyMessageAction(0),
+    aboutAction(0),
+    receiveCoinsAction(0),
+    optionsAction(0),
+    toggleHideAction(0),
     encryptWalletAction(0),
+    backupWalletAction(0),
     changePassphraseAction(0),
     aboutQtAction(0),
+    openRPCConsoleAction(0),
+    openAction(0),
+    showHelpMessageAction(0),
     trayIcon(0),
+//    trayIconMenu(0),
     notificator(0),
     rpcConsole(0),
     prevBlocks(0),
     spinnerFrame(0)
+#ifdef ENABLE_I2PSAM
+    ,i2pAddress(0)
+#endif
 {
     GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
+    fShutdownInProgress = false;
 
     QString windowTitle = tr("Anoncoin Core") + " - ";
 #ifdef ENABLE_WALLET
     /* if compiled with wallet support, -disablewallet can still disable the wallet */
-    bool enableWallet = !GetBoolArg("-disablewallet", false);
+    enableWallet = !GetBoolArg("-disablewallet", false);
 #else
-    bool enableWallet = false;
-#endif
+    enableWallet = false;
+#endif // ENABLE_WALLET
     if(enableWallet)
     {
         windowTitle += tr("Wallet");
@@ -124,6 +163,8 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
 #endif
 
     rpcConsole = new RPCConsole(enableWallet ? this : 0);
+    i2pAddress = new ShowI2PAddresses( this );
+
 #ifdef ENABLE_WALLET
     if(enableWallet)
     {
@@ -131,21 +172,13 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
         walletFrame = new WalletFrame(this);
         setCentralWidget(walletFrame);
     } else
-#endif
+#endif // ENABLE_WALLET
     {
         /* When compiled without wallet or -disablewallet is provided,
          * the central widget is the rpc console.
          */
         setCentralWidget(rpcConsole);
     }
-
-    // Default search path for OS icons
-    // ... if we ever use Qt themes
-    QStringList my_icon_paths = QIcon::themeSearchPaths();
-    QString ddDir = QDir::fromNativeSeparators( QString::fromStdString ( GetDataDir().string() ) );
-    QString themeDir = ddDir + "/themes";
-    my_icon_paths.prepend( themeDir );
-    QIcon::setThemeSearchPaths(my_icon_paths);
 
     // Accept D&D of URIs
     setAcceptDrops(true);
@@ -189,10 +222,13 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelI2PConnections);
 #endif
-    frameBlocksLayout->addStretch();
-    frameBlocksLayout->addWidget(unitDisplayControl);
-    frameBlocksLayout->addStretch();
-    frameBlocksLayout->addWidget(labelEncryptionIcon);
+    if(enableWallet)
+    {
+        frameBlocksLayout->addStretch();
+        frameBlocksLayout->addWidget(unitDisplayControl);
+        frameBlocksLayout->addStretch();
+        frameBlocksLayout->addWidget(labelEncryptionIcon);
+    }
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelConnectionsIcon);
     frameBlocksLayout->addStretch();
@@ -221,8 +257,14 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
 
-    // prevents an oben debug window from becoming stuck/unusable on client shutdown
+    // prevents an open debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
+
+#ifdef ENABLE_I2PSAM
+    // Do the same for the I2P Destination details window
+    connect(openI2pAddressAction, SIGNAL(triggered()), i2pAddress, SLOT(show()));
+    connect(quitAction, SIGNAL(triggered()), i2pAddress, SLOT(hide()));
+#endif
 
     // Install event filter to be able to catch status tip events (QEvent::StatusTip)
     this->installEventFilter(this);
@@ -239,80 +281,100 @@ AnoncoinGUI::~AnoncoinGUI()
     // Unsubscribe from notifications from core
     unsubscribeFromCoreSignals();
 
-    GUIUtil::saveWindowGeometry("nWindow", this);
-    if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
-        trayIcon->hide();
+    //! Todo: Improve this, hiding it is not a good solution, it should be removed before our mainwindow is destroyed
+    if( notificator ) delete notificator;
+    // Original Code suggested: Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
+    // That is now being done long before MainWindow destruction and addition steps here to destroy it properly
+    if(trayIcon) {
+//        trayIcon->hide();
+        trayIcon->disconnect();
+        // trayIcon->cleanup();      Not available in QT 4.6.4
+        delete trayIcon;
+    }
 #ifdef Q_OS_MAC
     delete appMenuBar;
     MacDockIconHandler::instance()->setMainWindow(NULL);
 #endif
 }
 
+QMainToolAction::QMainToolAction( const QString& sDefaultIcon, const QString& sDefaultText, const QString& sDefaultTip, const int nShortCutKey, AnoncoinGUI* pParentIn ) :
+     QAction( pParentIn ),
+     ourDefaultIcon( sDefaultIcon ),
+     nOurKey( nShortCutKey ),
+     pOurParent( pParentIn )
+{
+    strOurName = "Action:" + sDefaultText;  // Used for debugging only
+    setIcon( ourDefaultIcon );
+    setText( sDefaultText );
+    setStatusTip( sDefaultTip );
+    setToolTip( sDefaultTip );
+    setCheckable( true );
+    setShortcut( QKeySequence(Qt::ALT, nShortCutKey) );
+
+    connect(this, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(this, SIGNAL(triggered()), this, SLOT(gotoPage()));
+}
+
+bool QMainToolAction::event(QEvent *pEvent)
+{
+    //! We notify our base class of the event, let it do its thing and then update our copy of the icon, which may have been changed due to style settings.
+    if( pEvent->type() == QEvent::ActionChanged ) {
+        bool fResult = QAction::event(pEvent);
+        // ourStyledIcon = icon();
+        // The icon is now set from within the customized toolbutton detection of a style change,
+        //  we do not use this here in the action atm, but left the code in so you could know how
+        // to find it, if needed.  Also the following debug line could be helpful, the action event
+        // never returns any value but false with QT v4.6.4 builds.
+        // qDebug() << strOurName << " says Action " << (fResult ? "changed" : "failed to change");
+        return true;
+    }
+    //else
+        //qDebug() << strOurName << " says event type " << pEvent->type();
+
+    return QAction::event(pEvent);
+}
+
+//! Should this happen, we send our parent the message, so that all aspects of the application can be normalized.
+void QMainToolAction::showNormalIfMinimized()
+{
+    pOurParent->showNormalIfMinimized();
+}
+
+void QMainToolAction::gotoPage()
+{
+    //! We tell our parent about this new request, using the Short cut key as the index to identify whom we are.
+    pOurParent->gotoPage( nOurKey );
+}
+
 void AnoncoinGUI::createActions(bool fIsTestnet)
 {
+    //! Initialize the primary toolbar and button actions used for selecting the different ways we can view wallet details.
     QActionGroup *tabGroup = new QActionGroup(this);
 
-    overviewAction = new QAction(QIcon(":/icons/overview"), tr("&Overview"), this);
-    overviewAction->setStatusTip(tr("Show general overview of wallet"));
-    overviewAction->setToolTip(overviewAction->statusTip());
-    overviewAction->setCheckable(true);
-    overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
-    tabGroup->addAction(overviewAction);
+    overviewAction = new QMainToolAction( ":/icons/overview", tr("&Overview"), tr("Show general overview of wallet"), Qt::Key_1, this );
+    tabGroup->addAction( overviewAction );
 
-    accountsAction = new QAction(QIcon(":/icons/accounts"), tr("&Accounts"), this);
-    accountsAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
-    accountsAction->setToolTip(accountsAction->statusTip());
-    accountsAction->setCheckable(true);
-    accountsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
+    accountsAction = new QMainToolAction( ":/icons/accounts", tr("&Accounts"), tr("Show the list of used receiving addresses and labels"), Qt::Key_2, this );
     tabGroup->addAction(accountsAction);
 
-    sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send"), this);
-    sendCoinsAction->setStatusTip(tr("Send coins to a Anoncoin address"));
-    sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
-    sendCoinsAction->setCheckable(true);
-    sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));
+    sendCoinsAction = new QMainToolAction( ":/icons/send", tr("&Send"), tr("Send coins to a Anoncoin address"), Qt::Key_3, this );
     tabGroup->addAction(sendCoinsAction);
 
-    receiveCoinsAction = new QAction(QIcon(":/icons/receiving_addresses"), tr("&Receive"), this);
-    receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and anoncoin: URIs)"));
-    receiveCoinsAction->setToolTip(receiveCoinsAction->statusTip());
-    receiveCoinsAction->setCheckable(true);
-    receiveCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
+    receiveCoinsAction = new QMainToolAction( ":/icons/receiving_addresses", tr("&Receive"), tr("Request payments (generates QR codes and anoncoin: URIs)"), Qt::Key_4, this );
     tabGroup->addAction(receiveCoinsAction);
 
-    historyAction = new QAction(QIcon(":/icons/history"), tr("&Transactions"), this);
-    historyAction->setStatusTip(tr("Browse transaction history"));
-    historyAction->setToolTip(historyAction->statusTip());
-    historyAction->setCheckable(true);
-    historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    historyAction = new QMainToolAction( ":/icons/history", tr("&Transactions"), tr("Browse transaction history"), Qt::Key_5, this );
     tabGroup->addAction(historyAction);
 
-    addressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Address Book"), this);
-    accountsAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
-    addressesAction->setToolTip(addressesAction->statusTip());
-    addressesAction->setCheckable(true);
-    addressesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+    addressesAction = new QMainToolAction( ":/icons/address-book", tr("&Address Book"), tr("Show the list of used sending addresses and labels"), Qt::Key_6, this );
     tabGroup->addAction(addressesAction);
 
-    // These showNormalIfMinimized are needed because Send Coins and Receive Coins
-    // can be triggered from the tray menu, and need to show the GUI to be useful.
-    connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
-    connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
-    connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
-    connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-    connect(addressesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(addressesAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAddressBookPage()));
-    connect(accountsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(accountsAction, SIGNAL(triggered()), walletFrame, SLOT(gotoAccountsPage()));
-
+    //! Finish creating all possible menu and MainWindow Actions
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
+
     if (!fIsTestnet)
         aboutAction = new QAction(QIcon(":/icons/anoncoin"), tr("&About Anoncoin Core"), this);
     else
@@ -326,9 +388,11 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
 #endif
     aboutQtAction->setStatusTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
+
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
     optionsAction->setStatusTip(tr("Modify configuration options for Anoncoin"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
+
     if (!fIsTestnet)
         toggleHideAction = new QAction(QIcon(":/icons/anoncoin"), tr("&Show / Hide"), this);
     else
@@ -336,31 +400,54 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     toggleHideAction->setStatusTip(tr("Show or hide the main Window"));
 
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
-
     encryptWalletAction->setStatusTip(tr("Encrypt the private keys that belong to your wallet"));
     encryptWalletAction->setCheckable(true);
+
     backupWalletAction = new QAction(QIcon(":/icons/filesave"), tr("&Backup Wallet..."), this);
     backupWalletAction->setStatusTip(tr("Backup wallet to another location"));
+
     changePassphraseAction = new QAction(QIcon(":/icons/key"), tr("&Change Passphrase..."), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
+
     signMessageAction = new QAction(QIcon(":/icons/edit"), tr("Sign &message..."), this);
     signMessageAction->setStatusTip(tr("Sign messages with your Anoncoin addresses to prove you own them"));
+
     verifyMessageAction = new QAction(QIcon(":/icons/transaction_0"), tr("&Verify message..."), this);
     verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Anoncoin addresses"));
 
     openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging and diagnostic console"));
 
+    openI2pAddressAction = new QAction(QIcon(":/icons/options"), tr("&I2P Destination details"), this);
+    openI2pAddressAction->setStatusTip(tr("Shows your private I2P Destination details"));
+
     usedSendingAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Sending addresses..."), this);
     usedSendingAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
+
     usedReceivingAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Receiving addresses..."), this);
     usedReceivingAddressesAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
+
     openAction = new QAction(QIcon(":/icons/fileopen"), tr("Open &URI..."), this);
     openAction->setStatusTip(tr("Open a anoncoin: URI or payment request"));
 
     showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line options"), this);
+    showHelpMessageAction->setMenuRole(QAction::NoRole);
     showHelpMessageAction->setStatusTip(tr("Show the Anoncoin Core help message to get a list with possible Anoncoin command-line options"));
 
+    pWalletAddViewAction = new QAction( QIcon(":/icons/eye_plus"), tr("Add a Wallet View..."), this );
+    pWalletAddViewAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
+
+    pWalletClearViewsAction = new QAction( QIcon(":/icons/eye_plus"), tr("Clears your Wallet Views..."), this );
+    pWalletClearViewsAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
+
+    pWalletRestartCoreAction = new QAction( QIcon(":/icons/eye_plus"), tr("Restart Core with Wallet..."), this );
+    pWalletRestartCoreAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
+
+    pWalletUpdateViewAction = new QAction( QIcon(":/icons/eye_plus"), tr("Update a Wallet View..."), this );
+    pWalletUpdateViewAction->setStatusTip( tr("MultiWallet support for Anoncoin is in development") );
+
+
+    //! Connect up all signals and slots that are triggered when actions are selected. NOTE: This has already been done for Toolbar button actions
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -378,8 +465,13 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
         connect(usedSendingAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(usedSendingAddresses()));
         connect(usedReceivingAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(usedReceivingAddresses()));
         connect(openAction, SIGNAL(triggered()), this, SLOT(openClicked()));
+
+        connect(pWalletAddViewAction, SIGNAL(triggered()), this, SLOT(walletAddViewClicked()));
+        connect(pWalletClearViewsAction, SIGNAL(triggered()), this, SLOT(walletClearViewsClicked()));
+        connect(pWalletRestartCoreAction, SIGNAL(triggered()), this, SLOT(walletRestartCoreClicked()));
+        connect(pWalletUpdateViewAction, SIGNAL(triggered()), this, SLOT(walletUpdateViewClicked()));
     }
-#endif
+#endif // ENABLE_WALLET
 }
 
 void AnoncoinGUI::createMenuBar()
@@ -397,7 +489,13 @@ void AnoncoinGUI::createMenuBar()
     if(walletFrame)
     {
         file->addAction(openAction);
+        file->addSeparator();
+        file->addAction(pWalletAddViewAction);
+        file->addAction(pWalletClearViewsAction);
+        file->addAction(pWalletRestartCoreAction);
+        file->addAction(pWalletUpdateViewAction);
         file->addAction(backupWalletAction);
+        file->addSeparator();
         file->addAction(signMessageAction);
         file->addAction(verifyMessageAction);
         file->addSeparator();
@@ -415,7 +513,9 @@ void AnoncoinGUI::createMenuBar()
         settings->addSeparator();
     }
     settings->addAction(optionsAction);
-
+#ifdef ENABLE_I2PSAM
+    settings->addAction(openI2pAddressAction);
+#endif
     QMenu *help = appMenuBar->addMenu(tr("&Help"));
     if(walletFrame)
     {
@@ -427,51 +527,98 @@ void AnoncoinGUI::createMenuBar()
     help->addAction(aboutQtAction);
 }
 
+QMainToolButton::QMainToolButton( const QString& sNameIn, QMainToolAction* pActionIn, AnoncoinGUI* pParentIn) :
+     QToolButton( pParentIn ),
+     strOurName( sNameIn ),
+     pAction( pActionIn ),
+     pMainWindow( pParentIn )
+{
+    setObjectName(strOurName);
+    setDefaultAction(pAction);
+    setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+}
+
+bool QMainToolButton::event(QEvent *pEvent)
+{
+    if( pEvent->type() == QEvent::StyleChange ) {
+        // qDebug() << strOurName << " wanted to let you know, we received a StyleChange event.";
+        //!
+        //! This is the magic lines so hard fought for, how and where was the correct icon
+        //! being displayed from initially?  After a theme change, the tab buttons always
+        //! showed correctly at first, then reverted to the default icon once clicked on.
+        //!
+        //! Until this next line of code was identified, theme selection changes that tried
+        //! to modify the button icons could not be done.  A new permanent action icon
+        //! replacement had to be found, set and stored for user selected theme changes.
+        //!
+        //! This code now builds without error and linked as shared against a QT v4.6.4 library,
+        //! runs on Linux using QT v4.8 runtime and on Windows builds using a static QT v5.2.1
+        //! Mac build testing ToDo:
+        //!
+        //! During shutdown we get hit with style change events right until the last second, this causes segment faults because
+        //! either the icon or setting the action icon has already been destroyed and our pointer is no longer valid.  Whichever
+        //! reason, we must watch for and not update here when style change events are happening during shutdown, other approaches
+        //! could be used, such as if the widget is not visible or hidden, but the primary reason is because of shutdown.
+        if( !pMainWindow->fShutdownInProgress ) {
+            QIcon ourIcon = icon();             //! After a stylesheet change, this button icon() is correct, the action icon is not, and still set to default.
+            pAction->setIcon( ourIcon );        //! So here we make sure it is set to the right image, then the designers icon 'sticks' as it was suppose to.
+        }
+    }
+    //else
+        //qDebug() << strOurName << " says event type " << pEvent->type();
+
+    return QToolButton::event(pEvent);
+}
+
+void QMainToolButton::RestoreDefaultIcon()
+{
+    QIcon& ourIcon = pAction->GetDefaultIcon();
+    pAction->setIcon( ourIcon );
+}
+
+void AnoncoinGUI::RestoreDefaultIcons()
+{
+    buttonAccounts->RestoreDefaultIcon();
+    buttonAddresses->RestoreDefaultIcon();
+    buttonHistory->RestoreDefaultIcon();
+    buttonOverview->RestoreDefaultIcon();
+    buttonReceiveCoins->RestoreDefaultIcon();
+    buttonSendCoins->RestoreDefaultIcon();
+#if defined( DONT_COMPILE )
+    // ToDo: This code crashes, why?
+    QObjectList ObjList = appToolBar->children();
+    foreach( const QObject* anObj, ObjList ) {
+        QMainToolButton* pButton = (QMainToolButton*)anObj;
+        pButton->RestoreDefaultIcon();
+    }
+#endif
+}
+
 void AnoncoinGUI::createToolBars()
 {
-    if(walletFrame)
-    {
-        QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
-        toolbar->setObjectName("maintoolbar");
-        toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    //! If we are simply a node, no walletFrame will have been defined, so no toolbar should or need be created or used.
+    if(walletFrame) {
+        appToolBar = addToolBar(tr("Tabs toolbar"));
+        appToolBar->setObjectName("maintoolbar");
+        appToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-        QToolButton * tbButton;
+        buttonOverview = new QMainToolButton("toolbuttonOverview",overviewAction, this);
+        appToolBar->addWidget(buttonOverview);
 
-        tbButton = new QToolButton();
-        tbButton->setObjectName("toolbuttonOverview");
-        tbButton->setDefaultAction(overviewAction);
-        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addWidget(tbButton);
+        buttonAccounts = new QMainToolButton("toolbuttonAccounts",accountsAction, this);
+        appToolBar->addWidget(buttonAccounts);
 
-        tbButton = new QToolButton();
-        tbButton->setObjectName("toolbuttonAccounts");
-        tbButton->setDefaultAction(accountsAction);
-        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addWidget(tbButton);
+        buttonSendCoins = new QMainToolButton("toolbuttonSendCoins",sendCoinsAction, this);
+        appToolBar->addWidget(buttonSendCoins);
 
-        tbButton = new QToolButton();
-        tbButton->setObjectName("toolbuttonSendCoins");
-        tbButton->setDefaultAction(sendCoinsAction);
-        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addWidget(tbButton);
+        buttonReceiveCoins = new QMainToolButton("toolbuttonReceiveCoins",receiveCoinsAction, this);
+        appToolBar->addWidget(buttonReceiveCoins);
 
-        tbButton = new QToolButton();
-        tbButton->setObjectName("toolbuttonReceiveCoins");
-        tbButton->setDefaultAction(receiveCoinsAction);
-        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addWidget(tbButton);
+        buttonHistory = new QMainToolButton("toolbuttonHistory",historyAction, this);
+        appToolBar->addWidget(buttonHistory);
 
-        tbButton = new QToolButton();
-        tbButton->setObjectName("toolbuttonHistory");
-        tbButton->setDefaultAction(historyAction);
-        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addWidget(tbButton);
-
-        tbButton = new QToolButton();
-        tbButton->setObjectName("toolbuttonAddresses");
-        tbButton->setDefaultAction(addressesAction);
-        tbButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        toolbar->addWidget(tbButton);
+        buttonAddresses = new QMainToolButton("toolbuttonAddresses",addressesAction, this);
+        appToolBar->addWidget(buttonAddresses);
 
         overviewAction->setChecked(true);
     }
@@ -491,37 +638,41 @@ void AnoncoinGUI::setClientModel(ClientModel *clientModel)
         connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
 #ifdef ENABLE_I2PSAM
-        setNumI2PConnections(clientModel->getNumI2PConnections());
-        connect(clientModel, SIGNAL(numI2PConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
+        setNumI2PConnections(clientModel->getNumConnections());
+        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
 
         if (clientModel->isI2POnly()) {
             labelI2POnly->setText("I2P");
-            labelI2POnly->setToolTip(tr("Wallet is using I2P-network only!"));
+            labelI2POnly->setToolTip(tr("Node is using I2P-network only!"));
         }
         else if (clientModel->isTorOnly()) {
             labelI2POnly->setText("TOR");
-            labelI2POnly->setToolTip(tr("Wallet is using Tor-network only"));
+            labelI2POnly->setToolTip(tr("Node is using Tor-network only"));
         }
         else if (clientModel->isDarknetOnly()) {
             labelI2POnly->setText("I&T");
-            labelI2POnly->setToolTip(tr("Wallet is using I2P and Tor networks (Darknet mode)"));
+            labelI2POnly->setToolTip(tr("Node is using I2P and Tor networks (Darknet mode)"));
         }
         else if (clientModel->isBehindDarknet()) {
             labelI2POnly->setText("ICT");
-            labelI2POnly->setToolTip(tr("Wallet is using I2P and Tor networks, also Tor as a proxy"));
+            labelI2POnly->setToolTip(tr("Node is using I2P and Tor networks, also Tor as a proxy"));
         }
         else {
             labelI2POnly->setText("CLR");
-            labelI2POnly->setToolTip(tr("Wallet is using mixed or non-I2P (clear) network"));
+            labelI2POnly->setToolTip(tr("Node is using mixed or non-I2P (clear) network"));
         }
 
-        if (clientModel->isI2PAddressGenerated()) {
-            labelI2PGenerated->setText("DYN");
-            labelI2PGenerated->setToolTip(tr("Wallet is running with a random generated I2P-address"));
-        }
-        else {
-            labelI2PGenerated->setText("STA");
-            labelI2PGenerated->setToolTip(tr("Wallet is running with a static I2P-address"));
+        if( IsI2PEnabled() ) {
+            if( clientModel->isI2PAddressGenerated() ) {
+                labelI2PGenerated->setText("DYN");
+                labelI2PGenerated->setToolTip(tr("Node is running with a dynamic (random) I2P destination"));
+            } else {
+                labelI2PGenerated->setText("STA");
+                labelI2PGenerated->setToolTip(tr("Node is running with a static I2P destination"));
+            }
+        } else {
+            labelI2PGenerated->setVisible( false );
+            labelI2PConnections->setVisible( false );
         }
 #endif // ENABLE_I2PSAM
 
@@ -537,9 +688,17 @@ void AnoncoinGUI::setClientModel(ClientModel *clientModel)
         {
             walletFrame->setClientModel(clientModel);
         }
-#endif
+#endif // ENABLE_WALLET
 
         this->unitDisplayControl->setOptionsModel(clientModel->getOptionsModel());
+    } else {
+        // Disable possibility to show main window via action
+        toggleHideAction->setEnabled(false);
+//      if(trayIconMenu)
+//      {
+            // Disable context menu on tray icon
+//          trayIconMenu->clear();
+//      }
     }
 }
 
@@ -566,7 +725,7 @@ void AnoncoinGUI::removeAllWallets()
     setWalletActionsEnabled(false);
     walletFrame->removeAllWallets();
 }
-#endif
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::setWalletActionsEnabled(bool enabled)
 {
@@ -589,23 +748,24 @@ void AnoncoinGUI::setWalletActionsEnabled(bool enabled)
 void AnoncoinGUI::createTrayIcon(bool fIsTestnet)
 {
 #ifndef Q_OS_MAC
-    trayIcon = new QSystemTrayIcon(this);
+    if( QSystemTrayIcon::isSystemTrayAvailable() ) {
+        trayIcon = new QSystemTrayIcon(this);
 
-    if (!fIsTestnet)
-    {
-        trayIcon->setToolTip(tr("Anoncoin client"));
-        trayIcon->setIcon(QIcon(":/icons/toolbar"));
-    }
-    else
-    {
-        trayIcon->setToolTip(tr("Anoncoin client") + " " + tr("[testnet]"));
-        trayIcon->setIcon(QIcon(":/icons/toolbar_testnet"));
-    }
+        if (!fIsTestnet)
+        {
+            trayIcon->setToolTip(tr("Anoncoin client"));
+            trayIcon->setIcon(QIcon(":/icons/toolbar"));
+        }
+        else
+        {
+            trayIcon->setToolTip(tr("Anoncoin client") + " " + tr("[testnet]"));
+            trayIcon->setIcon(QIcon(":/icons/toolbar_testnet"));
+        }
 
-    trayIcon->show();
+        trayIcon->show();
+        notificator = new Notificator(QApplication::applicationName(), trayIcon, this);
+    }
 #endif
-
-    notificator = new Notificator(QApplication::applicationName(), trayIcon, this);
 }
 
 void AnoncoinGUI::createTrayIconMenu()
@@ -661,11 +821,8 @@ void AnoncoinGUI::optionsClicked()
     if(!clientModel || !clientModel->getOptionsModel())
         return;
 
-    OptionsDialog dlg(this);
+    OptionsDialog dlg(this, enableWallet);
     dlg.setModel(clientModel->getOptionsModel());
-#ifdef ENABLE_I2PSAM
-    dlg.setClientModel(clientModel);
-#endif
     dlg.exec();
 }
 
@@ -696,40 +853,21 @@ void AnoncoinGUI::openClicked()
     }
 }
 
-void AnoncoinGUI::gotoOverviewPage()
+//! We make this a public slot method so that any other section of the software that wishes to select a view can do so,
+//! an example of where this is needed is when the user clicks on a transaction in the overview page, an automatic
+//! connection is made to focus on that, while switching to the transactions history view through here.
+void AnoncoinGUI::gotoPage( const int nKey )
 {
-    overviewAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoOverviewPage();
-}
-
-void AnoncoinGUI::gotoAccountsPage()
-{
-    accountsAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoAccountsPage();
-}
-
-void AnoncoinGUI::gotoHistoryPage()
-{
-    historyAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoHistoryPage();
-}
-
-void AnoncoinGUI::gotoReceiveCoinsPage()
-{
-    receiveCoinsAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoReceiveCoinsPage();
-}
-
-void AnoncoinGUI::gotoSendCoinsPage(QString addr)
-{
-    sendCoinsAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
-}
-
-void AnoncoinGUI::gotoAddressBookPage()
-{
-    addressesAction->setEnabled(true);
-    if (walletFrame) walletFrame->gotoAddressBookPage();
+    if( walletFrame ) {
+        switch( nKey ) {
+            case Qt::Key_2 : buttonAccounts->setChecked(true); walletFrame->gotoAccountsPage(); break;
+            case Qt::Key_3 : buttonSendCoins->setChecked(true); walletFrame->gotoSendCoinsPage(); break;
+            case Qt::Key_4 : buttonReceiveCoins->setChecked(true); walletFrame->gotoReceiveCoinsPage(); break;
+            case Qt::Key_5 : buttonHistory->setChecked(true); walletFrame->gotoHistoryPage(); break;
+            case Qt::Key_6 : buttonAddresses->setChecked(true); walletFrame->gotoAddressBookPage(); break;
+            default: buttonOverview->setChecked(true); walletFrame->gotoOverviewPage();
+        }
+    }
 }
 
 void AnoncoinGUI::gotoSignMessageTab(QString addr)
@@ -741,18 +879,40 @@ void AnoncoinGUI::gotoVerifyMessageTab(QString addr)
 {
     if (walletFrame) walletFrame->gotoVerifyMessageTab(addr);
 }
-#endif
+
+void AnoncoinGUI::walletAddViewClicked()
+{
+    WalletAddViewDialog dlg(this);
+    dlg.exec();
+}
+
+void AnoncoinGUI::walletClearViewsClicked()
+{
+    WalletClearViewsDialog dlg(this);
+    dlg.exec();
+}
+
+void AnoncoinGUI::walletRestartCoreClicked()
+{
+    WalletRestartCoreDialog dlg(this);
+    dlg.exec();
+}
+
+void AnoncoinGUI::walletUpdateViewClicked()
+{
+    WalletUpdateViewDialog dlg(this);
+    dlg.exec();
+}
+
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::setNumConnections(int count)
 {
     QString icon;
+
 #ifdef ENABLE_I2PSAM
-    // Real count is minus the i2p connections we're showing that in another icon
-    int realcount = count - i2pConnectCount;
-    // ToDo: Having a bug here while testing I2P onlynet and binding my port in the anoncoin.conf file to 192.168.xx.xx.
-    // The realcount is getting a negative value for awhile, if nodes are found pretty fast on startup, not sure why.
-    // Added conditional below, so the user doesn't see that at least
-    if( realcount < 0 ) realcount = 0;
+    // Until we have the clientModel we can't determine the i2p connection count
+    int realcount = clientModel ? count - clientModel->getNumConnections(CONNECTIONS_I2P_ALL) : count;
 #else
     int realcount = count;
 #endif
@@ -771,23 +931,33 @@ void AnoncoinGUI::setNumConnections(int count)
 #ifdef ENABLE_I2PSAM
 void AnoncoinGUI::setNumI2PConnections(int count)
 {
-    QString i2pIcon;
-    // See the anoncoin.qrc file for icon files below & their associated alias name
-    switch(count) {
-    case 0: i2pIcon = ":/icons/i2pconnect_0"; break;
-    case 1: case 2: case 3: i2pIcon = ":/icons/i2pconnect_1"; break;
-    case 4: case 5: case 6: i2pIcon = ":/icons/i2pconnect_2"; break;
-    case 7: case 8: case 9: i2pIcon = ":/icons/i2pconnect_3"; break;
-    default: i2pIcon = ":/icons/i2pconnect_4"; break;
+    if( labelI2PConnections->isVisible() ) {
+        QString i2pIcon;
+
+        // We never run this until we have the clientModel, so the check shouldn't be necessary.
+        // Otherwise we can't determine the i2p connection count
+        // so we just show the total count here as well...
+        int realcount = clientModel ? clientModel->getNumConnections(CONNECTIONS_I2P_ALL) : count;
+
+        // See the anoncoin.qrc file for icon files below & their associated alias name
+        switch(realcount) {
+        case 0: i2pIcon = ":/icons/i2pconnect_0"; break;
+        case 1: case 2: case 3: i2pIcon = ":/icons/i2pconnect_1"; break;
+        case 4: case 5: case 6: i2pIcon = ":/icons/i2pconnect_2"; break;
+        case 7: case 8: case 9: i2pIcon = ":/icons/i2pconnect_3"; break;
+        default: i2pIcon = ":/icons/i2pconnect_4"; break;
+        }
+        labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(4*STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", realcount));
     }
-    labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(4*STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", count));
-    i2pConnectCount = count;
 }
 #endif // ENABLE_I2PSAM
 
 void AnoncoinGUI::setNumBlocks(int count)
 {
+    if(!clientModel)
+        return;
+
     // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
     statusBar()->clearMessage();
 
@@ -826,7 +996,7 @@ void AnoncoinGUI::setNumBlocks(int count)
 #ifdef ENABLE_WALLET
         if(walletFrame)
             walletFrame->showOutOfSyncWarning(false);
-#endif
+#endif // ENABLE_WALLET
 
         progressBarLabel->setVisible(false);
         progressBar->setVisible(false);
@@ -877,7 +1047,7 @@ void AnoncoinGUI::setNumBlocks(int count)
 #ifdef ENABLE_WALLET
         if(walletFrame)
             walletFrame->showOutOfSyncWarning(true);
-#endif
+#endif // ENABLE_WALLET
 
         tooltip += QString("<br>");
         tooltip += tr("Last received block was generated %1 ago.").arg(timeBehindText);
@@ -947,10 +1117,23 @@ void AnoncoinGUI::message(const QString &title, const QString &message, unsigned
         // initialization is finished.
         if(!(style & CClientUIInterface::NOSHOWGUI))
             showNormalIfMinimized();
-        QMessageBox mBox((QMessageBox::Icon)nMBoxIcon, strTitle, message, buttons, this);
+
+        // Here now we introduce some special code for our -generatei2pdestination command
+        // We know that is the message, if the button condition is correct (Note: no other
+        // place in the code should use that combination for this to work.  The rest is simple...
+        bool bGenI2pDest = false;
+        QString theMsg;                                     // Setup a place for a local copy of the message
+        if( buttons == (CClientUIInterface::BTN_ABORT | CClientUIInterface::BTN_APPLY ) ) {
+            theMsg = tr("A new I2P Destination was generated.\nDetails have been written to your debug.log file.\nDo you want to continue or shutdown?");
+            LogPrintf( message.toStdString().c_str() );
+            bGenI2pDest = true;
+        }
+        else
+            theMsg = message;
+        QMessageBox mBox((QMessageBox::Icon)nMBoxIcon, strTitle, theMsg, buttons, this);
         int r = mBox.exec();
-        if (ret != NULL)
-            *ret = r == QMessageBox::Ok;
+        if( ret != NULL )
+            *ret = r == ( bGenI2pDest ? QMessageBox::Apply : QMessageBox::Ok );
     }
     else
         notificator->notify((Notificator::Class)nNotifyIcon, strTitle, message);
@@ -962,7 +1145,7 @@ void AnoncoinGUI::changeEvent(QEvent *e)
 #ifndef Q_OS_MAC // Ignored on Mac
     if(e->type() == QEvent::WindowStateChange)
     {
-        if(clientModel && clientModel->getOptionsModel()->getMinimizeToTray())
+        if(clientModel && clientModel->getOptionsModel() && clientModel->getOptionsModel()->getMinimizeToTray())
         {
             QWindowStateChangeEvent *wsevt = static_cast<QWindowStateChangeEvent*>(e);
             if(!(wsevt->oldState() & Qt::WindowMinimized) && isMinimized())
@@ -977,16 +1160,16 @@ void AnoncoinGUI::changeEvent(QEvent *e)
 
 void AnoncoinGUI::closeEvent(QCloseEvent *event)
 {
-    if(clientModel)
-    {
 #ifndef Q_OS_MAC // Ignored on Mac
+    if(clientModel && clientModel->getOptionsModel())
+    {
         if(!clientModel->getOptionsModel()->getMinimizeToTray() &&
            !clientModel->getOptionsModel()->getMinimizeOnClose())
         {
             QApplication::quit();
         }
-#endif
     }
+#endif
     QMainWindow::closeEvent(event);
 }
 
@@ -1004,7 +1187,7 @@ void AnoncoinGUI::incomingTransaction(const QString& date, int unit, qint64 amou
                   .arg(type)
                   .arg(address), CClientUIInterface::MSG_INFORMATION);
 }
-#endif
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -1034,12 +1217,27 @@ bool AnoncoinGUI::eventFilter(QObject *object, QEvent *event)
         if (progressBarLabel->isVisible() || progressBar->isVisible())
             return true;
     }
-    if(event->type() == QEvent::Paint)
-    {
+    // ToDo:
+    // When the StyleChange event occurs and the appToolBar gets a copy.  It passes that on to each and every widget it has listed.
+    // That would be the toolbuttons that are needing such an event, however this causes it to happen TWICE, so we detect that
+    // here and eliminate the double whammy of duplicate style changes for each button, or would if that is all that was needed and
+    // done, as we can not know for sure, perhaps the designer needs to adjust the toolbar as well.  This has been commented out so
+    // it can be tested with future Themes to see if there is a problem or not with
+    if( event->type() == QEvent::StyleChange ) {
+        // qDebug() << "The Style Change event has occurred.";
+        if( object == appToolBar ) {
+            // return true;
+            // appToolBar->setStyleSheet(strCurrentStyleSheet);
+            // qDebug() << "...and it is for the ToolBar";
         // Needed to keep the stylesheet tab icons from being overwritten
-        if(clientModel)
-            clientModel->getOptionsModel()->applyTheme();
+        // if( clientModel && clientModel->getOptionsModel() ) {
+            // clientModel->getOptionsModel()->applyTheme();
+        // }
+        } else {
+            // qDebug() << "This was for an Object named: " << object->objectName();
+        }
     }
+
     return QMainWindow::eventFilter(object, event);
 }
 
@@ -1050,11 +1248,10 @@ bool AnoncoinGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
     if (walletFrame && walletFrame->handlePaymentRequest(recipient))
     {
         showNormalIfMinimized();
-        gotoSendCoinsPage();
+        walletFrame->gotoSendCoinsPage(recipient.address);
         return true;
     }
-    else
-        return false;
+    return false;
 }
 
 void AnoncoinGUI::setEncryptionStatus(int status)
@@ -1085,10 +1282,13 @@ void AnoncoinGUI::setEncryptionStatus(int status)
         break;
     }
 }
-#endif
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::showNormalIfMinimized(bool fToggleHidden)
 {
+    if(!clientModel)
+        return;
+
     // activateWindow() (sometimes) helps with keyboard focus on Windows
     if (isHidden())
     {
@@ -1114,19 +1314,55 @@ void AnoncoinGUI::toggleHidden()
     showNormalIfMinimized(true);
 }
 
+void AnoncoinGUI::ShutdownMainWindow()
+{
+    if(rpcConsole) rpcConsole->hide();
+    if( i2pAddress ) i2pAddress->hide();
+    if( trayIcon ) trayIcon->hide();
+    hide();
+    setClientModel(0);
+    fShutdownInProgress = true;
+}
+
+//! This will check the Core for a shutdown signal ever 200ms, if found then we process the request as if the user had requested a shutdown.
 void AnoncoinGUI::detectShutdown()
 {
     if (ShutdownRequested())
     {
-        if(rpcConsole)
-            rpcConsole->hide();
+        qDebug() << "Anoncoin Core has requested the application be shutdown.";
         qApp->quit();
     }
+}
+
+void AnoncoinGUI::showProgress(const QString &title, int nProgress)
+{
+    if (nProgress == 0)
+    {
+        progressDialog = new QProgressDialog(title, "", 0, 100);
+        progressDialog->setWindowModality(Qt::ApplicationModal);
+        progressDialog->setMinimumDuration(0);
+        progressDialog->setCancelButton(0);
+        progressDialog->setAutoClose(false);
+        progressDialog->setValue(0);
+    }
+    else if (nProgress == 100)
+    {
+        if (progressDialog)
+        {
+            progressDialog->close();
+            progressDialog->deleteLater();
+        }
+    }
+    else if (progressDialog)
+        progressDialog->setValue(nProgress);
 }
 
 static bool ThreadSafeMessageBox(AnoncoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
 {
     bool modal = (style & CClientUIInterface::MODAL);
+    // The SECURE flag has no effect in the Qt GUI.
+    // bool secure = (style & CClientUIInterface::SECURE);
+    style &= ~CClientUIInterface::SECURE;
     bool ret = false;
     // In case of modal message, use blocking connection to wait for user to click a button
     QMetaObject::invokeMethod(gui, "message",
@@ -1138,75 +1374,246 @@ static bool ThreadSafeMessageBox(AnoncoinGUI *gui, const std::string& message, c
     return ret;
 }
 
-#ifdef ENABLE_I2PSAM
-// ToDo: Check me
-// This code ported from 0.8.5.6 didn't work as is, had to rework (see the anoncoin.cpp file in old codebase). Removed all the printf's and msg strings,
-// they should go somewhere else (see noui.cpp for anoncoind operation), from what I (GR) could tell they would never have executed.
-// The 'guiref' value (old code) here is called 'gui', changed that.  Need to confirm this is a blockingGUI thread.....Think I've fixed this.
-// This function now returns a true/false value, that was changed here, but never crossed checked that the caller would process such a thing...
-// Ok think I got all the issues addressed and ready for testing...
-static bool ThreadSafeShowGeneratedI2PAddress(AnoncoinGUI *gui,
-                                              const std::string& caption,
-                                              const std::string& pub,
-                                              const std::string& priv,
-                                              const std::string& b32,
-                                              const std::string& configFileName)
-{
-    bool ret = false;
-
-//    ShowI2PAddresses i2pAddrDialog( QString::fromStdString(caption),
-//                                    QString::fromStdString(pub),
-//                                    QString::fromStdString(priv),
-//                                    QString::fromStdString(b32),
-//                                    QString::fromStdString(configFileName),
-//                                    gui );
-// Latest thoughts,  we need to get the clientmodel for a gui parent, and use new to create the dialog here now...
-
-//    i2pAddrDialog.show();
-    ret = true;
-//    unsigned int style = CClientUIInterface::BTN_ABORT | CClientUIInterface::MSG_INFORMATION;
-//    bool modal = (style & CClientUIInterface::MODAL);
-
-//    QString pubkey = QString::fromStdString(pub);
-//    QString privkey = QString::fromStdString(priv);
-
-    // http://qt-project.org/doc/qt-4.8/qmetaobject.html
-    // Invokes the member (a signal or a slot name) on the object obj. Returns true if the member could be invoked.
-    // Returns false if there is no such member or the parameters did not match.
-    // If type is Qt::BlockingQueuedConnection, the method will be invoked in the same way as for Qt::QueuedConnection,
-    // except that the current thread will block until the event is delivered. Using this connection type to communicate
-    // between objects in the same thread will lead to deadlocks....
-//    QMetaObject::invokeMethod(gui, "message",
-//                               modal ? GUIUtil::blockingGUIThreadConnection() : Qt::QueuedConnection,
-//                               Q_ARG(QString, QString::fromStdString(caption)),
-//                               pubkey,
-//                               privkey,
-//                               Q_ARG(QString, QString::fromStdString(b32)),
-//                               Q_ARG(QString, QString::fromStdString(configFileName)),
-//                               Q_ARG(unsigned int, style),
-//                               Q_ARG(bool*, &ret));
-
-    return ret;
-}
-#endif // ENABLE_I2PSAM
-
 void AnoncoinGUI::subscribeToCoreSignals()
 {
     // Connect signals to client
     uiInterface.ThreadSafeMessageBox.connect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
-#ifdef ENABLE_I2PSAM
-    uiInterface.ThreadSafeShowGeneratedI2PAddress.connect(boost::bind(ThreadSafeShowGeneratedI2PAddress, this, _1, _2, _3, _4, _5));
-#endif
 }
 
 void AnoncoinGUI::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
     uiInterface.ThreadSafeMessageBox.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
-#ifdef ENABLE_I2PSAM
-    uiInterface.ThreadSafeShowGeneratedI2PAddress.disconnect(boost::bind(ThreadSafeShowGeneratedI2PAddress, this, _1, _2, _3, _4, _5));
-#endif
 }
+
+bool AnoncoinGUI::GetThemeDataPath( boost::filesystem::path& themeDirPathOut )
+{
+    static bool fPathSet = false;
+    static boost::filesystem::path fspCurrentThemes;
+
+    //! The 1st time we run this and setup the path we log the result for debugging purposes
+    bool fLogResult = false;
+    //! If there was an error, we return the default location in the callers referenced variable and a false result
+    boost::filesystem::path fspDefaultLocation;
+    //! If an error was caught, the message is stored here
+    QString sErr;
+    //! Only go through all the path logic once, then use the same path every time afterwards, unless there was an error, in which cause it keeps trying over and over
+    if( !fPathSet ) {
+        fLogResult = true;
+        try {
+            //! Only initialize and/or use one theme directory in the primary data directory as our fist choice, regardless of the network type (main,testnet,regtest)
+            fspDefaultLocation = GetDataDir(false) / "themes";
+            //! If we can't find it there, look elsewhere...
+            if( boost::filesystem::exists(fspDefaultLocation) && boost::filesystem::is_directory(fspDefaultLocation) ) {
+                fspCurrentThemes = fspDefaultLocation;
+                fPathSet = true;
+            } else {
+                //! Otherwise check in the currently running program executable path, see if it can be found and used from there,
+                //! that is where a Windows user will have it automatically installed to (perhaps other OS versions in the future as well).
+                //! Be sure to only open the themes files with read-only set, if this is used.  Otherwise security conflicts are likely
+                //! to cause a runtime error when referencing a program (or system) folder.
+                fspCurrentThemes = boost::filesystem::current_path() / "themes";
+                // This maybe needed instead: fspCurrentThemes = boost::filesystem::initial_path() / "themes";
+                if( boost::filesystem::exists(fspCurrentThemes) && boost::filesystem::is_directory(fspCurrentThemes) ) {
+                    fPathSet = true;
+                } else {
+                    //! Try to create it in the default location, and add a note to the log that the user should move the themes there...
+                    //! If the creation fails, it will not be because the directory already exists, we know that it does not, and so
+                    //! an error must have been thrown, in any case we handle log reporting below so hopefully the user can figure out why.
+                    if( boost::filesystem::create_directory(fspDefaultLocation) ) {
+                        qDebug() << tr("Created default Themes Directory : ") + GUIUtil::boostPathToQString( fspDefaultLocation ) + tr(" You will need to manually populate it with your selected themes.");
+                        fspCurrentThemes = fspDefaultLocation;
+                        fPathSet = true;
+                    }
+                }
+            }
+        } catch( const boost::filesystem::filesystem_error& e ) {
+            sErr.fromStdString(e.what());
+            fspCurrentThemes = fspDefaultLocation;
+        }
+    }
+
+    themeDirPathOut = fspCurrentThemes;
+    if( fLogResult ) {
+        QString sPathUsed = GUIUtil::boostPathToQString( fspCurrentThemes );
+        qDebug() << tr("Themes Directory Path set : ") + sPathUsed;
+        if( !sErr.isEmpty() )
+            // ToDo: This message line can not be added with language translation until this function is in one of the class methods, it is called during optoinsdialog
+            // creation, yet can not simply be added to the optionsmodel class for some reason that reference has not been defined yet.  So debug logging was added instead,
+            // if this is fine, remove the ToDo
+            // QMessageBox::critical(0, tr("Anoncoin"), tr("Error: Specified theme directory \"%1\" cannot be created.").arg(sPathUsed));
+            qDebug() << tr("Error: While attempting to discover and define the themes directory, the following error was produced: ") + sErr;
+        strlistDefaultIconPaths = QIcon::themeSearchPaths();
+    }
+
+    return fPathSet;
+}
+
+bool AnoncoinGUI::applyTheme()
+{
+    bool fSetDefault = false;
+    bool fReadDefault = false;
+    bool fUpdateStyle = false;
+    QString sTheme;
+    QString styleSheet;
+    QString strThemeFolder;
+    QSettings settings;
+    static bool fFirstTime = true;
+
+    //! If the setting is incorrectly set to empty() or anything other than default, it should be the name of a subdirectory in the themes folder
+    if( settings.contains("selectedTheme") )
+        sTheme = settings.value("selectedTheme").toString();
+
+    if( fFirstTime ) {
+        qDebug() << tr("Initial Theme set to: ") << sTheme;
+        fFirstTime = false;
+    }
+    //! If anything other than a default theme is selected, proceed carefully into processing the stylesheet file(s) details
+    if( sTheme.isEmpty() ) fSetDefault = true;
+    if( sTheme == "(default)" ) fReadDefault = true;
+    if( !fSetDefault && !fReadDefault ) {
+        boost::filesystem::path themeDirPath;
+        if( GetThemeDataPath( themeDirPath ) ) {
+            boost::filesystem::path themeFolder = themeDirPath / sTheme.toStdString();
+            if( boost::filesystem::is_directory( themeFolder ) ) {
+                strThemeFolder = GUIUtil::boostPathToQString( themeFolder );
+                boost::filesystem::path styleFile = themeFolder / "styles.qss";
+                if( boost::filesystem::exists( styleFile ) ) {
+                    QFile qss( GUIUtil::boostPathToQString(styleFile) );
+                    // open qss stylesheet
+                    if (qss.open(QFile::ReadOnly)) {
+                        // read stylesheet
+                        styleSheet = QString(qss.readAll());
+                        QTextStream in(&qss);
+                        // rewind
+                        in.seek(0);
+                        bool readingVariables = false;
+                        // template variables : key => value
+                        QMap<QString, QString> variables;
+                        // seek for variables
+                        while(!in.atEnd()) {
+                            QString line = in.readLine();
+                            // variables starts here
+                            if (line == "/** [VARS]") {
+                                readingVariables = true;
+                            }
+                            // variables end here
+                            if (line == "[/VARS] */") {
+                                break;
+                            }
+                            // if we're reading variables - store them in a map
+                            // Idea came from ZeeWolf's themes in Hyperstake
+                            if (readingVariables == true) {
+                                // skip empty lines
+                                if (line.length()>3 && line.contains('=')) {
+                                    QStringList fields = line.split("=");
+                                    QString var = fields.at(0).trimmed();
+                                    QString value = fields.at(1).trimmed();
+                                    variables[var] = value;
+                                }
+                            }
+                        }
+
+                        // For simpler use we replace "_themesdir" in the
+                        // stylesheet with the appropriate path.
+                        styleSheet.replace("_themesdir", strThemeFolder);
+
+                        QMapIterator<QString, QString> variable(variables);
+                        variable.toBack();
+                        // iterate backwards to prevent overwriting variables
+                        while (variable.hasPrevious()) {
+                            variable.previous();
+                            // replace variables
+                            styleSheet.replace(variable.key(), variable.value());
+                        }
+                        qss.close();
+                        fUpdateStyle = true;
+                    } else
+                        fSetDefault = true;
+                } else
+                    fSetDefault = true;
+            } else
+                fSetDefault = true;
+        } else
+            fSetDefault = true;
+    }
+
+    if( fSetDefault ) {
+        // Make sure it is set to "(default)" and saved
+        sTheme = "(default)";
+        settings.setValue( "selectedTheme", sTheme );
+        fReadDefault = true;
+    }
+
+    if( fReadDefault ) {
+        QFile qss(":style/default");
+        // open qss stylesheet
+        if (qss.open(QFile::ReadOnly)) {
+            // read stylesheet
+            styleSheet = QString(qss.readAll());
+            qss.close();
+            fUpdateStyle = true;
+        }
+    }
+
+    if( fUpdateStyle ) {
+        //! Before we apply the next stylesheet settings, we restore the icons to default
+        RestoreDefaultIcons();
+        //! The Default search path for OS and Anoncoin icons was defined when we first located the themes directory,
+        //! we always use that here as the starting point encase the user wishes to restore default settings, if not
+        //! we place the correct theme subdirectory(s) as the 1st choice in that search path.
+        QStringList my_icon_paths = strlistDefaultIconPaths;
+        if( !strThemeFolder.isEmpty() ) {
+            my_icon_paths.prepend( strThemeFolder );
+#if defined( DONT_COMPILE )
+            //! Include all subdirectories that are found in the themes folder
+            QDir themeDir( strThemeFolder );
+            themeDir.setFilter(QDir::Dirs);
+            QStringList entries = themeDir.entryList();
+            for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ) {
+                QString themeSubDir=*entry;
+                if(themeSubDir != "." && themeSubDir != "..") {
+                    QString fullPath = strThemeFolder;
+                    fullPath += '/';
+                    fullPath += themeSubDir;
+                    my_icon_paths.prepend( QDir::fromNativeSeparators( fullPath ) );
+                }
+            }
+            qDebug() << "Theme Icon Paths:";
+            for( QStringList::ConstIterator entry=my_icon_paths.begin(); entry!=my_icon_paths.end(); ++entry )
+                qDebug() << *entry;
+#endif // defined
+        }
+        //! Set the search path for icon themes
+        QIcon::setThemeSearchPaths(my_icon_paths);
+        //! Set our theme name
+        QIcon::setThemeName( sTheme );
+        //! Keep a class wide copy of the parsed styleSheet for later use.  NOTE: This may not be needed, although offers some debugging potential
+        strCurrentStyleSheet = styleSheet;
+
+        qApp->setStyleSheet(styleSheet);
+        //! Promote style change.  The problem with doing a stylesheet update here is that widgets come and go, hopefully all
+        //! issues get resolved, because the application itself has been updated to the current style sheet settings.
+        //! If that is not the case, then the new global string (strCurrentStyleSheet ) can be used to update the StyleSheet,
+        //! it has already been parsed and made ready with correct paths for all details such as icon files and other.  When
+        //! a paint refresh event (or other) occurs, and those happen VERY frequently, it could be used to apply the style again
+        //! for some issue. The ApplyTheme call itself should not be called again unless the user has really changed the setting,
+        //! it is time complex and OS system dependent on a great many factors, which may requiring allot of processing.
+        QWidgetList widgets = QApplication::allWidgets();
+        for (int i = 0; i < widgets.size(); ++i) {
+            QWidget *widget = widgets.at(i);
+            //widget->setStyleSheet(styleSheet);
+            QEvent event(QEvent::StyleChange);
+            QApplication::sendEvent(widget, &event);
+            //widget->style()->polish(widget);
+        }
+        // qApp->style()->polish(qApp);
+    }
+
+    return true;
+}
+
+
 
 UnitDisplayStatusBarControl::UnitDisplayStatusBarControl():QLabel()
 {
@@ -1274,11 +1681,3 @@ void UnitDisplayStatusBarControl::onMenuSelection(QAction* action)
         optionsModel->setDisplayUnit(action->data());
     }
 }
-
-#ifdef ENABLE_I2PSAM
-void AnoncoinGUI::showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName)
-{
-    ShowI2PAddresses i2pDialog(caption, pub, priv, b32, configFileName, this);
-    i2pDialog.exec();
-}
-#endif // ENABLE_I2PSAM
