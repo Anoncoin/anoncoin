@@ -120,10 +120,6 @@ extern uint64_t nLocalHostNonce;
 extern CAddrMan addrman;
 extern int nMaxConnections;
 
-#ifdef ENABLE_I2PSAM
-extern int nI2PNodeCount;
-#endif
-
 extern std::vector<CNode*> vNodes;
 extern CCriticalSection cs_vNodes;
 extern std::map<CInv, CDataStream> mapRelay;
@@ -295,17 +291,28 @@ public:
     // Whether a ping is requested.
     bool fPingQueued;
 
-    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
-#ifdef ENABLE_I2PSAM
-      , nSendStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
-      , nRecvStreamType(SER_NETWORK | (((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY))
-#endif
+    // The original line we started with:
+    // CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
+    // As i2p addrs are MUCH larger than ip addresses, we're reducing the most-recently-used(mru) setAddrKnown to 1250, to have a much smaller memory profile per node.
+    //
+    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(1250)
     {
 #ifdef ENABLE_I2PSAM
-        // We don't no the protocol version here yet, nor does the addrIn have it as a member variable anyway
-        // This line of code was left out for 70008, so it doesnt get set until later after the version message
-        // on inbound connections.
-        // if( addrIn->nVersion != 70008 ) ssSend.SetType(nSendStreamType);
+        // Protocol 70009 changes the node creation process so it is deterministic.
+        // Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
+        // During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
+        // and may incorrectly report services depending on how they were built.  Some send full version address messages, and must have the
+        // stream type changed on the fly, before processing.  70008 has a bug, where the stream type is full size, but only contains an ip address
+        // over clearnet.  Protocol 70006 builds for clearnet lie about their support of the NODE_I2P service, while in fact the address object size
+        // is only large enough for an ip address.
+        // If the address given to us is a non-null string, the caller needs to have evaluated and setup that string correctly before calling this.
+        // It is no longer meaningful, and should be abandoned as an input parameter, it only serves to confusion and cloud the many issues involved
+        // in the node creation process.  Here it is assigned to the addrName field, which maybe useful in debugging problems, if it shows up incorrectly.
+        // Also note, all the subclasses vRecv, ssSend & hdrbuf get defined here  the same stream type during this initialization.
+        nStreamType = SER_NETWORK | (addrIn.IsNativeI2P() ? 0 : SER_IPADDRONLY);
+        SetSendStreamType( nStreamType );
+        SetRecvStreamType( nStreamType );
+        ssSend.SetType( nStreamType );
 #endif
         nServices = 0;
         hSocket = hSocketIn;
@@ -347,7 +354,7 @@ public:
             id = nLastNodeId++;
         }
 
-        // Be shy and don't send version until we hear
+        // Be shy and don't send version until we hear, unless its valid and outbound, then we go ahead and push our version...
         if (hSocket != INVALID_SOCKET && !fInbound)
             PushVersion();
 
@@ -368,8 +375,13 @@ public:
 
 private:
 #ifdef ENABLE_I2PSAM
-    int nSendStreamType;
-    int nRecvStreamType;
+    // A bug exists in older software, where the stream types are defined as integers, and they should be 'unsigned', this causes the
+    // code used to treat ~SER_TYPENAME values to be treated as negative numbers and produce the 'wrong' results when setting the
+    // stream type values.  Another bug.
+    unsigned int nStreamType;        // Our stream type need only be one value.  After everyone upgrades to 70009, we can eliminate the other two.
+    // We'll keep the separate Send/Recv Types for now, in the future we will always switch both together at the same time, so no need for 2
+    unsigned int nSendStreamType;
+    unsigned int nRecvStreamType;
 #endif
     // Network usage totals
     static CCriticalSection cs_totalBytesRecv;
@@ -393,6 +405,18 @@ public:
             it->hdrbuf.SetType(nRecvStreamType);
             it->vRecv.SetType(nRecvStreamType);
         }
+    }
+
+    void SetStreamType( const int nType )
+    {
+        nStreamType = nType;
+        SetSendStreamType( nStreamType );
+        SetRecvStreamType( nStreamType );
+    }
+
+    void SetStreamTypeBasedOnServices()
+    {
+        SetStreamType( SER_NETWORK | (nServices & NODE_I2P) ? 0 : SER_IPADDRONLY );
     }
 
     int GetSendStreamType() const { return nSendStreamType; }
@@ -452,8 +476,27 @@ public:
         // Known checking here is only to save space from duplicates.
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
-        if (addr.IsValid() && !setAddrKnown.count(addr))
-            vAddrToSend.push_back(addr);
+
+        // An Additional double check now allows us to share private network IP4v addresses
+        // only with those peers that are also on and using a private network.  This check
+        // produces a debug.log Warning message error if detected.
+        // All the real checking is done throughout the code where needed, and this
+        // log entry should NEVER happen, or the programming hasn't been done properly.
+        //
+        // Update: It does however work correctly when tested in one case at least, a peer
+        // also on the same RFC1918() network, had finally broadcast its address to us,
+        // causing a AddrMan entry to be created, and stop the addrman.Connect warnings,
+        // about the peers address not being found, but connected to.  In this case, we had
+        // connected outbound via an addnode onetry command, so did not yet have its address,
+        // by it finally did advertise its address to us, so we finally got it stored and the
+        // warning messages stopped.  Its up to addrman to not rebroadcast private network
+        // addresses, which it does not send it response to getaddr commands.
+        if (addr.IsValid() && !setAddrKnown.count(addr)) {
+            if( !addr.IsRFC1918() || this->addr.IsRFC1918() )
+                vAddrToSend.push_back(addr);
+            else
+                LogPrintf( "WARNING - Not pushing your private address %s to peer %s\n", addr.ToString(), this->addr.ToString() );
+        }
     }
 
 

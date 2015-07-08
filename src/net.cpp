@@ -30,6 +30,7 @@
 #endif
 
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
 
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
@@ -41,7 +42,7 @@
 using namespace std;
 using namespace boost;
 
-static const int MAX_OUTBOUND_CONNECTIONS = 24;
+static const int MAX_OUTBOUND_CONNECTIONS = 16;
 
 //
 // Global state variables
@@ -61,8 +62,11 @@ bool fAddressesInitialized = false;
 
 
 #ifdef ENABLE_I2PSAM
-// Starting with protocol 70009, NODE_I2P should probably no longer be set as default, as it indicates this node is available on i2p.
-// which we do not know until after initialization if that is true or not.
+// Starting with protocol 70008, NODE_I2P is always set.  This is what will be sent to all peers when trying to make connections.
+// It probably should not be used this way, and in the future default values (should) indicate if this node is available on i2p.
+// at the moment, with a working router.  Something we do not know until after initialization if that is true or not.
+// For now the purpose of that service bit is to indicate on clearnet if we can send/receive full i2p addresses, which of course
+// we can, so it is the default setting for that reason, about to release protocol 70009 as the developer is typing this.
 uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
 
 // For i2p these are 'real OS sockets, created for us after accept has been issued to the I2P SAM module.  Initially we have only one,
@@ -71,7 +75,6 @@ uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P p
 // to nodes we care connected to via I2P.
 // This differs greatly from the IP world and how the rest of the code here works for clearnet.
 static std::vector<SOCKET> vhI2PListenSocket;                   // We maintain a separate vector for I2P network SOCKET's
-int nI2PNodeCount = 0;                                          // And a count of the active nodes we're connected with
 #else
 uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM;            // Standard services declaration
 #endif
@@ -116,8 +119,9 @@ unsigned short GetListenPort()
 bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 {
     // ToDo: Check for IsTor() here as well?
+    // LogPrintf( "Finding best local address for %s\n", paddrPeer->ToString() );
 #ifdef ENABLE_I2PSAM
-    if( !paddrPeer->IsI2P() && fNoListen)
+    if( !paddrPeer->IsI2P() && fNoListen )
 #else
     if( fNoListen )
 #endif
@@ -131,14 +135,21 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
         {
             int nScore = (*it).second.nScore;
             int nReachability = (*it).first.GetReachabilityFrom(paddrPeer);
+
+            // Pick this local address, if they are both IPv4 private network addrs...
+            if( nReachability == 4 && (*it).first.IsRFC1918() && paddrPeer->IsRFC1918() ) nReachability = 99;
+            // LogPrintf( "Reachability from %s is %d with a score of %d\n", (*it).first.ToString(), nReachability, nScore );
+
             if (nReachability > nBestReachability || (nReachability == nBestReachability && nScore > nBestScore))
             {
                 addr = CService((*it).first, (*it).second.nPort);
+                // addr.print();
                 nBestReachability = nReachability;
                 nBestScore = nScore;
             }
         }
     }
+    if( nBestScore >= 0 && addr.IsRFC1918() && !paddrPeer->IsRFC1918() ) return false;      // We don't want to give a remote peer our local network address
     return nBestScore >= 0;
 }
 
@@ -215,11 +226,18 @@ void static AdvertizeLocal()
     {
         if (pnode->fSuccessfullyConnected)
         {
-            CAddress addrLocal = GetLocalAddress(&pnode->addr);
-            if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
-            {
-                pnode->PushAddress(addrLocal);
-                pnode->addrLocal = addrLocal;
+            // If its an i2p destination more than likely the node has the correct
+            // destination, even if it was the one we created dynamically, so we should
+            // not need to check this here and not send it if its not shared, as it would
+            // not do so anyway.  ToDo: Investigate and remove this next line of code
+            // if its not needed.
+            if( !pnode->addr.IsI2P() || IsMyDestinationShared() ) {
+                CAddress addrLocal = GetLocalAddress(&pnode->addr);
+                if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
+                {
+                    pnode->PushAddress(addrLocal);
+                    pnode->addrLocal = addrLocal;
+                }
             }
         }
     }
@@ -238,17 +256,21 @@ bool AddLocal(const CService& addr, int nScore)
 {
     if (!addr.IsRoutable())
         return false;
+        // { LogPrintf( "Failed to AddLocal Reason 1\n" ); return false; }
+
 #ifdef ENABLE_I2PSAM
-    if( !addr.IsI2P() && !fDiscover && nScore < LOCAL_MANUAL)
+    if( !addr.IsI2P() && !fDiscover && nScore < LOCAL_MANUAL )
 #else                                                               // Original code
     if (fDiscover && nScore < LOCAL_MANUAL)
 #endif
         return false;
+        // { LogPrintf( "Failed to AddLocal Reason 2\n" ); return false; }
 
-    if (IsLimited(addr))
+    if ( IsLimited(addr))
         return false;
+        // { LogPrintf( "Failed to AddLocal Reason 3\n" ); return false; }
 
-    LogPrintf(addr.IsI2P() ? "Accepting I2P peers at: %s Score=%d\n" : "AddLocal(%s,%i)\n", addr.ToString(), nScore);
+    LogPrintf( "AddLocal(%s,%i)\n", addr.ToString(), nScore );
 
     {
         LOCK(cs_mapLocalHost);
@@ -482,7 +504,6 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         }
     }
 
-
     /// debug print
     LogPrint("net", "trying connection %s lastseen=%.1fhrs\n",
         pszDest ? pszDest : addrConnect.ToString(),
@@ -496,6 +517,14 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
     if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
 #endif
     {
+        // Regardless of the outcome, while trying to connect, mark it as an Attempt
+        // This will not work however until ConnectSocketByName has been called for i2p addresses,
+        // during an addnode or any command calling ConnectNode with a string.
+        // So first we mark it here, now that a socket was successfully created.  Later on, if the version handshake happens
+        // addrman.Add/Good will get called to finish updates on the address (or not)
+        // ToDo: Investigate how an issue here should best be solved.  When addnode xxx onetry is executed, and its not a full i2p destination
+        // there will be no entry found in addrman for that connection attempt, if the address is not one already there.
+        // The attempt fails, and returns false.
         addrman.Attempt(addrConnect);
 
         LogPrint("net", "connected %s\n", pszDest ? pszDest : addrConnect.ToString());
@@ -517,18 +546,18 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         {
             LOCK(cs_vNodes);
             vNodes.push_back(pnode);
-#ifdef ENABLE_I2PSAM
-            if (addrConnect.IsI2P()) ++nI2PNodeCount;
-#endif
         }
 
         pnode->nTimeConnected = GetTime();
         return pnode;
     }
-    else
-    {
-        return NULL;
-    }
+    else                    // Still log the attempt
+        // This works once ConnectSocketByName has been called for i2p addresses, during an addnode (which it has above)
+        // The addrConnect object will have been correctly setup.
+        addrman.Attempt(addrConnect);
+        // Note Bitcoin v10 has code regarding the case of a proxy connection failure, more than likely this relates to tor, so its another ToDo for us as well:
+
+    return NULL;
 }
 
 void CNode::CloseSocketDisconnect()
@@ -563,18 +592,9 @@ void CNode::PushVersion()
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0",0)));
-    CAddress addrMe = GetLocalAddress(&addr);
+    CAddress addrMe = ( !addr.IsI2P() || IsMyDestinationShared() ) ? GetLocalAddress(&addr) : CAddress(CService("0.0.0.0",0),0);
     RAND_bytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
     LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), addrYou.ToString(), addr.ToString());
-    // Before we can push our addresses to old peer software, we need to reformat them for the node
-    // ToDo: This may not be needed...
-    //if( this->nVersion < PROTOCOL_VERSION ) {
-    //    // Fix the address structure if they are i2p addresses
-    //    if( ( GetSendStreamType() & SER_IPADDRONLY ) == 0 ) {
-    //        addrYou.ZeroOutIP();
-    //        addrMe.ZeroOutIP();
-    //    }
-    //}
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
                 nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight, true);
 }
@@ -800,7 +820,7 @@ static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
     {
         int nErr = WSAGetLastError();
         if (nErr != WSAEWOULDBLOCK)
-            LogPrintf("socket error accept failed: %d\n", nErr);
+            LogPrintf("I2P socket error accept failed: %d\n", nErr);
     }
     else if (nInbound >= GetArg("-maxconnections", 125) - MAX_OUTBOUND_CONNECTIONS)
     {
@@ -817,13 +837,15 @@ static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
     }
     else
     {
+        // At this point, the CAddress object has been correctly setup, the garlic field installed, the port zero'd out
+        // and the native i2p destination address verified.  So we can simply add a new node and know that the correct stream
+        // type and associated logic will all work correctly.
         LogPrintf("accepted connection %s\n", addr.ToString().c_str());
         CNode* pnode = new CNode(hSocket, addr, "", true);
         pnode->AddRef();
         {
             LOCK(cs_vNodes);
             vNodes.push_back(pnode);
-            ++nI2PNodeCount;
         }
     }
 }
@@ -836,9 +858,6 @@ static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
 void ThreadSocketHandler()
 {
     unsigned int nPrevNodeCount = 0;
-#ifdef ENABLE_I2PSAM
-    int nPrevI2PNodeCount = 0;
-#endif
 
     while (true)
     {
@@ -868,9 +887,6 @@ void ThreadSocketHandler()
                     if (pnode->fNetworkNode || pnode->fInbound)
                         pnode->Release();
                     vNodesDisconnected.push_back(pnode);
-#ifdef ENABLE_I2PSAM
-                    if (pnode->addr.IsI2P()) --nI2PNodeCount;
-#endif
                 }
             }
         }
@@ -905,18 +921,11 @@ void ThreadSocketHandler()
             }
         }
 
-        // We notify the ui of I2P node count changes BEFORE, we notify the normal node count, this way QT's status
-        // icons display the correct number of nodes MINUS the i2p ones connected.  See: anoncoingui.cpp setNumConnections()
-        // This I think caused a bug in the display of non-i2p node connection counts right after startup, had to add a
-        // fix in the status line display output, so that if the value was negative, then it was set to 0, as it should be
-#ifdef ENABLE_I2PSAM
-        if (nPrevI2PNodeCount != nI2PNodeCount)
-        {
-            nPrevI2PNodeCount = nI2PNodeCount;
-            uiInterface.NotifyNumI2PConnectionsChanged(nI2PNodeCount);
-        }
-#endif // ENABLE_I2PSAM
-
+        // This is a really big event for Anoncoin-QT programmers,
+        // fires off lots of activity to update the node count in client subsections.
+        // Reduced allot of complexity we had, which tracked node counds for i2p as
+        // well as ip based nodes, now all that is done in QT directly, all it needs
+        // here is to know the count changed.
         if(vNodes.size() != nPrevNodeCount) {
             nPrevNodeCount = vNodes.size();
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
@@ -1075,7 +1084,7 @@ void ThreadSocketHandler()
         {
             std::vector<SOCKET>::iterator it = vhI2PListenSocket.begin();       // Start at the beginning of the list of listening sockets
             // As long as the router is still up & there are some sockets to listen on, keep trying to accept new connections
-            while( !IsLimited( NET_NATIVE_I2P ) &&  it != vhI2PListenSocket.end() )
+            while( !IsLimited( NET_I2P ) &&  it != vhI2PListenSocket.end() )
             {
                 SOCKET& hI2PListenSocket = *it;
                 if( hI2PListenSocket == INVALID_SOCKET ) {
@@ -1100,13 +1109,14 @@ void ThreadSocketHandler()
                         char *pNewLine = strchr( pchBuf, '\n' );
                         if( pNewLine ) {                     // Yap the address is all here, pNewLine would be null otherwise.
                             // Lets make sure it looks correct as a base64 i2p destination string
-                            if( strlen(pchBuf) == NATIVE_I2P_DESTINATION_SIZE + 1 ) // we're waiting for dest-hash + '\n' symbol
+                            // We've been waiting for a valid base64 string, followed by a '\n' character, we got that.
+                            if( strlen(pchBuf) == NATIVE_I2P_DESTINATION_SIZE + 1 )
                             {
                                 // Fantastic if it checks out, we have another node!
                                 // The socket will be bound to that and used for message communications
                                 std::string incomingAddr(pchBuf, pchBuf + NATIVE_I2P_DESTINATION_SIZE);
                                 CAddress addr;
-                                if( addr.SetSpecial(incomingAddr) && addr.IsI2P() )
+                                if( addr.SetI2pDestination(incomingAddr) )
                                     AddIncomingI2pConnection(hI2PListenSocket, addr);
                                 else {
                                     LogPrintf("WARNING - Invalid incoming destination address, unable to setup node.  Received (%s)\n", incomingAddr.c_str());
@@ -1369,10 +1379,11 @@ void MapPort(bool)
  */
 void ThreadDNSAddressSeed()
 {
-    // goal: only query DNS seeds if address need is acute
+    // goal: only query DNS seeds if address need is acute, give i2p at least 60 seconds to have 2 peer connected
     if ((addrman.size() > 0) &&
         (!GetBoolArg("-forcednsseed", false))) {
-        MilliSleep(11 * 1000);
+        // MilliSleep(11 * 1000);
+        MilliSleep(60 * 1000);
 
         LOCK(cs_vNodes);
         if (vNodes.size() >= 2) {
@@ -1381,6 +1392,7 @@ void ThreadDNSAddressSeed()
         }
     }
 
+    const int nOneDay = 24*3600;
     int found = 0;
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
 //    LogPrintf("DNS seeds temporary disabled\n");
@@ -1389,29 +1401,28 @@ void ThreadDNSAddressSeed()
 #ifdef ENABLE_I2PSAM
     // If I2P is enabled, we need to process those too...
     if( IsI2PEnabled() ) {
-        LogPrintf("I2P DNS seed addresses...preferred\n");
+        LogPrintf("Loading b32.i2p destination seednodes...\n");
         const vector<CDNSSeedData> &i2pvSeeds = Params().i2pDNSSeeds();
+        vector<CAddress> vAdd;
         BOOST_FOREACH(const CDNSSeedData &seed, i2pvSeeds) {
-            vector<CNetAddr> vaddr;
-            vector<CAddress> vAdd;
-            if (LookupHost(seed.host.c_str(), vaddr)) {
-                assert( vaddr.size() == 1 );                // All this could ever be...
-                CNetAddr& ip = vaddr[0];                    // Need to clean up the variable use here, if this is finalized code
-                int nOneDay = 24*3600;
-                CAddress addr = CAddress(CService(ip, 0));
-                addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                vAdd.push_back(addr);
+            CAddress addrSeed;
+            // Lookup the b32.i2p destination, if it returns true, then the full Base64 destination is loaded,
+            // the GarlicCat field is set, & the port=0, the seed was on file locally or looked up over the router.
+            if( addrSeed.SetSpecial( seed.host ) ) {
+                addrSeed.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                vAdd.push_back(addrSeed);
                 found++;
-                // Lookup is very time expensive over I2P, (and satellite).
-                // With that in mind, only add it if Lookup worked, we don't need to again.
-                // Also set the flag AllowLookup false, otherwise I2PSAM goes through the same process all over again in a few millisecs, because it was true.
-                addrman.Add(vAdd, CNetAddr(seed.name, false));
-            }
+            }   // If the seed could not be found, Skip it
         }
+        // Set the source to anything other than the same b32.i2p destination (as is done in chainparams.cpp,
+        // doing that will cause addrman to think the services are correct, and alter them to these incorrect values,
+        // if its already on file.
+        addrman.Add( vAdd, CNetAddr("127.0.0.1") );
     }
-    // If we are I2P only, clearnet seeds will do us no good, so no point in loading them.
-    if( IsI2POnly() )                                                           // Do what we normally would do on clearnet
-        LogPrintf("Skipping Clearnet DNS seeds, Running I2P net only.\n");
+
+    // ToDo: Figure if if this should be I2P only or ??, clearnet seeds will do us no good in various cases...
+    if( IsDarknetOnly() )                                                           // Do what we normally would do on clearnet
+        LogPrintf("Clearnet DNS seeds disabled, Running Darknet only mode.\n");
     else
 #endif
     {
@@ -1504,11 +1515,17 @@ void ThreadOpenConnections()
         CSemaphoreGrant grant(*semOutbound);
         boost::this_thread::interruption_point();
 
-        // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
-        if (addrman.size() == 0 && (GetTime() - nStart > 60)) {
+        // Add seed nodes right away, b32.i2p address lookup takes a long time, and we have full
+        // destination base64 addresses in the code, put them in addrman, so it can start looking.
+        // As we have no clearnet fixed seeds, this is pointless unless the i2p network is available
+#ifdef ENABLE_I2PSAM
+        if( addrman.size() == 0 && IsI2PEnabled() ) {
+#else
+        if( addrman.size() == 0 && (GetTime() - nStart > 60) ) {
+#endif
             static bool done = false;
             if (!done) {
-                LogPrintf("Adding fixed seed nodes as DNS doesn't seem to be available.\n");
+                LogPrintf("Adding fixed i2p destination seednodes...\n");
                 addrman.Add(Params().FixedSeeds(), CNetAddr("127.0.0.1"));
                 done = true;
             }
@@ -1540,8 +1557,20 @@ void ThreadOpenConnections()
         int nTries = 0;
         while (true)
         {
-            // use an nUnkBias between 10 (no outgoing connections) and 90 (8 outgoing connections)
-            CAddress addr = addrman.Select(10 + min(nOutbound,8)*10);
+            // use an nUnkBias between 10 (no outgoing connections), and we need to try to connect to good nodes,
+            // that have been tried before and found to be likely good connections, out to 90% where almost every
+            // node tried will be a new and untested node address.
+            // At min pass 10(%) to Select when no outbound connections, if we're at the target outbound level,
+            // we want to pass pass 90(%) to the select() as the bias amount.
+            // Where addrman will mostly always try connections that are new and have not been tried before.
+            // In order to correctly allow the programmer to change the MAX_OUTBOUND_CONNECTIONS from 8 to 20 or whatever
+            // value, we need better math here to scale the value passed to addrman select.
+            // The programmed target range is now 10..90% using fast integer math, other than that point, any
+            // value can be now set and this will approximate the correct percentage.
+            int nNewBias = (nOutbound * 80) / MAX_OUTBOUND_CONNECTIONS;
+            // Keep the max value less than 100%, as the routine expects
+            nNewBias = min( nNewBias, 99 );
+            CAddress addr = addrman.Select(10 + nNewBias);
 
             // if we selected an invalid address, restart
             if (!addr.IsValid() || setConnected.count(addr.GetGroup()) || IsLocal(addr))
@@ -1561,13 +1590,13 @@ void ThreadOpenConnections()
             if (nANow - addr.nLastTry < 600 && nTries < 30)
                 continue;
 
-            if(
+            // do not allow non-default ports, unless after 50 invalid addresses selected already
 #ifdef ENABLE_I2PSAM
-                !addr.IsI2P() &&
+            if( !addr.IsI2P() && addr.GetPort() != Params().GetDefaultPort() && nTries < 50 )
+#else
+            if (addr.GetPort() != Params().GetDefaultPort() && nTries < 50)
 #endif
-                // do not allow non-default ports, unless after 50 invalid addresses selected already
-                addr.GetPort() != Params().GetDefaultPort() && nTries < 50 )
-                    continue;
+                continue;
 
             addrConnect = addr;
             break;
@@ -1661,15 +1690,51 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     // Initiate outbound network connection
     //
     boost::this_thread::interruption_point();
-    if (!strDest)
-        if (IsLocal(addrConnect) ||
-            FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) ||
-            FindNode(addrConnect.ToStringIPPort().c_str()))
+    string sBase32OrIP;                         // If a strDest pointer is give, we store the modified result here before connecting a new node.
+
+    if (!strDest) {                         // If a string was not given, just do what we normally would given a CAddress object
+        if( IsLocal(addrConnect) || FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) || FindNode(addrConnect.ToStringIPPort().c_str()) )
             return false;
-    if (strDest && FindNode(strDest))
+    }
+#ifdef ENABLE_I2PSAM
+    else {                                  // A string was given
+        // Before we print out a string (ConnectNode() and create the node, for any given string, we need to clean up the input, if for example it's in square brackets
+        // or if its a full base64 string we need to make it a b32.i2p address before creating the node address string for comparison in FindNode even.
+        // One big problem is when strDest is a full base64 address, we don't want to do a reverse lookup of a b32.i2p address for it over the network, if we already know
+        // the value. The best solution is to create a CAdress object and store the result in addrman, that way it and we know about it, and can always find that b32.i2p address
+        // again right away, which we'll soon need to open a new network connection.  After all this, we can continue on, with a strDest value that is the b32.i2p address of that
+        // given input string, and the rest of the code will not know the difference.
+
+        std::string strHost(strDest);   // Remove any square brackets now, right away before they cause us any comparison errors
+        if( boost::algorithm::starts_with(strHost, "[") && boost::algorithm::ends_with(strHost, "]") )
+            strHost = strHost.substr(1, strHost.size() - 2);
+
+        if( isValidI2pAddress( strHost ) ) {                        // In this case we have a full base64 i2p destination given to us
+            // When addr object below is created, it will cause LookupHost->LookupIntern->SetSpecial to happen
+            // for a full i2p destination string, no lookup will be done for this case, and we actually add a new entry into addrman
+            // if it wasn't there already.
+            CAddress addr( CService( CNetAddr(strHost), 0) );
+            // Now we create a hash map entry for this destination object, the source must have been from us locally here, if we're given a string
+            // All sources of an OpenNetworkConnection with a string value would be from us in configuration, console entry, or an rpc client.
+            // Locally 127.0.0.1 is MUCH easier to use as the source addr, than using any i2p address, a long base64 destination or in the case
+            // of a b32.i2p address, it will cause a lookup when the CNetAddr object is created.  Complicated.
+            // Anyway, no time penalty need be applied in the addrman parameter options, which is default when called.
+            //
+            // addnode onetry calls this routine directly, the rest of the addnode commands place entries into a 'vAddedNode' vector, and create
+            // CAddress objects directly from the values, bypassing this code from running as expected.
+            // ToDo: Figure out and fix any problems there if needed.
+            addrman.Add( addr, CNetAddr("127.0.0.1") );
+            // Our goal here is to ALWAYS be giving the FindNode/ConnectNode commands b32.i2p destinations, so that they work as expected.
+            sBase32OrIP = B32AddressFromDestination( strHost );
+        } else
+            sBase32OrIP = strHost;                                     // Regardless of any modifications, ipxx or b32.i2p we now need the new non-const variable setup.
+    }
+#endif // ENABLE_I2PSAM
+
+    if( sBase32OrIP.size() && FindNode( sBase32OrIP.c_str() ) )
         return false;
 
-    CNode* pnode = ConnectNode(addrConnect, strDest);
+    CNode* pnode = ConnectNode( addrConnect, sBase32OrIP.size() ? sBase32OrIP.c_str() : NULL );
     boost::this_thread::interruption_point();
 
     if (!pnode)
@@ -1900,10 +1965,11 @@ bool BindListenNativeI2P()
 
 bool BindListenNativeI2P(SOCKET& hSocket)
 {
-    if( !IsLimited( NET_NATIVE_I2P ) ) {
+    if( !IsLimited( NET_I2P ) ) {
         hSocket = I2PSession::Instance().accept(false);
         if( SetI2pSocketOptions(hSocket) ) {
-            CService addrBind(I2PSession::Instance().getMyDestination().pub, 0 );
+            string sDest = GetArg( "-i2p.mydestination.publickey", "" );
+            CService addrBind( sDest, 0 );
             return AddLocal( addrBind, LOCAL_BIND );
         } else
             LogPrintf( "ERROR - Unable to set I2P Socket options to non-blocking, after I2P accept was issued.\n" );
@@ -1980,7 +2046,7 @@ void StartNode(boost::thread_group& threadGroup)
         if (!adb.Read(addrman))
             LogPrintf("Invalid or missing peers.dat; recreating\n");
     }
-    LogPrintf("Loaded %i addresses from peers.dat in %dms and setup a %d entry address book table for b32.i2p destinations.\n",
+    LogPrintf("Loaded %i addresses from peers.dat in %dms and setup a %d entry address book for b32.i2p destinations.\n",
            addrman.size(), GetTimeMillis() - nStart, addrman.b32HashTableSize() );
     fAddressesInitialized = true;
 

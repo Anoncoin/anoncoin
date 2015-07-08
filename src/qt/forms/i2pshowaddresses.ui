@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>450</height>
+    <width>800</width>
+    <height>580</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -17,13 +17,13 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Private I2P Destination Details</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>If you want to use a permanent I2P-address you have to set a 'mydestination' option in the configuration file:</string>
+      <string>Setup a permanent I2P destination as soon as possible, so other peers can find you again on the network.  In order to do that you need to set the &quot;i2p.mydestination.privatekey&quot; parameter in your config file.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -31,12 +31,37 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="configText">
      <property name="text">
-      <string>Ready to save parameter (If you want to use this address save this text in the configuration file and keep it secret):</string>
+      <string>Your default configuration file is located here: </string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="enableI2pBox">
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>You have to set &quot;i2p.options.enable=1&quot; in your config file or on the commandline,
+in order to have Anoncoin access the I2P network.  This checkbox indicates that setting.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="staticI2pBox">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>You also want to have set &quot;i2p.mydestination.static=1&quot; in your config file, this checkbox indicates
+that setting.  If this is newly generated it will be false, and the destination discarded once you shut down.</string>
      </property>
     </widget>
    </item>
@@ -48,6 +73,9 @@
        <verstretch>3</verstretch>
       </sizepolicy>
      </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>
@@ -56,7 +84,8 @@
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Address (you can publish it):</string>
+      <string>Keep the above destination secret, you can publish those below this line.
+Your I2P Public Key:  *This makes the I2P router to router connections possible.</string>
      </property>
     </widget>
    </item>
@@ -68,6 +97,9 @@
        <verstretch>2</verstretch>
       </sizepolicy>
      </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>
@@ -76,15 +108,12 @@
    <item>
     <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>Short base32-address:</string>
+      <string>Your I2P b32.i2p destination address:  *Anoncoin Core instant peer lookup uses these.</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QLineEdit" name="b32Line">
-     <property name="mouseTracking">
-      <bool>false</bool>
-     </property>
      <property name="acceptDrops">
       <bool>false</bool>
      </property>
@@ -97,25 +126,84 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="privButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
-        <string>Copy &quot;mydestination&quot; parameter
+        <string>Copy &quot;privatekey&quot; parameter
 to the clipboard</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pubButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
-        <string>Copy public address
+        <string>Copy &quot;publickey&quot; destination
 to the clipboard</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="b32Button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
-        <string>Copy b32-address
+        <string>Copy your b32.i2p destination
 to the clipboard</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>80</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="okButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>OK</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -124,12 +212,13 @@ to the clipboard</string>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>privText</tabstop>
-  <tabstop>pubText</tabstop>
-  <tabstop>b32Line</tabstop>
   <tabstop>privButton</tabstop>
   <tabstop>pubButton</tabstop>
   <tabstop>b32Button</tabstop>
+  <tabstop>okButton</tabstop>
+  <tabstop>privText</tabstop>
+  <tabstop>pubText</tabstop>
+  <tabstop>b32Line</tabstop>
  </tabstops>
  <resources/>
  <connections/>

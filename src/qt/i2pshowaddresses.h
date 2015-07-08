@@ -16,11 +16,16 @@ class ShowI2PAddresses : public QDialog
     Q_OBJECT
 
 public:
-    explicit ShowI2PAddresses(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName, QWidget *parent = 0);
+    explicit ShowI2PAddresses(QWidget *parent = 0);
+    void UpdateParameters( void );
     ~ShowI2PAddresses();
 
 private:
     Ui::ShowI2PAddresses *ui;
+
+private slots:
+    void setEnabled( void );
+    void setStatic( void );
 };
 
 #endif // SHOWI2PADDRESSES_H

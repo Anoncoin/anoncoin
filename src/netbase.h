@@ -33,7 +33,7 @@ enum Network
     NET_IPV6,
     NET_TOR,
 #ifdef ENABLE_I2PSAM
-    NET_NATIVE_I2P,
+    NET_I2P,
 #endif
     NET_MAX,
 };
@@ -89,7 +89,9 @@ class CNetAddr
 #ifdef ENABLE_I2PSAM
         bool IsI2P() const;
         bool IsNativeI2P() const;
+        bool CheckAndSetGarlicCat( void );
         std::string GetI2pDestination() const;
+        bool SetI2pDestination( const std::string& sBase64Dest );
         std::string ToB32String() const;
 #endif
         CNetAddr(const struct in6_addr& pipv6Addr);

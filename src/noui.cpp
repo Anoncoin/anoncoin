@@ -35,28 +35,6 @@ static bool noui_ThreadSafeMessageBox(const std::string& message, const std::str
     return false;
 }
 
-#ifdef ENABLE_I2PSAM
-static bool noui_ThreadSafeShowGeneratedI2PAddress(const std::string& caption, const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName)
-{
-    std::string msg = _("\nIf you want to use a permanent I2P-address you have to set options in the configuration file:\nYour Config file is: ");
-    msg += configFileName;
-
-    msg += _("\nThis is your Address + private key (save this text in the configuration file and keep it secret):\n");
-    msg += priv;
-
-    msg += _("\n\nThis is your Address (you can make it public):\n");
-    msg += pub;
-
-    msg += _("\n\nYour Short base32-address:\n");
-    msg += b32;
-    msg += "\n\n";
-
-    printf("%s: %s\n", caption.c_str(), msg.c_str());
-    LogPrintf("%s: %s\n", caption.c_str(), msg.c_str());
-    return false;
-}
-#endif // ENABLE_I2PSAM
-
 static void noui_InitMessage(const std::string &message)
 {
     LogPrintf("init message: %s\n", message);
@@ -67,7 +45,4 @@ void noui_connect()
     // Connect anoncoind signal handlers
     uiInterface.ThreadSafeMessageBox.connect(noui_ThreadSafeMessageBox);
     uiInterface.InitMessage.connect(noui_InitMessage);
-#ifdef ENABLE_I2PSAM
-    uiInterface.ThreadSafeShowGeneratedI2PAddress.connect(noui_ThreadSafeShowGeneratedI2PAddress);
-#endif
 }

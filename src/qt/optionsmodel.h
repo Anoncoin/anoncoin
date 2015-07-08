@@ -48,27 +48,6 @@ public:
         ThreadsScriptVerif,     // int
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
-#ifdef ENABLE_I2PSAM
-        eI2PUseI2POnly,             // bool
-        eI2PSAMHost,                // QString
-        eI2PSAMPort,                // int
-        eI2PSessionName,            // QString
-
-        I2PInboundQuantity,         // int
-        I2PInboundLength,           // int
-        I2PInboundLengthVariance,   // int
-        I2PInboundBackupQuantity,   // int
-        I2PInboundAllowZeroHop,     // bool
-        I2PInboundIPRestriction,    // int
-
-        I2POutboundQuantity,        // int
-        I2POutboundLength,          // int
-        I2POutboundLengthVariance,  // int
-        I2POutboundBackupQuantity,  // int
-        I2POutboundAllowZeroHop,    // bool
-        I2POutboundIPRestriction,   // int
-        I2POutboundPriority,        // int
-#endif // ENABLE_I2PSAM
         OptionIDRowCount,
     };
 
@@ -107,26 +86,6 @@ private:
 
     /// Add option to list of GUI options overridden through command line/config file
     void addOverriddenOption(const std::string &option);
-
-#ifdef ENABLE_I2PSAM
-    bool I2PUseI2POnly;
-    QString I2PSAMHost;
-    int I2PSAMPort;
-    QString I2PSessionName;
-    int i2pInboundQuantity;
-    int i2pInboundLength;
-    int i2pInboundLengthVariance;
-    int i2pInboundBackupQuantity;
-    bool i2pInboundAllowZeroHop;
-    int i2pInboundIPRestriction;
-    int i2pOutboundQuantity;
-    int i2pOutboundLength;
-    int i2pOutboundLengthVariance;
-    int i2pOutboundBackupQuantity;
-    bool i2pOutboundAllowZeroHop;
-    int i2pOutboundIPRestriction;
-    int i2pOutboundPriority;
-#endif // ENABLE_I2PSAM
 
 signals:
     void displayUnitChanged(int unit);

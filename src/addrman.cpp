@@ -137,6 +137,35 @@ std::string CAddrMan::GetI2pBase64Destination(const std::string& sB32addr)
     CAddrInfo* paddr = LookupB32addr(sB32addr);
     return  paddr && paddr->IsI2P() ? paddr->GetI2pDestination() : std::string();
 }
+
+// Returns the number of entries processed
+int CAddrMan::CopyDestinationStats( std::vector<CDestinationStats>& vStats )
+{
+    int nSize = 0;
+    vStats.clear();
+    vStats.reserve( mapI2pHashes.size() );
+    for( std::map<uint256, int>::iterator it = mapI2pHashes.begin(); it != mapI2pHashes.end(); it++) {
+        CDestinationStats stats;
+        std::map<int, CAddrInfo>::iterator it2 = mapInfo.find((*it).second);
+        if (it2 != mapInfo.end()) {
+            CAddrInfo* paddr = &(*it2).second;
+            stats.sAddress = paddr->ToString();
+            stats.fInTried = paddr->fInTried;
+            stats.uPort = paddr->GetPort();
+            stats.nServices = paddr->nServices;
+            stats.nAttempts = paddr->nAttempts;
+            stats.nLastTry = paddr->nLastTry;
+            stats.nSuccessTime = paddr->nLastSuccess;
+            stats.sSource = paddr->source.ToString();
+            stats.sBase64 = paddr->GetI2pDestination();
+            nSize++;
+            vStats.push_back( stats );
+        }
+    }
+    assert( mapI2pHashes.size() == nSize );
+    return nSize;
+}
+
 #endif // ENABLE_I2PSAM
 
 CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, int *pnId)
@@ -150,8 +179,12 @@ CAddrInfo* CAddrMan::Create(const CAddress &addr, const CNetAddr &addrSource, in
         *pnId = nId;
 #ifdef ENABLE_I2PSAM
     if( addr.IsI2P() ) {
-        uint256 hash = GetI2pDestinationHash( addr.GetI2pDestination() );
-        mapI2pHashes[hash] = nId;
+        assert( addr.IsNativeI2P() );
+        uint256 b32hash = GetI2pDestinationHash( addr.GetI2pDestination() );
+        if( mapI2pHashes.count( b32hash ) == 0 )
+            mapI2pHashes[b32hash] = nId;
+        else
+            LogPrintf( "ERROR - Can't create base32 Hash in AddrMan for one that already exists\n");
     }
 #endif
     return &mapInfo[nId];
@@ -201,6 +234,30 @@ int CAddrMan::SelectTried(int nKBucket)
     return nOldestPos;
 }
 
+#ifdef ENABLE_I2PSAM
+void CAddrMan::CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible )
+{
+    if( aTerrible.IsI2P() ) {
+        uint256 b32hash = GetI2pDestinationHash( aTerrible.GetI2pDestination() );
+        if( mapI2pHashes.count( b32hash ) == 1 ) {
+            int nID2 = mapI2pHashes[ b32hash ];
+            if( nID == nID2 )            // Yap this is the one they want to delete, and it exists
+                mapI2pHashes.erase( b32hash );
+            else {
+                LogPrint( "addrman", "While attempting to erase base32 hash %s, it was unexpected that the ids differ id1=%d != id2=%d\n", b32hash.GetHex(), nID, nID2 );
+                // CAddrInfo &info2 = mapInfo[nID2];
+                // aTerrible.print();
+                // info2.print();
+            }
+        }
+        else {
+            LogPrint( "addrman", "While attempting to remove base32 hash %s, it was found to not exist.\n", b32hash.GetHex() );
+            // aTerrible.print();
+        }
+    }
+}
+#endif // ENABLE_I2PSAM
+
 int CAddrMan::ShrinkNew(int nUBucket)
 {
     assert(nUBucket >= 0 && (unsigned int)nUBucket < vvNew.size());
@@ -215,17 +272,13 @@ int CAddrMan::ShrinkNew(int nUBucket)
         {
             if (--info.nRefCount == 0)
             {
+#ifdef ENABLE_I2PSAM
+                CheckAndDeleteB32Hash( *it, info );
+#endif
                 SwapRandom(info.nRandomPos, vRandom.size()-1);
                 vRandom.pop_back();
                 mapAddr.erase(info);
                 mapInfo.erase(*it);
-#ifdef ENABLE_I2PSAM
-                if( info.IsI2P() ) {
-                    uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                    assert( mapI2pHashes.count(hash) );
-                    mapI2pHashes.erase(hash);
-                }
-#endif
                 nNew--;
             }
             vNew.erase(it);
@@ -251,17 +304,13 @@ int CAddrMan::ShrinkNew(int nUBucket)
     CAddrInfo &info = mapInfo[nOldest];
     if (--info.nRefCount == 0)
     {
+#ifdef ENABLE_I2PSAM
+        CheckAndDeleteB32Hash( nOldest, info );
+#endif
         SwapRandom(info.nRandomPos, vRandom.size()-1);
         vRandom.pop_back();
         mapAddr.erase(info);
         mapInfo.erase(nOldest);
-#ifdef ENABLE_I2PSAM
-        if( info.IsI2P() ) {
-            uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-            assert( mapI2pHashes.count(hash) ==  1);
-            mapI2pHashes.erase(hash);
-        }
-#endif
         nNew--;
     }
     vNew.erase(nOldest);
@@ -327,20 +376,40 @@ void CAddrMan::MakeTried(CAddrInfo& info, int nId, int nOrigin)
     return;
 }
 
-void CAddrMan::Good_(const CService &addr, int64_t nTime)
+// The only time good is called, is during the version message exchange, for inbound it was added first and any address problems
+// looked over and fixed.  For outbound, what we have, was likely what was used to make the connection, so it must have been good
+// or this would not have been called.
+// Still we may have services and port details incorrect in our database, and so any object differences can be corrected, if
+// a change is made to how this routine is called, from passing a CService to a CAddress object we can have the programmer fix
+// any problems before making this call, we'll look for, and fix the differences, if they show up here.
+void CAddrMan::Good_(const CAddress &addr, int64_t nTime)
 {
+    bool fChanged = false;
     int nId;
-    CAddrInfo *pinfo = Find(addr, &nId);
+    CAddrInfo *pinfo = Find(addr, &nId);    // This matches on the CNetAddr portion of the object only aka the ip/i2p only
 
     // if not found, bail out
-    if (!pinfo)
+    if (!pinfo) {
+        LogPrint( "addrman", "Marking as good failed, expected to find %s\n", addr.ToString() );
         return;
+    }
 
-    CAddrInfo &info = *pinfo;
+    CAddrInfo &info = *pinfo;           // Only really for convenience, not really needed
 
-    // check whether we are talking about the exact same CService (including same port)
-    if (info != addr)
-        return;
+    // check whether we are talking about the exact same CService (that includes the same port)
+    if( (CService)info != (CService)addr) {
+        assert( info.GetPort() != addr.GetPort() );     // The only reason which could cause a mismatch, or we have a serious programming problem
+        LogPrint( "addrman", "While marking %s as good, it was found that port %d does not match our record, now updated.\n", info.ToString(), addr.GetPort() );
+        info.SetPort( addr.GetPort() );
+        fChanged = true;
+    }
+
+    // Ok so now we know that at least the CService details all match, lets check and fix the CAddress service bits for this peer, if its listed wrong, fix it.
+    if( info.nServices != addr.nServices ) {
+        LogPrint( "addrman", "While marking %s as good, the peer services was found to have changed from %04x to %04x, now updated.\n", info.ToString(), info.nServices, addr.nServices );
+        info.nServices = addr.nServices;
+        fChanged = true;
+    }
 
     // update info
     info.nLastSuccess = nTime;
@@ -348,9 +417,13 @@ void CAddrMan::Good_(const CService &addr, int64_t nTime)
     info.nTime = nTime;
     info.nAttempts = 0;
 
-    // if it is already in the tried set, don't do anything else
-    if (info.fInTried)
+    // if it is already in the tried set, don't do anything else, except report we were here
+    if(info.fInTried ) {
+        if( !fChanged )
+            LogPrint( "addrman", "Marked as good peer %s\n", info.ToString() );
         return;
+    }
+
 
     // find a bucket it is in now
     int nRnd = GetRandInt(vvNew.size());
@@ -368,7 +441,10 @@ void CAddrMan::Good_(const CService &addr, int64_t nTime)
 
     // if no bucket is found, something bad happened;
     // TODO: maybe re-add the node, but for now, just bail out
-    if (nUBucket == -1) return;
+    if( nUBucket == -1 ) {
+        LogPrint( "addrman", "Fatal error while trying to add %s to tried, bucket not found\n", info.ToString() );
+        return;
+    }
 
     LogPrint("addrman", "Moving %s to tried\n", addr.ToString());
 
@@ -376,13 +452,30 @@ void CAddrMan::Good_(const CService &addr, int64_t nTime)
     MakeTried(info, nId, nUBucket);
 }
 
-bool CAddrMan::Add_(const CAddress &addr, const CNetAddr& source, int64_t nTimePenalty)
+bool CAddrMan::Add_(const CAddress &addrIn, const CNetAddr& source, int64_t nTimePenalty)
 {
-    if (!addr.IsRoutable())
+#ifdef ENABLE_I2PSAM
+    // We now need to check for an possibly modify the CAddress object for the garliccat field, so we make a local copy
+    CAddress addr = addrIn;
+    // Before we can add an address, even before we can test if its Routable, or use the Find command to match correctly,
+    // we need to make sure that any I2P addresses have the GarlicCat field setup correctly in the IP area of the
+    // CNetAddr portion of a given CAddress->CService->CNetAddr object, this should have already been done, but
+    // double checking it here also insures we do not get a polluted b32 hash map
+    if( addr.CheckAndSetGarlicCat() )
+        LogPrint( "addrman", "While adding an i2p destination, did not expect to need the garliccat fixed for %s\n", addr.ToString() );
+#endif
+    if( !addr.IsRoutable() ) {
+        LogPrint( "addrman", "While adding an address, did not expect to find it unroutable: %s\n", addr.ToString() );
         return false;
+    }
 
     bool fNew = false;
     int nId;
+
+    // Find Matches by CNetAddr objects, and returns the CAddrInfo object it finds, which is fine and what we want normally
+    // however this means the ports can be different (CService), and other details in the CAddress portion, such as nServices
+    // should not simply be 'or'd with what was found, sometimes we have to remove services in the version exchange that
+    // peers report incorrectly, and having the port wrong means when Good_ is called that the objects do not match exactly.
     CAddrInfo *pinfo = Find(addr, &nId);
 
     if (pinfo)
@@ -393,8 +486,29 @@ bool CAddrMan::Add_(const CAddress &addr, const CNetAddr& source, int64_t nTimeP
         if (addr.nTime && (!pinfo->nTime || pinfo->nTime < addr.nTime - nUpdateInterval - nTimePenalty))
             pinfo->nTime = max((int64_t)0, addr.nTime - nTimePenalty);
 
-        // add services
-        pinfo->nServices |= addr.nServices;
+        // Only do the following, IF the source of this information is the node itself (source),
+        // otherwise we're just constantly changing the details, while getting addresses from peers.
+        //
+        // The call (to addrman.Add()) which puts us here, happens at the end of a version message exchange,
+        // for inbound connections only.
+        // For outbound connections, we only have a call to good, if the connection is made.
+        // Other places addrman.Add() is called is for address seeding and user lookup, see net.cpp for those details
+        if( (CNetAddr)addr == source ) {
+            // add services, don't just 'or' them in here, hard set them to the correct value
+            // original code: pinfo->nServices |= addr.nServices;
+            // ToDo: Why this and the port value has not been fixed as standard procedure could be investigated in more detail
+            // for now Anoncoin has so many unique problems with these 2 values, this should help correct allot of the
+            // current network issues in regard to the values getting corrected over time.
+            if( pinfo->nServices != addr.nServices ) {
+                LogPrint( "addrman", "Updating peer record %s, the services listed needed to be changed from %04x, to %04x\n", pinfo->ToString(), pinfo->nServices, addr.nServices );
+                pinfo->nServices = addr.nServices;
+            }
+
+            if( pinfo->GetPort() != addr.GetPort() ) {
+                LogPrint( "addrman", "Updating peer record %s, port %d was wrong, changed it to %d\n", pinfo->ToString(), pinfo->GetPort(), addr.GetPort() );
+                pinfo->SetPort( addr.GetPort() );
+            }
+        }
 
         // do not update if no new information is present
         if (!addr.nTime || (pinfo->nTime && addr.nTime <= pinfo->nTime))
@@ -435,17 +549,21 @@ bool CAddrMan::Add_(const CAddress &addr, const CNetAddr& source, int64_t nTimeP
 
 void CAddrMan::Attempt_(const CService &addr, int64_t nTime)
 {
-    CAddrInfo *pinfo = Find(addr);
+    CAddrInfo *pinfo = Find(addr);      // This matches on the CNetAddr portion of the object only aka the ip/i2p only
 
     // if not found, bail out
-    if (!pinfo)
+    if (!pinfo) {
+        LogPrint( "addrman", "While making a connection attempt, expected to find %s\n", addr.ToString() );
         return;
+    }
 
     CAddrInfo &info = *pinfo;
 
     // check whether we are talking about the exact same CService (including same port)
-    if (info != addr)
+    if (info != addr) {
+        LogPrint( "addrman", "While making a connection attempt, expected to match %s with peer %s\n", info.ToString(), addr.ToString() );
         return;
+    }
 
     // update info
     info.nLastTry = nTime;
@@ -556,7 +674,11 @@ int CAddrMan::Check_()
 }
 #endif
 
+#ifdef ENABLE_I2PSAM
+void CAddrMan::GetAddr_(std::vector<CAddress> &vAddr, const bool fIpOnly, const bool fI2pOnly)
+#else
 void CAddrMan::GetAddr_(std::vector<CAddress> &vAddr)
+#endif
 {
     unsigned int nNodes = ADDRMAN_GETADDR_MAX_PCT * vRandom.size() / 100;
     if (nNodes > ADDRMAN_GETADDR_MAX)
@@ -573,24 +695,38 @@ void CAddrMan::GetAddr_(std::vector<CAddress> &vAddr)
         assert(mapInfo.count(vRandom[n]) == 1);
 
         const CAddrInfo& ai = mapInfo[vRandom[n]];
-        if (!ai.IsTerrible())
+        // Don't send terrible addresses or ip4 private network addresses in response to GetAddr requests
+#ifdef ENABLE_I2PSAM
+        // Additional checks, don't send addresses to nodes that cant process them or don't care about them.
+        if( !ai.IsTerrible() && !ai.IsRFC1918() && (!fIpOnly || !ai.IsI2P()) && (!fI2pOnly || ai.IsI2P()) )
+#else
+        if( !ai.IsTerrible() && !ai.IsRFC1918() )
+#endif
             vAddr.push_back(ai);
     }
 }
 
 void CAddrMan::Connected_(const CService &addr, int64_t nTime)
 {
-    CAddrInfo *pinfo = Find(addr);
+    CAddrInfo *pinfo = Find(addr);      // This matches on the CNetAddr portion of the object only aka the ip/i2p only
 
     // if not found, bail out
-    if (!pinfo)
+    if (!pinfo) {
+        // LogPrint( "addrman", "While marking as connected, expected to find %s\n", addr.ToString() );
+        // ToDo: Investigate the many possible reasons this could be happening.  Logging it can produce allot of output.
+        // Dynamic i2p destinations, private network addresses, addnode xxx onetry commands, lots of various reasons
+        // that some addresses will simply not be in our address book, and enabling the above line can be good to better
+        // understand what is happening, but in general should not be reported.
         return;
+    }
 
     CAddrInfo &info = *pinfo;
 
     // check whether we are talking about the exact same CService (including same port)
-    if (info != addr)
+    if (info != addr) {
+        LogPrint( "addrman", "While marking as connected, expected to match %s with peer %s\n", info.ToString(), addr.ToString() );
         return;
+    }
 
     // update info
     int64_t nUpdateInterval = 20 * 60;

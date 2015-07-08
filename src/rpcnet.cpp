@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,6 +13,7 @@
 #include "util.h"
 #include "alert.h"
 #include "base58.h"
+#include "addrman.h"
 
 #include <boost/foreach.hpp>
 #include "json/json_spirit_value.h"
@@ -59,6 +60,135 @@ Value ping(const Array& params, bool fHelp)
     return Value::null;
 }
 
+Value destination(const Array& params, bool fHelp)
+{
+   if (fHelp || params.size() > 2)
+        throw runtime_error(
+            "destination \"none|match|good|attempt|connect\" \"none|b32.i2p|base64|ip:port\"\n"
+            "\nReturns I2P destination details stored in your b32.i2p address manager lookup system.\n"
+            "\nArguments:\n"
+            "  If no arguments are provided, the command returns all the b32.i2p addresses.\n"
+            "  1st argument = \"match\" then a 2nd argument is also required.\n"
+            "  2nd argument = Any string. If a match is found in any of the address, source or base64 fields, that result will be returned.\n"
+            "  1st argument = \"good\" destinations that has been tried, connected and found to be good will be returned.\n"
+            "  1st argument = \"attempt\" destinations that have been attempted, will be returned.\n"
+            "  1st argument = \"connect\" destinations that have been connected to in the past, will be returned.\n"
+            "\nResults are returned as a json array of object(s).\n"
+            "  The 1st result pair is the total size of the address hash map.\n"
+            "  The 2nd result pair is the number of objects which follow, as matching this query.  It can be zero, if no match was found.\n"
+            "\nResult:\n"
+            "[\n"
+            "  {\n"
+            "    \"tablesize\": nnn,             (numeric) The total number of destinations in the i2p address book\n"
+            "    \"matchsize\": nnn,             (numeric) The number of results returned, which matched your query\n"
+            "  }\n"
+            "  {\n"
+            "    \"address\":\"b32.i2p\",        (string)  Base32 hash of a i2p destination, a possible peer\n"
+            "    \"good\": true|false,           (boolean) Has this address been tried & found to be good\n"
+            "    \"attempt\": nnn,               (numeric) The number of times it has been attempted\n"
+            "    \"lasttry\": ttt,               (numeric) The time of a last attempted connection (memory only)\n"
+            "    \"connect\": ttt,               (numeric) The time of a last successful connection\n"
+            "    \"source\":\"b32.i2p|ip:port\", (string)  The source of information about this address\n"
+            "    \"base64\":\"destination\",     (string)  The full Base64 Public Key of this peers b32.i2p address\n"
+            "  }\n"
+            "  ,...\n"
+            "]\n"
+            "\nNOTE: This is a snapshot, if connected to the network then your peer list is changing all the time.\n"
+            "\nExamples: Return all addresses, or selected attributes, the last few match addresses, sources or base64 field.\n"
+            + HelpExampleCli("destination", "")
+            + HelpExampleRpc("destination", "")
+            + HelpExampleCli("destination", "good")
+            + HelpExampleRpc("destination", "attempt")
+            + HelpExampleCli("destination", "connect")
+            + HelpExampleRpc("destination", "match 215.49.103")
+            + HelpExampleCli("destination", "match vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
+            + HelpExampleRpc("destination", "match vatzduwjheyou3ybknfgm7cl43efbhovtrpfduz55uilxahxwt7a.b32.i2p")
+        );
+
+    bool fSelectedMatch = false;
+    bool fMatchStr = false;
+    bool fMatchTried = false;
+    bool fMatchAttempt = false;
+    bool fMatchConnect = false;
+    bool fUnknownCmd = false;
+    string sMatchStr;
+    if( params.size() > 0 ) {                                   // Lookup the address and return the one object if found
+        string sCmdStr = params[0].get_str();
+        if( sCmdStr == "match" ) {
+            if( params.size() > 1 ) {
+                sMatchStr = params[1].get_str();
+                fMatchStr = true;
+            } else
+                fUnknownCmd = true;
+        } else if( sCmdStr == "good" )
+            fMatchTried = true;
+        else if( sCmdStr == "attempt" )
+            fMatchAttempt = true;
+        else if( sCmdStr == "connect")
+            fMatchConnect = true;
+        else
+            fUnknownCmd = true;
+        fSelectedMatch = true;
+    }
+
+    Array ret;
+    // Load the vector with all the objects we have and return with
+    // the total number of addresses we have on file
+    vector<CDestinationStats> vecStats;
+    int nTableSize = addrman.CopyDestinationStats(vecStats);
+    if( !fUnknownCmd ) {       // If set, throw runtime error
+        for( int i = 0; i < 2; i++ ) {          // Loop through the data twice
+            bool fMatchFound = false;       // Assume no match
+            int nMatchSize = 0;             // the match counter
+            BOOST_FOREACH(const CDestinationStats& stats, vecStats) {
+                if( fSelectedMatch ) {
+                    if( fMatchStr ) {
+                        if( stats.sAddress.find(sMatchStr) != string::npos ||
+                            stats.sSource.find(sMatchStr) != string::npos ||
+                            stats.sBase64.find(sMatchStr) != string::npos )
+                                fMatchFound = true;
+                    } else if( fMatchTried ) {
+                        if( stats.fInTried ) fMatchFound = true;
+                    }
+                    else if( fMatchAttempt ) {
+                        if( stats.nAttempts > 0 ) fMatchFound = true;
+                    }
+                    else if( fMatchConnect ) {
+                        if( stats.nSuccessTime > 0 ) fMatchFound = true;
+                    }
+                } else          // Match everything
+                    fMatchFound = true;
+
+                if( i == 1 && fMatchFound ) {
+                    Object obj;
+                    obj.push_back(Pair("address", stats.sAddress));
+                    obj.push_back(Pair("good", stats.fInTried));
+                    obj.push_back(Pair("attempt", stats.nAttempts));
+                    obj.push_back(Pair("lasttry", stats.nLastTry));
+                    obj.push_back(Pair("connect", stats.nSuccessTime));
+                    obj.push_back(Pair("source", stats.sSource));
+                    obj.push_back(Pair("base64", stats.sBase64));
+                    ret.push_back(obj);
+                }
+                if( fMatchFound ) {
+                    nMatchSize++;
+                    fMatchFound = false;
+                }
+            }
+            // The 1st time we get a count of the matches, so we can list that first in the results,
+            // then we finally build the output objects, on the 2nd pass...and don't put this in there twice
+            if( i == 0 ) {
+                Object objSizes;
+                objSizes.push_back(Pair("tablesize", nTableSize));
+                objSizes.push_back(Pair("matchsize", nMatchSize));
+                ret.push_back(objSizes);                            // This is the 1st object put on the Array
+            }
+        }
+    } else
+        throw runtime_error( "Unknown subcommand or argument missing" );
+    return ret;
+}
+
 static void CopyNodeStats(std::vector<CNodeStats>& vstats)
 {
     vstats.clear();
@@ -72,6 +202,7 @@ static void CopyNodeStats(std::vector<CNodeStats>& vstats)
     }
 }
 
+
 Value getpeerinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -81,9 +212,9 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "\nbResult:\n"
             "[\n"
             "  {\n"
-            "    \"addr\":\"host:port\",      (string) The ip address and port of the peer\n"
-            "    \"addrlocal\":\"ip:port\",   (string) local address\n"
-            "    \"services\":\"xxxxxxxxxxxxxxxx\",   (string) The services offered\n"
+            "    \"addr\":\"host:port|b32.i2p\", (string) The ip address and port of the peer\n"
+            "    \"addrlocal\":\"ip:port|b32.i2p\", (string) local address\n"
+            "    \"services\":\"xxxx\",       (string) The services offered in hex\n"
             "    \"lastsend\": ttt,           (numeric) The time in seconds since epoch (Jan 1 1970 GMT) of the last send\n"
             "    \"lastrecv\": ttt,           (numeric) The time in seconds since epoch (Jan 1 1970 GMT) of the last receive\n"
             "    \"bytessent\": n,            (numeric) The total bytes sent\n"
@@ -91,7 +222,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "    \"conntime\": ttt,           (numeric) The connection time in seconds since epoch (Jan 1 1970 GMT)\n"
             "    \"pingtime\": n,             (numeric) ping time\n"
             "    \"pingwait\": n,             (numeric) ping wait\n"
-            "    \"version\": v,              (numeric) The peer version, such as 70008\n"
+            "    \"version\": v,              (numeric) The peer protocol version, such as 70009\n"
             "    \"subver\": \"/s:n.n.n.n/\", (string) The subversion string\n"
             "    \"inbound\": true|false,     (boolean) Inbound (true) or Outbound (false)\n"
             "    \"startingheight\": n,       (numeric) The starting height (block) of the peer\n"
@@ -99,7 +230,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "    \"syncnode\": true|false     (boolean) if sync node\n"
             "  }\n"
             "  ,...\n"
-            "}\n"
+            "]\n"
 
             "\nExamples:\n"
             + HelpExampleCli("getpeerinfo", "")
@@ -118,7 +249,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("addr", stats.addrName));
         if (!(stats.addrLocal.empty()))
             obj.push_back(Pair("addrlocal", stats.addrLocal));
-        obj.push_back(Pair("services", strprintf("%016x", stats.nServices)));
+        obj.push_back(Pair("services", strprintf("%04x", stats.nServices)));
         obj.push_back(Pair("lastsend", stats.nLastSend));
         obj.push_back(Pair("lastrecv", stats.nLastRecv));
         obj.push_back(Pair("bytessent", stats.nSendBytes));
@@ -271,7 +402,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     BOOST_FOREACH(string& strAddNode, laddedNodes)
     {
         vector<CService> vservNode(0);
-        if(Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
+        if(Lookup(strAddNode.c_str(), vservNode, isStringI2pDestination(strAddNode) ? 0 : Params().GetDefaultPort(), fNameLookup, 0))
             laddedAddreses.push_back(make_pair(strAddNode, vservNode));
         else
         {
@@ -383,7 +514,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
             "  \"version\": xxxxx,           (numeric) the server version\n"
             "  \"subver\": \"/s:n.n.n.n/\",  (string)  this clients subversion string\n"
             "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
-            "  \"localservices\": xxxxxxxx,  (numeric) in Hex, the local service bits\n"
+            "  \"localservices\": xxxx,  (numeric) in Hex, the local service bits\n"
             "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
             "  \"connections\": xxxxx,       (numeric) the number of connections\n"
             "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in ixc/kb\n"
@@ -418,7 +549,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("version",        (int)CLIENT_VERSION));
     obj.push_back(Pair("subversion",     FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>())));
     obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
-    obj.push_back(Pair("localservices",  strprintf("%08x", nLocalServices)));
+    obj.push_back(Pair("localservices",  strprintf("%04x", nLocalServices)));
     obj.push_back(Pair("timeoffset",     GetTimeOffset()));
     obj.push_back(Pair("connections",    (int)vNodes.size()));
     obj.push_back(Pair("relayfee",       ValueFromAmount(CTransaction::nMinRelayTxFee)));
@@ -461,11 +592,8 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     return obj;
 }
 
-// Only build this code in preleases or test builds
 #if CLIENT_VERSION_IS_RELEASE != true
-//
-// This allows our developers to notify all nodes of any issues on the Anoncoin network
-//
+
 Value sendalert(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 7)
@@ -514,7 +642,6 @@ Value sendalert(const Array& params, bool fHelp)
         alert.nCancel = params[9].get_int();
     alert.nVersion = PROTOCOL_VERSION;
 
-    // Relay and don't expire this alert for one year, or the number of days given
     const int64_t i64AlertNow = GetAdjustedTime();
 
     alert.nRelayUntil = ( params.size() > 7 ) ? params[7].get_int() : 365;
@@ -528,50 +655,16 @@ Value sendalert(const Array& params, bool fHelp)
     CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
     sMsg << (CUnsignedAlert)alert;
     alert.vchMsg = vector<unsigned char>(sMsg.begin(), sMsg.end());
-
-    // From https://bitcointalk.org/index.php?topic=50330.40:
-    //
-    // CKey::GetPrivKey and CKey::SetPrivKey are accessor methods for the 279-byte DES private key.
-    // CKey::GetSecret and CKey::SetSecret are accessor methods for the 32-byte private key.
-    //
-    // Those of you who are interested in the OpenSSL calls needed, it's all spelled out in key.h
-    //
-    //  If the SendAlert user is giving us the 32 byte secret code & we already know the public key, so...
-    //  Setup an object with the correct value for the private key, otherwise we'll assume they are giving us the
-    //  private key as the string value, and use that to create the key object.
-    //  Either of the above must be given, before this code can sign and then process the alert.
-    //
-    // There are various code fragments below that are commented out for release builds. Helpful however, for debugging
-    // changes to the code and/or keys being used.  Otherwise not needed
-    //
-    //  Move the SendAlert 2nd parmeter chars into a vector, whichever it is, can assume it's being given to us as hex pairs
     vector<unsigned char> vchPrivKey = ParseHex(params[1].get_str());
-
-    if( vchPrivKey.size() == 32 ) {         // Then we're given only a 32-byte private key multipler
+    if( vchPrivKey.size() == 0x20 )
         key.Set( vchPrivKey.begin(), vchPrivKey.end(), false );
-        CPrivKey nPK = key.GetPrivKey();    // This calls openssl & sets the key structure up correctly.
-        // Print out the private key here, from being set by SecretBytes...
-        std::string strKey;
-        for( size_t i=0; i<nPK.size(); i++ )
-            strKey += strprintf( "%02x", nPK[i] );
-        LogPrintf("SendAlert pass is the SecretBytes, Private Key Value is:\n%s\n", strKey);
-    }
     else if( !key.SetPrivKey( CPrivKey(vchPrivKey.begin(), vchPrivKey.end()), false ) )
         throw runtime_error( "Unable to verify alert Private key, check private key?\n");
-    else
-        LogPrintf("SendAlert pass is the PrivateKey.\n");
 
-    // Sign the message & set the alert vchSig string...
     if (!key.Sign(Hash(alert.vchMsg.begin(), alert.vchMsg.end()), alert.vchSig))
         throw runtime_error( "Unable to sign alert, check private key?\n");
     else if(!alert.ProcessAlert())
         throw runtime_error( "Failed to process alert.\n");
-    //
-    // If you need to, Print out the CAlert structure, into the log file here:
-    alert.print();
-    //
-    // After we've called alert.ProcessAlert(), the public key will have been used to verify the
-    // signature of the (now) signed alert message, or a runtime_error would have been returned.
 
     // Relay alert to the other nodes
     {
@@ -580,7 +673,6 @@ Value sendalert(const Array& params, bool fHelp)
             alert.RelayTo(pnode);
     }
     // At this point, the Anoncoin network will be flooded with the alert message before very much time has passed.
-
     Object res;
     res.push_back( Pair("AlertID", alert.nID) );
     res.push_back( Pair("Priority", alert.nPriority) );

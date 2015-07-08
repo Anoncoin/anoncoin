@@ -53,7 +53,7 @@
 
 #ifdef ENABLE_I2PSAM
 #include "i2pshowaddresses.h"
-#endif // ENABLE_I2PSAM
+#endif
 
 #if QT_VERSION < 0x050000
 #include <QUrl>
@@ -74,6 +74,9 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     trayIcon(0),
     notificator(0),
     rpcConsole(0),
+#ifdef ENABLE_I2PSAM
+    i2pAddress(0),
+#endif
     prevBlocks(0),
     spinnerFrame(0)
 {
@@ -121,6 +124,10 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
 #endif
 
     rpcConsole = new RPCConsole(enableWallet ? this : 0);
+#ifdef ENABLE_I2PSAM
+    i2pAddress = new ShowI2PAddresses( this );
+#endif
+
 #ifdef ENABLE_WALLET
     if(enableWallet)
     {
@@ -210,8 +217,14 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
 
-    // prevents an oben debug window from becoming stuck/unusable on client shutdown
+    // prevents an open debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
+
+#ifdef ENABLE_I2PSAM
+    // Do the same for the I2P Destination details window
+    connect(openI2pAddressAction, SIGNAL(triggered()), i2pAddress, SLOT(show()));
+    connect(quitAction, SIGNAL(triggered()), i2pAddress, SLOT(hide()));
+#endif
 
     // Install event filter to be able to catch status tip events (QEvent::StatusTip)
     this->installEventFilter(this);
@@ -321,6 +334,11 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging and diagnostic console"));
 
+#ifdef ENABLE_I2PSAM
+    openI2pAddressAction = new QAction(QIcon(":/icons/options"), tr("&I2P Destination details"), this);
+    openI2pAddressAction->setStatusTip(tr("Shows your private I2P Destination details"));
+#endif
+
     usedSendingAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Sending addresses..."), this);
     usedSendingAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
     usedReceivingAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Receiving addresses..."), this);
@@ -386,7 +404,9 @@ void AnoncoinGUI::createMenuBar()
         settings->addSeparator();
     }
     settings->addAction(optionsAction);
-
+#ifdef ENABLE_I2PSAM
+    settings->addAction(openI2pAddressAction);
+#endif
     QMenu *help = appMenuBar->addMenu(tr("&Help"));
     if(walletFrame)
     {
@@ -426,8 +446,8 @@ void AnoncoinGUI::setClientModel(ClientModel *clientModel)
         connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
 #ifdef ENABLE_I2PSAM
-        setNumI2PConnections(clientModel->getNumI2PConnections());
-        connect(clientModel, SIGNAL(numI2PConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
+        setNumI2PConnections(clientModel->getNumConnections());
+        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
 
         if (clientModel->isI2POnly()) {
             labelI2POnly->setText("I2P");
@@ -452,11 +472,11 @@ void AnoncoinGUI::setClientModel(ClientModel *clientModel)
 
         if (clientModel->isI2PAddressGenerated()) {
             labelI2PGenerated->setText("DYN");
-            labelI2PGenerated->setToolTip(tr("Wallet is running with a random generated I2P-address"));
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a dynamic (random) I2P destination"));
         }
         else {
             labelI2PGenerated->setText("STA");
-            labelI2PGenerated->setToolTip(tr("Wallet is running with a static I2P-address"));
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a static I2P destination"));
         }
 #endif // ENABLE_I2PSAM
 
@@ -572,6 +592,9 @@ void AnoncoinGUI::createTrayIconMenu()
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(optionsAction);
     trayIconMenu->addAction(openRPCConsoleAction);
+#ifdef ENABLE_I2PSAM
+    trayIconMenu->addAction(openI2pAddressAction);
+#endif
 #ifndef Q_OS_MAC // This is built-in on Mac
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
@@ -596,9 +619,6 @@ void AnoncoinGUI::optionsClicked()
 
     OptionsDialog dlg(this);
     dlg.setModel(clientModel->getOptionsModel());
-#ifdef ENABLE_I2PSAM
-    dlg.setClientModel(clientModel);
-#endif
     dlg.exec();
 }
 
@@ -667,13 +687,10 @@ void AnoncoinGUI::gotoVerifyMessageTab(QString addr)
 void AnoncoinGUI::setNumConnections(int count)
 {
     QString icon;
+
 #ifdef ENABLE_I2PSAM
-    // Real count is minus the i2p connections we're showing that in another icon
-    int realcount = count - i2pConnectCount;
-    // ToDo: Having a bug here while testing I2P onlynet and binding my port in the anoncoin.conf file to 192.168.xx.xx.
-    // The realcount is getting a negative value for awhile, if nodes are found pretty fast on startup, not sure why.
-    // Added conditional below, so the user doesn't see that at least
-    if( realcount < 0 ) realcount = 0;
+    // Until we have the clientModel we can't determine the i2p connection count
+    int realcount = clientModel ? count - clientModel->getNumConnections(CONNECTIONS_I2P_ALL) : count;
 #else
     int realcount = count;
 #endif
@@ -693,8 +710,14 @@ void AnoncoinGUI::setNumConnections(int count)
 void AnoncoinGUI::setNumI2PConnections(int count)
 {
     QString i2pIcon;
+
+    // We never run this until we have the clientModel, so the check shouldn't be necessary.
+    // Otherwise we can't determine the i2p connection count
+    // so we just show the total count here as well...
+    int realcount = clientModel ? clientModel->getNumConnections(CONNECTIONS_I2P_ALL) : count;
+
     // See the anoncoin.qrc file for icon files below & their associated alias name
-    switch(count) {
+    switch(realcount) {
     case 0: i2pIcon = ":/icons/i2pconnect_0"; break;
     case 1: case 2: case 3: i2pIcon = ":/icons/i2pconnect_1"; break;
     case 4: case 5: case 6: i2pIcon = ":/icons/i2pconnect_2"; break;
@@ -702,8 +725,7 @@ void AnoncoinGUI::setNumI2PConnections(int count)
     default: i2pIcon = ":/icons/i2pconnect_4"; break;
     }
     labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(4*STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", count));
-    i2pConnectCount = count;
+    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", realcount));
 }
 #endif // ENABLE_I2PSAM
 
@@ -868,10 +890,23 @@ void AnoncoinGUI::message(const QString &title, const QString &message, unsigned
         // initialization is finished.
         if(!(style & CClientUIInterface::NOSHOWGUI))
             showNormalIfMinimized();
-        QMessageBox mBox((QMessageBox::Icon)nMBoxIcon, strTitle, message, buttons, this);
+
+        // Here now we introduce some special code for our -generatei2pdestination command
+        // We know that is the message, if the button condition is correct (Note: no other
+        // place in the code should use that combination for this to work.  The rest is simple...
+        bool bGenI2pDest = false;
+        QString theMsg;                                     // Setup a place for a local copy of the message
+        if( buttons == (CClientUIInterface::BTN_ABORT | CClientUIInterface::BTN_APPLY ) ) {
+            theMsg = tr("A new I2P Destination was generated.\nDetails have been written to your debug.log file.\nDo you want to continue or shutdown?");
+            LogPrintf( message.toStdString().c_str() );
+            bGenI2pDest = true;
+        }
+        else
+            theMsg = message;
+        QMessageBox mBox((QMessageBox::Icon)nMBoxIcon, strTitle, theMsg, buttons, this);
         int r = mBox.exec();
-        if (ret != NULL)
-            *ret = r == QMessageBox::Ok;
+        if( ret != NULL )
+            *ret = r == ( bGenI2pDest ? QMessageBox::Apply : QMessageBox::Ok );
     }
     else
         notificator->notify((Notificator::Class)nNotifyIcon, strTitle, message);
@@ -1035,6 +1070,10 @@ void AnoncoinGUI::detectShutdown()
     {
         if(rpcConsole)
             rpcConsole->hide();
+#ifdef ENABLE_I2PSAM
+        if(i2pAddress)
+            i2pAddress->hide();
+#endif
         qApp->quit();
     }
 }
@@ -1053,74 +1092,16 @@ static bool ThreadSafeMessageBox(AnoncoinGUI *gui, const std::string& message, c
     return ret;
 }
 
-#ifdef ENABLE_I2PSAM
-// ToDo: Check me
-// This code ported from 0.8.5.6 didn't work as is, had to rework (see the anoncoin.cpp file in old codebase). Removed all the printf's and msg strings,
-// they should go somewhere else (see noui.cpp for anoncoind operation), from what I (GR) could tell they would never have executed.
-// The 'guiref' value (old code) here is called 'gui', changed that.  Need to confirm this is a blockingGUI thread.....Think I've fixed this.
-// This function now returns a true/false value, that was changed here, but never crossed checked that the caller would process such a thing...
-// Ok think I got all the issues addressed and ready for testing...
-static bool ThreadSafeShowGeneratedI2PAddress(AnoncoinGUI *gui,
-                                              const std::string& caption,
-                                              const std::string& pub,
-                                              const std::string& priv,
-                                              const std::string& b32,
-                                              const std::string& configFileName)
-{
-    bool ret = false;
-
-//    ShowI2PAddresses i2pAddrDialog( QString::fromStdString(caption),
-//                                    QString::fromStdString(pub),
-//                                    QString::fromStdString(priv),
-//                                    QString::fromStdString(b32),
-//                                    QString::fromStdString(configFileName),
-//                                    gui );
-// Latest thoughts,  we need to get the clientmodel for a gui parent, and use new to create the dialog here now...
-
-//    i2pAddrDialog.show();
-    ret = true;
-//    unsigned int style = CClientUIInterface::BTN_ABORT | CClientUIInterface::MSG_INFORMATION;
-//    bool modal = (style & CClientUIInterface::MODAL);
-
-//    QString pubkey = QString::fromStdString(pub);
-//    QString privkey = QString::fromStdString(priv);
-
-    // http://qt-project.org/doc/qt-4.8/qmetaobject.html
-    // Invokes the member (a signal or a slot name) on the object obj. Returns true if the member could be invoked.
-    // Returns false if there is no such member or the parameters did not match.
-    // If type is Qt::BlockingQueuedConnection, the method will be invoked in the same way as for Qt::QueuedConnection,
-    // except that the current thread will block until the event is delivered. Using this connection type to communicate
-    // between objects in the same thread will lead to deadlocks....
-//    QMetaObject::invokeMethod(gui, "message",
-//                               modal ? GUIUtil::blockingGUIThreadConnection() : Qt::QueuedConnection,
-//                               Q_ARG(QString, QString::fromStdString(caption)),
-//                               pubkey,
-//                               privkey,
-//                               Q_ARG(QString, QString::fromStdString(b32)),
-//                               Q_ARG(QString, QString::fromStdString(configFileName)),
-//                               Q_ARG(unsigned int, style),
-//                               Q_ARG(bool*, &ret));
-
-    return ret;
-}
-#endif // ENABLE_I2PSAM
-
 void AnoncoinGUI::subscribeToCoreSignals()
 {
     // Connect signals to client
     uiInterface.ThreadSafeMessageBox.connect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
-#ifdef ENABLE_I2PSAM
-    uiInterface.ThreadSafeShowGeneratedI2PAddress.connect(boost::bind(ThreadSafeShowGeneratedI2PAddress, this, _1, _2, _3, _4, _5));
-#endif
 }
 
 void AnoncoinGUI::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
     uiInterface.ThreadSafeMessageBox.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
-#ifdef ENABLE_I2PSAM
-    uiInterface.ThreadSafeShowGeneratedI2PAddress.disconnect(boost::bind(ThreadSafeShowGeneratedI2PAddress, this, _1, _2, _3, _4, _5));
-#endif
 }
 
 UnitDisplayStatusBarControl::UnitDisplayStatusBarControl():QLabel()
@@ -1190,11 +1171,3 @@ void UnitDisplayStatusBarControl::onMenuSelection(QAction* action)
         optionsModel->setDisplayUnit(action->data());
     }
 }
-
-#ifdef ENABLE_I2PSAM
-void AnoncoinGUI::showGeneratedI2PAddr(const QString& caption, const QString& pub, const QString& priv, const QString& b32, const QString& configFileName)
-{
-    ShowI2PAddresses i2pDialog(caption, pub, priv, b32, configFileName, this);
-    i2pDialog.exec();
-}
-#endif // ENABLE_I2PSAM

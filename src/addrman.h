@@ -22,6 +22,21 @@
 
 #include <openssl/rand.h>
 
+/** Extended statistics about our B32.I2P address table */
+class CDestinationStats
+{
+public:
+    std::string sAddress;       // CNetAddr member
+    std::string sBase64;        // CNetAddr member
+    unsigned short uPort;       // CService member
+    int64_t nLastTry;           // CAddress member
+    uint64_t nServices;         // CAddress member
+    bool fInTried;              // CAddrInfo member, this means its good
+    int nAttempts;              // CAddrInfo member
+    int64_t nSuccessTime;       // CAddrInfo member
+    std::string sSource;        // CAddrInfo member, from CNetAddr of source
+};
+
 /** Extended statistics about a CAddress */
 class CAddrInfo : public CAddress
 {
@@ -163,10 +178,33 @@ public:
 #define ADDRMAN_MIN_FAIL_DAYS 7
 
 // the maximum percentage of nodes to return in a getaddr call
-#define ADDRMAN_GETADDR_MAX_PCT 23
+// Until we get so many users that we have tens of thousands of addresses on
+// both i2p and ip, we do not want to limit the percentage of addresses we
+// send because of how many we have in our peers.dat file
+// #define ADDRMAN_GETADDR_MAX_PCT 23
+#define ADDRMAN_GETADDR_MAX_PCT 100
 
 // the maximum number of nodes to return in a getaddr call
-#define ADDRMAN_GETADDR_MAX 2500
+// was #define ADDRMAN_GETADDR_MAX 2500
+// Anoncoin differs greatly here because of its I2P support, addresses are >33x larger
+// than cryptocoins which only support ip addresses.  Further adding to the complexity
+// is the fact some old peers can not accept i2p addresses on clearnet, and nodes running
+// over i2p really don't care or want to bother sharing ip addresses.
+//
+// Reducing the number of addresses returned is not a simple matter of reducing this value
+// however.  Although it will set a limit as to how many are sent in one request:
+// We've changed the mruset setKnownAddrs in the node creation (see net.h) to 1250, from 5000
+// that 5K is double what was set here as max (2500).  If you look at the way the GetAddr picks
+// random addresses, even on this developers system, with 14K+ addrs in peer.dat it typically only
+// sent less than about 800.  After study of the code, the conclusion is most are terrible,
+// the routine is likely spinning through all 14K and rejecting most of them as not being worth
+// sending, eventually hitting n==vRandom.size() and ending the search.
+// Lowering this limit will not likely cause any change in the current behavior, until many new
+// peers show up that are good ones.  Setting a new max, based on that same ratio change with
+// the node creation process, would mean going to 625 addresses here....  Also note, that in main.cpp
+// where addresses are spooled out in sendtrickle, the size of each message created, before pushing
+// the addrs, has been reduced.
+#define ADDRMAN_GETADDR_MAX 625
 
 /** Stochastical (IP) address manager */
 class CAddrMan
@@ -231,7 +269,7 @@ protected:
     void MakeTried(CAddrInfo& info, int nId, int nOrigin);
 
     // Mark an entry "good", possibly moving it from "new" to "tried".
-    void Good_(const CService &addr, int64_t nTime);
+    void Good_(const CAddress &addr, int64_t nTime);
 
     // Add an entry to the "new" table.
     bool Add_(const CAddress &addr, const CNetAddr& source, int64_t nTimePenalty);
@@ -249,12 +287,17 @@ protected:
 #endif
 
     // Select several addresses at once.
+#ifdef ENABLE_I2PSAM
+    void GetAddr_(std::vector<CAddress> &vAddr, const bool fIpOnly, const bool fI2pOnly);
+#else
     void GetAddr_(std::vector<CAddress> &vAddr);
+#endif
 
     // Mark an entry as currently-connected-to.
     void Connected_(const CService &addr, int64_t nTime);
 
 #ifdef ENABLE_I2PSAM
+    void CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible );         // Used in Shrink twice
     CAddrInfo* LookupB32addr(const std::string& sB32addr);
 #endif
 
@@ -346,6 +389,9 @@ public:
                 {
                     CAddrInfo &info = am->mapInfo[n];
                     READWRITE(info);
+                    info.nServices &= 0xFF;
+// if( (info.nServices & 0xFFFFFFFFFFFFFF00) != 0 )
+//    LogPrint( "addrman", "Found new %s, from %s to have service bits = %x set\n", info.ToString(), info.source.ToString(), info.nServices );
                     am->mapAddr[info] = n;
                     info.nRandomPos = vRandom.size();
                     am->vRandom.push_back(n);
@@ -355,9 +401,15 @@ public:
                         info.nRefCount++;
                     }
 #ifdef ENABLE_I2PSAM
+                    if( info.CheckAndSetGarlicCat() )
+                        LogPrint( "addrman", "While reading new peers, did not expect to need the garliccat fixed for destination %s\n", info.ToString() );
                     if( info.IsI2P() ) {
-                        uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                        am->mapI2pHashes[hash] = n;
+                        info.SetPort( 0 );              // Make sure the CService port is set to ZERO
+                        uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                        if( mapI2pHashes.count( b32hash ) == 0 )
+                            am->mapI2pHashes[b32hash] = n;
+                        else
+                            LogPrint( "addrman", "While reading new peer %s, could not create a base32 hash for one that already exists\n", info.ToString() );
                     }
 #endif
                 }
@@ -367,7 +419,10 @@ public:
                 {
                     CAddrInfo info;
                     READWRITE(info);
-                    std::vector<int> &vTried = am->vvTried[info.GetTriedBucket(am->nKey)];
+                    info.nServices &= 0xFF;
+//  if( (info.nServices & 0xFFFFFFFFFFFFFF00) != 0 )
+//    LogPrint( "addrman", "Found %s, from %s to have service bits = %x set\n", info.ToString(), info.source.ToString(), info.nServices );
+                   std::vector<int> &vTried = am->vvTried[info.GetTriedBucket(am->nKey)];
                     if (vTried.size() < ADDRMAN_TRIED_BUCKET_SIZE)
                     {
                         info.nRandomPos = vRandom.size();
@@ -377,10 +432,17 @@ public:
                         am->mapAddr[info] = am->nIdCount;
                         vTried.push_back(am->nIdCount);
 #ifdef ENABLE_I2PSAM
+                        if( info.CheckAndSetGarlicCat() )
+                            LogPrint( "addrman", "While reading tried peers, did not expect to need the garliccat fixed for destination %s\n", info.ToString() );
                         if( info.IsI2P() ) {
-                            uint256 hash = GetI2pDestinationHash( info.GetI2pDestination() );
-                            am->mapI2pHashes[hash] = am->nIdCount;
-                        }
+                            info.SetPort( 0 );              // Make sure the CService port is set to ZERO
+                            uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                            if( mapI2pHashes.count( b32hash ) == 0 )
+                                am->mapI2pHashes[b32hash] = am->nIdCount;
+                            else
+                                LogPrint( "addrman", "While reading tried peer %s, could not create a base32 hash for one that already exists\n", info.ToString() );
+                        } // else if( info.GetPort() == 0 )                     not yet sure why clearnet nodes have ports zeroed..ToDo: investigating
+                            // info.SetPort( Params().GetDefaultPort() );
 #endif
                         am->nIdCount++;
                     } else {
@@ -426,13 +488,14 @@ public:
     }
 
 #ifdef ENABLE_I2PSAM
-    // Return the number of (unique) addresses in all tables.
+    // Return the number of (unique) b32.i2p addresses in the hash table
     int b32HashTableSize()
     {
         return mapI2pHashes.size();
     }
 
     std::string GetI2pBase64Destination(const std::string& sB32addr);
+    int CopyDestinationStats( std::vector<CDestinationStats>& vStats );
 #endif
 
     // Consistency check
@@ -480,7 +543,7 @@ public:
     }
 
     // Mark an entry as accessible.
-    void Good(const CService &addr, int64_t nTime = GetAdjustedTime())
+    void Good(const CAddress &addr, int64_t nTime = GetAdjustedTime())
     {
         {
             LOCK(cs);
@@ -516,13 +579,21 @@ public:
     }
 
     // Return a bunch of addresses, selected at random.
+#ifdef ENABLE_I2PSAM
+    std::vector<CAddress> GetAddr(const bool fIpOnly, const bool fI2pOnly)
+#else
     std::vector<CAddress> GetAddr()
+#endif
     {
         Check();
         std::vector<CAddress> vAddr;
         {
             LOCK(cs);
+#ifdef ENABLE_I2PSAM
+            GetAddr_(vAddr, fIpOnly, fI2pOnly);
+#else
             GetAddr_(vAddr);
+#endif
         }
         Check();
         return vAddr;

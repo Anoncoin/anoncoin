@@ -38,6 +38,9 @@ enum NumConnections {
     CONNECTIONS_NONE = 0,
     CONNECTIONS_IN   = (1U << 0),
     CONNECTIONS_OUT  = (1U << 1),
+    CONNECTIONS_I2P_IN  = (1U << 2),
+    CONNECTIONS_I2P_OUT = (1U << 3),
+    CONNECTIONS_I2P_ALL = (CONNECTIONS_I2P_OUT | CONNECTIONS_I2P_IN),
     CONNECTIONS_ALL  = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
@@ -84,8 +87,6 @@ public:
      * Public functions needed for handling the I2P Config and operational settings
      */
     QString formatI2PNativeFullVersion() const;
-    int getNumI2PConnections() const;
-
     QString getPublicI2PKey() const;
     QString getPrivateI2PKey() const;
     bool isI2PAddressGenerated() const;
@@ -122,9 +123,6 @@ signals:
     void numBlocksChanged(int count);
     void alertsChanged(const QString &warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
-#ifdef ENABLE_I2PSAM
-    void numI2PConnectionsChanged(int count);               // When the I2P connection # changes, this signal is generated
-#endif
     //! Fired when a message should be reported to the user
     void message(const QString &title, const QString &message, unsigned int style);
 
@@ -137,9 +135,6 @@ public slots:
     void updateTimer();
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
-#ifdef ENABLE_I2PSAM
-    void updateNumI2PConnections(int numI2PConnections);  // For I2P connection count updates, emit an numI2PConnectionsChanged signal
-#endif
 };
 
 #endif // CLIENTMODEL_H

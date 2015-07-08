@@ -8,8 +8,6 @@
 
 #include <QDialog>
 
-#include "i2poptionswidget.h"
-
 class MonitoredDataMapper;
 class OptionsModel;
 class QValidatedLineEdit;
@@ -27,7 +25,6 @@ public:
     explicit OptionsDialog(QWidget *parent);
     ~OptionsDialog();
 
-    void setClientModel(ClientModel* clientModel);
     void setModel(OptionsModel *model);
     void setMapper();
 
@@ -46,7 +43,6 @@ private slots:
     void on_cancelButton_clicked();
 
     void showRestartWarning(bool fPersistent = false);
-    void showRestartWarning_I2P();
     void clearStatusLabel();
     void updateDisplayUnit();
     void doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort);
@@ -59,9 +55,6 @@ private:
     OptionsModel *model;
     MonitoredDataMapper *mapper;
     bool fProxyIpValid;
-    // Settings for the I2P options widget, operated from its own tab
-    bool fRestartWarningDisplayed_I2P;
-    I2POptionsWidget* tabI2P;
 };
 
 #endif // OPTIONSDIALOG_H

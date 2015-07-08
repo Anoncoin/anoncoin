@@ -58,7 +58,7 @@ enum Network ParseNetwork(std::string net) {
     if (net == "ipv6") return NET_IPV6;
     if (net == "tor" || net == "onion")  return NET_TOR;
 #ifdef ENABLE_I2PSAM
-    if (net == "i2p") return NET_NATIVE_I2P;
+    if (net == "i2p") return NET_I2P;
 #endif
     return NET_UNROUTABLE;
 }
@@ -70,7 +70,7 @@ std::string GetNetworkName(enum Network net) {
     case NET_IPV6: return "ipv6";
     case NET_TOR : return "tor";
 #ifdef ENABLE_I2PSAM
-    case NET_NATIVE_I2P: return "i2p";
+    case NET_I2P: return "i2p";
 #endif
 
     default: return "???";
@@ -113,7 +113,7 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
         // The problem is:  if SetSpecial returns false, we don't know why it failed or what happen
         else if( isStringI2pDestination( strName ) ) {
             // LogPrintf( "...." );  so SetSpecial now has extensive logging support of errors, need more put it here
-            return false;   // we're done here, a dns seed node could not be found or any other b32.i2p address failed to be found
+            return false;   // we're done here, a dns seed node could not be found or any I2P type destination address failed to be found
         }
 #endif
     }
@@ -545,6 +545,7 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
 
 #ifdef ENABLE_I2PSAM
     if( addrDest.IsI2P() ) {
+        assert( addrDest.IsNativeI2P() );
         SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2pDestination(), false/*, streamSocket*/);
         if( SetI2pSocketOptions(streamSocket) ) {
             hSocketRet = streamSocket;
@@ -644,19 +645,29 @@ bool CNetAddr::SetSpecial(const std::string &strName)
     {                                                                       // We're given a possible valid .b32.i2p address or a native I2P destination
         string addr;
         if( isValidI2pB32( strName ) ) {
-            // 1st try our new local address book for the lookup
+            // 1st try our new local address book for the lookup....
+            // NOTE: Adding this line of code was extremely expensive for the developer, it broke the build system, which could no longer link
+            // and create the Anoncoin-cli executable.  It requires that you link in the addrman.cpp/h module, as its now included here in netbase,
+            // This had  never been done until now.  You will be required to upgrade your code to support the chainparamsbase.cpp/h module concept,
+            // and remove all references to chainparams.cpp/h in your build script, if your going to try and just add this one line of code.
+            //  Upgrading your source base to v10 technology was the solution, but very time consuming, expensive and stressful.  It may appear to
+            // be just one line of code, but it is not nearly as simple as that when your starting from and working with a v9 source code base.
+            // ...GR
             addr = addrman.GetI2pBase64Destination( strName );
             if( IsI2PEnabled() && fNameLookup ) {                           // Check for dns set, we should at least log the error, if not.
-                if( addr == "" )                                            // We got it locally so were done
+                int64_t iNow = GetTime();
+                if( !addr.size() )                                          // If we couldn't find it, much more to do..
                     addr = I2PSession::Instance().namingLookup(strName);    // Expensive, but lets try, this could take a very long while...
+                else
+                    LogPrintf( "The i2p destination %s was found locally.\n", strName );
                 // If the address returned is a non-zero length string, the lookup was successful
                 if( !isValidI2pAddress( addr ) ) {                          // Not sure why, but that shouldn't happen, could be a 'new' destination type we can't yet handle
-                    LogPrintf( "WARNING - I2P Router [%s] address not found.\n", strName );
+                    LogPrintf( "After %d secs looking, even the i2p router was unable to locate %s\n", GetTime() - iNow, strName );
                     return false;                                           // Not some thing we can use
-                } else  // Otherwise the I2P router was able to find an I2P destination for this address, and it's now stored in 'addr' as a base64 string
-                    LogPrintf( "I2P Router lookup found [%s] address as destination\n[%s]\n", strName, addr );
+                } // else  // Otherwise the AddrMan or I2P router was able to find an I2P destination for this address, and it's now stored in 'addr' as a base64 string
+                    // LogPrintf( "AddrMan or I2P Router lookup found [%s] address as destination\n[%s]\n", strName, addr );
             } else {                                                        // Log should tell the user they have DNS turned off, so this can't work
-                LogPrintf( "WARNING - Unable to lookup [%s], No i2p router or dns=0 must be set\n", strName );
+                LogPrintf( "Unable to locate %s, no i2p router enabled or dns=0\n", strName );
                 return false;
             }
         } else                                                              // It was a native I2P address to begin with
@@ -664,7 +675,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         // If we make it here 'addr' has i2p destination address as a base 64 string...
         // Now we can build the output array of bytes as we need for protocol 70009+ by using the concept of a IP6 string we call pchGarlicCat
         memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
-        memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);         // So now copy it to our CNetAddr obect variable
+        memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);         // So now copy it to our CNetAddr object variable
         return true;                                                        // Special handling taken care of
     }
 #endif // ENABLE_I2PSAM
@@ -714,18 +725,10 @@ CNetAddr::CNetAddr(const char *pszIp, bool fAllowLookup)
 CNetAddr::CNetAddr(const std::string &strIp, bool fAllowLookup)
 {
     Init();
-#ifdef XXXXXXXENABLE_I2PSAM
-    // Don't think this is needed anymore, LookupHost->LookupIntern->SetSpecial anyway
-    // isValidI2pAddress call is needed for fixed seed i2p addresses, see: chainparam.cpp
-    if( isStringI2pDestination( strIp ) )
-        SetSpecial( strIp );
-    else
-#endif
-    {
-        std::vector<CNetAddr> vIP;
-        if (LookupHost(strIp.c_str(), vIP, 1, fAllowLookup))
-            *this = vIP[0];
-    }
+    std::vector<CNetAddr> vIP;
+    // LookupHost->LookupIntern->SetSpecial happens for i2p destinations
+    if (LookupHost(strIp.c_str(), vIP, 1, fAllowLookup))
+        *this = vIP[0];
 }
 
 unsigned int CNetAddr::GetByte(int n) const
@@ -816,16 +819,55 @@ bool CNetAddr::IsI2P() const
 
 bool CNetAddr::IsNativeI2P() const
 {
+    static const unsigned char pchAAAA[] = {'A','A','A','A'};
     // For unsigned char [] it's quicker here to just do a memory comparison .verses. conversion to a string.
     // In order for this to work however, it's important that the memory has been cleared when this object
-    // was created.  ToDo: investigate this and confirm it will never mistakenly see a valid native i2p address.
-    static const unsigned char pchAAAA[] = {'A','A','A','A'};
-    return (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
+    // was created.
+    // ToDo: More work could be done here to confirm it will never mistakenly see a valid native i2p address.
+    return (i2pDest[0] != 0) && (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }
 
 std::string CNetAddr::GetI2pDestination() const
 {
-    return std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE);
+    return IsNativeI2P() ? std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE) : std::string();
+}
+
+/** \brief Checks for a valid i2p destination, if the garlic field is not set correctly, it makes sure that field is set properly
+ *
+ * \param void
+ * \return bool true if the address object was changed
+ *
+ */
+bool CNetAddr::CheckAndSetGarlicCat( void )
+{
+    if( IsNativeI2P() && !IsI2P() ) {               // Fix the ip address field
+        memset(ip, 0, sizeof(ip));                  // Make sure the ip is completely zeroed out
+        memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
+        return true;
+    }
+    return false;
+}
+
+/** \brief Sets the i2pDest field to the callers given string
+    The ip field is not touched, if the parameter given is zero length, otherwise it is set to the GarlicCat
+ *
+ * \param sBase64Dest const std::string
+ * \return bool true if the address is now set to a valid i2p destination, otherwise false
+ *
+ */
+bool CNetAddr::SetI2pDestination( const std::string& sBase64Dest )
+{
+    size_t iSize = sBase64Dest.size();
+    if( iSize ) {
+        Init();
+        memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
+    } else          // First & always if we're given some non-zero value, Make sure the whole field is zeroed out
+        memset(i2pDest, 0, NATIVE_I2P_DESTINATION_SIZE);
+
+    // Copy what the caller wants put there, up to the max size
+    // Its not going to be valid, if the size is wrong, but do it anyway
+    if( iSize ) memcpy( i2pDest, sBase64Dest.c_str(), iSize < NATIVE_I2P_DESTINATION_SIZE ? iSize : NATIVE_I2P_DESTINATION_SIZE );
+    return (iSize == NATIVE_I2P_DESTINATION_SIZE) && IsNativeI2P();
 }
 
 // Convert this netaddress objects native i2p address into a b32.i2p address
@@ -841,10 +883,16 @@ bool CNetAddr::IsLocal() const
     // This address is local if it is the same as the public key of the session we have open,
     // ToDo: Compare the destination address with the session mydestination, this works for
     // now (maybe), but should be done better with getting the info from the i2psam module
-    if( IsI2P() ) {
-        string sMyDest = GetArg("-i2p.mydestination.publickey", "");
-        return sMyDest != GetI2pDestination();
-    }
+    // NOTE:
+    // The problem with doing this here, is that AddLocal never makes it on i2p, because
+    // this address matches for the IsRouteable() test, causing it to fail.
+    // There are two IsLocal(), the other one takes a CService object and works with the
+    // mapLocal addresses, this one only stops the local ip addresses from getting into
+    // the address stream, and should NOT include a valid i2p destination.
+    // if( IsI2P() ) {
+    //    string sMyDest = GetArg("-i2p.mydestination.publickey", "");
+    //    return sMyDest == GetI2pDestination();
+    // }
 #endif
 
     // IPv4 loopback
@@ -907,11 +955,15 @@ bool CNetAddr::IsValid() const
 
 bool CNetAddr::IsRoutable() const
 {
-#ifdef ENABLE_I2PSAM
-    return ( IsI2P() && IsNativeI2P() ) || (IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || (IsRFC4193() && !IsTor()) || IsRFC4843() || IsLocal()));
-#else                   // Original code
-    return IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || (IsRFC4193() && !IsTor()) || IsRFC4843() || IsLocal());
-#endif
+    // By allowing RFC1918 addresses you can have routes setup for connections on your local ipv4 network, this is BAD if done
+    // improperly, and is actually complicated to solve if you want to allow local private networks to share p2p data, but
+    // not have it shared externally.  However our newest builds detect this, reject sharing those private addresses outside
+    // yet allow p2p exchange to work well over the private network with separate destinations on each side.
+    bool fDetermined = IsValid() && !(IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
+    // bool fDetermined = IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
+    // LogPrintf( "Is this address %s routable? %s  It appears it is Valid=%s, Local=%s, I2P=%s\n", ToString(), fDetermined ? "YES" : "NO", IsValid() ? "1" : "0", IsLocal() ? "1" : "0", IsI2P() ? "1" : "0");
+    // LogPrintf( "RFC1918=%s RFC3927=%s RFC4862=%s RFC4193=%s RFC4843=%s\n", IsRFC1918() ? "1" : "0", IsRFC3927() ? "1" : "0", IsRFC4862() ? "1" : "0", IsRFC4193() ? "1" : "0", IsRFC4843() ? "1" : "0" );
+    return fDetermined;
 }
 
 enum Network CNetAddr::GetNetwork() const
@@ -926,7 +978,7 @@ enum Network CNetAddr::GetNetwork() const
         return NET_TOR;
 
 #ifdef ENABLE_I2PSAM
-    if (IsI2P()) return NET_NATIVE_I2P;
+    if (IsI2P()) return NET_I2P;
 #endif
 
     return NET_IPV6;
@@ -1019,7 +1071,7 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
 #ifdef ENABLE_I2PSAM
     if( IsI2P() ) {
         vchRet.resize(NATIVE_I2P_DESTINATION_SIZE + 1);
-        vchRet[0] = NET_NATIVE_I2P;
+        vchRet[0] = NET_I2P;
         memcpy(&vchRet[1], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
         return vchRet;
     }
@@ -1153,10 +1205,10 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         case NET_IPV6:   return fTunnel ? REACH_IPV6_WEAK : REACH_IPV6_STRONG; // only prefer giving our IPv6 address if it's not tunnelled
         }
 #ifdef ENABLE_I2PSAM
-    case NET_NATIVE_I2P:
+    case NET_I2P:
         switch(ourNet) {
         default:             return REACH_UNREACHABLE;
-        case NET_NATIVE_I2P: return REACH_PRIVATE;
+        case NET_I2P: return REACH_PRIVATE;
         }
 #endif
     case NET_TOR:
@@ -1182,7 +1234,7 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         case NET_IPV4:    return REACH_IPV4;
         case NET_TOR:     return REACH_PRIVATE; // either from Tor, or don't care about our address
 #ifdef ENABLE_I2PSAM
-        case NET_NATIVE_I2P: return REACH_PRIVATE;  // Same for i2p
+        case NET_I2P: return REACH_PRIVATE;  // Same for i2p
 #endif
         }
     }
@@ -1273,46 +1325,16 @@ unsigned short CService::GetPort() const
 
 bool operator==(const CService& a, const CService& b)
 {
-#ifdef ENABLE_I2PSAM
-    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
-        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
-            return a.GetI2pDestination() == b.GetI2pDestination();
-        } else                          // One is i2p the other is not
-            return false;               // So return that they are not the same
-    } else if( b.IsNativeI2P() )        // One is i2p the other is not
-        return false;                   // So return that they are not the same
-    else                                // Neither are I2P addresses, so use the original code
-#endif
     return (CNetAddr)a == (CNetAddr)b && a.port == b.port;
 }
 
 bool operator!=(const CService& a, const CService& b)
 {
-#ifdef ENABLE_I2PSAM
-    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
-        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
-            return a.GetI2pDestination() != b.GetI2pDestination();
-        } else                          // One is i2p the other is not
-            return true;                // So return that they are not the same
-    } else if( b.IsNativeI2P() )        // One is i2p the other is not
-        return true;                    // So return that they are not the same
-    else                                // Neither are I2P addresses, so use the original code
-#endif
-    return (CNetAddr)a != (CNetAddr)b || a.port != b.port;      // Use the original code
+    return (CNetAddr)a != (CNetAddr)b || a.port != b.port;
 }
 
 bool operator<(const CService& a, const CService& b)
 {
-#ifdef ENABLE_I2PSAM
-    if( a.IsNativeI2P() ) {             // True if the 1st service is I2P
-        if( b.IsNativeI2P() ) {         // and if the 2nd is also, compare the i2p addresses
-            return a.GetI2pDestination() < b.GetI2pDestination();
-        } else                          // One is i2p the other is not
-            return false;               // So return that they are not the same, I2P addresses are considered greater than IP addrs
-    } else if( b.IsNativeI2P() )        // One is i2p the other is not
-        return true;                    // So return that they are not the same, Addr 'a' is not I2P, but Addr 'b' is an I2P address
-    else                                // Neither are I2P addresses, so use the original code
-#endif
     return (CNetAddr)a < (CNetAddr)b || ((CNetAddr)a == (CNetAddr)b && a.port < b.port);
 }
 
@@ -1351,12 +1373,13 @@ std::vector<unsigned char> CService::GetKey() const
      std::vector<unsigned char> vKey;
 
 #ifdef ENABLE_I2PSAM
-     if (IsNativeI2P())
-     {
-         vKey.resize(NATIVE_I2P_DESTINATION_SIZE);
-         memcpy(&vKey[0], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
-         return vKey;
-     }
+    if (IsNativeI2P())
+    {
+        assert( IsI2P() );
+        vKey.resize(NATIVE_I2P_DESTINATION_SIZE);
+        memcpy(&vKey[0], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
+        return vKey;
+    }
 #endif
      vKey.resize(18);
      memcpy(&vKey[0], ip, 16);
