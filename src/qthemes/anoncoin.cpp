@@ -1,10 +1,17 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "anoncoingui.h"
-// Anoncoin-config.h has been loaded...
+
+// Many builder specific things set in the config file, for any source files where we rely on moc_xxx files being generated
+// it is best to include the anoncoin-config.h in the header file itself.  This file is unusual in that it has a .moc file
+// generated for the cpp src itself, with ENABLE_WALLET dependencies, so we include it again here now, attempting to resolve
+// some missing slots for windows builds, although the problem appears to be in anoncoingui...
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include "clientmodel.h"
 #include "guiconstants.h"
@@ -40,6 +47,11 @@
 #include <QThread>
 #include <QTimer>
 #include <QTranslator>
+
+// Needed for Stylesheet code
+#include <QFile>
+#include <QTextStream>
+// #include <QDir>
 
 
 #if defined(QT_STATICPLUGIN)
@@ -139,14 +151,14 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
 void DebugMessageHandler(QtMsgType type, const char *msg)
 {
     Q_UNUSED(type);
-    LogPrint("qt", "GUI: %s\n", msg);
+    LogPrint("gui", "GUI: %s\n", msg);
 }
 #else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString &msg)
 {
     Q_UNUSED(type);
     Q_UNUSED(context);
-    LogPrint("qt", "GUI: %s\n", qPrintable(msg));
+    LogPrint("gui", "GUI: %s\n", qPrintable(msg));
 }
 #endif
 
@@ -309,14 +321,19 @@ AnoncoinApplication::~AnoncoinApplication()
         LogPrintf("Stopped thread\n");
     }
 
-    delete window;
-    window = 0;
 #ifdef ENABLE_WALLET
     delete paymentServer;
     paymentServer = 0;
 #endif
+    optionsModel->SetMainWindow(0); // Do not allow ApplyTheme updates to be done
     delete optionsModel;
     optionsModel = 0;
+
+    //! Delete the main AnoncoinGUI window pointer last.  Segment faults are easy to cause, events may continue even during shutdown when no widgets remain,
+    //! finding these can be difficult, this order of destruction most likely is not the cause your looking for, but good practice just the same.
+    delete window;
+    window = 0;
+
 }
 
 #ifdef ENABLE_WALLET
@@ -328,12 +345,17 @@ void AnoncoinApplication::createPaymentServer()
 
 void AnoncoinApplication::createOptionsModel()
 {
-    optionsModel = new OptionsModel();
+    optionsModel = new OptionsModel( this );
 }
 
 void AnoncoinApplication::createWindow(bool isaTestNet)
 {
     window = new AnoncoinGUI(isaTestNet, 0);
+
+    //! Once the main window has been created, we can tell the options model about it, so if any Theme changes (via user selection) need to happen
+    //! that it will have a pointer to our main GUI and be able to Apply those changes, this could not be done when the Options Model was created
+    //! and the Windows QSettings values loaded, because the main GUI is only now created, nearly as a last step during initializing...GR
+    optionsModel->SetMainWindow( window );
 
     pollShutdownTimer = new QTimer(window);
     connect(pollShutdownTimer, SIGNAL(timeout()), window, SLOT(detectShutdown()));
@@ -380,8 +402,7 @@ void AnoncoinApplication::requestShutdown()
 {
     LogPrintf("Requesting shutdown\n");
     startThread();
-    window->hide();
-    window->setClientModel(0);
+    window->ShutdownMainWindow();
     pollShutdownTimer->stop();
 
 #ifdef ENABLE_WALLET
@@ -391,6 +412,9 @@ void AnoncoinApplication::requestShutdown()
 #endif
     delete clientModel;
     clientModel = 0;
+
+    //! Do this long before the Main Window is destroyed
+    GUIUtil::saveWindowGeometry("nWindow", window);
 
     // Show a simple window indicating shutdown status
     ShutdownWindow::showShutdownWindow(window);
@@ -402,6 +426,12 @@ void AnoncoinApplication::requestShutdown()
 void AnoncoinApplication::initializeResult(int retval)
 {
     LogPrintf("Initialization result: %i\n", retval);
+
+    // Regardless of the initialization result, we can now load the i2p
+    // destination address information into the ShowI2PAddresses class
+    // and any parameter interaction will have finished.
+    window->UpdateI2PAddressDetails();
+
     // Set exit result: 0 if successful, 1 if failure
     returnValue = retval ? 0 : 1;
     if(retval)
@@ -426,6 +456,9 @@ void AnoncoinApplication::initializeResult(int retval)
                              paymentServer, SLOT(fetchPaymentACK(CWallet*,const SendCoinsRecipient&,QByteArray)));
         }
 #endif
+        //! Once most all initialization steps have been done, and just before starting
+        //! a normal operational mode we can Apply the users Theme selection.
+        window->applyTheme();
 
         // If -min option passed, start window minimized.
         if(GetBoolArg("-min", false))
@@ -449,6 +482,11 @@ void AnoncoinApplication::initializeResult(int retval)
                          window, SLOT(message(QString,QString,unsigned int)));
         QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
 #endif
+
+        // If the commandline included -generatei2pdestination, and the user selected 'APPLY' then that is the reason we
+        // are here, and can now show the generated destination details.
+        if( GetBoolArg( "-generatei2pdestination", false ) )
+            window->ShowI2pDestination();
     } else {
         quit(); // Exit main loop
     }
@@ -551,7 +589,7 @@ int main(int argc, char *argv[])
         // runFirstRunWizard();
     }
 
-    // Read config after it's potentional written by the wizard.
+    // Read config after it's potentially been written by the wizard.
     try {
         ReadConfigFile(mapArgs, mapMultiArgs);
     } catch(std::exception &e) {
@@ -560,11 +598,11 @@ int main(int argc, char *argv[])
         return false;
     }
 
-    /// 7. Determine network (and switch to network specific options)
-    // - Do not call Params() before this step
-    // - Do this after parsing the configuration file, as the network can be switched there
-    // - QSettings() will use the new application name after this, resulting in network-specific settings
-    // - Needs to be done before createOptionsModel
+    //! 7. Determine network (and switch to network specific options)
+    //! - Do not call Params() before this step
+    //! - Do this after parsing the configuration file, as the network can be switched there
+    //! - QSettings() will use the new application name after this, resulting in network-specific settings
+    //! - Needs to be done before createOptionsModel
 
     app.processEvents();
     app.setQuitOnLastWindowClosed(false);
@@ -579,7 +617,7 @@ int main(int argc, char *argv[])
     if (!PaymentServer::ipcParseCommandLine(argc, argv))
         exit(0);
 #endif
-    bool isaTestNet = Params().NetworkID() != CChainParams::MAIN;
+    bool isaTestNet = !isMainNetwork();
     // Allow for separate UI settings for testnets
     if (isaTestNet)
         QApplication::setApplicationName(QAPP_APP_NAME_TESTNET);
@@ -617,7 +655,7 @@ int main(int argc, char *argv[])
     // Install qDebug() message handler to route to debug.log
     qInstallMessageHandler(DebugMessageHandler);
 #endif
-    // Load GUI settings from QSettings
+    // Load GUI settings from QSettings, the Options Model needs to have the GUI main window so that it can apply theme changes
     app.createOptionsModel();
 
     // Subscribe to global signals from core
@@ -628,7 +666,10 @@ int main(int argc, char *argv[])
 
     try
     {
+        //! Now finally we can create the main AnoncoinGUI window, based on what parameters have been setup and defined.
         app.createWindow(isaTestNet);
+        //! This next one is a biggy, it takes only a few machine cycles but starts a new thread which runs Anoncoin Core initialization, until that
+        //! is done, there is little else for us to do except execute QT application events, just as every other good QT program should do.
         app.requestInitialize();
 #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
         WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Anoncoin Core didn't yet exit safely..."), (HWND)app.getMainWinId());
