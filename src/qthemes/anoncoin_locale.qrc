@@ -1,0 +1,34 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="ar">locale/anoncoin_ar.qm</file>
+        <file alias="ca">locale/anoncoin_ca.qm</file>
+        <file alias="cs">locale/anoncoin_cs.qm</file>
+        <file alias="da">locale/anoncoin_da.qm</file>
+        <file alias="de">locale/anoncoin_de.qm</file>
+        <file alias="el_GR">locale/anoncoin_el_GR.qm</file>
+        <file alias="en">locale/anoncoin_en.qm</file>
+        <file alias="es">locale/anoncoin_es.qm</file>
+        <file alias="fi">locale/anoncoin_fi.qm</file>
+        <file alias="fr_FR">locale/anoncoin_fr_FR.qm</file>
+        <file alias="he">locale/anoncoin_he.qm</file>
+        <file alias="hi_IN">locale/anoncoin_hi_IN.qm</file>
+        <file alias="id_ID">locale/anoncoin_id_ID.qm</file>
+        <file alias="it">locale/anoncoin_it.qm</file>
+        <file alias="ja_JP">locale/anoncoin_ja_JP.qm</file>
+        <file alias="ka">locale/anoncoin_ka.qm</file>
+        <file alias="ko_KR">locale/anoncoin_ko_KR.qm</file>
+        <file alias="nb_NO">locale/anoncoin_nb_NO.qm</file>
+        <file alias="pl">locale/anoncoin_pl.qm</file>
+        <file alias="pt_BR">locale/anoncoin_pt_BR.qm</file>
+        <file alias="pt_PT">locale/anoncoin_pt_PT.qm</file>
+        <file alias="ro_RO">locale/anoncoin_ro_RO.qm</file>
+        <file alias="ru">locale/anoncoin_ru.qm</file>
+        <file alias="sk">locale/anoncoin_sk.qm</file>
+        <file alias="sv">locale/anoncoin_sv.qm</file>
+        <file alias="tr">locale/anoncoin_tr.qm</file>
+        <file alias="uk">locale/anoncoin_uk.qm</file>
+        <file alias="zh_CN">locale/anoncoin_zh_CN.qm</file>
+        <file alias="zh_HK">locale/anoncoin_zh_HK.qm</file>
+        <file alias="zh_TW">locale/anoncoin_zh_TW.qm</file>
+    </qresource>
+</RCC>

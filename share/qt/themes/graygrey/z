@@ -1,0 +1,18 @@
+image: url(:/arrow_down);
+image: url(:/arrow_up);
+image: url(:/branch-closed);
+image: url(:/branch-end) 0;
+image: url(:/branch-more) 0;
+image: url(:/branch-open);
+image: url(:/checkbox_checked);
+image: url(:/checkbox_checked_hover);
+image: url(:/checkbox_checked_pressed);
+image: url(:/down_arrow_disabled.png);
+image: url(:/radiobutton_checked);
+image: url(:/radiobutton_checked_hover);
+image: url(:/radiobutton_checked_pressed);
+image: url(:/radiobutton_unchecked);
+image: url(:/radiobutton_unchecked_hover);
+image: url(:/radiobutton_unchecked_pressed);
+image: url(:/up_arrow_disabled.png);
+image: url(:/vline) 0;

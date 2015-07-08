@@ -1,0 +1,306 @@
+/*
+    Qt style sheet
+Icons from http://www.flaticon.com - authors Freepik, Victor Erixon, Fermam Aziz, Google, Pavel Kozlov - are licensed by http://creativecommons.org/licenses/by/3.0/  "Creative Commons BY 3.0"
+*/
+
+/** [VARS]
+    $main_back = #fed740
+    $base_back = #3ccccc
+    $alt_back = #999966
+    $alt2_back = #cccc99
+    $base_edge = #7f7f7f
+    $alt_edge = #5c5c5c
+    $alt2_edge = #999999
+    $base_select = #dd9999
+    $bar_back = #ff017e
+    $bar_back2 = #5eaaff
+    $grad_lt = #ffffcc
+    $grad_2 = #883388
+[/VARS] */
+
+#labelWalletStatus { color: red; }
+#labelWelcome { font-style:italic; }
+#labelCoinControlFeatures { font-weight:bold; }
+#labelTransactionsStatus { color: red; }
+#listTransactions { background: transparent; }
+#errorMessage[error="true"], #freeSpace[error="true"] { color: #800000; }
+#labelCoinControlChangeLabel, #statusLabel { color: black; }
+#labelCoinControlChangeLabel[error="true"]  { color: red; }
+#statusLabel_SM, #statusLabel_VM  { color: green; }
+#statusLabel_SM[error="true"], #statusLabel_VM[error="true"], #statusLabel[error="true"]  { color: red; }
+#messagesWidget table { }
+#messagesWidget td.time { color: #808080; padding-top: 3px; }
+#messagesWidget td.message { font-family: monospace; font-size: 12px; }
+#messagesWidget td.cmd-request { color: #006060; }
+#messagesWidget td.cmd-error { color: red; }
+#messagesWidget b { color: #006060; }
+#l5[error="true"], l6[error="true"], l7[error="true"], l8[error="true"] { color: red; }
+unitDisplayControl QLabel { font: 11pt; color: #333333 }
+QProgressBar[windowsstyle="true"] {
+  background-color: #e8e8e8;
+  border: 1px solid grey; border-radius: 7px; padding: 1px; text-align: center;
+}
+QProgressBar::chunk[windowsstyle="true"] {
+  background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #FF8000, stop: 1 orange);
+  border-radius: 7px; margin: 0px;
+}
+QLineEdit[invalid="true"], QWidget[invalid="true"] { background: #FF8080; }
+
+QDialog,
+QMainWindow,
+QTabWidget,
+QTabWidget *,
+QTabBar,
+QMenuBar,
+QWebView,
+QTreeWidget,
+QSplitter,
+QScrollArea,
+QScrollArea *,
+#transactionsPage {
+    background-color: $main_back;
+}
+QMainWindow {
+    background-color: $main_back;
+    background-image: url(_themesdir/thecakeisalie.png);
+    background-position: bottom left;
+    background-repeat: no-repeat;
+    margin-left: 16px;
+    margin-bottom: 36px;
+}
+
+QTreeView,
+QListView,
+QLineEdit,
+QTextBrowser,
+QPlainTextEdit,
+QSpinBox,
+QDoubleSpinBox,
+QComboBox,
+QMenu {
+    selection-color: $grad_2; 
+    selection-background-color: $alt_back;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $base_back, stop:1 $grad_lt);
+    min-width: 14px;
+    min-height: 14px;
+    border: 1px solid $base_edge;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QPushButton,
+QToolButton {
+    selection-color: $grad_2; 
+    selection-background-color: $alt_back;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $base_back, stop:1 $grad_lt);
+    border: 1px solid $base_edge;
+    padding: 2px;
+    border-radius: 3px;
+}
+QTabBar::tab {
+    border: 1px solid $alt_back;
+    padding: 5px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $base_back, stop:1 $grad_lt);
+}
+
+QPushButton:hover,
+QToolButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $grad_lt, stop:1 $base_back);
+}
+
+QPushButton:pressed,
+QToolButton:pressed,
+QPushButton:on,
+QToolButton:on {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $base_select, stop: 1 $base_back);
+}
+
+QToolButton[flat=true], QToolButton[flat=true]:hover {
+    border: 0px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $grad_lt, stop:1 $base_back);
+}
+
+QCheckBox::indicator {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $base_back, stop:1 $grad_lt);
+    width: 14px;
+    height: 14px;
+    border: 1px solid $base_edge;
+    padding: 1px;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:checked {
+    image: url(_themesdir/ok.png);
+}
+
+QRadioButton::indicator {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $base_back, stop:1 $grad_lt);
+    width: 7px;
+    height: 7px;
+    border: 1px solid $base_edge;
+    padding: 1px;
+    border-radius: 5px;
+}
+
+QRadioButton::indicator:checked {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $base_back, stop:1 $base_select);
+    width: 7px;
+    height: 7px;
+    border: 1px solid $base_edge;
+    padding: 1px;
+    border-radius: 5px;
+}
+
+QListView::item:hover,
+QTreeView::item:hover,
+QRadioButton:hover,
+QCheckBox:hover,
+QToolTip,
+QMenu::item:selected,
+QHeaderView,
+QProgressBar,
+QScrollBar {
+    background-color: $alt2_back;
+}
+
+QMenuBar::item, QMenuBar::item:selected {
+        background: transparent;
+}
+
+QToolTip {
+    opacity: 192; /* with an active composition manager, this should look semi-transparent */
+}
+
+QSplitter::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $alt_back, stop:1 $base_back);
+    border: 1px solid $alt_edge;
+    width: 2px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+QSplitter::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $alt_back, stop:1 $base_back);
+    border: 1px solid $alt_edge;
+    width: 2px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+QProgressBar:horizontal {
+    border: 1px solid $base_edge;
+    border-radius: 3px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $grad_lt, stop:1 $base_back);
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar::chunk:horizontal {
+    background-color: $alt_back;
+    width: 1px;
+}
+
+QProgressBar:vertical {
+    border: 1px solid $base_edge;
+    border-radius: 3px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $grad_lt, stop:1 $base_back);
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar::chunk:vertical {
+    background-color: $alt_back;
+    height: 1px;
+}
+
+QProgressBar:disabled {
+    color: $grad_lt;
+}
+
+QHeaderView::down-arrow {
+    image: url(_themesdir/down-arrow.png);
+}
+
+QHeaderView::up-arrow {
+    image: url(_themesdir/up-arrow.png);
+}
+
+QTreeView {
+    alternate-background-color: $base_back;
+    paint-alternating-row-colors-for-empty-area: true;
+    show-decoration-selected: 0;
+}
+
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url(_themesdir/vline.png) 0;
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: url(_themesdir/branch-more.png) 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(_themesdir/branch-end.png) 0;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(_themesdir/branch-closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+    border-image: none;
+    image: url(_themesdir/branch-open.png);
+}
+
+QSlider::groove:horizontal {
+    border: 1px solid $alt2_edge;
+    height: 8px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 $grad_lt, stop:1 $base_back);
+    margin: 2px 0;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 $alt_back, stop:1 $base_back);
+    border: 1px solid $alt_edge;
+    width: 20px;
+    margin: -2px 0;
+    border-radius: 3px;
+}
+
+QMessageBox {
+    messagebox-text-interaction-flags: 1 /* text can be selected and copied to clipboard */
+}
+
+
+QToolBar {
+    background-color: $bar_back;
+    border: 0px;
+}
+
+#labelAlerts,
+QMenuBar,
+QStatusBar {
+    background: $bar_back2;
+}
+
+#toolbuttonOverview {
+    qproperty-icon: url(_themesdir/32x32/coins21.png);
+}
+#toolbuttonAccounts {
+    qproperty-icon: url(_themesdir/32x32/money148.png);
+}
+#toolbuttonSendCoins {
+    qproperty-icon: url("_themesdir/32x32/transit11.png");
+}
+#toolbuttonReceiveCoins {
+    qproperty-icon: url("_themesdir/32x32/loginoutlined.png");
+}
+#toolbuttonHistory {
+    qproperty-icon: url(_themesdir/32x32/history2.png);
+}
+#toolbuttonAddresses {
+    qproperty-icon: url("_themesdir/32x32/address16.png");
+}

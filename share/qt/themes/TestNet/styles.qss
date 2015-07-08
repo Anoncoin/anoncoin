@@ -1,0 +1,200 @@
+/**
+ * Default theme
+ * The $variables below will be read on the fly and used to
+ * replace matching entries in the stylesheet below.
+ * This makes it easier to use basic values in multiple places.
+ */
+
+/** [VARS]
+	$baseback = #d77f7f
+	$basefield = #d71c1c
+	$text-light-color = #ffffff
+	$text-dark-color = #3b444a
+	$grid-color = #ccc
+	$grad-top = #3b444a
+	$grad-bottom = #333aa2
+	$grad-edge = #313a40
+	$black = #000
+	$white = #fff
+[/VARS] */
+
+#labelWalletStatus { color: red; }
+#labelWelcome { font-style:italic; }
+#labelCoinControlFeatures { font-weight:bold; }
+#labelAlerts { background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop:0 #F0D0A0, stop:1 #F8D488); color:#000000; }
+#labelTransactionsStatus { color: red; }
+#listTransactions { background: transparent; }
+#errorMessage[error="true"], #freeSpace[error="true"] { color: #800000; }
+#labelCoinControlChangeLabel, #statusLabel { color: black; }
+#labelCoinControlChangeLabel[error="true"]  { color: red; }
+#statusLabel_SM, #statusLabel_VM  { color: green; }
+#statusLabel_SM[error="true"], #statusLabel_VM[error="true"], #statusLabel[error="true"]  { color: red; }
+#messagesWidget table { }
+#messagesWidget td.time { color: #808080; padding-top: 3px; }
+#messagesWidget td.message { font-family: monospace; font-size: 12px; }
+#messagesWidget td.cmd-request { color: #006060; }
+#messagesWidget td.cmd-error { color: red; }
+#messagesWidget b { color: #006060; }
+#l5[error="true"], l6[error="true"], l7[error="true"], l8[error="true"] { color: red; }
+unitDisplayControl QLabel { font: 11pt; color: #333333 }
+QProgressBar[windowsstyle="true"] {
+  background-color: #e8e8e8;
+  border: 1px solid grey; border-radius: 7px; padding: 1px; text-align: center;
+}
+QProgressBar::chunk[windowsstyle="true"] {
+  background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #FF8000, stop: 1 orange);
+  border-radius: 7px; margin: 0px;
+}
+QValidatedLineEdit[invalid="true"], AnoncoinAmountField[valid="false"] { background: #FF8080; }
+
+* { gridline-color: $grid-color }
+
+QWidget {
+        font-family: "Courier New", Courier, monospace;
+}
+
+/* Dialog, Window */
+QDialog, QMainWindow, #transactionsPage {
+	background: $baseback;
+        font-size: 11px;
+}
+QMainWindow {
+	background: $basefield;
+	background-image: url(:icons/anoncoin_testnet);
+	background-position: bottom left;
+	background-repeat: no-repeat;
+	margin-left: 8px;
+	margin-bottom: 32px;
+}
+
+
+/* Frames */
+QFrame {
+	/* too general - do not style */
+}
+
+QMenuBar {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 $grad-bottom, stop:1 $grad-top);
+	border-top: 1px solid $grad-edge;
+	color: $text-light-color;
+}
+QMenuBar::item {
+        background: transparent;
+}
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+        background: transparent;
+}
+QMenuBar::item:pressed {
+        background: $grad-bottom;
+}
+
+QTabBar::tab {
+	border: 1px solid $grad-top;
+	background-color: $grad-edge;
+	color: $grad-top;
+	padding: 4px 8px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	margin-right: 3px;
+	border-bottom: 0px;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+	background: $grad-bottom;
+	color: $white;
+}
+
+QTabBar::tab:!selected {
+	background-color: $grad-top;
+	color: $white;
+}
+
+QToolBar {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 $grad-top, stop:1 $basefield);
+	spacing: 3px; /* spacing between items in the tool bar */
+	margin-bottom: 0px;
+	border: none;
+	border-bottom: 1px solid $grad-top;
+}
+
+QToolBar::handle {
+	padding: 0px;
+	background-color: transparent;
+}
+
+/* Toolbar buttons */
+QToolBar QToolButton { /* all types of tool button */
+	border: 1px solid $grad-top;
+	background: transparent;
+	color: $text-dark-color;
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 $grad-top, stop:1 $basefield);
+	color: $black;
+	padding: 4px 2px;
+	font-size: 14px;
+	width: 140%;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	font: bold;
+	margin-top: 12px;
+}
+
+QToolBar QToolButton:hover {
+	background: $grad-top;
+	color: $white;
+}
+
+QToolBar QToolButton:checked {
+	border-bottom-color: $grad-edge;
+	background: $basefield;
+	color: $black;
+}
+
+QToolBar QToolButton:disabled {
+	color: $white;
+	border-color: $grad-edge;
+	border-bottom-color: transparent;
+	background-color: $basefield;
+}
+
+/* Bottom status bar */
+QStatusBar {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 $grad-top, stop:1 $grad-bottom);
+	border-top: 1px solid $grad-edge;
+	color: $text-light-color;
+}
+
+QStatusBar QLabel {
+	color: $text-light-color;
+}
+
+QStatusBar::item {
+	border: none;
+	color: $text-light-color;
+}
+
+QLabel[error="true"] {
+	color: red;
+}
+
+QLabel[status="ok"] {
+	color: green;
+}
+
+QValidatedLineEdit[error="true"] {
+	background-color: #FF8080;
+}
+
+QToolBar {
+	qproperty-iconSize: 32px 32px;
+}
+
+QToolBar QToolButton { /* all types of tool button */
+	qproperty-toolButtonStyle: ToolButtonTextBesideIcon;
+}
+
+#frame, #frame_2 {
+	background-color: $white;
+	border: 0px;
+}
