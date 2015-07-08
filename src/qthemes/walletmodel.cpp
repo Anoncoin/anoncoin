@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletmodel.h"
@@ -25,6 +25,8 @@
 #include <QSet>
 #include <QTimer>
 
+using namespace std;
+
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
     QObject(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
     transactionTableModel(0),
@@ -33,7 +35,6 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0)
 {
-    fProcessingQueuedTransactions = false;
     fHaveWatchOnly = wallet->HaveWatchOnly();
     fForceCheckBalanceChanged = false;
 
@@ -163,11 +164,8 @@ void WalletModel::checkBalanceChanged()
     }
 }
 
-void WalletModel::updateTransaction(const QString &hash, int status)
+void WalletModel::updateTransaction()
 {
-    if(transactionTableModel)
-        transactionTableModel->updateTransaction(hash, status);
-
     // Balance and number of transactions might have changed
     fForceCheckBalanceChanged = true;
 }
@@ -240,8 +238,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             setAddress.insert(rcp.address);
             ++nAddresses;
 
-            CScript scriptPubKey;
-            scriptPubKey.SetDestination(CAnoncoinAddress(rcp.address.toStdString()).Get());
+            CScript scriptPubKey = GetScriptForDestination(CAnoncoinAddress(rcp.address.toStdString()).Get());
             vecSend.push_back(std::pair<CScript, int64_t>(scriptPubKey, rcp.amount));
 
             total += rcp.amount;
@@ -257,12 +254,6 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
     if(total > nBalance)
     {
         return AmountExceedsBalance;
-    }
-
-    if((total + nTransactionFee) > nBalance)
-    {
-        transaction.setTransactionFee(nTransactionFee);
-        return SendCoinsReturn(AmountWithFeeExceedsBalance);
     }
 
     {
@@ -287,7 +278,11 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
                          CClientUIInterface::MSG_ERROR);
             return TransactionCreationFailed;
         }
-    }
+
+        // reject insane fee > 0.1 anoncoin
+        if (nFeeRequired > 10000000)
+            return InsaneFee;
+   }
 
     return SendCoinsReturn(OK);
 }
@@ -466,45 +461,16 @@ static void NotifyAddressBookChanged(WalletModel *walletmodel, CWallet *wallet,
                               Q_ARG(int, status));
 }
 
-// queue notifications to show a non freezing progress dialog e.g. for rescan
-static bool fQueueNotifications = false;
-static std::vector<std::pair<uint256, ChangeType> > vQueueNotifications;
 static void NotifyTransactionChanged(WalletModel *walletmodel, CWallet *wallet, const uint256 &hash, ChangeType status)
 {
-    if (fQueueNotifications)
-    {
-        vQueueNotifications.push_back(make_pair(hash, status));
-        return;
-    }
-
-    QString strHash = QString::fromStdString(hash.GetHex());
-
-    qDebug() << "NotifyTransactionChanged : " + strHash + " status= " + QString::number(status);
-    QMetaObject::invokeMethod(walletmodel, "updateTransaction", Qt::QueuedConnection,
-                              Q_ARG(QString, strHash),
-                              Q_ARG(int, status));
+    Q_UNUSED(wallet);
+    Q_UNUSED(hash);
+    Q_UNUSED(status);
+    QMetaObject::invokeMethod(walletmodel, "updateTransaction", Qt::QueuedConnection);
 }
 
 static void ShowProgress(WalletModel *walletmodel, const std::string &title, int nProgress)
 {
-    if (nProgress == 0)
-        fQueueNotifications = true;
-
-    if (nProgress == 100)
-    {
-        fQueueNotifications = false;
-        if (vQueueNotifications.size() > 10) // prevent balloon spam, show maximum 10 balloons
-            QMetaObject::invokeMethod(walletmodel, "setProcessingQueuedTransactions", Qt::QueuedConnection, Q_ARG(bool, true));
-        for (unsigned int i = 0; i < vQueueNotifications.size(); ++i)
-        {
-            if (vQueueNotifications.size() - i <= 10)
-                QMetaObject::invokeMethod(walletmodel, "setProcessingQueuedTransactions", Qt::QueuedConnection, Q_ARG(bool, false));
-
-            NotifyTransactionChanged(walletmodel, NULL, vQueueNotifications[i].first, vQueueNotifications[i].second);
-        }
-        std::vector<std::pair<uint256, ChangeType> >().swap(vQueueNotifications); // clear
-    }
-
     // emits signal "showProgress"
     QMetaObject::invokeMethod(walletmodel, "showProgress", Qt::QueuedConnection,
                               Q_ARG(QString, QString::fromStdString(title)),
@@ -633,7 +599,7 @@ void WalletModel::listCoins(std::map<QString, std::vector<COutput> >& mapCoins) 
         CTxDestination address;
         if(!out.fSpendable || !ExtractDestination(cout.tx->vout[cout.i].scriptPubKey, address))
             continue;
-        mapCoins[CAnoncoinAddress(address).ToString().c_str()].push_back(out);
+        mapCoins[QString::fromStdString(CAnoncoinAddress(address).ToString())].push_back(out);
     }
 }
 

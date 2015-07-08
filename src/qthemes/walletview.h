@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WALLETVIEW_H
@@ -24,7 +24,7 @@ class QModelIndex;
 class QProgressDialog;
 QT_END_NAMESPACE
 
-/*
+/**
   WalletView class. This class represents the view to a single wallet.
   It was added to support multiple wallet functionality. Each wallet gets its own WalletView instance.
   It communicates with both the client and the wallet models to give the user an up-to-date view of the

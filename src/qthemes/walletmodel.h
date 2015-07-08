@@ -1,10 +1,10 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WALLETMODEL_H
-#define WALLETMODEL_H
+#ifndef ANONCOIN_WALLETMODEL_H
+#define ANONCOIN_WALLETMODEL_H
 
 #include "paymentrequestplus.h"
 #include "walletmodeltransaction.h"
@@ -60,20 +60,20 @@ public:
     static const int CURRENT_VERSION = 1;
     int nVersion;
 
-    IMPLEMENT_SERIALIZE
-    (
-        SendCoinsRecipient* pthis = const_cast<SendCoinsRecipient*>(this);
+    ADD_SERIALIZE_METHODS;
 
-        std::string sAddress = pthis->address.toStdString();
-        std::string sLabel = pthis->label.toStdString();
-        std::string sMessage = pthis->message.toStdString();
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+        std::string sAddress = address.toStdString();
+        std::string sLabel = label.toStdString();
+        std::string sMessage = message.toStdString();
         std::string sPaymentRequest;
-        if (!fRead && pthis->paymentRequest.IsInitialized())
-            pthis->paymentRequest.SerializeToString(&sPaymentRequest);
-        std::string sAuthenticatedMerchant = pthis->authenticatedMerchant.toStdString();
+        if (!ser_action.ForRead() && paymentRequest.IsInitialized())
+            paymentRequest.SerializeToString(&sPaymentRequest);
+        std::string sAuthenticatedMerchant = authenticatedMerchant.toStdString();
 
-        READWRITE(pthis->nVersion);
-        nVersion = pthis->nVersion;
+        READWRITE(this->nVersion);
+        nVersion = this->nVersion;
         READWRITE(sAddress);
         READWRITE(sLabel);
         READWRITE(amount);
@@ -81,16 +81,16 @@ public:
         READWRITE(sPaymentRequest);
         READWRITE(sAuthenticatedMerchant);
 
-        if (fRead)
+        if (ser_action.ForRead())
         {
-            pthis->address = QString::fromStdString(sAddress);
-            pthis->label = QString::fromStdString(sLabel);
-            pthis->message = QString::fromStdString(sMessage);
+            address = QString::fromStdString(sAddress);
+            label = QString::fromStdString(sLabel);
+            message = QString::fromStdString(sMessage);
             if (!sPaymentRequest.empty())
-                pthis->paymentRequest.parse(QByteArray::fromRawData(sPaymentRequest.data(), sPaymentRequest.size()));
-            pthis->authenticatedMerchant = QString::fromStdString(sAuthenticatedMerchant);
+                paymentRequest.parse(QByteArray::fromRawData(sPaymentRequest.data(), sPaymentRequest.size()));
+            authenticatedMerchant = QString::fromStdString(sAuthenticatedMerchant);
         }
-    )
+    }
 };
 
 /** Interface to Anoncoin wallet from Qt view code. */
@@ -111,7 +111,8 @@ public:
         AmountWithFeeExceedsBalance,
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
-        TransactionCommitFailed
+        TransactionCommitFailed,
+        InsaneFee
     };
 
     enum EncryptionStatus
@@ -135,7 +136,6 @@ public:
     qint64 getWatchUnconfirmedBalance() const;
     qint64 getWatchImmatureBalance() const;
     EncryptionStatus getEncryptionStatus() const;
-    bool processingQueuedTransactions() { return fProcessingQueuedTransactions; }
 
     // Check address for validity
     bool validateAddress(const QString &address);
@@ -199,7 +199,6 @@ public:
 
 private:
     CWallet *wallet;
-    bool fProcessingQueuedTransactions;
     bool fHaveWatchOnly;
     bool fForceCheckBalanceChanged;
 
@@ -256,15 +255,13 @@ public slots:
     /* Wallet status might have changed */
     void updateStatus();
     /* New transaction, or transaction changed status */
-    void updateTransaction(const QString &hash, int status);
+    void updateTransaction();
     /* New, updated or removed address book entry */
     void updateAddressBook(const QString &address, const QString &label, bool isMine, const QString &purpose, int status);
     /* Watch-only added */
     void updateWatchOnlyFlag(bool fHaveWatchonly);
     /* Current, immature or unconfirmed balance might have changed - emit 'balanceChanged' if so */
     void pollBalanceChanged();
-    /* Needed to update fProcessingQueuedTransactions through a QueuedConnection */
-    void setProcessingQueuedTransactions(bool value) { fProcessingQueuedTransactions = value; }
 };
 
-#endif // WALLETMODEL_H
+#endif // ANONCOIN_WALLETMODEL_H
