@@ -1,17 +1,17 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-//
-// Why base-58 instead of standard base-64 encoding?
-// - Don't want 0OIl characters that look the same in some fonts and
-//      could be used to create visually identical looking account numbers.
-// - A string with non-alphanumeric characters is not as easily accepted as an account number.
-// - E-mail usually won't line-break if there's no punctuation to break at.
-// - Double-clicking selects the whole number as one word if it's all alphanumeric.
-//
+/**
+ * Why base-58 instead of standard base-64 encoding?
+ * - Don't want 0OIl characters that look the same in some fonts and
+ *      could be used to create visually identical looking account numbers.
+ * - A string with non-alphanumeric characters is not as easily accepted as an account number.
+ * - E-mail usually won't line-break if there's no punctuation to break at.
+ * - Double-clicking selects the whole number as one word if it's all alphanumeric.
+ */
 #ifndef ANONCOIN_BASE58_H
 #define ANONCOIN_BASE58_H
 
@@ -69,10 +69,10 @@ inline bool DecodeBase58Check(const std::string& str, std::vector<unsigned char>
 class CBase58Data
 {
 protected:
-    // the version byte(s)
+    //! the version byte(s)
     std::vector<unsigned char> vchVersion;
 
-    // the actually encoded data
+    //! the actually encoded data
     typedef std::vector<unsigned char, zero_after_free_allocator<unsigned char> > vector_uchar;
     vector_uchar vchData;
 
@@ -105,6 +105,7 @@ public:
     bool Set(const CScriptID &id);
     bool Set(const CTxDestination &dest);
     bool IsValid() const;
+    bool IsValid(const CChainParams &params) const;
 
     CAnoncoinAddress() {}
     CAnoncoinAddress(const CTxDestination &dest) { Set(dest); }
@@ -147,7 +148,7 @@ public:
         return ret;
     }
 
-    CAnoncoinExtKeyBase(const K &key) {
+    CAnoncoinExtKeyBase(const K& key) {
         SetKey(key);
     }
 

@@ -1,15 +1,16 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "script.h"
 
-#include "core.h"
+#include "compressor.h"
 #include "hash.h"
 #include "key.h"
 #include "keystore.h"
+#include "random.h"
 #include "sync.h"
 #include "uint256.h"
 #include "util.h"
@@ -1647,7 +1648,7 @@ bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, const C
 }
 
 
-bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CTransaction& txTo, unsigned int nIn, int nHashType)
+bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, int nHashType)
 {
     assert(nIn < txTo.vin.size());
     CTxIn& txin = txTo.vin[nIn];
@@ -1682,7 +1683,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CTransa
     return VerifyScript(txin.scriptSig, fromPubKey, txTo, nIn, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC, 0);
 }
 
-bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CTransaction& txTo, unsigned int nIn, int nHashType)
+bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CMutableTransaction& txTo, unsigned int nIn, int nHashType)
 {
     assert(nIn < txTo.vin.size());
     CTxIn& txin = txTo.vin[nIn];
@@ -1806,7 +1807,6 @@ CScript CombineSignatures(CScript scriptPubKey, const CTransaction& txTo, unsign
     txnouttype txType;
     vector<vector<unsigned char> > vSolutions;
     Solver(scriptPubKey, txType, vSolutions);
-
     vector<valtype> stack1;
     EvalScript(stack1, scriptSig1, CTransaction(), 0, SCRIPT_VERIFY_STRICTENC, 0);
     vector<valtype> stack2;
@@ -1957,123 +1957,38 @@ void CScript::SetMultisig(int nRequired, const std::vector<CPubKey>& keys)
     *this << EncodeOP_N(keys.size()) << OP_CHECKMULTISIG;
 }
 
-bool CScriptCompressor::IsToKeyID(CKeyID &hash) const
+namespace
 {
-    if (script.size() == 25 && script[0] == OP_DUP && script[1] == OP_HASH160
-                            && script[2] == 20 && script[23] == OP_EQUALVERIFY
-                            && script[24] == OP_CHECKSIG) {
-        memcpy(&hash, &script[3], 20);
+class CScriptVisitor : public boost::static_visitor<bool>
+{
+private:
+    CScript *script;
+public:
+    CScriptVisitor(CScript *scriptin) { script = scriptin; }
+
+    bool operator()(const CNoDestination &dest) const {
+        script->clear();
+        return false;
+    }
+
+    bool operator()(const CKeyID &keyID) const {
+        script->clear();
+        *script << OP_DUP << OP_HASH160 << ToByteVector(keyID) << OP_EQUALVERIFY << OP_CHECKSIG;
         return true;
     }
-    return false;
+
+    bool operator()(const CScriptID &scriptID) const {
+        script->clear();
+        *script << OP_HASH160 << ToByteVector(scriptID) << OP_EQUAL;
+        return true;
+    }
+};
 }
 
-bool CScriptCompressor::IsToScriptID(CScriptID &hash) const
+CScript GetScriptForDestination(const CTxDestination& dest)
 {
-    if (script.size() == 23 && script[0] == OP_HASH160 && script[1] == 20
-                            && script[22] == OP_EQUAL) {
-        memcpy(&hash, &script[2], 20);
-        return true;
-    }
-    return false;
-}
+    CScript script;
 
-bool CScriptCompressor::IsToPubKey(CPubKey &pubkey) const
-{
-    if (script.size() == 35 && script[0] == 33 && script[34] == OP_CHECKSIG
-                            && (script[1] == 0x02 || script[1] == 0x03)) {
-        pubkey.Set(&script[1], &script[34]);
-        return true;
-    }
-    if (script.size() == 67 && script[0] == 65 && script[66] == OP_CHECKSIG
-                            && script[1] == 0x04) {
-        pubkey.Set(&script[1], &script[66]);
-        return pubkey.IsFullyValid(); // if not fully valid, a case that would not be compressible
-    }
-    return false;
-}
-
-bool CScriptCompressor::Compress(std::vector<unsigned char> &out) const
-{
-    CKeyID keyID;
-    if (IsToKeyID(keyID)) {
-        out.resize(21);
-        out[0] = 0x00;
-        memcpy(&out[1], &keyID, 20);
-        return true;
-    }
-    CScriptID scriptID;
-    if (IsToScriptID(scriptID)) {
-        out.resize(21);
-        out[0] = 0x01;
-        memcpy(&out[1], &scriptID, 20);
-        return true;
-    }
-    CPubKey pubkey;
-    if (IsToPubKey(pubkey)) {
-        out.resize(33);
-        memcpy(&out[1], &pubkey[1], 32);
-        if (pubkey[0] == 0x02 || pubkey[0] == 0x03) {
-            out[0] = pubkey[0];
-            return true;
-        } else if (pubkey[0] == 0x04) {
-            out[0] = 0x04 | (pubkey[64] & 0x01);
-            return true;
-        }
-    }
-    return false;
-}
-
-unsigned int CScriptCompressor::GetSpecialSize(unsigned int nSize) const
-{
-    if (nSize == 0 || nSize == 1)
-        return 20;
-    if (nSize == 2 || nSize == 3 || nSize == 4 || nSize == 5)
-        return 32;
-    return 0;
-}
-
-bool CScriptCompressor::Decompress(unsigned int nSize, const std::vector<unsigned char> &in)
-{
-    switch(nSize) {
-    case 0x00:
-        script.resize(25);
-        script[0] = OP_DUP;
-        script[1] = OP_HASH160;
-        script[2] = 20;
-        memcpy(&script[3], &in[0], 20);
-        script[23] = OP_EQUALVERIFY;
-        script[24] = OP_CHECKSIG;
-        return true;
-    case 0x01:
-        script.resize(23);
-        script[0] = OP_HASH160;
-        script[1] = 20;
-        memcpy(&script[2], &in[0], 20);
-        script[22] = OP_EQUAL;
-        return true;
-    case 0x02:
-    case 0x03:
-        script.resize(35);
-        script[0] = 33;
-        script[1] = nSize;
-        memcpy(&script[2], &in[0], 32);
-        script[34] = OP_CHECKSIG;
-        return true;
-    case 0x04:
-    case 0x05:
-        unsigned char vch[33] = {};
-        vch[0] = nSize - 2;
-        memcpy(&vch[1], &in[0], 32);
-        CPubKey pubkey(&vch[0], &vch[33]);
-        if (!pubkey.Decompress())
-            return false;
-        assert(pubkey.size() == 65);
-        script.resize(67);
-        script[0] = 65;
-        memcpy(&script[1], pubkey.begin(), 65);
-        script[66] = OP_CHECKSIG;
-        return true;
-    }
-    return false;
+    boost::apply_visitor(CScriptVisitor(&script), dest);
+    return script;
 }

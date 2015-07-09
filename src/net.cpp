@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "net.h"
@@ -9,7 +9,7 @@
 #include "addrman.h"
 #include "clientversion.h"
 #include "chainparams.h"
-#include "core.h"
+#include "transaction.h"
 #include "ui_interface.h"
 
 #ifdef ENABLE_I2PSAM
@@ -53,7 +53,6 @@ map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
 static bool vfLimited[NET_MAX] = {};
 static CNode* pnodeLocalHost = NULL;
-static CNode* pnodeSync = NULL;
 uint64_t nLocalHostNonce = 0;
 static std::vector<SOCKET> vhListenSocket;
 CAddrMan addrman;
@@ -61,22 +60,39 @@ int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
 
-#ifdef ENABLE_I2PSAM
-// Starting with protocol 70008, NODE_I2P is always set.  This is what will be sent to all peers when trying to make connections.
-// It probably should not be used this way, and in the future default values (should) indicate if this node is available on i2p.
-// at the moment, with a working router.  Something we do not know until after initialization if that is true or not.
-// For now the purpose of that service bit is to indicate on clearnet if we can send/receive full i2p addresses, which of course
-// we can, so it is the default setting for that reason, about to release protocol 70009 as the developer is typing this.
+/**
+ * Starting with protocol 70008, NODE_I2P is always set as the standard type of service we support for our address space model.
+ * Anoncoin Core will send/receive to all peers with a greatly enlarged address/object.
+ * NODE_I2P indicates that this node is available for exchanging those i2p addresses, by enlarging the CNetAddr data structure.
+ * Over 546 bytes/address verses ~30 for clearnet only ips.   It's critical to understand how this effects the message exchange
+ * we conduct with peers, either on clearnet or over the i2p network.  Over i2p its easy, we always exchange them and NODE_I2P
+ * must be set, or we can handshake destinations.
+ * Clearnet is more complicated.  Something we do not know until after the version message has been exchanged, so we start out
+ * by exchanging only ip addresses.  If the peer in question also supports NODE_I2P, we switch stream types to our fully supported
+ * address space model.  The purpose of that service bit in for cases where they do not support i2p destinations, and we do not
+ * wish to make it mandatory for Anoncoin.  So, the one case where we do not switch our streamtype is for over clearnet and for
+ * a peer that does not have NODE_I2P set.  Our software then reverts to exchanging in the classical sense, only the [ip] portion
+ * of our address space model.  In this manner, we can still connect, exchange blocks, transactions and even IP addresses with
+ * those peers.
+ * Allowing for innovation and development work of many different types of products and services is good for Anoncoin, even
+ * though a peice of software may not initially be able to support the i2p network, that could change that with success and
+ * determination.
+ * Starting with the release of protocol 70009 we make many past issues and problem go away, our software now is deterministic
+ * in how it behaves with addresses over clearnet.  Peers that can not support NODE_I2P are welcome, but have limited access to
+ * our full and more secure ongoing network operations.
+ */
 uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
-
-// For i2p these are 'real OS sockets, created for us after accept has been issued to the I2P SAM module.  Initially we have only one,
-// and know exactly what the destination address is for us.
-// So as soon as initialized we immediately start 'accepting' other nodes that want to talk through it to us, as well as advertise it frequently
-// to nodes we care connected to via I2P.
-// This differs greatly from the IP world and how the rest of the code here works for clearnet.
+#ifdef ENABLE_I2PSAM
+/**
+ * For i2p we use real OS sockets, created for us after accept has been issued to the I2P SAM module.
+ * Initially we have only one, and know exactly what the destination address is for us.
+ * As soon as initialized we immediately start 'accepting' other nodes that want to talk through it to us,
+ * as well as advertise it frequently to other peers that we are connected to via the I2P network.
+ * This differs greatly from the IP world and how the rest of the code here works for clearnet. vhI2PListenSocket is currently
+ * used to initialize a new socket for another inbound peer, after the destination address has been received, but before
+ * we actually start talking with read/write of data to it.
+ */
 static std::vector<SOCKET> vhI2PListenSocket;                   // We maintain a separate vector for I2P network SOCKET's
-#else
-uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM;            // Standard services declaration
 #endif
 
 vector<CNode*> vNodes;
@@ -219,7 +235,7 @@ bool RecvLine(SOCKET hSocket, string& strLine)
 
 // used when scores of local addresses may have changed
 // pushes better local address to peers
-void static AdvertizeLocal()
+void AdvertizeLocal()
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH(CNode* pnode, vNodes)
@@ -227,13 +243,19 @@ void static AdvertizeLocal()
         if (pnode->fSuccessfullyConnected)
         {
             // If its an i2p destination more than likely the node has the correct
-            // destination, even if it was the one we created dynamically, so we should
-            // not need to check this here and not send it if its not shared, as it would
-            // not do so anyway.  ToDo: Investigate and remove this next line of code
-            // if its not needed.
-            if( !pnode->addr.IsI2P() || IsMyDestinationShared() ) {
+            // destination, even if it was one we created dynamically, or the connection
+            // could not be maintained.  If it is dynamic, we still do not want to
+            // advertize it.  If its a clearnet peer, we don't advertize it if we
+            // are not listening.
+            // And finally it has to be routable
+            // ToDo: Why does it need to be different from what the local address
+            // we already have set for this peer?  This was coded at some point, without
+            // explaining...
+            if( (!pnode->addr.IsI2P() && !fNoListen) || IsMyDestinationShared() ) {
+                // Compute is the best local address for this peer.
                 CAddress addrLocal = GetLocalAddress(&pnode->addr);
-                if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
+                // if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
+                if( addrLocal.IsRoutable() )
                 {
                     pnode->PushAddress(addrLocal);
                     pnode->addrLocal = addrLocal;
@@ -283,7 +305,12 @@ bool AddLocal(const CService& addr, int nScore)
         SetReachable(addr.GetNetwork());
     }
 
-    AdvertizeLocal();
+    // ToDo: The problem here is for i2p right now, we addlocal every time we
+    // accept an inbound connection.  During version exchange, SeenLocal() will
+    // get called, and do this same thing. Temporary fix, is to stop the advertize
+    // here in AddLocal for that case.
+    if( !addr.IsI2P() || nScore != LOCAL_BIND )
+        AdvertizeLocal();
 
     return true;
 }
@@ -574,10 +601,6 @@ void CNode::CloseSocketDisconnect()
     TRY_LOCK(cs_vRecvMsg, lockRecv);
     if (lockRecv)
         vRecvMsg.clear();
-
-    // if this was the sync node, we'll need a new one
-    if (this == pnodeSync)
-        pnodeSync = NULL;
 }
 
 void CNode::Cleanup()
@@ -653,7 +676,6 @@ void CNode::copyStats(CNodeStats &stats)
     X(nStartingHeight);
     X(nSendBytes);
     X(nRecvBytes);
-    stats.fSyncNode = (this == pnodeSync);
 
     // It is common for nodes with good ping times to suddenly become lagged,
     // due to a new block arriving or other large transfer.
@@ -1748,61 +1770,19 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     return true;
 }
 
-
-// for now, use a very simple selection metric: the node from which we received
-// most recently
-static int64_t NodeSyncScore(const CNode *pnode) {
-    return pnode->nLastRecv;
-}
-
-void static StartSync(const vector<CNode*> &vNodes) {
-    CNode *pnodeNewSync = NULL;
-    int64_t nBestScore = 0;
-
-    int nBestHeight = g_signals.GetHeight().get_value_or(0);
-
-    // Iterate over all nodes
-    BOOST_FOREACH(CNode* pnode, vNodes) {
-        // check preconditions for allowing a sync
-        if (!pnode->fClient && !pnode->fOneShot &&
-            !pnode->fDisconnect && pnode->fSuccessfullyConnected &&
-            (pnode->nStartingHeight > (nBestHeight - 144)) &&
-            (pnode->nVersion < NOBLKS_VERSION_START || pnode->nVersion >= NOBLKS_VERSION_END)) {
-            // if ok, compare node's score with the best so far
-            int64_t nScore = NodeSyncScore(pnode);
-            if (pnodeNewSync == NULL || nScore > nBestScore) {
-                pnodeNewSync = pnode;
-                nBestScore = nScore;
-            }
-        }
-    }
-    // if a new sync candidate was found, start sync!
-    if (pnodeNewSync) {
-        pnodeNewSync->fStartSync = true;
-        pnodeSync = pnodeNewSync;
-    }
-}
-
 void ThreadMessageHandler()
 {
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (true)
     {
-        bool fHaveSyncNode = false;
-
         vector<CNode*> vNodesCopy;
         {
             LOCK(cs_vNodes);
             vNodesCopy = vNodes;
             BOOST_FOREACH(CNode* pnode, vNodesCopy) {
                 pnode->AddRef();
-                if (pnode == pnodeSync)
-                    fHaveSyncNode = true;
             }
         }
-
-        if (!fHaveSyncNode)
-            StartSync(vNodesCopy);
 
         // Poll the connected nodes for messages
         CNode* pnodeTrickle = NULL;
@@ -2153,17 +2133,17 @@ instance_of_cnetcleanup;
 
 
 
-void RelayTransaction(const CTransaction& tx, const uint256& hash)
+void RelayTransaction(const CTransaction& tx)
 {
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss.reserve(10000);
     ss << tx;
-    RelayTransaction(tx, hash, ss);
+    RelayTransaction(tx, ss);
 }
 
-void RelayTransaction(const CTransaction& tx, const uint256& hash, const CDataStream& ss)
+void RelayTransaction(const CTransaction& tx, const CDataStream& ss)
 {
-    CInv inv(MSG_TX, hash);
+    CInv inv(MSG_TX, tx.GetHash());
     {
         LOCK(cs_mapRelay);
         // Expire old relay messages
@@ -2185,7 +2165,7 @@ void RelayTransaction(const CTransaction& tx, const uint256& hash, const CDataSt
         LOCK(pnode->cs_filter);
         if (pnode->pfilter)
         {
-            if (pnode->pfilter->IsRelevantAndUpdate(tx, hash))
+            if (pnode->pfilter->IsRelevantAndUpdate(tx))
                 pnode->PushInventory(inv);
         } else
             pnode->PushInventory(inv);
@@ -2277,8 +2257,8 @@ bool CAddrDB::Write(const CAddrMan& addr)
     // open temp output file, and associate with CAutoFile
     boost::filesystem::path pathTmp = GetDataDir() / tmpfn;
     FILE *file = fopen(pathTmp.string().c_str(), "wb");
-    CAutoFile fileout = CAutoFile(file, SER_DISK, CLIENT_VERSION);
-    if (!fileout)
+    CAutoFile fileout(file, SER_DISK, CLIENT_VERSION);
+    if (fileout.IsNull())
         return error("%s : Failed to open file %s", __func__, pathTmp.string());
 
     // Write and commit header, data
@@ -2288,7 +2268,7 @@ bool CAddrDB::Write(const CAddrMan& addr)
     catch (std::exception &e) {
         return error("%s : Serialize or I/O error - %s", __func__, e.what());
     }
-    FileCommit(fileout);
+    FileCommit(fileout.Get());
     fileout.fclose();
 
     // replace existing peers.dat, if any, with new peers.dat.XXXX
@@ -2302,8 +2282,8 @@ bool CAddrDB::Read(CAddrMan& addr)
 {
     // open input file, and associate with CAutoFile
     FILE *file = fopen(pathAddr.string().c_str(), "rb");
-    CAutoFile filein = CAutoFile(file, SER_DISK, CLIENT_VERSION);
-    if (!filein)
+    CAutoFile filein(file, SER_DISK, CLIENT_VERSION);
+    if (filein.IsNull())
         return error("%s : Failed to open file %s", __func__, pathAddr.string());
 
     // use file size to size memory buffer

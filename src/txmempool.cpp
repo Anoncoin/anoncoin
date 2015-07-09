@@ -1,10 +1,9 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "core.h"
 #include "txmempool.h"
 
 using namespace std;
@@ -194,6 +193,34 @@ bool CTxMemPool::lookup(uint256 hash, CTransaction& result) const
     if (i == mapTx.end()) return false;
     result = i->second.GetTx();
     return true;
+}
+
+void CTxMemPool::PrioritiseTransaction(const uint256 hash, const string strHash, double dPriorityDelta, const CAmount& nFeeDelta)
+{
+    {
+        LOCK(cs);
+        std::pair<double, CAmount> &deltas = mapDeltas[hash];
+        deltas.first += dPriorityDelta;
+        deltas.second += nFeeDelta;
+    }
+    LogPrintf("PrioritiseTransaction: %s priority += %f, fee += %d\n", strHash, dPriorityDelta, FormatMoney(nFeeDelta));
+}
+
+void CTxMemPool::ApplyDeltas(const uint256 hash, double &dPriorityDelta, CAmount &nFeeDelta)
+{
+    LOCK(cs);
+    std::map<uint256, std::pair<double, CAmount> >::iterator pos = mapDeltas.find(hash);
+    if (pos == mapDeltas.end())
+        return;
+    const std::pair<double, CAmount> &deltas = pos->second;
+    dPriorityDelta += deltas.first;
+    nFeeDelta += deltas.second;
+}
+
+void CTxMemPool::ClearPrioritisation(const uint256 hash)
+{
+    LOCK(cs);
+    mapDeltas.erase(hash);
 }
 
 CCoinsViewMemPool::CCoinsViewMemPool(CCoinsView &baseIn, CTxMemPool &mempoolIn) : CCoinsViewBacked(baseIn), mempool(mempoolIn) { }

@@ -1,22 +1,18 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
+#include "rpcserver.h"
+// anoncoin-config.h is now loaded...so has amount, rpcprotocol & uint256
 
 #include "base58.h"
-#include "core.h"
 #include "init.h"
 #include "keystore.h"
 #include "main.h"
 #include "net.h"
-#include "rpcserver.h"
-#include "uint256.h"
+#include "transaction.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
@@ -356,7 +352,7 @@ Value createrawtransaction(const Array& params, bool fHelp)
     Array inputs = params[0].get_array();
     Object sendTo = params[1].get_obj();
 
-    CTransaction rawTx;
+    CMutableTransaction rawTx;
 
     BOOST_FOREACH(const Value& input, inputs)
     {
@@ -452,7 +448,7 @@ Value decoderawtransaction(const Array& params, bool fHelp)
 
     vector<unsigned char> txData(ParseHexV(params[0], "argument"));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
-    CTransaction tx;
+    CMutableTransaction tx;
     try {
         ssData >> tx;
     }
@@ -461,7 +457,12 @@ Value decoderawtransaction(const Array& params, bool fHelp)
     }
 
     Object result;
-    TxToJSON(tx, 0, result);
+
+    // Embed the constructed transaction data into an unmutable CTransaction object tx2.
+    // Before the call to TxToJSON
+    CTransaction tx2;
+    *static_cast<CTransaction*>(&tx2) = CTransaction(tx);
+    TxToJSON(tx2, 0, result);
 
     return result;
 }
@@ -561,11 +562,11 @@ Value signrawtransaction(const Array& params, bool fHelp)
 
     vector<unsigned char> txData(ParseHexV(params[0], "argument 1"));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
-    vector<CTransaction> txVariants;
+    vector<CMutableTransaction> txVariants;
     while (!ssData.empty())
     {
         try {
-            CTransaction tx;
+            CMutableTransaction tx;
             ssData >> tx;
             txVariants.push_back(tx);
         }
@@ -579,7 +580,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
 
     // mergedTx will end up with all the signatures; it
     // starts as a clone of the rawtx:
-    CTransaction mergedTx(txVariants[0]);
+    CMutableTransaction mergedTx(txVariants[0]);
     bool fComplete = true;
 
     // Fetch previous transactions (inputs):
@@ -720,11 +721,12 @@ Value signrawtransaction(const Array& params, bool fHelp)
             SignSignature(keystore, prevPubKey, mergedTx, i, nHashType);
 
         // ... and merge in other signatures:
-        BOOST_FOREACH(const CTransaction& txv, txVariants)
+        BOOST_FOREACH(const CMutableTransaction& txv, txVariants)
         {
             txin.scriptSig = CombineSignatures(prevPubKey, mergedTx, i, txin.scriptSig, txv.vin[i].scriptSig);
         }
-        if (!VerifyScript(txin.scriptSig, prevPubKey, mergedTx, i, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC, 0))
+        CTransaction mTx = mergedTx;
+        if (!VerifyScript(txin.scriptSig, prevPubKey, mTx, i, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC, 0))
             fComplete = false;
     }
 
@@ -764,7 +766,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     // parse hex string from parameter
     vector<unsigned char> txData(ParseHexV(params[0], "parameter"));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
-    CTransaction tx;
+    CMutableTransaction tx;
 
     bool fOverrideFees = false;
     if (params.size() > 1)
@@ -797,7 +799,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     } else if (fHaveChain) {
         throw JSONRPCError(RPC_TRANSACTION_ALREADY_IN_CHAIN, "transaction already in block chain");
     }
-    RelayTransaction(tx, hashTx);
+    RelayTransaction(tx);
 
     return hashTx.GetHex();
 }

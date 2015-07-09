@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_NET_H
 #define ANONCOIN_NET_H
@@ -18,6 +18,8 @@
 #include "mruset.h"
 #include "netbase.h"
 #include "protocol.h"
+#include "random.h"
+#include "streams.h"
 #include "sync.h"
 #include "uint256.h"
 #include "util.h"
@@ -72,6 +74,7 @@ bool BindListenNativeI2P(SOCKET& hSocket);
 void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
+void AdvertizeLocal();
 
 typedef int NodeId;
 
@@ -139,7 +142,7 @@ struct LocalServiceInfo {
 };
 
 extern CCriticalSection cs_mapLocalHost;
-extern map<CNetAddr, LocalServiceInfo> mapLocalHost;
+extern std::map<CNetAddr, LocalServiceInfo> mapLocalHost;
 
 class CNodeStats
 {
@@ -267,7 +270,7 @@ public:
     CBlockIndex* pindexLastGetBlocksBegin;
     uint256 hashLastGetBlocksEnd;
     int nStartingHeight;
-    bool fStartSync;
+//    bool fStartSync;
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
@@ -323,7 +326,7 @@ public:
         nRecvBytes = 0;
         nTimeConnected = GetTime();
         addr = addrIn;
-        addrName = addrNameIn == "" ? addr.ToStringIPPort() : addrNameIn;
+        addrName = addrNameIn.size() ? addrNameIn : addr.ToStringIPPort();
         nVersion = 0;
         strSubVer = "";
         fOneShot = false;
@@ -339,7 +342,6 @@ public:
         pindexLastGetBlocksBegin = 0;
         hashLastGetBlocksEnd = 0;
         nStartingHeight = -1;
-        fStartSync = false;
         fGetAddr = false;
         fRelayTxes = false;
         setInventoryKnown.max_size(SendBufferSize() / 1000);
@@ -809,8 +811,8 @@ public:
 
 
 class CTransaction;
-void RelayTransaction(const CTransaction& tx, const uint256& hash);
-void RelayTransaction(const CTransaction& tx, const uint256& hash, const CDataStream& ss);
+void RelayTransaction(const CTransaction& tx);
+void RelayTransaction(const CTransaction& tx, const CDataStream& ss);
 
 /** Access to the (IP) address database (peers.dat) */
 class CAddrDB

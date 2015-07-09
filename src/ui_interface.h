@@ -1,7 +1,7 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2012 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_UI_INTERFACE_H
 #define ANONCOIN_UI_INTERFACE_H
@@ -70,6 +70,8 @@ public:
         MODAL               = 0x10000000U,
         /** Don't bring GUI to foreground. Use for messages during initialization */
         NOSHOWGUI           = 0x20000000U,
+        /** New v10 definition (running out of bits...), Do not print contents of message to debug log */
+        SECURE              = 0x40000000U,
 
         /** Predefined combinations for certain default usage cases */
         MSG_INFORMATION = ICON_INFORMATION,

@@ -1,7 +1,5 @@
-# Anoncoin edits as required to build 9.4 code,
-# we don't use secp256k1 nor build univalue/ crypto/ and core/ subdirectories seperately at this time.
-# We will want to as we migrate to the 0.9.99+ code though.  As much stuff as possible has simply been
-# commented out for now, make future upgrades easier when we go to those changes.
+# Anoncoin edits as required to build 9.5 code,
+# Still some things we're not building, but getting closer, others no one else has...
 #
 # DIST_SUBDIRS = secp256k1
 DIST_SUBDIRS=
@@ -38,8 +36,8 @@ LIBANONCOIN_WALLET=libanoncoin_wallet.a
 LIBANONCOIN_COMMON=libanoncoin_common.a
 LIBANONCOIN_CLI=libanoncoin_cli.a
 LIBANONCOIN_UTIL=libanoncoin_util.a
-LIBANONCOIN_CRYPTO=
-LIBANONCOIN_UNIVALUE=
+LIBANONCOIN_CRYPTO=crypto/libanoncoin_crypto.a
+LIBANONCOIN_UNIVALUE=univalue/libanoncoin_univalue.a
 LIBANONCOINQT=qt/libanoncoinqt.a
 #LIBSECP256K1=secp256k1/libsecp256k1.la
 LIBSECP256K1=
@@ -49,14 +47,16 @@ LIBSECP256K1=
 
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
-noinst_LIBRARIES = \
+EXTRA_LIBRARIES = \
+  crypto/libanoncoin_crypto.a \
   libanoncoin_util.a \
   libanoncoin_common.a \
+  univalue/libanoncoin_univalue.a \
   libanoncoin_server.a \
   libanoncoin_cli.a
 if ENABLE_WALLET
 ANONCOIN_INCLUDES += $(BDB_CPPFLAGS)
-noinst_LIBRARIES += libanoncoin_wallet.a
+EXTRA_LIBRARIES += libanoncoin_wallet.a
 endif
 
 #if BUILD_ANONCOIN_LIBS
@@ -74,8 +74,7 @@ if BUILD_ANONCOIND
 endif
 
 if BUILD_ANONCOIN_UTILS
-#  bin_PROGRAMS += anoncoin-cli anoncoin-tx
-  bin_PROGRAMS += anoncoin-cli
+  bin_PROGRAMS += anoncoin-cli anoncoin-tx
 endif
 
 .PHONY: FORCE
@@ -84,9 +83,12 @@ ANONCOIN_CORE_H = \
   addrman.h \
   alert.h \
   allocators.h \
+amount.h \
   base58.h \
   bignum.h \
+block.h \
   bloom.h \
+chain.h \
   chainparams.h \
   chainparamsbase.h \
   checkpoints.h \
@@ -95,7 +97,8 @@ ANONCOIN_CORE_H = \
   coincontrol.h \
   coins.h \
   compat.h \
-  core.h \
+compressor.h \
+core_io.h \
   crypter.h \
   db.h \
   hash.h \
@@ -106,25 +109,32 @@ ANONCOIN_CORE_H = \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
+merkleblock.h \
   miner.h \
   mruset.h \
   netbase.h \
   net.h \
   noui.h \
+pow.h \
   protocol.h \
+random.h \
   rpcclient.h \
   rpcprotocol.h \
   rpcserver.h \
   script.h \
   scrypt.h \
   serialize.h \
+stream.h \
   sync.h \
   threadsafety.h \
+timedata.h \
   tinyformat.h \
+transaction.h \
   txdb.h \
   txmempool.h \
   ui_interface.h \
   uint256.h \
+undo.h \
   util.h \
   version.h \
   wallet.h \
@@ -157,19 +167,24 @@ libanoncoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
   bloom.cpp \
+chain.cpp \
   checkpoints.cpp \
   init.cpp \
   leveldbwrapper.cpp \
   main.cpp \
+merkleblock.cpp \
   miner.cpp \
   net.cpp \
   noui.cpp \
+pow.cpp \
+rest.cpp \
   rpcblockchain.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \
   rpcrawtransaction.cpp \
   rpcserver.cpp \
+timedata.cpp \
   txdb.cpp \
   txmempool.cpp \
   $(JSON_H) \
@@ -189,32 +204,45 @@ libanoncoin_wallet_a_SOURCES = \
   $(ANONCOIN_CORE_H)
 
 # crypto primitives library
-#crypto_libanoncoin_crypto_a_CPPFLAGS = $(ANONCOIN_CONFIG_INCLUDES)
-#crypto_libanoncoin_crypto_a_SOURCES = \
-#  crypto/sha1.cpp \
-#  crypto/sha2.cpp \
-#  crypto/ripemd160.cpp \
-#  crypto/common.h \
-#  crypto/sha2.h \
-#  crypto/sha1.h \
-#  crypto/ripemd160.h
+crypto_libanoncoin_crypto_a_CPPFLAGS = $(ANONCOIN_CONFIG_INCLUDES)
+crypto_libanoncoin_crypto_a_SOURCES = \
+  crypto/sha1.cpp \
+  crypto/sha256.cpp \
+  crypto/sha512.cpp \
+  crypto/hmac_sha256.cpp \
+  crypto/rfc6979_hmac_sha256.cpp \
+  crypto/hmac_sha512.cpp \
+  crypto/ripemd160.cpp \
+  crypto/common.h \
+  crypto/sha256.h \
+  crypto/sha512.h \
+  crypto/hmac_sha256.h \
+  crypto/rfc6979_hmac_sha256.h \
+  crypto/hmac_sha512.h \
+  crypto/sha1.h \
+  crypto/ripemd160.h
 
 # univalue JSON library
-#univalue_libanoncoin_univalue_a_SOURCES = \
-#  univalue/univalue.cpp \
-#  univalue/univalue_read.cpp \
-#  univalue/univalue_write.cpp \
-#  univalue/univalue_escapes.h \
-#  univalue/univalue.h
+univalue_libanoncoin_univalue_a_SOURCES = \
+  univalue/univalue.cpp \
+  univalue/univalue_read.cpp \
+  univalue/univalue_write.cpp \
+  univalue/univalue_escapes.h \
+  univalue/univalue.h
 
 # common: shared between anoncoind, and anoncoin-qt and non-server tools
 libanoncoin_common_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
 libanoncoin_common_a_SOURCES = \
   allocators.cpp \
+amount.cpp \
   base58.cpp \
   chainparams.cpp \
   coins.cpp \
-  core.cpp \
+compressor.cpp \
+core_read.cpp \
+core_write.cpp \
+block.cpp \
+transaction.cpp \
   hash.cpp \
   key.cpp \
   keystore.cpp \
@@ -236,8 +264,10 @@ libanoncoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
+random.cpp \
   rpcprotocol.cpp \
   sync.cpp \
+uint256.cpp \
   util.cpp \
   $(ANONCOIN_CORE_H)
 
@@ -290,22 +320,21 @@ anoncoin_cli_SOURCES = \
   anoncoin-cli.cpp
 
 anoncoin_cli_CPPFLAGS = $(ANONCOIN_INCLUDES)
-#
 
-# anoncoin-tx binary #
-#anoncoin_tx_LDADD = \
-#  $(LIBANONCOIN_UNIVALUE) \
-#  $(LIBANONCOIN_COMMON) \
-#  $(LIBANONCOIN_UTIL) \
-#  $(LIBANONCOIN_CRYPTO) \
+#anoncoin-tx binary #
 #  $(LIBSECP256K1) \
-#  $(BOOST_LIBS) \
-#  $(CRYPTO_LIBS)
+anoncoin_tx_LDADD = \
+  $(LIBANONCOIN_UNIVALUE) \
+  $(LIBANONCOIN_COMMON) \
+  $(LIBANONCOIN_UTIL) \
+  $(LIBANONCOIN_CRYPTO) \
+  $(BOOST_LIBS) \
+  $(CRYPTO_LIBS)
 
-#anoncoin_tx_SOURCES = anoncoin-tx.cpp
-#anoncoin_tx_CPPFLAGS = $(ANONCOIN_INCLUDES)
+anoncoin_tx_SOURCES = anoncoin-tx.cpp
+anoncoin_tx_CPPFLAGS = $(ANONCOIN_INCLUDES)
 #
-#anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
 anoncoin_cli_SOURCES += anoncoin-cli-res.rc
@@ -344,7 +373,7 @@ anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno i2psam/libi2psam.a
 
-DISTCLEANFILES = obj/build.h
+DISTCLEANFILES = obj/build.h makefile.in
 
 EXTRA_DIST = leveldb
 

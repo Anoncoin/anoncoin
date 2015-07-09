@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -38,25 +38,25 @@ static inline size_t GetSystemPageSize()
     page_size = sSysInfo.dwPageSize;
 #elif defined(PAGESIZE) // defined in limits.h
     page_size = PAGESIZE;
-#else // assume some POSIX OS
+#else                   // assume some POSIX OS
     page_size = sysconf(_SC_PAGESIZE);
 #endif
     return page_size;
 }
 
-bool MemoryPageLocker::Lock(const void *addr, size_t len)
+bool MemoryPageLocker::Lock(const void* addr, size_t len)
 {
 #ifdef WIN32
-    return VirtualLock(const_cast<void*>(addr), len);
+    return VirtualLock(const_cast<void*>(addr), len) != 0;
 #else
     return mlock(addr, len) == 0;
 #endif
 }
 
-bool MemoryPageLocker::Unlock(const void *addr, size_t len)
+bool MemoryPageLocker::Unlock(const void* addr, size_t len)
 {
 #ifdef WIN32
-    return VirtualUnlock(const_cast<void*>(addr), len);
+    return VirtualUnlock(const_cast<void*>(addr), len) != 0;
 #else
     return munlock(addr, len) == 0;
 #endif
@@ -65,4 +65,3 @@ bool MemoryPageLocker::Unlock(const void *addr, size_t len)
 LockedPageManager::LockedPageManager() : LockedPageManagerBase<MemoryPageLocker>(GetSystemPageSize())
 {
 }
-

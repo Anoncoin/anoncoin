@@ -1,12 +1,12 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef COINCONTROL_H
 #define COINCONTROL_H
 
-#include "core.h"
+#include "transaction.h"
 
 /** Coin Control Features. */
 class CCoinControl

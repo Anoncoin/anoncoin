@@ -552,7 +552,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("localservices",  strprintf("%04x", nLocalServices)));
     obj.push_back(Pair("timeoffset",     GetTimeOffset()));
     obj.push_back(Pair("connections",    (int)vNodes.size()));
-    obj.push_back(Pair("relayfee",       ValueFromAmount(CTransaction::nMinRelayTxFee)));
+    obj.push_back(Pair("relayfee",       ValueFromAmount(minRelayTxFee.GetFeePerK())));
     obj.push_back(Pair("networkconnections",GetNetworksInfo()));
     Array localAddresses;
     {

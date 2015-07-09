@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "key.h"
@@ -557,7 +557,7 @@ bool CExtKey::Derive(CExtKey &out, unsigned int nChild) const {
 }
 
 void CExtKey::SetMaster(const unsigned char *seed, unsigned int nSeedLen) {
-    static const char hashkey[] = {'B','i','t','c','o','i','n',' ','s','e','e','d'};
+    static const char hashkey[] = {'A','n','o','n','c','o','i','n',' ','s','e','e','d'};
     HMAC_SHA512_CTX ctx;
     HMAC_SHA512_Init(&ctx, hashkey, sizeof(hashkey));
     HMAC_SHA512_Update(&ctx, seed, nSeedLen);

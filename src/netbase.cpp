@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 // Many builder specific things set in the config file, don't forget to include it this way in your source files.
@@ -608,7 +608,7 @@ void CNetAddr::Init()
 {
     memset(ip, 0, sizeof(ip));
 #ifdef ENABLE_I2PSAM
-    memset(i2pDest, 0, NATIVE_I2P_DESTINATION_SIZE);
+    memset(i2pDest, 0, I2P_DESTINATION_STORE);
 #endif
 }
 
@@ -616,7 +616,26 @@ void CNetAddr::SetIP(const CNetAddr& ipIn)
 {
     memcpy(ip, ipIn.ip, sizeof(ip));
 #ifdef ENABLE_I2PSAM
-    memcpy(i2pDest, ipIn.i2pDest, NATIVE_I2P_DESTINATION_SIZE);
+    memcpy(i2pDest, ipIn.i2pDest, I2P_DESTINATION_STORE);
+#endif
+}
+
+void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
+{
+    switch(network)
+    {
+        case NET_IPV4:
+            memcpy(ip, pchIPv4, 12);
+            memcpy(ip+12, ip_in, 4);
+            break;
+        case NET_IPV6:
+            memcpy(ip, ip_in, 16);
+            break;
+        default:
+            assert(!"invalid network");
+    }
+#ifdef ENABLE_I2PSAM
+    memset(i2pDest, 0, I2P_DESTINATION_STORE);
 #endif
 }
 
@@ -675,7 +694,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         // If we make it here 'addr' has i2p destination address as a base 64 string...
         // Now we can build the output array of bytes as we need for protocol 70009+ by using the concept of a IP6 string we call pchGarlicCat
         memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
-        memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);         // So now copy it to our CNetAddr object variable
+        memcpy(i2pDest, addr.c_str(), I2P_DESTINATION_STORE);         // So now copy it to our CNetAddr object variable
         return true;                                                        // Special handling taken care of
     }
 #endif // ENABLE_I2PSAM
@@ -699,19 +718,12 @@ CNetAddr::CNetAddr()
 
 CNetAddr::CNetAddr(const struct in_addr& ipv4Addr)
 {
-    memcpy(ip,    pchIPv4, 12);
-    memcpy(ip+12, &ipv4Addr, 4);
-#ifdef ENABLE_I2PSAM
-    memset(i2pDest, 0, NATIVE_I2P_DESTINATION_SIZE);
-#endif
+    SetRaw(NET_IPV4, (const uint8_t*)&ipv4Addr);
 }
 
 CNetAddr::CNetAddr(const struct in6_addr& ipv6Addr)
 {
-    memcpy(ip, &ipv6Addr, 16);
-#ifdef ENABLE_I2PSAM
-    memset(i2pDest, 0, NATIVE_I2P_DESTINATION_SIZE);
-#endif
+    SetRaw(NET_IPV6, (const uint8_t*)&ipv6Addr);
 }
 
 CNetAddr::CNetAddr(const char *pszIp, bool fAllowLookup)
@@ -824,12 +836,12 @@ bool CNetAddr::IsNativeI2P() const
     // In order for this to work however, it's important that the memory has been cleared when this object
     // was created.
     // ToDo: More work could be done here to confirm it will never mistakenly see a valid native i2p address.
-    return (i2pDest[0] != 0) && (memcmp(i2pDest + NATIVE_I2P_DESTINATION_SIZE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
+    return (i2pDest[0] != 0) && (memcmp(i2pDest + I2P_DESTINATION_STORE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }
 
 std::string CNetAddr::GetI2pDestination() const
 {
-    return IsNativeI2P() ? std::string(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE) : std::string();
+    return IsNativeI2P() ? std::string(i2pDest, i2pDest + I2P_DESTINATION_STORE) : std::string();
 }
 
 /** \brief Checks for a valid i2p destination, if the garlic field is not set correctly, it makes sure that field is set properly
@@ -862,12 +874,12 @@ bool CNetAddr::SetI2pDestination( const std::string& sBase64Dest )
         Init();
         memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
     } else          // First & always if we're given some non-zero value, Make sure the whole field is zeroed out
-        memset(i2pDest, 0, NATIVE_I2P_DESTINATION_SIZE);
+        memset(i2pDest, 0, I2P_DESTINATION_STORE);
 
     // Copy what the caller wants put there, up to the max size
     // Its not going to be valid, if the size is wrong, but do it anyway
-    if( iSize ) memcpy( i2pDest, sBase64Dest.c_str(), iSize < NATIVE_I2P_DESTINATION_SIZE ? iSize : NATIVE_I2P_DESTINATION_SIZE );
-    return (iSize == NATIVE_I2P_DESTINATION_SIZE) && IsNativeI2P();
+    if( iSize ) memcpy( i2pDest, sBase64Dest.c_str(), iSize < I2P_DESTINATION_STORE ? iSize : I2P_DESTINATION_STORE );
+    return (iSize == I2P_DESTINATION_STORE) && IsNativeI2P();
 }
 
 // Convert this netaddress objects native i2p address into a b32.i2p address
@@ -1018,7 +1030,7 @@ std::string CNetAddr::ToString() const
 bool operator==(const CNetAddr& a, const CNetAddr& b)
 {
 #ifdef ENABLE_I2PSAM
-    return (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, NATIVE_I2P_DESTINATION_SIZE) == 0);
+    return (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, I2P_DESTINATION_STORE) == 0);
 #else                                               // Use the original code
     return (memcmp(a.ip, b.ip, 16) == 0);
 #endif
@@ -1027,7 +1039,7 @@ bool operator==(const CNetAddr& a, const CNetAddr& b)
 bool operator!=(const CNetAddr& a, const CNetAddr& b)
 {
 #ifdef ENABLE_I2PSAM
-    return (memcmp(a.ip, b.ip, 16) != 0 || memcmp(a.i2pDest, b.i2pDest, NATIVE_I2P_DESTINATION_SIZE) != 0);
+    return (memcmp(a.ip, b.ip, 16) != 0 || memcmp(a.i2pDest, b.i2pDest, I2P_DESTINATION_STORE) != 0);
 #else                                               // Use the original code
     return (memcmp(a.ip, b.ip, 16) != 0);
 #endif
@@ -1036,7 +1048,7 @@ bool operator!=(const CNetAddr& a, const CNetAddr& b)
 bool operator<(const CNetAddr& a, const CNetAddr& b)
 {
 #ifdef ENABLE_I2PSAM
-    return (memcmp(a.ip, b.ip, 16) < 0 || (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, NATIVE_I2P_DESTINATION_SIZE) < 0));
+    return (memcmp(a.ip, b.ip, 16) < 0 || (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, I2P_DESTINATION_STORE) < 0));
 #else                                               // Use the original code
     return (memcmp(a.ip, b.ip, 16) < 0);
 #endif
@@ -1070,9 +1082,9 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
 
 #ifdef ENABLE_I2PSAM
     if( IsI2P() ) {
-        vchRet.resize(NATIVE_I2P_DESTINATION_SIZE + 1);
+        vchRet.resize(I2P_DESTINATION_STORE + 1);
         vchRet[0] = NET_I2P;
-        memcpy(&vchRet[1], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
+        memcpy(&vchRet[1], i2pDest, I2P_DESTINATION_STORE);
         return vchRet;
     }
 #endif // ENABLE_I2PSAM
@@ -1144,7 +1156,7 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
 uint64_t CNetAddr::GetHash() const
 {
 #ifdef ENABLE_I2PSAM
-    uint256 hash = IsI2P() ? Hash(i2pDest, i2pDest + NATIVE_I2P_DESTINATION_SIZE) : Hash(&ip[0], &ip[16]);
+    uint256 hash = IsI2P() ? Hash(i2pDest, i2pDest + I2P_DESTINATION_STORE) : Hash(&ip[0], &ip[16]);
 #else                                               // Use the original code
     uint256 hash = Hash(&ip[0], &ip[16]);
 #endif
@@ -1376,8 +1388,8 @@ std::vector<unsigned char> CService::GetKey() const
     if (IsNativeI2P())
     {
         assert( IsI2P() );
-        vKey.resize(NATIVE_I2P_DESTINATION_SIZE);
-        memcpy(&vKey[0], i2pDest, NATIVE_I2P_DESTINATION_SIZE);
+        vKey.resize(I2P_DESTINATION_STORE);
+        memcpy(&vKey[0], i2pDest, I2P_DESTINATION_STORE);
         return vKey;
     }
 #endif
@@ -1420,6 +1432,108 @@ void CService::SetPort(unsigned short portIn)
     port = portIn;
 }
 
+CSubNet::CSubNet():
+    valid(false)
+{
+    memset(netmask, 0, sizeof(netmask));
+}
+
+CSubNet::CSubNet(const std::string &strSubnet, bool fAllowLookup)
+{
+    size_t slash = strSubnet.find_last_of('/');
+    std::vector<CNetAddr> vIP;
+
+    valid = true;
+    // Default to /32 (IPv4) or /128 (IPv6), i.e. match single address
+    memset(netmask, 255, sizeof(netmask));
+
+    std::string strAddress = strSubnet.substr(0, slash);
+    if (LookupHost(strAddress.c_str(), vIP, 1, fAllowLookup))
+    {
+        network = vIP[0];
+        if (slash != strSubnet.npos)
+        {
+            std::string strNetmask = strSubnet.substr(slash + 1);
+            int32_t n;
+            // IPv4 addresses start at offset 12, and first 12 bytes must match, so just offset n
+            int noffset = network.IsIPv4() ? (12 * 8) : 0;
+            if (ParseInt32(strNetmask, &n)) // If valid number, assume /24 symtex
+            {
+                if(n >= 0 && n <= (128 - noffset)) // Only valid if in range of bits of address
+                {
+                    n += noffset;
+                    // Clear bits [n..127]
+                    for (; n < 128; ++n)
+                        netmask[n>>3] &= ~(1<<(n&7));
+                }
+                else
+                {
+                    valid = false;
+                }
+            }
+            else // If not a valid number, try full netmask syntax
+            {
+                if (LookupHost(strNetmask.c_str(), vIP, 1, false)) // Never allow lookup for netmask
+                {
+                    // Remember: GetByte returns bytes in reversed order
+                    // Copy only the *last* four bytes in case of IPv4, the rest of the mask should stay 1's as
+                    // we don't want pchIPv4 to be part of the mask.
+                    int asize = network.IsIPv4() ? 4 : 16;
+                    for(int x=0; x<asize; ++x)
+                        netmask[15-x] = vIP[0].GetByte(x);
+                }
+                else
+                {
+                    valid = false;
+                }
+            }
+        }
+    }
+    else
+    {
+        valid = false;
+    }
+}
+
+bool CSubNet::Match(const CNetAddr &addr) const
+{
+    if (!valid || !addr.IsValid())
+        return false;
+    for(int x=0; x<16; ++x)
+        if ((addr.GetByte(x) & netmask[15-x]) != network.GetByte(x))
+            return false;
+    return true;
+}
+
+std::string CSubNet::ToString() const
+{
+    std::string strNetmask;
+    if (network.IsIPv4())
+        strNetmask = strprintf("%u.%u.%u.%u", netmask[12], netmask[13], netmask[14], netmask[15]);
+    else
+        strNetmask = strprintf("%x:%x:%x:%x:%x:%x:%x:%x",
+                         netmask[0] << 8 | netmask[1], netmask[2] << 8 | netmask[3],
+                         netmask[4] << 8 | netmask[5], netmask[6] << 8 | netmask[7],
+                         netmask[8] << 8 | netmask[9], netmask[10] << 8 | netmask[11],
+                         netmask[12] << 8 | netmask[13], netmask[14] << 8 | netmask[15]);
+    return network.ToString() + "/" + strNetmask;
+}
+
+bool CSubNet::IsValid() const
+{
+    return valid;
+}
+
+bool operator==(const CSubNet& a, const CSubNet& b)
+{
+    return a.valid == b.valid && a.network == b.network && !memcmp(a.netmask, b.netmask, 16);
+}
+
+bool operator!=(const CSubNet& a, const CSubNet& b)
+{
+    return !(a==b);
+}
+
 #ifdef WIN32
 std::string NetworkErrorString(int err)
 {
@@ -1453,57 +1567,3 @@ std::string NetworkErrorString(int err)
 }
 #endif
 
-void AddTimeData(const CNetAddr& ip, int64_t nTime)
-{
-    int64_t nOffsetSample = nTime - GetTime();
-
-    LOCK(cs_nTimeOffset);
-    // Ignore duplicates
-    static set<CNetAddr> setKnown;
-    if (!setKnown.insert(ip).second)
-        return;
-
-    // Add data
-    static CMedianFilter<int64_t> vTimeOffsets(200,0);
-    vTimeOffsets.input(nOffsetSample);
-    LogPrintf("Added time data, samples %d, offset %+d (%+d minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample/60);
-    if (vTimeOffsets.size() >= 5 && vTimeOffsets.size() % 2 == 1)
-    {
-        int64_t nMedian = vTimeOffsets.median();
-        std::vector<int64_t> vSorted = vTimeOffsets.sorted();
-        // Only let other nodes change our time by so much
-        if (abs64(nMedian) < 35 * 60)
-        {
-            nTimeOffset = nMedian;
-        }
-        else
-        {
-            nTimeOffset = 0;
-
-            static bool fDone;
-            if (!fDone)
-            {
-                // If nobody has a time different than ours but within 5 minutes of ours, give a warning
-                bool fMatch = false;
-                BOOST_FOREACH(int64_t nOffset, vSorted)
-                    if (nOffset != 0 && abs64(nOffset) < 5 * 60)
-                        fMatch = true;
-
-                if (!fMatch)
-                {
-                    fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Anoncoin will not work properly.");
-                    strMiscWarning = strMessage;
-                    LogPrintf("*** %s\n", strMessage);
-                    uiInterface.ThreadSafeMessageBox(strMessage, "", CClientUIInterface::MSG_WARNING);
-                }
-            }
-        }
-        if (fDebug) {
-            BOOST_FOREACH(int64_t n, vSorted)
-                LogPrintf("%+d  ", n);
-            LogPrintf("|  ");
-        }
-        LogPrintf("nTimeOffset = %+d  (%+d minutes)\n", nTimeOffset, nTimeOffset/60);
-    }
-}
