@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WalletRestartCoreDialog</class>
+ <widget class="QDialog" name="WalletRestartCoreDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Welcome to Anoncoin QT</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Restart Core using a different Wallet</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QTextBrowser" name="textBrowser">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cantarell'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;DEVELOPER NOTE: Once these technologies have been developed, having multiple wallet views kept current with the blockchain will be possible and make switching between them much easier &amp;amp; faster.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This will be the most difficult part of implementing Multi-Wallet QT.  In order to switch the Core to use a different wallet file than it was initialized with requires many details be considered.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;First all mining must be terminated (if any), the RPC also needs to be disabled and all live connections terminated.  The current wallet flushed and all peer-to-peer network traffic suspended while making sure that all currently available blocks have been processed and those tasks completed before closing and disconnecting the ~default wallet.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;At this point we can now open the newly selected wallet file as read-writable and proceed to re-initialize the Core with the new View as the primary wallet (~default).  This requires allot of care and consideration, as wallet initialization is complicated and has many possible points of failure to deal with in a new and specialized way.  So code will need to be developed to handle that.  Once wallet re-initialization has completed, the 1st step will be to update the Wallet with all the most recent blocks &amp;amp; transactions that have been added to the chain. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Then we can proceed to restore most, if not all of the primary duties our node is responsible for, resuming the p2p communications will be 1st and most important.  Peers may have allot of data in transit when this happens and they may soon disconnect us, if we've become unresponsive.  To minimize that, the user should have ran Update View on the wallet before executing this command, that way the Wallet file is very near being current with the blockchain and fast to be switched in and on track.  &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The next challenge for the software in recovering from a live wallet switch will be restoring RPC operations.  This is easy if no mining was taking place at the time the primary wallet was changed.  If either internal or external mining was going, the programmer and user are both presented with some  possible problems.  If the internal miner(s) were running at the time, I'm in favor of it being left off and the user must manually restart mining after a wallet switch, for external miners using the RPC any work submitted after it is re-enabled will not be accepted, as those coinbase keys are no longer valid and more than likely new blocks have made the work stale in any case.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;So there you have it, this command should display a simple progress bar as the primary wallet is switched while a live node is in operation, there will of coarse be many possible error message boxes which could show up and I suggest we implement the code in such a way that simply returning to the previous wallet file be its default behavior in the cases where switching to a different one is going to cause problems in a way that the user may not have thought of or expected.  The wallet file is the most important and private part of our software, anything which compromises that, will not be considered as an option here.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>WalletRestartCoreDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>WalletRestartCoreDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
