@@ -1,13 +1,20 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "rpcserver.h"
+// anoncoin-config.h loaded...
+
+#include "checkpoints.h"
 #include "main.h"
 #include "sync.h"
-#include "checkpoints.h"
+#include "util.h"
+
+#ifdef ENABLE_WALLET
+#include "wallet.h"
+#endif
 
 #include <stdint.h>
 
@@ -16,7 +23,39 @@
 using namespace json_spirit;
 using namespace std;
 
+extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
+
+double GetDifficulty(const CBlockIndex* blockindex)
+{
+    // Floating point number that is a multiple of the minimum difficulty,
+    // minimum difficulty = 1.0.
+    if (blockindex == NULL)
+    {
+        if (chainActive.Tip() == NULL)
+            return 1.0;
+        else
+            blockindex = chainActive.Tip();
+    }
+
+    int nShift = (blockindex->nBits >> 24) & 0xff;
+
+    double dDiff =
+        (double)0x0000ffff / (double)(blockindex->nBits & 0x00ffffff);
+
+    while (nShift < 29)
+    {
+        dDiff *= 256.0;
+        nShift++;
+    }
+    while (nShift > 29)
+    {
+        dDiff /= 256.0;
+        nShift--;
+    }
+
+    return dDiff;
+}
 
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex)
 {

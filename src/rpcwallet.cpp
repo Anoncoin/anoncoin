@@ -1,7 +1,7 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "base58.h"
@@ -9,7 +9,7 @@
 #include "init.h"
 #include "net.h"
 #include "netbase.h"
-#include "util.h"
+#include "timedata.h"
 #include "wallet.h"
 #include "walletdb.h"
 
