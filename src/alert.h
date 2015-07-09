@@ -1,10 +1,10 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef _ANONCOINALERT_H_
-#define _ANONCOINALERT_H_
+#ifndef ANONCOIN_ALERT_H
+#define ANONCOIN_ALERT_H
 
 #include "serialize.h"
 #include "sync.h"
@@ -46,8 +46,10 @@ public:
     std::string strStatusBar;
     std::string strReserved;
 
-    IMPLEMENT_SERIALIZE
-    (
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(this->nVersion);
         nVersion = this->nVersion;
         READWRITE(nRelayUntil);
@@ -63,7 +65,7 @@ public:
         READWRITE(LIMITED_STRING(strComment, 65536));
         READWRITE(LIMITED_STRING(strStatusBar, 256));
         READWRITE(LIMITED_STRING(strReserved, 256));
-    )
+    }
 
     void SetNull();
 
@@ -83,11 +85,13 @@ public:
         SetNull();
     }
 
-    IMPLEMENT_SERIALIZE
-    (
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(vchMsg);
         READWRITE(vchSig);
-    )
+    }
 
     void SetNull();
     bool IsNull() const;

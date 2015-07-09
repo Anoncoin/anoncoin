@@ -1,15 +1,18 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txdb.h"
 
-#include "core.h"
+#include "amount.h"
+#include "pow.h"
 #include "uint256.h"
 
 #include <stdint.h>
+
+#include <boost/scoped_ptr.hpp>
 
 using namespace std;
 
@@ -109,7 +112,10 @@ bool CBlockTreeDB::ReadLastBlockFile(int &nFile) {
 }
 
 bool CCoinsViewDB::GetStats(CCoinsStats &stats) {
-    leveldb::Iterator *pcursor = db.NewIterator();
+    /* It seems that there are no "const iterators" for LevelDB.  Since we
+       only need read operations on it, use a const-cast to get around
+       that restriction.  */
+    boost::scoped_ptr<leveldb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
     pcursor->SeekToFirst();
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
@@ -152,7 +158,6 @@ bool CCoinsViewDB::GetStats(CCoinsStats &stats) {
             return error("%s : Deserialize or I/O error - %s", __func__, e.what());
         }
     }
-    delete pcursor;
     stats.nHeight = mapBlockIndex.find(GetBestBlock())->second->nHeight;
     stats.hashSerialized = ss.GetHash();
     stats.nTotalAmount = nTotalAmount;
@@ -184,7 +189,7 @@ bool CBlockTreeDB::ReadFlag(const std::string &name, bool &fValue) {
 
 bool CBlockTreeDB::LoadBlockIndexGuts()
 {
-    leveldb::Iterator *pcursor = NewIterator();
+    boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
 
     CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
     ssKeySet << make_pair('b', uint256(0));
@@ -219,8 +224,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
 
-                if (!pindexNew->CheckIndex())
-                    return error("LoadBlockIndex() : CheckIndex failed: %s", pindexNew->ToString());
+                bool fIsGenesis = diskindex.nHeight == 0;
+                if( !fIsGenesis && !CheckProofOfWork( diskindex.GetBlockPowHash(), diskindex.nBits) )
+                    return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
 
                 pcursor->Next();
             } else {
@@ -230,7 +236,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
             return error("%s : Deserialize or I/O error - %s", __func__, e.what());
         }
     }
-    delete pcursor;
 
     return true;
 }

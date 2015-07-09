@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
@@ -10,15 +10,32 @@
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "net.h"
+#include "random.h"
+#include "timedata.h"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <openssl/rand.h>
 
 using namespace std;
 
-// Settings
-int64_t nTransactionFee = DEFAULT_TRANSACTION_FEE;
+// Setting required for v9 code to work
+int64_t nTransactionFee = (int64_t)DEFAULT_TRANSACTION_FEE;
+
+// V10 param CWallet::minTxFee, will not link in v9 CWallet class as defined static,
+// huge pain-in-ass.  Moving here and setting it in AppInit2 init.cpp by user param -mintxfee
+CFeeRate m_minTxFee;
+
+
+/**
+ * V10 Settings
+ */
+CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
+CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
+unsigned int nTxConfirmTarget = 1;
 bool bSpendZeroConfChange = true;
+bool fSendFreeTransactions = false;
+bool fPayAtLeastCustomFee = true;
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -948,9 +965,8 @@ void CWalletTx::RelayWalletTransaction()
     if (!IsCoinBase())
     {
         if (GetDepthInMainChain() == 0) {
-            uint256 hash = GetHash();
-            LogPrintf("Relaying wtx %s\n", hash.ToString());
-            RelayTransaction((CTransaction)*this, hash);
+            LogPrintf("Relaying wtx %s\n", GetHash().ToString());
+            RelayTransaction((CTransaction)*this);
         }
     }
 }
@@ -1335,6 +1351,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
     }
 
     wtxNew.BindWallet(this);
+    CMutableTransaction txNew;
 
     {
         LOCK2(cs_main, cs_wallet);
@@ -1342,8 +1359,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
             nFeeRet = nTransactionFee;
             while (true)
             {
-                wtxNew.vin.clear();
-                wtxNew.vout.clear();
+                txNew.vin.clear();
+                txNew.vout.clear();
                 wtxNew.fFromMe = true;
 
                 int64_t nTotalValue = nValue + nFeeRet;
@@ -1352,12 +1369,12 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
                 BOOST_FOREACH (const PAIRTYPE(CScript, int64_t)& s, vecSend)
                 {
                     CTxOut txout(s.second, s.first);
-                    if (txout.IsDust(CTransaction::nMinRelayTxFee))
+                    if (txout.IsDust(minRelayTxFee))
                     {
                         strFailReason = _("Transaction amount too small");
                         return false;
                     }
-                    wtxNew.vout.push_back(txout);
+                    txNew.vout.push_back(txout);
                 }
 
                 // Choose coins to use
@@ -1382,9 +1399,9 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
                 // have upgraded to the 0.9 GetMinFee() rules. Until then, this avoids
                 // creating free transactions that have change outputs less than
                 // CENT anoncoins.
-                // if (nFeeRet < CTransaction::nMinTxFee && nChange > 0 && nChange < CENT)
+                // if (nFeeRet < tx_nMinTxFee && nChange > 0 && nChange < CENT)
                 // {
-                //    int64_t nMoveToFee = min(nChange, CTransaction::nMinTxFee - nFeeRet);
+                //    int64_t nMoveToFee = min(nChange, tx_nMinTxFee - nFeeRet);
                 //    nChange -= nMoveToFee;
                 //    nFeeRet += nMoveToFee;
                 // }
@@ -1423,7 +1440,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
 
                     // Never create dust outputs; if we would, just
                     // add the dust to the fee.
-                    if (newTxOut.IsDust(CTransaction::nMinRelayTxFee))
+                    if (newTxOut.IsDust(minRelayTxFee))
                     {
                         nFeeRet += nChange;
                         reservekey.ReturnKey();
@@ -1431,8 +1448,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
                     else
                     {
                         // Insert change txn at random position:
-                        vector<CTxOut>::iterator position = wtxNew.vout.begin()+GetRandInt(wtxNew.vout.size()+1);
-                        wtxNew.vout.insert(position, newTxOut);
+                        vector<CTxOut>::iterator position = txNew.vout.begin()+GetRandInt(txNew.vout.size()+1);
+                        txNew.vout.insert(position, newTxOut);
                     }
                 }
                 else
@@ -1440,16 +1457,19 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend,
 
                 // Fill vin
                 BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins)
-                    wtxNew.vin.push_back(CTxIn(coin.first->GetHash(),coin.second));
+                    txNew.vin.push_back(CTxIn(coin.first->GetHash(),coin.second));
 
                 // Sign
                 int nIn = 0;
                 BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins)
-                    if (!SignSignature(*this, *coin.first, wtxNew, nIn++))
+                    if (!SignSignature(*this, *coin.first, txNew, nIn++))
                     {
                         strFailReason = _("Signing transaction failed");
                         return false;
                     }
+
+                // Embed the constructed transaction data in wtxNew.
+                *static_cast<CTransaction*>(&wtxNew) = CTransaction(txNew);
 
                 // Limit size
                 unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
@@ -1579,8 +1599,31 @@ string CWallet::SendMoneyToDestination(const CTxDestination& address, int64_t nV
 
     return SendMoney(scriptPubKey, nValue, wtxNew);
 }
-
-
+#if defined( DONT_COMPILE )
+// v10 code will not yet compile
+CAmount CWallet::GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
+{
+    // payTxFee is user-set "I want to pay this much"
+    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
+    // user selected total at least (default=true)
+    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
+        nFeeNeeded = payTxFee.GetFeePerK();
+    // User didn't set: use -txconfirmtarget to estimate...
+    if (nFeeNeeded == 0)
+        nFeeNeeded = pool.estimateFee(nConfirmTarget).GetFee(nTxBytes);
+    // ... unless we don't have enough mempool data, in which case fall
+    // back to a hard-coded fee
+    if (nFeeNeeded == 0)
+        nFeeNeeded = minTxFee.GetFee(nTxBytes);
+    // prevent user from paying a non-sense fee (like 1 satoshi): 0 < fee < minRelayFee
+    if (nFeeNeeded < ::minRelayTxFee.GetFee(nTxBytes))
+        nFeeNeeded = ::minRelayTxFee.GetFee(nTxBytes);
+    // But always obey the maximum
+    if (nFeeNeeded > maxTxFee)
+        nFeeNeeded = maxTxFee;
+    return nFeeNeeded;
+}
+#endif
 
 
 DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
@@ -2186,4 +2229,102 @@ bool CWallet::GetDestData(const CTxDestination &dest, const std::string &key, st
         }
     }
     return false;
+}
+
+int CMerkleTx::SetMerkleBranch(const CBlock* pblock)
+{
+    AssertLockHeld(cs_main);
+    CBlock blockTmp;
+
+    if (pblock == NULL) {
+        CCoins coins;
+        if (pcoinsTip->GetCoins(GetHash(), coins)) {
+            CBlockIndex *pindex = chainActive[coins.nHeight];
+            if (pindex) {
+                if (!ReadBlockFromDisk(blockTmp, pindex))
+                    return 0;
+                pblock = &blockTmp;
+            }
+        }
+    }
+
+    if (pblock) {
+        // Update the tx's hashBlock
+        hashBlock = pblock->GetHash();
+
+        // Locate the transaction
+        for (nIndex = 0; nIndex < (int)pblock->vtx.size(); nIndex++)
+            if (pblock->vtx[nIndex] == *(CTransaction*)this)
+                break;
+        if (nIndex == (int)pblock->vtx.size())
+        {
+            vMerkleBranch.clear();
+            nIndex = -1;
+            LogPrintf("ERROR: SetMerkleBranch() : couldn't find tx in block\n");
+            return 0;
+        }
+
+        // Fill in merkle branch
+        vMerkleBranch = pblock->GetMerkleBranch(nIndex);
+    }
+
+    // Is the tx in a block that's in the main chain
+    BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
+    if (mi == mapBlockIndex.end())
+        return 0;
+    CBlockIndex* pindex = (*mi).second;
+    if (!pindex || !chainActive.Contains(pindex))
+        return 0;
+
+    return chainActive.Height() - pindex->nHeight + 1;
+}
+
+int CMerkleTx::GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const
+{
+    if (hashBlock == 0 || nIndex == -1)
+        return 0;
+    AssertLockHeld(cs_main);
+
+    // Find the block it claims to be in
+    BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
+    if (mi == mapBlockIndex.end())
+        return 0;
+    CBlockIndex* pindex = (*mi).second;
+    if (!pindex || !chainActive.Contains(pindex))
+        return 0;
+
+    // Make sure the merkle branch connects to this block
+    if (!fMerkleVerified)
+    {
+        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, nIndex) != pindex->hashMerkleRoot)
+            return 0;
+        fMerkleVerified = true;
+    }
+
+    pindexRet = pindex;
+    return chainActive.Height() - pindex->nHeight + 1;
+}
+
+int CMerkleTx::GetDepthInMainChain(CBlockIndex* &pindexRet) const
+{
+    AssertLockHeld(cs_main);
+    int nResult = GetDepthInMainChainINTERNAL(pindexRet);
+    if (nResult == 0 && !mempool.exists(GetHash()))
+        return -1; // Not in chain, not in mempool
+
+    return nResult;
+}
+
+int CMerkleTx::GetBlocksToMaturity() const
+{
+    if (!IsCoinBase())
+        return 0;
+    return max(0, (COINBASE_MATURITY+1) - GetDepthInMainChain());
+}
+
+
+bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree)
+{
+    CValidationState state;
+    return ::AcceptToMemoryPool(mempool, state, *this, fLimitFree, NULL);
 }

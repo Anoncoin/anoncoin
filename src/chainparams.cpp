@@ -1,16 +1,20 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chainparams.h"
 // Anoncoin-config.h has been loaded...
 
-#include "assert.h"
-#include "core.h"
+#include "block.h"
+#include "amount.h"
 #include "protocol.h"
-#include "util.h"
+#include "random.h"
+#include "timedata.h"
+// #include "util.h"
+
+#include <assert.h>
 
 #include <boost/assign/list_of.hpp>
 
@@ -69,9 +73,9 @@ public:
 
         nDefaultPort = 9377;
 
-        // As of March '15, SCRYPT is all that matters, future mining with a SHA256D algo may soon be supported as well, set those limits here.
-        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
-        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 32);       // ToDo: Bitcoin difficulty is very high (taken from 9.99 code 12/2014)
+        // As of April '15, SCRYPT is all that matters, future mining a SHA256D algo may soon be supported as well, set those limits here.
+        bnProofOfWorkLimit[ALGO_SCRYPT] = uint256().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
+        bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 32;       // ToDo: set SHA256D min work
 
         // Anoncoin Genesis block details:
         //2ca51355580bb293fe369c5f34954069c263e9a9e8d70945ebb4c38f05778558
@@ -86,7 +90,7 @@ public:
         // CTxOut(error)
         // vMerkleTree: 7ce7004d76
         const char* pszTimestamp = "02/Jun/2013:  The Universe, we're all one. But really, fuck the Central banks. - Anonymous 420";
-        CTransaction txNew;
+        CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
@@ -199,8 +203,8 @@ public:
         nDefaultPort = 19377;
 
         // ToDo: Proof of work limits for testnet.  Adjust as needed...
-        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 17);
-        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 20);
+        bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 17;
+        bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 20;
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         // These values have been set to the same as the v0.8.5.6 client had, so testing should be possible with that client, although maynot be required.
@@ -248,8 +252,8 @@ public:
         pchMessageStart[3] = 0xda;
 
         // ToDo: Proof of work limits, for regression testing are very small, more than likely these should work
-        bnProofOfWorkLimit[ALGO_SCRYPT] = CBigNum(~uint256(0) >> 1);
-        bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 1);
+        bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 10;
+        bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 10;
 
         genesis.nTime = 1296688602;
         genesis.nBits = 0x207fffff;

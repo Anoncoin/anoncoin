@@ -1,28 +1,27 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_CHAIN_PARAMS_H
 #define ANONCOIN_CHAIN_PARAMS_H
 
 // Many builder specific things set in the config file, ENABLE_WALLET is a good example.
-// Don't forget to include it this way in your source or header files.  GR Note: The
-// latter is now my preferred method, with a note in the source file about how the builder
-// config file has now been loaded.
+// Don't forget to include it this way in your source or header files.  GR Note: This
+// method is now preferred, with a note in the source file about how the builder config
+// file has now been loaded.
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
 #endif
 
 #include "chainparamsbase.h"
-#include "bignum.h"
+#include "protocol.h"
 #include "uint256.h"
 
 #include <vector>
 
 using namespace std;
 
-#define MESSAGE_START_SIZE 4
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
 
 class CAddress;
@@ -69,7 +68,7 @@ public:
     const vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     const vector<unsigned char>& OldAlertKey() const { return vOldAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
-    const CBigNum& ProofOfWorkLimit( MinedWithAlgo mwa = ALGO_SCRYPT ) const { return bnProofOfWorkLimit[ mwa ]; }
+    const uint256& ProofOfWorkLimit( MinedWithAlgo mwa = ALGO_SCRYPT ) const { return bnProofOfWorkLimit[ mwa ]; }
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }
@@ -89,7 +88,7 @@ protected:
     vector<unsigned char> vAlertPubKey;
     vector<unsigned char> vOldAlertPubKey;
     int nDefaultPort;
-    CBigNum bnProofOfWorkLimit[ MAX_ALGO_TYPES ];
+    uint256 bnProofOfWorkLimit[ MAX_ALGO_TYPES ];
     string strDataDir;
     vector<CDNSSeedData> vSeeds;
 #ifdef ENABLE_I2PSAM

@@ -1,14 +1,14 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "util.h"
 
 #include "chainparamsbase.h"
 #include "netbase.h"
-#include "ui_interface.h"
+#include "random.h"
 #include "uint256.h"
 #include "version.h"
 
@@ -96,7 +96,6 @@ string strMiscWarning;
 bool fNoListen = false;
 bool fLogTimestamps = false;
 volatile bool fReopenDebugLog = false;
-CClientUIInterface uiInterface;
 
 // Init OpenSSL library multithreading support
 static CCriticalSection** ppmutexOpenSSL;
@@ -139,75 +138,6 @@ public:
     }
 }
 instance_of_cinit;
-
-
-
-
-
-
-
-
-void RandAddSeed()
-{
-    // Seed with CPU performance counter
-    int64_t nCounter = GetPerformanceCounter();
-    RAND_add(&nCounter, sizeof(nCounter), 1.5);
-    memset(&nCounter, 0, sizeof(nCounter));
-}
-
-void RandAddSeedPerfmon()
-{
-    RandAddSeed();
-
-    // This can take up to 2 seconds, so only do it every 10 minutes
-    static int64_t nLastPerfmon;
-    if (GetTime() < nLastPerfmon + 10 * 60)
-        return;
-    nLastPerfmon = GetTime();
-
-#ifdef WIN32
-    // Don't need this on Linux, OpenSSL automatically uses /dev/urandom
-    // Seed with the entire set of perfmon data
-    unsigned char pdata[250000];
-    memset(pdata, 0, sizeof(pdata));
-    unsigned long nSize = sizeof(pdata);
-    long ret = RegQueryValueExA(HKEY_PERFORMANCE_DATA, "Global", NULL, NULL, pdata, &nSize);
-    RegCloseKey(HKEY_PERFORMANCE_DATA);
-    if (ret == ERROR_SUCCESS)
-    {
-        RAND_add(pdata, nSize, nSize/100.0);
-        OPENSSL_cleanse(pdata, nSize);
-        LogPrint("rand", "RandAddSeed() %lu bytes\n", nSize);
-    }
-#endif
-}
-
-uint64_t GetRand(uint64_t nMax)
-{
-    if (nMax == 0)
-        return 0;
-
-    // The range of the random source must be a multiple of the modulus
-    // to give every possible output value an equal possibility
-    uint64_t nRange = (std::numeric_limits<uint64_t>::max() / nMax) * nMax;
-    uint64_t nRand = 0;
-    do
-        RAND_bytes((unsigned char*)&nRand, sizeof(nRand));
-    while (nRand >= nRange);
-    return (nRand % nMax);
-}
-
-int GetRandInt(int nMax)
-{
-    return GetRand(nMax);
-}
-
-uint256 GetRandHash()
-{
-    uint256 hash;
-    RAND_bytes((unsigned char*)&hash, sizeof(hash));
-    return hash;
-}
 
 // LogPrintf() has been broken a couple of times now
 // by well-meaning people adding mutexes in the most straightforward way.
@@ -1243,41 +1173,6 @@ void SetMockTime(int64_t nMockTimeIn)
     nMockTime = nMockTimeIn;
 }
 
-CCriticalSection cs_nTimeOffset;
-int64_t nTimeOffset = 0;
-
-int64_t GetTimeOffset()
-{
-    LOCK(cs_nTimeOffset);
-    return nTimeOffset;
-}
-
-int64_t GetAdjustedTime()
-{
-    return GetTime() + GetTimeOffset();
-}
-
-uint32_t insecure_rand_Rz = 11;
-uint32_t insecure_rand_Rw = 11;
-void seed_insecure_rand(bool fDeterministic)
-{
-    //The seed values have some unlikely fixed points which we avoid.
-    if(fDeterministic)
-    {
-        insecure_rand_Rz = insecure_rand_Rw = 11;
-    } else {
-        uint32_t tmp;
-        do {
-            RAND_bytes((unsigned char*)&tmp, 4);
-        } while(tmp == 0 || tmp == 0x9068ffffU);
-        insecure_rand_Rz = tmp;
-        do {
-            RAND_bytes((unsigned char*)&tmp, 4);
-        } while(tmp == 0 || tmp == 0x464fffffU);
-        insecure_rand_Rw = tmp;
-    }
-}
-
 #ifdef WIN32
 boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
@@ -1375,5 +1270,54 @@ std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)
     ss.imbue(loc);
     ss << boost::posix_time::from_time_t(nTime);
     return ss.str();
+}
+
+bool ParseInt32(const std::string& str, int32_t *out)
+{
+    char *endp = NULL;
+    errno = 0; // strtol will not set errno if valid
+    long int n = strtol(str.c_str(), &endp, 10);
+    if(out) *out = (int)n;
+    // Note that strtol returns a *long int*, so even if strtol doesn't report a over/underflow
+    // we still have to check that the returned value is within the range of an *int32_t*. On 64-bit
+    // platforms the size of these types may be different.
+    return endp && *endp == 0 && !errno &&
+        n >= std::numeric_limits<int32_t>::min() &&
+        n <= std::numeric_limits<int32_t>::max();
+}
+
+std::string FormatParagraph(const std::string in, size_t width, size_t indent)
+{
+    std::stringstream out;
+    size_t col = 0;
+    size_t ptr = 0;
+    while(ptr < in.size())
+    {
+        // Find beginning of next word
+        ptr = in.find_first_not_of(' ', ptr);
+        if (ptr == std::string::npos)
+            break;
+        // Find end of next word
+        size_t endword = in.find_first_of(' ', ptr);
+        if (endword == std::string::npos)
+            endword = in.size();
+        // Add newline and indentation if this wraps over the allowed width
+        if (col > 0)
+        {
+            if ((col + endword - ptr) > width)
+            {
+                out << '\n';
+                for(size_t i=0; i<indent; ++i)
+                    out << ' ';
+                col = 0;
+            } else
+                out << ' ';
+        }
+        // Append word
+        out << in.substr(ptr, endword - ptr);
+        col += endword - ptr + 1;
+        ptr = endword;
+    }
+    return out.str();
 }
 

@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef ANONCOIN_UTIL_H
@@ -11,6 +11,7 @@
 #include "config/anoncoin-config.h"
 #endif
 
+#include "amount.h"
 #include "compat.h"
 #include "serialize.h"
 #include "sync.h"
@@ -36,9 +37,6 @@
 
 class uint256;
 
-static const int64_t COIN = 100000000;
-static const int64_t CENT = 1000000;
-
 #define BEGIN(a)            ((char*)&(a))
 #define END(a)              ((char*)&((&(a))[1]))
 #define UBEGIN(a)           ((unsigned char*)&(a))
@@ -47,6 +45,10 @@ static const int64_t CENT = 1000000;
 
 // This is needed because the foreach macro can't get over the comma in pair<t1, t2>
 #define PAIRTYPE(t1, t2)    std::pair<t1, t2>
+
+//! This value is used all over the place, sometimes stored in data space for no good reason &
+//! should have just been DEFINED for the compiler to place in code space as a constant
+#define SECONDSPERDAY (60 * 60 * 24)
 
 // Align by increasing pointer, must have extra space at end of buffer
 template <size_t nBytes, typename T>
@@ -105,18 +107,18 @@ extern bool fNoListen;
 extern bool fLogTimestamps;
 extern volatile bool fReopenDebugLog;
 
-// The code needed access to these was moved to netbase.cpp temporarily at least
-extern CCriticalSection cs_nTimeOffset;
-extern int64_t nTimeOffset;
-
-void RandAddSeed();
-void RandAddSeedPerfmon();
 void SetupEnvironment();
 
 /* Return true if log accepts specified category */
 bool LogAcceptCategory(const char* category);
 /* Send a string to the log output */
 int LogPrintStr(const std::string &str);
+
+extern const signed char p_util_hexdigit[];
+inline signed char HexDigit(char c)
+{
+    return p_util_hexdigit[(unsigned char)c];
+}
 
 #define strprintf tfm::format
 #define LogPrintf(...) LogPrint(NULL, __VA_ARGS__)
@@ -197,13 +199,8 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 #endif
 boost::filesystem::path GetTempPath();
 void ShrinkDebugFile();
-int GetRandInt(int nMax);
-uint64_t GetRand(uint64_t nMax);
-uint256 GetRandHash();
 int64_t GetTime();
 void SetMockTime(int64_t nMockTimeIn);
-int64_t GetAdjustedTime();
-int64_t GetTimeOffset();
 void runCommand(std::string strCommand);
 
 
@@ -289,19 +286,6 @@ void PrintHex(const T pbegin, const T pend, const char* pszFormat="%s", bool fSp
 inline void PrintHex(const std::vector<unsigned char>& vch, const char* pszFormat="%s", bool fSpaces=true)
 {
     LogPrintf(pszFormat, HexStr(vch, fSpaces).c_str());
-}
-
-inline int64_t GetPerformanceCounter()
-{
-    int64_t nCounter = 0;
-#ifdef WIN32
-    QueryPerformanceCounter((LARGE_INTEGER*)&nCounter);
-#else
-    timeval t;
-    gettimeofday(&t, NULL);
-    nCounter = (int64_t) t.tv_sec * 1000000 + t.tv_usec;
-#endif
-    return nCounter;
 }
 
 inline int64_t GetTimeMillis()
@@ -398,28 +382,6 @@ void HardSetArg(const std::string& strArg, const std::string& strValue);
 void HardSetBoolArg(const std::string& strArg, bool fValue);
 
 /**
- * MWC RNG of George Marsaglia
- * This is intended to be fast. It has a period of 2^59.3, though the
- * least significant 16 bits only have a period of about 2^30.1.
- *
- * @return random value
- */
-extern uint32_t insecure_rand_Rz;
-extern uint32_t insecure_rand_Rw;
-static inline uint32_t insecure_rand(void)
-{
-    insecure_rand_Rz = 36969 * (insecure_rand_Rz & 65535) + (insecure_rand_Rz >> 16);
-    insecure_rand_Rw = 18000 * (insecure_rand_Rw & 65535) + (insecure_rand_Rw >> 16);
-    return (insecure_rand_Rw << 16) + insecure_rand_Rz;
-}
-
-/**
- * Seed insecure_rand using the random pool.
- * @param Deterministic Use a determinstic seed
- */
-void seed_insecure_rand(bool fDeterministic=false);
-
-/**
  * Timing-attack-resistant comparison.
  * Takes time proportional to length
  * of first argument.
@@ -434,61 +396,6 @@ bool TimingResistantEqual(const T& a, const T& b)
     return accumulator == 0;
 }
 
-/** Median filter over a stream of values.
- * Returns the median of the last N numbers
- */
-template <typename T> class CMedianFilter
-{
-private:
-    std::vector<T> vValues;
-    std::vector<T> vSorted;
-    unsigned int nSize;
-public:
-    CMedianFilter(unsigned int size, T initial_value):
-        nSize(size)
-    {
-        vValues.reserve(size);
-        vValues.push_back(initial_value);
-        vSorted = vValues;
-    }
-
-    void input(T value)
-    {
-        if(vValues.size() == nSize)
-        {
-            vValues.erase(vValues.begin());
-        }
-        vValues.push_back(value);
-
-        vSorted.resize(vValues.size());
-        std::copy(vValues.begin(), vValues.end(), vSorted.begin());
-        std::sort(vSorted.begin(), vSorted.end());
-    }
-
-    T median() const
-    {
-        int size = vSorted.size();
-        assert(size>0);
-        if(size & 1) // Odd number of elements
-        {
-            return vSorted[size/2];
-        }
-        else // Even number of elements
-        {
-            return (vSorted[size/2-1] + vSorted[size/2]) / 2;
-        }
-    }
-
-    int size() const
-    {
-        return vValues.size();
-    }
-
-    std::vector<T> sorted () const
-    {
-        return vSorted;
-    }
-};
 
 #ifdef WIN32
 inline void SetThreadPriority(int nPriority)
@@ -586,4 +493,17 @@ template <typename Callable> void TraceThread(const char* name,  Callable func)
     }
 }
 
-#endif
+/**
+ * Convert string to signed 32-bit integer with strict parse error feedback.
+ * @returns true if the entire string could be parsed as valid integer,
+ *   false if not the entire string could be parsed or when overflow or underflow occurred.
+ */
+bool ParseInt32(const std::string& str, int32_t *out);
+
+/**
+ * Format a paragraph of text to a fixed width, adding spaces for
+ * indentation to any added line.
+ */
+std::string FormatParagraph(const std::string in, size_t width=79, size_t indent=0);
+
+#endif // ANONCOIN_UTIL_H

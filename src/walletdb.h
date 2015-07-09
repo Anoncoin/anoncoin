@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_WALLETDB_H
 #define ANONCOIN_WALLETDB_H
@@ -55,12 +55,14 @@ public:
         nCreateTime = nCreateTime_;
     }
 
-    IMPLEMENT_SERIALIZE
-    (
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(this->nVersion);
         nVersion = this->nVersion;
         READWRITE(nCreateTime);
-    )
+    }
 
     void SetNull()
     {
@@ -73,13 +75,10 @@ public:
 class CWalletDB : public CDB
 {
 public:
-    CWalletDB(std::string strFilename, const char* pszMode="r+") : CDB(strFilename.c_str(), pszMode)
+    CWalletDB(const std::string& strFilename, const char* pszMode = "r+") : CDB(strFilename, pszMode)
     {
     }
-private:
-    CWalletDB(const CWalletDB&);
-    void operator=(const CWalletDB&);
-public:
+
     bool WriteName(const std::string& strAddress, const std::string& strName);
     bool EraseName(const std::string& strAddress);
 
@@ -118,19 +117,23 @@ public:
     bool WriteDestData(const std::string &address, const std::string &key, const std::string &value);
     /// Erase destination data tuple from wallet database
     bool EraseDestData(const std::string &address, const std::string &key);
-private:
-    bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
-public:
+
     bool WriteAccountingEntry(const CAccountingEntry& acentry);
     int64_t GetAccountCreditDebit(const std::string& strAccount);
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& acentries);
 
-    DBErrors ReorderTransactions(CWallet*);
+    DBErrors ReorderTransactions(CWallet* pwallet);
     DBErrors LoadWallet(CWallet* pwallet);
     DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash);
     DBErrors ZapWalletTx(CWallet* pwallet);
     static bool Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys);
     static bool Recover(CDBEnv& dbenv, std::string filename);
+
+private:
+    CWalletDB(const CWalletDB&);
+    void operator=(const CWalletDB&);
+
+    bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
 };
 
 bool BackupWallet(const CWallet& wallet, const std::string& strDest);

@@ -1,14 +1,16 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_COINS_H
 #define ANONCOIN_COINS_H
 
-#include "core.h"
+#include "compressor.h"
+#include "transaction.h"
 #include "serialize.h"
 #include "uint256.h"
+#include "undo.h"
 
 #include <assert.h>
 #include <stdint.h>
@@ -240,6 +242,7 @@ public:
     }
 };
 
+typedef std::map<uint256, CCoins> CCoinsMap;        // Old v9 definition for new v10 code, can change here after upgrading the map
 
 struct CCoinsStats
 {
@@ -322,6 +325,13 @@ public:
     uint256 GetBestBlock();
     bool SetBestBlock(const uint256 &hashBlock);
     bool BatchWrite(const std::map<uint256, CCoins> &mapCoins, const uint256 &hashBlock);
+
+    /** V10 code:
+     * Return a pointer to CCoins in the cache, or NULL if not found. This is
+     * more efficient than GetCoins. Modifications to other cache entries are
+     * allowed while accessing the returned pointer.
+     */
+    const CCoins* AccessCoins(const uint256 &txid) const;
 
     // Return a modifiable reference to a CCoins. Check HaveCoins first.
     // Many methods explicitly require a CCoinsViewCache because of this method, to reduce

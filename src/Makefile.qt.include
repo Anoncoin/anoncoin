@@ -1,5 +1,5 @@
 bin_PROGRAMS += qt/anoncoin-qt
-noinst_LIBRARIES += qt/libanoncoinqt.a
+EXTRA_LIBRARIES += qt/libanoncoinqt.a
 
 # anoncoin qt core #
 QT_TS = \

@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_TXMEMPOOL_H
 #define ANONCOIN_TXMEMPOOL_H
@@ -9,7 +9,6 @@
 #include <list>
 
 #include "coins.h"
-#include "core.h"
 #include "sync.h"
 
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
@@ -42,6 +41,19 @@ public:
     unsigned int GetHeight() const { return nHeight; }
 };
 
+/** An inpoint - a combination of a transaction and an index n into its vin */
+class CInPoint
+{
+public:
+    const CTransaction* ptx;
+    unsigned int n;
+
+    CInPoint() { SetNull(); }
+    CInPoint(const CTransaction* ptxIn, unsigned int nIn) { ptx = ptxIn; n = nIn; }
+    void SetNull() { ptx = NULL; n = (unsigned int) -1; }
+    bool IsNull() const { return (ptx == NULL && n == (unsigned int) -1); }
+};
+
 /*
  * CTxMemPool stores valid-according-to-the-current-best-chain
  * transactions that may be included in the next block.
@@ -62,6 +74,7 @@ public:
     mutable CCriticalSection cs;
     std::map<uint256, CTxMemPoolEntry> mapTx;
     std::map<COutPoint, CInPoint> mapNextTx;
+    std::map<uint256, std::pair<double, CAmount> > mapDeltas;
 
     CTxMemPool();
 
@@ -82,6 +95,11 @@ public:
     void pruneSpent(const uint256& hash, CCoins &coins);
     unsigned int GetTransactionsUpdated() const;
     void AddTransactionsUpdated(unsigned int n);
+
+    /** Affect CreateNewBlock prioritisation of transactions */
+    void PrioritiseTransaction(const uint256 hash, const std::string strHash, double dPriorityDelta, const CAmount& nFeeDelta);
+    void ApplyDeltas(const uint256 hash, double &dPriorityDelta, CAmount &nFeeDelta);
+    void ClearPrioritisation(const uint256 hash);
 
     unsigned long size()
     {

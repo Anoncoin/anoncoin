@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef H_ANONCOIN_SCRIPT
@@ -21,6 +21,7 @@
 class CCoins;
 class CKeyStore;
 class CTransaction;
+struct CMutableTransaction;
 
 static const unsigned int MAX_SCRIPT_ELEMENT_SIZE = 520; // bytes
 static const unsigned int MAX_OP_RETURN_RELAY = 40;      // bytes
@@ -192,6 +193,26 @@ enum
     SCRIPT_VERIFY_EVEN_S    = (1U << 2), // enforce even S values in signatures (depends on STRICTENC)
     SCRIPT_VERIFY_NOCACHE   = (1U << 3), // do not store results in signature cache (but do query it)
 };
+
+//! Some v10 flags and definitions, greatly reduced for our needs in v9.5
+/**
+ * Mandatory script verification flags that all new blocks must comply with for
+ * them to be valid. (but old blocks may not comply with) Currently just P2SH,
+ * but in the future other flags may be added, such as a soft-fork to enforce
+ * strict DER encoding.
+ *
+ * Failing one of these tests may trigger a DoS ban - see CheckInputs() for
+ * details.
+ */
+static const unsigned int MANDATORY_SCRIPT_VERIFY_FLAGS = SCRIPT_VERIFY_P2SH;
+
+/**
+ * Standard script verification flags that standard transactions will comply
+ * with. However scripts violating these flags may still be present in valid
+ * blocks and we must accept those blocks.
+ */
+static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC;
+
 
 /** IsMine() return codes */
 enum isminetype
@@ -686,7 +707,8 @@ public:
 
     void PrintHex() const
     {
-        LogPrintf("CScript(%s)\n", HexStr(begin(), end(), true).c_str());
+        // LogPrintf("CScript(%s)\n", HexStr(begin(), end(), true).c_str());
+        printf("CScript(%s)\n", HexStr(begin(), end(), true).c_str());
     }
 
     std::string ToString() const
@@ -723,79 +745,6 @@ public:
     }
 };
 
-/** Compact serializer for scripts.
- *
- *  It detects common cases and encodes them much more efficiently.
- *  3 special cases are defined:
- *  * Pay to pubkey hash (encoded as 21 bytes)
- *  * Pay to script hash (encoded as 21 bytes)
- *  * Pay to pubkey starting with 0x02, 0x03 or 0x04 (encoded as 33 bytes)
- *
- *  Other scripts up to 121 bytes require 1 byte + script length. Above
- *  that, scripts up to 16505 bytes require 2 bytes + script length.
- */
-class CScriptCompressor
-{
-private:
-    // make this static for now (there are only 6 special scripts defined)
-    // this can potentially be extended together with a new nVersion for
-    // transactions, in which case this value becomes dependent on nVersion
-    // and nHeight of the enclosing transaction.
-    static const unsigned int nSpecialScripts = 6;
-
-    CScript &script;
-protected:
-    // These check for scripts for which a special case with a shorter encoding is defined.
-    // They are implemented separately from the CScript test, as these test for exact byte
-    // sequence correspondences, and are more strict. For example, IsToPubKey also verifies
-    // whether the public key is valid (as invalid ones cannot be represented in compressed
-    // form).
-    bool IsToKeyID(CKeyID &hash) const;
-    bool IsToScriptID(CScriptID &hash) const;
-    bool IsToPubKey(CPubKey &pubkey) const;
-
-    bool Compress(std::vector<unsigned char> &out) const;
-    unsigned int GetSpecialSize(unsigned int nSize) const;
-    bool Decompress(unsigned int nSize, const std::vector<unsigned char> &out);
-public:
-    CScriptCompressor(CScript &scriptIn) : script(scriptIn) { }
-
-    unsigned int GetSerializeSize(int nType, int nVersion) const {
-        std::vector<unsigned char> compr;
-        if (Compress(compr))
-            return compr.size();
-        unsigned int nSize = script.size() + nSpecialScripts;
-        return script.size() + VARINT(nSize).GetSerializeSize(nType, nVersion);
-    }
-
-    template<typename Stream>
-    void Serialize(Stream &s, int nType, int nVersion) const {
-        std::vector<unsigned char> compr;
-        if (Compress(compr)) {
-            s << CFlatData(&compr[0], &compr[compr.size()]);
-            return;
-        }
-        unsigned int nSize = script.size() + nSpecialScripts;
-        s << VARINT(nSize);
-        s << CFlatData(&script[0], &script[script.size()]);
-    }
-
-    template<typename Stream>
-    void Unserialize(Stream &s, int nType, int nVersion) {
-        unsigned int nSize = 0;
-        s >> VARINT(nSize);
-        if (nSize < nSpecialScripts) {
-            std::vector<unsigned char> vch(GetSpecialSize(nSize), 0x00);
-            s >> REF(CFlatData(&vch[0], &vch[vch.size()]));
-            Decompress(nSize, vch);
-            return;
-        }
-        nSize -= nSpecialScripts;
-        script.resize(nSize);
-        s >> REF(CFlatData(&script[0], &script[script.size()]));
-    }
-};
-
 bool IsCanonicalPubKey(const std::vector<unsigned char> &vchPubKey, unsigned int flags);
 bool IsCanonicalSignature(const std::vector<unsigned char> &vchSig, unsigned int flags);
 
@@ -808,12 +757,14 @@ isminetype IsMine(const CKeyStore& keystore, const CTxDestination& dest);
 void ExtractAffectedKeys(const CKeyStore &keystore, const CScript& scriptPubKey, std::vector<CKeyID> &vKeys);
 bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet);
 bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<CTxDestination>& addressRet, int& nRequiredRet);
-bool SignSignature(const CKeyStore& keystore, const CScript& fromPubKey, CTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
-bool SignSignature(const CKeyStore& keystore, const CTransaction& txFrom, CTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
+bool SignSignature(const CKeyStore& keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
+bool SignSignature(const CKeyStore& keystore, const CTransaction& txFrom, CMutableTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
 bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn, unsigned int flags, int nHashType);
 
 // Given two sets of signatures for scriptPubKey, possibly with OP_0 placeholders,
 // combine them intelligently and return the result.
 CScript CombineSignatures(CScript scriptPubKey, const CTransaction& txTo, unsigned int nIn, const CScript& scriptSig1, const CScript& scriptSig2);
+// Needed for v10 anoncoin-tx
+CScript GetScriptForDestination(const CTxDestination& dest);
 
 #endif
