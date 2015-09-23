@@ -1,9 +1,10 @@
 // Copyright (c) 2012-2013 The Bitcoin Core developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "serialize.h"
+#include "streams.h"
 
 #include <stdint.h>
 

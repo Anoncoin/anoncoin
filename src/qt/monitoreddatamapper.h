@@ -28,7 +28,7 @@ public:
 private:
     void addChangeMonitor(QWidget *widget);
 
-signals:
+Q_SIGNALS:
     void viewModified();
 };
 

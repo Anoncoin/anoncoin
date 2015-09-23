@@ -18,6 +18,8 @@
 #include "main.h"
 #include "net.h"
 #include "pow.h"
+#include "scrypt.h"
+#include "sync.h"
 #include "timedata.h"
 #include "transaction.h"
 #include "util.h"
@@ -25,8 +27,19 @@
 #include "wallet.h"
 #endif
 
+#include <boost/foreach.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/unordered_map.hpp>
+
+//! Used to initialize the scrypt mining hash buffers
+#include <openssl/sha.h>
+
+using namespace std;
+
+uint64_t nLastBlockTx = 0;
+uint64_t nLastBlockSize = 0;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -52,10 +65,15 @@ public:
     COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), dPriority(0)
     {
     }
-};
 
-uint64_t nLastBlockTx = 0;
-uint64_t nLastBlockSize = 0;
+    void print() const
+    {
+        LogPrintf("COrphan(hash=%s, dPriority=%.1f, FeePerKb=%d)\n",
+               ptx->GetHash().ToString(), dPriority, feeRate.GetFeePerK());
+        BOOST_FOREACH(uint256 hash, setDependsOn)
+            LogPrintf("   setDependsOn %s\n", hash.ToString());
+    }
+};
 
 // We want to sort transactions by priority and fee rate, so:
 typedef boost::tuple<double, CFeeRate, const CTransaction*> TxPriority;
@@ -86,10 +104,6 @@ public:
 void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 {
     pblock->nTime = std::max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
-
-    // Updating time can change work required on testnet:
-    // if (Params().AllowMinDifficultyBlocks())
-        // pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
 }
 
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
@@ -140,7 +154,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LOCK2(cs_main, mempool.cs);
         CBlockIndex* pindexPrev = chainActive.Tip();
         const int nHeight = pindexPrev->nHeight + 1;
-        CCoinsViewCache view(*pcoinsTip, true);
+        CCoinsViewCache view(pcoinsTip);                    // Create an empty coin cache view, based on the main pcoinsTip cache
 
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move
@@ -281,11 +295,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             // policy here, but we still have to ensure that the block we
             // create only contains transactions that are valid in new blocks.
             CValidationState state;
-            if (!CheckInputs(tx, state, view, true, SCRIPT_VERIFY_P2SH))
+            if (!CheckInputs(tx, state, view, true, SCRIPT_VERIFY_P2SH, true))
                 continue;
 
-            CTxUndo txundo;
-            UpdateCoins(tx, state, view, txundo, nHeight, hash);
+            UpdateCoins(tx, state, view, nHeight);
 
             // Added
             pblock->vtx.push_back(tx);
@@ -331,12 +344,15 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         pblocktemplate->vTxFees[0] = -nFees;
 
         // Fill in header
-        pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
+        pblock->hashPrevBlock  = pindexPrev->GetBlockSha256dHash();             // Make sure it places the sha256d hash of the previous block into this new one.
         UpdateTime(pblock, pindexPrev);
         pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
         pblock->nNonce         = 0;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
+        //! Force both hash calculations to be updated before validity testing the block
+        assert( pblock->GetHash(true) != uint256(0) );
+        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false))
             throw std::runtime_error("CreateNewBlock() : TestBlockValidity failed");
@@ -348,7 +364,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce)
 {
     // Update nExtraNonce
-    static uint256 hashPrevBlock;
+    static uintFakeHash hashPrevBlock;
     if (hashPrevBlock != pblock->hashPrevBlock)
     {
         nExtraNonce = 0;
@@ -369,51 +385,13 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 //
 // Internal miner
 //
-double dHashesPerSec = 0.0;
-int64_t nHPSTimerStart = 0;
-
-//
-// ScanHash scans nonces looking for a hash with at least some zero bits.
-// The nonce is usually preserved between calls, but periodically or if the
-// nonce is 0xffff0000 or above, the block is rebuilt and nNonce starts over at
-// zero.
-//
-bool static ScanHash(const CBlockHeader *pblock, uint32_t& nNonce, uint256 *phash)
-{
-    // Write the first 76 bytes of the block header to a double-SHA256 state.
-    // CHash256 hasher;
-    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-    ss << *pblock;
-    assert(ss.size() == 80);
-    // hasher.Write((unsigned char*)&ss[0], 76);
-
-    while (true) {
-        nNonce++;
-
-        // Write the last 4 bytes of the block header (the nonce) to a copy of
-        // the double-SHA256 state, and compute the result.
-        // CHash256(hasher).Write((unsigned char*)&nNonce, 4).Finalize((unsigned char*)phash);
-
-        // Return the nonce if the hash has at least some zero bits,
-        // caller will check if it has enough to reach the target
-        // if (((uint16_t*)phash)[15] == 0)
-            return true;
-
-        // If nothing found after trying for a while, return -1
-        if ((nNonce & 0xffff) == 0)
-            return false;
-        if ((nNonce & 0xfff) == 0)
-            boost::this_thread::interruption_point();
-    }
-}
-
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
     CPubKey pubkey;
     if (!reservekey.GetReservedKey(pubkey))
         return NULL;
 
-    CScript scriptPubKey = CScript() << pubkey << OP_CHECKSIG;
+    CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey);
 }
 
@@ -425,7 +403,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     // Found a solution
     {
         LOCK(cs_main);
-        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockSha256dHash())
             return error("AnoncoinMiner : generated block is stale");
     }
 
@@ -435,7 +413,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     // Track how many getdata requests this block gets
     {
         LOCK(wallet.cs_wallet);
-        wallet.mapRequestCount[pblock->GetHash()] = 0;
+        wallet.mapRequestCount[pblock->CalcSha256dHash()] = 0;
     }
 
     // Process this block the same as if we had received it from another node
@@ -446,135 +424,463 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     return true;
 }
 
+class CHashMeter
+{
+private:
+    const uint8_t nMinerID;     //! The ID is likely the same value as the thread number which started this hash meter
+    const int64_t nSlowRunTime; //! This constant defines how long (in ms) before a logging event needs to be produced.
+    int64_t nMinerStartTime;    //! in Seconds, the time for which this miner thread 1st started.
+    int64_t nFastStartTime;     //! in milliSeconds, the time we started this last integration period
+    int64_t nSlowStartTime;     //! in milliSeconds, the time we last logged our results
+    uint64_t nFastCounter;      //! Hash count over one integration period (10sec)
+    uint64_t nSlowCounter;      //! Cumulative hash count since this miner last reported a logging request
+    uint64_t nCumulative;       //! Cumulative hash count since this miner was running
+    double dFastKHPS;           //! The last computed Hash rate sample, in Kilo Hashes Per Second.
+    double dSlowKHPS;           //! The computed Hash rate for one logging period.
+
+public:
+    //! Multithread miners will start out with a log result time one second longer than the previous thread.
+    //! We want to avoid them hitting the log at exactly the same moment, and preferably in order, this is
+    //! not likely, but an experiment.  Calculating the nSlowRunTime constant now and storing it saves doing
+    //! that each time the UpdateAccumulations() is run, easy to change here and for speed.
+    CHashMeter( const uint8_t nID ) : nMinerID(nID), nSlowRunTime( ( 10 * 60 + (int64_t)nID ) * 1000 )
+    {
+        int64_t nTimeNow = GetTimeMillis();
+
+        nMinerStartTime = (nTimeNow + 500) / 1000;  //! Nearest second, with rounding
+        nFastStartTime = nSlowStartTime = nTimeNow;
+        nFastCounter = nSlowCounter = nCumulative = 0;
+        dFastKHPS = dSlowKHPS = 0.0;
+    }
+    ~CHashMeter() {}
+
+    //! Adds newly hashed counts to the primary accumulator only and starts returning true if it wants the short term result updated and logged.
+    bool UpdateFastCounter( const uint16_t nHashesDone )
+    {
+        nFastCounter += (uint64_t)nHashesDone;
+        return GetTimeMillis() - nFastStartTime > 10000;
+    }
+
+    //! Updates the longer term counters, short term measurement calculation & resets its counter and start time.
+    //! Returns true if the longer mid term log entry should be updated.
+    bool UpdateAccumulations()
+    {
+        int64_t nTimeNow = GetTimeMillis();
+
+        nSlowCounter += nFastCounter;
+        nCumulative += nFastCounter;
+        dFastKHPS = (double)nFastCounter / (double)(nTimeNow - nFastStartTime);
+        nFastCounter = 0;
+        nFastStartTime = nTimeNow;
+
+        //! After 10 minutes plus 1 sec x the nID, we start asking for a logging event
+        return nTimeNow - nSlowStartTime > nSlowRunTime;
+    }
+
+    //! Updates the mid term (logged) measurement calculation, resets its counter and start time, then returns with the calculation in Hashes per second.
+    double RestartSlowCounter()
+    {
+        int64_t nTimeNow = GetTimeMillis();
+        int64_t nMilliSecs = nTimeNow - nSlowStartTime;
+
+        dSlowKHPS = (double)nSlowCounter / (double)nMilliSecs;
+        nSlowCounter = 0;
+        nSlowStartTime = nTimeNow;
+
+        return dSlowKHPS;
+    }
+    uint8_t GetMinerID() const { return nMinerID; }
+    int64_t GetStartTime() const { return nMinerStartTime; }
+    double GetFastKHPS() const { return dFastKHPS; }
+    double GetSlowKHPS() const { return dSlowKHPS; }
+    //! The total work performed so far on this miner thread can be gotten several ways, this method simply returns the total number of hashes the thread has calculated.
+    uint64_t GetCumulativeHashes() const { return nCumulative; }
+    //! This next one is a little more complicated, likely this is called by some routine that cares we return the correct value for time.
+    //! As it marches on, this sample could have been made in the distant past, aka placed in one of the mru storage sets long ago.  So we
+    //! make sure the accumulated hashes do not get added to, unless the HPSCounter was just zeroed, and most importantly to this next
+    //! method,  the nFastStartTime was set to the ending time for the accumulation!
+    int64_t GetCumulativeSecs() const { return ( (nFastStartTime + 500) / 1000 ) - nMinerStartTime; }
+    //! Returns the Hashes per Second for the total time this hash meter has been running (within 10sec)
+    double GetCumulativeHPS() const { return (double)nCumulative / (double)GetCumulativeSecs(); }
+
+    //! Needed for inclusion in an mru set...
+    friend bool operator<(const CHashMeter& a, const CHashMeter& b)
+    {
+        return a.nMinerID < b.nMinerID || (a.nMinerID == b.nMinerID && a.nFastStartTime < b.nFastStartTime) ||
+               (a.nMinerID == b.nMinerID && a.nFastStartTime == b.nFastStartTime && a.nSlowStartTime < b.nSlowStartTime);
+    }
+};
+
+static uint8_t nLastRunThreadCount = 0;
+static int64_t nMiningStoppedTime = 0;
+
+//! Global values protected by the cs_hashmeter condition variable...
+static CCriticalSection cs_hashmeter;
+static uint8_t nMinerThreadsRunning = 0;
+//! Initialization here only requires a few bytes, actual storage maximum size will be set when the miner(s) start running.
+//! We only keep ~ the last 10mins worth of 10sec short term data and ~1 days worth of 10min, these sizes will be defined
+//! depending on how many threads the user wants started.
+static mruset<CHashMeter> mruFastReadings(60);
+static mruset<CHashMeter> mruSlowReadings(144);
+
+typedef pair<uint16_t,double> MeterSum;
+typedef boost::unordered_map<uint8_t,MeterSum> MeterMap;
+
+static void UpdateMeterMap( uint8_t nMinerID, double dMinerKHPS, MeterMap& mapMeterSums )
+{
+    MeterMap::iterator it = mapMeterSums.find(nMinerID);
+    if( it == mapMeterSums.end() ) {
+        MeterSum newMiner;
+        newMiner.first = 1;
+        newMiner.second = dMinerKHPS;
+        mapMeterSums[nMinerID] = newMiner;
+    } else {
+        (*it).second.first++;
+        (*it).second.second += dMinerKHPS;
+    }
+}
+
+bool GetHashMeterStats( HashMeterStats& HashMeterState )
+{
+    bool fResultsProduced = false;
+    uint8_t nAttempts = 0; //! If lock fails, its no big deal, we'll try again for at least a couple of seconds...
+    int64_t nTimeNow = GetTime();
+
+    HashMeterState.nIDsReporting = 0;
+    HashMeterState.nFastCount = HashMeterState.nSlowCount = 0;
+    HashMeterState.nEarliestStartTime = nTimeNow;
+    HashMeterState.nMiningStoppedTime = nMiningStoppedTime;
+    HashMeterState.nRunTime = HashMeterState.nCumulativeTime = HashMeterState.nCumulativeHashes = 0;
+    HashMeterState.dFastKHPS = HashMeterState.dSlowKHPS = HashMeterState.dCumulativeMHPH = 0.0;
+    do {
+        TRY_LOCK(cs_hashmeter, lockedmeter);
+        if( lockedmeter ) {
+            //! If no miners are running, we still may have results from the past stored in the longer term dataset
+            //! Determine if we have some meter readings to analyze...
+            HashMeterState.nFastCount = mruFastReadings.size();
+            HashMeterState.nSlowCount = mruSlowReadings.size();
+            //! If there are no meter readings, we are also done...
+            if( HashMeterState.nFastCount || HashMeterState.nSlowCount ) {
+                //! For each of the slow and fast mruReadings, we must now total the counts and hashes found from each and every miner thread separately.
+                //! It requires us to keep track of that, as we go through all the mru datapoints, and gets kinda complicated to explain.  See the
+                //! UpdateMeterMap() helper function that figures out if the miner ID is already in the MeterMap, or needs to be added, takes care of both.
+                if( HashMeterState.nFastCount ) {
+                    MeterMap mapMiner;
+                    for( mruset<CHashMeter>::const_iterator it = mruFastReadings.begin(); it != mruFastReadings.end(); ++it )
+                        UpdateMeterMap( (*it).GetMinerID(), (*it).GetFastKHPS(), mapMiner );
+                    //! Finally we can go through each of the miner IDs that reported results and
+                    //! add the averaged KHPS from each to the hash meter states final result.
+                    for( MeterMap::const_iterator it = mapMiner.begin(); it != mapMiner.end(); ++it )
+                        HashMeterState.dFastKHPS += (*it).second.second / (double)(*it).second.first;
+                }
+                //! Finally we handle the processing of the longer term 10 minute samples and calculate the final
+                //! KHPS from the average we've seen in the same fashion we did for the fast mru.
+                if( HashMeterState.nSlowCount ) {
+                    MeterMap mapMiner;
+                    for( mruset<CHashMeter>::const_iterator it = mruSlowReadings.begin(); it != mruSlowReadings.end(); ++it )
+                        UpdateMeterMap( (*it).GetMinerID(), (*it).GetSlowKHPS(), mapMiner );
+                    //! Again we can go through each of the miner IDs that reported results and
+                    //! add the averaged KHPS to the hash meter states final result.
+                    for( MeterMap::const_iterator it = mapMiner.begin(); it != mapMiner.end(); ++it )
+                        HashMeterState.dSlowKHPS += (*it).second.second / (double)(*it).second.first;
+                }
+
+                //! While we know there is at least some meter readings, we can find and total the most recent accumulative
+                //! hash count and total execution times, from each of the miner threads.  This time we'll do that with a
+                //! simple MinerID set, we start out with no miner IDs and an iterator that points to the end of the selected
+                //! mru set, that depends on if this is history or while operating live running mining threads.  In either
+                //! case all we need is the most recent sample from each of the MinerID's, that also depends on if we are
+                //! running or stopped at the moment.
+                set<uint8_t> setMinerID;
+                uint8_t nMaxId = nMinerThreadsRunning ? nMinerThreadsRunning : nLastRunThreadCount;
+                mruset<CHashMeter>::const_iterator it = HashMeterState.nFastCount ? mruFastReadings.end() : mruSlowReadings.end();
+                mruset<CHashMeter>::const_iterator itend = HashMeterState.nFastCount ? mruFastReadings.begin() : mruSlowReadings.begin();
+                do {
+                    //! ToDo: Upgrade this to use the newly invented (typedefs added to mruset.h) reverse_iterator method.
+                    it--; //! 1st decrement it, as we move backwards in time from the most recent sample produced, starts out = end() of the selected mru set.
+                    //! Insertion fails, and returns false if the miner ID is already in the set so we skip it, because that means we already have
+                    //! that miners ID information. When we get all of them we're done, and have also totaled how many reported, which is a very
+                    //! good way of knowing if they are all still running or one or more have terminated.
+                    if( setMinerID.insert( (*it).GetMinerID() ).second ) {
+                        //! So it must have been inserted, include this threads results in the accumulation...
+                        HashMeterState.nCumulativeTime += (*it).GetCumulativeSecs();
+                        HashMeterState.nCumulativeHashes += (*it).GetCumulativeHashes();
+                        //! ...and keep track of the earliest start time we find, that will be when mining was initiated.
+                        int64_t nMetersStartTime = (*it).GetStartTime();
+                        if( HashMeterState.nEarliestStartTime > nMetersStartTime ) HashMeterState.nEarliestStartTime = nMetersStartTime;
+                        //! Finally bump the number of reporting threads we have found.
+                        HashMeterState.nIDsReporting++;
+                    }
+                //! Do this until we have all the mining thread reports, or we've run out of samples to explore.
+                } while( HashMeterState.nIDsReporting < nMaxId && it != itend );
+
+                //! We now have only one datapoint from each of the miners, and it is the most recent Cumulative run time from each of them.
+                //! so we calculate the HPS and convert it into mega hashes per hour at the same time.  nCumulativeTime here is not used though
+                //! or we could multiply the result by the number of nIDsReporting.  Instead we use actual time span, this effectively multiplies
+                //! the result by the same factor and sets up the final result needed by the 'gethashmeter' query.  It also works if mining has
+                //! stopped or is currently running.
+                if( HashMeterState.nIDsReporting ) {
+                    HashMeterState.nRunTime = HashMeterState.nFastCount ? nTimeNow : nMiningStoppedTime;
+                    HashMeterState.nRunTime -= HashMeterState.nEarliestStartTime;
+                }
+                //! Should never happen, but stops divide by zero, good for debugging and not reporting garbage to the user...
+                if( HashMeterState.nRunTime > 0 )
+                    HashMeterState.dCumulativeMHPH = (double)(HashMeterState.nCumulativeHashes * 3600) / (double)(HashMeterState.nRunTime * 1000000);
+                else
+                    HashMeterState.nRunTime = -1;
+            }
+            fResultsProduced = true;
+        } else
+            MilliSleep(100);            //! Sleep for abit..
+    } while( !fResultsProduced && ++nAttempts < 20 );
+
+    return fResultsProduced;
+}
+
+bool ClearHashMeterSlowMRU()
+{
+    bool fCleared = false;
+    uint8_t nAttempts = 0; //! If lock fails, its no big deal, we'll try again for at least a couple of seconds...
+
+    do {
+        TRY_LOCK(cs_hashmeter, lockedmeter);
+        if( lockedmeter ) {
+            mruSlowReadings.clear();
+            fCleared = true;
+        } else
+            MilliSleep(100);            //! Sleep for abit..
+    } while( !fCleared && ++nAttempts < 20 );
+
+    return fCleared;
+}
+
+bool IsMinersRunning()
+{
+    LOCK(cs_hashmeter);
+    return nMinerThreadsRunning != 0;
+}
+
+//! This procedure averages the miner threads 10 second samples, as found from over the last 10 minutes.
+//! Once the totals from each thread have been created, it finds the average each of them are producing
+//! and sums each of those, into the total returned.
+double GetFastMiningKHPS()
+{
+    double dFastKHPS = 0.0;
+
+    LOCK(cs_hashmeter);
+
+    if( nMinerThreadsRunning ) {
+        MeterMap mapMiner;
+        for( mruset<CHashMeter>::const_iterator it = mruFastReadings.begin(); it != mruFastReadings.end(); ++it )
+            UpdateMeterMap( (*it).GetMinerID(), (*it).GetFastKHPS(), mapMiner );
+        for( MeterMap::const_iterator it = mapMiner.begin(); it != mapMiner.end(); ++it )
+            dFastKHPS += (*it).second.second / (double)(*it).second.first;
+    }
+
+    return dFastKHPS;
+}
+
+//! Slow mining results can be returned even if generation has been turned off, if there are still results stored, this routine will
+//! find, and return the most recent 10 minute sample from each of the threads that were(are) running, and return that value.
+//! Accumulated averaging is not done, although it could be in the future.  As of this commentary it is not being used for anything.
+double GetSlowMiningKHPS()
+{
+    double dResult = 0.0;
+
+    LOCK(cs_hashmeter);
+
+    uint8_t nIDsFound = 0;
+    set<uint8_t> setMinerID;
+    for( mruset<CHashMeter>::const_reverse_iterator it = mruSlowReadings.rbegin(); nIDsFound < nMinerThreadsRunning && it != mruSlowReadings.rend(); ++it ) {
+        if( setMinerID.insert( (*it).GetMinerID() ).second ) {
+            dResult += (*it).GetFastKHPS();
+            nIDsFound++;
+        }
+    }
+    return dResult;
+}
+
 void static AnoncoinMiner(CWallet *pwallet)
 {
-    LogPrintf("AnoncoinMiner started\n");
+    LogPrintf("%s : v2.0 for Scrypt started with (DDA) Dynamic Difficulty Awareness and (MTHM) Multi-Threaded HashMeter technologies.\n", __func__ );
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("anoncoin-miner");
 
-    // Each thread has its own key and counter
+    //! Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
-    unsigned int nExtraNonce = 0;
+    uint32_t nExtraNonce = 0;
+
+    //! Create a new Hash meter for this thread, destruction handled automatically
+    uint8_t nMyID;
+    {
+        LOCK(cs_hashmeter);
+        nMyID = ++nMinerThreadsRunning;
+    }
+    //! Allocating with scoped pointers means no more concern over its destruction when we're finished...
+
+    //! Each thread gets its own Hash Meter, with a unique ID
+    boost::scoped_ptr<CHashMeter> spMyMeter(new CHashMeter( nMyID ));
+    //! Each thread gets its own Scrypt mining ScratchPad buffer, they are large.
+    boost::scoped_ptr<char> spScratchPad( new char[ SCRYPT_SCRATCHPAD_SIZE ] );
+    // Each thread gets its own scratchpad buffer, allocated in normal data storage and off the stack...
+    // char* pScratchPadBuffer = (char*) ::operator new (SCRYPT_SCRATCHPAD_SIZE, nothrow);
+    // if( !pScratchPadBuffer ) {
+        // LogPrintf( "%s %2d: ERROR - Unable to allocate scratchpad buffer for scrypt miner...\n", __func__, nMyID );
+        // return;
+    //}
 
     try {
         while (true) {
-            if (BaseParams().NetworkID() != CBaseChainParams::REGTEST) {
-                // Busy-wait for the network to come online so we don't waste time mining
-                // on an obsolete chain. In regtest mode we expect to fly solo.
+            if (!RegTest()) {
+                //! Busy-wait for the network to come online so we don't waste time mining
+                //! on an obsolete chain. In regtest mode we expect to fly solo.
                 while (vNodes.empty())
-                    MilliSleep(1000);
+                    MilliSleep(10000);
             }
 
-            //
-            // Create new block
-            //
+            /**
+             * Create new block
+             */
             unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
             CBlockIndex* pindexPrev = chainActive.Tip();
 
             auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey));
             if (!pblocktemplate.get())
             {
-                LogPrintf("Error in AnoncoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
+                LogPrintf("%s %2d: ERROR - Keypool ran out, please refill before restarting.\n", __func__, nMyID );
                 return;
             }
             CBlock *pblock = &pblocktemplate->block;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-            LogPrintf("Running AnoncoinMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+            LogPrintf("%s %2d: Running with %u transactions in block (%u bytes)\n", __func__, nMyID, pblock->vtx.size(),
                 ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
-            //
-            // Search
-            //
+            /**
+             * Search
+             */
             int64_t nStart = GetTime();
-            uint256 hashTarget = uint256().SetCompact(pblock->nBits);
-            uint256 hash;
-            uint32_t nNonce = 0;
-            uint32_t nOldNonce = 0;
-            while (true) {
-                bool fFound = ScanHash(pblock, nNonce, &hash);
-                uint32_t nHashesDone = nNonce - nOldNonce;
-                nOldNonce = nNonce;
-
-                // Check if something found
-                if (fFound)
-                {
-                    if (hash <= hashTarget)
-                    {
-                        // Found a solution
-                        pblock->nNonce = nNonce;
-                        assert(hash == pblock->GetHash());
-
+            uint256 hashTarget;
+            hashTarget.SetCompact(pblock->nBits);
+            while( true ) {
+                bool fFound = false;
+                bool fAccepted = false;
+                uint16_t nHashesDone = 0;
+                uint256 thash;
+                //! Scan nonces looking for a solution
+                while(true) {
+                    // scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), pScratchPadBuffer);
+                    //char *pPad = spScratchPad.get();
+                    scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), spScratchPad.get());
+                    nHashesDone++;
+                    if( thash <= hashTarget ) {
+                        fFound = true;
                         SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                        LogPrintf("AnoncoinMiner:\n");
-                        LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
-                        ProcessBlockFound(pblock, *pwallet, reservekey);
+                        //! Found a solution
+                        //! Force new proof-of-work block scrypt hash and the sha256d hash values to be calculated.
+                        //! Calling GetHash() & CalcSha256dHash() with true invalidates any previous (and obsolete) ones.
+                        assert( thash == pblock->GetHash(true) );
+                        //! Basically this next line does the Scrypt calculation again once, then all the normal
+                        //! validation code kicks in from the call to ProcessBlockFound(), insuring that is the case...
+                        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+                        LogPrintf("%s %2d:\n", __func__, nMyID );
+                        LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", thash.GetHex(), hashTarget.GetHex());
+                        fAccepted = ProcessBlockFound(pblock, *pwallet, reservekey);
                         SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
-                        // In regression test mode, stop mining after a block is found.
-                        // if (Params().MineBlocksOnDemand())
-                        if (BaseParams().NetworkID() == CBaseChainParams::REGTEST)
+                        //! In regression test mode, stop mining after a block is found.
+                        if( RegTest() )
                             throw boost::thread_interrupted();
-
                         break;
                     }
+                    pblock->nNonce++;
+                    //! In this inner loop, we calculate 256 hashes, if none are found, we'll try updating some other factors
+                    if( (pblock->nNonce & 0xFF) == 0 )
+                        break;
                 }
 
-                // Meter hashes/sec
-                static int64_t nHashCounter;
-                if (nHPSTimerStart == 0)
-                {
-                    nHPSTimerStart = GetTimeMillis();
-                    nHashCounter = 0;
-                }
-                else
-                    nHashCounter += nHashesDone;
-                if (GetTimeMillis() - nHPSTimerStart > 4000)
-                {
-                    static CCriticalSection cs;
-                    {
-                        LOCK(cs);
-                        if (GetTimeMillis() - nHPSTimerStart > 4000)
-                        {
-                            dHashesPerSec = 1000.0 * nHashCounter / (GetTimeMillis() - nHPSTimerStart);
-                            nHPSTimerStart = GetTimeMillis();
-                            nHashCounter = 0;
-                            static int64_t nLogTime;
-                            if (GetTime() - nLogTime > 30 * 60)
-                            {
-                                nLogTime = GetTime();
-                                LogPrintf("hashmeter %6.0f khash/s\n", dHashesPerSec/1000.0);
+                //!
+                //if( fFound ) {
+                    //if( !fAccepted )
+                    //break;
+                //}
+
+                //! Meter hashes/sec production, UpdateFastCounter starts returning true if its time to log results (10 sec.)
+                if( spMyMeter->UpdateFastCounter(nHashesDone) ) {
+                    //! If lock fails, its no big deal, we'll try again next time, the meter update is fast & keeps accumulating...
+                    TRY_LOCK(cs_hashmeter, lockedmeter);
+                    if( lockedmeter ) {
+                        //! Once we have the meter locked we first update our meter results, 'then' the 10 sec summary mru.
+                        bool fUpdateLog = spMyMeter->UpdateAccumulations();
+                        //! Now we store the whole hash meter as another (most recent) data point in the short term sample buffer,
+                        //! its new start time, becomes our final timestamp and can be used outside this thread anytime in the future.
+                        mruFastReadings.insert( *spMyMeter );
+                        //! If it turns out that the 10 minute log update needs to be done, we update that and report it and other stuff as well, otherwise we're done.
+                        if( fUpdateLog ) {
+                            //! Again before saving the sample, we make sure the timestamp is updated and the meters log fields reset for another interval,
+                            //! this call returns the logged HashesPermilliSec, so the value is correct for KiloHashes per second already...cool
+                            double dKiloHashesPerSec = spMyMeter->RestartSlowCounter();
+                            //! Store the whole hash meter as another data point in the long term sample buffer, and report that to the log.
+                            mruSlowReadings.insert( *spMyMeter );
+                            LogPrintf("%s %2d: reporting new 10 min sample update of %6.3f KHashes/Sec.\n", __func__, nMyID, dKiloHashesPerSec );
+#if defined( DONT_COMPILE )
+                            //! If our ID matches the number of threads running, we are the last one, and report some more...
+                            //! ToDo: Note this only works if the last thread always keep running, for an unknown reason it or other threads may have shut down.
+                            //! The HashMeter stats reporting function looks at the data in the 10sec mru, and knows if all threads are reporting results, can
+                            //! even tell which ones are not if we need that information.  Here though, it could fail if the last thread shutdown unexpectedly.
+                            if( nMyID == nMinerThreadsRunning ) {
+                                int nReadings = mruFastReadings.size();
+                                double dCumulativeKHPS = 0.0;
+                                for( mruset<CHashMeter>::const_iterator it = mruFastReadings.begin(); it != mruFastReadings.end(); ++it )
+                                    dCumulativeKHPS += (*it).GetFastKHPS();
+                                dCumulativeKHPS /= (double)nReadings;
+                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10sec) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
+                                nReadings = mruSlowReadings.size();
+                                dCumulativeKHPS = 0.0;
+                                for( mruset<CHashMeter>::const_iterator it = mruSlowReadings.begin(); it != mruSlowReadings.end(); ++it )
+                                    dCumulativeKHPS += (*it).GetSlowKHPS();
+                                dCumulativeKHPS /= (double)nReadings;
+                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10min) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
                             }
+#endif
                         }
                     }
                 }
-
-                // Check for stop or if block needs to be rebuilt
+                //! Check for stop or if block needs to be rebuilt
                 boost::this_thread::interruption_point();
-                if (vNodes.empty() && BaseParams().NetworkID() != CBaseChainParams::REGTEST)
+                //! If there are no peers we terminate the miner... except for RegTests
+                if( vNodes.empty() && !RegTest() )
                     break;
-                if (nNonce >= 0xffff0000)
+                //! Having processed more than 65K hashes means updating would be a good idea...
+                if( pblock->nNonce >= 0xffff0000 )
                     break;
-                if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
+                //! Checks for transaction changes happen at least 5 times over the coarse of one nTargetSpacing interval
+                if( mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 36 )
                     break;
+                //! If the previous block has changed, we must as well...
                 if (pindexPrev != chainActive.Tip())
                     break;
 
-                // Update nTime every few seconds
+                //! Update nTime and difficulty required (if needed) every so often
+                //! Changing pblock->nTime effects the work required for Anoncoin if the blockheader time is used for PID calculations,
+                //! otherwise it does not.  No older generation of the NextWorkRequired will be effected by time change.
                 UpdateTime(pblock, pindexPrev);
-                // if (Params().AllowMinDifficultyBlocks())
-                {
-                    // Changing pblock->nTime can change work required on testnet:
-                    // hashTarget.SetCompact(pblock->nBits);
-                }
-            }
-        }
-    }
-    catch (boost::thread_interrupted)
+                pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+                hashTarget.SetCompact(pblock->nBits);
+            } // Looping forever while true and no nonce overflow, transactions updated or new blocks arrived
+        } // Looping forever while true in this thread
+    } // try, errors caught and logged before terminating
+    catch (const boost::thread_interrupted&)
     {
-        LogPrintf("AnoncoinMiner terminated\n");
+        LogPrintf("%s %2d: terminated.\n", __func__, nMyID );
         throw;
     }
+    catch (const std::runtime_error &e)
+    {
+        LogPrintf("%s %2d: runtime error: %s\n", __func__, nMyID, e.what());
+        return;
+    }
+    // if( pScratchPadBuffer ) delete pScratchPadBuffer;
 }
 
 void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
@@ -582,7 +888,7 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
     static boost::thread_group* minerThreads = NULL;
 
     if (nThreads < 0) {
-        if (BaseParams().NetworkID() == CBaseChainParams::REGTEST)
+        if( RegTest() )
             nThreads = 1;
         else
             nThreads = boost::thread::hardware_concurrency();
@@ -595,8 +901,25 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
         minerThreads = NULL;
     }
 
-    if (nThreads == 0 || !fGenerate)
+    {
+        LOCK(cs_hashmeter);
+        nMinerThreadsRunning = 0;
+        mruFastReadings.clear();
+    }
+
+    if (nThreads == 0 || !fGenerate) {
+        nMiningStoppedTime = GetTime();
         return;
+    }
+
+    {
+        LOCK(cs_hashmeter);
+        mruFastReadings.max_size( nThreads * 60 );
+        mruSlowReadings.max_size( nThreads * 144 );
+    }
+
+    nLastRunThreadCount = nThreads;
+    nMiningStoppedTime = 0;
 
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
@@ -605,72 +928,11 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
 
 #endif // ENABLE_WALLET
 
-bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
-{
-    uint256 hash = pblock->GetPowHash();
-    uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-
-    //// debug print
-    LogPrintf("AnoncoinMiner: proof-of-work found.");
-    LogPrintf("\n  hash  : %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
-
-    // This is really a double check on the hash, we would not be here if it had not already been checked, and found to be valid.
-    // The way this is done however, is different, this time we are actually using the block data in a POW recalculation, if any
-    // memory problems had occurred while mining, that might show up here...
-    // Plus its now a way for us to initialize some blocks on TestNet that are fairly evenly spaced in time, before switching on
-    // some new algos or difficulty retargeting systems...
-    if( hash > hashTarget ) {
-        return error( "Unexpected mining check failed, 2nd level proof of work did not confirm block as mined.");
-        // ToDo: May want to raise an assertion here, this should not be happening....
-    }
-
-    // If we are initializing a new blockchain for algo/pow testing, we try to space those initial blocks near our target time span, regardless of mining horse power,
-    // unless it is to small, or the testnet difficulty set to high, then this concept will need to be adjusted...
-    // Note: Don't do this inside of cs_main being locked.
-    if( TestNet() ) {
-        CBlockIndex* pindexPrev = chainActive.Tip();
-        uint64_t nTimeDiff = (uint64_t)(pblock->nTime - pindexPrev->nTime);
-        // For the 1st 22 blocks and if the spacing is less than 90% of the target spacing
-        if( pindexPrev->nHeight <= 22 && nTimeDiff < (nTargetSpacing * 90)/100 ) {
-            LogPrintf( "Initial TestNet block mined %lld seconds to soon, ignored.\n", nTimeDiff );
-            return false;       // So we re-build the block and try again
-        }
-    }
-
-    // Found a solution
-    {
-        LOCK(cs_main);
-        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("AnoncoinMiner : generated block is stale");
-
-        LogPrintf("generated:\n%sAnc=%s\n", pblock->ToString(), FormatMoney(pblock->vtx[0].vout[0].nValue));
-
-        // Remove key from key pool
-        reservekey.KeepKey();
-
-        // Track how many getdata requests this block gets
-        {
-            LOCK(wallet.cs_wallet);
-            wallet.mapRequestCount[pblock->GetHash()] = 0;
-        }
-
-        // Process this block the same as if we had received it from another node
-        CValidationState state;
-        // ToDo: Check v10 call
-        bool fAccepted = ProcessNewBlock(state, NULL, pblock);
-        // if (!ProcessBlock(state, NULL, pblock))
-        if( !fAccepted )
-            return error("AnoncoinMiner : ProcessBlock, block not accepted");
-    }
-
-    return true;
-}
-
-#if defined( DONT_COMPILE )
-/** Do mining precalculation */
-void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1);
-/** Base sha256 mining transform */
-void SHA256Transform(void* pstate, void* pinput, const void* pinit);
+/**
+ * Scrypt mining related code for block creation
+ */
+static const uint32_t pSHA256InitState[8] =
+{0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
 {
@@ -687,10 +949,8 @@ int static FormatHashBlocks(void* pbuffer, unsigned int len)
     return blocks;
 }
 
-static const unsigned int pSHA256InitState[8] =
-{0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
-
-void SHA256Transform(void* pstate, void* pinput, const void* pinit)
+/** Base sha256 mining transform */
+void static SHA256Transform(void* pstate, void* pinput, const void* pinit)
 {
     SHA256_CTX ctx;
     unsigned char data[64];
@@ -708,11 +968,10 @@ void SHA256Transform(void* pstate, void* pinput, const void* pinit)
         ((uint32_t*)pstate)[i] = ctx.h[i];
 }
 
-void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1)
+/** Do mining precalculation, also used in rpcmining.cpp for the old getwork() */
+void FormatHashBuffers(const CBlockHeader* pblock, char* pmidstate, char* pdata, char* phash1)
 {
-    //
-    // Pre-build hash buffers
-    //
+    //! Structure used for pre-building the hash buffers
     struct
     {
         struct unnamed2
@@ -742,72 +1001,13 @@ void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash
     FormatHashBlocks(&tmp.block, sizeof(tmp.block));
     FormatHashBlocks(&tmp.hash1, sizeof(tmp.hash1));
 
-    // Byte swap all the input buffer
+    //! Byte swap all the input buffer
     for (unsigned int i = 0; i < sizeof(tmp)/4; i++)
         ((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
 
-    // Precalc the first half of the first hash, which stays constant
+    //! Precalc the first half of the first hash, which stays constant
     SHA256Transform(pmidstate, &tmp.block, pSHA256InitState);
 
     memcpy(pdata, &tmp.block, 128);
     memcpy(phash1, &tmp.hash1, 64);
 }
-
-class COrphan
-{
-    void print() const
-    {
-        LogPrintf("COrphan(hash=%s, dPriority=%.1f, dFeePerKb=%.1f)\n",
-               ptx->GetHash().ToString(), dPriority, dFeePerKb);
-        BOOST_FOREACH(uint256 hash, setDependsOn)
-            LogPrintf("   setDependsOn %s\n", hash.ToString());
-    }
-};
-
-
-void ScryptSearchMethod( void )
-{
-    bool fSolutionFound = false;
-    bool fBlockAccepted = false;
-    uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-    //
-    // Pre-build hash buffers
-    //
-    char pmidstatebuf[32+16]; char* pmidstate = alignup<16>(pmidstatebuf);
-    char pdatabuf[128+16];    char* pdata     = alignup<16>(pdatabuf);
-    char phash1buf[64+16];    char* phash1    = alignup<16>(phash1buf);
-
-    FormatHashBuffers(pblock, pmidstate, pdata, phash1);
-    // unsigned int& nBlockTime = *(unsigned int*)(pdata + 64 + 4);
-    // unsigned int& nBlockBits = *(unsigned int*)(pdata + 64 + 8);
-
-    unsigned int nHashesDone = 0;
-    uint256 thash;
-    char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
-    while(true) {
-        scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), scratchpad);
-        if (thash <= hashTarget) {
-            // Found a solution
-            fSolutionFound = true;
-            SetThreadPriority(THREAD_PRIORITY_NORMAL);
-            fBlockAccepted = CheckWork(pblock, *pwallet, reservekey);
-            SetThreadPriority(THREAD_PRIORITY_LOWEST);
-
-            // In regression test mode, stop mining after a block is found. This
-            // allows developers to controllably generate a block on demand.
-            if (BaseParams().NetworkID() == CBaseChainParams::REGTEST)
-                throw boost::thread_interrupted();
-
-            break;
-        }
-        pblock->nNonce += 1;
-        nHashesDone += 1;
-        // In this inner loop, we calculate 256 hashes, as fast as can be done, looking for a solution
-        if ((pblock->nNonce & 0xFF) == 0)
-            break;
-    }
-
-                if( fSolutionFound && !fBlockAccepted ) // Something went wrong, so rebuild a new block and try again
-                    break;
-}
-#endif

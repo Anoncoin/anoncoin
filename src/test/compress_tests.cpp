@@ -1,6 +1,6 @@
 // Copyright (c) 2012-2013 The Bitcoin Core developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main.h"
@@ -44,7 +44,9 @@ BOOST_AUTO_TEST_CASE(compress_amounts)
     BOOST_CHECK(TestPair(         CENT,       0x7));
     BOOST_CHECK(TestPair(         COIN,       0x9));
     BOOST_CHECK(TestPair(      50*COIN,      0x32));
-    BOOST_CHECK(TestPair(21000000*COIN, 0x1406f40));
+    BOOST_CHECK(TestPair(   10500*COIN,    0x2904));
+    BOOST_CHECK(TestPair(  250000*COIN,   0x3d090));
+    BOOST_CHECK(TestPair( 3100000*COIN,  0x2f4d60));
 
     for (uint64_t i = 1; i <= NUM_MULTIPLES_UNIT; i++)
         BOOST_CHECK(TestEncode(i));

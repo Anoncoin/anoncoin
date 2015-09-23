@@ -72,6 +72,7 @@ public:
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const string& DataDir() const { return strDataDir; }
+    CBaseChainParams::Network GetNetworkID() const { return networkID; }
     std::string NetworkIDString() const { return strNetworkID; }
     const vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
 #ifdef ENABLE_I2PSAM
@@ -95,6 +96,7 @@ protected:
     vector<CDNSSeedData> i2pvSeeds;
 #endif
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
+    CBaseChainParams::Network networkID;
     std::string strNetworkID;
 };
 
@@ -102,27 +104,23 @@ protected:
  * Return the currently selected parameters. This won't change after app startup
  * outside of the unit tests.
  */
-const CChainParams &Params();
+extern const CChainParams &Params();
 
 /** Return parameters for the given network. */
-CChainParams &Params(CBaseChainParams::Network network);
+extern CChainParams &Params(CBaseChainParams::Network network);
 
 /** Sets the params returned by Params() to those for the given network. */
-void SelectParams(CBaseChainParams::Network network);
+extern void SelectParams(CBaseChainParams::Network network);
 
 /**
  * Looks for -regtest or -testnet and then calls SelectParams as appropriate.
  * Returns false if an invalid combination is given.
  */
-bool SelectParamsFromCommandLine();
+extern bool SelectParamsFromCommandLine();
 
-inline bool TestNet() {
-    // Note: it's deliberate that this returns "false" for regression test mode.
-    return BaseParams().NetworkID() == CBaseChainParams::TESTNET;
-}
+extern bool TestNet();
+extern bool RegTest();
+extern bool isMainNetwork();
 
-inline bool RegTest() {
-    return BaseParams().NetworkID() == CBaseChainParams::REGTEST;
-}
 #endif // header guard
 

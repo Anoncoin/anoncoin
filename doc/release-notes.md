@@ -1,4 +1,4 @@
-Anoncoin Core version 0.9.4 is now available from:
+Anoncoin Core version 0.9.5 is now available from:
 
   https://github.com/Anoncoin/anoncoin.git
 
@@ -20,7 +20,7 @@ installer (on Windows) or just copy over /Applications/Anoncoin (on Mac) or
 anoncoind/anoncoin-qt (on Linux).
 
 If you are upgrading from version 0.8.5.6 or earlier, the first time you run
-0.9.4, you will need to re-indexed your block chain.
+0.9.5, you will need to re-indexed your block chain.
 
 Downgrading warnings
 --------------------
@@ -37,7 +37,7 @@ data structures and correct the problem.
 Also, the first time you run a 0.8.x release on a 0.9 wallet it will rescan
 the blockchain for missing spent coins.
 
-0.9.4 Release notes
+0.9.5 Release notes
 ===================
 
 RPC:
@@ -53,7 +53,7 @@ Protocol and network code:
 - Remove a useless millisleep in socket handler
 - Stricter memory limits on CNode
 - Better orphan transaction handling
-- Add `-maxorphantx=<n>` and `-maxorphanblocks=<n>` options for control over the maximum orphan transactions and blocks
+- Add `-maxorphantx=<n>` option for control over the maximum orphan transactions
 
 Wallet:
 - Check redeemScript size does not exceed 520 byte limit
@@ -67,7 +67,7 @@ GUI:
 Miscellaneous:
 - key.cpp: fail with a friendlier message on missing ssl EC support
 - Remove bignum dependency for scripts
-- Upgrade OpenSSL to 1.0.1i (see https://www.openssl.org/news/secadv_20140806.txt - just to be sure, no critical issues for Bitcoin Core)
+- Upgrade OpenSSL to 1.0.1j (see https://www.openssl.org/news/ - just to be sure, no critical issues for Anoncoin Core)
 - Upgrade miniupnpc to 1.9.20140701
 - Fix boost detection in build system on some platforms
 - Updated Splash Screen

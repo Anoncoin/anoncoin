@@ -19,18 +19,17 @@ Finally, two new headers and source files will have to be added to anoncoin-qt.p
 Changes to class AnoncoinGUI
 ---------------------------
 The principal change to the AnoncoinGUI class concerns the QStackedWidget instance called centralWidget.
-This widget owns five page views: overviewPage, transactionsPage, addressBookPage, receiveCoinsPage, and sendCoinsPage.
+This widget owns six page views: overviewPage, accountsPage, receiveCoinsPage, sendCoinsPage, transactionsPage and addressBookPage.
 
 A new class called *WalletView* inheriting from QStackedWidget has been written to handle all renderings and updates of
-these page views. In addition to owning these five page views, a WalletView also has a pointer to a WalletModel instance.
+these page views. In addition to owning these page views, a WalletView also has a pointer to a WalletModel instance.
 This allows the construction of multiple WalletView objects, each rendering a distinct wallet.
 
 A second class called *WalletFrame* inheriting from QFrame has been written as a container for embedding all wallet-related
 controls into AnoncoinGUI. At present it contains the WalletView instances for the wallets and does little more than passing on messages
-from AnoncoinGUI to the currently selected WalletView. It is a WalletFrame instance
-that takes the place of what used to be centralWidget in AnoncoinGUI. The purpose of this class is to allow future
-refinements of the wallet controls with minimal need for further modifications to AnoncoinGUI, thus greatly simplifying
-merges while reducing the risk of breaking top-level stuff.
+from AnoncoinGUI to the currently selected WalletView. It is a WalletFrame instance that takes the place of what used to be centralWidget
+in AnoncoinGUI. The purpose of this class is to allow future refinements of the wallet controls with minimal need for further modifications
+to AnoncoinGUI, thus greatly simplifying merges while reducing the risk of breaking top-level stuff.
 
 Changes to anoncoin.cpp
 ----------------------

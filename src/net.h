@@ -31,10 +31,9 @@
 #include <arpa/inet.h>
 #endif
 
+#include <boost/filesystem/path.hpp>
 #include <boost/foreach.hpp>
 #include <boost/signals2/signal.hpp>
-#include <openssl/rand.h>
-
 
 class CAddrMan;
 class CBlockIndex;
@@ -42,31 +41,40 @@ class CNode;
 
 namespace boost {
     class thread_group;
-}
+} // namespace boost
 
 /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
-static const int PING_INTERVAL = 2 * 60;
+extern const int PING_INTERVAL;
 /** Time after which to disconnect, after waiting for a ping response (or inactivity). */
-static const int TIMEOUT_INTERVAL = 20 * 60;
+extern const int TIMEOUT_INTERVAL;
 /** The maximum number of entries in an 'inv' protocol message */
-static const unsigned int MAX_INV_SZ = 50000;
+extern const unsigned int MAX_INV_SZ;
+/** The maximum number of new addresses to accumulate before announcing. */
+extern const unsigned int MAX_ADDR_TO_SEND;
+/** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
+extern const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH;
+/** -listen default */
+extern const bool DEFAULT_LISTEN;
+/** -upnp default */
+extern const bool DEFAULT_UPNP;
 /** The maximum number of entries in mapAskFor */
-static const size_t MAPASKFOR_MAX_SZ = MAX_INV_SZ;
+extern const size_t MAPASKFOR_MAX_SZ;
 
-inline unsigned int ReceiveFloodSize() { return 1000*GetArg("-maxreceivebuffer", 5*1000); }
-inline unsigned int SendBufferSize() { return 1000*GetArg("-maxsendbuffer", 1*1000); }
+unsigned int ReceiveFloodSize();
+unsigned int SendBufferSize();
 
 void AddOneShot(std::string strDest);
 bool RecvLine(SOCKET hSocket, std::string& strLine);
 bool GetMyExternalIP(CNetAddr& ipRet);
 void AddressCurrentlyConnected(const CService& addr);
 CNode* FindNode(const CNetAddr& ip);
+CNode* FindNode(const std::string& addrName);
 CNode* FindNode(const CService& ip);
 CNode* ConnectNode(CAddress addrConnect, const char *strDest = NULL);
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
-bool BindListenPort(const CService &bindAddr, std::string& strError=REF(std::string()));
+bool BindListenPort(const CService &bindAddr, std::string& strError, bool fWhitelisted = false);
 #ifdef ENABLE_I2PSAM
 bool BindListenNativeI2P();
 bool BindListenNativeI2P(SOCKET& hSocket);
@@ -95,6 +103,7 @@ CNodeSignals& GetNodeSignals();
 enum
 {
     LOCAL_NONE,   // unknown
+    LOCAL_PEER,   // address was discovered from a peer
     LOCAL_IF,     // address a local interface listens on
     LOCAL_BIND,   // address explicit bound to
     LOCAL_UPNP,   // address reported by UPnP
@@ -104,6 +113,8 @@ enum
     LOCAL_MAX
 };
 
+bool IsPeerAddrLocalGood(CNode *pnode);
+void AdvertizeLocal(CNode *pnode);
 void SetLimited(enum Network net, bool fLimited = true);
 bool IsLimited(enum Network net);
 bool IsLimited(const CNetAddr& addr);
@@ -116,8 +127,11 @@ bool IsReachable(enum Network net);
 bool IsReachable(const CNetAddr &addr);
 void SetReachable(enum Network net, bool fFlag = true);
 CAddress GetLocalAddress(const CNetAddr *paddrPeer = NULL);
+extern std::string GetPeerLogStr( const CNode* pfrom );
+
 
 extern bool fDiscover;
+extern bool fListen;
 extern uint64_t nLocalServices;
 extern uint64_t nLocalHostNonce;
 extern CAddrMan addrman;
@@ -159,7 +173,7 @@ public:
     int nStartingHeight;
     uint64_t nSendBytes;
     uint64_t nRecvBytes;
-    bool fSyncNode;
+    bool fWhitelisted;
     double dPingTime;
     double dPingWait;
     std::string addrLocal;
@@ -179,11 +193,14 @@ public:
     CDataStream vRecv;              // received message data
     unsigned int nDataPos;
 
+    int64_t nTime;                  // time (in microseconds) of message receipt.
+
     CNetMessage(int nTypeIn, int nVersionIn) : hdrbuf(nTypeIn, nVersionIn), vRecv(nTypeIn, nVersionIn) {
         hdrbuf.resize(24);
         in_data = false;
         nHdrPos = 0;
         nDataPos = 0;
+        nTime = 0;
     }
 
     bool complete() const
@@ -239,6 +256,7 @@ public:
     // store the sanitized version in cleanSubVer. The original should be used when dealing with
     // the network or wire types and the cleaned string used when displayed or logged.
     std::string strSubVer, cleanSubVer;
+    bool fWhitelisted; // This peer can bypass DoS banning.
     bool fOneShot;
     bool fClient;
     bool fInbound;
@@ -262,15 +280,17 @@ protected:
     static std::map<CNetAddr, int64_t> setBanned;
     static CCriticalSection cs_setBanned;
 
+    // Whitelisted ranges. Any node connecting from these is automatically
+    // whitelisted (as well as those connecting to whitelisted binds).
+    static std::vector<CSubNet> vWhitelistedRange;
+    static CCriticalSection cs_vWhitelistedRange;
+
     // Basic fuzz-testing
     void Fuzz(int nChance); // modifies ssSend
 
 public:
-    uint256 hashContinue;
-    CBlockIndex* pindexLastGetBlocksBegin;
-    uint256 hashLastGetBlocksEnd;
+    uintFakeHash hashContinue;              // This value is stored as a sha256d hash
     int nStartingHeight;
-//    bool fStartSync;
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
@@ -294,89 +314,10 @@ public:
     // Whether a ping is requested.
     bool fPingQueued;
 
-    // The original line we started with:
-    // CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
-    // As i2p addrs are MUCH larger than ip addresses, we're reducing the most-recently-used(mru) setAddrKnown to 1250, to have a much smaller memory profile per node.
-    //
-    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(1250)
-    {
-#ifdef ENABLE_I2PSAM
-        // Protocol 70009 changes the node creation process so it is deterministic.
-        // Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
-        // During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
-        // and may incorrectly report services depending on how they were built.  Some send full version address messages, and must have the
-        // stream type changed on the fly, before processing.  70008 has a bug, where the stream type is full size, but only contains an ip address
-        // over clearnet.  Protocol 70006 builds for clearnet lie about their support of the NODE_I2P service, while in fact the address object size
-        // is only large enough for an ip address.
-        // If the address given to us is a non-null string, the caller needs to have evaluated and setup that string correctly before calling this.
-        // It is no longer meaningful, and should be abandoned as an input parameter, it only serves to confusion and cloud the many issues involved
-        // in the node creation process.  Here it is assigned to the addrName field, which maybe useful in debugging problems, if it shows up incorrectly.
-        // Also note, all the subclasses vRecv, ssSend & hdrbuf get defined here  the same stream type during this initialization.
-        nStreamType = SER_NETWORK | (addrIn.IsNativeI2P() ? 0 : SER_IPADDRONLY);
-        SetSendStreamType( nStreamType );
-        SetRecvStreamType( nStreamType );
-        ssSend.SetType( nStreamType );
-#endif
-        nServices = 0;
-        hSocket = hSocketIn;
-        nRecvVersion = INIT_PROTO_VERSION;
-        nLastSend = 0;
-        nLastRecv = 0;
-        nSendBytes = 0;
-        nRecvBytes = 0;
-        nTimeConnected = GetTime();
-        addr = addrIn;
-        addrName = addrNameIn.size() ? addrNameIn : addr.ToStringIPPort();
-        nVersion = 0;
-        strSubVer = "";
-        fOneShot = false;
-        fClient = false; // set by version message
-        fInbound = fInboundIn;
-        fNetworkNode = false;
-        fSuccessfullyConnected = false;
-        fDisconnect = false;
-        nRefCount = 0;
-        nSendSize = 0;
-        nSendOffset = 0;
-        hashContinue = 0;
-        pindexLastGetBlocksBegin = 0;
-        hashLastGetBlocksEnd = 0;
-        nStartingHeight = -1;
-        fGetAddr = false;
-        fRelayTxes = false;
-        setInventoryKnown.max_size(SendBufferSize() / 1000);
-        pfilter = new CBloomFilter();
-        nPingNonceSent = 0;
-        nPingUsecStart = 0;
-        nPingUsecTime = 0;
-        fPingQueued = false;
-
-        {
-            LOCK(cs_nLastNodeId);
-            id = nLastNodeId++;
-        }
-
-        // Be shy and don't send version until we hear, unless its valid and outbound, then we go ahead and push our version...
-        if (hSocket != INVALID_SOCKET && !fInbound)
-            PushVersion();
-
-        GetNodeSignals().InitializeNode(GetId(), this);
-    }
-
-    ~CNode()
-    {
-        if (hSocket != INVALID_SOCKET)
-        {
-            closesocket(hSocket);
-            hSocket = INVALID_SOCKET;
-        }
-        if (pfilter)
-            delete pfilter;
-        GetNodeSignals().FinalizeNode(GetId());
-    }
+    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false);
+    ~CNode();
 
 private:
-#ifdef ENABLE_I2PSAM
     // A bug exists in older software, where the stream types are defined as integers, and they should be 'unsigned', this causes the
     // code used to treat ~SER_TYPENAME values to be treated as negative numbers and produce the 'wrong' results when setting the
     // stream type values.  Another bug.
@@ -384,7 +325,6 @@ private:
     // We'll keep the separate Send/Recv Types for now, in the future we will always switch both together at the same time, so no need for 2
     unsigned int nSendStreamType;
     unsigned int nRecvStreamType;
-#endif
     // Network usage totals
     static CCriticalSection cs_totalBytesRecv;
     static CCriticalSection cs_totalBytesSent;
@@ -395,7 +335,6 @@ private:
     void operator=(const CNode&);
 
 public:
-#ifdef ENABLE_I2PSAM
     void SetSendStreamType(int nType) {
         nSendStreamType = nType;
         ssSend.SetType(nSendStreamType);
@@ -421,9 +360,9 @@ public:
         SetStreamType( SER_NETWORK | (nServices & NODE_I2P) ? 0 : SER_IPADDRONLY );
     }
 
+    unsigned int GetStreamType() const { return nStreamType; }
     int GetSendStreamType() const { return nSendStreamType; }
     int GetRecvStreamType() const { return nRecvStreamType; }
-#endif // ENABLE_I2PSAM
 
     NodeId GetId() const {
       return id;
@@ -478,27 +417,8 @@ public:
         // Known checking here is only to save space from duplicates.
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
-
-        // An Additional double check now allows us to share private network IP4v addresses
-        // only with those peers that are also on and using a private network.  This check
-        // produces a debug.log Warning message error if detected.
-        // All the real checking is done throughout the code where needed, and this
-        // log entry should NEVER happen, or the programming hasn't been done properly.
-        //
-        // Update: It does however work correctly when tested in one case at least, a peer
-        // also on the same RFC1918() network, had finally broadcast its address to us,
-        // causing a AddrMan entry to be created, and stop the addrman.Connect warnings,
-        // about the peers address not being found, but connected to.  In this case, we had
-        // connected outbound via an addnode onetry command, so did not yet have its address,
-        // by it finally did advertise its address to us, so we finally got it stored and the
-        // warning messages stopped.  Its up to addrman to not rebroadcast private network
-        // addresses, which it does not send it response to getaddr commands.
-        if (addr.IsValid() && !setAddrKnown.count(addr)) {
-            if( !addr.IsRFC1918() || this->addr.IsRFC1918() )
-                vAddrToSend.push_back(addr);
-            else
-                LogPrintf( "WARNING - Not pushing your private address %s to peer %s\n", addr.ToString(), this->addr.ToString() );
-        }
+        if (addr.IsValid() && !setAddrKnown.count(addr))
+            vAddrToSend.push_back(addr);
     }
 
 
@@ -519,99 +439,16 @@ public:
         }
     }
 
-    void AskFor(const CInv& inv)
-    {
-        if (mapAskFor.size() > MAPASKFOR_MAX_SZ)
-            return;
-
-        // We're using mapAskFor as a priority queue,
-        // the key is the earliest time the request can be sent
-        int64_t nRequestTime;
-        limitedmap<CInv, int64_t>::const_iterator it = mapAlreadyAskedFor.find(inv);
-        if (it != mapAlreadyAskedFor.end())
-            nRequestTime = it->second;
-        else
-            nRequestTime = 0;
-        LogPrint("net", "askfor %s   %d (%s)\n", inv.ToString().c_str(), nRequestTime, DateTimeStrFormat("%H:%M:%S", nRequestTime/1000000).c_str());
-
-        // Make sure not to reuse time indexes to keep things in the same order
-        int64_t nNow = GetTimeMicros() - 1000000;
-        static int64_t nLastTime;
-        ++nLastTime;
-        nNow = std::max(nNow, nLastTime);
-        nLastTime = nNow;
-
-        // Each retry is 2 minutes after the last
-        nRequestTime = std::max(nRequestTime + 2 * 60 * 1000000, nNow);
-        if (it != mapAlreadyAskedFor.end())
-            mapAlreadyAskedFor.update(it, nRequestTime);
-        else
-            mapAlreadyAskedFor.insert(std::make_pair(inv, nRequestTime));
-        mapAskFor.insert(std::make_pair(nRequestTime, inv));
-    }
-
-
+    void AskFor(const CInv& inv);
 
     // TODO: Document the postcondition of this function.  Is cs_vSend locked?
-    void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
-    {
-        ENTER_CRITICAL_SECTION(cs_vSend);
-        assert(ssSend.size() == 0);
-        ssSend << CMessageHeader(pszCommand, 0);
-        LogPrint("net", "sending: %s ", pszCommand);
-    }
+    void BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend);
 
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
-    void AbortMessage() UNLOCK_FUNCTION(cs_vSend)
-    {
-        ssSend.clear();
-
-        LEAVE_CRITICAL_SECTION(cs_vSend);
-
-        LogPrint("net", "(aborted)\n");
-    }
+    void AbortMessage() UNLOCK_FUNCTION(cs_vSend);
 
     // TODO: Document the precondition of this function.  Is cs_vSend locked?
-    void EndMessage() UNLOCK_FUNCTION(cs_vSend)
-    {
-        // The -*messagestest options are intentionally not documented in the help message,
-        // since they are only used during development to debug the networking code and are
-        // not intended for end-users.
-        if (mapArgs.count("-dropmessagestest") && GetRand(GetArg("-dropmessagestest", 2)) == 0)
-        {
-            LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
-            AbortMessage();
-            return;
-        }
-        if (mapArgs.count("-fuzzmessagestest"))
-            Fuzz(GetArg("-fuzzmessagestest", 10));
-
-        if (ssSend.size() == 0)
-            return;
-
-        // Set the size
-        unsigned int nSize = ssSend.size() - CMessageHeader::HEADER_SIZE;
-        memcpy((char*)&ssSend[CMessageHeader::MESSAGE_SIZE_OFFSET], &nSize, sizeof(nSize));
-
-        // Set the checksum
-        uint256 hash = Hash(ssSend.begin() + CMessageHeader::HEADER_SIZE, ssSend.end());
-        unsigned int nChecksum = 0;
-        memcpy(&nChecksum, &hash, sizeof(nChecksum));
-        assert(ssSend.size () >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));
-        memcpy((char*)&ssSend[CMessageHeader::CHECKSUM_OFFSET], &nChecksum, sizeof(nChecksum));
-
-        LogPrint("net", "(%d bytes)\n", nSize);
-
-        std::deque<CSerializeData>::iterator it = vSendMsg.insert(vSendMsg.end(), CSerializeData());
-        ssSend.GetAndClear(*it);
-        nSendSize += (*it).size();
-
-        // If write queue empty, attempt "optimistic write"
-        if (it == vSendMsg.begin())
-            SocketSendData(this);
-
-        LEAVE_CRITICAL_SECTION(cs_vSend);
-    }
+    void EndMessage() UNLOCK_FUNCTION(cs_vSend);
 
     void PushVersion();
 
@@ -778,8 +615,6 @@ public:
     void Subscribe(unsigned int nChannel, unsigned int nHops=0);
     void CancelSubscribe(unsigned int nChannel);
     void CloseSocketDisconnect();
-    void Cleanup();
-
 
     // Denial-of-service detection/prevention
     // The idea is to detect peers that are behaving
@@ -799,6 +634,9 @@ public:
     static bool IsBanned(CNetAddr ip);
     static bool Ban(const CNetAddr &ip);
     void copyStats(CNodeStats &stats);
+
+    static bool IsWhitelistedRange(const CNetAddr &ip);
+    static void AddWhitelistedRange(const CSubNet &subnet);
 
     // Network stats
     static void RecordBytesRecv(uint64_t bytes);

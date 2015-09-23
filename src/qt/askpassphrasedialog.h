@@ -41,7 +41,7 @@ private:
     WalletModel *model;
     bool fCapsLock;
 
-private slots:
+private Q_SLOTS:
     void textChanged();
 
 protected:

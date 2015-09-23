@@ -35,13 +35,24 @@ bool AnoncoinUnits::valid(int unit)
     }
 }
 
+QString AnoncoinUnits::id(int unit)
+{
+    switch(unit)
+    {
+    case ANC: return QString("anc");
+    case mANC: return QString("manc");
+    case uANC: return QString("uanc");
+    default: return QString("???");
+    }
+}
+
 QString AnoncoinUnits::name(int unit)
 {
     switch(unit)
     {
     case ANC: return QString("ANC");
     case mANC: return QString("mANC");
-    case uANC: return QString::fromUtf8("μANC");
+    case uANC: return QString("μANC");
     default: return QString("???");
     }
 }
@@ -51,8 +62,8 @@ QString AnoncoinUnits::description(int unit)
     switch(unit)
     {
     case ANC: return QString("Anoncoins");
-    case mANC: return QString("Milli-Anoncoins (1 / 1,000)");
-    case uANC: return QString("Micro-Anoncoins (1 / 1,000,000)");
+    case mANC: return QString("Milli-Anoncoins (1 / 1" THIN_SP_UTF8 "000)");
+    case uANC: return QString("Micro-Anoncoins (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     default: return QString("???");
     }
 }
@@ -68,28 +79,6 @@ qint64 AnoncoinUnits::factor(int unit)
     }
 }
 
-qint64 AnoncoinUnits::maxAmount(int unit)
-{
-    switch(unit)
-    {
-    case ANC:  return Q_INT64_C(21000000);
-    case mANC: return Q_INT64_C(21000000000);
-    case uANC: return Q_INT64_C(21000000000000);
-    default:   return 0;
-    }
-}
-
-int AnoncoinUnits::amountDigits(int unit)
-{
-    switch(unit)
-    {
-    case ANC: return 8; // 21,000,000 (# digits, without commas)
-    case mANC: return 11; // 21,000,000,000
-    case uANC: return 14; // 21,000,000,000,000
-    default: return 0;
-    }
-}
-
 int AnoncoinUnits::decimals(int unit)
 {
     switch(unit)
@@ -101,7 +90,7 @@ int AnoncoinUnits::decimals(int unit)
     }
 }
 
-QString AnoncoinUnits::format(int unit, qint64 n, bool fPlus)
+QString AnoncoinUnits::format(int unit, const qint64& n, bool fPlus, SeparatorStyle separators)
 {
     // Note: not using straight sprintf here because we do NOT want
     // localized number formatting.
@@ -115,11 +104,13 @@ QString AnoncoinUnits::format(int unit, qint64 n, bool fPlus)
     QString quotient_str = QString::number(quotient);
     QString remainder_str = QString::number(remainder).rightJustified(num_decimals, '0');
 
-    // Right-trim excess zeros after the decimal point
-    int nTrim = 0;
-    for (int i = remainder_str.size()-1; i>=2 && (remainder_str.at(i) == '0'); --i)
-        ++nTrim;
-    remainder_str.chop(nTrim);
+    // Use SI-style thin space separators as these are locale independent and can't be
+    // confused with the decimal marker.
+    QChar thin_sp(THIN_SP_CP);
+    int q_size = quotient_str.size();
+    if (separators == separatorAlways || (separators == separatorStandard && q_size > 4))
+        for (int i = 3; i < q_size; i += 3)
+            quotient_str.insert(q_size - i, thin_sp);
 
     if (n < 0)
         quotient_str.insert(0, '-');
@@ -128,17 +119,42 @@ QString AnoncoinUnits::format(int unit, qint64 n, bool fPlus)
     return quotient_str + QString(".") + remainder_str;
 }
 
-QString AnoncoinUnits::formatWithUnit(int unit, qint64 amount, bool plussign)
+// TODO: Review all remaining calls to AnoncoinUnits::formatWithUnit to
+// TODO: determine whether the output is used in a plain text context
+// TODO: or an HTML context (and replace with
+// TODO: AnoncoinUnits::formatHtmlWithUnit in the latter case). Hopefully
+// TODO: there aren't instances where the result could be used in
+// TODO: either context.
+
+// NOTE: Using formatWithUnit in an HTML context risks wrapping
+// quantities at the thousands separator. More subtly, it also results
+// in a standard space rather than a thin space, due to a bug in Qt's
+// XML whitespace canonicalisation
+//
+// Please take care to use formatHtmlWithUnit instead, when
+// appropriate.
+
+QString AnoncoinUnits::formatWithUnit(int unit, const qint64& amount, bool plussign, SeparatorStyle separators)
 {
-    return format(unit, amount, plussign) + QString(" ") + name(unit);
+    return format(unit, amount, plussign, separators) + QString(" ") + name(unit);
 }
+
+QString AnoncoinUnits::formatHtmlWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
+{
+    QString str(formatWithUnit(unit, amount, plussign, separators));
+    str.replace(QChar(THIN_SP_CP), QString(THIN_SP_HTML));
+    return QString("<span style='white-space: nowrap;'>%1</span>").arg(str);
+}
+
 
 bool AnoncoinUnits::parse(int unit, const QString &value, qint64 *val_out)
 {
     if(!valid(unit) || value.isEmpty())
         return false; // Refuse to parse invalid unit or empty string
     int num_decimals = decimals(unit);
-    QStringList parts = value.split(".");
+
+    // Ignore spaces and thin spaces when parsing
+    QStringList parts = removeSpaces(value).split(".");
 
     if(parts.size() > 2)
     {
@@ -162,7 +178,7 @@ bool AnoncoinUnits::parse(int unit, const QString &value, qint64 *val_out)
     {
         return false; // Longer numbers will exceed 63 bits
     }
-    qint64 retvalue = str.toLongLong(&ok);
+    qint64 retvalue(str.toLongLong(&ok));
     if(val_out)
     {
         *val_out = retvalue;
@@ -205,3 +221,31 @@ QVariant AnoncoinUnits::data(const QModelIndex &index, int role) const
     }
     return QVariant();
 }
+
+CAmount AnoncoinUnits::maxMoney()
+{
+    return MAX_MONEY;
+}
+
+qint64 AnoncoinUnits::maxAmount(int unit)
+{
+    switch(unit)
+    {
+    case ANC:  return Q_INT64_C(3105156);
+    case mANC: return Q_INT64_C(31051560000);
+    case uANC: return Q_INT64_C(31051560000000);
+    default:   return 0;
+    }
+}
+
+int AnoncoinUnits::amountDigits(int unit)
+{
+    switch(unit)
+    {
+    case ANC: return 7;     // 3,105,156 (# digits, without commas)
+    case mANC: return 10;   // 3,105,156,000
+    case uANC: return 13;   // 3,105,156,000,000
+    default: return 0;
+    }
+}
+

@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef ANONCOINGUI_H
@@ -12,6 +12,8 @@
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
 #endif
+
+#include "amount.h"
 #include "i2pshowaddresses.h"
 
 #include <QLabel>
@@ -26,12 +28,11 @@ class Notificator;
 class OptionsModel;
 class RPCConsole;
 class SendCoinsRecipient;
+class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
 
 class CWallet;
-
-class UnitDisplayStatusBarControl;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -39,6 +40,7 @@ class QLabel;
 class QMenu;
 class QPoint;
 class QProgressBar;
+class QProgressDialog;
 QT_END_NAMESPACE
 
 /**
@@ -68,10 +70,12 @@ public:
     bool addWallet(const QString& name, WalletModel *walletModel);
     bool setCurrentWallet(const QString& name);
     void removeAllWallets();
-#endif
+#endif // ENABLE_WALLET
+    bool enableWallet;
+#ifdef ENABLE_I2PSAM
     void UpdateI2PAddressDetails( void ) { i2pAddress->UpdateParameters(); }
     void ShowI2pDestination( void ) { openI2pAddressAction->activate( QAction::Trigger ); }
-
+#endif
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *event);
@@ -89,6 +93,7 @@ private:
     QLabel *labelBlocksIcon;
     QLabel *progressBarLabel;
     QProgressBar *progressBar;
+    QProgressDialog *progressDialog;
 
     QMenuBar *appMenuBar;
     QAction *overviewAction;
@@ -143,18 +148,16 @@ private:
     /** Disconnect core signals from GUI client */
     void unsubscribeFromCoreSignals();
 
-signals:
+Q_SIGNALS:
     /** Signal raised when a URI was entered or dragged to the GUI */
     void receivedURI(const QString &uri);
 
-public slots:
+public Q_SLOTS:
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
-
 #ifdef ENABLE_I2PSAM
     void setNumI2PConnections(int count);
 #endif
-
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count);
 
@@ -178,9 +181,9 @@ public slots:
 
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address);
-#endif
+#endif // ENABLE_WALLET
 
-private slots:
+private Q_SLOTS:
 #ifdef ENABLE_WALLET
     /** Switch to overview (home) page */
     void gotoOverviewPage();
@@ -198,7 +201,7 @@ private slots:
 
     /** Show open dialog */
     void openClicked();
-#endif
+#endif // ENABLE_WALLET
     /** Show configuration dialog */
     void optionsClicked();
     /** Show about dialog */
@@ -217,6 +220,9 @@ private slots:
 
     /** called by a timer to check if fRequestShutdown has been set **/
     void detectShutdown();
+
+    /** Show progress dialog e.g. for verifychain */
+    void showProgress(const QString &title, int nProgress);
 };
 
 class UnitDisplayStatusBarControl : public QLabel
@@ -235,12 +241,13 @@ protected:
 private:
     OptionsModel *optionsModel;
     QMenu* menu;
+
     /** Shows context menu with Display Unit options by the mouse coordinates */
     void onDisplayUnitsClicked(const QPoint& point);
     /** Creates context menu, its actions, and wires up all the relevant signals for mouse events. */
     void createContextMenu();
 
-private slots:
+private Q_SLOTS:
     /** When Display Units are changed on OptionsModel it will refresh the display text of the control on the status bar */
     void updateDisplayUnit(int newUnits);
     /** Tells underlying optionsModel to update its current display unit. */

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Copyright (c) 2013-2014 The Bitcoin Core developers
-# Copyright (c) 2013-2014 The Anoncoin Core developers
-# Distributed under the MIT/X11 software license, see the accompanying
+# Copyright (c) 2013-2015 The Anoncoin Core developers
+# Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # Test block generation and basic wallet sending
@@ -25,13 +25,13 @@ if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 D=$(mktemp -d test.XXXXX)
 
 D1=${D}/node1
-CreateDataDir "$D1" port=11000 rpcport=11001
+CreateDataDir "$D1" port=19377 rpcport=19376
 B1ARGS="-datadir=$D1"
 $ANONCOIND $B1ARGS &
 B1PID=$!
 
 D2=${D}/node2
-CreateDataDir "$D2" port=11010 rpcport=11011 connect=127.0.0.1:11000
+CreateDataDir "$D2" port=11010 rpcport=11011 connect=127.0.0.1:11010
 B2ARGS="-datadir=$D2"
 $ANONCOIND $B2ARGS &
 B2PID=$!

@@ -11,16 +11,45 @@
 #include "tinyformat.h"
 #include "util.h"
 
-uint256 CBlockHeader::GetHash() const
+//! Constants found in this source codes header(.h)
+//! The maximum allowed size for a serialized block, in bytes (network rule)
+const uint32_t MAX_BLOCK_SIZE = 1000000;
+
+BlockHashCorrectionMap mapBlockHashCrossReference;
+
+uint256 uintFakeHash::GetRealHash() const
 {
-    return Hash(BEGIN(nVersion), END(nNonce));
+    BlockHashCorrectionMap::iterator mi = mapBlockHashCrossReference.find(*this);
+    return (mi != mapBlockHashCrossReference.end()) ? mi->second : uint256(0);
 }
 
-uint256 CBlockHeader::GetPowHash() const
+void uintFakeHash::SetRealHash( const uint256& realHash )
 {
-    uint256 thash;
-    scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
-    return thash;
+    BlockHashCorrectionMap::iterator mi = mapBlockHashCrossReference.insert(std::make_pair(*this, realHash)).first;
+}
+
+uintFakeHash CBlockHeader::CalcSha256dHash(const bool fForceUpdate) const
+{
+    if( !fCalcSha256d || fForceUpdate ) {
+        uint256 tHash;
+        tHash = Hash(BEGIN(nVersion), END(nNonce));
+        //! We can do this in a constant class method because we declared them as mutable
+        sha256dHash = tHash;
+        fCalcSha256d = true;
+    }
+    return sha256dHash;
+}
+
+uint256 CBlockHeader::GetHash(const bool fForceUpdate) const
+{
+    if( !fCalcScrypt || fForceUpdate ) {
+        uint256 tHash;
+        scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));
+        //! We can do this in a constant class method because we declared them as mutable
+        therealHash = tHash;
+        fCalcScrypt = true;
+    }
+    return therealHash;
 }
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const

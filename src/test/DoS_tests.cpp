@@ -1,20 +1,22 @@
 // Copyright (c) 2011-2014 The Bitcoin Core developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 //
 // Unit tests for denial-of-service detection/prevention code
 //
-
-// This test code here is working with some Anoncoin structure updates
+// Note: working with partial Anoncoin v9->v10 structure updates
 
 
 #include "keystore.h"
 #include "main.h"
 #include "net.h"
+#include "pow.h"
+#include "random.h"
 #include "script.h"
 #include "serialize.h"
+#include "sign.h"
 #include "util.h"
 
 #include <stdint.h>
@@ -126,7 +128,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     // 50 orphan transactions:
     for (int i = 0; i < 50; i++)
     {
-        CTransaction tx;
+        CMutableTransaction tx;
         tx.vin.resize(1);
         tx.vin[0].prevout.n = 0;
         tx.vin[0].prevout.hash = GetRandHash();
@@ -143,7 +145,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     {
         CTransaction txPrev = RandomOrphan();
 
-        CTransaction tx;
+        CMutableTransaction tx;
         tx.vin.resize(1);
         tx.vin[0].prevout.n = 0;
         tx.vin[0].prevout.hash = txPrev.GetHash();
@@ -160,7 +162,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     {
         CTransaction txPrev = RandomOrphan();
 
-        CTransaction tx;
+        CMutableTransaction tx;
         tx.vout.resize(1);
         tx.vout[0].nValue = 1*CENT;
         tx.vout[0].scriptPubKey.SetDestination(key.GetPubKey().GetID());

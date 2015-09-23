@@ -1,12 +1,17 @@
 // Copyright (c) 2012 Pieter Wuille
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_ADDRMAN_H
 #define ANONCOIN_ADDRMAN_H
 
+//! This allows the extensions required to be compiled for the Anoncoin AddrManager b32.i2p destination lookup functionality
+#define I2PADDRMAN_EXTENSIONS
+
 // Many builder specific things set in the config file,
-// Included here in that header, as we need ENABLE_I2PSAM
+// Included here as we need ENABLE_I2PSAM
+// Version 0.9.5.1 makes that requirement obsolete, I2PSAM has nothing to do with managing b32.i2p destination
+// lookups, however leaving in the include, as it does no harm, and could be useful at a later date.
 #if defined(HAVE_CONFIG_H)
 #include "config/anoncoin-config.h"
 #endif
@@ -35,7 +40,7 @@ public:
     unsigned short uPort;       // CService member
     int64_t nLastTry;           // CAddress member
     uint64_t nServices;         // CAddress member
-    bool fInTried;              // CAddrInfo member, this means its good
+    bool fInTried;              // CAddrInfo member, Developer preference here to say <this means its good>
     int nAttempts;              // CAddrInfo member
     int64_t nSuccessTime;       // CAddrInfo member
     std::string sSource;        // CAddrInfo member, from CNetAddr of source
@@ -251,7 +256,7 @@ private:
     //! list of "new" buckets
     std::vector<std::set<int> > vvNew;
 
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
     //! table of i2p destination address hashes, and the id assigned to them
     // ToDO: Convert to unordered_map, so we can have immediate lookup, based on hash
     // typedef boost::unordered_map<uint256, int, I2pHasher> I2pMap;
@@ -301,7 +306,7 @@ protected:
 #endif
 
     //! Select several addresses at once.
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
     void GetAddr_(std::vector<CAddress> &vAddr, const bool fIpOnly, const bool fI2pOnly);
 #else
     void GetAddr_(std::vector<CAddress> &vAddr);
@@ -310,7 +315,7 @@ protected:
     //! Mark an entry as currently-connected-to.
     void Connected_(const CService &addr, int64_t nTime);
 
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
     void CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible );         // Used in Shrink twice
     CAddrInfo* LookupB32addr(const std::string& sB32addr);
 #endif
@@ -403,7 +408,7 @@ public:
         mapInfo.clear();
         mapAddr.clear();
         vRandom.clear();
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
         mapI2pHashes.clear();
 #endif
         vvTried = std::vector<std::vector<int> >(ADDRMAN_TRIED_BUCKET_COUNT, std::vector<int>(0));
@@ -411,7 +416,7 @@ public:
         for (int n = 0; n < nNew; n++) {
             CAddrInfo &info = mapInfo[n];
             s >> info;
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
             if( (info.nServices & 0xFFFFFFFFFFFFFF00) != 0 ) {
                 LogPrint( "addrman", "While reading new %s, from %s found upper service bits set = %x, cleared.\n", info.ToString(), info.source.ToString(), info.nServices );
                 info.nServices &= 0xFF;
@@ -424,7 +429,7 @@ public:
                 vvNew[info.GetNewBucket(nKey)].insert(n);
                 info.nRefCount++;
             }
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
             if( info.CheckAndSetGarlicCat() )
                 LogPrint( "addrman", "While reading new peers, did not expect to need the garliccat fixed for destination %s\n", info.ToString() );
             if( info.IsI2P() ) {
@@ -445,7 +450,7 @@ public:
         for (int n = 0; n < nTried; n++) {
             CAddrInfo info;
             s >> info;
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
             if( (info.nServices & 0xFFFFFFFFFFFFFF00) != 0 ) {
                 LogPrint( "addrman", "While reading tried %s, from %s found upper service bits set = %x, cleared.\n", info.ToString(), info.source.ToString(), info.nServices );
                 info.nServices &= 0xFF;
@@ -459,7 +464,7 @@ public:
                 mapInfo[nIdCount] = info;
                 mapAddr[info] = nIdCount;
                 vTried.push_back(nIdCount);
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
                 if( info.CheckAndSetGarlicCat() )
                     LogPrint( "addrman", "While reading tried peers, did not expect to need the garliccat fixed for destination %s\n", info.ToString() );
                 if( info.IsI2P() ) {
@@ -517,7 +522,7 @@ public:
         return vRandom.size();
     }
 
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
     //! Return the number of (unique) b32.i2p addresses in the hash table
     int b32HashTableSize()
     {
@@ -611,7 +616,7 @@ public:
     }
 
     //! Return a bunch of addresses, selected at random.
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
     std::vector<CAddress> GetAddr(const bool fIpOnly, const bool fI2pOnly)
 #else
     std::vector<CAddress> GetAddr()
@@ -621,7 +626,7 @@ public:
         std::vector<CAddress> vAddr;
         {
             LOCK(cs);
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
             GetAddr_(vAddr, fIpOnly, fI2pOnly);
 #else
             GetAddr_(vAddr);

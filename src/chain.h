@@ -96,7 +96,10 @@ enum BlockStatus {
 class CBlockIndex
 {
 public:
-    //! pointer to the hash of the block, if any. memory is owned by this CBlockIndex
+    //! This is part of how we map sha256d hash values into real pow hashes that the rest of the software can use
+    uintFakeHash fakeBIhash;
+
+    //! pointer to the hash of the block, This is in the mapBlockIndex and based on the real POW. memory is owned by this CBlockIndex
     const uint256* phashBlock;
 
     //! pointer to the index of the predecessor of this block
@@ -125,7 +128,7 @@ public:
     unsigned int nTx;
 
     //! (memory only) Number of transactions in the chain up to and including this block.
-    //! This value will be non-zero only if and only if transactions for this block and all its parents are available.
+    //! This value will be non-zero only if transactions for this block and all its parents are available.
     //! Change to 64-bit type when necessary; won't happen before 2030
     unsigned int nChainTx;
 
@@ -162,6 +165,7 @@ public:
         nTime          = 0;
         nBits          = 0;
         nNonce         = 0;
+        fakeBIhash     = 0;
     }
 
     CBlockIndex()
@@ -203,12 +207,17 @@ public:
         CBlockHeader block;
         block.nVersion       = nVersion;
         if (pprev)
-            block.hashPrevBlock = pprev->GetBlockHash();
+            block.hashPrevBlock = pprev->fakeBIhash;
         block.hashMerkleRoot = hashMerkleRoot;
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
         return block;
+    }
+
+    uint256 GetBlockSha256dHash() const
+    {
+        return fakeBIhash;
     }
 
     uint256 GetBlockHash() const
@@ -247,10 +256,11 @@ public:
 
     std::string ToString() const
     {
-        return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s)",
+        return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s, sha256dHash=%s)",
             pprev, nHeight,
             hashMerkleRoot.ToString(),
-            GetBlockHash().ToString());
+            GetBlockHash().ToString(),
+            fakeBIhash.ToString());
     }
 
     //! Check whether this block index entry is valid up to the passed validity level.
@@ -288,14 +298,14 @@ public:
 class CDiskBlockIndex : public CBlockIndex
 {
 public:
-    uint256 hashPrev;
+    uintFakeHash hashPrev;
 
     CDiskBlockIndex() {
-        hashPrev = 0;
+        hashPrev.SetNull();
     }
 
     explicit CDiskBlockIndex(CBlockIndex* pindex) : CBlockIndex(*pindex) {
-        hashPrev = (pprev ? pprev->GetBlockHash() : 0);
+        hashPrev = (pprev ? pprev->fakeBIhash : uintFakeHash());
     }
 
     ADD_SERIALIZE_METHODS;
@@ -324,37 +334,14 @@ public:
         READWRITE(nNonce);
     }
 
-    uint256 GetBlockHash() const
-    {
-        CBlockHeader block;
-        block.nVersion        = nVersion;
-        block.hashPrevBlock   = hashPrev;
-        block.hashMerkleRoot  = hashMerkleRoot;
-        block.nTime           = nTime;
-        block.nBits           = nBits;
-        block.nNonce          = nNonce;
-        return block.GetHash();
-    }
-
-    uint256 GetBlockPowHash() const
-    {
-        CBlockHeader block;
-        block.nVersion        = nVersion;
-        block.hashPrevBlock   = hashPrev;
-        block.hashMerkleRoot  = hashMerkleRoot;
-        block.nTime           = nTime;
-        block.nBits           = nBits;
-        block.nNonce          = nNonce;
-        return block.GetPowHash();
-    }
-
     std::string ToString() const
     {
         std::string str = "CDiskBlockIndex(";
         str += CBlockIndex::ToString();
-        str += strprintf("\n                hashBlock=%s, hashPrev=%s)",
+        str += strprintf("\n                hashBlock=%s, hashPrev=%s sha256dHash=%s)",
             GetBlockHash().ToString(),
-            hashPrev.ToString());
+            hashPrev.ToString(),
+            fakeBIhash.ToString());
         return str;
     }
 };
@@ -363,6 +350,7 @@ public:
 class CChain {
 private:
     std::vector<CBlockIndex*> vChain;
+    CBlockLocator GetTheRightLocator(const CBlockIndex *pindex, const bool fRealHashes) const;
 
 public:
     /** Returns the index entry for the genesis block of this chain, or NULL if none. */
@@ -410,7 +398,11 @@ public:
     void SetTip(CBlockIndex *pindex);
 
     /** Return a CBlockLocator that refers to a block in this chain (by default the tip). */
-    CBlockLocator GetLocator(const CBlockIndex *pindex = NULL) const;
+    CBlockLocator GetLocator(const CBlockIndex *pindex = NULL) const { return GetTheRightLocator(pindex, false); }
+
+    /** Return a CBlockLocator that refers to a block in this chain (by default the tip).  In this case the real hash values */
+    //! Right now we need this only to pass the skiplist test
+    CBlockLocator GetRealHashLocator(const CBlockIndex *pindex = NULL) const { return GetTheRightLocator(pindex, true); }
 
     /** Find the last common block between this chain and a block index entry. */
     const CBlockIndex *FindFork(const CBlockIndex *pindex) const;

@@ -6,6 +6,7 @@
 #ifndef ANONCOIN_WALLETDB_H
 #define ANONCOIN_WALLETDB_H
 
+#include "amount.h"
 #include "db.h"
 #include "key.h"
 #include "keystore.h"
@@ -75,7 +76,7 @@ public:
 class CWalletDB : public CDB
 {
 public:
-    CWalletDB(const std::string& strFilename, const char* pszMode = "r+") : CDB(strFilename, pszMode)
+    CWalletDB(const std::string& strFilename, const char* pszMode = "r+", bool fFlushOnClose = true) : CDB(strFilename, pszMode, fFlushOnClose)
     {
     }
 
@@ -119,15 +120,15 @@ public:
     bool EraseDestData(const std::string &address, const std::string &key);
 
     bool WriteAccountingEntry(const CAccountingEntry& acentry);
-    int64_t GetAccountCreditDebit(const std::string& strAccount);
+    CAmount GetAccountCreditDebit(const std::string& strAccount);
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& acentries);
 
     DBErrors ReorderTransactions(CWallet* pwallet);
     DBErrors LoadWallet(CWallet* pwallet);
-    DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash);
-    DBErrors ZapWalletTx(CWallet* pwallet);
-    static bool Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys);
-    static bool Recover(CDBEnv& dbenv, std::string filename);
+    DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, std::vector<CWalletTx>& vWtx);
+    DBErrors ZapWalletTx(CWallet* pwallet, std::vector<CWalletTx>& vWtx);
+    static bool Recover(CDBEnv& dbenv, const std::string& filename, bool fOnlyKeys);
+    static bool Recover(CDBEnv& dbenv, const std::string& filename);
 
 private:
     CWalletDB(const CWalletDB&);
@@ -137,5 +138,6 @@ private:
 };
 
 bool BackupWallet(const CWallet& wallet, const std::string& strDest);
+void ThreadFlushWalletDB(const std::string& strFile);
 
 #endif // ANONCOIN_WALLETDB_H

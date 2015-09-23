@@ -45,17 +45,17 @@ Eric Young (eay@cryptsoft.com) y el software UPnP escrito por Thomas Bernard.</t
     <message>
         <location line="+1"/>
         <source>The Bitcoin Core developers</source>
-        <translation type="unfinished"/>
+        <translation>Los desarrolladores de Bitcoin Core</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The Litecoin Core developers</source>
-        <translation type="unfinished"/>
+        <translation>Los desarrolladores de Litecoin Core</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The Primecoin developers</source>
-        <translation type="unfinished"/>
+        <translation>Los desarrolladores de Primecoin</translation>
     </message>
     <message>
         <location line="+12"/>

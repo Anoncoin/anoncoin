@@ -11,7 +11,6 @@
 #include "config/anoncoin-config.h"
 #endif
 
-#include "amount.h"
 #include "compat.h"
 #include "serialize.h"
 #include "sync.h"
@@ -34,6 +33,25 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/thread.hpp>
+
+extern std::map<std::string, std::string> mapArgs;
+extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
+extern bool fDebug;
+extern bool fPrintToConsole;
+extern bool fPrintToDebugLog;
+extern bool fServer;
+extern std::string strMiscWarning;
+extern bool fLogTimestamps;
+extern bool fLogIPs;        // New v10 param
+extern bool fLogI2Ps;       // Anoncoin specific
+extern volatile bool fReopenDebugLog;
+
+void SetupEnvironment();
+
+/* Return true if log accepts specified category */
+bool LogAcceptCategory(const char* category);
+/* Send a string to the log output */
+int LogPrintStr(const std::string &str);
 
 class uint256;
 
@@ -94,26 +112,6 @@ inline void MilliSleep(int64_t n)
 #endif
 }
 
-
-
-extern std::map<std::string, std::string> mapArgs;
-extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
-extern bool fDebug;
-extern bool fPrintToConsole;
-extern bool fPrintToDebugLog;
-extern bool fServer;
-extern std::string strMiscWarning;
-extern bool fNoListen;
-extern bool fLogTimestamps;
-extern volatile bool fReopenDebugLog;
-
-void SetupEnvironment();
-
-/* Return true if log accepts specified category */
-bool LogAcceptCategory(const char* category);
-/* Send a string to the log output */
-int LogPrintStr(const std::string &str);
-
 extern const signed char p_util_hexdigit[];
 inline signed char HexDigit(char c)
 {
@@ -160,10 +158,7 @@ static inline bool error(const char* format)
 
 
 void LogException(std::exception* pex, const char* pszThread);
-void PrintExceptionContinue(std::exception* pex, const char* pszThread);
-std::string FormatMoney(int64_t n, bool fPlus=false);
-bool ParseMoney(const std::string& str, int64_t& nRet);
-bool ParseMoney(const char* pszIn, int64_t& nRet);
+void PrintExceptionContinue(const std::exception* pex, const char* pszThread);
 std::string SanitizeString(const std::string& str);
 std::vector<unsigned char> ParseHex(const char* psz);
 std::vector<unsigned char> ParseHex(const std::string& str);
@@ -187,10 +182,11 @@ bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest);
 bool TryCreateDirectory(const boost::filesystem::path& p);
 boost::filesystem::path GetDefaultDataDir();
 const boost::filesystem::path &GetDataDir(bool fNetSpecific = true);
+void ClearDatadirCache();
 boost::filesystem::path GetConfigFile();
 boost::filesystem::path GetQtStyleFile();
-boost::filesystem::path GetPidFile();
 #ifndef WIN32
+boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path &path, pid_t pid);
 #endif
 void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);

@@ -61,7 +61,9 @@ class AnoncoinRPC:
 	def getblock(self, hash, verbose=True):
 		return self.rpc('getblock', [hash, verbose])
 	def getblockhash(self, index):
-		return self.rpc('getblockhash', [index])
+		tmp = self.rpc('getblockhash', [index])
+		realhash = tmp["hash"]
+		return realhash
 
 def getblock(rpc, settings, n):
 	hash = rpc.getblockhash(n)

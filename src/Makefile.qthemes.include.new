@@ -1,0 +1,403 @@
+bin_PROGRAMS += qthemes/anoncoin-qtt
+EXTRA_LIBRARIES += qthemes/libanoncoinqtt.a
+
+# anoncoin qt core #
+QTHEMES_TS = \
+  qthemes/locale/anoncoin_ar.ts \
+  qthemes/locale/anoncoin_ca.ts \
+  qthemes/locale/anoncoin_cs.ts \
+  qthemes/locale/anoncoin_da.ts \
+  qthemes/locale/anoncoin_de.ts \
+  qthemes/locale/anoncoin_el_GR.ts \
+  qthemes/locale/anoncoin_en.ts \
+  qthemes/locale/anoncoin_es.ts \
+  qthemes/locale/anoncoin_fi.ts \
+  qthemes/locale/anoncoin_fr_FR.ts \
+  qthemes/locale/anoncoin_he.ts \
+  qthemes/locale/anoncoin_hi_IN.ts \
+  qthemes/locale/anoncoin_id_ID.ts \
+  qthemes/locale/anoncoin_it.ts \
+  qthemes/locale/anoncoin_ja_JP.ts \
+  qthemes/locale/anoncoin_ka.ts \
+  qthemes/locale/anoncoin_ko_KR.ts \
+  qthemes/locale/anoncoin_nb_NO.ts \
+  qthemes/locale/anoncoin_pl.ts \
+  qthemes/locale/anoncoin_pt_BR.ts \
+  qthemes/locale/anoncoin_pt_PT.ts \
+  qthemes/locale/anoncoin_ro_RO.ts \
+  qthemes/locale/anoncoin_ru.ts \
+  qthemes/locale/anoncoin_sk.ts \
+  qthemes/locale/anoncoin_sv.ts \
+  qthemes/locale/anoncoin_tr.ts \
+  qthemes/locale/anoncoin_uk.ts \
+  qthemes/locale/anoncoin_zh_CN.ts \
+  qthemes/locale/anoncoin_zh_HK.ts \
+  qthemes/locale/anoncoin_zh_TW.ts
+
+QTHEMES_FORMS_UI = \
+  qthemes/forms/aboutdialog.ui \
+  qthemes/forms/accountspage.ui \
+  qthemes/forms/addressbookpage.ui \
+  qthemes/forms/askpassphrasedialog.ui \
+  qthemes/forms/coincontroldialog.ui \
+  qthemes/forms/editaddressdialog.ui \
+  qthemes/forms/helpmessagedialog.ui \
+  qthemes/forms/i2pshowaddresses.ui \
+  qthemes/forms/intro.ui \
+  qthemes/forms/openuridialog.ui \
+  qthemes/forms/optionsdialog.ui \
+  qthemes/forms/overviewpage.ui \
+  qthemes/forms/receivecoinsdialog.ui \
+  qthemes/forms/receiverequestdialog.ui \
+  qthemes/forms/rpcconsole.ui \
+  qthemes/forms/sendcoinsdialog.ui \
+  qthemes/forms/sendcoinsentry.ui \
+  qthemes/forms/signverifymessagedialog.ui \
+  qthemes/forms/transactiondescdialog.ui \
+  qthemes/forms/walletaddviewdialog.ui \
+  qthemes/forms/walletclearviewsdialog.ui \
+  qthemes/forms/walletrestartcoredialog.ui \
+  qthemes/forms/walletupdateviewdialog.ui
+
+QTHEMES_MOC_CPP = \
+  qthemes/moc_accountspage.cpp \
+  qthemes/moc_addressbookpage.cpp \
+  qthemes/moc_addresstablemodel.cpp \
+  qthemes/moc_askpassphrasedialog.cpp \
+  qthemes/moc_anoncoinaddressvalidator.cpp \
+  qthemes/moc_anoncoinamountfield.cpp \
+  qthemes/moc_anoncoingui.cpp \
+  qthemes/moc_anoncoinunits.cpp \
+  qthemes/moc_clientmodel.cpp \
+  qthemes/moc_coincontroldialog.cpp \
+  qthemes/moc_coincontroltreewidget.cpp \
+  qthemes/moc_csvmodelwriter.cpp \
+  qthemes/moc_editaddressdialog.cpp \
+  qthemes/moc_guiutil.cpp \
+  qthemes/moc_i2pshowaddresses.cpp \
+  qthemes/moc_intro.cpp \
+  qthemes/moc_macdockiconhandler.cpp \
+  qthemes/moc_macnotificationhandler.cpp \
+  qthemes/moc_monitoreddatamapper.cpp \
+  qthemes/moc_notificator.cpp \
+  qthemes/moc_openuridialog.cpp \
+  qthemes/moc_optionsdialog.cpp \
+  qthemes/moc_optionsmodel.cpp \
+  qthemes/moc_overviewpage.cpp \
+  qthemes/moc_paymentserver.cpp \
+  qthemes/moc_peertablemodel.cpp \
+  qthemes/moc_qvalidatedlineedit.cpp \
+  qthemes/moc_qvaluecombobox.cpp \
+  qthemes/moc_receivecoinsdialog.cpp \
+  qthemes/moc_receiverequestdialog.cpp \
+  qthemes/moc_recentrequeststablemodel.cpp \
+  qthemes/moc_rpcconsole.cpp \
+  qthemes/moc_sendcoinsdialog.cpp \
+  qthemes/moc_sendcoinsentry.cpp \
+  qthemes/moc_signverifymessagedialog.cpp \
+  qthemes/moc_splashscreen.cpp \
+  qthemes/moc_trafficgraphwidget.cpp \
+  qthemes/moc_transactiondesc.cpp \
+  qthemes/moc_transactiondescdialog.cpp \
+  qthemes/moc_transactionfilterproxy.cpp \
+  qthemes/moc_transactiontablemodel.cpp \
+  qthemes/moc_transactionview.cpp \
+  qthemes/moc_utilitydialog.cpp \
+  qthemes/moc_walletframe.cpp \
+  qthemes/moc_walletmodel.cpp \
+  qthemes/moc_walletview.cpp \
+  qthemes/moc_walletaddviewdialog.cpp \
+  qthemes/moc_walletclearviewsdialog.cpp \
+  qthemes/moc_walletrestartcoredialog.cpp \
+  qthemes/moc_walletupdateviewdialog.cpp
+
+QTHEMES_MM = \
+  qthemes/macdockiconhandler.mm \
+  qthemes/macnotificationhandler.mm
+
+QTHEMES_MOC = \
+  qthemes/anoncoin.moc \
+  qthemes/intro.moc \
+  qthemes/overviewpage.moc \
+  qthemes/rpcconsole.moc
+
+QTHEMES_QRC_CPP = qthemes/qrc_anoncoin.cpp
+QTHEMES_QRC = qthemes/anoncoin.qrc
+QTHEMES_QRC_LOCALE_CPP = qthemes/qrc_anoncoin_locale.cpp
+QTHEMES_QRC_LOCALE = qthemes/anoncoin_locale.qrc
+
+QTHEMES_PROTOBUF_CC = qthemes/paymentrequest.pb.cc
+QTHEMES_PROTOBUF_H = qthemes/paymentrequest.pb.h
+QTHEMES_PROTOBUF_PROTO = qthemes/paymentrequest.proto
+
+ANONCOIN_QTHEMES_H = \
+  qthemes/accountspage.h \
+  qthemes/addressbookpage.h \
+  qthemes/addresstablemodel.h \
+  qthemes/askpassphrasedialog.h \
+  qthemes/anoncoinaddressvalidator.h \
+  qthemes/anoncoinamountfield.h \
+  qthemes/anoncoingui.h \
+  qthemes/anoncoinunits.h \
+  qthemes/clientmodel.h \
+  qthemes/coincontroldialog.h \
+  qthemes/coincontroltreewidget.h \
+  qthemes/csvmodelwriter.h \
+  qthemes/editaddressdialog.h \
+  qthemes/guiconstants.h \
+  qthemes/guiutil.h \
+  qthemes/i2pshowaddresses.h \
+  qthemes/intro.h \
+  qthemes/macdockiconhandler.h \
+  qthemes/macnotificationhandler.h \
+  qthemes/monitoreddatamapper.h \
+  qthemes/notificator.h \
+  qthemes/openuridialog.h \
+  qthemes/optionsdialog.h \
+  qthemes/optionsmodel.h \
+  qthemes/overviewpage.h \
+  qthemes/paymentrequestplus.h \
+  qthemes/paymentserver.h \
+  qthemes/peertablemodel.h \
+  qthemes/qvalidatedlineedit.h \
+  qthemes/qvaluecombobox.h \
+  qthemes/receivecoinsdialog.h \
+  qthemes/receiverequestdialog.h \
+  qthemes/recentrequeststablemodel.h \
+  qthemes/rpcconsole.h \
+  qthemes/sendcoinsdialog.h \
+  qthemes/sendcoinsentry.h \
+  qthemes/signverifymessagedialog.h \
+  qthemes/splashscreen.h \
+  qthemes/trafficgraphwidget.h \
+  qthemes/transactiondesc.h \
+  qthemes/transactiondescdialog.h \
+  qthemes/transactionfilterproxy.h \
+  qthemes/transactionrecord.h \
+  qthemes/transactiontablemodel.h \
+  qthemes/transactionview.h \
+  qthemes/utilitydialog.h \
+  qthemes/walletframe.h \
+  qthemes/walletmodel.h \
+  qthemes/walletmodeltransaction.h \
+  qthemes/walletview.h \
+  qthemes/winshutdownmonitor.h \
+  qthemes/walletaddviewdialog.h \
+  qthemes/walletclearviewsdialog.h \
+  qthemes/walletrestartcoredialog.h \
+  qthemes/walletupdateviewdialog.h
+
+QTHEMES_RES_ICONS = \
+  qthemes/res/icons/add.png \
+  qthemes/res/icons/address-book.png \
+  qthemes/res/icons/anoncoin.ico \
+  qthemes/res/icons/anoncoin.png \
+  qthemes/res/icons/anoncoin_testnet.ico \
+  qthemes/res/icons/anoncoin_testnet.png \
+  qthemes/res/icons/clock1.png \
+  qthemes/res/icons/clock2.png \
+  qthemes/res/icons/clock3.png \
+  qthemes/res/icons/clock4.png \
+  qthemes/res/icons/clock5.png \
+  qthemes/res/icons/configure.png \
+  qthemes/res/icons/connect0_16.png \
+  qthemes/res/icons/connect1_16.png \
+  qthemes/res/icons/connect2_16.png \
+  qthemes/res/icons/connect3_16.png \
+  qthemes/res/icons/connect4_16.png \
+  qthemes/res/icons/debugwindow.png \
+  qthemes/res/icons/edit.png \
+  qthemes/res/icons/editcopy.png \
+  qthemes/res/icons/editpaste.png \
+  qthemes/res/icons/export.png \
+  qthemes/res/icons/fileopen.png \
+  qthemes/res/icons/filesave.png \
+  qthemes/res/icons/history.png \
+  qthemes/res/icons/key.png \
+  qthemes/res/icons/lock_closed.png \
+  qthemes/res/icons/lock_open.png \
+  qthemes/res/icons/overview.png \
+  qthemes/res/icons/qrcode.png \
+  qthemes/res/icons/quit.png \
+  qthemes/res/icons/receive.png \
+  qthemes/res/icons/remove.png \
+  qthemes/res/icons/send.png \
+  qthemes/res/icons/synced.png \
+  qthemes/res/icons/toolbar.png \
+  qthemes/res/icons/toolbar_testnet.png \
+  qthemes/res/icons/transaction0.png \
+  qthemes/res/icons/transaction2.png \
+  qthemes/res/icons/transaction_conflicted.png \
+  qthemes/res/icons/tx_inout.png \
+  qthemes/res/icons/tx_input.png \
+  qthemes/res/icons/tx_output.png \
+  qthemes/res/icons/tx_mined.png
+
+ANONCOIN_QTHEMES_CPP = \
+  qthemes/anoncoinaddressvalidator.cpp \
+  qthemes/anoncoinamountfield.cpp \
+  qthemes/anoncoingui.cpp \
+  qthemes/anoncoinunits.cpp \
+  qthemes/clientmodel.cpp \
+  qthemes/csvmodelwriter.cpp \
+  qthemes/guiutil.cpp \
+  qthemes/i2pshowaddresses.cpp \
+  qthemes/intro.cpp \
+  qthemes/monitoreddatamapper.cpp \
+  qthemes/notificator.cpp \
+  qthemes/optionsdialog.cpp \
+  qthemes/optionsmodel.cpp \
+  qthemes/peertablemodel.cpp \
+  qthemes/qvalidatedlineedit.cpp \
+  qthemes/qvaluecombobox.cpp \
+  qthemes/rpcconsole.cpp \
+  qthemes/splashscreen.cpp \
+  qthemes/trafficgraphwidget.cpp \
+  qthemes/utilitydialog.cpp \
+  qthemes/winshutdownmonitor.cpp
+
+if ENABLE_WALLET
+ANONCOIN_QTHEMES_CPP += \
+  qthemes/accountspage.cpp \
+  qthemes/addressbookpage.cpp \
+  qthemes/addresstablemodel.cpp \
+  qthemes/askpassphrasedialog.cpp \
+  qthemes/coincontroldialog.cpp \
+  qthemes/coincontroltreewidget.cpp \
+  qthemes/editaddressdialog.cpp \
+  qthemes/openuridialog.cpp \
+  qthemes/overviewpage.cpp \
+  qthemes/paymentrequestplus.cpp \
+  qthemes/paymentserver.cpp \
+  qthemes/receivecoinsdialog.cpp \
+  qthemes/receiverequestdialog.cpp \
+  qthemes/recentrequeststablemodel.cpp \
+  qthemes/sendcoinsdialog.cpp \
+  qthemes/sendcoinsentry.cpp \
+  qthemes/signverifymessagedialog.cpp \
+  qthemes/transactiondesc.cpp \
+  qthemes/transactiondescdialog.cpp \
+  qthemes/transactionfilterproxy.cpp \
+  qthemes/transactionrecord.cpp \
+  qthemes/transactiontablemodel.cpp \
+  qthemes/transactionview.cpp \
+  qthemes/walletframe.cpp \
+  qthemes/walletmodel.cpp \
+  qthemes/walletmodeltransaction.cpp \
+  qthemes/walletview.cpp \
+  qthemes/walletaddviewdialog.cpp \
+  qthemes/walletclearviewsdialog.cpp \
+  qthemes/walletrestartcoredialog.cpp \
+  qthemes/walletupdateviewdialog.cpp
+endif
+
+QTHEMES_RES_IMAGES = \
+  qthemes/res/images/about.png \
+  qthemes/res/images/aboutcmds.png \
+  qthemes/res/images/i2pguy.png \
+  qthemes/res/images/splash.png \
+  qthemes/res/images/splash_testnet.png
+
+QTHEMES_RES_MOVIES = $(wildcard qthemes/res/movies/spinner-*.png)
+
+ANONCOIN_QTHEMES_RC = qthemes/res/anoncoin-qt-res.rc
+
+ANONCOIN_QTHEMES_INCLUDES = -I$(builddir)/qthemes -I$(srcdir)/qthemes -I$(srcdir)/qthemes/forms \
+  -I$(builddir)/qthemes/forms -DQT_NO_KEYWORDS
+
+qthemes_libanoncoinqtt_a_CPPFLAGS = $(ANONCOIN_INCLUDES) $(ANONCOIN_QTHEMES_INCLUDES) \
+  $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
+
+qthemes_libanoncoinqtt_a_SOURCES = $(ANONCOIN_QTHEMES_CPP) $(ANONCOIN_QTHEMES_H) $(QTHEMES_FORMS_UI) \
+  $(QTHEMES_QRC) $(QTHEMES_QRC_LOCALE) $(QTHEMES_TS) $(QTHEMES_PROTOBUF_PROTO) $(QTHEMES_RES_ICONS) $(QTHEMES_RES_IMAGES) $(QTHEMES_RES_MOVIES)
+
+nodist_qthemes_libanoncoinqtt_a_SOURCES = $(QTHEMES_MOC_CPP) $(QTHEMES_MOC) $(QTHEMES_PROTOBUF_CC) \
+  $(QTHEMES_PROTOBUF_H) $(QTHEMES_QRC_CPP) $(QTHEMES_QRC_LOCALE_CPP)
+
+# forms/foo.h -> forms/ui_foo.h
+QTHEMES_FORMS_H=$(join $(dir $(QTHEMES_FORMS_UI)),$(addprefix ui_, $(notdir $(QTHEMES_FORMS_UI:.ui=.h))))
+
+# Most files will depend on the forms and moc files as includes. Generate them
+# before anything else.
+$(QTHEMES_MOC): $(QTHEMES_FORMS_H)
+$(qthemes_libanoncoinqtt_a_OBJECTS) $(qthemes_anoncoin_qtt_OBJECTS) : | $(QTHEMES_MOC)
+
+#Generating these with a half-written protobuf header leads to wacky results.
+#This makes sure it's done.
+$(QTHEMES_MOC): $(QTHEMES_PROTOBUF_H)
+$(QTHEMES_MOC_CPP): $(QTHEMES_PROTOBUF_H)
+
+# anoncoin-qt binary #
+qthemes_anoncoin_qtt_CPPFLAGS = $(ANONCOIN_INCLUDES) $(ANONCOIN_QTHEMES_INCLUDES) \
+  $(QT_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
+
+qthemes_anoncoin_qtt_SOURCES = qthemes/anoncoin.cpp
+if TARGET_DARWIN
+  qthemes_anoncoin_qtt_SOURCES += $(QTHEMES_MM)
+endif
+if TARGET_WINDOWS
+  qthemes_anoncoin_qtt_SOURCES += $(ANONCOIN_QTHEMES_RC)
+endif
+qthemes_anoncoin_qtt_LDADD = $(LIBANONCOINQTHEMES) $(LIBANONCOIN_SERVER)
+if ENABLE_I2PSAM
+qthemes_anoncoin_qtt_LDADD += libanoncoin_i2pnet.a
+endif
+if ENABLE_WALLET
+qthemes_anoncoin_qtt_LDADD += $(LIBANONCOIN_WALLET)
+endif
+qthemes_anoncoin_qtt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) $(LIBANONCOIN_SCRYPT) \
+  $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) \
+  $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+qthemes_anoncoin_qtt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+qthemes_anoncoin_qtt_LIBTOOLFLAGS = --tag CXX
+
+#locale/foo.ts -> locale/foo.qm
+QTHEMES_QM=$(QTHEMES_TS:.ts=.qm)
+
+.SECONDARY: $(QTHEMES_QM)
+
+qthemes/anoncoinstrings.cpp: $(libanoncoin_server_a_SOURCES) $(libanoncoin_wallet_a_SOURCES)
+	@test -n $(XGETTEXT) || echo "xgettext is required for updating translations"
+	$(AM_V_GEN) cd $(srcdir); XGETTEXT=$(XGETTEXT) ../share/qt/extract_strings_qthemes.py $^
+
+translate_qtt: qthemes/anoncoinstrings.cpp $(QTHEMES_FORMS_UI) $(ANONCOIN_QTHEMES_CPP) $(ANONCOIN_QTHEMES_H) $(QTHEMES_MM)
+	@test -n $(LUPDATE) || echo "lupdate is required for updating translations"
+	$(AM_V_GEN) QTHEMES_SELECT=$(QTHEMES_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts qthemes/locale/anoncoin_en.ts
+
+$(QTHEMES_QRC_LOCALE_CPP): $(QTHEMES_QRC_LOCALE) $(QTHEMES_QM)
+	@test -f $(RCC)
+	@test -f $(@D)/$(<F) || cp -f $< $(@D)
+	$(AM_V_GEN) QTHEMES_SELECT=$(QTHEMES_SELECT) $(RCC) -name anoncoin_locale $(@D)/$(<F) | \
+	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
+
+$(QTHEMES_QRC_CPP): $(QTHEMES_QRC) $(QTHEMES_FORMS_H) $(QTHEMES_RES_ICONS) $(QTHEMES_RES_IMAGES) $(QTHEMES_RES_MOVIES) $(QTHEMES_PROTOBUF_H)
+	@test -f $(RCC)
+	$(AM_V_GEN) QTHEMES_SELECT=$(QTHEMES_SELECT) $(RCC) -name anoncoin $< | \
+	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
+
+CLEAN_QTHEMES = $(nodist_qthemes_libanoncoinqtt_a_SOURCES) $(QTHEMES_QM) $(QTHEMES_FORMS_H) qthemes/*.gcda qthemes/*.gcno
+
+CLEANFILES += $(CLEAN_QTHEMES)
+
+anoncoin_qtt_clean: FORCE
+	rm -f $(CLEAN_QTHEMES) $(qthemes_libanoncoinqtt_a_OBJECTS) $(qthemes_anoncoin_qtt_OBJECTS) qthemes/anoncoin-qtt$(EXEEXT) $(LIBANONCOINQTHEMES)
+
+anoncoin_qtt : qthemes/anoncoin-qtt$(EXEEXT)
+
+ui_%.h: %.ui
+	@test -f $(UIC)
+	@$(MKDIR_P) $(@D)
+	$(AM_V_GEN) QTHEMES_SELECT=$(QTHEMES_SELECT) $(UIC) -o $@ $< || (echo "Error creating $@"; false)
+
+%.moc: %.cpp
+	$(AM_V_GEN) QTHEMES_SELECT=$(QTHEMES_SELECT) $(MOC) $(QTHEMES_INCLUDES) $(MOC_DEFS) $< | \
+	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
+
+moc_%.cpp: %.h
+	$(AM_V_GEN) QTHEMES_SELECT=$(QTHEMES_SELECT) $(MOC) $(QTHEMES_INCLUDES) $(MOC_DEFS) $< | \
+	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
+
+%.qm: %.ts
+	@test -f $(LRELEASE)
+	@$(MKDIR_P) $(@D)
+	$(AM_V_GEN) QTHEMES_SELECT=$(QTHEMES_SELECT) $(LRELEASE) -silent $< -qm $@

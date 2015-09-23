@@ -77,11 +77,12 @@
 // See also: http://stackoverflow.com/questions/10020179/compilation-fail-in-boost-librairies-program-options
 //           http://clang.debian.net/status.php?version=3.0&key=CANNOT_FIND_FUNCTION
 namespace boost {
+
     namespace program_options {
         std::string to_internal(const std::string&);
     }
-}
 
+} // namespace boost
 
 using namespace std;
 
@@ -93,8 +94,9 @@ bool fPrintToDebugLog = true;
 bool fDaemon = false;
 bool fServer = false;
 string strMiscWarning;
-bool fNoListen = false;
 bool fLogTimestamps = false;
+bool fLogIPs = false;       // New v10 param
+bool fLogI2Ps = false;      // Anoncoin specific
 volatile bool fReopenDebugLog = false;
 
 // Init OpenSSL library multithreading support
@@ -187,8 +189,14 @@ bool LogAcceptCategory(const char* category)
         const set<string>& setCategories = *ptrCategory.get();
 
         // if not debugging everything and not debugging specific category, LogPrint does nothing.
-        if (setCategories.count(string("")) == 0 &&
-            setCategories.count(string(category)) == 0)
+        string strCat(category);
+        if( setCategories.count(string("")) == 0 ) {        //! Only true if not all debugging is turned on
+            if (setCategories.count(strCat) == 0)
+                return false;
+        //! If all debugging is turned on with debug=
+        //! Here is where the programmer can specifically turn certain categories off.
+        //! Such as is being done now for bench & estimatefee
+        } else if( strCat == "bench" || strCat == "estimatefee" )
             return false;
     }
     return true;
@@ -232,75 +240,6 @@ int LogPrintStr(const std::string &str)
     }
 
     return ret;
-}
-
-string FormatMoney(int64_t n, bool fPlus)
-{
-    // Note: not using straight sprintf here because we do NOT want
-    // localized number formatting.
-    int64_t n_abs = (n > 0 ? n : -n);
-    int64_t quotient = n_abs/COIN;
-    int64_t remainder = n_abs%COIN;
-    string str = strprintf("%d.%08d", quotient, remainder);
-
-    // Right-trim excess zeros before the decimal point:
-    int nTrim = 0;
-    for (int i = str.size()-1; (str[i] == '0' && isdigit(str[i-2])); --i)
-        ++nTrim;
-    if (nTrim)
-        str.erase(str.size()-nTrim, nTrim);
-
-    if (n < 0)
-        str.insert((unsigned int)0, 1, '-');
-    else if (fPlus && n > 0)
-        str.insert((unsigned int)0, 1, '+');
-    return str;
-}
-
-
-bool ParseMoney(const string& str, int64_t& nRet)
-{
-    return ParseMoney(str.c_str(), nRet);
-}
-
-bool ParseMoney(const char* pszIn, int64_t& nRet)
-{
-    string strWhole;
-    int64_t nUnits = 0;
-    const char* p = pszIn;
-    while (isspace(*p))
-        p++;
-    for (; *p; p++)
-    {
-        if (*p == '.')
-        {
-            p++;
-            int64_t nMult = CENT*10;
-            while (isdigit(*p) && (nMult > 0))
-            {
-                nUnits += nMult * (*p++ - '0');
-                nMult /= 10;
-            }
-            break;
-        }
-        if (isspace(*p))
-            break;
-        if (!isdigit(*p))
-            return false;
-        strWhole.insert(strWhole.end(), *p);
-    }
-    for (; *p; p++)
-        if (!isspace(*p))
-            return false;
-    if (strWhole.size() > 10) // guard against 63 bit overflow
-        return false;
-    if (nUnits < 0 || nUnits > COIN)
-        return false;
-    int64_t nWhole = atoi64(strWhole);
-    int64_t nValue = nWhole*COIN + nUnits;
-
-    nRet = nValue;
-    return true;
 }
 
 // safeChars chosen to allow simple messages/URLs/email addresses, but avoid anything
@@ -841,7 +780,7 @@ bool WildcardMatch(const string& str, const string& mask)
 }
 
 
-static std::string FormatException(std::exception* pex, const char* pszThread)
+static std::string FormatException(const std::exception* pex, const char* pszThread)
 {
 #ifdef WIN32
     char pszModule[MAX_PATH] = "";
@@ -857,13 +796,13 @@ static std::string FormatException(std::exception* pex, const char* pszThread)
             "UNKNOWN EXCEPTION       \n%s in %s       \n", pszModule, pszThread);
 }
 
-void LogException(std::exception* pex, const char* pszThread)
+void LogException(const std::exception* pex, const char* pszThread)
 {
     std::string message = FormatException(pex, pszThread);
     LogPrintf("\n%s", message);
 }
 
-void PrintExceptionContinue(std::exception* pex, const char* pszThread)
+void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 {
     std::string message = FormatException(pex, pszThread);
     LogPrintf("\n\n************************\n%s\n", message);
@@ -900,7 +839,8 @@ boost::filesystem::path GetDefaultDataDir()
 #endif // WIN32
 }
 
-static boost::filesystem::path pathCached[CBaseChainParams::MAX_NETWORK_TYPES+1];
+static boost::filesystem::path pathCached;
+static boost::filesystem::path pathCachedNetSpecific;
 static CCriticalSection csPathCached;
 
 const boost::filesystem::path &GetDataDir(bool fNetSpecific)
@@ -909,10 +849,7 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 
     LOCK(csPathCached);
 
-    int nNet = CBaseChainParams::MAX_NETWORK_TYPES;
-    if (fNetSpecific) nNet = BaseParams().NetworkID();
-
-    fs::path &path = pathCached[nNet];
+    fs::path &path = fNetSpecific ? pathCachedNetSpecific : pathCached;
 
     // This can be called during exceptions by LogPrintf(), so we cache the
     // value so we don't have to do memory allocations after that.
@@ -938,8 +875,8 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 
 void ClearDatadirCache()
 {
-    std::fill(&pathCached[0], &pathCached[CBaseChainParams::MAX_NETWORK_TYPES+1],
-              boost::filesystem::path());
+    pathCached = boost::filesystem::path();
+    pathCachedNetSpecific = boost::filesystem::path();
 }
 
 boost::filesystem::path GetConfigFile()
@@ -989,6 +926,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
     ClearDatadirCache();
 }
 
+#ifndef WIN32
 boost::filesystem::path GetPidFile()
 {
     boost::filesystem::path pathPidFile(GetArg("-pid", "anoncoin.pid"));
@@ -996,7 +934,6 @@ boost::filesystem::path GetPidFile()
     return pathPidFile;
 }
 
-#ifndef WIN32
 void CreatePidFile(const boost::filesystem::path &path, pid_t pid)
 {
     FILE* file = fopen(path.string().c_str(), "w");
@@ -1134,15 +1071,15 @@ void ShrinkDebugFile()
     if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000)
     {
         // Restart the file with some of the end
-        char pch[200000];
-        fseek(file, -sizeof(pch), SEEK_END);
-        int nBytes = fread(pch, 1, sizeof(pch), file);
+        std::vector <char> vch(200000,0);
+        fseek(file, -((long)vch.size()), SEEK_END);
+        int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
         fclose(file);
 
         file = fopen(pathLog.string().c_str(), "w");
         if (file)
         {
-            fwrite(pch, 1, nBytes, file);
+            fwrite(begin_ptr(vch), 1, nBytes, file);
             fclose(file);
         }
     }
@@ -1243,23 +1180,23 @@ void RenameThread(const char* name)
 #endif
 }
 
-// ToDo: What's going on here, got a compiler error: stray ‘#’ in program, method defined twice, so deleted the dup with error.
-// GR note: Perhaps some additional thought needs to go into WIN32 environment construction, none is being provided for here.
 void SetupEnvironment()
 {
-    #ifndef WIN32
-    try
-    {
-	#if BOOST_FILESYSTEM_VERSION == 3
-            boost::filesystem::path::codecvt(); // Raises runtime error if current locale is invalid
-	#else				          // boost filesystem v2
-            std::locale();                      // Raises runtime error if current locale is invalid
-	#endif
-    } catch(std::runtime_error &e)
-    {
-        setenv("LC_ALL", "C", 1); // Force C locale
+    // On most POSIX systems (e.g. Linux, but not BSD) the environment's locale
+    // may be invalid, in which case the "C" locale is used as fallback.
+#if !defined(WIN32) && !defined(MAC_OSX) && !defined(__FreeBSD__) && !defined(__OpenBSD__)
+    try {
+        std::locale(""); // Raises a runtime error if current locale is invalid
+    } catch (const std::runtime_error&) {
+        setenv("LC_ALL", "C", 1);
     }
-    #endif
+#endif
+    // The path locale is lazy initialized and to avoid deinitialization errors
+    // in multithreading environments, it is set explicitly by the main thread.
+    // A dummy locale is used to extract the internal default locale, used by
+    // boost::filesystem::path, which is then used to explicitly imbue the path.
+    std::locale loc = boost::filesystem::path::imbue(std::locale::classic());
+    boost::filesystem::path::imbue(loc);
 }
 
 std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)
@@ -1277,7 +1214,7 @@ bool ParseInt32(const std::string& str, int32_t *out)
     char *endp = NULL;
     errno = 0; // strtol will not set errno if valid
     long int n = strtol(str.c_str(), &endp, 10);
-    if(out) *out = (int)n;
+    if(out) *out = (int32_t)n;
     // Note that strtol returns a *long int*, so even if strtol doesn't report a over/underflow
     // we still have to check that the returned value is within the range of an *int32_t*. On 64-bit
     // platforms the size of these types may be different.

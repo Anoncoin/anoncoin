@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 // Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
@@ -19,6 +19,7 @@
 #endif
 
 #include <QApplication>
+#include <QDebug>
 #include <QPainter>
 
 SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTestNet) :
@@ -43,15 +44,15 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     else {
         newPixmap     = QPixmap(":/images/splash");
     }
-	
+
 	QFont initfont;
 	initfont.setFamily("Courier New,Courier,Monaco,Andale Mono,Arial");
-	initfont.setPixelSize(12);	
-	    
+	initfont.setPixelSize(12);
+
     QPainter pixPaint(&newPixmap);
     pixPaint.setPen(QColor(250,250,250));
     pixPaint.setFont(initfont);
-    
+
     QFontMetrics fm = pixPaint.fontMetrics();
 
     // draw version
@@ -70,7 +71,7 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTest
     //    int testnetAddTextWidth  = fm.width(testnetAddText);
     //    pixPaint.drawText(newPixmap.width()-testnetAddTextWidth-10,15,testnetAddText);
     //}
-	
+
     pixPaint.end();
 
     this->setPixmap(newPixmap);
@@ -98,15 +99,15 @@ static void InitMessage(SplashScreen *splash, const std::string &message)
 
 	std::string message_cr;
 	message_cr = message + "\n";
-	
-    QMetaObject::invokeMethod(splash, "showMessage",
+
+    bool fInvoked = QMetaObject::invokeMethod(splash, "showMessage",
         Qt::QueuedConnection,
         Q_ARG(QString, QString::fromStdString(message_cr)),
         Q_ARG(int, Qt::AlignBottom|Qt::AlignHCenter),
         Q_ARG(QColor, QColor(0,0,0)));
 }
 
-static void ShowProgress(SplashScreen *splash, const std::string &title, int nProgress)
+static void BindToShowProgress(SplashScreen *splash, const std::string &title, int nProgress)
 {
     InitMessage(splash, title + strprintf("%d", nProgress) + "%");
 }
@@ -114,7 +115,7 @@ static void ShowProgress(SplashScreen *splash, const std::string &title, int nPr
 #ifdef ENABLE_WALLET
 static void ConnectWallet(SplashScreen *splash, CWallet* wallet)
 {
-    wallet->ShowProgress.connect(boost::bind(ShowProgress, splash, _1, _2));
+    wallet->ShowProgress.connect(boost::bind(BindToShowProgress, splash, _1, _2));
 }
 #endif
 
@@ -122,6 +123,7 @@ void SplashScreen::subscribeToCoreSignals()
 {
     // Connect signals to client
     uiInterface.InitMessage.connect(boost::bind(InitMessage, this, _1));
+    uiInterface.ShowProgress.connect(boost::bind(BindToShowProgress, this, _1, _2));
 #ifdef ENABLE_WALLET
     uiInterface.LoadWallet.connect(boost::bind(ConnectWallet, this, _1));
 #endif
@@ -131,8 +133,9 @@ void SplashScreen::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
     uiInterface.InitMessage.disconnect(boost::bind(InitMessage, this, _1));
+    uiInterface.ShowProgress.disconnect(boost::bind(BindToShowProgress, this, _1, _2));
 #ifdef ENABLE_WALLET
     if(pwalletMain)
-        pwalletMain->ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
+        pwalletMain->ShowProgress.disconnect(boost::bind(BindToShowProgress, this, _1, _2));
 #endif
 }

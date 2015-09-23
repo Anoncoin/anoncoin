@@ -21,6 +21,11 @@
 
 using namespace std;
 
+//! Constants found in this source codes header(.h)
+//! 20,000 items with fp rate < 0.1% or 10,000 items and <0.0001%
+const uint32_t MAX_BLOOM_FILTER_SIZE = 36000; // bytes
+const uint32_t MAX_HASH_FUNCS = 50;
+
 CBloomFilter::CBloomFilter(unsigned int nElements, double nFPRate, unsigned int nTweakIn, unsigned char nFlagsIn) :
 /**
  * The ideal size for a bloom filter with a given number of elements and false positive rate is:

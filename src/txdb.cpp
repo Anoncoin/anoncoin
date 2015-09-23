@@ -7,6 +7,7 @@
 #include "txdb.h"
 
 #include "amount.h"
+#include "checkpoints.h"
 #include "pow.h"
 #include "uint256.h"
 
@@ -14,58 +15,75 @@
 
 #include <boost/scoped_ptr.hpp>
 
+//! Constants found in this source codes header(.h)
+//! -dbcache default (MiB)
+const int64_t nDefaultDbCache = 400;
+//! max. -dbcache in (MiB)
+const int64_t nMaxDbCache = sizeof(void*) > 4 ? 4096 : 1024;
+//! min. -dbcache in (MiB)
+const int64_t nMinDbCache = 4;
+
 using namespace std;
 
 void static BatchWriteCoins(CLevelDBBatch &batch, const uint256 &hash, const CCoins &coins) {
-    if (coins.IsPruned())
+    if (coins.IsPruned()) {
+        //LogPrintf( "CCoinsViewDB::BatchWriteCoins() erased hash %s it has been Pruned.\n", hash.ToString() );
         batch.Erase(make_pair('c', hash));
+    }
     else
         batch.Write(make_pair('c', hash), coins);
 }
 
-void static BatchWriteHashBestChain(CLevelDBBatch &batch, const uint256 &hash) {
+void static BatchWriteHashBestChain(CLevelDBBatch &batch, const uint256 &hash)
+{
+    // LogPrintf( "CCoinsViewDB::BatchWriteHashBestChain() hash %s\n", hash.ToString() );
     batch.Write('B', hash);
 }
 
 CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe) {
 }
 
-bool CCoinsViewDB::GetCoins(const uint256 &txid, CCoins &coins) {
-    return db.Read(make_pair('c', txid), coins);
+bool CCoinsViewDB::GetCoins(const uint256 &txid, CCoins &coins) const {
+    bool fResult = db.Read(make_pair('c', txid), coins);
+    //LogPrintf( "CCoinsViewDB::GetCoins() for %s found on disk=%d\n", txid.ToString(), fResult );
+    return fResult;
 }
 
-bool CCoinsViewDB::SetCoins(const uint256 &txid, const CCoins &coins) {
-    CLevelDBBatch batch;
-    BatchWriteCoins(batch, txid, coins);
-    return db.WriteBatch(batch);
+bool CCoinsViewDB::HaveCoins(const uint256 &txid) const {
+    bool fResult = db.Exists(make_pair('c', txid));
+    //LogPrintf( "CCoinsViewDB::HaveCoins() for %s found on disk=%d\n", txid.ToString(), fResult );
+    return fResult;
 }
 
-bool CCoinsViewDB::HaveCoins(const uint256 &txid) {
-    return db.Exists(make_pair('c', txid));
-}
-
-uint256 CCoinsViewDB::GetBestBlock() {
+uint256 CCoinsViewDB::GetBestBlock() const {
     uint256 hashBestChain;
-    if (!db.Read('B', hashBestChain))
+    bool fResult = db.Read('B', hashBestChain);
+    //LogPrintf( "CCoinsViewDB::GetBestBlock() read=%d found %s\n", fResult, hashBestChain.ToString() );
+    if (!fResult)
         return uint256(0);
     return hashBestChain;
 }
 
-bool CCoinsViewDB::SetBestBlock(const uint256 &hashBlock) {
+bool CCoinsViewDB::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock) {
     CLevelDBBatch batch;
-    BatchWriteHashBestChain(batch, hashBlock);
-    return db.WriteBatch(batch);
-}
-
-bool CCoinsViewDB::BatchWrite(const std::map<uint256, CCoins> &mapCoins, const uint256 &hashBlock) {
-    LogPrint("coindb", "Committing %u changed transactions to coin database...\n", (unsigned int)mapCoins.size());
-
-    CLevelDBBatch batch;
-    for (std::map<uint256, CCoins>::const_iterator it = mapCoins.begin(); it != mapCoins.end(); it++)
-        BatchWriteCoins(batch, it->first, it->second);
+    size_t count = 0;
+    size_t changed = 0;
+    for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end();) {
+        if (it->second.flags & CCoinsCacheEntry::DIRTY) {
+            BatchWriteCoins(batch, it->first, it->second.coins);
+            changed++;
+        }
+        count++;
+        CCoinsMap::iterator itOld = it++;
+        mapCoins.erase(itOld);
+    }
     if (hashBlock != uint256(0))
         BatchWriteHashBestChain(batch, hashBlock);
+    //else
+        //LogPrintf( "CCoinsViewDB::BatchWrite() WARNING - No hashBlock set to write BestChain hash.\n" );
 
+    // LogPrint("coindb", "Committing %u changed transactions (out of %u) to coin database...\n", (unsigned int)changed, (unsigned int)count);
+    LogPrint("coindb", "Committing %u changed transactions (out of %u) to coin database, best hashblock=%s\n", (unsigned int)changed, (unsigned int)count, hashBlock.ToString());
     return db.WriteBatch(batch);
 }
 
@@ -74,13 +92,8 @@ CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevel
 
 bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)
 {
+    // LogPrintf( "Writing blockindex hash: %s\n", blockindex.GetBlockHash().ToString());
     return Write(make_pair('b', blockindex.GetBlockHash()), blockindex);
-}
-
-bool CBlockTreeDB::WriteBestInvalidWork(const CBigNum& bnBestInvalidWork)
-{
-    // Obsolete; only written for backward compatibility.
-    return Write('I', bnBestInvalidWork);
 }
 
 bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo &info) {
@@ -111,7 +124,7 @@ bool CBlockTreeDB::ReadLastBlockFile(int &nFile) {
     return Read('l', nFile);
 }
 
-bool CCoinsViewDB::GetStats(CCoinsStats &stats) {
+bool CCoinsViewDB::GetStats(CCoinsStats &stats) const {
     /* It seems that there are no "const iterators" for LevelDB.  Since we
        only need read operations on it, use a const-cast to get around
        that restriction.  */
@@ -187,7 +200,7 @@ bool CBlockTreeDB::ReadFlag(const std::string &name, bool &fValue) {
     return true;
 }
 
-bool CBlockTreeDB::LoadBlockIndexGuts()
+bool CBlockTreeDB::LoadBlockIndexGuts( vector<BlockTreeEntry>& vSortedByHeight )
 {
     boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
 
@@ -195,7 +208,8 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
     ssKeySet << make_pair('b', uint256(0));
     pcursor->Seek(ssKeySet.str());
 
-    // Load mapBlockIndex
+    BlockTreeEntry aBlockDetails;
+    //! Load mapBlockIndex <-- Not yet, but a good start. Anoncoin works differently then other coins, all we do here is a fast load of what is on disk
     while (pcursor->Valid()) {
         boost::this_thread::interruption_point();
         try {
@@ -204,14 +218,32 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
             char chType;
             ssKey >> chType;
             if (chType == 'b') {
+                ssKey >> aBlockDetails.uintRealHash;
                 leveldb::Slice slValue = pcursor->value();
                 CDataStream ssValue(slValue.data(), slValue.data()+slValue.size(), SER_DISK, CLIENT_VERSION);
                 CDiskBlockIndex diskindex;
                 ssValue >> diskindex;
+                aBlockDetails.nHeight = diskindex.nHeight;
 
-                // Construct block index object
-                CBlockIndex* pindexNew = InsertBlockIndex(diskindex.GetBlockHash());
-                pindexNew->pprev          = InsertBlockIndex(diskindex.hashPrev);
+                //! NOTE: On constructing block index objects.  Computing many hash values here can lead to many minutes of waiting for
+                //! the user.  This has been re-written several times in order to be as fast as possible for loading.  We don't
+                //! re-compute hashes here any longer, the fake sha256d ones that are in the mined blocks for the previous block,
+                //! or the real scrypt hashes Anoncoin has used for years as POW.  Just create the CBlockIndex objects and add them to
+                //! a vector of CBlockIndex objects, we will later sort, calculate hashes, organize it and build the mapBlockIndex lookup
+                //! system used by the rest of the software....
+
+                //! Create a new empty CBlockIndex each time we read one
+                CBlockIndex* pindexNew = new CBlockIndex();
+                if (!pindexNew)
+                    throw runtime_error("LoadBlockIndex() : new CBlockIndex failed");
+
+                aBlockDetails.pBlockIndex = pindexNew;
+                //! For speed we'll initially just save the previous block hash (sha256d) in the fakeBIhash field of the new object, this
+                //! is NORMALLY used to hold the sha256d hash of THIS block, but we don't have that value computed yet, and this works fine
+                //! as a temporary holding location, until later when we do the calculations.  See LoadBlockIndexDB() in main.cpp where all
+                //! the time complex work is done.
+                pindexNew->fakeBIhash     = diskindex.hashPrev;
+                //!pindexNew->pprev        We can not set this up yet, without allot of time complexity
                 pindexNew->nHeight        = diskindex.nHeight;
                 pindexNew->nFile          = diskindex.nFile;
                 pindexNew->nDataPos       = diskindex.nDataPos;
@@ -223,11 +255,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nNonce         = diskindex.nNonce;
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
-
-                bool fIsGenesis = diskindex.nHeight == 0;
-                if( !fIsGenesis && !CheckProofOfWork( diskindex.GetBlockPowHash(), diskindex.nBits) )
-                    return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
-
+                //! Just store it in the vector for later sorting & processing.
+                vSortedByHeight.push_back(aBlockDetails);
+                //! No pow checks here, just go to the next blockindex
                 pcursor->Next();
             } else {
                 break; // if shutdown requested or finished loading block index
@@ -236,6 +266,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
             return error("%s : Deserialize or I/O error - %s", __func__, e.what());
         }
     }
+    //LogPrintf("%s : The Data Position of the last blockindex entry is %d\n", __func__, vSortedByHeight[vSortedByHeight.size() - 1].second->nDataPos);
 
     return true;
 }

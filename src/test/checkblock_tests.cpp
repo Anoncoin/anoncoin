@@ -1,14 +1,13 @@
 // Copyright (c) 2013-2014 The Bitcoin Core developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 //
 // Unit tests for block.CheckBlock()
 //
 
-
-
+#include "clientversion.h"
 #include "main.h"
 
 #include <cstdio>
@@ -35,8 +34,8 @@ bool read_block(const std::string& filename, CBlock& block)
 
     fseek(fp, 8, SEEK_SET); // skip msgheader/size
 
-    CAutoFile filein = CAutoFile(fp, SER_DISK, CLIENT_VERSION);
-    if (!filein) return false;
+    CAutoFile filein(fp, SER_DISK, CLIENT_VERSION);
+    if (!filein.IsNull()) return false;
 
     filein >> block;
 

@@ -21,14 +21,9 @@ $(LIBLEVELDB) $(LIBMEMENV):
           OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
 
-if EMBEDDED_I2PSAM
-I2PSAM_CPPFLAGS += -I$(srcdir)/i2psam
-endif
-
 ANONCOIN_CONFIG_INCLUDES=-I$(builddir)/config
 ANONCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 
-ANONCOIN_INCLUDES += -I$(I2PSAM_CPPFLAGS)
 #ANONCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
 
 LIBANONCOIN_SERVER=libanoncoin_server.a
@@ -38,7 +33,10 @@ LIBANONCOIN_CLI=libanoncoin_cli.a
 LIBANONCOIN_UTIL=libanoncoin_util.a
 LIBANONCOIN_CRYPTO=crypto/libanoncoin_crypto.a
 LIBANONCOIN_UNIVALUE=univalue/libanoncoin_univalue.a
-LIBANONCOINQT=qt/libanoncoinqt.a
+LIBANONCOIN_SCRYPT=libanoncoin_scrypt.a
+LIBANONCOIN_I2PNET=libanoncoin_i2pnet.a
+LIBANONCOINQTCLASS=qt/libanoncoinqtc.a
+LIBANONCOINQTHEMES=qthemes/libanoncoinqtt.a
 #LIBSECP256K1=secp256k1/libsecp256k1.la
 LIBSECP256K1=
 
@@ -53,10 +51,14 @@ EXTRA_LIBRARIES = \
   libanoncoin_common.a \
   univalue/libanoncoin_univalue.a \
   libanoncoin_server.a \
-  libanoncoin_cli.a
+  libanoncoin_cli.a \
+  libanoncoin_scrypt.a
 if ENABLE_WALLET
 ANONCOIN_INCLUDES += $(BDB_CPPFLAGS)
 EXTRA_LIBRARIES += libanoncoin_wallet.a
+endif
+if ENABLE_I2PSAM
+EXTRA_LIBRARIES += libanoncoin_i2pnet.a
 endif
 
 #if BUILD_ANONCOIN_LIBS
@@ -83,12 +85,11 @@ ANONCOIN_CORE_H = \
   addrman.h \
   alert.h \
   allocators.h \
-amount.h \
+  amount.h \
   base58.h \
-  bignum.h \
-block.h \
+  block.h \
   bloom.h \
-chain.h \
+  chain.h \
   chainparams.h \
   chainparamsbase.h \
   checkpoints.h \
@@ -97,11 +98,12 @@ chain.h \
   coincontrol.h \
   coins.h \
   compat.h \
-compressor.h \
-core_io.h \
+  compressor.h \
+  core_io.h \
   crypter.h \
   db.h \
   hash.h \
+  i2psam.h \
   i2pwrapper.h \
   init.h \
   key.h \
@@ -109,32 +111,35 @@ core_io.h \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
-merkleblock.h \
+  merkleblock.h \
   miner.h \
   mruset.h \
   netbase.h \
   net.h \
   noui.h \
-pow.h \
+  pow.h \
   protocol.h \
-random.h \
+  random.h \
   rpcclient.h \
   rpcprotocol.h \
   rpcserver.h \
   script.h \
+  script_error.h \
   scrypt.h \
   serialize.h \
-stream.h \
+  sigcache.h \
+  sign.h \
+  streams.h \
   sync.h \
   threadsafety.h \
-timedata.h \
+  timedata.h \
   tinyformat.h \
-transaction.h \
+  transaction.h \
   txdb.h \
   txmempool.h \
   ui_interface.h \
   uint256.h \
-undo.h \
+  undo.h \
   util.h \
   version.h \
   wallet.h \
@@ -152,9 +157,6 @@ JSON_H = \
   json/json_spirit_writer.h \
   json/json_spirit_writer_template.h
 
-I2PSAM_H = \
-  i2psam/i2psam.h
-
 obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
 	@$(top_srcdir)/share/genbuild.sh $(abs_top_builddir)/src/obj/build.h \
@@ -164,31 +166,28 @@ libanoncoin_util_a-clientversion.$(OBJEXT): obj/build.h
 # server: shared between anoncoind and anoncoin-qt
 libanoncoin_server_a_CPPFLAGS = $(ANONCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libanoncoin_server_a_SOURCES = \
-  addrman.cpp \
   alert.cpp \
   bloom.cpp \
-chain.cpp \
+  chain.cpp \
   checkpoints.cpp \
   init.cpp \
   leveldbwrapper.cpp \
   main.cpp \
-merkleblock.cpp \
+  merkleblock.cpp \
   miner.cpp \
   net.cpp \
   noui.cpp \
-pow.cpp \
-rest.cpp \
+  pow.cpp \
+  rest.cpp \
   rpcblockchain.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \
   rpcrawtransaction.cpp \
   rpcserver.cpp \
-timedata.cpp \
   txdb.cpp \
   txmempool.cpp \
   $(JSON_H) \
-  $(I2PSAM_H) \
   $(ANONCOIN_CORE_H)
 
 # wallet: shared between anoncoind and anoncoin-qt, but only linked
@@ -233,26 +232,27 @@ univalue_libanoncoin_univalue_a_SOURCES = \
 # common: shared between anoncoind, and anoncoin-qt and non-server tools
 libanoncoin_common_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
 libanoncoin_common_a_SOURCES = \
+  addrman.cpp \
   allocators.cpp \
-amount.cpp \
+  amount.cpp \
   base58.cpp \
   chainparams.cpp \
   coins.cpp \
-compressor.cpp \
-core_read.cpp \
-core_write.cpp \
-block.cpp \
-transaction.cpp \
+  compressor.cpp \
+  core_read.cpp \
+  core_write.cpp \
+  block.cpp \
+  timedata.cpp \
+  transaction.cpp \
   hash.cpp \
   key.cpp \
   keystore.cpp \
   netbase.cpp \
   protocol.cpp \
   script.cpp \
-  scrypt.cpp \
-  scrypt-sse2.cpp \
-  i2pwrapper.cpp \
-  i2psam/i2psam.cpp \
+  script_error.cpp \
+  sigcache.cpp \
+  sign.cpp \
   $(ANONCOIN_CORE_H)
 
 # util: shared between all executables.
@@ -264,11 +264,26 @@ libanoncoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
-random.cpp \
+  random.cpp \
   rpcprotocol.cpp \
   sync.cpp \
-uint256.cpp \
+  uint256.cpp \
   util.cpp \
+  $(ANONCOIN_CORE_H)
+
+# i2pnet: shared between anoncoind and anoncoin-qt, but only linked
+# when the network type is enabled
+libanoncoin_i2pnet_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_i2pnet_a_SOURCES = \
+  i2pwrapper.cpp \
+  i2psam.cpp \
+  $(ANONCOIN_CORE_H)
+
+# scrypt: shared between anoncoind and anoncoin-qt, requires special compiler flags
+libanoncoin_scrypt_a_CPPFLAGS = $(ANONCOIN_INCLUDES) -msse2 -mstackrealign
+libanoncoin_scrypt_a_SOURCES = \
+  scrypt.cpp \
+  scrypt-sse2.cpp \
   $(ANONCOIN_CORE_H)
 
 if GLIBC_BACK_COMPAT
@@ -283,23 +298,26 @@ libanoncoin_cli_a_SOURCES = \
   $(ANONCOIN_CORE_H)
 
 nodist_libanoncoin_util_a_SOURCES = $(srcdir)/obj/build.h
-#
 
 # anoncoind binary #
 anoncoind_LDADD = \
-  $(LIBANONCOIN_CLI) \
   $(LIBANONCOIN_SERVER) \
   $(LIBANONCOIN_COMMON) \
+  $(LIBANONCOIN_UNIVALUE) \
   $(LIBANONCOIN_UTIL) \
+  $(LIBANONCOIN_CRYPTO) \
+  $(LIBANONCOIN_SCRYPT) \
   $(LIBLEVELDB) \
   $(LIBMEMENV)
 
 if ENABLE_WALLET
 anoncoind_LDADD += libanoncoin_wallet.a
 endif
-anoncoind_SOURCES = anoncoind.cpp
-#
+if ENABLE_I2PSAM
+anoncoind_LDADD += libanoncoin_i2pnet.a
+endif
 
+anoncoind_SOURCES = anoncoind.cpp
 if TARGET_WINDOWS
 anoncoind_SOURCES += anoncoind-res.rc
 endif
@@ -316,35 +334,37 @@ anoncoin_cli_LDADD = \
   $(SSL_LIBS) \
   $(CRYPTO_LIBS)
 
-anoncoin_cli_SOURCES = \
-  anoncoin-cli.cpp
+anoncoin_cli_SOURCES = anoncoin-cli.cpp
+if TARGET_WINDOWS
+anoncoin_cli_SOURCES += anoncoin-cli-res.rc
+endif
 
 anoncoin_cli_CPPFLAGS = $(ANONCOIN_INCLUDES)
+anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 #anoncoin-tx binary #
-#  $(LIBSECP256K1) \
 anoncoin_tx_LDADD = \
   $(LIBANONCOIN_UNIVALUE) \
   $(LIBANONCOIN_COMMON) \
   $(LIBANONCOIN_UTIL) \
   $(LIBANONCOIN_CRYPTO) \
+  $(LIBANONCOIN_SCRYPT) \
   $(BOOST_LIBS) \
   $(CRYPTO_LIBS)
 
-anoncoin_tx_SOURCES = anoncoin-tx.cpp
-anoncoin_tx_CPPFLAGS = $(ANONCOIN_INCLUDES)
-#
-anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
-
-if TARGET_WINDOWS
-anoncoin_cli_SOURCES += anoncoin-cli-res.rc
+if ENABLE_I2PSAM
+anoncoin_tx_LDADD += libanoncoin_i2pnet.a
 endif
-anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+
+anoncoin_tx_SOURCES = anoncoin-tx.cpp
+
+anoncoin_tx_CPPFLAGS = $(ANONCOIN_INCLUDES)
+anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 #if BUILD_ANONCOIN_LIBS
 #include_HEADERS = script/anoncoinconsensus.h
 #libanoncoinconsensus_la_SOURCES = \
-#  core/transaction.cpp \
+#  transaction.cpp \
 #  crypto/sha1.cpp \
 #  crypto/sha2.cpp \
 #  crypto/ripemd160.cpp \
@@ -371,9 +391,9 @@ anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 #endif
 #endif
 
-CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno i2psam/libi2psam.a
+CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno
 
-DISTCLEANFILES = obj/build.h makefile.in
+DISTCLEANFILES = obj/build.h $(EXTRA_LIBRARIES)
 
 EXTRA_DIST = leveldb
 
@@ -401,6 +421,7 @@ endif
 
 if ENABLE_QT
 include Makefile.qt.include
+include Makefile.qthemes.include
 endif
 
 if ENABLE_QT_TESTS

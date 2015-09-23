@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef RECENTREQUESTSTABLEMODEL_H
@@ -25,21 +25,21 @@ public:
     QDateTime date;
     SendCoinsRecipient recipient;
 
-    IMPLEMENT_SERIALIZE
-    (
-        RecentRequestEntry* pthis = const_cast<RecentRequestEntry*>(this);
+    ADD_SERIALIZE_METHODS;
 
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         unsigned int nDate = date.toTime_t();
 
-        READWRITE(pthis->nVersion);
-        nVersion = pthis->nVersion;
+        READWRITE(this->nVersion);
+        nVersion = this->nVersion;
         READWRITE(id);
         READWRITE(nDate);
         READWRITE(recipient);
 
-        if (fRead)
-            pthis->date = QDateTime::fromTime_t(nDate);
-    )
+        if (ser_action.ForRead())
+            date = QDateTime::fromTime_t(nDate);
+    }
 };
 
 class RecentRequestEntryLessThan
@@ -90,7 +90,7 @@ public:
     void addNewRequest(const std::string &recipient);
     void addNewRequest(RecentRequestEntry &recipient);
 
-public slots:
+public Q_SLOTS:
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
     void updateDisplayUnit();
 

@@ -1,5 +1,5 @@
-bin_PROGRAMS += qt/anoncoin-qt
-EXTRA_LIBRARIES += qt/libanoncoinqt.a
+bin_PROGRAMS += qt/anoncoin-qtc
+EXTRA_LIBRARIES += qt/libanoncoinqtc.a
 
 # anoncoin qt core #
 QT_TS = \
@@ -282,15 +282,15 @@ RES_MOVIES = $(wildcard qt/res/movies/spinner-*.png)
 ANONCOIN_RC = qt/res/anoncoin-qt-res.rc
 
 ANONCOIN_QT_INCLUDES = -I$(builddir)/qt -I$(srcdir)/qt -I$(srcdir)/qt/forms \
-  -I$(builddir)/qt/forms
+  -I$(builddir)/qt/forms  -DQT_NO_KEYWORDS
 
-qt_libanoncoinqt_a_CPPFLAGS = $(ANONCOIN_INCLUDES) $(ANONCOIN_QT_INCLUDES) \
+qt_libanoncoinqtc_a_CPPFLAGS = $(ANONCOIN_INCLUDES) $(ANONCOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
 
-qt_libanoncoinqt_a_SOURCES = $(ANONCOIN_QT_CPP) $(ANONCOIN_QT_H) $(QT_FORMS_UI) \
+qt_libanoncoinqtc_a_SOURCES = $(ANONCOIN_QT_CPP) $(ANONCOIN_QT_H) $(QT_FORMS_UI) \
   $(QT_QRC) $(QT_QRC_LOCALE) $(QT_TS) $(PROTOBUF_PROTO) $(RES_ICONS) $(RES_IMAGES) $(RES_MOVIES)
 
-nodist_qt_libanoncoinqt_a_SOURCES = $(QT_MOC_CPP) $(QT_MOC) $(PROTOBUF_CC) \
+nodist_qt_libanoncoinqtc_a_SOURCES = $(QT_MOC_CPP) $(QT_MOC) $(PROTOBUF_CC) \
   $(PROTOBUF_H) $(QT_QRC_CPP) $(QT_QRC_LOCALE_CPP)
 
 # forms/foo.h -> forms/ui_foo.h
@@ -299,7 +299,7 @@ QT_FORMS_H=$(join $(dir $(QT_FORMS_UI)),$(addprefix ui_, $(notdir $(QT_FORMS_UI:
 # Most files will depend on the forms and moc files as includes. Generate them
 # before anything else.
 $(QT_MOC): $(QT_FORMS_H)
-$(qt_libanoncoinqt_a_OBJECTS) $(qt_anoncoin_qt_OBJECTS) : | $(QT_MOC)
+$(qt_libanoncoinqtc_a_OBJECTS) $(qt_anoncoin_qtc_OBJECTS) : | $(QT_MOC)
 
 #Generating these with a half-written protobuf header leads to wacky results.
 #This makes sure it's done.
@@ -307,25 +307,28 @@ $(QT_MOC): $(PROTOBUF_H)
 $(QT_MOC_CPP): $(PROTOBUF_H)
 
 # anoncoin-qt binary #
-qt_anoncoin_qt_CPPFLAGS = $(ANONCOIN_INCLUDES) $(ANONCOIN_QT_INCLUDES) \
+qt_anoncoin_qtc_CPPFLAGS = $(ANONCOIN_INCLUDES) $(ANONCOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
 
-qt_anoncoin_qt_SOURCES = qt/anoncoin.cpp
+qt_anoncoin_qtc_SOURCES = qt/anoncoin.cpp
 if TARGET_DARWIN
-  qt_anoncoin_qt_SOURCES += $(ANONCOIN_MM)
+  qt_anoncoin_qtc_SOURCES += $(ANONCOIN_MM)
 endif
 if TARGET_WINDOWS
-  qt_anoncoin_qt_SOURCES += $(ANONCOIN_RC)
+  qt_anoncoin_qtc_SOURCES += $(ANONCOIN_RC)
 endif
-qt_anoncoin_qt_LDADD = $(LIBANONCOINQT) $(LIBANONCOIN_SERVER)
+qt_anoncoin_qtc_LDADD = $(LIBANONCOINQTCLASS) $(LIBANONCOIN_SERVER)
+if ENABLE_I2PSAM
+qt_anoncoin_qtc_LDADD += libanoncoin_i2pnet.a
+endif
 if ENABLE_WALLET
-qt_anoncoin_qt_LDADD += $(LIBANONCOIN_WALLET)
+qt_anoncoin_qtc_LDADD += $(LIBANONCOIN_WALLET)
 endif
-qt_anoncoin_qt_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) \
+qt_anoncoin_qtc_LDADD += $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) $(LIBANONCOIN_SCRYPT) \
   $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) \
   $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
-qt_anoncoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
-qt_anoncoin_qt_LIBTOOLFLAGS = --tag CXX
+qt_anoncoin_qtc_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+qt_anoncoin_qtc_LIBTOOLFLAGS = --tag CXX
 
 #locale/foo.ts -> locale/foo.qm
 QT_QM=$(QT_TS:.ts=.qm)
@@ -351,14 +354,14 @@ $(QT_QRC_CPP): $(QT_QRC) $(QT_FORMS_H) $(RES_ICONS) $(RES_IMAGES) $(RES_MOVIES) 
 	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name anoncoin $< | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 
-CLEAN_QT = $(nodist_qt_libanoncoinqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno
+CLEAN_QT = $(nodist_qt_libanoncoinqtc_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno
 
 CLEANFILES += $(CLEAN_QT)
 
-anoncoin_qt_clean: FORCE
-	rm -f $(CLEAN_QT) $(qt_libanoncoinqt_a_OBJECTS) $(qt_anoncoin_qt_OBJECTS) qt/anoncoin-qt$(EXEEXT) $(LIBANONCOINQT)
+anoncoin_qtc_clean: FORCE
+	rm -f $(CLEAN_QT) $(qt_libanoncoinqtc_a_OBJECTS) $(qt_anoncoin_qtc_OBJECTS) qt/anoncoin-qtc$(EXEEXT) $(LIBANONCOINQTCLASS)
 
-anoncoin_qt : qt/anoncoin-qt$(EXEEXT)
+anoncoin_qtc : qt/anoncoin-qtc$(EXEEXT)
 
 ui_%.h: %.ui
 	@test -f $(UIC)

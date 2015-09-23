@@ -5,12 +5,13 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION @CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@
-!define COMPANY "Anoncoin Core Project"
-!define URL https://anoncoin.net/
+!define VERSION "@PACKAGE_VERSION@"
+!define PRODUCT "@PACKAGE_NAME@"
+!define COMPANY "Anoncoin Project Development Team"
+!define URL "@PACKAGE_URL@"
 
-# MUI Symbol Definitions
-!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/anoncoin64.ico"
+# MUI Symbol Definitions, be sure the bmp files are indexed 8-bit files and of the correct size
+!define MUI_ICON "@abs_top_srcdir@/share/pixmaps/anoncoin.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
@@ -44,11 +45,11 @@ Var StartMenuGroup
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
-# Installer languages
+# Installer languages NOTE: Must be after the page macros
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile @abs_top_srcdir@/anoncoin-${VERSION}-win@WINDOWS_BITS@-setup.exe
+OutFile @abs_top_srcdir@/release/anoncoin-${VERSION}-win@WINDOWS_BITS@-setup.exe
 !if "@WINDOWS_BITS@" == "64"
 InstallDir $PROGRAMFILES64\Anoncoin
 !else
@@ -58,8 +59,8 @@ CRCCheck on
 XPStyle on
 BrandingText " "
 ShowInstDetails show
-VIProductVersion ${VERSION}.@CLIENT_VERSION_BUILD@
-VIAddVersionKey ProductName "Anoncoin Core"
+VIProductVersion ${VERSION}
+VIAddVersionKey ProductName "${PRODUCT}"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
@@ -73,20 +74,26 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File @abs_top_srcdir@/release/anoncoin-qt.exe
+    File @abs_top_srcdir@/release/anoncoin-qtc.exe
+    File @abs_top_srcdir@/release/anoncoin-qtt.exe
     File /oname=COPYING.txt @abs_top_srcdir@/COPYING
     File /oname=readme.txt @abs_top_srcdir@/doc/README_windows.txt
-    SetOutPath $INSTDIR\daemon
     File @abs_top_srcdir@/release/anoncoind.exe
     File @abs_top_srcdir@/release/anoncoin-cli.exe
+    File @abs_top_srcdir@/release/anoncoin-tx.exe
+    File @abs_top_srcdir@/release/test_anoncoin.exe
+    SetOutPath $INSTDIR\themes
+    File /r @abs_top_srcdir@/share/qt/themes/*.*
     SetOutPath $INSTDIR\doc
+    File @abs_top_srcdir@/doc/anoncoin.conf.sample
+    File @abs_top_srcdir@/doc/bootstrap.md
+    File @abs_top_srcdir@/doc/build-msw.md
+    File @abs_top_srcdir@/doc/coding.md
+    File @abs_top_srcdir@/doc/files.md
     File @abs_top_srcdir@/doc/release-notes.md
     File @abs_top_srcdir@/doc/release-process.md
     File @abs_top_srcdir@/doc/tor.md
     File @abs_top_srcdir@/doc/translation_process.md
-    File @abs_top_srcdir@/doc/files.md
-    File @abs_top_srcdir@/doc/build-msw.md
-    File @abs_top_srcdir@/doc/coding.md
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd
@@ -97,7 +104,8 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\anoncoin-qt.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Classic.lnk" $INSTDIR\anoncoin-qtc.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Themes.lnk" $INSTDIR\anoncoin-qtt.exe
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
@@ -110,8 +118,8 @@ Section -post SEC0001
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
     WriteRegStr HKCR "anoncoin" "URL Protocol" ""
     WriteRegStr HKCR "anoncoin" "" "URL:Anoncoin"
-    WriteRegStr HKCR "anoncoin\DefaultIcon" "" $INSTDIR\anoncoin-qt.exe
-    WriteRegStr HKCR "anoncoin\shell\open\command" "" '"$INSTDIR\anoncoin-qt.exe" "%1"'
+    WriteRegStr HKCR "anoncoin\DefaultIcon" "" $INSTDIR\anoncoin-qtc.exe
+    WriteRegStr HKCR "anoncoin\shell\open\command" "" '"$INSTDIR\anoncoin-qtc.exe" "%1"'
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -129,10 +137,15 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK $INSTDIR\anoncoin-qt.exe
+    Delete /REBOOTOK $INSTDIR\anoncoin-qtc.exe
+    Delete /REBOOTOK $INSTDIR\anoncoin-qtt.exe
     Delete /REBOOTOK $INSTDIR\COPYING.txt
     Delete /REBOOTOK $INSTDIR\readme.txt
-    RMDir /r /REBOOTOK $INSTDIR\daemon
+    Delete /REBOOTOK $INSTDIR\anoncoind.exe
+    Delete /REBOOTOK $INSTDIR\anoncoin-cli.exe
+    Delete /REBOOTOK $INSTDIR\anoncoin-tx.exe
+    Delete /REBOOTOK $INSTDIR\test_anoncoin.exe
+    RMDir /r /REBOOTOK $INSTDIR\themes
     RMDir /r /REBOOTOK $INSTDIR\doc
     DeleteRegValue HKCU "${REGKEY}\Components" Main
 SectionEnd
@@ -140,7 +153,8 @@ SectionEnd
 Section -un.post UNSEC0001
     DeleteRegKey HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) Classic.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) Themes.lnk"
     Delete /REBOOTOK "$SMSTARTUP\Anoncoin.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     Delete /REBOOTOK $INSTDIR\debug.log

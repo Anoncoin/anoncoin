@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "optionsmodel.h"
@@ -24,14 +24,6 @@
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QStringList>
-
-// Only needed because we have a temporary readonly on the i2p settings
-#ifdef NOTYET_ENABLE_I2PSAM
-#include <QMessageBox>
-            QMessageBox::warning( NULL, "Notice - Upgrade in progress",
-                                  "Values are now for read-only purposes only",
-                                  QMessageBox::Ok, QMessageBox::Ok );
-#endif
 
 OptionsModel::OptionsModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -281,7 +273,7 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             // Todo: Add is valid check  and warn via message, if not
             nTransactionFee = value.toLongLong();
             settings.setValue("nTransactionFee", (qint64)nTransactionFee);
-            emit transactionFeeChanged(nTransactionFee);
+            Q_EMIT transactionFeeChanged(nTransactionFee);
             break;
         case SpendZeroConfChange:
             if (settings.value("bSpendZeroConfChange") != value) {
@@ -309,7 +301,7 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();
             settings.setValue("fCoinControlFeatures", fCoinControlFeatures);
-            emit coinControlFeaturesChanged(fCoinControlFeatures);
+            Q_EMIT coinControlFeaturesChanged(fCoinControlFeatures);
             break;
         case DatabaseCache:
             if (settings.value("nDatabaseCache") != value) {
@@ -327,7 +319,7 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         }
     }
-    emit dataChanged(index, index);
+    Q_EMIT dataChanged(index, index);
 
     return successful;
 }
@@ -340,7 +332,7 @@ void OptionsModel::setDisplayUnit(const QVariant &value)
         QSettings settings;
         nDisplayUnit = value.toInt();
         settings.setValue("nDisplayUnit", nDisplayUnit);
-        emit displayUnitChanged(nDisplayUnit);
+        Q_EMIT displayUnitChanged(nDisplayUnit);
     }
 }
 

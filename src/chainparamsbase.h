@@ -20,18 +20,20 @@ public:
         MAIN,
         TESTNET,
         REGTEST,
+        UNITTEST,
 
         MAX_NETWORK_TYPES
     };
 
     const std::string& DataDir() const { return strDataDir; }
     int RPCPort() const { return nRPCPort; }
-    virtual Network NetworkID() const = 0;
+    Network GetNetworkID() const { return networkID; }
 
 protected:
     CBaseChainParams() {}
 
     int nRPCPort;
+    Network networkID;
     std::string strDataDir;
 };
 

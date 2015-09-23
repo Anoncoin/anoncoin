@@ -42,17 +42,17 @@ Dieses Produkt enthält Software, die vom OpenSSL-Projekt zur Verwendung im Open
     <message>
         <location line="+1"/>
         <source>The Bitcoin Core developers</source>
-        <translation type="unfinished"/>
+        <translation>Die Bitcoin Hauptentwickler</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The Litecoin Core developers</source>
-        <translation type="unfinished"/>
+        <translation>Die Litecoin Hauptentwickler</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The Primecoin developers</source>
-        <translation type="unfinished"/>
+        <translation>Die Primecoin Entwickler</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -441,37 +441,37 @@ Dieses Produkt enthält Software, die vom OpenSSL-Projekt zur Verwendung im Open
     <message>
         <location line="+29"/>
         <source>Wallet is using I2P-network only!</source>
-        <translation type="unfinished"/>
+        <translation>Die Brieftasche benutzt ausschließlich das I2P-Netzwerk!</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using Tor-network only</source>
-        <translation type="unfinished"/>
+        <translation>Die Brieftasche benutzt ausschließlich das Tor-Netzwerk</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using I2P and Tor networks (Darknet mode)</source>
-        <translation type="unfinished"/>
+        <translation>Die Brieftasche benutzt das I2P- und Tor-Netzwerk (Darknet Modus)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using I2P and Tor networks, also Tor as a proxy</source>
-        <translation type="unfinished"/>
+        <translation>Die Brieftasche benutzt das I2P- und Tor-Netzwerk, Tor wird ebenfalls als Proxy benutzt</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is using mixed or non-I2P (clear) network</source>
-        <translation type="unfinished"/>
+        <translation>Die Brieftasche benutzt gemischte oder kein I2P (sichtbare) Netzwerke</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Wallet is running with a random generated I2P-address</source>
-        <translation type="unfinished"/>
+        <translation>Die Brieftasche benutzt eine zufällig generierte I2P-Adresse</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Wallet is running with a static I2P-address</source>
-        <translation type="unfinished"/>
+        <translation>Die Brieftasche benutzt eine feste I2P-Adresse</translation>
     </message>
     <message>
         <location line="+70"/>
@@ -1218,12 +1218,12 @@ Adresse: %4</translation>
     <message>
         <location filename="../forms/i2poptionswidget.ui" line="+14"/>
         <source>Form</source>
-        <translation type="unfinished"/>
+        <translation>Von</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Use I2P only (-onlynet=i2p)</source>
-        <translation type="unfinished"/>
+        <translation>Nur I2P benutzen (-onlynet=i2p)</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -1233,59 +1233,61 @@ Adresse: %4</translation>
     <message>
         <location line="+3"/>
         <source>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Help&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://www.i2p2.i2p/i2cp.html#options&quot;&gt;Hilfe&lt;/a&gt;</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>SAM host</source>
-        <translation type="unfinished"/>
+        <translation>SAM Host</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>127.0.0.1</source>
-        <translation type="unfinished"/>
+        <translation>127.0.0.1</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>SAM port</source>
-        <translation type="unfinished"/>
+        <translation>SAM Port</translation>
     </message>
     <message>
         <location line="+37"/>
         <source>Tunnel name</source>
-        <translation type="unfinished"/>
+        <translation>Tunnel Name</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Anoncoin-client</source>
-        <translation type="unfinished"/>
+        <translation>Anoncoin-Client</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Current
 I2P-address...</source>
-        <translation type="unfinished"/>
+        <translation>Aktuelle
+I2P-Adresse...</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Generate
 I2P-address...</source>
-        <translation type="unfinished"/>
+        <translation>Generiere
+I2P-Adresse...</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>I2CP options of inbound tunnels</source>
-        <translation type="unfinished"/>
+        <translation>I2CP Optionen der eingehenden Tunnel</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>inbound.quantity </source>
-        <translation type="unfinished"/>
+        <translation>eingehend.anzahl</translation>
     </message>
     <message>
         <location line="+37"/>
         <source>inbound.length </source>
-        <translation type="unfinished"/>
+        <translation>eingehend.länge</translation>
     </message>
     <message>
         <location line="+37"/>
@@ -1681,12 +1683,12 @@ I2P-address...</source>
     <message>
         <location line="+12"/>
         <source>Warning</source>
-        <translation type="unfinished"/>
+        <translation>Warnung</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>This setting will take effect after restarting Anoncoin.</source>
-        <translation type="unfinished"/>
+        <translation>Diese Einstellung wird erst nach einem Neustart von Anoncoin wirksam.</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -1704,7 +1706,7 @@ I2P-address...</source>
     <message>
         <location line="+43"/>
         <source>Balances</source>
-        <translation type="unfinished"/>
+        <translation>Guthaben</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1883,7 +1885,7 @@ I2P-address...</source>
     <message>
         <location filename="../peertablemodel.cpp" line="+120"/>
         <source>Address/Hostname</source>
-        <translation type="unfinished"/>
+        <translation>Adresse/Host-Name</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -1893,7 +1895,7 @@ I2P-address...</source>
     <message>
         <location line="+0"/>
         <source>Ping Time</source>
-        <translation type="unfinished"/>
+        <translation>Ping-Zeit</translation>
     </message>
 </context>
 <context>
@@ -1901,7 +1903,7 @@ I2P-address...</source>
     <message>
         <location filename="../anoncoinunits.cpp" line="+175"/>
         <source>Amount</source>
-        <translation type="unfinished"/>
+        <translation>Anzahl</translation>
     </message>
     <message>
         <location filename="../guiutil.cpp" line="+102"/>
@@ -1931,22 +1933,22 @@ I2P-address...</source>
     <message>
         <location line="+17"/>
         <source>NETWORK</source>
-        <translation type="unfinished"/>
+        <translation>NETZWERK</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>UNKNOWN</source>
-        <translation type="unfinished"/>
+        <translation>UNBEKANNT</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>Keine</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>N/A</source>
-        <translation type="unfinished"/>
+        <translation>Nicht verfügbar</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -2129,7 +2131,7 @@ I2P-address...</source>
     <message>
         <location line="+80"/>
         <source>Sent</source>
-        <translation type="unfinished"/>
+        <translation>Senden</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -2151,7 +2153,7 @@ I2P-address...</source>
     <message>
         <location line="+23"/>
         <source>Version</source>
-        <translation type="unfinished"/>
+        <translation>Version</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -2161,7 +2163,7 @@ I2P-address...</source>
     <message>
         <location line="+23"/>
         <source>Services</source>
-        <translation type="unfinished"/>
+        <translation>Dienste</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -2282,17 +2284,17 @@ I2P-address...</source>
     <message>
         <location line="+7"/>
         <source>Inbound</source>
-        <translation type="unfinished"/>
+        <translation>Eingehend</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Outbound</source>
-        <translation type="unfinished"/>
+        <translation>Ausgehend</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Unbekannt</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2865,7 +2867,7 @@ I2P-address...</source>
     <message>
         <location filename="../forms/i2pshowaddresses.ui" line="+20"/>
         <source>Dialog</source>
-        <translation type="unfinished"/>
+        <translation>Dialog</translation>
     </message>
     <message>
         <location line="+6"/>

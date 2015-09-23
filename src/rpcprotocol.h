@@ -20,6 +20,11 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
 
+//! This next constant is being placed here in rpcprotocol.h, global in scope & clearly named for use by any calls to ReadHTTPMessage()
+//! that need a max_size value...
+//! Number of bytes to allocate and read at most at once in post data.
+const size_t POST_READ_SIZE = 256 * 1024;
+
 //! HTTP status codes
 enum HTTPStatusCode
 {
@@ -123,7 +128,7 @@ public:
             tcp::resolver::query query(server.c_str(), port.c_str());
             endpoint_iterator = resolver.resolve(query);
 #if BOOST_VERSION >= 104300
-        } catch(boost::system::system_error &e)
+        } catch (const boost::system::system_error&)
         {
             // If we at first don't succeed, try blanket lookup (IPv4+IPv6 independent of configured interfaces)
             tcp::resolver::query query(server.c_str(), port.c_str(), resolver_query_base::flags());

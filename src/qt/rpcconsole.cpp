@@ -1,14 +1,10 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
-
 #include "rpcconsole.h"
+// Anoncoin-config.h has been loaded...
 #include "ui_rpcconsole.h"
 
 #include "clientmodel.h"
@@ -64,10 +60,10 @@ class RPCExecutor : public QObject
 {
     Q_OBJECT
 
-public slots:
+public Q_SLOTS:
     void request(const QString &command);
 
-signals:
+Q_SIGNALS:
     void reply(int category, const QString &command);
 };
 
@@ -99,7 +95,7 @@ bool parseCommandLine(std::vector<std::string> &args, const std::string &strComm
         STATE_ESCAPE_DOUBLEQUOTED
     } state = STATE_EATING_SPACES;
     std::string curarg;
-    foreach(char ch, strCommand)
+    Q_FOREACH(char ch, strCommand)
     {
         switch(state)
         {
@@ -162,7 +158,7 @@ void RPCExecutor::request(const QString &command)
     std::vector<std::string> args;
     if(!parseCommandLine(args, command.toStdString()))
     {
-        emit reply(RPCConsole::CMD_ERROR, QString("Parse error: unbalanced ' or \""));
+        Q_EMIT reply(RPCConsole::CMD_ERROR, QString("Parse error: unbalanced ' or \""));
         return;
     }
     if(args.empty())
@@ -184,7 +180,7 @@ void RPCExecutor::request(const QString &command)
         else
             strPrint = write_string(result, true);
 
-        emit reply(RPCConsole::CMD_REPLY, QString::fromStdString(strPrint));
+        Q_EMIT reply(RPCConsole::CMD_REPLY, QString::fromStdString(strPrint));
     }
     catch (json_spirit::Object& objError)
     {
@@ -192,16 +188,16 @@ void RPCExecutor::request(const QString &command)
         {
             int code = find_value(objError, "code").get_int();
             std::string message = find_value(objError, "message").get_str();
-            emit reply(RPCConsole::CMD_ERROR, QString::fromStdString(message) + " (code " + QString::number(code) + ")");
+            Q_EMIT reply(RPCConsole::CMD_ERROR, QString::fromStdString(message) + " (code " + QString::number(code) + ")");
         }
         catch(std::runtime_error &) // raised when converting to invalid type, i.e. missing code or message
         {   // Show raw JSON object
-            emit reply(RPCConsole::CMD_ERROR, QString::fromStdString(write_string(json_spirit::Value(objError), false)));
+            Q_EMIT reply(RPCConsole::CMD_ERROR, QString::fromStdString(write_string(json_spirit::Value(objError), false)));
         }
     }
     catch (std::exception& e)
     {
-        emit reply(RPCConsole::CMD_ERROR, QString("Error: ") + QString::fromStdString(e.what()));
+        Q_EMIT reply(RPCConsole::CMD_ERROR, QString("Error: ") + QString::fromStdString(e.what()));
     }
 }
 
@@ -249,7 +245,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
 RPCConsole::~RPCConsole()
 {
     GUIUtil::saveWindowGeometry("nRPCConsoleWindow", this);
-    emit stopExecutor();
+    Q_EMIT stopExecutor();
     delete ui;
 }
 
@@ -425,7 +421,7 @@ void RPCConsole::on_lineEdit_returnPressed()
     if(!cmd.isEmpty())
     {
         message(CMD_REQUEST, cmd);
-        emit cmdRequest(cmd);
+        Q_EMIT cmdRequest(cmd);
         // Remove command, if already in history
         history.removeOne(cmd);
         // Append command to history

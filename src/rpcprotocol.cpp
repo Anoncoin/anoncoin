@@ -25,12 +25,7 @@
 #include "json/json_spirit_writer_template.h"
 
 using namespace std;
-using namespace boost;
-using namespace boost::asio;
 using namespace json_spirit;
-
-//! Number of bytes to allocate and read at most at once in post data
-const size_t POST_READ_SIZE = 256 * 1024;
 
 /**
  * HTTP protocol
@@ -105,7 +100,7 @@ string HTTPReplyHeader(int nStatus, bool keepalive, size_t contentLength, const 
             "Connection: %s\r\n"
             "Content-Length: %u\r\n"
             "Content-Type: %s\r\n"
-            "Server: bitcoin-json-rpc/%s\r\n"
+            "Server: anoncoin-json-rpc/%s\r\n"
             "\r\n",
         nStatus,
         httpStatusDescription(nStatus),
@@ -132,6 +127,7 @@ bool ReadHTTPRequestLine(std::basic_istream<char>& stream, int &proto,
 {
     string str;
     getline(stream, str);
+    LogPrint( "rpcio", "%s : Started processing request %s\n", __func__, str);
 
     // HTTP request line is space-delimited
     vector<string> vWords;
@@ -184,6 +180,8 @@ int ReadHTTPHeaders(std::basic_istream<char>& stream, map<string, string>& mapHe
     {
         string str;
         std::getline(stream, str);
+        LogPrint( "rpcio", "%s : Header line %s\n", __func__, str);
+
         if (str.empty() || str == "\r")
             break;
         string::size_type nColon = str.find(":");
@@ -230,6 +228,7 @@ int ReadHTTPMessage(std::basic_istream<char>& stream, map<string,
             ptr += bytes_to_read;
         }
         strMessageRet = string(vch.begin(), vch.end());
+        LogPrint( "rpcio", "%s : Message %s\n", __func__, strMessageRet);
     }
 
     string sConHdr = mapHeadersRet["connection"];

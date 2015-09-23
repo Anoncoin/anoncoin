@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "anoncoingui.h"
@@ -15,10 +15,11 @@
 #include "optionsmodel.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
+
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
-#endif
+#endif // ENABLE_WALLET
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -32,6 +33,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QDateTime>
+#include <QDebug>
 #include <QDesktopWidget>
 #include <QDragEnterEvent>
 #include <QIcon>
@@ -43,6 +45,7 @@
 #include <QMimeData>
 #include <QPoint>
 #include <QProgressBar>
+#include <QProgressDialog>
 #include <QSettings>
 #include <QStackedWidget>
 #include <QStatusBar>
@@ -68,27 +71,52 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     QMainWindow(parent),
     clientModel(0),
     walletFrame(0),
+    unitDisplayControl(0),
+    labelEncryptionIcon(0),
+    labelConnectionsIcon(0),
+    labelBlocksIcon(0),
+    progressBarLabel(0),
+    progressBar(0),
+    progressDialog(0),
+    appMenuBar(0),
+    overviewAction(0),
+    historyAction(0),
+    quitAction(0),
+    sendCoinsAction(0),
+    usedSendingAddressesAction(0),
+    usedReceivingAddressesAction(0),
+    signMessageAction(0),
+    verifyMessageAction(0),
+    aboutAction(0),
+    receiveCoinsAction(0),
+    optionsAction(0),
+    toggleHideAction(0),
     encryptWalletAction(0),
+    backupWalletAction(0),
     changePassphraseAction(0),
     aboutQtAction(0),
+    openRPCConsoleAction(0),
+    openAction(0),
+    showHelpMessageAction(0),
     trayIcon(0),
+//    trayIconMenu(0),
     notificator(0),
     rpcConsole(0),
-#ifdef ENABLE_I2PSAM
-    i2pAddress(0),
-#endif
     prevBlocks(0),
     spinnerFrame(0)
+#ifdef ENABLE_I2PSAM
+    ,i2pAddress(0)
+#endif
 {
     GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
 
     QString windowTitle = tr("Anoncoin Core") + " - ";
 #ifdef ENABLE_WALLET
     /* if compiled with wallet support, -disablewallet can still disable the wallet */
-    bool enableWallet = !GetBoolArg("-disablewallet", false);
+    enableWallet = !GetBoolArg("-disablewallet", false);
 #else
-    bool enableWallet = false;
-#endif
+    enableWallet = false;
+#endif // ENABLE_WALLET
     if(enableWallet)
     {
         windowTitle += tr("Wallet");
@@ -135,7 +163,7 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
         walletFrame = new WalletFrame(this);
         setCentralWidget(walletFrame);
     } else
-#endif
+#endif // ENABLE_WALLET
     {
         /* When compiled without wallet or -disablewallet is provided,
          * the central widget is the rpc console.
@@ -185,10 +213,13 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelI2PConnections);
 #endif
-    frameBlocksLayout->addStretch();
-    frameBlocksLayout->addWidget(unitDisplayControl);
-    frameBlocksLayout->addStretch();
-    frameBlocksLayout->addWidget(labelEncryptionIcon);
+    if(enableWallet)
+    {
+        frameBlocksLayout->addStretch();
+        frameBlocksLayout->addWidget(unitDisplayControl);
+        frameBlocksLayout->addStretch();
+        frameBlocksLayout->addWidget(labelEncryptionIcon);
+    }
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelConnectionsIcon);
     frameBlocksLayout->addStretch();
@@ -198,7 +229,7 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     // Progress bar and label for blocks download
     progressBarLabel = new QLabel();
     progressBarLabel->setVisible(false);
-    progressBar = new QProgressBar();
+    progressBar = new GUIUtil::ProgressBar();
     progressBar->setAlignment(Qt::AlignCenter);
     progressBar->setVisible(false);
 
@@ -282,6 +313,7 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 
+#ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -292,6 +324,7 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
+#endif // ENABLE_WALLET
 
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setStatusTip(tr("Quit application"));
@@ -348,6 +381,7 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     openAction->setStatusTip(tr("Open a anoncoin: URI or payment request"));
 
     showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line options"), this);
+    showHelpMessageAction->setMenuRole(QAction::NoRole);
     showHelpMessageAction->setStatusTip(tr("Show the Anoncoin Core help message to get a list with possible Anoncoin command-line options"));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -368,7 +402,7 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
         connect(usedReceivingAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(usedReceivingAddresses()));
         connect(openAction, SIGNAL(triggered()), this, SLOT(openClicked()));
     }
-#endif
+#endif // ENABLE_WALLET
 }
 
 void AnoncoinGUI::createMenuBar()
@@ -423,6 +457,7 @@ void AnoncoinGUI::createToolBars()
     if(walletFrame)
     {
         QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
+        toolbar->setMovable(false);
         toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         toolbar->addAction(overviewAction);
         toolbar->addAction(sendCoinsAction);
@@ -486,15 +521,26 @@ void AnoncoinGUI::setClientModel(ClientModel *clientModel)
         // Receive and report messages from client model
         connect(clientModel, SIGNAL(message(QString,QString,unsigned int)), this, SLOT(message(QString,QString,unsigned int)));
 
+        // Show progress dialog
+        connect(clientModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
+
         rpcConsole->setClientModel(clientModel);
 #ifdef ENABLE_WALLET
         if(walletFrame)
         {
             walletFrame->setClientModel(clientModel);
         }
-#endif
+#endif // ENABLE_WALLET
 
         this->unitDisplayControl->setOptionsModel(clientModel->getOptionsModel());
+    } else {
+        // Disable possibility to show main window via action
+        toggleHideAction->setEnabled(false);
+//      if(trayIconMenu)
+//      {
+            // Disable context menu on tray icon
+//          trayIconMenu->clear();
+//      }
     }
 }
 
@@ -521,7 +567,7 @@ void AnoncoinGUI::removeAllWallets()
     setWalletActionsEnabled(false);
     walletFrame->removeAllWallets();
 }
-#endif
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::setWalletActionsEnabled(bool enabled)
 {
@@ -617,7 +663,7 @@ void AnoncoinGUI::optionsClicked()
     if(!clientModel || !clientModel->getOptionsModel())
         return;
 
-    OptionsDialog dlg(this);
+    OptionsDialog dlg(this, enableWallet);
     dlg.setModel(clientModel->getOptionsModel());
     dlg.exec();
 }
@@ -645,7 +691,7 @@ void AnoncoinGUI::openClicked()
     OpenURIDialog dlg(this);
     if(dlg.exec())
     {
-        emit receivedURI(dlg.getURI());
+        Q_EMIT receivedURI(dlg.getURI());
     }
 }
 
@@ -682,7 +728,7 @@ void AnoncoinGUI::gotoVerifyMessageTab(QString addr)
 {
     if (walletFrame) walletFrame->gotoVerifyMessageTab(addr);
 }
-#endif
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::setNumConnections(int count)
 {
@@ -731,6 +777,9 @@ void AnoncoinGUI::setNumI2PConnections(int count)
 
 void AnoncoinGUI::setNumBlocks(int count)
 {
+    if(!clientModel)
+        return;
+
     // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
     statusBar()->clearMessage();
 
@@ -769,7 +818,7 @@ void AnoncoinGUI::setNumBlocks(int count)
 #ifdef ENABLE_WALLET
         if(walletFrame)
             walletFrame->showOutOfSyncWarning(false);
-#endif
+#endif // ENABLE_WALLET
 
         progressBarLabel->setVisible(false);
         progressBar->setVisible(false);
@@ -820,7 +869,7 @@ void AnoncoinGUI::setNumBlocks(int count)
 #ifdef ENABLE_WALLET
         if(walletFrame)
             walletFrame->showOutOfSyncWarning(true);
-#endif
+#endif // ENABLE_WALLET
 
         tooltip += QString("<br>");
         tooltip += tr("Last received block was generated %1 ago.").arg(timeBehindText);
@@ -918,7 +967,7 @@ void AnoncoinGUI::changeEvent(QEvent *e)
 #ifndef Q_OS_MAC // Ignored on Mac
     if(e->type() == QEvent::WindowStateChange)
     {
-        if(clientModel && clientModel->getOptionsModel()->getMinimizeToTray())
+        if(clientModel && clientModel->getOptionsModel() && clientModel->getOptionsModel()->getMinimizeToTray())
         {
             QWindowStateChangeEvent *wsevt = static_cast<QWindowStateChangeEvent*>(e);
             if(!(wsevt->oldState() & Qt::WindowMinimized) && isMinimized())
@@ -933,16 +982,16 @@ void AnoncoinGUI::changeEvent(QEvent *e)
 
 void AnoncoinGUI::closeEvent(QCloseEvent *event)
 {
-    if(clientModel)
-    {
 #ifndef Q_OS_MAC // Ignored on Mac
+    if(clientModel && clientModel->getOptionsModel())
+    {
         if(!clientModel->getOptionsModel()->getMinimizeToTray() &&
            !clientModel->getOptionsModel()->getMinimizeOnClose())
         {
             QApplication::quit();
         }
-#endif
     }
+#endif
     QMainWindow::closeEvent(event);
 }
 
@@ -960,7 +1009,7 @@ void AnoncoinGUI::incomingTransaction(const QString& date, int unit, qint64 amou
                   .arg(type)
                   .arg(address), CClientUIInterface::MSG_INFORMATION);
 }
-#endif
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -973,9 +1022,9 @@ void AnoncoinGUI::dropEvent(QDropEvent *event)
 {
     if(event->mimeData()->hasUrls())
     {
-        foreach(const QUrl &uri, event->mimeData()->urls())
+        Q_FOREACH(const QUrl &uri, event->mimeData()->urls())
         {
-            emit receivedURI(uri.toString());
+            Q_EMIT receivedURI(uri.toString());
         }
     }
     event->acceptProposedAction();
@@ -1003,8 +1052,7 @@ bool AnoncoinGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
         gotoSendCoinsPage();
         return true;
     }
-    else
-        return false;
+    return false;
 }
 
 void AnoncoinGUI::setEncryptionStatus(int status)
@@ -1035,10 +1083,13 @@ void AnoncoinGUI::setEncryptionStatus(int status)
         break;
     }
 }
-#endif
+#endif // ENABLE_WALLET
 
 void AnoncoinGUI::showNormalIfMinimized(bool fToggleHidden)
 {
+    if(!clientModel)
+        return;
+
     // activateWindow() (sometimes) helps with keyboard focus on Windows
     if (isHidden())
     {
@@ -1078,17 +1129,44 @@ void AnoncoinGUI::detectShutdown()
     }
 }
 
+void AnoncoinGUI::showProgress(const QString &title, int nProgress)
+{
+    if (nProgress == 0)
+    {
+        progressDialog = new QProgressDialog(title, "", 0, 100);
+        progressDialog->setWindowModality(Qt::ApplicationModal);
+        progressDialog->setMinimumDuration(0);
+        progressDialog->setCancelButton(0);
+        progressDialog->setAutoClose(false);
+        progressDialog->setValue(0);
+    }
+    else if (nProgress == 100)
+    {
+        if (progressDialog)
+        {
+            progressDialog->close();
+            progressDialog->deleteLater();
+        }
+    }
+    else if (progressDialog)
+        progressDialog->setValue(nProgress);
+}
+
 static bool ThreadSafeMessageBox(AnoncoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
 {
     bool modal = (style & CClientUIInterface::MODAL);
+    // The SECURE flag has no effect in the Qt GUI.
+    // bool secure = (style & CClientUIInterface::SECURE);
+    style &= ~CClientUIInterface::SECURE;
     bool ret = false;
     // In case of modal message, use blocking connection to wait for user to click a button
-    QMetaObject::invokeMethod(gui, "message",
+    bool fInvoked = QMetaObject::invokeMethod(gui, "message",
                                modal ? GUIUtil::blockingGUIThreadConnection() : Qt::QueuedConnection,
                                Q_ARG(QString, QString::fromStdString(caption)),
                                Q_ARG(QString, QString::fromStdString(message)),
                                Q_ARG(unsigned int, style),
                                Q_ARG(bool*, &ret));
+    if( !fInvoked ) qDebug() << QString(__func__) + " ERROR - InvokeMethod failed.";
     return ret;
 }
 
@@ -1122,7 +1200,7 @@ void UnitDisplayStatusBarControl::mousePressEvent(QMouseEvent *event)
 void UnitDisplayStatusBarControl::createContextMenu()
 {
     menu = new QMenu();
-    foreach(AnoncoinUnits::Unit u, AnoncoinUnits::availableUnits())
+    Q_FOREACH(AnoncoinUnits::Unit u, AnoncoinUnits::availableUnits())
     {
         QAction *menuAction = new QAction(QString(AnoncoinUnits::name(u)), this);
         menuAction->setData(QVariant(u));

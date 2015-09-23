@@ -8,12 +8,13 @@
 // anoncoin-config.h is now loaded...
 
 #include "base58.h"
+#include "clientversion.h"
 #include "init.h"
 #include "main.h"
 #include "net.h"
 #include "netbase.h"
+#include "sync.h"
 #include "timedata.h"
-//#include "util.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
@@ -22,14 +23,26 @@
 #include <stdint.h>
 
 #include <boost/assign/list_of.hpp>
+
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 
-using namespace std;
-using namespace boost;
-using namespace boost::assign;
 using namespace json_spirit;
+using namespace std;
 
+/**
+ * @note Do not add or change anything in the information returned by this
+ * method. `getinfo` exists for backwards-compatibility only. It combines
+ * information from wildly different sources in the program, which is a mess,
+ * and is thus planned to be deprecated eventually.
+ *
+ * Based on the source of the information, new information should be added to:
+ * - `getblockchaininfo`,
+ * - `getnetworkinfo` or
+ * - `getwalletinfo`
+ *
+ * Or alternatively, create a specific query method for the information.
+ **/
 Value getinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -38,27 +51,33 @@ Value getinfo(const Array& params, bool fHelp)
             "Returns an object containing various state info.\n"
             "\nResult:\n"
             "{\n"
-            "  \"version\": xxxxx,           (numeric) the server version\n"
-            "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
-            "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-            "  \"balance\": xxxxxxx,         (numeric) the total anoncoin balance of the wallet\n"
-            "  \"blocks\": xxxxxx,           (numeric) the current number of blocks processed in the server\n"
-            "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
-            "  \"connections\": xxxxx,       (numeric) the number of connections\n"
+            "  \"version\": xxxxx,         (numeric) the server version\n"
+            "  \"protocolversion\": xxxxx, (numeric) the protocol version\n"
+            "  \"walletversion\": xxxxx,   (numeric) the wallet version\n"
+            "  \"balance\": xxxxxxx,       (numeric) the total anoncoin balance of the wallet\n"
+            "  \"blocks\": xxxxxx,         (numeric) the current number of blocks processed in the server\n"
+            "  \"timeoffset\": xxxxx,      (numeric) the time offset\n"
+            "  \"connections\": xxxxx,     (numeric) the number of connections\n"
             "  \"proxy\": \"host:port\",     (string, optional) the proxy used by the server\n"
-            "  \"difficulty\": xxxxxx,       (numeric) the current difficulty\n"
-            "  \"testnet\": true|false,      (boolean) if the server is using testnet or not\n"
-            "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
-            "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
-            "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
-            "  \"paytxfee\": x.xxxx,         (numeric) the transaction fee set in anc/kb\n"
-            "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in anc/kb\n"
+            "  \"difficulty\" : x.xxx,     (numeric) The current required difficulty. Based on the minimum, smaller = harder, larger = easier.\n"
+            "  \"testnet\": true|false,    (boolean) if the server is using testnet or not\n"
+            "  \"keypoololdest\": xxxxxx,  (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
+            "  \"keypoolsize\": xxxx,      (numeric) how many new keys are pre-generated\n"
+            "  \"unlocked_until\": ttt,    (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
+            "  \"paytxfee\": x.xxxx,       (numeric) the transaction fee set in anc/kb\n"
+            "  \"relayfee\": x.xxxx,       (numeric) minimum relay fee for non-free transactions in anc/kb\n"
             "  \"errors\": \"...\"           (string) any error messages\n"
             "}\n"
             "\nExamples:\n"
             + HelpExampleCli("getinfo", "")
             + HelpExampleRpc("getinfo", "")
         );
+
+#ifdef ENABLE_WALLET
+    LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : NULL);
+#else
+    LOCK(cs_main);
+#endif
 
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
@@ -85,7 +104,7 @@ Value getinfo(const Array& params, bool fHelp)
     }
     if (pwalletMain && pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
-    obj.push_back(Pair("paytxfee",      ValueFromAmount(nTransactionFee)));
+    obj.push_back(Pair("paytxfee",      ValueFromAmount(payTxFee.GetFeePerK())));
 #endif
     obj.push_back(Pair("relayfee",      ValueFromAmount(minRelayTxFee.GetFeePerK())));
     obj.push_back(Pair("errors",        GetWarnings("statusbar")));
@@ -143,25 +162,32 @@ Value validateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "validateaddress \"anoncoinaddress\"\n"
-            "\nReturn information about the given anoncoin address.\n"
+            "validateaddress <\"anoncoinaddress\">\n"
+            "\n Return information about the given anoncoin address.\n"
             "\nArguments:\n"
-            "1. \"anoncoinaddress\"     (string, required) The anoncoin address to validate\n"
+            " 1. \"anoncoinaddress\"          (string, required) The anoncoin address to validate\n"
             "\nResult:\n"
             "{\n"
-            "  \"isvalid\" : true|false,         (boolean) If the address is valid or not. If not, this is the only property returned.\n"
-            "  \"address\" : \"anoncoinaddress\", (string) The anoncoin address validated\n"
-            "  \"ismine\" : true|false,          (boolean) If the address is yours or not\n"
-            "  \"isscript\" : true|false,        (boolean) If the key is a script\n"
-            "  \"pubkey\" : \"publickeyhex\",    (string) The hex value of the raw public key\n"
-            "  \"iscompressed\" : true|false,    (boolean) If the address is compressed\n"
-            "  \"account\" : \"account\"         (string) The account associated with the address, \"\" is the default account\n"
+            "  \"isvalid\" : true|false,      (boolean) If the address is valid or not. If not, this is the only property returned.\n"
+            "  \"address\" : \"address\",       (string) The anoncoin address validated\n"
+            "  \"scriptpubkey\" : \"hex\",      (string) The hex encoded scriptPubKey generated by the address\n"
+            "  \"ismine\" : true|false,       (boolean) If the address is yours or not\n"
+            "  \"isscript\" : true|false,     (boolean) If the key is a script\n"
+            "  \"iswatchonly\" : true|false,  (boolean) If the key is not mine, this field will show up, and indicate to you if it has been imported to watch.\n"
+            "  \"pubkey\" : \"publickeyhex\",   (string) The hex value of the raw public key\n"
+            "  \"iscompressed\" : true|false, (boolean) If the address is compressed\n"
+            "  \"account\" : \"account\"        (string) The account associated with the address, \"\" is the default account\n"
             "}\n"
             "\nExamples:\n"
-            + HelpExampleCli("validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\"")
-            + HelpExampleRpc("validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\"")
+            + HelpExampleCli("validateaddress", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\"")
+            + HelpExampleRpc("validateaddress", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\"")
         );
 
+#ifdef ENABLE_WALLET
+    LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : NULL);
+#else
+    LOCK(cs_main);
+#endif
     CAnoncoinAddress address(params[0].get_str());
     bool isValid = address.IsValid();
 
@@ -172,6 +198,10 @@ Value validateaddress(const Array& params, bool fHelp)
         CTxDestination dest = address.Get();
         string currentAddress = address.ToString();
         ret.push_back(Pair("address", currentAddress));
+
+        CScript scriptPubKey = GetScriptForDestination(dest);
+        ret.push_back(Pair("scriptpubkey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
+
 #ifdef ENABLE_WALLET
         isminetype mine = pwalletMain ? IsMine(*pwalletMain, dest) : ISMINE_NO;
         ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
@@ -187,9 +217,9 @@ Value validateaddress(const Array& params, bool fHelp)
     return ret;
 }
 
-//
-// Used by addmultisigaddress / createmultisig:
-//
+/**
+ * Used by addmultisigaddress / createmultisig:
+ */
 CScript _createmultisig_redeemScript(const Array& params)
 {
     int nRequired = params[0].get_int();
@@ -202,6 +232,8 @@ CScript _createmultisig_redeemScript(const Array& params)
         throw runtime_error(
             strprintf("not enough keys supplied "
                       "(got %u keys, but need at least %d to redeem)", keys.size(), nRequired));
+    if (keys.size() > 16)
+        throw runtime_error("Number of addresses involved in the multisignature address creation > 16\nReduce the number");
     std::vector<CPubKey> pubkeys;
     pubkeys.resize(keys.size());
     for (unsigned int i = 0; i < keys.size(); i++)
@@ -240,8 +272,7 @@ CScript _createmultisig_redeemScript(const Array& params)
             throw runtime_error(" Invalid public key: "+ks);
         }
     }
-    CScript result;
-    result.SetMultisig(nRequired, pubkeys);
+    CScript result = GetScriptForMultisig(nRequired, pubkeys);
 
     if (result.size() > MAX_SCRIPT_ELEMENT_SIZE)
         throw runtime_error(
@@ -254,22 +285,22 @@ Value createmultisig(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 2)
     {
-        string msg = "createmultisig nrequired [\"key\",...]\n"
-            "\nCreates a multi-signature address with n signature of m keys required.\n"
-            "It returns a json object with the address and redeemScript.\n"
+        string msg = "createmultisig <nrequired> <[\"key\",...]>\n"
+            "\n Creates a multi-signature address with n signature of m keys required.\n"
+            " It returns a json object with the address and redeemScript.\n"
 
             "\nArguments:\n"
-            "1. nrequired      (numeric, required) The number of required signatures out of the n keys or addresses.\n"
-            "2. \"keys\"       (string, required) A json array of keys which are anoncoin addresses or hex-encoded public keys\n"
+            " 1. nrequired                  (numeric, required) The number of required signatures out of the n keys or addresses.\n"
+            " 2. \"keys\"                     (string, required) A json array of keys which are anoncoin addresses or hex-encoded public keys\n"
             "     [\n"
-            "       \"key\"    (string) anoncoin address or hex-encoded public key\n"
+            "       \"key\"                   (string) Anoncoin address or hex-encoded public key\n"
             "       ,...\n"
             "     ]\n"
 
             "\nResult:\n"
             "{\n"
-            "  \"address\":\"multisigaddress\",  (string) The value of the new multisig address.\n"
-            "  \"redeemScript\":\"script\"       (string) The string value of the hex-encoded redemption script.\n"
+            "  \"address\":\"multisigaddress\", (string) The value of the new multisig address.\n"
+            "  \"redeemScript\":\"script\"      (string) The string value of the hex-encoded redemption script.\n"
             "}\n"
 
             "\nExamples:\n"
@@ -283,6 +314,7 @@ Value createmultisig(const Array& params, bool fHelp)
 
     // Construct using pay-to-script-hash:
     CScript inner = _createmultisig_redeemScript(params);
+    // CScriptID innerID(inner);
     CScriptID innerID = inner.GetID();
     CAnoncoinAddress address(innerID);
 
@@ -297,24 +329,26 @@ Value verifymessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(
-            "verifymessage \"anoncoinaddress\" \"signature\" \"message\"\n"
-            "\nVerify a signed message\n"
+            "verifymessage <\"address\"> <\"signature\"> <\"message\">\n"
+            "\n Verify a signed message\n"
             "\nArguments:\n"
-            "1. \"anoncoinaddress\"  (string, required) The anoncoin address to use for the signature.\n"
-            "2. \"signature\"       (string, required) The signature provided by the signer in base 64 encoding (see signmessage).\n"
-            "3. \"message\"         (string, required) The message that was signed.\n"
+            " 1. \"address\"      (string, required) The Anoncoin address to use for the signature.\n"
+            " 2. \"signature\"    (string, required) The signature provided by the signer in base 64 encoding (see signmessage).\n"
+            " 3. \"message\"      (string, required) The message that was signed.\n"
             "\nResult:\n"
-            "true|false   (boolean) If the signature is verified or not.\n"
+            " true|false        (boolean) If the signature is verified or not.\n"
             "\nExamples:\n"
-            "\nUnlock the wallet for 30 seconds\n"
+            "\n Unlock the wallet for 30 seconds\n"
             + HelpExampleCli("walletpassphrase", "\"mypassphrase\" 30") +
-            "\nCreate the signature\n"
-            + HelpExampleCli("signmessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"my message\"") +
-            "\nVerify the signature\n"
-            + HelpExampleCli("verifymessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"signature\" \"my message\"") +
-            "\nAs json rpc\n"
-            + HelpExampleRpc("verifymessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\", \"signature\", \"my message\"")
+            "\n Create the signature\n"
+            + HelpExampleCli("signmessage", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\" \"my message\"") +
+            "\n Verify the signature\n"
+            + HelpExampleCli("verifymessage", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\" \"signature\" \"my message\"") +
+            "\n As json rpc\n"
+            + HelpExampleRpc("verifymessage", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\", \"signature\", \"my message\"")
         );
+
+    LOCK(cs_main);
 
     string strAddress  = params[0].get_str();
     string strSign     = params[1].get_str();
@@ -343,4 +377,27 @@ Value verifymessage(const Array& params, bool fHelp)
         return false;
 
     return (pubkey.GetID() == keyID);
+}
+
+Value setmocktime(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "setmocktime <timestamp>\n"
+            "\n Sets the local time to the given timestamp.\n"
+            " NOTE: For regression testing and initializing testnet. Non MAIN network modes only!\n"
+            "\nArguments:\n"
+            " 1. timestamp  (integer, required) Unix seconds-since-epoch timestamp\n"
+            "    Pass 0 to this call will restore time back to your systems control."
+        );
+
+    if (isMainNetwork())
+        throw JSONRPCError(RPC_INVALID_REQUEST, "Non mainnet modes only");
+
+    LOCK(cs_main);
+
+    RPCTypeCheck(params, boost::assign::list_of(int_type));
+    SetMockTime(params[0].get_int64());
+
+    return Value::null;
 }

@@ -33,15 +33,18 @@ RAW_TEST_FILES = test/data/alertTests.raw
 GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h)
 
 ANONCOIN_TESTS =\
+  test/bignum.h \
   test/allocator_tests.cpp \
   test/base32_tests.cpp \
   test/base58_tests.cpp \
   test/base64_tests.cpp \
-  test/bignum_tests.cpp \
   test/bloom_tests.cpp \
+  test/canonical_tests.cpp \
   test/checkblock_tests.cpp \
   test/Checkpoints_tests.cpp \
+  test/coins_tests.cpp \
   test/compress_tests.cpp \
+  test/crypto_tests.cpp \
   test/DoS_tests.cpp \
   test/getarg_tests.cpp \
   test/hash_tests.cpp \
@@ -53,6 +56,7 @@ ANONCOIN_TESTS =\
   test/netbase_tests.cpp \
   test/pmt_tests.cpp \
   test/rpc_tests.cpp \
+  test/sanity_tests.cpp \
   test/script_P2SH_tests.cpp \
   test/script_tests.cpp \
   test/scrypt_tests.cpp \
@@ -60,9 +64,12 @@ ANONCOIN_TESTS =\
   test/serialize_tests.cpp \
   test/sighash_tests.cpp \
   test/sigopcount_tests.cpp \
+  test/skiplist_tests.cpp \
   test/test_anoncoin.cpp \
+  test/timedata_tests.cpp \
   test/transaction_tests.cpp \
   test/uint256_tests.cpp \
+  test/univalue_tests.cpp \
   test/util_tests.cpp
 
 if ENABLE_WALLET
@@ -74,10 +81,22 @@ endif
 
 test_test_anoncoin_SOURCES = $(ANONCOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
 test_test_anoncoin_CPPFLAGS = $(ANONCOIN_INCLUDES) -I$(builddir)/test/ $(TESTDEFS)
-test_test_anoncoin_LDADD = $(LIBANONCOIN_SERVER) $(LIBANONCOIN_CLI) $(LIBANONCOIN_COMMON) $(LIBANONCOIN_UTIL) $(LIBANONCOIN_CRYPTO) $(LIBANONCOIN_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
+test_test_anoncoin_LDADD = \
+  $(LIBANONCOIN_SERVER) \
+  $(LIBANONCOIN_CLI) \
+  $(LIBANONCOIN_COMMON) \
+  $(LIBANONCOIN_UTIL) \
+  $(LIBANONCOIN_CRYPTO) \
+  $(LIBANONCOIN_UNIVALUE) \
+  $(LIBANONCOIN_SCRYPT) \
+  $(LIBLEVELDB) \
+  $(LIBMEMENV) \
   $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1)
 if ENABLE_WALLET
 test_test_anoncoin_LDADD += $(LIBANONCOIN_WALLET)
+endif
+if ENABLE_I2PSAM
+test_test_anoncoin_LDADD += $(LIBANONCOIN_I2PNET)
 endif
 
 test_test_anoncoin_LDADD += $(LIBANONCOIN_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)

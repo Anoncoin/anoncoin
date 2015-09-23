@@ -29,8 +29,9 @@
 #include <miniupnpc/upnperrors.h>
 #endif
 
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
+#include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
@@ -39,36 +40,73 @@
 #define MSG_NOSIGNAL 0
 #endif
 
-using namespace std;
-using namespace boost;
+// Fix for ancient MinGW versions, that don't have defined these in ws2tcpip.h.
+// Todo: Can be removed when our pull-tester is upgraded to a modern MinGW version.
+#ifdef WIN32
+#ifndef PROTECTION_LEVEL_UNRESTRICTED
+#define PROTECTION_LEVEL_UNRESTRICTED 10
+#endif
+#ifndef IPV6_PROTECTION_LEVEL
+#define IPV6_PROTECTION_LEVEL 23
+#endif
+#endif
 
-static const int MAX_OUTBOUND_CONNECTIONS = 16;
+using namespace std;
+
+//! Only used for the initial protocol version during a node object creation, increased after version/verack negotiation
+static const int INIT_PROTO_VERSION = 209;
+
+//! Constants found in this source codes header(.h)
+/** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
+const int PING_INTERVAL = 2 * 60;
+/** Time after which to disconnect, after waiting for a ping response (or inactivity). */
+const int TIMEOUT_INTERVAL = 20 * 60;
+/** The maximum number of entries in an 'inv' protocol message */
+const unsigned int MAX_INV_SZ = 50000;
+/** The maximum number of new addresses to accumulate before announcing. */
+const unsigned int MAX_ADDR_TO_SEND = 1000;
+/** Maximum length of incoming protocol messages (no message over 2 MiB is currently acceptable). */
+const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 2 * 1024 * 1024;
+/** -listen default */
+const bool DEFAULT_LISTEN = true;
+/** -upnp default */
+#ifdef USE_UPNP
+const bool DEFAULT_UPNP = USE_UPNP;
+#else
+const bool DEFAULT_UPNP = false;
+#endif
+/** The maximum number of entries in mapAskFor */
+const size_t MAPASKFOR_MAX_SZ = MAX_INV_SZ;
+
+namespace {
+    const int MAX_OUTBOUND_CONNECTIONS = 16;
+
+    struct ListenSocket {
+        SOCKET socket;
+        bool whitelisted;
+
+        ListenSocket(SOCKET socket, bool whitelisted) : socket(socket), whitelisted(whitelisted) {}
+    };
+}
 
 //
 // Global state variables
 //
 bool fDiscover = true;
-CCriticalSection cs_mapLocalHost;
-map<CNetAddr, LocalServiceInfo> mapLocalHost;
-static bool vfReachable[NET_MAX] = {};
-static bool vfLimited[NET_MAX] = {};
-static CNode* pnodeLocalHost = NULL;
-uint64_t nLocalHostNonce = 0;
-static std::vector<SOCKET> vhListenSocket;
-CAddrMan addrman;
-int nMaxConnections = 125;
-bool fAddressesInitialized = false;
-
+bool fListen = true;
 
 /**
- * Starting with protocol 70008, NODE_I2P is always set as the standard type of service we support for our address space model.
+ * Default nLocalServices Definition:
+ *
+ * Starting with protocol 70008 the nLocalServices NODE_I2P bit is always set as the standard we support for our address space
+ * model.
  * Anoncoin Core will send/receive to all peers with a greatly enlarged address/object.
  * NODE_I2P indicates that this node is available for exchanging those i2p addresses, by enlarging the CNetAddr data structure.
- * Over 546 bytes/address verses ~30 for clearnet only ips.   It's critical to understand how this effects the message exchange
+ * Over 546 bytes/address verses ~30 for clearnet only IP's.   It's critical to understand how this effects the message exchange
  * we conduct with peers, either on clearnet or over the i2p network.  Over i2p its easy, we always exchange them and NODE_I2P
- * must be set, or we can handshake destinations.
+ * must be set, or we can not handshake destinations.
  * Clearnet is more complicated.  Something we do not know until after the version message has been exchanged, so we start out
- * by exchanging only ip addresses.  If the peer in question also supports NODE_I2P, we switch stream types to our fully supported
+ * by exchanging only IP addresses.  If the peer in question also supports NODE_I2P, we switch stream types to our fully supported
  * address space model.  The purpose of that service bit in for cases where they do not support i2p destinations, and we do not
  * wish to make it mandatory for Anoncoin.  So, the one case where we do not switch our streamtype is for over clearnet and for
  * a peer that does not have NODE_I2P set.  Our software then reverts to exchanging in the classical sense, only the [ip] portion
@@ -80,17 +118,36 @@ bool fAddressesInitialized = false;
  * Starting with the release of protocol 70009 we make many past issues and problem go away, our software now is deterministic
  * in how it behaves with addresses over clearnet.  Peers that can not support NODE_I2P are welcome, but have limited access to
  * our full and more secure ongoing network operations.
+ *
+ * NODE_NETWORK and NODE_BLOOM service bits.  Consensus seems to be forming that NODE_BLOOM can be assumed if NODE_NETWORK is
+ * defined as true, so we have turned it off as well.  Newer services like NODE_PREFIX appear to be planned for.  We support
+ * NODE_BLOOM, but no longer have the* bit turned on.  NODE_NETWORK is on because we have a full copy of the blockchain and can
+ * support requests for blocks as has always been the case. Apparently some see bloom filters as a possible source for attacks,
+ * we need to add this ToDo: as a decision the team makes together as to if we want to keep the code in place or remove it.
  */
-uint64_t nLocalServices = NODE_NETWORK | NODE_BLOOM | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
+static bool vfReachable[NET_MAX] = {};
+static bool vfLimited[NET_MAX] = {};
+static CNode* pnodeLocalHost = NULL;
+static std::vector<ListenSocket> vhListenSocket;
+
+uint64_t nLocalServices = NODE_NETWORK | NODE_I2P; // Add the I2P protocol(.h) bit to our local services list
+CCriticalSection cs_mapLocalHost;
+map<CNetAddr, LocalServiceInfo> mapLocalHost;
+uint64_t nLocalHostNonce = 0;
+// CAddrMan addrman; is moved to netbase.cpp so it can be used for b32.i2p address lookup
+int nMaxConnections = 125;
+bool fAddressesInitialized = false;
+
 #ifdef ENABLE_I2PSAM
 /**
- * For i2p we use real OS sockets, created for us after accept has been issued to the I2P SAM module.
- * Initially we have only one, and know exactly what the destination address is for us.
+ * For i2p we do use real OS sockets, created for us after accept has been issued to the I2P SAM module.
+ * Initially we have only one, and know exactly what our destination address is.
  * As soon as initialized we immediately start 'accepting' other nodes that want to talk through it to us,
  * as well as advertise it frequently to other peers that we are connected to via the I2P network.
  * This differs greatly from the IP world and how the rest of the code here works for clearnet. vhI2PListenSocket is currently
  * used to initialize a new socket for another inbound peer, after the destination address has been received, but before
- * we actually start talking with read/write of data to it.
+ * we actually start talking with read/write of data to it.  This is from the v8 design era, and plans are in the
+ * works to remove it in the future, it is not really needed.
  */
 static std::vector<SOCKET> vhI2PListenSocket;                   // We maintain a separate vector for I2P network SOCKET's
 #endif
@@ -117,8 +174,8 @@ CCriticalSection cs_nLastNodeId;
 static CSemaphore *semOutbound = NULL;
 
 // Signals for message handling
-static CNodeSignals g_signals;
-CNodeSignals& GetNodeSignals() { return g_signals; }
+static CNodeSignals n_signals;
+CNodeSignals& GetNodeSignals() { return n_signals; }
 
 void AddOneShot(string strDest)
 {
@@ -134,13 +191,8 @@ unsigned short GetListenPort()
 // find 'best' local address for a particular peer
 bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 {
-    // ToDo: Check for IsTor() here as well?
     // LogPrintf( "Finding best local address for %s\n", paddrPeer->ToString() );
-#ifdef ENABLE_I2PSAM
-    if( !paddrPeer->IsI2P() && fNoListen )
-#else
-    if( fNoListen )
-#endif
+    if( !paddrPeer->IsI2P() && !fListen )
         return false;
 
     int nBestScore = -1;
@@ -152,10 +204,7 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
             int nScore = (*it).second.nScore;
             int nReachability = (*it).first.GetReachabilityFrom(paddrPeer);
 
-            // Pick this local address, if they are both IPv4 private network addrs...
-            if( nReachability == 4 && (*it).first.IsRFC1918() && paddrPeer->IsRFC1918() ) nReachability = 99;
             // LogPrintf( "Reachability from %s is %d with a score of %d\n", (*it).first.ToString(), nReachability, nScore );
-
             if (nReachability > nBestReachability || (nReachability == nBestReachability && nScore > nBestScore))
             {
                 addr = CService((*it).first, (*it).second.nPort);
@@ -165,21 +214,29 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
             }
         }
     }
-    if( nBestScore >= 0 && addr.IsRFC1918() && !paddrPeer->IsRFC1918() ) return false;      // We don't want to give a remote peer our local network address
     return nBestScore >= 0;
 }
 
 // get best local address for a particular peer as a CAddress
+// Otherwise, return the unroutable 0.0.0.0 but filled in with
+// the normal parameters, since the IP may be changed to a useful
+// one by discovery.
+// If the peer is I2P, GetLocal() returns true as long as the i2p
+// router has been enabled and warmed up, so we have a local i2p
+// destination set. otherwise it could be false.  ToDo: We may
+// want the CAddress object to be ALL zeros in that case, although
+// the code seems unnecessary atm to this developer GR.
 CAddress GetLocalAddress(const CNetAddr *paddrPeer)
 {
-    CAddress ret(CService("0.0.0.0",0),0);
+    CAddress ret(CService("0.0.0.0",GetListenPort()),0);
     CService addr;
-    if (GetLocal(addr, paddrPeer))
+    if( (!paddrPeer->IsI2P() || IsMyDestinationShared()) && GetLocal(addr, paddrPeer) )
     {
         ret = CAddress(addr);
-        ret.nServices = nLocalServices;
-        ret.nTime = GetAdjustedTime();
     }
+    ret.nServices = nLocalServices;
+    ret.nTime = GetAdjustedTime();
+    if( paddrPeer->IsI2P() ) ret.SetPort(0);      //! For i2p destinations, the port should always be zero
     return ret;
 }
 
@@ -233,36 +290,58 @@ bool RecvLine(SOCKET hSocket, string& strLine)
     }
 }
 
+int GetnScore(const CService& addr)
+{
+    LOCK(cs_mapLocalHost);
+    if (mapLocalHost.count(addr) == LOCAL_NONE)
+        return 0;
+    return mapLocalHost[addr].nScore;
+}
+
+// Is our peer's addrLocal potentially useful as an external IP source?
+bool IsPeerAddrLocalGood(CNode *pnode)
+{
+    return fDiscover && pnode->addr.IsRoutable() && pnode->addrLocal.IsRoutable() &&
+           !IsLimited(pnode->addrLocal.GetNetwork());
+}
+
+// pushes our own address to a peer
+void AdvertizeLocal(CNode *pnode)
+{
+    if (pnode->fSuccessfullyConnected)
+    {
+        // If its an i2p destination more than likely the node has the correct destination,
+        // even if it was one we created dynamically, or the connection could not be maintained.
+        // If it is dynamic, we still do not want to advertize it.  If its a clearnet peer,
+        // we don't advertize it if we are not listening.
+        // And finally it does have to be routable before we push it
+        if( !pnode->addr.IsI2P() && fListen ) {
+            CAddress addrLocal = GetLocalAddress(&pnode->addr);                 // Compute the best local address for this peer.
+            // If discovery is enabled, sometimes give our peer the address it
+            // tells us that it sees us as in case it has a better idea of our
+            // address than we do.  If this node is on clearnet
+            if( !pnode->addr.IsI2P() ) {
+                if (IsPeerAddrLocalGood(pnode) && (!addrLocal.IsRoutable() ||
+                     GetRand((GetnScore(addrLocal) > LOCAL_MANUAL) ? 8:2) == 0))
+                {
+                    addrLocal.SetIP(pnode->addrLocal);
+                }
+            }
+            if( addrLocal.IsRoutable() )
+            {
+                pnode->PushAddress(addrLocal);
+            }
+        }
+    }
+}
+
 // used when scores of local addresses may have changed
 // pushes better local address to peers
 void AdvertizeLocal()
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH(CNode* pnode, vNodes)
-    {
-        if (pnode->fSuccessfullyConnected)
-        {
-            // If its an i2p destination more than likely the node has the correct
-            // destination, even if it was one we created dynamically, or the connection
-            // could not be maintained.  If it is dynamic, we still do not want to
-            // advertize it.  If its a clearnet peer, we don't advertize it if we
-            // are not listening.
-            // And finally it has to be routable
-            // ToDo: Why does it need to be different from what the local address
-            // we already have set for this peer?  This was coded at some point, without
-            // explaining...
-            if( (!pnode->addr.IsI2P() && !fNoListen) || IsMyDestinationShared() ) {
-                // Compute is the best local address for this peer.
-                CAddress addrLocal = GetLocalAddress(&pnode->addr);
-                // if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
-                if( addrLocal.IsRoutable() )
-                {
-                    pnode->PushAddress(addrLocal);
-                    pnode->addrLocal = addrLocal;
-                }
-            }
-        }
-    }
+        AdvertizeLocal( pnode );
 }
 
 void SetReachable(enum Network net, bool fFlag)
@@ -280,19 +359,13 @@ bool AddLocal(const CService& addr, int nScore)
         return false;
         // { LogPrintf( "Failed to AddLocal Reason 1\n" ); return false; }
 
-#ifdef ENABLE_I2PSAM
     if( !addr.IsI2P() && !fDiscover && nScore < LOCAL_MANUAL )
-#else                                                               // Original code
-    if (fDiscover && nScore < LOCAL_MANUAL)
-#endif
         return false;
         // { LogPrintf( "Failed to AddLocal Reason 2\n" ); return false; }
 
     if ( IsLimited(addr))
         return false;
         // { LogPrintf( "Failed to AddLocal Reason 3\n" ); return false; }
-
-    LogPrintf( "AddLocal(%s,%i)\n", addr.ToString(), nScore );
 
     {
         LOCK(cs_mapLocalHost);
@@ -303,14 +376,9 @@ bool AddLocal(const CService& addr, int nScore)
             info.nPort = addr.GetPort();
         }
         SetReachable(addr.GetNetwork());
+        if( !fAlready )
+            LogPrintf( "AddLocal(%s,%i)\n", addr.ToString(), nScore );
     }
-
-    // ToDo: The problem here is for i2p right now, we addlocal every time we
-    // accept an inbound connection.  During version exchange, SeenLocal() will
-    // get called, and do this same thing. Temporary fix, is to stop the advertize
-    // here in AddLocal for that case.
-    if( !addr.IsI2P() || nScore != LOCAL_BIND )
-        AdvertizeLocal();
 
     return true;
 }
@@ -349,9 +417,6 @@ bool SeenLocal(const CService& addr)
             return false;
         mapLocalHost[addr].nScore++;
     }
-
-    AdvertizeLocal();
-
     return true;
 }
 
@@ -379,8 +444,11 @@ bool IsReachable(const CNetAddr& addr)
 bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const char* pszKeyword, CNetAddr& ipRet)
 {
     SOCKET hSocket;
-    if (!ConnectSocket(addrConnect, hSocket))
+    if (!ConnectSocket(addrConnect, hSocket, DEFAULT_CONNECT_TIMEOUT, NULL))
         return error("GetMyExternalIP() : connection to %s failed", addrConnect.ToString());
+
+    if( !SetSocketNonBlocking(hSocket, false) )
+        return error("GetMyExternalIP() : error restoring socket to blocking mode for %s", addrConnect.ToString());
 
     send(hSocket, pszGet, strlen(pszGet), MSG_NOSIGNAL);
 
@@ -393,7 +461,7 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
             {
                 if (!RecvLine(hSocket, strLine))
                 {
-                    closesocket(hSocket);
+                    CloseSocket(hSocket);
                     return false;
                 }
                 if (pszKeyword == NULL)
@@ -404,7 +472,7 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
                     break;
                 }
             }
-            closesocket(hSocket);
+            CloseSocket(hSocket);
             if (strLine.find("<") != string::npos)
                 strLine = strLine.substr(0, strLine.find("<"));
             strLine = strLine.substr(strspn(strLine.c_str(), " \t\n\r"));
@@ -418,7 +486,7 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
             return true;
         }
     }
-    closesocket(hSocket);
+    CloseSocket(hSocket);
     return error("GetMyExternalIP() : connection closed");
 }
 
@@ -429,36 +497,45 @@ bool GetMyExternalIP(CNetAddr& ipRet)
     const char* pszKeyword;
 
     for (int nLookup = 0; nLookup <= 1; nLookup++)
-    for (int nHost = 1; nHost <= 1; nHost++)
-    {
-        // We should be phasing out our use of sites like these. If we need
-        // replacements, we should ask for volunteers to put this simple
-        // php file on their web server that prints the client IP:
-        //  <?php echo $_SERVER["REMOTE_ADDR"]; ?>
-        if (nHost == 1)
-        {
-            addrConnect = CService("91.198.22.70", 80); // checkip.dyndns.org
+        for (int nHost = 1; nHost <= 2; nHost++) {
+            // We should be phasing out our use of sites like these. If we need
+            // replacements, we should ask for volunteers to put this simple
+            // php file on their web server that prints the client IP:
+            //  <?php echo $_SERVER["REMOTE_ADDR"]; ?>
+            switch(nHost) {
+                case 1 :
+                    addrConnect = CService("66.171.248.178", 80); // whatismyipaddress.com has a bot too
+                    if (nLookup == 1) {
+                        CService addrIP("bot.whatismyipaddress.com", 80, true);
+                        if (addrIP.IsValid())
+                            addrConnect = addrIP;
+                    }
+                    pszGet = "GET / HTTP/1.1\r\n"
+                             "Host: bot.whatismyipaddress.com\r\n"
+                             "User-Agent: Mozilla/4.0\r\n"
+                             "Connection: close\r\n"
+                             "\r\n";
+                    pszKeyword = NULL;
+                break;
+                case 2 :
+                    addrConnect = CService("216.146.43.70", 80); // checkip.dyndns.org
+                    if (nLookup == 1) {
+                        CService addrIP("checkip.dyndns.org", 80, true);
+                        if (addrIP.IsValid())
+                            addrConnect = addrIP;
+                    }
+                    pszGet = "GET / HTTP/1.1\r\n"
+                             "Host: checkip.dyndns.org\r\n"
+                             "User-Agent: Mozilla/4.0\r\n"
+                             "Connection: close\r\n"
+                             "\r\n";
 
-            if (nLookup == 1)
-            {
-                CService addrIP("checkip.dyndns.org", 80, true);
-                if (addrIP.IsValid())
-                    addrConnect = addrIP;
+                    pszKeyword = "Address:";
+                break;
             }
-
-            pszGet = "GET / HTTP/1.1\r\n"
-                     "Host: checkip.dyndns.org\r\n"
-                     "User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)\r\n"
-                     "Connection: close\r\n"
-                     "\r\n";
-
-            pszKeyword = "Address:";
+            if (GetMyExternalIP2(addrConnect, pszGet, pszKeyword, ipRet))
+                return true;
         }
-
-        if (GetMyExternalIP2(addrConnect, pszGet, pszKeyword, ipRet))
-            return true;
-    }
-
     return false;
 }
 
@@ -472,16 +549,10 @@ void ThreadGetMyExternalIP()
     }
 }
 
-
-
-
-
 void AddressCurrentlyConnected(const CService& addr)
 {
     addrman.Connected(addr);
 }
-
-
 
 
 uint64_t CNode::nTotalBytesRecv = 0;
@@ -498,7 +569,7 @@ CNode* FindNode(const CNetAddr& ip)
     return NULL;
 }
 
-CNode* FindNode(std::string addrName)
+CNode* FindNode(const std::string& addrName)
 {
     LOCK(cs_vNodes);
     BOOST_FOREACH(CNode* pnode, vNodes)
@@ -534,37 +605,27 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
     /// debug print
     LogPrint("net", "trying connection %s lastseen=%.1fhrs\n",
         pszDest ? pszDest : addrConnect.ToString(),
-        pszDest ? 0 : (double)(GetAdjustedTime() - addrConnect.nTime)/3600.0);
+        pszDest ? 0.0 : (double)(GetAdjustedTime() - addrConnect.nTime)/3600.0);
 
     // Connect
     SOCKET hSocket;
-#ifdef ENABLE_I2PSAM
-    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, isStringI2pDestination(string(pszDest)) ? 0 : Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
-#else
-    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, Params().GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
-#endif
+    bool proxyConnectionFailed;         //! Success will be assumed and set at the start of both the ConnectSocket calls
+    int nPort = pszDest && isStringI2pDestination(string(pszDest)) ? 0 : Params().GetDefaultPort();
+    if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, nPort, nConnectTimeout, &proxyConnectionFailed) :
+                  ConnectSocket(addrConnect, hSocket, nConnectTimeout, &proxyConnectionFailed))
     {
-        // Regardless of the outcome, while trying to connect, mark it as an Attempt
-        // This will not work however until ConnectSocketByName has been called for i2p addresses,
-        // during an addnode or any command calling ConnectNode with a string.
-        // So first we mark it here, now that a socket was successfully created.  Later on, if the version handshake happens
-        // addrman.Add/Good will get called to finish updates on the address (or not)
+        //! Regardless of the outcome, while trying to connect, mark it as an Attempt
+        //! This will not work however until ConnectSocketByName has been called for i2p addresses,
+        //! during an addnode or any command calling ConnectNode with a string.
+        //! So first we mark it here, now that a socket was successfully created.  Later on, if the
+        //! version handshake happens addrman.Add/Good will get called to finish updates on the address (or not)
         // ToDo: Investigate how an issue here should best be solved.  When addnode xxx onetry is executed, and its not a full i2p destination
         // there will be no entry found in addrman for that connection attempt, if the address is not one already there.
         // The attempt fails, and returns false.
+        // GR Update: Do not think this is still a problem, testing is underway or I would delete that comment as its been fixed?
         addrman.Attempt(addrConnect);
 
         LogPrint("net", "connected %s\n", pszDest ? pszDest : addrConnect.ToString());
-
-        // Set to non-blocking
-#ifdef WIN32
-        u_long nOne = 1;
-        if (ioctlsocket(hSocket, FIONBIO, &nOne) == SOCKET_ERROR)
-            LogPrintf("ConnectSocket() : ioctlsocket non-blocking setting failed, error %s\n", NetworkErrorString(WSAGetLastError()));
-#else
-        if (fcntl(hSocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR)
-            LogPrintf("ConnectSocket() : fcntl non-blocking setting failed, error %s\n", NetworkErrorString(errno));
-#endif
 
         // Add node
         CNode* pnode = new CNode(hSocket, addrConnect, pszDest ? pszDest : "", false);
@@ -576,13 +637,21 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         }
 
         pnode->nTimeConnected = GetTime();
+
         return pnode;
-    }
-    else                    // Still log the attempt
-        // This works once ConnectSocketByName has been called for i2p addresses, during an addnode (which it has above)
-        // The addrConnect object will have been correctly setup.
+    } else if (!proxyConnectionFailed) {
+        //! If connecting to the node failed, and failure is not caused by a problem connecting to the proxy, mark this as an attempt.
+        //! This next line of code is missing from v9 builds, and causes allot of problems with addrman working correctly because it
+        //! was forgotten.  Figured it out independently while developing the b32.i2p address lookup system for I2P destinations.
+        //! This recording of an attempt works for I2P destinations too.  Once ConnectSocketByName has been called for i2p addresses,
+        //! such as during an addnode entered by the user, the destination will have been created in addrman, if it was a full base64
+        //! or if it was b32.i2p and the lookup was successful, either by the i2p router or because it was found to already be on file.
+        //! This logic can be hard to find and understand. It appears hidden, yet that was not the intention.  During ConnectSocketByName()
+        //! a CNetAddr object will have been created based on that string name given, when that happens, all of the above is done
+        //! automatically by the software in netbase.cpp  If ConnectSocket() is called, because we are simply given a CAddress object
+        //! here to work with, and no string, it will also set the proxyConnectionFailed flag false always for i2p destinations.
         addrman.Attempt(addrConnect);
-        // Note Bitcoin v10 has code regarding the case of a proxy connection failure, more than likely this relates to tor, so its another ToDo for us as well:
+    }
 
     return NULL;
 }
@@ -592,9 +661,8 @@ void CNode::CloseSocketDisconnect()
     fDisconnect = true;
     if (hSocket != INVALID_SOCKET)
     {
-        LogPrint("net", "disconnecting node %s\n", addrName);
-        closesocket(hSocket);
-        hSocket = INVALID_SOCKET;
+        LogPrint("net", "disconnecting peer %s\n", GetPeerLogStr(this));
+        CloseSocket(hSocket);
     }
 
     // in case this fails, we'll empty the recv buffer when the CNode is deleted
@@ -603,21 +671,21 @@ void CNode::CloseSocketDisconnect()
         vRecvMsg.clear();
 }
 
-void CNode::Cleanup()
-{
-}
-
-
 void CNode::PushVersion()
 {
-    int nBestHeight = g_signals.GetHeight().get_value_or(0);
+    int nBestHeight = n_signals.GetHeight().get_value_or(0);
 
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0",0)));
-    CAddress addrMe = ( !addr.IsI2P() || IsMyDestinationShared() ) ? GetLocalAddress(&addr) : CAddress(CService("0.0.0.0",0),0);
-    RAND_bytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
-    LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), addrYou.ToString(), addr.ToString());
+    CAddress addrMe = GetLocalAddress(&addr);
+    GetRandBytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
+
+    LogPrint( "net", "send version message: version %d, blocks=%d, ", PROTOCOL_VERSION, nBestHeight );
+    if (fLogIPs)
+        LogPrint("net", "us=%s, them=%s, peer=%s\n", addrMe.ToString(), addrYou.ToString(), addr.ToString());
+    else
+        LogPrint("net", "peer=%d\n", id);
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
                 nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight, true);
 }
@@ -660,6 +728,24 @@ bool CNode::Ban(const CNetAddr &addr) {
     return true;
 }
 
+
+std::vector<CSubNet> CNode::vWhitelistedRange;
+CCriticalSection CNode::cs_vWhitelistedRange;
+
+bool CNode::IsWhitelistedRange(const CNetAddr &addr) {
+    LOCK(cs_vWhitelistedRange);
+    BOOST_FOREACH(const CSubNet& subnet, vWhitelistedRange) {
+        if (subnet.Match(addr))
+            return true;
+    }
+    return false;
+}
+
+void CNode::AddWhitelistedRange(const CSubNet &subnet) {
+    LOCK(cs_vWhitelistedRange);
+    vWhitelistedRange.push_back(subnet);
+}
+
 #undef X
 #define X(name) stats.name = name
 void CNode::copyStats(CNodeStats &stats)
@@ -676,6 +762,7 @@ void CNode::copyStats(CNodeStats &stats)
     X(nStartingHeight);
     X(nSendBytes);
     X(nRecvBytes);
+    X(fWhitelisted);
 
     // It is common for nodes with good ping times to suddenly become lagged,
     // due to a new block arriving or other large transfer.
@@ -719,8 +806,16 @@ bool CNode::ReceiveMsgBytes(const char *pch, unsigned int nBytes)
         if (handled < 0)
                 return false;
 
+        if (msg.in_data && msg.hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
+            LogPrint("net", "Oversized message from %s, disconnecting", GetPeerLogStr(this));
+            return false;
+        }
+
         pch += handled;
         nBytes -= handled;
+
+        if (msg.complete())
+            msg.nTime = GetTimeMicros();
     }
 
     return true;
@@ -743,7 +838,7 @@ int CNetMessage::readHeader(const char *pch, unsigned int nBytes)
     try {
         hdrbuf >> hdr;
     }
-    catch (std::exception &e) {
+    catch (const std::exception &) {
         return -1;
     }
 
@@ -753,7 +848,6 @@ int CNetMessage::readHeader(const char *pch, unsigned int nBytes)
 
     // switch state to reading message data
     in_data = true;
-    vRecv.resize(hdr.nMessageSize);
 
     return nCopy;
 }
@@ -762,6 +856,11 @@ int CNetMessage::readData(const char *pch, unsigned int nBytes)
 {
     unsigned int nRemaining = hdr.nMessageSize - nDataPos;
     unsigned int nCopy = std::min(nRemaining, nBytes);
+
+    if (vRecv.size() < nDataPos + nCopy) {
+        // Allocate up to 256 KiB ahead, but never more than the total message size.
+        vRecv.resize(std::min(hdr.nMessageSize, nDataPos + nCopy + 256 * 1024));
+    }
 
     memcpy(&vRecv[nDataPos], pch, nCopy);
     nDataPos += nCopy;
@@ -849,13 +948,13 @@ static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
         {
             LOCK(cs_setservAddNodeAddresses);
             if (!setservAddNodeAddresses.count(addr))
-                closesocket(hSocket);
+                CloseSocket(hSocket);
         }
     }
     else if (CNode::IsBanned(addr))
     {
         LogPrintf("connection from %s dropped (banned)\n", addr.ToString().c_str());
-        closesocket(hSocket);
+        CloseSocket(hSocket);
     }
     else
     {
@@ -873,14 +972,10 @@ static void AddIncomingI2pConnection(SOCKET hSocket, const CAddress& addr)
 }
 #endif // ENABLE_I2PSAM
 
-/**
- * Main Thread that handling socket's & their housekeeping...
- */
-
+ //! Main Thread that handles socket's & their housekeeping...
 void ThreadSocketHandler()
 {
     unsigned int nPrevNodeCount = 0;
-
     while (true)
     {
         //
@@ -903,7 +998,6 @@ void ThreadSocketHandler()
 
                     // close socket and cleanup
                     pnode->CloseSocketDisconnect();
-                    pnode->Cleanup();
 
                     // hold in disconnected pool until all refs are released
                     if (pnode->fNetworkNode || pnode->fInbound)
@@ -979,11 +1073,12 @@ void ThreadSocketHandler()
         }
 #endif // ENABLE_I2PSAM
 
-        BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket) {
-            FD_SET(hListenSocket, &fdsetRecv);
-            hSocketMax = max(hSocketMax, hListenSocket);
+        BOOST_FOREACH(const ListenSocket& hListenSocket, vhListenSocket) {
+            FD_SET(hListenSocket.socket, &fdsetRecv);
+            hSocketMax = max(hSocketMax, hListenSocket.socket);
             have_fds = true;
         }
+
         {
             LOCK(cs_vNodes);
             BOOST_FOREACH(CNode* pnode, vNodes)
@@ -1044,62 +1139,62 @@ void ThreadSocketHandler()
             MilliSleep(timeout.tv_usec/1000);
         }
 
-
         //
         // Accept new connections
         //
-        // ToDo: Double check me, all of this net.cpp code for I2PSAM should be looked over again.
-#ifdef ENABLE_I2PSAM
-        if( !IsI2POnly() ) {
-#endif // Without I2P onlynet, execute the original code
-            BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket)
-                if (hListenSocket != INVALID_SOCKET && FD_ISSET(hListenSocket, &fdsetRecv))
+        if( !IsI2POnly() ) {    //If I2P is the onlynet, we do not execute listen code for clearnet
+        BOOST_FOREACH(const ListenSocket& hListenSocket, vhListenSocket)
+        {
+            if (hListenSocket.socket != INVALID_SOCKET && FD_ISSET(hListenSocket.socket, &fdsetRecv))
+            {
+                struct sockaddr_storage sockaddr;
+                socklen_t len = sizeof(sockaddr);
+                SOCKET hSocket = accept(hListenSocket.socket, (struct sockaddr*)&sockaddr, &len);
+                CAddress addr;
+                int nInbound = 0;
+
+                if (hSocket != INVALID_SOCKET)
+                    if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
+                        LogPrintf("Warning: Unknown socket family\n");
+
+                bool whitelisted = hListenSocket.whitelisted || CNode::IsWhitelistedRange(addr);
                 {
-                    struct sockaddr_storage sockaddr;
-                    socklen_t len = sizeof(sockaddr);
-                    SOCKET hSocket = accept(hListenSocket, (struct sockaddr*)&sockaddr, &len);
-                    CAddress addr;
-                    int nInbound = 0;
+                    LOCK(cs_vNodes);
+                    BOOST_FOREACH(CNode* pnode, vNodes)
+                        if (pnode->fInbound)
+                            nInbound++;
+                }
 
-                    if (hSocket != INVALID_SOCKET)
-                        if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
-                            LogPrintf("Warning: Unknown socket family\n");
-
+                if (hSocket == INVALID_SOCKET)
+                {
+                    int nErr = WSAGetLastError();
+                    if (nErr != WSAEWOULDBLOCK)
+                        LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
+                }
+                else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS)
+                {
+                    CloseSocket(hSocket);
+                }
+                else if (CNode::IsBanned(addr) && !whitelisted)
+                {
+                    LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
+                    CloseSocket(hSocket);
+                }
+                else
+                {
+                    CNode* pnode = new CNode(hSocket, addr, "", true);
+                    pnode->AddRef();
+                    pnode->fWhitelisted = whitelisted;
+                    LogPrint("net", "accepted connection for %s\n", GetPeerLogStr(pnode));
                     {
                         LOCK(cs_vNodes);
-                        BOOST_FOREACH(CNode* pnode, vNodes)
-                            if (pnode->fInbound)
-                                nInbound++;
-                    }
-
-                    if (hSocket == INVALID_SOCKET)
-                    {
-                        int nErr = WSAGetLastError();
-                        if (nErr != WSAEWOULDBLOCK)
-                            LogPrintf("socket error accept failed: %s\n", NetworkErrorString(nErr));
-                    }
-                    else if (nInbound >= nMaxConnections - MAX_OUTBOUND_CONNECTIONS)
-                    {
-                        closesocket(hSocket);
-                    }
-                    else if (CNode::IsBanned(addr))
-                    {
-                        LogPrintf("connection from %s dropped (banned)\n", addr.ToString());
-                        closesocket(hSocket);
-                    }
-                    else
-                    {
-                        LogPrint("net", "accepted connection %s\n", addr.ToString());
-                        CNode* pnode = new CNode(hSocket, addr, "", true);
-                        pnode->AddRef();
-                        {
-                            LOCK(cs_vNodes);
-                            vNodes.push_back(pnode);
-                        }
+                        vNodes.push_back(pnode);
                     }
                 }
-#ifdef ENABLE_I2PSAM
+            }
         }
+        }
+#ifdef ENABLE_I2PSAM
         //
         // Accept new incoming I2P connections
         //
@@ -1142,22 +1237,22 @@ void ThreadSocketHandler()
                                     AddIncomingI2pConnection(hI2PListenSocket, addr);
                                 else {
                                     LogPrintf("WARNING - Invalid incoming destination address, unable to setup node.  Received (%s)\n", incomingAddr.c_str());
-                                    closesocket(hI2PListenSocket);
+                                    CloseSocket(hI2PListenSocket);
                                 }
                             } else {
-                                LogPrintf("WARNING - New destination addresses not yet supported, size & data received (%d) [%s]", nBytes, pchBuf);
-                                closesocket(hI2PListenSocket);
+                                LogPrintf("WARNING - Destination size mismatch. Only 516 chars+newline allowed. Received (%d) bytes or limit(1024), the string in []:\n[%s]", nBytes, pchBuf);
+                                CloseSocket(hI2PListenSocket);
                             }
                         } else {
                             LogPrintf("WARNING - No eol found in destination address from router, size & data received (%d) [%s]\n", nBytes, pchBuf);
-                            closesocket(hI2PListenSocket);
+                            CloseSocket(hI2PListenSocket);
                         }
                     }
                     else if (nBytes == 0)
                     {
                         // socket closed gracefully, but why?  This shouldn't have happened
                         LogPrintf("WARNING - I2P listen socket was closed unexpectedly, with no data received.  Will attempt to open a new one.\n");
-                        closesocket(hI2PListenSocket);
+                        CloseSocket(hI2PListenSocket);
                     }
                     else if (nBytes < 0)
                     {
@@ -1167,7 +1262,7 @@ void ThreadSocketHandler()
                             continue;
 
                         LogPrintf("WARNING - I2P listen socket recv error %d, Will attempt to open a new one.\n", nErr);
-                        closesocket(hI2PListenSocket);
+                        CloseSocket(hI2PListenSocket);
                     }
                     // We now need to invalidate that socket from accepting new inbound connections,
                     // it was either closed do to an error, or hopefully a new node was added to our peers list as inbound.
@@ -1257,7 +1352,7 @@ void ThreadSocketHandler()
             {
                 if (pnode->nLastRecv == 0 || pnode->nLastSend == 0)
                 {
-                    LogPrint("net", "socket no message in first 60 seconds, %d %d\n", pnode->nLastRecv != 0, pnode->nLastSend != 0);
+                    LogPrint("net", "socket no message in first 60 seconds, %d %d from %s\n", pnode->nLastRecv != 0, pnode->nLastSend != 0, GetPeerLogStr(pnode));
                     pnode->fDisconnect = true;
                 }
                 else if (nTime - pnode->nLastSend > TIMEOUT_INTERVAL)
@@ -1265,7 +1360,7 @@ void ThreadSocketHandler()
                     LogPrintf("socket sending timeout: %is\n", nTime - pnode->nLastSend);
                     pnode->fDisconnect = true;
                 }
-                else if (nTime - pnode->nLastRecv > (pnode->nVersion > BIP0031_VERSION ? TIMEOUT_INTERVAL : 90*60))
+                else if (nTime - pnode->nLastRecv > TIMEOUT_INTERVAL)
                 {
                     LogPrintf("socket receive timeout: %is\n", nTime - pnode->nLastRecv);
                     pnode->fDisconnect = true;
@@ -1284,6 +1379,13 @@ void ThreadSocketHandler()
         }
     }
 }
+
+
+
+
+
+
+
 
 
 #ifdef USE_UPNP
@@ -1396,16 +1498,17 @@ void MapPort(bool)
 #endif
 
 
+
 /**
  * Process DNS seed data from chainparams
  */
 void ThreadDNSAddressSeed()
 {
-    // goal: only query DNS seeds if address need is acute, give i2p at least 60 seconds to have 2 peer connected
+    // goal: only query DNS seeds if address need is acute, give the network at least 120 seconds to have 2 peers connected
     if ((addrman.size() > 0) &&
         (!GetBoolArg("-forcednsseed", false))) {
         // MilliSleep(11 * 1000);
-        MilliSleep(60 * 1000);
+        MilliSleep(120 * 1000);
 
         LOCK(cs_vNodes);
         if (vNodes.size() >= 2) {
@@ -1476,6 +1579,16 @@ void ThreadDNSAddressSeed()
 }
 
 
+
+
+
+
+
+
+
+
+
+
 void DumpAddresses()
 {
     int64_t nStart = GetTimeMillis();
@@ -1483,7 +1596,7 @@ void DumpAddresses()
     CAddrDB adb;
     adb.Write(addrman);
 
-    LogPrint("net", "Flushed %d addresses to peers.dat  %lldms\n",
+    LogPrint("net", "Flushed %d addresses to peers.dat  %dms\n",
            addrman.size(), GetTimeMillis() - nStart);
 }
 
@@ -1508,8 +1621,18 @@ void static ProcessOneShot()
 void ThreadOpenConnections()
 {
     // Connect to specific addresses
-    if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
+    size_t nConnectsMulti = mapMultiArgs["-connect"].size();
+    size_t nConnectsMap = mapArgs.count("-connect");
+    if( nConnectsMap && nConnectsMulti > 0 )
+    // if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
     {
+        //! Special case: a single connect="" parameter specified.
+        //! where we completely exit this thread. no outbound connections.
+        //! Means no oneshot processing, its up to you to insure listen=1
+        //! to receive inbound connections.
+        if( nConnectsMap == 1 && nConnectsMulti < 2 && mapArgs["-connect"] == "" )
+            return;
+
         for (int64_t nLoop = 0;; nLoop++)
         {
             ProcessOneShot();
@@ -1522,7 +1645,7 @@ void ThreadOpenConnections()
                     MilliSleep(500);
                 }
             }
-            MilliSleep(500);
+            MilliSleep(30000);          // Only thy every 30 seconds
         }
     }
 
@@ -1613,11 +1736,7 @@ void ThreadOpenConnections()
                 continue;
 
             // do not allow non-default ports, unless after 50 invalid addresses selected already
-#ifdef ENABLE_I2PSAM
             if( !addr.IsI2P() && addr.GetPort() != Params().GetDefaultPort() && nTries < 50 )
-#else
-            if (addr.GetPort() != Params().GetDefaultPort() && nTries < 50)
-#endif
                 continue;
 
             addrConnect = addr;
@@ -1667,11 +1786,7 @@ void ThreadOpenAddedConnections()
         BOOST_FOREACH(string& strAddNode, lAddresses)
         {
             vector<CService> vservNode(0);
-#ifdef ENABLE_I2PSAM
             if( Lookup(strAddNode.c_str(), vservNode, isStringI2pDestination(strAddNode) ? 0 : Params().GetDefaultPort(), fNameLookup, 0) )
-#else
-            if(Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
-#endif
             {
                 lservAddressesToAdd.push_back(vservNode);
                 {
@@ -1712,13 +1827,12 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     // Initiate outbound network connection
     //
     boost::this_thread::interruption_point();
-    string sBase32OrIP;                         // If a strDest pointer is give, we store the modified result here before connecting a new node.
+    string sBase32OrIP = "";                // If a strDest pointer is give, we store the modified result here before connecting a new node.
 
     if (!strDest) {                         // If a string was not given, just do what we normally would given a CAddress object
         if( IsLocal(addrConnect) || FindNode((CNetAddr)addrConnect) || CNode::IsBanned(addrConnect) || FindNode(addrConnect.ToStringIPPort().c_str()) )
             return false;
     }
-#ifdef ENABLE_I2PSAM
     else {                                  // A string was given
         // Before we print out a string (ConnectNode() and create the node, for any given string, we need to clean up the input, if for example it's in square brackets
         // or if its a full base64 string we need to make it a b32.i2p address before creating the node address string for comparison in FindNode even.
@@ -1751,7 +1865,6 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
         } else
             sBase32OrIP = strHost;                                     // Regardless of any modifications, ipxx or b32.i2p we now need the new non-const variable setup.
     }
-#endif // ENABLE_I2PSAM
 
     if( sBase32OrIP.size() && FindNode( sBase32OrIP.c_str() ) )
         return false;
@@ -1769,6 +1882,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
 
     return true;
 }
+
 
 void ThreadMessageHandler()
 {
@@ -1801,7 +1915,7 @@ void ThreadMessageHandler()
                 TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
                 if (lockRecv)
                 {
-                    if (!g_signals.ProcessMessages(pnode))
+                    if (!n_signals.ProcessMessages(pnode))
                         pnode->CloseSocketDisconnect();
 
                     if (pnode->nSendSize < SendBufferSize())
@@ -1819,7 +1933,7 @@ void ThreadMessageHandler()
             {
                 TRY_LOCK(pnode->cs_vSend, lockSend);
                 if (lockSend)
-                    g_signals.SendMessages(pnode, pnode == pnodeTrickle);
+                    n_signals.SendMessages(pnode, pnode == pnodeTrickle || pnode->fWhitelisted);
             }
             boost::this_thread::interruption_point();
         }
@@ -1836,7 +1950,11 @@ void ThreadMessageHandler()
 }
 
 
-bool BindListenPort(const CService &addrBind, string& strError)
+
+
+
+
+bool BindListenPort(const CService &addrBind, string& strError, bool fWhitelisted)
 {
     strError = "";
     int nOne = 1;
@@ -1846,7 +1964,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
     socklen_t len = sizeof(sockaddr);
     if (!addrBind.GetSockAddr((struct sockaddr*)&sockaddr, &len))
     {
-        strError = strprintf("Error: bind address family for %s not supported", addrBind.ToString());
+        strError = strprintf("Error: Bind address family for %s not supported", addrBind.ToString());
         LogPrintf("%s\n", strError);
         return false;
     }
@@ -1859,26 +1977,19 @@ bool BindListenPort(const CService &addrBind, string& strError)
         return false;
     }
 
+#ifndef WIN32
 #ifdef SO_NOSIGPIPE
     // Different way of disabling SIGPIPE on BSD
     setsockopt(hListenSocket, SOL_SOCKET, SO_NOSIGPIPE, (void*)&nOne, sizeof(int));
 #endif
-
-#ifndef WIN32
     // Allow binding if the port is still in TIME_WAIT state after
-    // the program was closed and restarted.  Not an issue on windows.
+    // the program was closed and restarted. Not an issue on windows!
     setsockopt(hListenSocket, SOL_SOCKET, SO_REUSEADDR, (void*)&nOne, sizeof(int));
 #endif
 
-
-#ifdef WIN32
     // Set to non-blocking, incoming connections will also inherit this
-    if (ioctlsocket(hListenSocket, FIONBIO, (u_long*)&nOne) == SOCKET_ERROR)
-#else
-    if (fcntl(hListenSocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR)
-#endif
-    {
-        strError = strprintf("Error: Couldn't set properties on socket for incoming connections (error %s)", NetworkErrorString(WSAGetLastError()));
+    if (!SetSocketNonBlocking(hListenSocket, true)) {
+        strError = strprintf("BindListenPort: Setting listening socket to non-blocking failed, error %s\n", NetworkErrorString(WSAGetLastError()));
         LogPrintf("%s\n", strError);
         return false;
     }
@@ -1894,10 +2005,8 @@ bool BindListenPort(const CService &addrBind, string& strError)
 #endif
 #endif
 #ifdef WIN32
-        int nProtLevel = 10 /* PROTECTION_LEVEL_UNRESTRICTED */;
-        int nParameterId = 23 /* IPV6_PROTECTION_LEVEl */;
-        // this call is allowed to fail
-        setsockopt(hListenSocket, IPPROTO_IPV6, nParameterId, (const char*)&nProtLevel, sizeof(int));
+        int nProtLevel = PROTECTION_LEVEL_UNRESTRICTED;
+        setsockopt(hListenSocket, IPPROTO_IPV6, IPV6_PROTECTION_LEVEL, (const char*)&nProtLevel, sizeof(int));
 #endif
     }
 
@@ -1909,6 +2018,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
         else
             strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %s)"), addrBind.ToString(), NetworkErrorString(nErr));
         LogPrintf("%s\n", strError);
+        CloseSocket(hListenSocket);
         return false;
     }
     LogPrintf("Bound to %s\n", addrBind.ToString());
@@ -1918,12 +2028,13 @@ bool BindListenPort(const CService &addrBind, string& strError)
     {
         strError = strprintf(_("Error: Listening for incoming connections failed (listen returned error %s)"), NetworkErrorString(WSAGetLastError()));
         LogPrintf("%s\n", strError);
+        CloseSocket(hListenSocket);
         return false;
     }
 
-    vhListenSocket.push_back(hListenSocket);
+    vhListenSocket.push_back(ListenSocket(hListenSocket, fWhitelisted));
 
-    if (addrBind.IsRoutable() && fDiscover)
+    if (addrBind.IsRoutable() && fDiscover && !fWhitelisted)
         AddLocal(addrBind, LOCAL_BIND);
 
     return true;
@@ -1947,7 +2058,7 @@ bool BindListenNativeI2P(SOCKET& hSocket)
 {
     if( !IsLimited( NET_I2P ) ) {
         hSocket = I2PSession::Instance().accept(false);
-        if( SetI2pSocketOptions(hSocket) ) {
+        if (SetSocketNonBlocking(hSocket, true)) { // Set to non-blocking
             string sDest = GetArg( "-i2p.mydestination.publickey", "" );
             CService addrBind( sDest, 0 );
             return AddLocal( addrBind, LOCAL_BIND );
@@ -1967,7 +2078,7 @@ void static Discover(boost::thread_group& threadGroup)
 
 #ifdef WIN32
     // Get local host IP
-    char pszHostName[1000] = "";
+    char pszHostName[256] = "";
     if (gethostname(pszHostName, sizeof(pszHostName)) != SOCKET_ERROR)
     {
         vector<CNetAddr> vaddr;
@@ -1975,7 +2086,8 @@ void static Discover(boost::thread_group& threadGroup)
         {
             BOOST_FOREACH (const CNetAddr &addr, vaddr)
             {
-                AddLocal(addr, LOCAL_IF);
+                if (AddLocal(addr, LOCAL_IF))
+                    LogPrintf("%s : %s - %s\n", __func__, pszHostName, addr.ToString());
             }
         }
     }
@@ -1995,14 +2107,14 @@ void static Discover(boost::thread_group& threadGroup)
                 struct sockaddr_in* s4 = (struct sockaddr_in*)(ifa->ifa_addr);
                 CNetAddr addr(s4->sin_addr);
                 if (AddLocal(addr, LOCAL_IF))
-                    LogPrintf("IPv4 %s: %s\n", ifa->ifa_name, addr.ToString());
+                    LogPrintf("%s : IPv4 %s: %s\n", __func__, ifa->ifa_name, addr.ToString());
             }
             else if (ifa->ifa_addr->sa_family == AF_INET6)
             {
                 struct sockaddr_in6* s6 = (struct sockaddr_in6*)(ifa->ifa_addr);
                 CNetAddr addr(s6->sin6_addr);
                 if (AddLocal(addr, LOCAL_IF))
-                    LogPrintf("IPv6 %s: %s\n", ifa->ifa_name, addr.ToString());
+                    LogPrintf("%s : IPv6 %s: %s\n", __func__, ifa->ifa_name, addr.ToString());
             }
         }
         freeifaddrs(myaddrs);
@@ -2050,10 +2162,8 @@ void StartNode(boost::thread_group& threadGroup)
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "dnsseed", &ThreadDNSAddressSeed));
 
-#ifdef USE_UPNP
     // Map ports with UPnP
-    MapPort(GetBoolArg("-upnp", USE_UPNP));
-#endif
+    MapPort(GetBoolArg("-upnp", DEFAULT_UPNP));
 
     // Send and receive from sockets, accept connections
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
@@ -2091,23 +2201,22 @@ bool StopNode()
 class CNetCleanup
 {
 public:
-    CNetCleanup()
-    {
-    }
+    CNetCleanup() {}
+
     ~CNetCleanup()
     {
         // Close sockets
         BOOST_FOREACH(CNode* pnode, vNodes)
             if (pnode->hSocket != INVALID_SOCKET)
-                closesocket(pnode->hSocket);
-        BOOST_FOREACH(SOCKET hListenSocket, vhListenSocket)
-            if (hListenSocket != INVALID_SOCKET)
-                if (closesocket(hListenSocket) == SOCKET_ERROR)
-                    LogPrintf("closesocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
+                CloseSocket(pnode->hSocket);
+        BOOST_FOREACH(ListenSocket& hListenSocket, vhListenSocket)
+            if (hListenSocket.socket != INVALID_SOCKET)
+                if (!CloseSocket(hListenSocket.socket))
+                    LogPrintf("CloseSocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
 #ifdef ENABLE_I2PSAM
         BOOST_FOREACH(SOCKET& hI2PListenSocket, vhI2PListenSocket)
             if (hI2PListenSocket != INVALID_SOCKET)
-                if (closesocket(hI2PListenSocket) == SOCKET_ERROR)
+                if( !CloseSocket(hI2PListenSocket) )
                     LogPrintf("I2P closesocket(hI2PListenSocket) failed with error %d\n", WSAGetLastError());
 #endif // ENABLE_I2PSAM
 
@@ -2118,6 +2227,7 @@ public:
             delete pnode;
         vNodes.clear();
         vNodesDisconnected.clear();
+        vhListenSocket.clear();
         delete semOutbound;
         semOutbound = NULL;
         delete pnodeLocalHost;
@@ -2130,6 +2240,10 @@ public:
     }
 }
 instance_of_cnetcleanup;
+
+
+
+
 
 
 
@@ -2244,7 +2358,7 @@ bool CAddrDB::Write(const CAddrMan& addr)
 {
     // Generate random temporary filename
     unsigned short randv = 0;
-    RAND_bytes((unsigned char *)&randv, sizeof(randv));
+    GetRandBytes((unsigned char*)&randv, sizeof(randv));
     std::string tmpfn = strprintf("peers.dat.%04x", randv);
 
     // serialize addresses, checksum data up to that point, then append csum
@@ -2332,3 +2446,188 @@ bool CAddrDB::Read(CAddrMan& addr)
     return true;
 }
 
+unsigned int ReceiveFloodSize() { return 1000*GetArg("-maxreceivebuffer", 5*1000); }
+unsigned int SendBufferSize() { return 1000*GetArg("-maxsendbuffer", 1*1000); }
+
+//! As i2p addrs are MUCH larger than ip addresses, we're reducing the most-recently-used(mru) setAddrKnown to 1250, to have a smaller memory profile per node.
+CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(1250)
+{
+    //! Protocol 70009 changes the node creation process so it is deterministic.
+    //! Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
+    //! During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
+    //! and may incorrectly report services depending on how they were built.  Some send full version address messages, and must have the
+    //! stream type changed on the fly, before processing.  70008 has a bug, where the stream type is full size, but only contains an ip address
+    //! over clearnet.  Protocol 70006 builds for clearnet lie about their support of the NODE_I2P service, while in fact the address object size
+    //! is only large enough for an ip address.
+    //! If the address given to us is a non-null string, the caller needs to have evaluated and setup that string correctly before calling this.
+    //! It is no longer meaningful, and should be abandoned as an input parameter, it only serves to confusion and cloud the many issues involved
+    //! in the node creation process.  Here it is assigned to the addrName field, which maybe useful in debugging problems, if it shows up incorrectly.
+    //! Also note, all the subclasses vRecv, ssSend & hdrbuf get defined here  the same stream type during this initialization.
+    nStreamType = SER_NETWORK | (addrIn.IsNativeI2P() ? 0 : SER_IPADDRONLY);
+    SetSendStreamType( nStreamType );
+    SetRecvStreamType( nStreamType );
+    ssSend.SetType( nStreamType );
+    nServices = 0;
+    hSocket = hSocketIn;
+    nRecvVersion = INIT_PROTO_VERSION;
+    nLastSend = 0;
+    nLastRecv = 0;
+    nSendBytes = 0;
+    nRecvBytes = 0;
+    nTimeConnected = GetTime();
+    addr = addrIn;
+    addrName = addrNameIn.size() ? addrNameIn : addr.ToStringIPPort();
+    nVersion = 0;
+    strSubVer = "";
+    fWhitelisted = false;
+    fOneShot = false;
+    fClient = false; // set by version message
+    fInbound = fInboundIn;
+    fNetworkNode = false;
+    fSuccessfullyConnected = false;
+    fDisconnect = false;
+    nRefCount = 0;
+    nSendSize = 0;
+    nSendOffset = 0;
+    hashContinue = 0;
+    nStartingHeight = -1;
+    fGetAddr = false;
+    fRelayTxes = false;
+    setInventoryKnown.max_size(SendBufferSize() / 1000);
+    pfilter = new CBloomFilter();
+    nPingNonceSent = 0;
+    nPingUsecStart = 0;
+    nPingUsecTime = 0;
+    fPingQueued = false;
+
+    {
+        LOCK(cs_nLastNodeId);
+        id = nLastNodeId++;
+    }
+    LogPrint("net", "Added connection to ");
+    if (fLogIPs)
+        LogPrint("net", "%s peer=%d\n", addrName, id);
+    else
+        LogPrint("net", "peer id=%d\n", id);
+
+    // Be shy and don't send version until we hear, unless its valid and outbound, then we go ahead and push our version...
+    if (hSocket != INVALID_SOCKET && !fInbound)
+        PushVersion();
+
+    GetNodeSignals().InitializeNode(GetId(), this);
+}
+
+CNode::~CNode()
+{
+    CloseSocket(hSocket);
+
+    if (pfilter)
+        delete pfilter;
+
+    GetNodeSignals().FinalizeNode(GetId());
+}
+
+void CNode::AskFor(const CInv& inv)
+{
+    if (mapAskFor.size() > MAPASKFOR_MAX_SZ)
+        return;
+    // We're using mapAskFor as a priority queue,
+    // the key is the earliest time the request can be sent
+    int64_t nRequestTime;
+    limitedmap<CInv, int64_t>::const_iterator it = mapAlreadyAskedFor.find(inv);
+    if (it != mapAlreadyAskedFor.end())
+        nRequestTime = it->second;
+    else
+        nRequestTime = 0;
+    LogPrint("net", "askfor %s  %d (%s) from %s\n", inv.ToString(), nRequestTime, DateTimeStrFormat("%H:%M:%S", nRequestTime/1000000), GetPeerLogStr(this));
+
+    // Make sure not to reuse time indexes to keep things in the same order
+    int64_t nNow = GetTimeMicros() - 1000000;
+    static int64_t nLastTime;
+    ++nLastTime;
+    nNow = std::max(nNow, nLastTime);
+    nLastTime = nNow;
+
+    // Each retry is 2 minutes after the last
+    nRequestTime = std::max(nRequestTime + 2 * 60 * 1000000, nNow);
+    if (it != mapAlreadyAskedFor.end())
+        mapAlreadyAskedFor.update(it, nRequestTime);
+    else
+        mapAlreadyAskedFor.insert(std::make_pair(inv, nRequestTime));
+    mapAskFor.insert(std::make_pair(nRequestTime, inv));
+}
+
+void CNode::BeginMessage(const char* pszCommand) EXCLUSIVE_LOCK_FUNCTION(cs_vSend)
+{
+    ENTER_CRITICAL_SECTION(cs_vSend);
+    assert(ssSend.size() == 0);
+    ssSend << CMessageHeader(pszCommand, 0);
+    LogPrint( "net", "sending: %s ", SanitizeString(pszCommand) );
+}
+
+void CNode::AbortMessage() UNLOCK_FUNCTION(cs_vSend)
+{
+    ssSend.clear();
+
+    LEAVE_CRITICAL_SECTION(cs_vSend);
+
+    LogPrint("net", "(aborted)\n");
+}
+
+void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
+{
+    // The -*messagestest options are intentionally not documented in the help message,
+    // since they are only used during development to debug the networking code and are
+    // not intended for end-users.
+    if (mapArgs.count("-dropmessagestest") && GetRand(GetArg("-dropmessagestest", 2)) == 0)
+    {
+        LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
+        AbortMessage();
+        return;
+    }
+    if (mapArgs.count("-fuzzmessagestest"))
+        Fuzz(GetArg("-fuzzmessagestest", 10));
+
+    if (ssSend.size() == 0)
+        return;
+
+    // Set the size
+    unsigned int nSize = ssSend.size() - CMessageHeader::HEADER_SIZE;
+    memcpy((char*)&ssSend[CMessageHeader::MESSAGE_SIZE_OFFSET], &nSize, sizeof(nSize));
+
+    // Set the checksum
+    uint256 hash = Hash(ssSend.begin() + CMessageHeader::HEADER_SIZE, ssSend.end());
+    unsigned int nChecksum = 0;
+    memcpy(&nChecksum, &hash, sizeof(nChecksum));
+    assert(ssSend.size () >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));
+    memcpy((char*)&ssSend[CMessageHeader::CHECKSUM_OFFSET], &nChecksum, sizeof(nChecksum));
+
+    LogPrint( "net", "(%d bytes) to %s\n", nSize, GetPeerLogStr(this) );
+
+    std::deque<CSerializeData>::iterator it = vSendMsg.insert(vSendMsg.end(), CSerializeData());
+    ssSend.GetAndClear(*it);
+    nSendSize += (*it).size();
+
+    // If write queue empty, attempt "optimistic write"
+    if (it == vSendMsg.begin())
+        SocketSendData(this);
+
+    LEAVE_CRITICAL_SECTION(cs_vSend);
+}
+
+string GetPeerLogStr( const CNode* pfrom )
+{
+    string remoteAddr = _("peer");
+
+    if( pfrom != NULL ) {
+        remoteAddr += strprintf( "=%d", pfrom->id );
+        if( fLogIPs ) {
+            remoteAddr += ", ";
+            remoteAddr += _("peeraddr");
+            remoteAddr += strprintf( "=%s", pfrom->addr.ToString() );
+        }
+    } else
+        remoteAddr += "=??? ERROR invalid Node Ptr, please notify dev team";
+
+    return remoteAddr;
+}

@@ -14,10 +14,8 @@
 
 #define _(x) std::string(x) /* Keep the _() around in case gettext or such will be used later to translate non-UI */
 
-using namespace std;
-using namespace boost;
-using namespace boost::asio;
 using namespace json_spirit;
+using namespace std;
 
 std::string HelpMessageCli()
 {
@@ -30,7 +28,7 @@ std::string HelpMessageCli()
     strUsage += "  -regtest               " + _("Enter regression test mode, which uses a special chain in which blocks can be "
                                                 "solved instantly. This is intended for regression testing tools and app development.") + "\n";
     strUsage += "  -rpcconnect=<ip>       " + strprintf(_("Send commands to node running on <ip> (default: %s)"), "127.0.0.1") + "\n";
-    strUsage += "  -rpcport=<port>        " + strprintf(_("Connect to JSON-RPC on <port> (default: %u or testnet: %u)"), 8332, 18332) + "\n";
+    strUsage += "  -rpcport=<port>        " + strprintf(_("Connect to JSON-RPC on <port> (default: %u or testnet: %u)"), 9376, 19376) + "\n";
     strUsage += "  -rpcwait               " + _("Wait for RPC server to start") + "\n";
     strUsage += "  -rpcuser=<user>        " + _("Username for JSON-RPC connections") + "\n";
     strUsage += "  -rpcpassword=<pw>      " + _("Password for JSON-RPC connections") + "\n";
@@ -89,7 +87,7 @@ static bool AppInitRPC(int argc, char* argv[])
     }
     try {
         ReadConfigFile(mapArgs, mapMultiArgs);
-    } catch(std::exception &e) {
+    } catch(const std::exception& e) {
         fprintf(stderr,"Error reading configuration file: %s\n", e.what());
         return false;
     }
@@ -106,17 +104,18 @@ Object CallRPC(const string& strMethod, const Array& params)
     if (mapArgs["-rpcuser"] == "" && mapArgs["-rpcpassword"] == "")
         throw runtime_error(strprintf(
             _("You must set rpcpassword=<password> in the configuration file:\n%s\n"
-              "If the file does not exist, create it with owner-readable-only file permissions."),
+              "If the file does not exist, create it with owner-readable-only file permissions.\n"
+              "If server was started with other than the default data directory, you must specify that location too. Try -help."),
                 GetConfigFile().string().c_str()));
 
     // Connect to localhost
     bool fUseSSL = GetBoolArg("-rpcssl", false);
-    asio::io_service io_service;
-    ssl::context context(io_service, ssl::context::sslv23);
-    context.set_options(ssl::context::no_sslv2 | ssl::context::no_sslv3);
-    asio::ssl::stream<asio::ip::tcp::socket> sslStream(io_service, context);
-    SSLIOStreamDevice<asio::ip::tcp> d(sslStream, fUseSSL);
-    iostreams::stream< SSLIOStreamDevice<asio::ip::tcp> > stream(d);
+    boost::asio::io_service io_service;
+    boost::asio::ssl::context context(io_service, boost::asio::ssl::context::sslv23);
+    context.set_options(boost::asio::ssl::context::no_sslv2 | boost::asio::ssl::context::no_sslv3);
+    boost::asio::ssl::stream<boost::asio::ip::tcp::socket> sslStream(io_service, context);
+    SSLIOStreamDevice<boost::asio::ip::tcp> d(sslStream, fUseSSL);
+    boost::iostreams::stream< SSLIOStreamDevice<boost::asio::ip::tcp> > stream(d);
 
     const bool fConnected = d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", itostr(BaseParams().RPCPort())));
     if (!fConnected)
@@ -139,7 +138,8 @@ Object CallRPC(const string& strMethod, const Array& params)
     // Receive HTTP reply message headers and body
     map<string, string> mapHeaders;
     string strReply;
-    ReadHTTPMessage(stream, mapHeaders, strReply, nProto, std::numeric_limits<size_t>::max());
+    //! Defining a more realistic max_size message limit that had been placed in v10 code.
+    ReadHTTPMessage(stream, mapHeaders, strReply, nProto, POST_READ_SIZE);
 
     if (nStatus == HTTP_UNAUTHORIZED)
         throw runtime_error("incorrect rpcuser or rpcpassword (authorization failed)");
@@ -209,7 +209,7 @@ int CommandLineRPC(int argc, char *argv[])
                 // Connection succeeded, no need to retry.
                 break;
             }
-            catch (const CConnectionFailed& e) {
+            catch (const CConnectionFailed&) {
                 if (fWait)
                     MilliSleep(1000);
                 else
@@ -217,10 +217,10 @@ int CommandLineRPC(int argc, char *argv[])
             }
         } while (fWait);
     }
-    catch (boost::thread_interrupted) {
+    catch (const boost::thread_interrupted&) {
         throw;
     }
-    catch (std::exception& e) {
+    catch (const std::exception& e) {
         strPrint = string("error: ") + e.what();
         nRet = EXIT_FAILURE;
     }
@@ -243,7 +243,7 @@ int main(int argc, char* argv[])
         if(!AppInitRPC(argc, argv))
             return EXIT_FAILURE;
     }
-    catch (std::exception& e) {
+    catch (const std::exception& e) {
         PrintExceptionContinue(&e, "AppInitRPC()");
         return EXIT_FAILURE;
     } catch (...) {
@@ -255,7 +255,7 @@ int main(int argc, char* argv[])
     try {
         ret = CommandLineRPC(argc, argv);
     }
-    catch (std::exception& e) {
+    catch (const std::exception& e) {
         PrintExceptionContinue(&e, "CommandLineRPC()");
     } catch (...) {
         PrintExceptionContinue(NULL, "CommandLineRPC()");

@@ -15,7 +15,7 @@ Block style:
 	            return false;
 	        ...
 	    }
-	
+
 	    // Success return is usually at the end
 	    return true;
 	}
@@ -34,14 +34,15 @@ Common types:
 	n       integer number: short, unsigned short, int, unsigned int, int64, uint64, sometimes char if used as a number
 	d       double, float
 	f       flag
-	hash    uint256
+	hash    uint256 (for blocks we now also have uintFakeHash, derived from uint256,
+	                 it adds the power of an unordered map to express the dual identity for block hashes)
 	p       pointer or array, one p for each level of indirection
 	psz     pointer to null terminated string
 	str     string object
 	v       vector or similar list objects
-	map     map or multimap
+	map     map or multimap (new boost:unordered maps based on hash are replacing maps in allot of cases)
 	set     set or multiset
-	bn      CBigNum
+	bn      CBigNum (obsolete now, nearly everywhere in the code, uint256 has replaced it)
 
 Doxygen comments
 -----------------
@@ -60,11 +61,11 @@ bool function(int arg1, const char *arg2)
 ```
 A complete list of `@xxx` commands can be found at http://www.stack.nl/~dimitri/doxygen/manual/commands.html.
 As Doxygen recognizes the comments by the delimiters (`/**` and `*/` in this case), you don't
-*need* to provide any commands for a comment to be valid, just a description text is fine. 
+*need* to provide any commands for a comment to be valid, just a description text is fine.
 
 To describe a class use the same construct above the class definition:
 ```c++
-/** 
+/**
  * Alerts are for notifying old versions if they become too obsolete and
  * need to upgrade. The message is displayed in the status bar.
  * @see GetWarnings()
@@ -108,12 +109,12 @@ result, deadlock as each waits for the other to release its lock) are
 a problem. Compile with -DDEBUG_LOCKORDER to get lock order
 inconsistencies reported in the debug.log file.
 
-Re-architecting the core code so there are better-defined interfaces
+Re-architecture the core code so there are better-defined interfaces
 between the various components is a goal, with any necessary locking
 done by the components (e.g. see the self-contained CKeyStore class
 and its cs_KeyStore lock for example).
 
-Threads
+Threads (ToDo: Needs to be updated)
 -------
 
 - ThreadScriptCheck : Verifies block scripts.
@@ -128,7 +129,7 @@ Threads
 
 - ThreadMapPort : Universal plug-and-play startup/shutdown
 
-- ThreadSocketHandler : Sends/Receives data from peers on port 8333.
+- ThreadSocketHandler : Sends/Receives data from peers on port 9377.
 
 - ThreadOpenAddedConnections : Opens network connections to added nodes.
 
@@ -140,7 +141,7 @@ Threads
 
 - ThreadFlushWalletDB : Close the wallet.dat file if it hasn't been used in 500ms.
 
-- ThreadRPCServer : Remote procedure call handler, listens on port 8332 for connections and services them.
+- ThreadRPCServer : Remote procedure call handler, listens on port 9376 for connections and services them.
 
 - AnoncoinMiner : Generates anoncoins (if wallet is enabled).
 

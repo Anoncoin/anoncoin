@@ -97,7 +97,7 @@ CAddrInfo* CAddrMan::Find(const CNetAddr& addr, int* pnId)
     return NULL;
 }
 
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
 /** \brief We sometimes have a vast reservoir of i2p destinations, b32.i2p addresses are simply the hash
 of those addresses, so we should be able to look them up here, if we already have the base64 string,
 we're done and never have to ask the router to lookup the destination.
@@ -169,7 +169,7 @@ int CAddrMan::CopyDestinationStats( std::vector<CDestinationStats>& vStats )
     return nSize;
 }
 
-#endif // ENABLE_I2PSAM
+#endif // I2PADDRMAN_EXTENSIONS
 
 CAddrInfo* CAddrMan::Create(const CAddress& addr, const CNetAddr& addrSource, int* pnId)
 {
@@ -180,7 +180,7 @@ CAddrInfo* CAddrMan::Create(const CAddress& addr, const CNetAddr& addrSource, in
     vRandom.push_back(nId);
     if (pnId)
         *pnId = nId;
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
     if( addr.IsI2P() ) {
         assert( addr.IsNativeI2P() );
         uint256 b32hash = GetI2pDestinationHash( addr.GetI2pDestination() );
@@ -236,7 +236,7 @@ int CAddrMan::SelectTried(int nKBucket)
     return nOldestPos;
 }
 
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
 void CAddrMan::CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible )
 {
     if( aTerrible.IsI2P() ) {
@@ -258,7 +258,7 @@ void CAddrMan::CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible 
         }
     }
 }
-#endif // ENABLE_I2PSAM
+#endif // I2PADDRMAN_EXTENSIONS
 
 int CAddrMan::ShrinkNew(int nUBucket)
 {
@@ -271,7 +271,7 @@ int CAddrMan::ShrinkNew(int nUBucket)
         CAddrInfo& info = mapInfo[*it];
         if (info.IsTerrible()) {
             if (--info.nRefCount == 0) {
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
                 CheckAndDeleteB32Hash( *it, info );
 #endif
                 SwapRandom(info.nRandomPos, vRandom.size() - 1);
@@ -300,7 +300,7 @@ int CAddrMan::ShrinkNew(int nUBucket)
     assert(mapInfo.count(nOldest) == 1);
     CAddrInfo& info = mapInfo[nOldest];
     if (--info.nRefCount == 0) {
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
         CheckAndDeleteB32Hash( nOldest, info );
 #endif
         SwapRandom(info.nRandomPos, vRandom.size() - 1);
@@ -401,7 +401,7 @@ void CAddrMan::Good_(const CAddress& addr, int64_t nTime)
 
     // Ok so now we know that at least the CService details all match, lets check and fix the CAddress service bits for this peer, if its listed wrong, fix it.
     if( info.nServices != addr.nServices ) {
-        LogPrint( "addrman", "While marking %s as good, the peer services was found to have changed from %04x to %04x, now updated.\n", info.ToString(), info.nServices, addr.nServices );
+        LogPrint( "addrman", "While marking %s as good, the peer services was found to have changed from 0x%016x to 0x%016x, now updated.\n", info.ToString(), info.nServices, addr.nServices );
         info.nServices = addr.nServices;
         fChanged = true;
     }
@@ -449,7 +449,7 @@ void CAddrMan::Good_(const CAddress& addr, int64_t nTime)
 
 bool CAddrMan::Add_(const CAddress& addrIn, const CNetAddr& source, int64_t nTimePenalty)
 {
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
     //! We now need to check for an possibly modify the CAddress object for the garliccat field, so we make a local copy
     CAddress addr = addrIn;
     /**
@@ -503,7 +503,7 @@ bool CAddrMan::Add_(const CAddress& addrIn, const CNetAddr& source, int64_t nTim
              * current network issues in regard to the values getting corrected over time.
              */
             if( pinfo->nServices != addr.nServices ) {
-                LogPrint( "addrman", "Updating peer record %s, the services listed needed to be changed from %04x, to %04x\n", pinfo->ToString(), pinfo->nServices, addr.nServices );
+                LogPrint( "addrman", "Updating peer record %s, the services listed needed to be changed. From 0x%016x To 0x%016x\n", pinfo->ToString(), pinfo->nServices, addr.nServices );
                 pinfo->nServices = addr.nServices;
             }
 
@@ -683,7 +683,7 @@ int CAddrMan::Check_()
 }
 #endif
 
-#ifdef ENABLE_I2PSAM
+#ifdef I2PADDRMAN_EXTENSIONS
 void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr, const bool fIpOnly, const bool fI2pOnly)
 #else
 void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr)
@@ -703,12 +703,15 @@ void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr)
         assert(mapInfo.count(vRandom[n]) == 1);
 
         const CAddrInfo& ai = mapInfo[vRandom[n]];
-        // Don't send terrible addresses or ip4 private network addresses in response to GetAddr requests
-#ifdef ENABLE_I2PSAM
-        // Additional checks, don't send addresses to nodes that cant process them or don't care about them.
+        //! Don't send terrible addresses in response to GetAddr requests
+#ifdef I2PADDRMAN_EXTENSIONS
+        //! Additional checks, don't send addresses to nodes that cant process them or don't care about them.
+        //! Inclusion of a check for RFC1918() addresses, means any local whitelisted peers that have made
+        //! it into the address manager and are RFC1918 IPs will not be globally shared with peers on the
+        //! Anoncoin network, originally done for software testing, now seems like a good idea to leave it.
         if( !ai.IsTerrible() && !ai.IsRFC1918() && (!fIpOnly || !ai.IsI2P()) && (!fI2pOnly || ai.IsI2P()) )
 #else
-        if( !ai.IsTerrible() && !ai.IsRFC1918() )
+        if(!ai.IsTerrible())
 #endif
             vAddr.push_back(ai);
     }

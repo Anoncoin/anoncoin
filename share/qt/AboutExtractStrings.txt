@@ -1,0 +1,4 @@
+Run the Extract Strings python commands from the src/ directory and have it process them for both classic and themes QT
+../share/qt/extract_strings_qt.py *.cpp
+../share/qt/extract_strings_qthemes.py *.cpp
+

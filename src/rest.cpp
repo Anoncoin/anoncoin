@@ -42,7 +42,7 @@ public:
     string message;
 };
 
-extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
+extern void TxToJSON(const CTransaction& tx, const uintFakeHash hashBlock, Object& entry);
 extern Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false);
 
 static RestErr RESTERR(enum HTTPStatusCode status, string message)
@@ -100,18 +100,22 @@ static bool rest_block(AcceptedConnection* conn,
     enum RetFormat rf = ParseDataFormat(params, strReq);
 
     string hashStr = params[0];
-    uint256 hash;
-    if (!ParseHashStr(hashStr, hash))
+    uintFakeHash aBlockHash;
+    if (!ParseHashStr(hashStr, aBlockHash))
         throw RESTERR(HTTP_BAD_REQUEST, "Invalid hash: " + hashStr);
 
     CBlock block;
     CBlockIndex* pblockindex = NULL;
     {
         LOCK(cs_main);
-        if (mapBlockIndex.count(hash) == 0)
+        //! Allow the user to enter either the real block hash value or the sha256d hash,
+        //! so we can better have backwards compatibility while working with the rest api
+        uint256 aRealHash = aBlockHash.GetRealHash();
+        if(aRealHash != 0)  aBlockHash = aRealHash;
+        if (mapBlockIndex.count(aBlockHash) == 0)
             throw RESTERR(HTTP_NOT_FOUND, hashStr + " not found");
 
-        pblockindex = mapBlockIndex[hash];
+        pblockindex = mapBlockIndex[aBlockHash];
         if (!ReadBlockFromDisk(block, pblockindex))
             throw RESTERR(HTTP_NOT_FOUND, hashStr + " not found");
     }
@@ -178,7 +182,7 @@ static bool rest_tx(AcceptedConnection* conn,
         throw RESTERR(HTTP_BAD_REQUEST, "Invalid hash: " + hashStr);
 
     CTransaction tx;
-    uint256 hashBlock = 0;
+    uintFakeHash hashBlock = 0;
     if (!GetTransaction(hash, tx, hashBlock, true))
         throw RESTERR(HTTP_NOT_FOUND, hashStr + " not found");
 

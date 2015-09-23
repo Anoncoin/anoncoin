@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef OPTIONSMODEL_H
 #define OPTIONSMODEL_H
@@ -87,7 +87,7 @@ private:
     /// Add option to list of GUI options overridden through command line/config file
     void addOverriddenOption(const std::string &option);
 
-signals:
+Q_SIGNALS:
     void displayUnitChanged(int unit);
     void transactionFeeChanged(qint64);
     void coinControlFeaturesChanged(bool);

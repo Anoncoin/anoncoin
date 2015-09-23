@@ -10,7 +10,7 @@ class PaymentServerTests : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     void paymentServerTests();
 };
 
@@ -21,7 +21,7 @@ class RecipientCatcher : public QObject
 {
     Q_OBJECT
 
-public slots:
+public Q_SLOTS:
     void getRecipient(SendCoinsRecipient r);
 
 public:

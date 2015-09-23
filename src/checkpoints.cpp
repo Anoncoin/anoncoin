@@ -88,15 +88,15 @@ namespace Checkpoints
     };
 
     const CCheckpointData &Checkpoints() {
-        if (BaseParams().NetworkID() == CBaseChainParams::TESTNET)
+        if (BaseParams().GetNetworkID() == CBaseChainParams::TESTNET)
             return dataTestnet;
-        else if (BaseParams().NetworkID() == CBaseChainParams::MAIN)
+        else if (isMainNetwork())
             return data;
         else
             return dataRegtest;
     }
 
-    bool CheckBlock(int nHeight, const uint256& hash)
+    bool CheckBlock(int nHeight, const uintFakeHash& hash)
     {
         if (!fEnabled)
             return true;
@@ -159,8 +159,9 @@ namespace Checkpoints
 
         BOOST_REVERSE_FOREACH(const MapCheckpoints::value_type& i, checkpoints)
         {
-            const uint256& hash = i.second;
-            BlockMap::const_iterator t = mapBlockIndex.find(hash);
+            const uintFakeHash& aFakeHash = i.second;
+            const uint256 aRealHash = aFakeHash.GetRealHash();
+            BlockMap::const_iterator t = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
             if (t != mapBlockIndex.end())
                 return t->second;
         }

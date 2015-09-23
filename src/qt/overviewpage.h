@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef OVERVIEWPAGE_H
@@ -34,11 +34,11 @@ public:
     void setWalletModel(WalletModel *walletModel);
     void showOutOfSyncWarning(bool fShow);
 
-public slots:
+public Q_SLOTS:
     void setBalance(qint64 balance, qint64 unconfirmedBalance, qint64 immatureBalance,
                     qint64 watchOnlyBalance, qint64 watchUnconfBalance, qint64 watchImmatureBalance);
 
-signals:
+Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
 
 private:
@@ -55,7 +55,7 @@ private:
     TxViewDelegate *txdelegate;
     TransactionFilterProxy *filter;
 
-private slots:
+private Q_SLOTS:
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);

@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "overviewpage.h"
@@ -16,6 +16,7 @@
 #include "walletmodel.h"
 
 #include <QAbstractItemDelegate>
+#include <QDebug>
 #include <QPainter>
 
 #define DECORATION_SIZE 64
@@ -139,7 +140,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
 {
     if(filter)
-        emit transactionClicked(filter->mapToSource(index));
+        Q_EMIT transactionClicked(filter->mapToSource(index));
 }
 
 OverviewPage::~OverviewPage()
@@ -149,31 +150,34 @@ OverviewPage::~OverviewPage()
 
 void OverviewPage::setBalance(qint64 balance, qint64 unconfirmedBalance, qint64 immatureBalance, qint64 watchOnlyBalance, qint64 watchUnconfBalance, qint64 watchImmatureBalance)
 {
-    int unit = walletModel->getOptionsModel()->getDisplayUnit();
-    currentBalance = balance;
-    currentUnconfirmedBalance = unconfirmedBalance;
-    currentImmatureBalance = immatureBalance;
-    currentWatchOnlyBalance = watchOnlyBalance;
-    currentWatchUnconfBalance = watchUnconfBalance;
-    currentWatchImmatureBalance = watchImmatureBalance;
-    ui->labelBalance->setText(AnoncoinUnits::formatWithUnit(unit, balance));
-    ui->labelUnconfirmed->setText(AnoncoinUnits::formatWithUnit(unit, unconfirmedBalance));
-    ui->labelImmature->setText(AnoncoinUnits::formatWithUnit(unit, immatureBalance));
-    ui->labelTotal->setText(AnoncoinUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance));
-    ui->labelWatchAvailable->setText(AnoncoinUnits::formatWithUnit(unit, watchOnlyBalance));
-    ui->labelWatchPending->setText(AnoncoinUnits::formatWithUnit(unit, watchUnconfBalance));
-    ui->labelWatchImmature->setText(AnoncoinUnits::formatWithUnit(unit, watchImmatureBalance));
-    ui->labelWatchTotal->setText(AnoncoinUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance));
+    if( walletModel && walletModel->getOptionsModel() ) {
+        int unit = walletModel->getOptionsModel()->getDisplayUnit();
+        currentBalance = balance;
+        currentUnconfirmedBalance = unconfirmedBalance;
+        currentImmatureBalance = immatureBalance;
+        currentWatchOnlyBalance = watchOnlyBalance;
+        currentWatchUnconfBalance = watchUnconfBalance;
+        currentWatchImmatureBalance = watchImmatureBalance;
+        ui->labelBalance->setText(AnoncoinUnits::formatWithUnit(unit, balance));
+        ui->labelUnconfirmed->setText(AnoncoinUnits::formatWithUnit(unit, unconfirmedBalance));
+        ui->labelImmature->setText(AnoncoinUnits::formatWithUnit(unit, immatureBalance));
+        ui->labelTotal->setText(AnoncoinUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance));
+        ui->labelWatchAvailable->setText(AnoncoinUnits::formatWithUnit(unit, watchOnlyBalance));
+        ui->labelWatchPending->setText(AnoncoinUnits::formatWithUnit(unit, watchUnconfBalance));
+        ui->labelWatchImmature->setText(AnoncoinUnits::formatWithUnit(unit, watchImmatureBalance));
+        ui->labelWatchTotal->setText(AnoncoinUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance));
 
-    // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
-    // for the non-mining users
-    bool showImmature = immatureBalance != 0;
-    bool showWatchOnlyImmature = watchImmatureBalance != 0;
+        // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
+        // for the non-mining users
+        bool showImmature = immatureBalance != 0;
+        bool showWatchOnlyImmature = watchImmatureBalance != 0;
 
-    // for symmetry reasons also show immature label when the watch-only one is shown
-    ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
-    ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
-    ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
+        // for symmetry reasons also show immature label when the watch-only one is shown
+        ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
+        ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
+        ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
+    } else
+        qDebug() << "OverviewPage::setBalance: ERROR - Programming bug detected. walletModel or OptionsModel pointers undefined.";
 }
 
 // show/hide watch-only labels

@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletmodeltransaction.h"
@@ -32,6 +32,11 @@ CWalletTx *WalletModelTransaction::getTransaction()
     return walletTransaction;
 }
 
+unsigned int WalletModelTransaction::getTransactionSize()
+{
+    return (!walletTransaction ? 0 : (::GetSerializeSize(*(CTransaction*)walletTransaction, SER_NETWORK, PROTOCOL_VERSION)));
+}
+
 qint64 WalletModelTransaction::getTransactionFee()
 {
     return fee;
@@ -45,7 +50,7 @@ void WalletModelTransaction::setTransactionFee(qint64 newFee)
 qint64 WalletModelTransaction::getTotalTransactionAmount()
 {
     qint64 totalTransactionAmount = 0;
-    foreach(const SendCoinsRecipient &rcp, recipients)
+    Q_FOREACH(const SendCoinsRecipient &rcp, recipients)
     {
         totalTransactionAmount += rcp.amount;
     }

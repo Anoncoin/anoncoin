@@ -1,17 +1,16 @@
 // Copyright (c) 2013-2015 The Anoncoin Core developers
 // Copyright (c) 2012-2013 giv
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //--------------------------------------------------------------------------------------------------
 #ifndef I2PWRAPPER_H
 #define I2PWRAPPER_H
 
 #include "util.h"
-#include "i2psam/i2psam.h"
+#include "i2psam.h"
 
 #define I2P_SESSION_NAME_DEFAULT        "Anoncoin-client"
 #define NATIVE_I2P_DESTINATION_SIZE     516
-#define NATIVE_I2P_B32ADDR_SIZE         60
 
 namespace SAM
 {
@@ -82,22 +81,11 @@ class I2PSession : private SAM::StreamSessionAdapter
 };
 
 void InitializeI2pSettings( const bool fGenerated );
-bool isValidI2pAddress( const std::string& I2pAddr );
-bool isValidI2pB32( const std::string& B32Address );
-bool isStringI2pDestination( const std::string & strName );
-std::string B32AddressFromDestination(const std::string& destination);
-uint256 GetI2pDestinationHash( const std::string& destination );
 
 /**
  * Specific functions we need to implement I2P functionality
  */
 std::string FormatI2PNativeFullVersion();
-bool IsDarknetOnly();
-bool IsTorOnly();
-bool IsI2POnly();
-bool IsI2PEnabled();
-bool IsMyDestinationShared();
-bool IsBehindDarknet();
 std::string GenerateI2pDestinationMessage( const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName );
 
 struct Identity

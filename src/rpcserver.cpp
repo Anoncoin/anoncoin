@@ -4,16 +4,14 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-// Many builder specific things set in the config file, ENABLE_WALLET is a good example.  Don't forget to include it this way in your source files.
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
-
 #include "rpcserver.h"
+// anoncoin-config.h loaded...
 
 #include "base58.h"
 #include "init.h"
-#include "main.h"
+#include "miner.h"
+#include "random.h"
+#include "sync.h"
 #include "ui_interface.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
@@ -29,12 +27,13 @@
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/signals2/signal.hpp>
 #include <boost/thread.hpp>
 #include "json/json_spirit_writer_template.h"
 
-using namespace boost;
 using namespace boost::asio;
 using namespace json_spirit;
+using namespace RPCServer;
 using namespace std;
 
 static std::string strRPCUserColonPass;
@@ -45,13 +44,41 @@ static std::string rpcWarmupStatus("RPC server started");
 static CCriticalSection cs_rpcWarmup;
 
 //! These are created by StartRPCThreads, destroyed in StopRPCThreads
-static asio::io_service* rpc_io_service = NULL;
+static boost::asio::io_service* rpc_io_service = NULL;
 static map<string, boost::shared_ptr<deadline_timer> > deadlineTimers;
 static ssl::context* rpc_ssl_context = NULL;
 static boost::thread_group* rpc_worker_group = NULL;
 static boost::asio::io_service::work *rpc_dummy_work = NULL;
 static std::vector<CSubNet> rpc_allow_subnets; //!< List of subnets to allow RPC connections from
 static std::vector< boost::shared_ptr<ip::tcp::acceptor> > rpc_acceptors;
+
+static struct CRPCSignals
+{
+    boost::signals2::signal<void ()> Started;
+    boost::signals2::signal<void ()> Stopped;
+    boost::signals2::signal<void (const CRPCCommand&)> PreCommand;
+    boost::signals2::signal<void (const CRPCCommand&)> PostCommand;
+} g_rpcSignals;
+
+void RPCServer::OnStarted(boost::function<void ()> slot)
+{
+    g_rpcSignals.Started.connect(slot);
+}
+
+void RPCServer::OnStopped(boost::function<void ()> slot)
+{
+    g_rpcSignals.Stopped.connect(slot);
+}
+
+void RPCServer::OnPreCommand(boost::function<void (const CRPCCommand&)> slot)
+{
+    g_rpcSignals.PreCommand.connect(boost::bind(slot, _1));
+}
+
+void RPCServer::OnPostCommand(boost::function<void (const CRPCCommand&)> slot)
+{
+    g_rpcSignals.PostCommand.connect(boost::bind(slot, _1));
+}
 
 void RPCTypeCheck(const Array& params,
                   const list<Value_type>& typesExpected,
@@ -93,7 +120,7 @@ void RPCTypeCheck(const Object& o,
     }
 }
 #if defined( DONT_COMPILE )
-static inline int64_t roundint64(double d)
+static inline int64_t roundint64(double d)      // This is found in util.h
 {
     return (int64_t)(d > 0 ? d + 0.5 : d - 0.5);
 }
@@ -105,12 +132,12 @@ int64_t AmountFromValue(const Value& value)
      * MAX_MONEY is an int64_t type multiplied by COIN, also an int64_t type.  In order to calculate
      * the Maximum amount allowed.  First convert max money into a whole number value & type cast it
      * to double, after the fast integer math divide.  This max amount was originally a hard coded
-     * constant, from Btc code.  Changes to the definition of MAX_MONEY was not fully supported,
+     * constant, from btc code.  Changes to the definition of MAX_MONEY was not fully supported,
      * without this change also being considered.  This code should track that value whatever it is
      * set to.
-     * Note: Wacho places to find those defs, so heres the tip:  See amount.h for definition of
+     * Note: Wacho places to find those def's, so heres the tip:  See amount.h for definition of
      *       MAX_MONEY, was in core.h for v9, and the definition of COIN was found in util.h, now
-     *       consolidated to one place, clear as mud?
+     *       consolidated to one place.
      */
     if (dAmount <= 0.0 || dAmount > (double)(MAX_MONEY / COIN))
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
@@ -189,11 +216,6 @@ string CRPCTable::help(string strCommand) const
             continue;
         if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand)
             continue;
-#ifdef ENABLE_WALLET
-        if (pcmd->reqWallet && !pwalletMain)
-            continue;
-#endif
-
         try
         {
             Array params;
@@ -201,7 +223,7 @@ string CRPCTable::help(string strCommand) const
             if (setDone.insert(pfn).second)
                 (*pfn)(params, true);
         }
-        catch (std::exception& e)
+        catch (const std::exception& e)
         {
             // Help text is returned in an exception
             string strHelp = string(e.what());
@@ -233,12 +255,12 @@ Value help(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
-            "help ( \"command\" )\n"
+            "help [\"command\"]\n"
             "\nList all commands, or get help for a specified command.\n"
             "\nArguments:\n"
-            "1. \"command\"     (string, optional) The command to get help on\n"
+            "1. \"command\"   (string, optional) The command to get help on.\n"
             "\nResult:\n"
-            "\"text\"     (string) The help text\n"
+            "\"text\"         (string) The help text.\n"
         );
 
     string strCommand;
@@ -255,7 +277,10 @@ Value stop(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
-            "\nStop Anoncoin server.");
+            "\n Starts the Anoncoin server shutdown sequence, this normally only take a few moments to complete.\n"
+            " Please allow additional time when the I2P network is in use, so the router connection can properly\n"
+            " be closed.\n"
+        );
     // Shutdown will take long enough that the response should get back
     StartShutdown();
     return "Anoncoin server stopping";
@@ -266,119 +291,122 @@ Value stop(const Array& params, bool fHelp)
  * Call Table
  */
 static const CRPCCommand vRPCCommands[] =
-{ //  category              name                      actor (function)         okSafeMode threadSafe reqWallet
-  //  --------------------- ------------------------  -----------------------  ---------- ---------- ---------
+{ //  category              name                      actor (function)         okSafeMode
+  //  --------------------- ------------------------  -----------------------  ----------
     /* Overall control/query calls */
-    { "control",            "getinfo",                &getinfo,                true,      false,      false }, /* uses wallet if enabled */
-    { "control",            "help",                   &help,                   true,      true,       false },
-    { "control",            "stop",                   &stop,                   true,      true,       false },
+    { "control",            "getinfo",                &getinfo,                true  }, /* uses wallet if enabled */
+    { "control",            "help",                   &help,                   true  },
+    { "control",            "stop",                   &stop,                   true  },
 
     /* P2P networking */
-    { "network",            "getnetworkinfo",         &getnetworkinfo,         true,      false,      false },
-    { "network",            "addnode",                &addnode,                true,      true,       false },
-    { "network",            "destination",            &destination,            true,      false,      false },
-    { "network",            "getaddednodeinfo",       &getaddednodeinfo,       true,      true,       false },
-    { "network",            "getconnectioncount",     &getconnectioncount,     true,      false,      false },
-    { "network",            "getnettotals",           &getnettotals,           true,      true,       false },
-    { "network",            "getpeerinfo",            &getpeerinfo,            true,      false,      false },
-    { "network",            "ping",                   &ping,                   true,      false,      false },
+    { "network",            "getnetworkinfo",         &getnetworkinfo,         true  },
+    { "network",            "addnode",                &addnode,                true  },
+    { "network",            "destination",            &destination,            true  },
+    { "network",            "getaddednodeinfo",       &getaddednodeinfo,       true  },
+    { "network",            "getconnectioncount",     &getconnectioncount,     true  },
+    { "network",            "getnettotals",           &getnettotals,           true  },
+    { "network",            "getpeerinfo",            &getpeerinfo,            true  },
+    { "network",            "ping",                   &ping,                   true  },
 
     /* Block chain and UTXO */
-    { "blockchain",         "getblockchaininfo",      &getblockchaininfo,      true,      false,      false },
-    { "blockchain",         "getbestblockhash",       &getbestblockhash,       true,      false,      false },
-    { "blockchain",         "getblockcount",          &getblockcount,          true,      false,      false },
-    { "blockchain",         "getblock",               &getblock,               true,      false,      false },
-    { "blockchain",         "getblockhash",           &getblockhash,           true,      false,      false },
-//    { "blockchain",         "getchaintips",           &getchaintips,           true,      false,      false },
-    { "blockchain",         "getdifficulty",          &getdifficulty,          true,      false,      false },
-//    { "blockchain",         "getmempoolinfo",         &getmempoolinfo,         true,      true,       false },
-    { "blockchain",         "getrawmempool",          &getrawmempool,          true,      false,      false },
-    { "blockchain",         "gettxout",               &gettxout,               true,      false,      false },
-    { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        true,      false,      false },
-    { "blockchain",         "verifychain",            &verifychain,            true,      false,      false },
-//    { "blockchain",         "invalidateblock",        &invalidateblock,        true,      true,       false },
-//    { "blockchain",         "reconsiderblock",        &reconsiderblock,        true,      true,       false },
+    { "blockchain",         "getblockchaininfo",      &getblockchaininfo,      true  },
+    { "blockchain",         "getbestblockhash",       &getbestblockhash,       true  },
+    { "blockchain",         "getblockcount",          &getblockcount,          true  },
+    { "blockchain",         "getblock",               &getblock,               true  },
+    { "blockchain",         "getblockhash",           &getblockhash,           true  },
+    { "blockchain",         "getchaintips",           &getchaintips,           true  },
+    { "blockchain",         "getdifficulty",          &getdifficulty,          true  },
+    { "blockchain",         "getmempoolinfo",         &getmempoolinfo,         true  },
+    { "blockchain",         "getrawmempool",          &getrawmempool,          true  },
+    { "blockchain",         "gettxout",               &gettxout,               true  },
+    { "blockchain",         "gettxoutproof",          &gettxoutproof,          true  },
+    { "blockchain",         "verifytxoutproof",       &verifytxoutproof,       true  },
+    { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        true  },
+    { "blockchain",         "verifychain",            &verifychain,            true  },
+    { "blockchain",         "invalidateblock",        &invalidateblock,        true  },
+    { "blockchain",         "reconsiderblock",        &reconsiderblock,        true  },
 
-    /* Mining */
-    { "mining",             "getblocktemplate",       &getblocktemplate,       true,      false,      false },
-    { "mining",             "getmininginfo",          &getmininginfo,          true,      false,      false },
-    { "mining",             "getnetworkhashps",       &getnetworkhashps,       true,      false,      false },
-//    { "mining",             "prioritisetransaction",  &prioritisetransaction,  true,      false,      false },
-    { "mining",             "submitblock",            &submitblock,            true,      true,       false },
-
+    /* Mining and Coin generation */
+    { "mining",             "getblocktemplate",       &getblocktemplate,       true  },
+    { "mining",             "getmininginfo",          &getmininginfo,          true  },
+    { "mining",             "getnetworkhashps",       &getnetworkhashps,       true  },
+    { "mining",             "prioritisetransaction",  &prioritisetransaction,  true  },
+    { "mining",             "submitblock",            &submitblock,            true  },
+    { "mining",             "getretargetpid",         &getretargetpid,         true  },
 #ifdef ENABLE_WALLET
-    { "mining",             "getwork",                &getwork,                true,      false,      true  },
-    /* Coin generation */
-    { "generating",         "getgenerate",            &getgenerate,            true,      false,      false },
-    { "generating",         "gethashespersec",        &gethashespersec,        true,      false,      false },
-    { "generating",         "setgenerate",            &setgenerate,            true,      true,       false },
+    { "mining",             "getwork",                &getwork,                true  },
+    { "mining",             "getgenerate",            &getgenerate,            true  },
+    { "mining",             "gethashmeter",           &gethashmeter,           true  },
+    { "mining",             "setgenerate",            &setgenerate,            true  },
 #endif
 
     /* Raw transactions */
-    { "rawtransactions",    "createrawtransaction",   &createrawtransaction,   true,      false,      false },
-    { "rawtransactions",    "decoderawtransaction",   &decoderawtransaction,   true,      false,      false },
-    { "rawtransactions",    "decodescript",           &decodescript,           true,      false,      false },
-    { "rawtransactions",    "getrawtransaction",      &getrawtransaction,      true,      false,      false },
-    { "rawtransactions",    "sendrawtransaction",     &sendrawtransaction,     false,     false,      false },
-    { "rawtransactions",    "signrawtransaction",     &signrawtransaction,     false,     false,      false }, /* uses wallet if enabled */
+    { "rawtransactions",    "createrawtransaction",   &createrawtransaction,   true  },
+    { "rawtransactions",    "decoderawtransaction",   &decoderawtransaction,   true  },
+    { "rawtransactions",    "decodescript",           &decodescript,           true  },
+    { "rawtransactions",    "getrawtransaction",      &getrawtransaction,      true  },
+    { "rawtransactions",    "sendrawtransaction",     &sendrawtransaction,     false },
+    { "rawtransactions",    "signrawtransaction",     &signrawtransaction,     false }, /* uses wallet if enabled */
 
     /* Utility functions */
-    { "util",               "createmultisig",         &createmultisig,         true,      true ,      false },
-    { "util",               "validateaddress",        &validateaddress,        true,      false,      false }, /* uses wallet if enabled */
-    { "util",               "verifymessage",          &verifymessage,          true,      false,      false },
-//    { "util",               "estimatefee",            &estimatefee,            true,      true,       false },
-//    { "util",               "estimatepriority",       &estimatepriority,       true,      true,       false },
+    { "util",               "createmultisig",         &createmultisig,         true  },
+    { "util",               "validateaddress",        &validateaddress,        true  }, /* uses wallet if enabled */
+    { "util",               "verifymessage",          &verifymessage,          true  },
+    { "util",               "estimatefee",            &estimatefee,            true  },
+    { "util",               "estimatepriority",       &estimatepriority,       true  },
 
     /* Not shown in help */
-//    { "hidden",             "invalidateblock",        &invalidateblock,        true,      true,       false },
-//    { "hidden",             "reconsiderblock",        &reconsiderblock,        true,      true,       false },
-//    { "hidden",             "setmocktime",            &setmocktime,            true,      false,      false },
-#if CLIENT_VERSION_IS_RELEASE != true
-    { "hidden",             "makekeypair",            &makekeypair,            true,      false,	  false },
-    { "hidden",             "sendalert",              &sendalert,              true,      false,      false },
+    { "hidden",             "invalidateblock",        &invalidateblock,        true  },
+    { "hidden",             "reconsiderblock",        &reconsiderblock,        true  },
+    { "hidden",             "setmocktime",            &setmocktime,            true  },
+    { "hidden",             "makekeypair",            &makekeypair,            true  },
+    { "hidden",             "sendalert",              &sendalert,              true  },
+#ifdef ENABLE_WALLET
+    { "hidden",             "generate",               &generate,               true  },
+    { "hidden",             "resendwallettransactions", &resendwallettransactions, true},
 #endif
 
 #ifdef ENABLE_WALLET
     /* Wallet */
-    { "wallet",             "addmultisigaddress",     &addmultisigaddress,     true,      false,      true },
-    { "wallet",             "backupwallet",           &backupwallet,           true,      false,      true },
-    { "wallet",             "dumpprivkey",            &dumpprivkey,            true,      false,      true },
-    { "wallet",             "dumpwallet",             &dumpwallet,             true,      false,      true },
-    { "wallet",             "encryptwallet",          &encryptwallet,          true,      false,      true },
-    { "wallet",             "getaccountaddress",      &getaccountaddress,      true,      false,      true },
-    { "wallet",             "getaccount",             &getaccount,             true,      false,      true },
-    { "wallet",             "getaddressesbyaccount",  &getaddressesbyaccount,  true,      false,      true },
-    { "wallet",             "getbalance",             &getbalance,             false,     false,      true },
-    { "wallet",             "getnewaddress",          &getnewaddress,          true,      false,      true },
-    { "wallet",             "getrawchangeaddress",    &getrawchangeaddress,    true,      false,      true },
-    { "wallet",             "getreceivedbyaccount",   &getreceivedbyaccount,   false,     false,      true },
-    { "wallet",             "getreceivedbyaddress",   &getreceivedbyaddress,   false,     false,      true },
-    { "wallet",             "gettransaction",         &gettransaction,         false,     false,      true },
-    { "wallet",             "getunconfirmedbalance",  &getunconfirmedbalance,  false,     false,      true },
-    { "wallet",             "getwalletinfo",          &getwalletinfo,          false,     false,      true },
-    { "wallet",             "importprivkey",          &importprivkey,          true,      false,      true },
-    { "wallet",             "importwallet",           &importwallet,           true,      false,      true },
-    { "wallet",             "importaddress",          &importaddress,          true,      false,      true },
-    { "wallet",             "keypoolrefill",          &keypoolrefill,          true,      false,      true },
-    { "wallet",             "listaccounts",           &listaccounts,           false,     false,      true },
-    { "wallet",             "listaddressgroupings",   &listaddressgroupings,   false,     false,      true },
-    { "wallet",             "listlockunspent",        &listlockunspent,        false,     false,      true },
-    { "wallet",             "listreceivedbyaccount",  &listreceivedbyaccount,  false,     false,      true },
-    { "wallet",             "listreceivedbyaddress",  &listreceivedbyaddress,  false,     false,      true },
-    { "wallet",             "listsinceblock",         &listsinceblock,         false,     false,      true },
-    { "wallet",             "listtransactions",       &listtransactions,       false,     false,      true },
-    { "wallet",             "listunspent",            &listunspent,            false,     false,      true },
-    { "wallet",             "lockunspent",            &lockunspent,            true,      false,      true },
-    { "wallet",             "move",                   &movecmd,                false,     false,      true },
-    { "wallet",             "sendfrom",               &sendfrom,               false,     false,      true },
-    { "wallet",             "sendmany",               &sendmany,               false,     false,      true },
-    { "wallet",             "sendtoaddress",          &sendtoaddress,          false,     false,      true },
-    { "wallet",             "setaccount",             &setaccount,             true,      false,      true },
-    { "wallet",             "settxfee",               &settxfee,               true,      false,      true },
-    { "wallet",             "signmessage",            &signmessage,            true,      false,      true },
-    { "wallet",             "walletlock",             &walletlock,             true,      false,      true },
-    { "wallet",             "walletpassphrasechange", &walletpassphrasechange, true,      false,      true },
-    { "wallet",             "walletpassphrase",       &walletpassphrase,       true,      false,      true },
+    { "wallet",             "addmultisigaddress",     &addmultisigaddress,     true  },
+    { "wallet",             "backupwallet",           &backupwallet,           true  },
+    { "wallet",             "dumpprivkey",            &dumpprivkey,            true  },
+    { "wallet",             "dumpwallet",             &dumpwallet,             true  },
+    { "wallet",             "encryptwallet",          &encryptwallet,          true  },
+    { "wallet",             "getaccountaddress",      &getaccountaddress,      true  },
+    { "wallet",             "getaccount",             &getaccount,             true  },
+    { "wallet",             "getaddressesbyaccount",  &getaddressesbyaccount,  true  },
+    { "wallet",             "getbalance",             &getbalance,             false },
+    { "wallet",             "getnewaddress",          &getnewaddress,          true  },
+    { "wallet",             "getrawchangeaddress",    &getrawchangeaddress,    true  },
+    { "wallet",             "getreceivedbyaccount",   &getreceivedbyaccount,   false },
+    { "wallet",             "getreceivedbyaddress",   &getreceivedbyaddress,   false },
+    { "wallet",             "gettransaction",         &gettransaction,         false },
+    { "wallet",             "getunconfirmedbalance",  &getunconfirmedbalance,  false },
+    { "wallet",             "getwalletinfo",          &getwalletinfo,          false },
+    { "wallet",             "importprivkey",          &importprivkey,          true  },
+    { "wallet",             "importwallet",           &importwallet,           true  },
+    { "wallet",             "importaddress",          &importaddress,          true  },
+    { "wallet",             "keypoolrefill",          &keypoolrefill,          true  },
+    { "wallet",             "listaccounts",           &listaccounts,           false },
+    { "wallet",             "listaddressgroupings",   &listaddressgroupings,   false },
+    { "wallet",             "listlockunspent",        &listlockunspent,        false },
+    { "wallet",             "listreceivedbyaccount",  &listreceivedbyaccount,  false },
+    { "wallet",             "listreceivedbyaddress",  &listreceivedbyaddress,  false },
+    { "wallet",             "listsinceblock",         &listsinceblock,         false },
+    { "wallet",             "listtransactions",       &listtransactions,       false },
+    { "wallet",             "listunspent",            &listunspent,            false },
+    { "wallet",             "lockunspent",            &lockunspent,            true  },
+    { "wallet",             "move",                   &movecmd,                false },
+    { "wallet",             "sendfrom",               &sendfrom,               false },
+    { "wallet",             "sendmany",               &sendmany,               false },
+    { "wallet",             "sendtoaddress",          &sendtoaddress,          false },
+    { "wallet",             "setaccount",             &setaccount,             true  },
+    { "wallet",             "settxfee",               &settxfee,               true  },
+    { "wallet",             "signmessage",            &signmessage,            true  },
+    { "wallet",             "walletlock",             &walletlock,             true  },
+    { "wallet",             "walletpassphrasechange", &walletpassphrasechange, true  },
+    { "wallet",             "walletpassphrase",       &walletpassphrase,       true  },
 #endif // ENABLE_WALLET
 };
 
@@ -421,7 +449,9 @@ void ErrorReply(std::ostream& stream, const Object& objError, const Value& id)
     if (code == RPC_INVALID_REQUEST) nStatus = HTTP_BAD_REQUEST;
     else if (code == RPC_METHOD_NOT_FOUND) nStatus = HTTP_NOT_FOUND;
     string strReply = JSONRPCReply(Value::null, objError, id);
-    stream << HTTPReply(nStatus, strReply, false) << std::flush;
+    string strHTTPReply = HTTPReply(nStatus, strReply, false);
+    LogPrint("rpcio", "%s : response size=%d message=\n%s\n", __func__, strHTTPReply.size(), strHTTPReply);
+    stream << strHTTPReply << std::flush;
 }
 
 CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address)
@@ -460,7 +490,7 @@ class AcceptedConnectionImpl : public AcceptedConnection
 {
 public:
     AcceptedConnectionImpl(
-            asio::io_service& io_service,
+            boost::asio::io_service& io_service,
             ssl::context &context,
             bool fUseSSL) :
         sslStream(io_service, context),
@@ -485,11 +515,11 @@ public:
     }
 
     typename Protocol::endpoint peer;
-    asio::ssl::stream<typename Protocol::socket> sslStream;
+    boost::asio::ssl::stream<typename Protocol::socket> sslStream;
 
 private:
     SSLIOStreamDevice<Protocol> _d;
-    iostreams::stream< SSLIOStreamDevice<Protocol> > _stream;
+    boost::iostreams::stream< SSLIOStreamDevice<Protocol> > _stream;
 };
 
 void ServiceConnection(AcceptedConnection *conn);
@@ -536,7 +566,7 @@ static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, 
                              const boost::system::error_code& error)
 {
     // Immediately start accepting new connections, except when we're cancelled or our socket is closed.
-    if (error != asio::error::operation_aborted && acceptor->is_open())
+    if (error != boost::asio::error::operation_aborted && acceptor->is_open())
         RPCListen(acceptor, context, fUseSSL);
 
     AcceptedConnectionImpl<ip::tcp>* tcp_conn = dynamic_cast< AcceptedConnectionImpl<ip::tcp>* >(conn.get());
@@ -544,7 +574,7 @@ static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, 
     if (error)
     {
         // TODO: Actually handle errors
-        LogPrintf("%s: Error: %s\n", __func__, error.message());
+        LogPrintf("%s : Error: %s\n", __func__, error.message());
     }
     // Restrict callers by IP.  It is important to
     // do this before starting client thread, to filter out
@@ -567,7 +597,7 @@ static ip::tcp::endpoint ParseEndpoint(const std::string &strEndpoint, int defau
     std::string addr;
     int port = defaultPort;
     SplitHostPort(strEndpoint, port, addr);
-    return ip::tcp::endpoint(asio::ip::address::from_string(addr), port);
+    return ip::tcp::endpoint(boost::asio::ip::address::from_string(addr), port);
 }
 
 void StartRPCThreads()
@@ -595,14 +625,14 @@ void StartRPCThreads()
     std::string strAllowed;
     BOOST_FOREACH(const CSubNet &subnet, rpc_allow_subnets)
         strAllowed += subnet.ToString() + " ";
-    LogPrint("rpc", "Allowing RPC connections from: %s\n", strAllowed);
+    LogPrintf("Allowing RPC connections from: %s\n", strAllowed);  // Always log this, as it is done only once during initialization
 
     strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
     if (((mapArgs["-rpcpassword"] == "") ||
          (mapArgs["-rpcuser"] == mapArgs["-rpcpassword"])) && Params().RequireRPCPassword())
     {
         unsigned char rand_pwd[32];
-        RAND_bytes(rand_pwd, 32);
+        GetRandBytes(rand_pwd, 32);
         uiInterface.ThreadSafeMessageBox(strprintf(
             _("To use anoncoind, or the -server option to anoncoin-qt, you must set an rpcpassword in the configuration file:\n"
               "%s\n"
@@ -622,7 +652,7 @@ void StartRPCThreads()
     }
 
     assert(rpc_io_service == NULL);
-    rpc_io_service = new asio::io_service();
+    rpc_io_service = new boost::asio::io_service();
     rpc_ssl_context = new ssl::context(*rpc_io_service, ssl::context::sslv23);
 
     const bool fUseSSL = GetBoolArg("-rpcssl", false);
@@ -631,14 +661,14 @@ void StartRPCThreads()
     {
         rpc_ssl_context->set_options(ssl::context::no_sslv2 | ssl::context::no_sslv3);
 
-        filesystem::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
-        if (!pathCertFile.is_complete()) pathCertFile = filesystem::path(GetDataDir()) / pathCertFile;
-        if (filesystem::exists(pathCertFile)) rpc_ssl_context->use_certificate_chain_file(pathCertFile.string());
+        boost::filesystem::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
+        if (!pathCertFile.is_complete()) pathCertFile = boost::filesystem::path(GetDataDir()) / pathCertFile;
+        if (boost::filesystem::exists(pathCertFile)) rpc_ssl_context->use_certificate_chain_file(pathCertFile.string());
         else LogPrintf("ThreadRPCServer ERROR: missing server certificate file %s\n", pathCertFile.string());
 
-        filesystem::path pathPKFile(GetArg("-rpcsslprivatekeyfile", "server.pem"));
-        if (!pathPKFile.is_complete()) pathPKFile = filesystem::path(GetDataDir()) / pathPKFile;
-        if (filesystem::exists(pathPKFile)) rpc_ssl_context->use_private_key_file(pathPKFile.string(), ssl::context::pem);
+        boost::filesystem::path pathPKFile(GetArg("-rpcsslprivatekeyfile", "server.pem"));
+        if (!pathPKFile.is_complete()) pathPKFile = boost::filesystem::path(GetDataDir()) / pathPKFile;
+        if (boost::filesystem::exists(pathPKFile)) rpc_ssl_context->use_private_key_file(pathPKFile.string(), ssl::context::pem);
         else LogPrintf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string());
 
         string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH");
@@ -650,8 +680,8 @@ void StartRPCThreads()
     int defaultPort = GetArg("-rpcport", BaseParams().RPCPort());
     if (!mapArgs.count("-rpcallowip")) // Default to loopback if not allowing external IPs
     {
-        vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v6::loopback(), defaultPort));
-        vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v4::loopback(), defaultPort));
+        vEndpoints.push_back(ip::tcp::endpoint(boost::asio::ip::address_v6::loopback(), defaultPort));
+        vEndpoints.push_back(ip::tcp::endpoint(boost::asio::ip::address_v4::loopback(), defaultPort));
         if (mapArgs.count("-rpcbind"))
         {
             LogPrintf("WARNING: option -rpcbind was ignored because -rpcallowip was not specified, refusing to allow everyone to connect\n");
@@ -663,7 +693,7 @@ void StartRPCThreads()
             try {
                 vEndpoints.push_back(ParseEndpoint(addr, defaultPort));
             }
-            catch(const boost::system::system_error &)
+            catch (const boost::system::system_error&)
             {
                 uiInterface.ThreadSafeMessageBox(
                     strprintf(_("Could not parse -rpcbind value %s as network address"), addr),
@@ -673,8 +703,8 @@ void StartRPCThreads()
             }
         }
     } else { // No specific bind address specified, bind to any
-        vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v6::any(), defaultPort));
-        vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v4::any(), defaultPort));
+        vEndpoints.push_back(ip::tcp::endpoint(boost::asio::ip::address_v6::any(), defaultPort));
+        vEndpoints.push_back(ip::tcp::endpoint(boost::asio::ip::address_v4::any(), defaultPort));
         // Prefer making the socket dual IPv6/IPv4 instead of binding
         // to both addresses seperately.
         bBindAny = true;
@@ -686,7 +716,7 @@ void StartRPCThreads()
     BOOST_FOREACH(const ip::tcp::endpoint &endpoint, vEndpoints)
     {
         try {
-            asio::ip::address bindAddress = endpoint.address();
+            boost::asio::ip::address bindAddress = endpoint.address();
             straddress = bindAddress.to_string();
             LogPrintf("Binding RPC on address %s port %i (IPv4+IPv6 bind any: %i)\n", straddress, endpoint.port(), bBindAny);
             boost::system::error_code v6_only_error;
@@ -697,7 +727,7 @@ void StartRPCThreads()
 
             // Try making the socket dual IPv6/IPv4 when listening on the IPv6 "any" address
             acceptor->set_option(boost::asio::ip::v6_only(
-                !bBindAny || bindAddress != asio::ip::address_v6::any()), v6_only_error);
+                !bBindAny || bindAddress != boost::asio::ip::address_v6::any()), v6_only_error);
 
             acceptor->bind(endpoint);
             acceptor->listen(socket_base::max_connections);
@@ -707,10 +737,10 @@ void StartRPCThreads()
             fListening = true;
             rpc_acceptors.push_back(acceptor);
             // If dual IPv6/IPv4 bind successful, skip binding to IPv4 separately
-            if(bBindAny && bindAddress == asio::ip::address_v6::any() && !v6_only_error)
+            if(bBindAny && bindAddress == boost::asio::ip::address_v6::any() && !v6_only_error)
                 break;
         }
-        catch(boost::system::system_error &e)
+        catch (const boost::system::system_error& e)
         {
             LogPrintf("ERROR: Binding RPC on address %s port %i failed: %s\n", straddress, endpoint.port(), e.what());
             strerr = strprintf(_("An error occurred while setting up the RPC address %s port %u for listening: %s"), straddress, endpoint.port(), e.what());
@@ -725,20 +755,21 @@ void StartRPCThreads()
 
     rpc_worker_group = new boost::thread_group();
     for (int i = 0; i < GetArg("-rpcthreads", 4); i++)
-        rpc_worker_group->create_thread(boost::bind(&asio::io_service::run, rpc_io_service));
+        rpc_worker_group->create_thread(boost::bind(&boost::asio::io_service::run, rpc_io_service));
     fRPCRunning = true;
+    g_rpcSignals.Started();
 }
 
 void StartDummyRPCThread()
 {
     if(rpc_io_service == NULL)
     {
-        rpc_io_service = new asio::io_service();
+        rpc_io_service = new boost::asio::io_service();
         /* Create dummy "work" to keep the thread from exiting when no timeouts active,
          * see http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio/reference/io_service.html#boost_asio.reference.io_service.stopping_the_io_service_from_running_out_of_work */
-        rpc_dummy_work = new asio::io_service::work(*rpc_io_service);
+        rpc_dummy_work = new boost::asio::io_service::work(*rpc_io_service);
         rpc_worker_group = new boost::thread_group();
-        rpc_worker_group->create_thread(boost::bind(&asio::io_service::run, rpc_io_service));
+        rpc_worker_group->create_thread(boost::bind(&boost::asio::io_service::run, rpc_io_service));
         fRPCRunning = true;
     }
 }
@@ -751,25 +782,25 @@ void StopRPCThreads()
 
     // First, cancel all timers and acceptors
     // This is not done automatically by ->stop(), and in some cases the destructor of
-    // asio::io_service can hang if this is skipped.
+    // boost::asio::io_service can hang if this is skipped.
     boost::system::error_code ec;
     BOOST_FOREACH(const boost::shared_ptr<ip::tcp::acceptor> &acceptor, rpc_acceptors)
     {
         acceptor->cancel(ec);
         if (ec)
-            LogPrintf("%s: Warning: %s when cancelling acceptor", __func__, ec.message());
+            LogPrintf("%s : Warning: %s when cancelling acceptor", __func__, ec.message());
     }
     rpc_acceptors.clear();
     BOOST_FOREACH(const PAIRTYPE(std::string, boost::shared_ptr<deadline_timer>) &timer, deadlineTimers)
     {
         timer.second->cancel(ec);
         if (ec)
-            LogPrintf("%s: Warning: %s when cancelling timer", __func__, ec.message());
+            LogPrintf("%s : Warning: %s when cancelling timer", __func__, ec.message());
     }
     deadlineTimers.clear();
 
     rpc_io_service->stop();
-    cvBlockChange.notify_all();
+    g_rpcSignals.Stopped();
     if (rpc_worker_group != NULL)
         rpc_worker_group->join_all();
     delete rpc_dummy_work; rpc_dummy_work = NULL;
@@ -819,7 +850,7 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
         deadlineTimers.insert(make_pair(name,
                                         boost::shared_ptr<deadline_timer>(new deadline_timer(*rpc_io_service))));
     }
-    deadlineTimers[name]->expires_from_now(posix_time::seconds(nSeconds));
+    deadlineTimers[name]->expires_from_now(boost::posix_time::seconds(nSeconds));
     deadlineTimers[name]->async_wait(boost::bind(RPCRunHandler, _1, func));
 }
 
@@ -851,8 +882,6 @@ void JSONRequest::parse(const Value& valRequest)
     if (valMethod.type() != str_type)
         throw JSONRPCError(RPC_INVALID_REQUEST, "Method must be a string");
     strMethod = valMethod.get_str();
-    if (strMethod != "getwork" && strMethod != "getblocktemplate")
-        LogPrint("rpc", "ThreadRPCServer method=%s\n", SanitizeString(strMethod));
 
     // Parse params
     Value valParams = find_value(request, "params");
@@ -873,14 +902,27 @@ static Object JSONRPCExecOne(const Value& req)
     try {
         jreq.parse(req);
 
+        bool fCommandException = false;
+        if (jreq.strMethod == "getwork" || jreq.strMethod == "getblocktemplate") {
+            static bool fFirstTime = true;
+
+            if( fFirstTime ) {
+                // LogPrint( "rpc", "%s : log entries for getwork or getblocktemplate executed once, so rpc debug can be left on for other methods.\n", __func__);
+                // fFirstTime = false;
+            } else
+                fCommandException = true;
+        }
+        if( !fCommandException )
+            LogPrint( "rpc", "%s : executing method=%s with %d parameters.\n", __func__, SanitizeString(jreq.strMethod), jreq.params.size() );
+
         Value result = tableRPC.execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, Value::null, jreq.id);
     }
-    catch (Object& objError)
+    catch (const Object& objError)
     {
         rpc_result = JSONRPCReplyObj(Value::null, objError, jreq.id);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         rpc_result = JSONRPCReplyObj(Value::null,
                                      JSONRPCError(RPC_PARSE_ERROR, e.what()), jreq.id);
@@ -954,14 +996,16 @@ static bool HTTPReq_JSONRPC(AcceptedConnection *conn,
         else
             throw JSONRPCError(RPC_PARSE_ERROR, "Top-level object parse error");
 
-        conn->stream() << HTTPReplyHeader(HTTP_OK, fRun, strReply.size()) << strReply << std::flush;
+        string strHeader = HTTPReplyHeader(HTTP_OK, fRun, strReply.size());
+        LogPrint("rpcio", "ThreadRPCServer response size=%d message=\n%s%s\n", strHeader.size() + strReply.size(), strHeader, strReply);
+        conn->stream() << strHeader << strReply << std::flush;
     }
-    catch (Object& objError)
+    catch (const Object& objError)
     {
         ErrorReply(conn->stream(), objError, jreq.id);
         return false;
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         ErrorReply(conn->stream(), JSONRPCError(RPC_PARSE_ERROR, e.what()), jreq.id);
         return false;
@@ -982,8 +1026,10 @@ void ServiceConnection(AcceptedConnection *conn)
         if (!ReadHTTPRequestLine(conn->stream(), nProto, strMethod, strURI))
             break;
 
-        // Read HTTP message headers and body
-        ReadHTTPMessage(conn->stream(), mapHeaders, strRequest, nProto, MAX_SIZE);
+        //! Read HTTP message headers and body...
+        //! Fixed max_size so it does not generate server 500 errors on processing,
+        //! MAX_SIZE was to vague, now using a good size, defined in rpcprotocol.h
+        ReadHTTPMessage(conn->stream(), mapHeaders, strRequest, nProto, POST_READ_SIZE);
 
         // HTTP Keep-Alive is false; close connection immediately
         if ((mapHeaders["connection"] == "close") || (!GetBoolArg("-rpckeepalive", true)))
@@ -996,9 +1042,7 @@ void ServiceConnection(AcceptedConnection *conn)
 
         // Process via HTTP REST API
         } else if (strURI.substr(0, 6) == "/rest/" && GetBoolArg("-rest", false)) {
-            // if (!HTTPReq_REST(conn, strURI, mapHeaders, fRun))
-            // ToDo: implement
-            LogPrintf( "REST Not yet supported\n");
+            if (!HTTPReq_REST(conn, strURI, mapHeaders, fRun))
                 break;
 
         } else {
@@ -1014,45 +1058,20 @@ json_spirit::Value CRPCTable::execute(const std::string &strMethod, const json_s
     const CRPCCommand *pcmd = tableRPC[strMethod];
     if (!pcmd)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
-#ifdef ENABLE_WALLET
-    if (pcmd->reqWallet && !pwalletMain)
-        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
-#endif
 
-    // Observe safe mode
-    string strWarning = GetWarnings("rpc");
-    if (strWarning != "" && !GetBoolArg("-disablesafemode", false) &&
-        !pcmd->okSafeMode)
-        throw JSONRPCError(RPC_FORBIDDEN_BY_SAFE_MODE, string("Safe mode: ") + strWarning);
+    g_rpcSignals.PreCommand(*pcmd);
 
     try
     {
         // Execute
-        Value result;
-        {
-            if (pcmd->threadSafe)
-                result = pcmd->actor(params, false);
-#ifdef ENABLE_WALLET
-            else if (!pwalletMain) {
-                LOCK(cs_main);
-                result = pcmd->actor(params, false);
-            } else {
-                LOCK2(cs_main, pwalletMain->cs_wallet);
-                result = pcmd->actor(params, false);
-            }
-#else // ENABLE_WALLET
-            else {
-                LOCK(cs_main);
-                result = pcmd->actor(params, false);
-            }
-#endif // !ENABLE_WALLET
-        }
-        return result;
+        return pcmd->actor(params, false);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         throw JSONRPCError(RPC_MISC_ERROR, e.what());
     }
+
+    g_rpcSignals.PostCommand(*pcmd);
 }
 
 std::string HelpExampleCli(string methodname, string args){
@@ -1062,6 +1081,83 @@ std::string HelpExampleCli(string methodname, string args){
 std::string HelpExampleRpc(string methodname, string args){
     return "> curl --user myusername --data-binary '{\"jsonrpc\": \"1.0\", \"id\":\"curltest\", "
         "\"method\": \"" + methodname + "\", \"params\": [" + args + "] }' -H 'content-type: text/plain;' http://127.0.0.1:9376/\n";
+}
+
+//! If we've just initialized Testnet with a genesis block we need to create some initial blocks so mining can
+//! use the RetargetPID without being in an error state.  The ChargeIntegrator() function handles weeks long
+//! periods by creating virtual blocks made from a mass of perfectly spaced times and (as best as we have)
+//! difficulty averages.  This flag is only used to create 11 blocks after the TestNet genesis block is laid
+//! down using a set of RPC commands built on-the-fly from whatever the current Unix Timestamp is.  This is
+//! accomplished by using setmocktime for marking the blocks as 11 perfectly spaced entries in the nearest possible
+//! past, mining those with minimal difficulty via the new 'generate' command.  Then restoring realtime to the
+//! system.  By creating these the user gets the benefit of starting out with some initial coin, the instantaneous
+//! BlockError can be calculated and test mining can begin immediately.
+void InitializeTestNetBlocks()
+{
+    assert( pRetargetPid != NULL );
+    const int32_t nMockBlocks = pRetargetPid->GetTipFilterBlocks();
+    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+
+    int64_t nTimeNow = GetTime();
+    uint256 uintStartingDifficulty = pRetargetPid->GetTestNetStartingDifficulty();
+    //! When we finish this, some time will have past, and the 1st next new block will have a time greater than the last
+    //! one mined with a mocktime, so do some calculations here 'off the cuff' as observed max production rate based on
+    //! 1 miner thread seems to be ~1 every 2 secs, from the filter size we can then guess at a good starting time
+    //! so we hit spacing with the difficulty perfect, although that is up to the user, and at least our goal.  We want a
+    //! real miner to start up and immediately have a full nTargetSpacing period to produce the 1st real block with the
+    //! right spacing, although it is based on a great many factors and only a guess...GR
+    int64_t nTimeToMineThem = nMockBlocks * 2;
+    int64_t nMockTimeOfBlock = nTimeNow - ((nMockBlocks - 1) * nTargetSpacing) + nTimeToMineThem;
+    LogPrintf( "%s : Generating %d initial TestNet blocks based on current Timestamp: %d\n", __func__, nMockBlocks, nTimeNow );
+    LogPrintf( "%s : Setting the starting Difficulty to 0x%s\n", __func__, uintStartingDifficulty.ToString() );
+
+    Array GenerateParams;
+    GenerateParams.push_back( (int64_t)1 );
+    GenerateParams.push_back( uintStartingDifficulty.ToString() );
+    for( int32_t i = 1; i <= nMockBlocks; i++ ) {
+        Array aCommands;
+        Array MockTimeParams;
+        MockTimeParams.push_back(nMockTimeOfBlock);
+
+        Object request1;
+        request1.push_back(Pair("method", "setmocktime"));
+        request1.push_back(Pair("params", MockTimeParams));
+        request1.push_back(Pair("id", i));
+
+        Object request2;
+        request2.push_back(Pair("method", "generate"));
+        request2.push_back(Pair("params", GenerateParams));
+        request2.push_back(Pair("id", i));
+
+        aCommands.push_back(request1);
+        aCommands.push_back(request2);
+
+        //! This actually executes the RPC commands to generate those blocks
+        string strResults = JSONRPCExecBatch(aCommands);
+        // LogPrintf( "%s : Block generation returned results:\n%s", __func__, strResults );
+        nMockTimeOfBlock += nTargetSpacing;
+        boost::this_thread::interruption_point();
+    }
+
+    //! One last command, and its a very important one.  Restore normal time with mocktime=0
+    nMockTimeOfBlock -= nTargetSpacing;
+    int64_t nRestoreSystemTime = 0;
+    Array MockTimeParams;
+    MockTimeParams.push_back(nRestoreSystemTime);
+    Object request;
+    request.push_back(Pair("method", "setmocktime"));
+    request.push_back(Pair("params", MockTimeParams));
+    request.push_back(Pair("id", nMockBlocks));
+    Array aCommands;
+    aCommands.push_back(request);
+    string strResults = JSONRPCExecBatch(aCommands);
+    nTimeNow = GetTime();
+    LogPrintf( "%s : Restored system time to: %d, last mined block stamped %dsecs ago.\n", __func__, nTimeNow, nTimeNow - nMockTimeOfBlock );
+    //! Before we start block generation make sure the next work required has been updated.
+
+    //! Now if they had generation selected, we can turn that on...
+    GenerateAnoncoins(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", -1));
+    //! We're done the thread can exit
 }
 
 const CRPCTable tableRPC;

@@ -16,6 +16,7 @@
 #include "net.h"
 #include "pow.h"
 #include "random.h"
+#include "sigcache.h"
 #include "timedata.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -24,17 +25,99 @@
 
 #include <sstream>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
 
-using namespace boost;
 using namespace std;
 
 #if defined(NDEBUG)
 # error "Anoncoin cannot be compiled without assertions."
 #endif
+
+//! Constants found in this source codes header(.h)
+
+/** "reject" message codes */
+const uint8_t REJECT_MALFORMED = 0x01;
+const uint8_t REJECT_INVALID = 0x10;
+const uint8_t REJECT_OBSOLETE = 0x11;
+const uint8_t REJECT_DUPLICATE = 0x12;
+const uint8_t REJECT_NONSTANDARD = 0x40;
+const uint8_t REJECT_DUST = 0x41;
+const uint8_t REJECT_INSUFFICIENTFEE = 0x42;
+const uint8_t REJECT_CHECKPOINT = 0x43;
+
+//! disconnect from peers older than this proto version, anything older than a build
+//! from client version v0.8.5.5 has not been seen or supported on the network
+static const int32_t MIN_PEER_PROTO_VERSION = 70006;
+
+/** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
+const uint32_t DEFAULT_BLOCK_MAX_SIZE = 750000;
+const uint32_t DEFAULT_BLOCK_MIN_SIZE = 0;
+/** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
+const uint32_t DEFAULT_BLOCK_PRIORITY_SIZE = 27000;              //! This matches Anoncoin v0.8.5.6 clients value
+/** The maximum size for transactions we're willing to relay/mine */
+const uint32_t MAX_STANDARD_TX_SIZE = 100000;
+/** The maximum allowed number of signature check operations in a block (network rule) */
+const uint32_t MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
+/** Maximum number of signature check operations in an IsStandard() P2SH script */
+const uint32_t MAX_P2SH_SIGOPS = 15;
+/** The maximum number of sigops we're willing to relay/mine in a single tx */
+const uint32_t MAX_TX_SIGOPS = MAX_BLOCK_SIGOPS/5;
+/** Default for -maxorphantx, maximum number of orphan transactions kept in memory */
+const uint32_t DEFAULT_MAX_ORPHAN_TRANSACTIONS = 100;
+/** The maximum size of a blk?????.dat file (since 0.8) */
+const uint32_t MAX_BLOCKFILE_SIZE = 0x8000000; // 128 MiB
+/** The pre-allocation chunk size for blk?????.dat files (since 0.8) */
+const uint32_t BLOCKFILE_CHUNK_SIZE = 0x1000000; // 16 MiB
+/** The pre-allocation chunk size for rev?????.dat files (since 0.8) */
+const uint32_t UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
+/** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
+const int32_t COINBASE_MATURITY = 100;
+/** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
+const uint32_t LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
+/** Maximum number of script-checking threads allowed */
+const int32_t MAX_SCRIPTCHECK_THREADS = 16;
+/** -par default (number of script-checking threads, 0 = auto) */
+const int32_t DEFAULT_SCRIPTCHECK_THREADS = 0;
+/** Number of blocks that can be requested at any given time from a single peer. */
+const int32_t MAX_BLOCKS_IN_TRANSIT_PER_PEER = 16;
+/** Timeout in seconds during which a peer must stall block download progress before being disconnected. */
+const uint32_t BLOCK_STALLING_TIMEOUT = 15;      //! We wait at least 15sec over i2p before stalling out a peer
+/** Number of headers sent in one getheaders result. We rely on the assumption that if a peer sends
+ *  less than this number, we reached their tip. Changing this value is a protocol upgrade. */
+const uint32_t MAX_HEADERS_RESULTS = 2000;
+/** Size of the "block download window": how far ahead of our current height do we fetch?
+ *  Larger windows tolerate larger download speed differences between peer, but increase the potential
+ *  degree of disordering of blocks on disk (which make reindexing and in the future perhaps pruning
+ *  harder). We'll probably want to make this a per-peer adaptive value at some point. */
+const uint32_t BLOCK_DOWNLOAD_WINDOW = 1024;
+/** Time to wait (in seconds) between writing blockchain state to disk. */
+const uint32_t DATABASE_WRITE_INTERVAL = 3600;
+/** Maximum length of reject messages. */
+const uint32_t MAX_REJECT_MESSAGE_LENGTH = 111;
+
+// This value came from Anoncoin v0.8.5.6, and allow us to increase Tx fee prices (ToDo: check if that code got removed)
+// as the block grows in size, the param is still a number of places in main.cpp, but not found in v10
+/** The maximum size for mined blocks */
+const uint32_t MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/4;         // 250KB  block soft limit
+
+// Old params no longer used or changed ToDo: Review
+// For I2p, this could be considerably longer, up'n the value by double
+// static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 60;
+/** Timeout in seconds before considering a block download peer unresponsive. */
+const uint32_t BLOCK_DOWNLOAD_TIMEOUT = 120;
+
+/** Dust Soft Limit, allowed with additional fee per output */
+// This value matches the v0.8.5.6 client, however does not exist in v10
+const int64_t DUST_SOFT_LIMIT = 1000000; // 0.01 ANC
+
+/** Minimum disk space required - used in CheckDiskSpace() */
+const uint64_t nMinDiskSpace = 52428800;
+
 
 /**
  * Global state
@@ -49,18 +132,20 @@ int64_t nTimeBestReceived = 0;
 CWaitableCriticalSection csBestBlock;
 CConditionVariable cvBlockChange;
 int nScriptCheckThreads = 0;
+
 bool fImporting = false;
 bool fReindex = false;
 bool fTxIndex = false;
 bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
-unsigned int nCoinCacheSize = 5000;
+uint32_t nCoinCacheSize = 5000;
+
+//! If we've just initialized Testnet with a genesis block we need to create some initial blocks, this flag starts that process
+bool fGenerateInitialTestNetState = false;
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying and mining) */
 CFeeRate minRelayTxFee = CFeeRate(1000);
-// CTxMemPool mempool(::minRelayTxFee);
-
-CTxMemPool mempool;
+CTxMemPool mempool(::minRelayTxFee);
 
 struct COrphanTx {
     CTransaction tx;
@@ -68,8 +153,8 @@ struct COrphanTx {
 };
 map<uint256, COrphanTx> mapOrphanTransactions;
 map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
-void EraseOrphansFor(NodeId peer);
 
+void EraseOrphansFor(NodeId peer);
 static void CheckBlockIndex();
 
 /** Constant stuff for coinbase transactions we create: */
@@ -126,6 +211,33 @@ namespace {
     uint32_t nBlockSequenceId = 1;
 
     /**
+     * Special Note from Anoncoin Developer: GroundRod
+     *      Its going to be difficult for anyone looking at this code to understand (including myself
+     *      months or years from now) what part uses/works with/is setup as sha256d hash values
+     *      for blocks, and which parts are working internally with the real block mined hashes.
+     *      So with that in mind, I've decided to try and structure things around this idea.  If its
+     *      not directly headed out to node(s), or received from them, we stick to using the real
+     *      Scrypt hash, as that is what is being referenced everywhere else as much as possible
+     *      throughout the rest of this code, so it can work as was intended.  RPC users inbound we
+     *      try to decode both ways, so they can use either/or.  Outbound is more complicated, and
+     *      requires tuning based on the command/query itself, and another topic.
+     *      Back to source code data structures, like mapBlockSource next up here in the main.cpp
+     *      That hash value in each map object will only be converted to a sha256d hash, if we need
+     *      to send out a reject message to a node, other than that one place, you can figure it is
+     *      a map of real work uint256 hash values.
+     *      On the other hand, QueuedBlock & CBlockReject structures are all only useful as heading
+     *      to the outside world.  And will not be setup with REAL block hashes, instead what is used
+     *      is often referenced as a FakeHash, the double sha256 hash of the block, which have long
+     *      since been used throughout Anoncoin's history, totally useless for chain proof-of-work
+     *      calculations.
+     *      The past is still used in the exchange with peers, and embedded in transactions.  As much
+     *      as possible where referenced that will be classed as uintFakeHash, instead of uint256 values.
+     *      to help indicate this distinction .  As we can then easily use the cross reference map to
+     *      find the real hash quick if we need to for some reason.  Note CBlockLocator objects
+     *      are also made up of sha256d hashes, and can be sent directly to peers, or referenced as real
+     *      hashes when we receive a locator from another peer inventory, thanks again to the new map.
+     *      A new GetRealHashLocator() has been setup, although only used to pass the skiplist tests atm...
+     *
      * Sources of received blocks, to be able to send them reject messages or ban
      * them, if processing happens afterwards. Protected by cs_main.
      */
@@ -133,7 +245,7 @@ namespace {
 
     /** Blocks that are in flight, and that are in the queue to be downloaded. Protected by cs_main. */
     struct QueuedBlock {
-        uint256 hash;
+        uintFakeHash hash;
         CBlockIndex *pindex;  //! Optional.
         int64_t nTime;  //! Time of "getdata" request in microseconds.
         int nValidatedQueuedBefore;  //! Number of blocks queued with validated headers (globally) at the time this one is requested.
@@ -156,60 +268,48 @@ namespace {
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// dispatching functions
+// dispatching functions, and allocation for the primary signals structure group
 //
+static CMainSignals g_signals;
+CMainSignals& GetMainSignals() { return g_signals; }
 
 // These functions dispatch to one or all registered wallets
 
-namespace {
-
-struct CMainSignals {
-    /** Notifies listeners of updated transaction data (transaction, and optionally the block it is found in. */
-    boost::signals2::signal<void (const uint256 &, const CTransaction &, const CBlock *)> SyncTransaction;
-    /** Notifies listeners of an erased transaction (currently disabled, requires transaction replacement). */
-    boost::signals2::signal<void (const uint256 &)> EraseTransaction;
-    /** Notifies listeners of an updated transaction without new data (for now: a coinbase potentially becoming visible). */
-    boost::signals2::signal<void (const uint256 &)> UpdatedTransaction;
-    /** Notifies listeners of a new active block chain. */
-    boost::signals2::signal<void (const CBlockLocator &)> SetBestChain;
-    /** Notifies listeners about an inventory item being seen on the network. */
-    boost::signals2::signal<void (const uint256 &)> Inventory;
-    /** Tells listeners to broadcast their data. */
-    boost::signals2::signal<void ()> Broadcast;
-    /** Notifies listeners of a block validation result */
-//    boost::signals2::signal<void (const CBlock&, const CValidationState&)> BlockChecked;
-} g_signals;
+void RegisterValidationInterface(CValidationInterface* pInterfaceIn) {
+    g_signals.SyncTransaction.connect(boost::bind(&CValidationInterface::SyncTransaction, pInterfaceIn, _1, _2));
+    g_signals.UpdatedTransaction.connect(boost::bind(&CValidationInterface::UpdatedTransaction, pInterfaceIn, _1));
+    g_signals.SetBestChain.connect(boost::bind(&CValidationInterface::SetBestChain, pInterfaceIn, _1));
+    g_signals.Inventory.connect(boost::bind(&CValidationInterface::Inventory, pInterfaceIn, _1));
+    g_signals.Broadcast.connect(boost::bind(&CValidationInterface::ResendWalletTransactions, pInterfaceIn));
+    g_signals.BlockChecked.connect(boost::bind(&CValidationInterface::BlockChecked, pInterfaceIn, _1, _2));
+    g_signals.GetScriptForMining.connect(boost::bind(&CValidationInterface::GetScriptForMining, pInterfaceIn, _1));
+    g_signals.BlockFound.connect(boost::bind(&CValidationInterface::ResetRequestCount, pInterfaceIn, _1));
 }
 
-void RegisterWallet(CWalletInterface* pwalletIn) {
-    g_signals.SyncTransaction.connect(boost::bind(&CWalletInterface::SyncTransaction, pwalletIn, _1, _2, _3));
-    g_signals.EraseTransaction.connect(boost::bind(&CWalletInterface::EraseFromWallet, pwalletIn, _1));
-    g_signals.UpdatedTransaction.connect(boost::bind(&CWalletInterface::UpdatedTransaction, pwalletIn, _1));
-    g_signals.SetBestChain.connect(boost::bind(&CWalletInterface::SetBestChain, pwalletIn, _1));
-    g_signals.Inventory.connect(boost::bind(&CWalletInterface::Inventory, pwalletIn, _1));
-    g_signals.Broadcast.connect(boost::bind(&CWalletInterface::ResendWalletTransactions, pwalletIn));
+void UnregisterValidationInterface(CValidationInterface* pInterfaceIn) {
+    g_signals.BlockFound.disconnect(boost::bind(&CValidationInterface::ResetRequestCount, pInterfaceIn, _1));
+    g_signals.GetScriptForMining.disconnect(boost::bind(&CValidationInterface::GetScriptForMining, pInterfaceIn, _1));
+    g_signals.BlockChecked.disconnect(boost::bind(&CValidationInterface::BlockChecked, pInterfaceIn, _1, _2));
+    g_signals.Broadcast.disconnect(boost::bind(&CValidationInterface::ResendWalletTransactions, pInterfaceIn));
+    g_signals.Inventory.disconnect(boost::bind(&CValidationInterface::Inventory, pInterfaceIn, _1));
+    g_signals.SetBestChain.disconnect(boost::bind(&CValidationInterface::SetBestChain, pInterfaceIn, _1));
+    g_signals.UpdatedTransaction.disconnect(boost::bind(&CValidationInterface::UpdatedTransaction, pInterfaceIn, _1));
+    g_signals.SyncTransaction.disconnect(boost::bind(&CValidationInterface::SyncTransaction, pInterfaceIn, _1, _2));
 }
 
-void UnregisterWallet(CWalletInterface* pwalletIn) {
-    g_signals.Broadcast.disconnect(boost::bind(&CWalletInterface::ResendWalletTransactions, pwalletIn));
-    g_signals.Inventory.disconnect(boost::bind(&CWalletInterface::Inventory, pwalletIn, _1));
-    g_signals.SetBestChain.disconnect(boost::bind(&CWalletInterface::SetBestChain, pwalletIn, _1));
-    g_signals.UpdatedTransaction.disconnect(boost::bind(&CWalletInterface::UpdatedTransaction, pwalletIn, _1));
-    g_signals.EraseTransaction.disconnect(boost::bind(&CWalletInterface::EraseFromWallet, pwalletIn, _1));
-    g_signals.SyncTransaction.disconnect(boost::bind(&CWalletInterface::SyncTransaction, pwalletIn, _1, _2, _3));
-}
-
-void UnregisterAllWallets() {
+void UnregisterAllValidationInterfaces() {
+    g_signals.BlockFound.disconnect_all_slots();
+    g_signals.GetScriptForMining.disconnect_all_slots();
+    g_signals.BlockChecked.disconnect_all_slots();
     g_signals.Broadcast.disconnect_all_slots();
     g_signals.Inventory.disconnect_all_slots();
     g_signals.SetBestChain.disconnect_all_slots();
     g_signals.UpdatedTransaction.disconnect_all_slots();
-    g_signals.EraseTransaction.disconnect_all_slots();
     g_signals.SyncTransaction.disconnect_all_slots();
 }
 
-void SyncWithWallets(const uint256 &hash, const CTransaction &tx, const CBlock *pblock) {
-    g_signals.SyncTransaction(hash, tx, pblock);
+void SyncWithWallets(const CTransaction &tx, const CBlock *pblock) {
+    g_signals.SyncTransaction(tx, pblock);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -220,9 +320,9 @@ void SyncWithWallets(const uint256 &hash, const CTransaction &tx, const CBlock *
 namespace {
 
 struct CBlockReject {
-    unsigned char chRejectCode;
+    uint8_t chRejectCode;
     string strRejectReason;
-    uint256 hashBlock;
+    uintFakeHash hashBlock;
 };
 
 /**
@@ -238,7 +338,7 @@ struct CNodeState {
     bool fCurrentlyConnected;
     //! Accumulated misbehaviour score for this peer.
     int nMisbehavior;
-    //! Whether this peer should be disconnected and banned.
+    //! Whether this peer should be disconnected and banned (unless whitelisted).
     bool fShouldBan;
     //! String name of this peer (debugging/logging purposes).
     std::string name;
@@ -246,8 +346,9 @@ struct CNodeState {
     std::vector<CBlockReject> rejects;
     //! The best known block we know this peer has announced.
     CBlockIndex *pindexBestKnownBlock;
-    //! The hash of the last unknown block this peer has announced.
-    uint256 hashLastUnknownBlock;
+    //! The sha256d hash of the last unknown block this peer has announced.
+    //! We can not use the real hash here, as the block maybe unknown to us.
+    uintFakeHash hashLastUnknownBlock;
     //! The last full block we both have.
     CBlockIndex *pindexLastCommonBlock;
     //! Whether we've started headers synchronization with this peer.
@@ -295,7 +396,7 @@ void UpdatePreferredDownload(CNode* node, CNodeState* state)
     nPreferredDownload -= state->fPreferredDownload;
 
     // Whether this node should be marked as a preferred download node.
-    state->fPreferredDownload = !node->fInbound && !node->fOneShot && !node->fClient;
+    state->fPreferredDownload = (!node->fInbound || node->fWhitelisted) && !node->fOneShot && !node->fClient;
 
     nPreferredDownload += state->fPreferredDownload;
 }
@@ -327,7 +428,7 @@ void FinalizeNode(NodeId nodeid) {
 }
 
 // Requires cs_main.
-void MarkBlockAsReceived(const uint256& hash) {
+void MarkBlockAsReceived(const uintFakeHash& hash) {
     map<uint256, pair<NodeId, list<QueuedBlock>::iterator> >::iterator itInFlight = mapBlocksInFlight.find(hash);
     if (itInFlight != mapBlocksInFlight.end()) {
         CNodeState *state = State(itInFlight->second.first);
@@ -340,7 +441,7 @@ void MarkBlockAsReceived(const uint256& hash) {
 }
 
 // Requires cs_main.
-void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex *pindex = NULL) {
+void MarkBlockAsInFlight(NodeId nodeid, const uintFakeHash& hash, CBlockIndex *pindex = NULL) {
     CNodeState *state = State(nodeid);
     assert(state != NULL);
 
@@ -360,7 +461,8 @@ void ProcessBlockAvailability(NodeId nodeid) {
     assert(state != NULL);
 
     if (!state->hashLastUnknownBlock.IsNull()) {
-        BlockMap::iterator itOld = mapBlockIndex.find(state->hashLastUnknownBlock);
+        uint256 aRealHash = state->hashLastUnknownBlock.GetRealHash();
+        BlockMap::iterator itOld = (aRealHash != 0) ? mapBlockIndex.find(aRealHash) : mapBlockIndex.end();
         if (itOld != mapBlockIndex.end() && itOld->second->nChainWork > 0) {
             if (state->pindexBestKnownBlock == NULL || itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
                 state->pindexBestKnownBlock = itOld->second;
@@ -370,13 +472,13 @@ void ProcessBlockAvailability(NodeId nodeid) {
 }
 
 /** Update tracking information about which blocks a peer is assumed to have. */
-void UpdateBlockAvailability(NodeId nodeid, const uint256 &hash) {
+void UpdateBlockAvailability(NodeId nodeid, const uintFakeHash &hash) {
     CNodeState *state = State(nodeid);
     assert(state != NULL);
 
     ProcessBlockAvailability(nodeid);
-
-    BlockMap::iterator it = mapBlockIndex.find(hash);
+    uint256 aRealHash = hash.GetRealHash();
+    BlockMap::iterator it = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
     if (it != mapBlockIndex.end() && it->second->nChainWork > 0) {
         // An actually better block was announced.
         if (state->pindexBestKnownBlock == NULL || it->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
@@ -467,7 +569,7 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
             if (pindex->nStatus & BLOCK_HAVE_DATA) {
                 if (pindex->nChainTx)
                     state->pindexLastCommonBlock = pindex;
-            } else if (mapBlocksInFlight.count(pindex->GetBlockHash()) == 0) {
+            } else if (mapBlocksInFlight.count(pindex->GetBlockSha256dHash()) == 0) {
                 // The block is not already downloaded, and not yet in flight.
                 if (pindex->nHeight > nWindowEnd) {
                     // We reached the end of the window.
@@ -483,7 +585,7 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
                 }
             } else if (waitingfor == -1) {
                 // This is the first already-in-flight block.
-                waitingfor = mapBlocksInFlight[pindex->GetBlockHash()].first;
+                waitingfor = mapBlocksInFlight[pindex->GetBlockSha256dHash()].first;
             }
         }
     }
@@ -527,8 +629,9 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals)
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator)
 {
     // Find the first block the caller has in the main chain
-    BOOST_FOREACH(const uint256& hash, locator.vHave) {
-        BlockMap::iterator mi = mapBlockIndex.find(hash);
+    BOOST_FOREACH(const uintFakeHash& aFakeHash, locator.vHave) {
+        uint256 aRealHash = aFakeHash.GetRealHash();
+        BlockMap::iterator mi = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
         if (mi != mapBlockIndex.end())
         {
             CBlockIndex* pindex = (*mi).second;
@@ -748,7 +851,7 @@ bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
  * 2. P2SH scripts with a crazy number of expensive
  *    CHECKSIG/CHECKMULTISIG operations
  */
-bool AreInputsStandard(const CTransaction& tx, CCoinsViewCache& mapInputs)
+bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
 {
     if (tx.IsCoinBase())
         return true; // Coinbases don't use vin normally
@@ -757,7 +860,7 @@ bool AreInputsStandard(const CTransaction& tx, CCoinsViewCache& mapInputs)
     {
         const CTxOut& prev = mapInputs.GetOutputFor(tx.vin[i]);
 
-        vector<vector<unsigned char> > vSolutions;
+        vector<vector<uint8_t> > vSolutions;
         txnouttype whichType;
         // get the scriptPubKey corresponding to this input:
         const CScript& prevScript = prev.scriptPubKey;
@@ -770,10 +873,11 @@ bool AreInputsStandard(const CTransaction& tx, CCoinsViewCache& mapInputs)
         // Transactions with extra stuff in their scriptSigs are
         // non-standard. Note that this EvalScript() call will
         // be quick, because if there are any operations
-        // beside "push data" in the scriptSig the
-        // IsStandard() call returns false
-        vector<vector<unsigned char> > stack;
-        if (!EvalScript(stack, tx.vin[i].scriptSig, tx, i, false, 0))
+        // beside "push data" in the scriptSig
+        // IsStandard() will have already returned false
+        // and this method isn't called.
+        vector<vector<uint8_t> > stack;
+        if (!EvalScript(stack, tx.vin[i].scriptSig, false, BaseSignatureChecker()))
             return false;
 
         if (whichType == TX_SCRIPTHASH)
@@ -781,7 +885,7 @@ bool AreInputsStandard(const CTransaction& tx, CCoinsViewCache& mapInputs)
             if (stack.empty())
                 return false;
             CScript subscript(stack.back().begin(), stack.back().end());
-            vector<vector<unsigned char> > vSolutions2;
+            vector<vector<uint8_t> > vSolutions2;
             txnouttype whichType2;
             if (!Solver(subscript, whichType2, vSolutions2))
                 return false;
@@ -816,7 +920,7 @@ unsigned int GetLegacySigOpCount(const CTransaction& tx)
     return nSigOps;
 }
 
-unsigned int GetP2SHSigOpCount(const CTransaction& tx, CCoinsViewCache& inputs)
+unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& inputs)
 {
     if (tx.IsCoinBase())
         return 0;
@@ -878,7 +982,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
         vInOutPoints.insert(txin.prevout);
     }
 
-    /* GR Notes 12/2014: The following chunck of code was commented out in Anc 8.6,
+    /** GR Notes 12/2014: The following chunck of code was commented out in Anc 8.6,
      * The problem was the Genesis Block has a string 95 bytes long, so this was failing
      * with script size error, this important set of tests on the transaction never got
      * 'uncommented' and fixed so the following CheckTransaction code could run properly.
@@ -951,7 +1055,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 
     // Rather not work on nonstandard transactions (unless -testnet/-regtest)
     string reason;
-    if (BaseParams().NetworkID() == CBaseChainParams::MAIN && !IsStandardTx(tx, reason))
+    if (isMainNetwork() && !IsStandardTx(tx, reason))
         return state.DoS(0,
                          error("AcceptToMemoryPool : nonstandard transaction: %s", reason),
                          REJECT_NONSTANDARD, reason);
@@ -963,56 +1067,60 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 
     // Check for conflicts with in-memory transactions
     {
-    LOCK(pool.cs); // protect pool.mapNextTx
-    for (unsigned int i = 0; i < tx.vin.size(); i++)
-    {
-        COutPoint outpoint = tx.vin[i].prevout;
-        if (pool.mapNextTx.count(outpoint))
-        {
-            // Disable replacement feature for now
-            return false;
+        LOCK(pool.cs); // protect pool.mapNextTx
+        for (unsigned int i = 0; i < tx.vin.size(); i++) {
+            COutPoint outpoint = tx.vin[i].prevout;
+            if (pool.mapNextTx.count(outpoint)) {
+                // Disable replacement feature for now
+                return false;
+            }
         }
-    }
     }
 
     {
         CCoinsView dummy;
-        CCoinsViewCache view(dummy);
+        CCoinsViewCache view(&dummy);
 
+        int64_t nValueIn = 0;
         {
-        LOCK(pool.cs);
-        CCoinsViewMemPool viewMemPool(*pcoinsTip, pool);
-        view.SetBackend(viewMemPool);
+            LOCK(pool.cs);
+            CCoinsViewMemPool viewMemPool(pcoinsTip, pool);
+            view.SetBackend(viewMemPool);
 
-        // do we already have it?
-        if (view.HaveCoins(hash))
-            return false;
-
-        // do all inputs exist?
-        // Note that this does not check for the presence of actual outputs (see the next check for that),
-        // only helps filling in pfMissingInputs (to determine missing vs spent).
-        BOOST_FOREACH(const CTxIn txin, tx.vin) {
-            if (!view.HaveCoins(txin.prevout.hash)) {
-                if (pfMissingInputs)
-                    *pfMissingInputs = true;
+            // do we already have it?
+            if (view.HaveCoins(hash))
                 return false;
+
+            // do all inputs exist?
+            // Note that this does not check for the presence of actual outputs (see the next check for that),
+            // only helps filling in pfMissingInputs (to determine missing vs spent).
+            BOOST_FOREACH(const CTxIn txin, tx.vin) {
+                uint256 prevHash = txin.prevout.hash;
+                if (!view.HaveCoins(prevHash)) {
+                    LogPrintf( "%s : While processing Tx hash %s missing inputs found, no TxIn.prevout %s\n", __func__, hash.ToString(), prevHash.ToString() );
+                    if (pfMissingInputs)
+                        *pfMissingInputs = true;
+                    return false;
+                }
             }
-        }
 
-        // are the actual inputs available?
-        if (!view.HaveInputs(tx))
-            return state.Invalid(error("AcceptToMemoryPool : inputs already spent"),
-                                 REJECT_DUPLICATE, "bad-txns-inputs-spent");
+            // are the actual inputs available?
+            if (!view.HaveInputs(tx))
+                return state.Invalid(error("AcceptToMemoryPool : inputs already spent"),
+                                     REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
-        // Bring the best block into scope
-        view.GetBestBlock();
+            // Bring the best block into scope
+            view.GetBestBlock();
 
-        // we have all inputs cached now, so switch back to dummy, so we don't need to keep lock on mempool
-        view.SetBackend(dummy);
+            // Be SURE to grab the transaction ValueIn BEFORE the view is returned to a dummy state!
+            nValueIn = view.GetValueIn(tx);
+
+            // we have all inputs cached now, so switch back to dummy, so we don't need to keep lock on mempool
+            view.SetBackend(dummy);
         }
 
         // Check for non-standard pay-to-script-hash in inputs
-        if (BaseParams().NetworkID() == CBaseChainParams::MAIN && !AreInputsStandard(tx, view))
+        if (isMainNetwork() && !AreInputsStandard(tx, view))
             return error("AcceptToMemoryPool: : nonstandard transaction input");
 
 #ifdef HARDFORK_BLOCK
@@ -1030,9 +1138,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
                                    hash.ToString(), nSigOps, MAX_TX_SIGOPS),
                              REJECT_NONSTANDARD, "bad-txns-too-many-sigops");
 #endif
-        int64_t nValueIn = view.GetValueIn(tx);
         int64_t nValueOut = tx.GetValueOut();
-        int64_t nFees = nValueIn-nValueOut;
+        int64_t nFees = nValueIn - nValueOut;
         double dPriority = view.GetPriority(tx, chainActive.Height());
 
         CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
@@ -1080,12 +1187,11 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
-        if (!CheckInputs(tx, state, view, true, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC))
+        if (!CheckInputs(tx, state, view, true, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC, true))
         {
             return error("AcceptToMemoryPool: : ConnectInputs failed %s", hash.ToString());
         }
 
-#if defined( DONT_COMPILE )
         // Check again against just the consensus-critical mandatory script
         // verification flags, in case of bugs in the standard flags that cause
         // transactions to pass as valid when they're actually invalid. For
@@ -1099,19 +1205,18 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
         {
             return error("AcceptToMemoryPool: : BUG! PLEASE REPORT THIS! ConnectInputs failed against MANDATORY but not STANDARD flags %s", hash.ToString());
         }
-#endif
+
         // Store transaction in memory
         pool.addUnchecked(hash, entry);
     }
 
-    g_signals.SyncTransaction(hash, tx, NULL);
+    SyncWithWallets(tx, NULL);
 
     return true;
 }
 
-
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
-bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock, bool fAllowSlow)
+bool GetTransaction(const uint256 &hash, CTransaction &txOut, uintFakeHash &hashBlock, bool fAllowSlow)
 {
     CBlockIndex *pindexSlow = NULL;
     {
@@ -1128,16 +1233,17 @@ bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock
             if (pblocktree->ReadTxIndex(hash, postx)) {
                 CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
                 if (file.IsNull())
-                    return error("%s: OpenBlockFile failed", __func__);
+                    return error("%s : OpenBlockFile failed", __func__);
                 CBlockHeader header;
                 try {
                     file >> header;
                     fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
                     file >> txOut;
-                } catch (std::exception &e) {
+                } catch (const std::exception& e) {
                     return error("%s : Deserialize or I/O error - %s", __func__, e.what());
                 }
-                hashBlock = header.GetHash();
+                //! Returning a block hash to the outside world means the sha256d hash is needed
+                hashBlock = header.CalcSha256dHash();
                 if (txOut.GetHash() != hash)
                     return error("%s : txid mismatch", __func__);
                 return true;
@@ -1148,9 +1254,9 @@ bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock
             int nHeight = -1;
             {
                 CCoinsViewCache &view = *pcoinsTip;
-                CCoins coins;
-                if (view.GetCoins(hash, coins))
-                    nHeight = coins.nHeight;
+                const CCoins* coins = view.AccessCoins(hash);
+                if (coins)
+                    nHeight = coins->nHeight;
             }
             if (nHeight > 0)
                 pindexSlow = chainActive[nHeight];
@@ -1163,7 +1269,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock
             BOOST_FOREACH(const CTransaction &tx, block.vtx) {
                 if (tx.GetHash() == hash) {
                     txOut = tx;
-                    hashBlock = pindexSlow->GetBlockHash();
+                    hashBlock = pindexSlow->GetBlockSha256dHash();
                     return true;
                 }
             }
@@ -1217,14 +1323,13 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
     try {
         filein >> block;
     }
-    catch (std::exception &e) {
+    catch (const std::exception& e) {
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
 
-    // Check the header
-    // ToDo: Change this to confirm it is the genesis block
-    if (pos.nPos != 0 && !CheckProofOfWork(block.GetPowHash(), block.nBits))
-        return error("ReadBlockFromDisk : Errors in block header");
+    // Check the header POW
+    if( !CheckProofOfWork( block.GetHash(), block.nBits) )
+            return error("ReadBlockFromDisk : Errors in block header");
 
     return true;
 }
@@ -1260,15 +1365,17 @@ int64_t GetBlockValue(int nHeight, int64_t nFees)
 bool IsInitialBlockDownload()
 {
     LOCK(cs_main);
+    // LogPrintf( "IsInitialBlockDownload() fImporting=%d fReindex=%d Checkpoints=%d\n", fImporting, fReindex, chainActive.Height() < Checkpoints::GetTotalBlocksEstimate() );
     if (fImporting || fReindex || chainActive.Height() < Checkpoints::GetTotalBlocksEstimate())
         return true;
     // ToDo:
     static bool lockIBDState = false;
+    // LogPrintf( "IsInitialBlockDownload() lockIBDState=%d BestHeader Height=%d BlockTime=%d\n", lockIBDState, pindexBestHeader->nHeight, pindexBestHeader->GetBlockTime() );
     if (lockIBDState)
         return false;
-    // With 3min blocks, we have ~20/hour
-    bool state = (chainActive.Height() < pindexBestHeader->nHeight - 24 * 20 ||
-            pindexBestHeader->GetBlockTime() < GetTime() - 24 * 60 * 60);
+    // With 3min blocks, we have ~20/hour set now for 8hrs, btc was 24
+    bool state = (chainActive.Height() < pindexBestHeader->nHeight - 8 * 20 ||
+            pindexBestHeader->GetBlockTime() < GetTime() - 8 * 60 * 60);
     if (!state)
         lockIBDState = true;
     return state;
@@ -1294,14 +1401,9 @@ void CheckForkWarningConditions()
     {
         if (!fLargeWorkForkFound && pindexBestForkBase)
         {
-            // ToDo: Add alert message to client interface
-            std::string strCmd = GetArg("-alertnotify", "");
-            if (!strCmd.empty()) {
-                std::string warning = std::string("'Warning: Large-work fork detected, forking after block ") +
-                                      pindexBestForkBase->phashBlock->ToString() + std::string("'");
-                boost::replace_all(strCmd, "%s", warning);
-                boost::thread t(runCommand, strCmd); // thread runs free
-            }
+            std::string warning = std::string("'Warning: Large-work fork detected, forking after block ") +
+                pindexBestForkBase->phashBlock->ToString() + std::string("'");
+            CAlert::Notify(warning, true);
         }
         if (pindexBestForkTip && pindexBestForkBase)
         {
@@ -1345,7 +1447,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
     // or a chain that is entirely longer than ours and invalid (note that this should be detected by both)
     // We define it this way because it allows us to only store the highest fork tip (+ base) which meets
     // the 20-block condition and from this always have the most-likely-to-cause-warning fork
-    // Note to team: Adjusted values based on Anoncoin 3min target time, although set 20 blocks as the arbitrarily value
+    // ToDo: Note to team--> GR Adjusted values based on Anoncoin 3min target time, although setting 20 blocks was arbitrary
     if (pfork && (!pindexBestForkTip || (pindexBestForkTip && pindexNewForkTip->nHeight > pindexBestForkTip->nHeight)) &&
             pindexNewForkTip->nChainWork - pfork->nChainWork > (GetBlockProof(*pfork) * 20) &&
             chainActive.Height() - pindexNewForkTip->nHeight < 240)
@@ -1368,7 +1470,8 @@ void Misbehaving(NodeId pnode, int howmuch)
         return;
 
     state->nMisbehavior += howmuch;
-    if (state->nMisbehavior >= GetArg("-banscore", 100))
+    int banscore = GetArg("-banscore", 100);
+    if (state->nMisbehavior >= banscore && state->nMisbehavior - howmuch < banscore)
     {
         LogPrintf("Misbehaving: %s (%d -> %d) BAN THRESHOLD EXCEEDED\n", state->name, state->nMisbehavior-howmuch, state->nMisbehavior);
         state->fShouldBan = true;
@@ -1379,21 +1482,14 @@ void Misbehaving(NodeId pnode, int howmuch)
 void static InvalidChainFound(CBlockIndex* pindexNew)
 {
     if (!pindexBestInvalid || pindexNew->nChainWork > pindexBestInvalid->nChainWork)
-    {
         pindexBestInvalid = pindexNew;
-        // The current code doesn't actually read the BestInvalidWork entry in
-        // the block database anymore, as it is derived from the flags in block
-        // index entry. We only write it for backward compatibility.
-        // ToDo: Study this issue
-        pblocktree->WriteBestInvalidWork(CBigNum(pindexBestInvalid->nChainWork));
-        uiInterface.NotifyBlocksChanged();
-    }
+
     LogPrintf("InvalidChainFound: invalid block=%s  height=%d  log2_work=%.8g  date=%s\n",
       pindexNew->GetBlockHash().ToString(), pindexNew->nHeight,
-      log(pindexNew->nChainWork.getdouble())/log(2.0), DateTimeStrFormat("%Y-%m-%d %H:%M:%S",
+      GetLog2Work(pindexNew->nChainWork), DateTimeStrFormat("%Y-%m-%d %H:%M:%S",
       pindexNew->GetBlockTime()));
     LogPrintf("InvalidChainFound:  current best=%s  height=%d  log2_work=%.8g  date=%s\n",
-      chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), log(chainActive.Tip()->nChainWork.getdouble())/log(2.0),
+      chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), GetLog2Work(chainActive.Tip()->nChainWork),
       DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()));
     CheckForkWarningConditions();
 }
@@ -1403,7 +1499,7 @@ void static InvalidBlockFound(CBlockIndex *pindex, const CValidationState &state
     if (state.IsInvalid(nDoS)) {
         std::map<uint256, NodeId>::iterator it = mapBlockSource.find(pindex->GetBlockHash());
         if (it != mapBlockSource.end() && State(it->second)) {
-            CBlockReject reject = {state.GetRejectCode(), state.GetRejectReason(), pindex->GetBlockHash()};
+            CBlockReject reject = {state.GetRejectCode(), state.GetRejectReason(), pindex->GetBlockSha256dHash()};
             State(it->second)->rejects.push_back(reject);
             if (nDoS > 0)
                 Misbehaving(it->second, nDoS);
@@ -1417,38 +1513,49 @@ void static InvalidBlockFound(CBlockIndex *pindex, const CValidationState &state
     }
 }
 
-void UpdateCoins(const CTransaction& tx, CValidationState &state, CCoinsViewCache &inputs, CTxUndo &txundo, int nHeight, const uint256 &txhash)
+void UpdateCoins(const CTransaction& tx, CValidationState &state, CCoinsViewCache &inputs, CTxUndo &txundo, int nHeight)
 {
-    bool ret;
     // mark inputs spent
     if (!tx.IsCoinBase()) {
+        txundo.vprevout.reserve(tx.vin.size());
         BOOST_FOREACH(const CTxIn &txin, tx.vin) {
-            CCoins &coins = inputs.GetCoins(txin.prevout.hash);
-            CTxInUndo undo;
-            ret = coins.Spend(txin.prevout, undo);
+            CCoinsModifier coins = inputs.ModifyCoins(txin.prevout.hash);
+            unsigned nPos = txin.prevout.n;
+
+            if (nPos >= coins->vout.size() || coins->vout[nPos].IsNull())
+                assert(false);
+            // mark an outpoint spent, and construct undo information
+            txundo.vprevout.push_back(CTxInUndo());
+            bool ret = coins->Spend(txin.prevout, txundo.vprevout.back());
             assert(ret);
-            txundo.vprevout.push_back(undo);
         }
     }
 
     // add outputs
-    ret = inputs.SetCoins(txhash, CCoins(tx, nHeight));
-    assert(ret);
+    inputs.ModifyCoins(tx.GetHash())->FromTx(tx, nHeight);
 }
 
-bool CScriptCheck::operator()() const {
+void UpdateCoins(const CTransaction& tx, CValidationState &state, CCoinsViewCache &inputs, int nHeight)
+{
+    CTxUndo txundo;
+    UpdateCoins(tx, state, inputs, txundo, nHeight);
+}
+
+bool CScriptCheck::operator()() {
     const CScript &scriptSig = ptxTo->vin[nIn].scriptSig;
-    if (!VerifyScript(scriptSig, scriptPubKey, *ptxTo, nIn, nFlags, nHashType))
-        return error("CScriptCheck() : %s VerifySignature failed", ptxTo->GetHash().ToString());
+/**
+ * Valid signature cache, to avoid doing expensive ECDSA signature checking
+ * twice for every transaction (once when accepted into memory pool, and
+ * again when accepted into the block chain)
+ */
+
+    if (!VerifyScript(scriptSig, scriptPubKey, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, cacheStore), &error)) {
+        return ::error("CScriptCheck(): %s:%d VerifySignature failed: %s", ptxTo->GetHash().ToString(), nIn, ScriptErrorString(error));
+    }
     return true;
 }
 
-bool VerifySignature(const CCoins& txFrom, const CTransaction& txTo, unsigned int nIn, unsigned int flags, int nHashType)
-{
-    return CScriptCheck(txFrom, txTo, nIn, flags, nHashType)();
-}
-
-bool CheckInputs(const CTransaction& tx, CValidationState &state, CCoinsViewCache &inputs, bool fScriptChecks, unsigned int flags, std::vector<CScriptCheck> *pvChecks)
+bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsViewCache &inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck> *pvChecks)
 {
     if (!tx.IsCoinBase())
     {
@@ -1462,37 +1569,46 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, CCoinsViewCach
 
         // While checking, GetBestBlock() refers to the parent block.
         // This is also true for mempool checks.
-        CBlockIndex *pindexPrev = mapBlockIndex.find(inputs.GetBestBlock())->second;
+        // If it was not already setup properly, this call also brings the best block into scope for the view,
+        // after consulting the base view, which could be programmed wrong or have returned 0
+        uint256 viewBestBlock = inputs.GetBestBlock();
+        BlockMap::iterator itBM = (viewBestBlock != 0) ? mapBlockIndex.find( viewBestBlock ) : mapBlockIndex.end();
+        if( itBM == mapBlockIndex.end() )
+            return state.Invalid(error("%s : for Tx %s view GetBestBlock() returned %s not setup correctly.", __func__, tx.GetHash().ToString(), viewBestBlock.ToString()));
+
+        CBlockIndex *pindexPrev = itBM->second;
         int nSpendHeight = pindexPrev->nHeight + 1;
-        int64_t nValueIn = 0;
-        int64_t nFees = 0;
+        CAmount nValueIn = 0;
+        CAmount nFees = 0;
         for (unsigned int i = 0; i < tx.vin.size(); i++)
         {
             const COutPoint &prevout = tx.vin[i].prevout;
-            const CCoins &coins = inputs.GetCoins(prevout.hash);
+            const CCoins *coins = inputs.AccessCoins(prevout.hash);
+            assert(coins);
 
             // If prev is coinbase, check that it's matured
-            if (coins.IsCoinBase()) {
-                if (nSpendHeight - coins.nHeight < COINBASE_MATURITY)
+            if (coins->IsCoinBase()) {
+                if (nSpendHeight - coins->nHeight < COINBASE_MATURITY)
                     return state.Invalid(
-                        error("CheckInputs() : tried to spend coinbase at depth %d", nSpendHeight - coins.nHeight),
+                        error("CheckInputs() : tried to spend coinbase at depth %d", nSpendHeight - coins->nHeight),
                         REJECT_INVALID, "bad-txns-premature-spend-of-coinbase");
             }
 
             // Check for negative or overflow input values
-            nValueIn += coins.vout[prevout.n].nValue;
-            if (!MoneyRange(coins.vout[prevout.n].nValue) || !MoneyRange(nValueIn))
+            nValueIn += coins->vout[prevout.n].nValue;
+            if (!MoneyRange(coins->vout[prevout.n].nValue) || !MoneyRange(nValueIn))
                 return state.DoS(100, error("CheckInputs() : txin values out of range"),
                                  REJECT_INVALID, "bad-txns-inputvalues-outofrange");
 
         }
 
         if (nValueIn < tx.GetValueOut())
-            return state.DoS(100, error("CheckInputs() : %s value in < value out", tx.GetHash().ToString()),
+            return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
+                                        tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
                              REJECT_INVALID, "bad-txns-in-belowout");
 
         // Tally transaction fees
-        int64_t nTxFee = nValueIn - tx.GetValueOut();
+        CAmount nTxFee = nValueIn - tx.GetValueOut();
         if (nTxFee < 0)
             return state.DoS(100, error("CheckInputs() : %s nTxFee < 0", tx.GetHash().ToString()),
                              REJECT_INVALID, "bad-txns-fee-negative");
@@ -1511,22 +1627,35 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, CCoinsViewCach
         if (fScriptChecks) {
             for (unsigned int i = 0; i < tx.vin.size(); i++) {
                 const COutPoint &prevout = tx.vin[i].prevout;
-                const CCoins &coins = inputs.GetCoins(prevout.hash);
+                const CCoins* coins = inputs.AccessCoins(prevout.hash);
+                assert(coins);
 
                 // Verify signature
-                CScriptCheck check(coins, tx, i, flags, 0);
+                CScriptCheck check(*coins, tx, i, flags, cacheStore);
                 if (pvChecks) {
                     pvChecks->push_back(CScriptCheck());
                     check.swap(pvChecks->back());
                 } else if (!check()) {
                     if (flags & SCRIPT_VERIFY_STRICTENC) {
-                        // For now, check whether the failure was caused by non-canonical
-                        // encodings or not; if so, don't trigger DoS protection.
-                        CScriptCheck check(coins, tx, i, flags & (~SCRIPT_VERIFY_STRICTENC), 0);
+                        // Check whether the failure was caused by a
+                        // non-mandatory script verification check, such as
+                        // non-standard DER encodings or non-null dummy
+                        // arguments; if so, don't trigger DoS protection to
+                        // avoid splitting the network between upgraded and
+                        // non-upgraded nodes.
+                        CScriptCheck check(*coins, tx, i,
+                                flags & (~SCRIPT_VERIFY_STRICTENC), cacheStore);
                         if (check())
-                            return state.Invalid(false, REJECT_NONSTANDARD, "non-canonical");
+                            return state.Invalid(false, REJECT_NONSTANDARD, strprintf("non-mandatory-script-verify-flag (%s)", ScriptErrorString(check.GetScriptError())));
                     }
-                    return state.DoS(100,false, REJECT_NONSTANDARD, "non-canonical");
+                    // Failures of other flags indicate a transaction that is
+                    // invalid in new blocks, e.g. a invalid P2SH. We DoS ban
+                    // such nodes as they are not following the protocol. That
+                    // said during an upgrade careful thought should be taken
+                    // as to the correct behavior - we may want to continue
+                    // peering with non-upgraded nodes even after a soft-fork
+                    // super-majority vote has passed.
+                    return state.DoS(100,false, REJECT_INVALID, strprintf("mandatory-script-verify-flag-failed (%s)", ScriptErrorString(check.GetScriptError())));
                 }
             }
         }
@@ -1561,31 +1690,27 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
         const CTransaction &tx = block.vtx[i];
         uint256 hash = tx.GetHash();
 
-        // check that all outputs are available
-        if (!view.HaveCoins(hash)) {
-            fClean = fClean && error("DisconnectBlock() : outputs still spent? database corrupted");
-            view.SetCoins(hash, CCoins());
-        }
-        CCoins &outs = view.GetCoins(hash);
         // Check that all outputs are available and match the outputs in the block itself
         // exactly. Note that transactions with only provably unspendable outputs won't
         // have outputs available even in the block itself, so we handle that case
         // specially with outsEmpty.
-        //CCoins outsEmpty;
-        //CCoins &outs = view.HaveCoins(hash) ? view.GetCoins(hash) : outsEmpty;
-        //outs.ClearUnspendable();
+        {
+            CCoins outsEmpty;
+            CCoinsModifier outs = view.ModifyCoins(hash);
+            outs->ClearUnspendable();
 
-        CCoins outsBlock = CCoins(tx, pindex->nHeight);
-        // The CCoins serialization does not serialize negative numbers.
-        // No network rules currently depend on the version here, so an inconsistency is harmless
-        // but it must be corrected before txout nversion ever influences a network rule.
-        if (outsBlock.nVersion < 0)
-            outs.nVersion = outsBlock.nVersion;
-        if (outs != outsBlock)
-            fClean = fClean && error("DisconnectBlock() : added transaction mismatch? database corrupted");
+            CCoins outsBlock(tx, pindex->nHeight);
+            // The CCoins serialization does not serialize negative numbers.
+            // No network rules currently depend on the version here, so an inconsistency is harmless
+            // but it must be corrected before txout nversion ever influences a network rule.
+            if (outsBlock.nVersion < 0)
+                outs->nVersion = outsBlock.nVersion;
+            if (*outs != outsBlock)
+                fClean = fClean && error("DisconnectBlock() : added transaction mismatch? database corrupted");
 
-        // remove outputs
-        outs = CCoins();
+            // remove outputs
+            outs->Clear();
+        }
 
         // restore inputs
         if (i > 0) { // not coinbases
@@ -1595,27 +1720,24 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
             for (unsigned int j = tx.vin.size(); j-- > 0;) {
                 const COutPoint &out = tx.vin[j].prevout;
                 const CTxInUndo &undo = txundo.vprevout[j];
-                CCoins coins;
-                view.GetCoins(out.hash, coins); // this can fail if the prevout was already entirely spent
+                CCoinsModifier coins = view.ModifyCoins(out.hash);
                 if (undo.nHeight != 0) {
                     // undo data contains height: this is the last output of the prevout tx being spent
-                    if (!coins.IsPruned())
+                    if (!coins->IsPruned())
                         fClean = fClean && error("DisconnectBlock() : undo data overwriting existing transaction");
-                    coins = CCoins();
-                    coins.fCoinBase = undo.fCoinBase;
-                    coins.nHeight = undo.nHeight;
-                    coins.nVersion = undo.nVersion;
+                    coins->Clear();
+                    coins->fCoinBase = undo.fCoinBase;
+                    coins->nHeight = undo.nHeight;
+                    coins->nVersion = undo.nVersion;
                 } else {
-                    if (coins.IsPruned())
+                    if (coins->IsPruned())
                         fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
                 }
-                if (coins.IsAvailable(out.n))
+                if (coins->IsAvailable(out.n))
                     fClean = fClean && error("DisconnectBlock() : undo data overwriting existing output");
-                if (coins.vout.size() < out.n+1)
-                    coins.vout.resize(out.n+1);
-                coins.vout[out.n] = undo.txout;
-                if (!view.SetCoins(out.hash, coins))
-                    return error("DisconnectBlock() : cannot restore coin inputs");
+                if (coins->vout.size() < out.n+1)
+                    coins->vout.resize(out.n+1);
+                coins->vout[out.n] = undo.txout;
             }
         }
     }
@@ -1678,12 +1800,21 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     // verify that the view's current state corresponds to the previous block
     uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();
-    assert(hashPrevBlock == view.GetBestBlock());
+    // This assertion fails when trying to run Anoncoin v9.5 with an old blockindex database
+    // Trying to handle it better, log the problem, tell them the solution and shutdown.
+    // assert(hashPrevBlock == view.GetBestBlock());
+    if( hashPrevBlock != view.GetBestBlock()) {
+        LogPrintf( "ERROR - You maybe trying to run Anoncoin, without having 1st reindexed the BlockChain, executing shutdown.\n" );
+        LogPrintf( "ConnectBlock variables: indexheight=%d hashPrevBlock=%s viewBestBloc=%s\n", pindex->nHeight, hashPrevBlock.ToString(), view.GetBestBlock().ToString() );
+        AbortNode( _("Internal ERROR - Invalid BlockIndex") );
+        return false;
+    }
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
     if (block.GetHash() == Params().HashGenesisBlock()) {
-        view.SetBestBlock(pindex->GetBlockHash());
+        if (!fJustCheck)
+            view.SetBestBlock(pindex->GetBlockHash());
         return true;
     }
 
@@ -1717,7 +1848,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nBIP16SwitchTime = 1333238400;
     bool fStrictPayToScriptHash = (pindex->GetBlockTime() >= nBIP16SwitchTime);
 
-    unsigned int flags = SCRIPT_VERIFY_NOCACHE;     // ToDo: Confirm this with team
+    // unsigned int flags = SCRIPT_VERIFY_LOW_S;        ToDo: Can not support this flag yet
+    unsigned int flags = 0;
     flags |= fStrictPayToScriptHash ? SCRIPT_VERIFY_P2SH : SCRIPT_VERIFY_NONE;
 
     // Start enforcing the DERSIG (BIP66) rules, for block.nVersion=3 blocks, when 75% of the network has upgraded:
@@ -1769,17 +1901,18 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             nFees += view.GetValueIn(tx)-tx.GetValueOut();
 
             std::vector<CScriptCheck> vChecks;
-            if (!CheckInputs(tx, state, view, fScriptChecks, flags, nScriptCheckThreads ? &vChecks : NULL))
+            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL))
                 return false;
             control.Add(vChecks);
         }
 
-        CTxUndo txundo;
-        UpdateCoins(tx, state, view, txundo, pindex->nHeight, block.GetTxHash(i));
-        if (!tx.IsCoinBase())
-            blockundo.vtxundo.push_back(txundo);
+        CTxUndo undoDummy;
+        if (i > 0) {
+            blockundo.vtxundo.push_back(CTxUndo());
+        }
+        UpdateCoins(tx, state, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
 
-        vPos.push_back(std::make_pair(block.GetTxHash(i), pos));
+        vPos.push_back(std::make_pair(tx.GetHash(), pos));
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
     int64_t nTime1 = GetTimeMicros(); nTimeConnect += nTime1 - nTimeStart;
@@ -1823,17 +1956,24 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.Abort(_("Failed to write transaction index"));
 
     // add this block to the view's block chain
-    bool ret;
-    ret = view.SetBestBlock(pindex->GetBlockHash());
-    assert(ret);
+    view.SetBestBlock(pindex->GetBlockHash());
 
     int64_t nTime3 = GetTimeMicros(); nTimeIndex += nTime3 - nTime2;
     LogPrint("bench", "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
 
-    // Watch for changes to the previous coinbase transaction.
+//! Removing this from here and placing it later in the validation process solved Windows Build crashing problems
+//! which took many hours of debug time to figure out well enough that at least the immediate problem was solved.
+//! Which QT builds crash with this here?  That remains a question mark so putting this on the ToDo: list as moving
+//! this code to ConnectTip(), right after the UpdateTip() call is not yet fully understood as to why it caused only
+//! a crash in Windows QT programs built against the QT 5.2.1 library.
+#if defined( DONT_COMPILE )
+    // Watch for changes to the previous coinbase transaction, first time here the static variable with be null.
     static uint256 hashPrevBestCoinBase;
-    g_signals.UpdatedTransaction(hashPrevBestCoinBase);
+    if( !hashPrevBestCoinBase.IsNull() ) {
+        g_signals.UpdatedTransaction( hashPrevBestCoinBase );
+    }
     hashPrevBestCoinBase = block.vtx[0].GetHash();
+#endif // defined
 
     int64_t nTime4 = GetTimeMicros(); nTimeCallbacks += nTime4 - nTime3;
     LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
@@ -1853,7 +1993,7 @@ enum FlushStateMode {
  * fast is not set and it's been a while since the last write.
  */
 bool static FlushStateToDisk(CValidationState &state, FlushStateMode mode) {
-    LOCK(cs_main);
+    LOCK2(cs_main, cs_LastBlockFile);
     static int64_t nLastWrite = 0;
     try {
     if ((mode == FLUSH_STATE_ALWAYS) ||
@@ -1907,26 +2047,33 @@ void FlushStateToDisk() {
     FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
 }
 
-// Update chainActive and related internal data structures.
+/** Update chainActive and related internal data structures. */
 void static UpdateTip(CBlockIndex *pindexNew) {
     chainActive.SetTip(pindexNew);
-
-    // Update best block in wallet (so we can detect restored wallets)
-    // This v9 code can be left for now April '15
-    bool fIsInitialDownload = IsInitialBlockDownload();
-    if ((chainActive.Height() % 20160) == 0 || (!fIsInitialDownload && (chainActive.Height() % 144) == 0))
-        g_signals.SetBestChain(chainActive.GetLocator());
 
     // New best block
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
-    // if( chainActive.Height() % 1000   == 0)  Limit the log output allot with this if your debugging other things
-    LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s progress=%f  cache=%u\n",
-      chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), log(chainActive.Tip()->nChainWork.getdouble())/log(2.0), (unsigned long)chainActive.Tip()->nChainTx,
-      DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
-      Checkpoints::GuessVerificationProgress(chainActive.Tip()), (unsigned int)pcoinsTip->GetCacheSize());
 
-    cvBlockChange.notify_all();         // V10 code that does nothing atm, until coded in wallet/rpcmining/rpcserver
+    uint16_t nReportInterval = 0;
+    if( isMainNetwork() ) {
+        if( chainActive.Height() < Checkpoints::GetTotalBlocksEstimate() )
+            nReportInterval = 1000;
+        else if( chainActive.Height() < 350000 )
+            nReportInterval = 100;
+        else if( chainActive.Height() < 360000 )
+            nReportInterval = 10;
+    }
+    // Limit the log output allot with this if your initializing the blockchain
+    if( !nReportInterval || chainActive.Height() % nReportInterval == 0 )
+        LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s progress=%f  cache=%u\n",
+          chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), GetLog2Work(chainActive.Tip()->nChainWork), (unsigned long)chainActive.Tip()->nChainTx,
+          DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
+          Checkpoints::GuessVerificationProgress(chainActive.Tip()), (unsigned int)pcoinsTip->GetCacheSize());
+
+    cvBlockChange.notify_all();
+
+    SetRetargetToBlock(pindexNew);
 
     // Check the version of the last 100 blocks to see if we need to upgrade:
     static bool fWarned = false;
@@ -1946,13 +2093,11 @@ void static UpdateTip(CBlockIndex *pindexNew) {
         {
             // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
             strMiscWarning = _("Warning: This version is obsolete, upgrade required!");
-            // Need v10 upgrade to alert module, for the next line of code to work
-            // CAlert::Notify(strMiscWarning, true);
+            CAlert::Notify(strMiscWarning, true);
             fWarned = true;
         }
     }
 }
-
 
 /** Disconnect chainActive's tip. */
 bool static DisconnectTip(CValidationState &state) {
@@ -1966,7 +2111,7 @@ bool static DisconnectTip(CValidationState &state) {
     // Apply the block atomically to the chain state.
     int64_t nStart = GetTimeMicros();
     {
-        CCoinsViewCache view(*pcoinsTip, true);
+        CCoinsViewCache view(pcoinsTip);                    // Create an empty coin cache view, based on the main pcoinsTip cache
         if (!DisconnectBlock(block, state, pindexDelete, view))
             return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
         assert(view.Flush());
@@ -1983,15 +2128,14 @@ bool static DisconnectTip(CValidationState &state) {
         if (tx.IsCoinBase() || !AcceptToMemoryPool(mempool, stateDummy, tx, false, NULL))
             mempool.remove(tx, removed, true);
     }
-    // v10 Code line:
-    // mempool.removeCoinbaseSpends(pcoinsTip, pindexDelete->nHeight);
+    mempool.removeCoinbaseSpends(pcoinsTip, pindexDelete->nHeight);
     mempool.check(pcoinsTip);
     // Update chainActive and related variables.
     UpdateTip(pindexDelete->pprev);
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
     BOOST_FOREACH(const CTransaction &tx, block.vtx) {
-        SyncWithWallets(tx.GetHash(), tx, NULL);
+        SyncWithWallets(tx, NULL);
     }
     return true;
 }
@@ -2022,17 +2166,15 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     int64_t nTime3;
     LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
     {
-        CCoinsViewCache view(*pcoinsTip, true);
-        CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
+        CCoinsViewCache view(pcoinsTip);                    // Create an empty coin cache view, based on the main pcoinsTip cache
         bool rv = ConnectBlock(*pblock, state, pindexNew, view);
-        // This next line is from v10
-//        g_signals.BlockChecked(*pblock, state);
+        g_signals.BlockChecked(*pblock, state);                             // New signal used for the rpc miner
         if (!rv) {
             if (state.IsInvalid())
                 InvalidBlockFound(pindexNew, state);
             return error("ConnectTip() : ConnectBlock %s failed", pindexNew->GetBlockHash().ToString());
         }
-        mapBlockSource.erase(inv.hash);
+        mapBlockSource.erase(pindexNew->GetBlockHash());
         nTime3 = GetTimeMicros(); nTimeConnectTotal += nTime3 - nTime2;
         LogPrint("bench", "  - Connect total: %.2fms [%.2fs]\n", (nTime3 - nTime2) * 0.001, nTimeConnectTotal * 0.000001);
         assert(view.Flush());
@@ -2044,25 +2186,28 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
         return false;
     int64_t nTime5 = GetTimeMicros(); nTimeChainState += nTime5 - nTime4;
     LogPrint("bench", "  - Writing chainstate: %.2fms [%.2fs]\n", (nTime5 - nTime4) * 0.001, nTimeChainState * 0.000001);
-
     // Remove conflicting transactions from the mempool.
     list<CTransaction> txConflicted;
-    BOOST_FOREACH(const CTransaction &tx, block.vtx) {
-        list<CTransaction> unused;
-        mempool.remove(tx, unused);
-        mempool.removeConflicts(tx, txConflicted);
-    }
+    mempool.removeForBlock(pblock->vtx, pindexNew->nHeight, txConflicted);
     mempool.check(pcoinsTip);
     // Update chainActive & related variables.
     UpdateTip(pindexNew);
+
+    // Watch for changes to the previous coinbase transaction, first time here the static variable with be null.
+    static uint256 hashPrevBestCoinBase;
+    if( !hashPrevBestCoinBase.IsNull() ) {
+        g_signals.UpdatedTransaction( hashPrevBestCoinBase );
+    }
+    hashPrevBestCoinBase = pblock->vtx[0].GetHash();
+
     // Tell wallet about transactions that went from mempool
     // to conflicted:
     BOOST_FOREACH(const CTransaction &tx, txConflicted) {
-        SyncWithWallets(tx.GetHash(), tx, NULL);
+        SyncWithWallets(tx, NULL);
     }
     // ... and about transactions that got confirmed:
-    BOOST_FOREACH(const CTransaction &tx, block.vtx) {
-        SyncWithWallets(tx.GetHash(), tx, &block);
+    BOOST_FOREACH(const CTransaction &tx, pblock->vtx) {
+        SyncWithWallets(tx, pblock);
     }
 
     int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
@@ -2201,7 +2346,6 @@ static bool ActivateBestChainStep(CValidationState &state, CBlockIndex *pindexMo
  * that is already loaded (to avoid loading it again from disk).
  */
 bool ActivateBestChain(CValidationState &state, CBlock *pblock) {
-    CBlockIndex *pindexOldTip = chainActive.Tip();
     CBlockIndex *pindexNewTip = NULL;
     CBlockIndex *pindexMostWork = NULL;
     do {
@@ -2226,7 +2370,7 @@ bool ActivateBestChain(CValidationState &state, CBlock *pblock) {
 
         // Notifications/callbacks that can run without cs_main
         if (!fInitialDownload) {
-            uint256 hashNewTip = pindexNewTip->GetBlockHash();
+            uintFakeHash hashNewTip = pindexNewTip->GetBlockSha256dHash();
             // Relay inventory, but don't relay old inventory during initial block download.
             int nBlockEstimate = Checkpoints::GetTotalBlocksEstimate();
             {
@@ -2235,8 +2379,8 @@ bool ActivateBestChain(CValidationState &state, CBlock *pblock) {
                     if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
                         pnode->PushInventory(CInv(MSG_BLOCK, hashNewTip));
             }
-            // Notify external listeners about the new tip.
-            // uiInterface.NotifyBlockTip(hashNewTip);
+            // Notify external listeners about the new tip, and in this case use the real hash
+            uiInterface.NotifyBlockTip(pindexNewTip->GetBlockHash());
         }
     } while(pindexMostWork != chainActive.Tip());
     CheckBlockIndex();
@@ -2244,15 +2388,6 @@ bool ActivateBestChain(CValidationState &state, CBlock *pblock) {
     // Write changes periodically to disk, after relay.
     if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC)) {
         return false;
-    }
-
-    if (chainActive.Tip() != pindexOldTip) {
-        std::string strCmd = GetArg("-blocknotify", "");
-        if (!IsInitialBlockDownload() && !strCmd.empty())
-        {
-            boost::replace_all(strCmd, "%s", chainActive.Tip()->GetBlockHash().GetHex());
-            boost::thread t(runCommand, strCmd); // thread runs free
-        }
     }
 
     return true;
@@ -2325,36 +2460,47 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex *pindex) {
     return true;
 }
 
-CBlockIndex* AddToBlockIndex(const CBlockHeader& block)
+static CBlockIndex* AddToBlockIndex(const CBlockHeader& aHeader)
 {
-    // Check for duplicate
-    uint256 hash = block.GetHash();
-    BlockMap::iterator it = mapBlockIndex.find(hash);
-    if (it != mapBlockIndex.end())
+    //! Check for duplicate
+    uint256 uintRealHash = aHeader.GetHash();
+    BlockMap::iterator it = mapBlockIndex.find( uintRealHash );
+    if (it != mapBlockIndex.end())                  //! Bingo, got it already
         return it->second;
 
-    // Construct new block index object
-    CBlockIndex* pindexNew = new CBlockIndex(block);
+    //! Construct new block index object, filling in the initial basic header values
+    CBlockIndex* pindexNew = new CBlockIndex(aHeader);
     assert(pindexNew);
-    // We assign the sequence id to blocks only when the full data is available,
-    // to avoid miners withholding blocks but broadcasting headers, to get a
-    // competitive advantage.
+    //! Time complexity is much higher now, it really shows up in reindexing...ToDo:
+    pindexNew->fakeBIhash = aHeader.CalcSha256dHash();      //! Now store it in the new index object
+    pindexNew->fakeBIhash.SetRealHash( uintRealHash );      //! Make sure we keep our cross reference lookup map full and fast
+
+    //! We assign the sequence id to blocks only when the full data is available,
+    //! to avoid miners withholding blocks but broadcasting headers, to get a
+    //! competitive advantage.
     pindexNew->nSequenceId = 0;
-    BlockMap::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
+    BlockMap::iterator mi = mapBlockIndex.insert(make_pair(uintRealHash, pindexNew)).first;
     pindexNew->phashBlock = &((*mi).first);
-    BlockMap::iterator miPrev = mapBlockIndex.find(block.hashPrevBlock);
-    if (miPrev != mapBlockIndex.end())
-    {
+    if( aHeader.hashPrevBlock != 0 ) {
+        //! We can do this now because the call to new CBlockIndex calculated both hashes and updated
+        //! the cross reference map for the sha256d hash.
+        uint256 aRealHash = aHeader.hashPrevBlock.GetRealHash();
+        BlockMap::iterator miPrev = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
+        //! ToDo: This means something is wrong, add more armor...
+        assert( miPrev != mapBlockIndex.end() );
         pindexNew->pprev = (*miPrev).second;
         pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
         pindexNew->BuildSkip();
-    }
+    } else
+        assert( uintRealHash == Params().HashGenesisBlock() );
+    // ToDo: Above, instead of crashing due to assertion failure, if the previous block hash is zero..or the realhash isn't found,
+    // log them or something better, perhaps log a reindex blockchain request & start shutdown?
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (pindexBestHeader == NULL || pindexBestHeader->nChainWork < pindexNew->nChainWork)
         pindexBestHeader = pindexNew;
 
-    setDirtyBlockIndex.insert(pindexNew);
+    setDirtyBlockIndex.insert(pindexNew);               //! Signal this needs to get stored to disk later
 
     return pindexNew;
 }
@@ -2369,10 +2515,6 @@ bool ReceivedBlockTransactions(const CBlock &block, CValidationState& state, CBl
     pindexNew->nUndoPos = 0;
     pindexNew->nStatus |= BLOCK_HAVE_DATA;
     pindexNew->RaiseValidity(BLOCK_VALID_TRANSACTIONS);
-    {
-         LOCK(cs_nBlockSequenceId);
-         pindexNew->nSequenceId = nBlockSequenceId++;
-    }
     setDirtyBlockIndex.insert(pindexNew);
 
     if (pindexNew->pprev == NULL || pindexNew->pprev->nChainTx) {
@@ -2385,6 +2527,10 @@ bool ReceivedBlockTransactions(const CBlock &block, CValidationState& state, CBl
             CBlockIndex *pindex = queue.front();
             queue.pop_front();
             pindex->nChainTx = (pindex->pprev ? pindex->pprev->nChainTx : 0) + pindex->nTx;
+            {
+                 LOCK(cs_nBlockSequenceId);
+                 pindex->nSequenceId = nBlockSequenceId++;
+            }
             if (chainActive.Tip() == NULL || !setBlockIndexCandidates.value_comp()(pindex, chainActive.Tip())) {
                 setBlockIndexCandidates.insert(pindex);
             }
@@ -2487,15 +2633,22 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetPowHash(), block.nBits))
+    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits))
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
                          REJECT_INVALID, "high-hash");
 
-    // Check timestamp
-    if (block.GetBlockTime() > GetAdjustedTime() + 2 * 60 * 60)
-        return state.Invalid(error("CheckBlockHeader() : block timestamp too far in the future"),
+    // Check timestamp, for Anoncoin we make that less than 2hrs after the hardfork,
+    // no mined block time need have a future time so large.  In fact the header can
+    // not be used unless this value is reduced to mere seconds.
+    int64_t nTimeLimit = GetAdjustedTime();
+#if defined( HARDFORK_BLOCK )
+    nTimeLimit += ( chainActive.Tip()->nHeight < HARDFORK_BLOCK ) ? 2 * 60 * 60 : 15 * 60;
+#else
+    nTimeLimit += 2 * 60 * 60;
+#endif
+    if( block.GetBlockTime() > nTimeLimit )
+        return state.Invalid(error("CheckBlockHeader(): block timestamp too far in the future"),
                              REJECT_INVALID, "time-too-new");
-
     return true;
 }
 
@@ -2559,7 +2712,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     return true;
 }
 
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex * const pindexPrev)
+bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* pindexPrev)
 {
     uint256 hash = block.GetHash();
     if (hash == Params().HashGenesisBlock())
@@ -2570,9 +2723,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     int nHeight = pindexPrev->nHeight+1;
 
     // Check proof of work
-    if( block.nBits != GetNextWorkRequired(pindexPrev, &block) )
-        return state.DoS(100, error("%s : incorrect proof of work", __func__),
-                         REJECT_INVALID, "bad-diffbits");
+    if( block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
+        if( !TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
+            return state.DoS(100, error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+    }
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
@@ -2580,7 +2734,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
                              REJECT_INVALID, "time-too-old");
 
     // Check that the block chain matches the known block chain up to a checkpoint
-    if (!Checkpoints::CheckBlock(nHeight, hash))
+    if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
         return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight),
                          REJECT_CHECKPOINT, "checkpoint mismatch");
 
@@ -2607,9 +2761,9 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     return true;
 }
 
-bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIndex * const pindexPrev)
+bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CBlockIndex* pindexPrev)
 {
-    const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
+    const int32_t nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
 
     // Check that all transactions are finalized
     BOOST_FOREACH(const CTransaction& tx, block.vtx)
@@ -2634,8 +2788,8 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
 {
     AssertLockHeld(cs_main);
     // Check for duplicate
-    uint256 hash = block.GetHash();
-    BlockMap::iterator miSelf = mapBlockIndex.find(hash);
+    uint256 realHash = block.GetHash();
+    BlockMap::iterator miSelf = mapBlockIndex.find(realHash);
     CBlockIndex *pindex = NULL;
     if (miSelf != mapBlockIndex.end()) {
         // Block header is already known.
@@ -2652,8 +2806,9 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
 
     // Get prev block index
     CBlockIndex* pindexPrev = NULL;
-    if (hash != Params().HashGenesisBlock()) {
-        BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+    if (realHash != Params().HashGenesisBlock()) {
+        uint256 realPrevHash = block.hashPrevBlock.GetRealHash();
+        BlockMap::iterator mi = ( realPrevHash != 0 ) ? mapBlockIndex.find( realPrevHash ) : mapBlockIndex.end();
         if (mi == mapBlockIndex.end())
             return state.DoS(10, error("%s : prev block not found", __func__), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
@@ -2706,30 +2861,17 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
             blockPos = *dbp;
         if (!FindBlockPos(state, blockPos, nBlockSize+8, nHeight, block.GetBlockTime(), dbp != NULL))
             return error("AcceptBlock() : FindBlockPos failed");
-        if (dbp == NULL)
+        if (dbp == NULL) {
+            // LogPrintf( "Writing Block %d with hash: %s to position %d\n", nHeight, (block.GetHash()).ToString(), blockPos.nPos);
             if (!WriteBlockToDisk(block, blockPos))
                 return state.Abort("Failed to write block");
+        }
         if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
             return error("AcceptBlock() : ReceivedBlockTransactions failed");
-    } catch(std::runtime_error &e) {
+    } catch(const std::runtime_error& e) {
         return state.Abort(std::string("System error: ") + e.what());
     }
 
-#if defined( HARDFORK_BLOCK )
-    if (!IsInitialBlockDownload()) {
-        filesystem::path pathDifficulty = GetDataDir() / "difficulty.csv";
-        ofstream csvfile( pathDifficulty.string().c_str(), ofstream::out | ofstream::app );
-        if (csvfile.is_open())
-        {
-            csvfile << GetAdjustedTime() << "," << block.GetBlockTime() << ",";
-            csvfile << (int)chainActive.Height()<<",";
-            const CBlockIndex* pBI = GetLastBlockIndexForAlgo( chainActive.Tip(),  GetAlgo( block.nVersion ) );
-            csvfile << pBI->nBits << "\n";
-            // csvfile << (double)GetDifficulty(blockindex)<<"\n";
-            csvfile.close();
-        }
-    }
-#endif
     return true;
 }
 
@@ -2803,7 +2945,7 @@ bool ProcessNewBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDis
 
     {
         LOCK(cs_main);
-        MarkBlockAsReceived(pblock->GetHash());
+        MarkBlockAsReceived(pblock->CalcSha256dHash());
         if (!checked) {
             return error("%s : CheckBlock FAILED", __func__);
         }
@@ -2819,21 +2961,20 @@ bool ProcessNewBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDis
             return error("%s : AcceptBlock FAILED", __func__);
     }
 
-    // ToDo: if (!ActivateBestChain(state, pblock))
-    if (!ActivateBestChain(state))
+    if (!ActivateBestChain(state, pblock))
         return error("%s : ActivateBestChain failed", __func__);
 
     return true;
 }
 
-bool TestBlockValidity(CValidationState &state, const CBlock& block, CBlockIndex * const pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
+bool TestBlockValidity(CValidationState &state, const CBlock& block, const CBlockIndex* pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     AssertLockHeld(cs_main);
     assert(pindexPrev == chainActive.Tip());
 
-    CCoinsViewCache viewNew(*pcoinsTip);
+    CCoinsViewCache viewNew(pcoinsTip);
     CBlockIndex indexDummy(block);
-    indexDummy.pprev = pindexPrev;
+    indexDummy.pprev = (CBlockIndex*)pindexPrev;    // The constantness of pindexPrev must be overridden here, the dummy will not modify what it points to
     indexDummy.nHeight = pindexPrev->nHeight + 1;
 
     // NOTE: CheckBlockHeader is called by CheckBlock
@@ -2862,7 +3003,7 @@ bool AbortNode(const std::string &strMessage) {
 
 bool CheckDiskSpace(uint64_t nAdditionalBytes)
 {
-    uint64_t nFreeBytesAvailable = filesystem::space(GetDataDir()).available;
+    uint64_t nFreeBytesAvailable = boost::filesystem::space(GetDataDir()).available;
 
     // Check for nMinDiskSpace bytes (currently 50MB)
     if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
@@ -2875,7 +3016,7 @@ FILE* OpenDiskFile(const CDiskBlockPos &pos, const char *prefix, bool fReadOnly)
 {
     if (pos.IsNull())
         return NULL;
-    boost::filesystem::path path = GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
+    boost::filesystem::path path = GetBlockPosFilename(pos, prefix);
     boost::filesystem::create_directories(path.parent_path());
     FILE* file = fopen(path.string().c_str(), "rb+");
     if (!file && !fReadOnly)
@@ -2902,6 +3043,12 @@ FILE* OpenUndoFile(const CDiskBlockPos &pos, bool fReadOnly) {
     return OpenDiskFile(pos, "rev", fReadOnly);
 }
 
+boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix)
+{
+    return GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
+}
+#if defined( DONT_COMPILE )
+// Don't use this routine for Anoncoin
 CBlockIndex * InsertBlockIndex(uint256 hash)
 {
     if (hash == 0)
@@ -2921,27 +3068,143 @@ CBlockIndex * InsertBlockIndex(uint256 hash)
 
     return pindexNew;
 }
-
+#endif
 bool static LoadBlockIndexDB()
 {
-    if (!pblocktree->LoadBlockIndexGuts())
+    //! Load the blockindex guts & build a vector of blockindex pointers sorted by height...
+    vector<BlockTreeEntry> vSortedByHeight;
+    if( !pblocktree->LoadBlockIndexGuts( vSortedByHeight ) )
         return false;
 
-    boost::this_thread::interruption_point();
+    //! If there are no blocks to sort, that is ok, the genesis block has not even been created
+    //! and setup yet on disk...we're done
+    if( vSortedByHeight.size() == 0 )
+        return true;
 
-    // Calculate nChainWork
-    vector<pair<int, CBlockIndex*> > vSortedByHeight;
-    vSortedByHeight.reserve(mapBlockIndex.size());
-    BOOST_FOREACH(const PAIRTYPE(uint256, CBlockIndex*)& item, mapBlockIndex)
-    {
-        CBlockIndex* pindex = item.second;
-        vSortedByHeight.push_back(make_pair(pindex->nHeight, pindex));
+    if(ShutdownRequested()) {                 //! Watch out for and respond to any shutdown signal
+        vSortedByHeight.clear();
+        return false;
     }
-    sort(vSortedByHeight.begin(), vSortedByHeight.end());
-    BOOST_FOREACH(const PAIRTYPE(int, CBlockIndex*)& item, vSortedByHeight)
+    boost::this_thread::interruption_point();               //! If there is other stuff to do, now would be a good time
+    SetThreadPriority(THREAD_PRIORITY_ABOVE_NORMAL);        //! Move to warp speed if the OS will let us, try to up the thread priority
+
+    sort(vSortedByHeight.begin(), vSortedByHeight.end());   //! U gotta love the old sort routine, still works great!
+
+    uint32_t nBIsize = vSortedByHeight.size();
+    LogPrintf( "%s : Sorted %d blockindex entries by height.\n", __func__, nBIsize );
+
+    //! Now with minimal time complexity we can finally build the cross reference index,
+    //! initialize the mapBlockIndex and CBlockIndex structure pointers and values.
+    //! We already have the previous block sha256d hashes stored in childern object(s) temporarily
+    //! First we must calculate the sha256d hash and scrypt hash of every block to build our
+    //! crossreference map, then we can lookup the fake sha256d hashes for every block, to set
+    //! its previous block pointer to correctly, in the 2nd pass
+    uint32_t nHeight = 0;
+    CBlockHeader aHeader;                                           //! Setup a temp header here to work in the loop with
+    //! Best to dynamically allocate some temporary arrays (vectors) to finish things up quick on the 2nd pass...
+    vector<uintFakeHash> vFakeHashes;
+    vFakeHashes.reserve( nBIsize );
+    mapBlockHashCrossReference.reserve( nBIsize );                  //! Pre-allocate the number of entries
+    bool fDoubleCheckingHash = true;
+    //! Better tell the user, this takes awhile
+    uint64_t nStartTime = GetTime() - 16;
+    uint8_t msgcnt = 0;
+    BOOST_FOREACH(const BlockTreeEntry& entry, vSortedByHeight) {
+        CBlockIndex* pindex = entry.pBlockIndex;
+        //! ONLY the Genesis block should not have a previous hash
+        assert( pindex->fakeBIhash != 0 || pindex->nHeight == 0 );
+        aHeader.nVersion        = pindex->nVersion;
+        aHeader.hashPrevBlock   = pindex->fakeBIhash; //! Temporarily stored the prev block sha256d hash here
+        aHeader.hashMerkleRoot  = pindex->hashMerkleRoot;
+        aHeader.nTime           = pindex->nTime;
+        aHeader.nBits           = pindex->nBits;
+        aHeader.nNonce          = pindex->nNonce;
+        //! Calling GetHash & CalcSha256dHash with true, invalidates any previously calculated hashes for this block, as they have changed
+        uintFakeHash aFakeHash  = aHeader.CalcSha256dHash(true);    //! Calculate the sha256d hash, even for the genesis block
+        uint256 aRealHash;
+        if( fDoubleCheckingHash ) {
+            aRealHash = aHeader.GetHash(true);              //! Calc the real scrypt hash of this block.
+            if( nHeight > 100 )                             //! Stop checking if things have been ok after the 1st 100 blocks
+                fDoubleCheckingHash = false;
+        } else if( nHeight > nBIsize - 1000 ) {             //! Turn it back on for the last 1000 blocks
+            aRealHash = aHeader.GetHash(true);              //! Calc the real scrypt hash of this block.
+        } else
+            aRealHash = entry.uintRealHash;
+
+        if( aRealHash != entry.uintRealHash ) {
+            LogPrintf( "%s : ERROR - at Block %d, the Real Hash is not the same as being reported by the BlockTreeDB key, recommend a reindex.\n", __func__, nHeight );
+            StartShutdown();
+        }
+
+        //! Could do a quick check of the nBits to confirm pow here...its fast.
+        if( !CheckProofOfWork( aRealHash, aHeader.nBits ) )
+            return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());
+        // LogPrintf( "fakeBIhash: %s aRealHash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), nHeight );
+        vFakeHashes[nHeight++] = aFakeHash; //! Save it for later on the 2nd pass
+        aFakeHash.SetRealHash( aRealHash ); //! Update our cross reference unordered fast hash lookup map
+//      if( GetTime() - nStartTime  > 15 ) {
+        if( GetTime() - nStartTime > 1 ) {
+            switch( msgcnt++ ) {
+                case 0 : uiInterface.InitMessage(_("Building cross reference...")); break;
+                case 1 : uiInterface.InitMessage(_("Checking proof-of-work too...")); msgcnt = 0; break;
+/*                case 1 : uiInterface.InitMessage(_("Please be patient...")); break;
+                case 2 : uiInterface.InitMessage(_("Checking proof-of-work too...")); break;
+                case 3 : uiInterface.InitMessage(_("Anoncoin for the 1st time...")); break;
+                case 4 : uiInterface.InitMessage(_("Will use real block hashes...")); break;
+                case 5 : uiInterface.InitMessage(_("Each block has 2 identities...")); break;
+                case 6 : uiInterface.InitMessage(_("A mined hash & sha256d hash...")); msgcnt = 0; break; */
+            }
+            nStartTime = GetTime();
+            boost::this_thread::interruption_point();//! If there is other stuff to do, now would be a good time
+       }
+        if(ShutdownRequested()) {                   //! Watch out for and respond to any shutdown signal
+            vSortedByHeight.clear();                //! Although not really needed, cleaning up the vectors in use
+                                                    //! is good programming practice & helps to understand what
+            vFakeHashes.clear();                    //! variables the code has been working on.
+            //! Don't really need to worry about the thread priority, as this is all about to be over anyway
+            return false;
+        }
+    }
+    LogPrintf( "%s : Cross referenced %s block sha256d hashes, using real proof-of-work for the index.\n", __func__, mapBlockHashCrossReference.size() );
+    uiInterface.InitMessage(_("Finishing block index setup..."));
+
+    //! Now that is finally done, we can build the main softwares mapBlockIndex and fix the BlockIndex
+    //! Structures variables and pointers.
+    nHeight = 0;
+    assert( mapBlockIndex.size() == 0 );
+    mapBlockIndex.reserve( nBIsize );                               //! Pre-allocate the number of entries
+    BOOST_FOREACH(const BlockTreeEntry& entry, vSortedByHeight) {
+        CBlockIndex* pindex = entry.pBlockIndex;
+        BlockMap::iterator mi = mapBlockIndex.insert(make_pair(entry.uintRealHash, pindex)).first;
+        pindex->phashBlock = &((*mi).first);                        //! Keeps a pointer to the hash in the BI
+        //! Now find the real hash of this blocks previous block, and set the pointer up correctly.
+        //! It should already be in the mapBlockIndex
+        if( pindex->fakeBIhash != 0 ) {      //! Can't do that for the genesis though
+            uint256 aRealHash = pindex->fakeBIhash.GetRealHash();
+            BlockMap::iterator mi2 = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
+            // LogPrintf( "fakeBIhash: %s aRealHash: %s  mi2 at end? %s Height=%d\n", pindex->fakeBIhash.ToString(), aRealHash.ToString(), (mi2 == mapBlockIndex.end()) ? "yes" : "no", pindex->nHeight );
+            assert(mi2 != mapBlockIndex.end());
+            pindex->pprev = (*mi2).second;
+        }
+        //! Finally we can wipe out the previous blocks fake hash that was stored here temporarily
+        //! and now set it correct for what this blocks sha256d hash is, which we remembered from
+        //! the 1st pass...and was the original design intention of the field.
+        pindex->fakeBIhash = vFakeHashes[nHeight++];
+    }
+    vFakeHashes.clear();
+    SetThreadPriority(THREAD_PRIORITY_NORMAL);      //! Return to normal processing priority, the hard work has been finished
+    LogPrintf( "%s : Completed building the BlockIndex map with %d real proof-of-work hashes.\n", __func__, mapBlockIndex.size() );
+
+    //! Another day, another pass...returning to the standard coding...
+    //! Calculate nChainWork
+    nHeight = 0;
+    BOOST_FOREACH(const BlockTreeEntry& entry, vSortedByHeight)
     {
-        CBlockIndex* pindex = item.second;
+        CBlockIndex* pindex = entry.pBlockIndex;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
+        if( (nHeight < 25000 && nHeight % 5000 == 0 ) || nHeight % 25000 == 0 )
+            LogPrintf( "%s : Block @ Height=%6d, ChainWork=%s\n", __func__, entry.nHeight, pindex->nChainWork.ToString() );
+        nHeight++;
         if (pindex->nStatus & BLOCK_HAVE_DATA) {
             if (pindex->pprev) {
                 if (pindex->pprev->nChainTx) {
@@ -2963,15 +3226,25 @@ bool static LoadBlockIndexDB()
         if (pindex->IsValid(BLOCK_VALID_TREE) && (pindexBestHeader == NULL || CBlockIndexWorkComparator()(pindexBestHeader, pindex)))
             pindexBestHeader = pindex;
     }
+    vSortedByHeight.clear();
+    LogPrintf( "%s : setBlockIndexCandidates size=%d\n", __func__, setBlockIndexCandidates.size() );
+    LogPrintf( "%s : mapBlocksUnlinked       size=%d\n", __func__, mapBlocksUnlinked.size() );
+    LogPrintf( "%s : pindexBestHeader points to block=%d\n", __func__, pindexBestHeader ? pindexBestHeader->nHeight : 0 );
+    LogPrintf( "%s : pindexBestInvalid points to block=%d\n", __func__, pindexBestInvalid ? pindexBestInvalid->nHeight : 0 );
+
+    //LogPrintf( "LoadBlockIndex() : Following the last skip map Ancestor chain...\n" );
+    //while( pindex->pskip ) {
+    //    LogPrintf( "LoadBlockIndex() : pindexBestInvalid points to block=%d\n", pindexBestInvalid ? pindexBestInvalid->nHeight : 0 );
+    //}
 
     // Load block file info
     pblocktree->ReadLastBlockFile(nLastBlockFile);
     vinfoBlockFile.resize(nLastBlockFile + 1);
-    LogPrintf("%s: last block file = %i\n", __func__, nLastBlockFile);
+    LogPrintf("%s : last block file = %i\n", __func__, nLastBlockFile);
     for (int nFile = 0; nFile <= nLastBlockFile; nFile++) {
         pblocktree->ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]);
     }
-    LogPrintf("%s: last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile].ToString());
+    LogPrintf("%s : last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile].ToString());
     for (int nFile = nLastBlockFile + 1; true; nFile++) {
         CBlockFileInfo info;
         if (pblocktree->ReadBlockFileInfo(nFile, info)) {
@@ -2982,7 +3255,7 @@ bool static LoadBlockIndexDB()
     }
 
     // Check presence of blk files
-    LogPrintf("Checking all blk files are present...\n");
+    LogPrintf("%s : Checking all blk files are present...\n", __func__ );
     set<int> setBlkDataFiles;
     BOOST_FOREACH(const PAIRTYPE(uint256, CBlockIndex*)& item, mapBlockIndex)
     {
@@ -3006,17 +3279,21 @@ bool static LoadBlockIndexDB()
 
     // Check whether we have a transaction index
     pblocktree->ReadFlag("txindex", fTxIndex);
-    LogPrintf("LoadBlockIndexDB(): transaction index %s\n", fTxIndex ? "enabled" : "disabled");
+    LogPrintf("%s : transaction index %s\n", __func__, fTxIndex ? "enabled" : "disabled");
 
     // Load pointer to end of best chain
-    BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
-    if (it == mapBlockIndex.end())
+    uint256 viewBestBlock = pcoinsTip->GetBestBlock();
+    BlockMap::iterator itBM = (viewBestBlock != 0) ? mapBlockIndex.find( viewBestBlock ) : mapBlockIndex.end();
+    if( itBM == mapBlockIndex.end() ) {
+        LogPrintf( "%s : WARNING - Coins BestBlock hash: %s not found in BlockIndex. Failed initializing...\n", __func__, viewBestBlock.ToString() );
         return true;
-    chainActive.SetTip(it->second);
+    }
+    chainActive.SetTip(itBM->second);
+    SetRetargetToBlock(itBM->second);
 
     PruneBlockIndexCandidates();
 
-    LogPrintf("LoadBlockIndexDB(): hashBestChain=%s height=%d date=%s progress=%f\n",
+    LogPrintf("%s : hashBestChain=%s height=%d date=%s progress=%f\n", __func__,
         chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(),
         DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
         Checkpoints::GuessVerificationProgress(chainActive.Tip()));
@@ -3037,7 +3314,7 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         nCheckDepth = chainActive.Height();
     nCheckLevel = std::max(0, std::min(4, nCheckLevel));
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
-    CCoinsViewCache coins(*pcoinsTip, true);
+    CCoinsViewCache coins(pcoinsTip);
     CBlockIndex* pindexState = chainActive.Tip();
     CBlockIndex* pindexFailure = NULL;
     int nGoodTransactions = 0;
@@ -3093,7 +3370,9 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
             } else
                 nGoodTransactions += block.vtx.size();
         }
-    }
+        if (ShutdownRequested())
+            return true;
+  }
     LogPrintf( "The height of the last V1 block was %d, and there were %d of them.\n", nHeightOfLastV1block, nCountOfLastV1block );
     // LogPrintf( "The height of the last V2 block that has a mismatch in the coinbase height was %d, and there were %d of them.\n", nHeightOfLastV2FailedRuleBlock, nCountOfLastV2FailedRuleBlock );
 
@@ -3105,6 +3384,7 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         CBlockIndex *pindex = pindexState;
         while (pindex != chainActive.Tip()) {
             boost::this_thread::interruption_point();
+            uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * 50))));
             pindex = chainActive.Next(pindex);
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex))
@@ -3121,11 +3401,34 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
 
 void UnloadBlockIndex()
 {
-    mapBlockIndex.clear();
     setBlockIndexCandidates.clear();
+    mapBlockHashCrossReference.clear();
     chainActive.SetTip(NULL);
     pindexBestInvalid = NULL;
-}
+    pindexBestHeader = NULL;
+    mempool.clear();
+    mapOrphanTransactions.clear();
+    mapOrphanTransactionsByPrev.clear();
+    nSyncStarted = 0;
+    mapBlocksUnlinked.clear();
+    vinfoBlockFile.clear();
+    nLastBlockFile = 0;
+    nBlockSequenceId = 1;
+    mapBlockSource.clear();
+    mapBlocksInFlight.clear();
+    nQueuedValidatedHeaders = 0;
+    nPreferredDownload = 0;
+    setDirtyBlockIndex.clear();
+    setDirtyFileInfo.clear();
+    mapNodeState.clear();
+
+    BOOST_FOREACH(BlockMap::value_type& entry, mapBlockIndex) {
+        delete entry.second;
+    }
+    mapBlockIndex.clear();
+    // cross reference block hash map
+    mapBlockHashCrossReference.clear();
+ }
 
 bool LoadBlockIndex()
 {
@@ -3134,7 +3437,6 @@ bool LoadBlockIndex()
         return false;
     return true;
 }
-
 
 bool InitBlockIndex() {
     LOCK(cs_main);
@@ -3155,7 +3457,7 @@ bool InitBlockIndex() {
             unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
             CDiskBlockPos blockPos;
             CValidationState state;
-            if (!FindBlockPos(state, blockPos, nBlockSize+8, 0, block.nTime))
+            if (!FindBlockPos(state, blockPos, nBlockSize+8, 0, block.GetBlockTime()))
                 return error("LoadBlockIndex() : FindBlockPos failed");
             if (!WriteBlockToDisk(block, blockPos))
                 return error("LoadBlockIndex() : writing genesis block to disk failed");
@@ -3164,15 +3466,22 @@ bool InitBlockIndex() {
                 return error("LoadBlockIndex() : genesis block not accepted");
             if (!ActivateBestChain(state, &block))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
+            if( TestNet() && GetBoolArg( "-testnetstart", false ) ) {
+                //! Starts the process of using the RPC to run the initial block generation commands
+                //! once initialization has completed and the RPC warm up period has ended.
+                fGenerateInitialTestNetState = true;
+                LogPrintf( "Preparing to generate TestNet initial condition blocks...\n" );
+            }
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
-        } catch(std::runtime_error &e) {
+        } catch(const std::runtime_error& e) {
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
         }
     }
 
     return true;
 }
+
 
 
 bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
@@ -3195,7 +3504,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
             unsigned int nSize = 0;
             try {
                 // locate a header
-                unsigned char buf[MESSAGE_START_SIZE];
+                uint8_t buf[MESSAGE_START_SIZE];
                 blkdat.FindByte(Params().MessageStart()[0]);
                 nRewind = blkdat.GetPos()+1;
                 blkdat >> FLATDATA(buf);
@@ -3205,7 +3514,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
                 blkdat >> nSize;
                 if (nSize < 80 || nSize > MAX_BLOCK_SIZE)
                     continue;
-            } catch (const std::exception &) {
+            } catch (const std::exception&) {
                 // no valid block header found; don't complain
                 break;
             }
@@ -3221,29 +3530,30 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
                 nRewind = blkdat.GetPos();
 
                 // detect out of order blocks, and store them for later
-                uint256 hash = block.GetHash();
-                if (hash != Params().HashGenesisBlock() && mapBlockIndex.find(block.hashPrevBlock) == mapBlockIndex.end()) {
-                    LogPrint("reindex", "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
-                            block.hashPrevBlock.ToString());
+                uint256 newRealHash = block.GetHash();
+                uint256 prevRealHash = block.hashPrevBlock.GetRealHash();
+                if (newRealHash != Params().HashGenesisBlock() && ( prevRealHash == 0 || mapBlockIndex.find(prevRealHash) == mapBlockIndex.end())) {
+                    LogPrint("reindex", "%s : Out of order block %s, parent %s not known\n", __func__, newRealHash.ToString(),
+                            prevRealHash.ToString());
                     if (dbp)
-                        mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
+                        mapBlocksUnknownParent.insert(std::make_pair(prevRealHash, *dbp));
                     continue;
                 }
 
                 // process in case the block isn't known yet
-                if (mapBlockIndex.count(hash) == 0 || (mapBlockIndex[hash]->nStatus & BLOCK_HAVE_DATA) == 0) {
+                if (mapBlockIndex.count(newRealHash) == 0 || (mapBlockIndex[newRealHash]->nStatus & BLOCK_HAVE_DATA) == 0) {
                     CValidationState state;
                     if (ProcessNewBlock(state, NULL, &block, dbp))
                         nLoaded++;
                     if (state.IsError())
                         break;
-                } else if (hash != Params().HashGenesisBlock() && mapBlockIndex[hash]->nHeight % 1000 == 0) {
-                    LogPrintf("Block Import: already had block %s at height %d\n", hash.ToString(), mapBlockIndex[hash]->nHeight);
+                } else if (newRealHash != Params().HashGenesisBlock() && mapBlockIndex[newRealHash]->nHeight % 1000 == 0) {
+                    LogPrintf("Block Import: already had block %s at height %d\n", newRealHash.ToString(), mapBlockIndex[newRealHash]->nHeight);
                 }
 
                 // Recursively process earlier encountered successors of this block
                 deque<uint256> queue;
-                queue.push_back(hash);
+                queue.push_back(newRealHash);
                 while (!queue.empty()) {
                     uint256 head = queue.front();
                     queue.pop_front();
@@ -3252,7 +3562,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
                         std::multimap<uint256, CDiskBlockPos>::iterator it = range.first;
                         if (ReadBlockFromDisk(block, it->second))
                         {
-                            LogPrintf("%s: Processing out of order child %s of %s\n", __func__, block.GetHash().ToString(),
+                            LogPrintf("%s : Processing out of order child %s of %s\n", __func__, block.GetHash().ToString(),
                                     head.ToString());
                             CValidationState dummy;
                             if (ProcessNewBlock(dummy, NULL, &block, &it->second))
@@ -3265,11 +3575,11 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
                         mapBlocksUnknownParent.erase(it);
                     }
                 }
-            } catch (std::exception &e) {
+            } catch (const std::exception& e) {
                 LogPrintf("%s : Deserialize or I/O error - %s", __func__, e.what());
             }
         }
-    } catch(std::runtime_error &e) {
+    } catch(const std::runtime_error& e) {
         AbortNode(std::string("System error: ") + e.what());
     }
     if (nLoaded > 0)
@@ -3421,21 +3731,27 @@ string GetWarnings(string strFor)
     if (GetBoolArg("-testsafemode", false))
         strRPC = "test";
 
-    if (!CLIENT_VERSION_IS_RELEASE) {
+    if (CLIENT_VERSION_IS_RELEASE) {
 #if defined( HARDFORK_BLOCK )
-        stringstream ss;
+        ostringstream ss;
+        ss << HARDFORK_BLOCK;
+        strStatusBar = "This is a HARDFORK build for block " + ss.str();
+#endif
+    } else {
+#if defined( HARDFORK_BLOCK )
+        ostringstream ss;
         ss << HARDFORK_BLOCK;
         strStatusBar = "This is a HARDFORK pre-release test build, and will fork at block " + ss.str();
 #else
-        strStatusBar = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications");
+        strStatusBar = _("This is a pre-release test build - use at your own risk");
 #endif
-        // The piority of this message remains @ 0, yet if nothing else is found, it will be displayed by default for pre-release or hardfork builds.
+        // The priority of this message remains @ 0, yet if nothing else is found, it will be displayed by default for pre-release or hardfork builds.
     }
 
     // These nPriority values set an upper limit on what should be used by the development team, when issuing alert messages,
     // as they are more important than anything else to this client's user..
 
-    // Misc warnings like out of disk space and clock is wrong
+    // Misc warnings like out of disk space and clock is wrong will be assigned a priority of 1000
     if (strMiscWarning != "")
     {
         nPriority = 1000;
@@ -3467,6 +3783,19 @@ string GetWarnings(string strFor)
             {
                 nPriority = alert.nPriority;
                 strStatusBar = alert.strStatusBar;
+                if( !isMainNetwork() ) {
+                    //! A Special Alert message can be used to change the TestNet retarget parameters for all the nodes.
+                    //! All Mining must be briefly stopped, then the alert issued and mining again resumed.  The new
+                    //! settings will then be used for calculating a retarget difficulty value for all the next blocks
+                    //! mined.  This causes a complete RetargetPID Controller reset to occur and the new constants
+                    //! for P-I-D terms loaded, as if the software was just booting up.  No new TestNet miners can be
+                    //! added to the network as any reload of the blockchain will fail, however it can be useful for
+                    //! testing different settings on a small controlled TestNet, were those details can be ignored
+                    //! and the user(s) simply want new values tried and experimented with for a time.
+                    if( boost::algorithm::istarts_with(strStatusBar, "retargetpid ") ) {
+                        RetargetPidReset( strStatusBar.substr(11, string::npos), chainActive.Tip() );
+                    }
+                }
             }
         }
     }
@@ -3504,13 +3833,24 @@ bool static AlreadyHave(const CInv& inv)
     {
     case MSG_TX:
         {
-            bool txInMap = false;
-            txInMap = mempool.exists(inv.hash);
-            return txInMap || mapOrphanTransactions.count(inv.hash) ||
-                pcoinsTip->HaveCoins(inv.hash);
+            bool fTxMemPool = mempool.exists(inv.hash);
+            bool fOrphan = mapOrphanTransactions.count(inv.hash) != 0;
+            CCoinsViewCache &view = *pcoinsTip;
+            const CCoins* pCoins = view.AccessCoins(inv.hash);
+            bool fInCoins = pCoins != NULL;
+
+            if( fInCoins && pCoins->vout.empty() )
+                LogPrintf( "%s : Unexpected pruned coins found in database, reindexing maybe required.\n", __func__ );
+
+            return fTxMemPool || fOrphan || fInCoins;
         }
     case MSG_BLOCK:
-        return mapBlockIndex.count(inv.hash);
+        // Don't really need to look in mapBlockIndex, if we had the block, a non-
+        // zero hash would be found, and returned from the cross reference map.
+        // GetRealHash() returns zero, if its not found, but we'll double check
+        // anyway...
+        uint256 aRealHash = inv.hash.GetRealHash();
+        return aRealHash != 0 && mapBlockIndex.count(aRealHash) != 0;
     }
     // Don't know what it is, just say we already got one
     return true;
@@ -3538,22 +3878,21 @@ void static ProcessGetData(CNode* pfrom)
             if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK)
             {
                 bool send = false;
-                BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
+                uint256 aRealHash = inv.hash.GetRealHash();
+                BlockMap::iterator mi = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
                 if (mi != mapBlockIndex.end())
                 {
-                    // If the requested block is at a height below our last
-                    // checkpoint, only serve it if it's in the checkpointed chain
-                    int nHeight = mi->second->nHeight;
-                    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
-                    if (pcheckpoint && nHeight < pcheckpoint->nHeight) {
-                        if (!chainActive.Contains(mi->second))
-                        {
-                            LogPrintf("ProcessGetData(): ignoring request for old block that isn't in the main chain\n");
-                        } else {
-                            send = true;
-                        }
-                    } else {
+                    if (chainActive.Contains(mi->second)) {
                         send = true;
+                    } else {
+                        // To prevent fingerprinting attacks, only send blocks outside of the active
+                        // chain if they are valid, and no more than a month older than the best header
+                        // chain we know about.
+                        send = mi->second->IsValid(BLOCK_VALID_SCRIPTS) && (pindexBestHeader != NULL) &&
+                            (mi->second->GetBlockTime() > pindexBestHeader->GetBlockTime() - 30 * 24 * 60 * 60);
+                        if (!send) {
+                            LogPrintf("ProcessGetData(): ignoring request from %s for old block that isn't in the main chain\n", GetPeerLogStr(pfrom));
+                        }
                     }
                 }
                 if (send)
@@ -3592,7 +3931,7 @@ void static ProcessGetData(CNode* pfrom)
                         // and we want it right after the last block so they don't
                         // wait for other stuff first.
                         vector<CInv> vInv;
-                        vInv.push_back(CInv(MSG_BLOCK, chainActive.Tip()->GetBlockHash()));
+                        vInv.push_back(CInv(MSG_BLOCK, chainActive.Tip()->GetBlockSha256dHash()));
                         pfrom->PushMessage("inv", vInv);
                         pfrom->hashContinue = 0;
                     }
@@ -3650,7 +3989,8 @@ void static ProcessGetData(CNode* pfrom)
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 {
     RandAddSeedPerfmon();
-    LogPrint("net", "received: %s (%u bytes)\n", strCommand, vRecv.size());
+
+    LogPrint( "net", "received: %s (%u bytes) from %s\n", SanitizeString(strCommand), vRecv.size(), GetPeerLogStr(pfrom) );
     if (mapArgs.count("-dropmessagestest") && GetRand(atoi(mapArgs["-dropmessagestest"])) == 0)
     {
         LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
@@ -3661,7 +4001,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     if (strCommand == "version")
     {
-        // Each connection can only send one version message
+        //! Each connection can only send one version message
         if (pfrom->nVersion != 0)
         {
             pfrom->PushMessage("reject", strCommand, REJECT_DUPLICATE, string("Duplicate version message"));
@@ -3675,19 +4015,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64_t nNonce = 1;
 
-        // Start with getting a few things first, before the nightmare begins as what needs to happen with past protocols and address objects.
+        //! Start with getting a few things first, before the nightmare begins as what needs to happen with past protocols and address objects.
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
 
-        // Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
-        // Values like these have been found: 0xa224000000000083 &  0xa124000000000083
-        pfrom->addr.nServices &= 0xFF;         // Do it for the node copy too. Purge undefined service bits
-
-        // If it's to old, its easy, just disconnect and your out of here.
+        //! If it's to old, its easy, just disconnect and your out of here.
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
-            // relay alerts prior to disconnection
+            //! relay alerts prior to disconnection
             RelayAlerts(pfrom);
-            // disconnect from peers older than this proto version
+            //! disconnect from peers older than this proto version
             LogPrintf("partner %s using obsolete version %i; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion);
             pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
                                strprintf("Version must be %d or greater", MIN_PEER_PROTO_VERSION));
@@ -3695,96 +4031,99 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return true;
         }
 
+        //! Protocol 70009 uses only IP addresses on initiating connections over clearnet, after that full size addresses
+        //! are always used for any network type, the i2p destination maybe zero, or if not the ip field must be set to the
+        //! new GarlicCat field (an IP6/48) specifier.  This is checked and fixed, if found to be incorrect.
+        //! For processing inbound connection messages that contain addresses, you can expect the same behavior & other than
+        //! that one detail, the format has not been changed, so it should work well with older versions too.  With the
+        //! exception of 70008, which needs a correction to work properly, that version will quickly be abandoned as a
+        //! 'buggy' pre-release test protocol this developer never got right.
 
-        // Protocol 70009 uses only IP addresses on initiating connections over clearnet, after that full size addresses
-        // are always used for any network type, the i2p destination maybe zero, or if not the ip field must be set to the
-        // new GarlicCat field (an IP6/48) specifier.  This is checked and fixed, if found to be incorrect.
-        // For processing inbound connection messages that contain addresses, you can expect the same behavior & other than
-        // that one detail, the format has not been changed, so it should work well with older versions too.  With the
-        // exception of 70008, which needs a correction to work properly, that version will quickly be abandoned as a
-        // 'buggy' pre-release test protocol this developer never got right.
+        //! Because we are getting a version message that may NOT have the expected stream type setup correctly,
+        //! the data caused an exception to be thrown, until this huge effort was made to correct the many problems
+        //! found while attempting to initialize a version/verack cycle with other, even older buggy brained peers
+        //! on the Anoncoin network.
 
-        // Because we are getting a version message that may NOT have the expected stream type setup correctly,
-        // the data caused an exception to be thrown, until this huge effort was made to correct the many problems
-        // found while attempting to initialize a version/verack cycle with other, even older buggy brained peers
-        // on the Anoncoin network.
-
-        // if we are expecting an i2p address, yet the version message itself is much shorter, and only contains
-        // the 2 ip addresses (addMe,addrFrom).  We need to not get the addrMe value from the data stream until after
-        // some additional checking.... try to figure out what to have our streams set to while dealing with these problems.
+        //! if we are expecting an i2p address, yet the version message itself is much shorter, and only contains
+        //! the 2 ip addresses (addMe,addrFrom).  We need to not get the addrMe value from the data stream until after
+        //! some additional checking.... try to figure out what to have our streams set to while dealing with these problems.
         if( (pfrom->nVersion < 70009) && !pfrom->addr.IsNativeI2P() ) {
-            // If the peer protocol version was 70008, then the inbound addresses are always full size, however the data within
-            // the message themselves is only ip information when sent over a clearnet connection.  If we're connecting that way
-            // it means the wrong stream type has been set in the ssSend DataStream field from that node.  At least until AFTER it
-            // responds to our response. (if this is an outbound connection attempt by it) its version message will not have its
-            // ssSend datastream field type set to anything other than full size, even though the data itself will only be 2 ip
-            // addresses without the i2p destinations.  This gets corrected on once it pushes it version message.
+            //! If the peer protocol version was 70008, then the inbound addresses are always full size, however the data within
+            //! the message themselves is only ip information when sent over a clearnet connection.  If we're connecting that way
+            //! it means the wrong stream type has been set in the ssSend DataStream field from that node.  At least until AFTER it
+            //! responds to our response. (if this is an outbound connection attempt by it) its version message will not have its
+            //! ssSend datastream field type set to anything other than full size, even though the data itself will only be 2 ip
+            //! addresses without the i2p destinations.  This gets corrected on once it pushes it version message.
 
-            // Earlier protocol version also send us larger version message addresses all the time, if they think we support the
-            // NODE_I2P service they start out right away trying to connect to us with that full size address object, this code
-            // now works for those cases, no special version checking required.....other than knowing its less that 70009.
-            // Protocol 70006 lies about its services on clearnet, and is handled later on in this code.
+            //! Earlier protocol version also send us larger version message addresses all the time, if they think we support the
+            //! NODE_I2P service they start out right away trying to connect to us with that full size address object, this code
+            //! now works for those cases, no special version checking required.....other than knowing its less that 70009.
+            //! Protocol 70006 lies about its services on clearnet, and is handled later on in this code.
             unsigned int nRemaining = vRecv.size();
             unsigned int nAddrWithI2P = ::GetSerializeSize(addrMe, SER_NETWORK, PROTOCOL_VERSION);
             // size_type nAddrWithIP = ::GetSerializeSize(addrMe, SER_NETWORK | SER_IPADDRONLY, PROTOCOL_VERSION);
-            LogPrint( "version", "node %s, so far we know nVersion=%d nServices=%d nTime=%d, and there are %d bytes left in the message.\n", pfrom->addrName, pfrom->nVersion, pfrom->nServices, nTime, nRemaining );
-            // On clearnet protocol 70009 assumes ip addresses only, so if the inbound version is larger than that, then
-            // we need to switch the stream type to include those larger address objects, do it now, and do it for both recv/send streams.
+            LogPrint( "version", "peer %s, so far we know nVersion=%d nServices=0x%016x nTime=%d, and there are %d bytes left in the message.\n", pfrom->addrName, pfrom->nVersion, pfrom->nServices, nTime, nRemaining );
+            //! On clearnet protocol 70009 assumes ip addresses only, so if the inbound version is larger than that, then
+            //! we need to switch the stream type to include those larger address objects, do it now, and do it for both recv/send streams.
             if( nRemaining > nAddrWithI2P * 2 ) {
                 pfrom->SetStreamType( SER_NETWORK );
                 LogPrint( "version", "switched stream type to full destination addresses.\n" );
-                fBadProtocol = true;                              // Protocol bugs have been a huge job to debug, this is only used for that.
+                fBadProtocol = true;                                //! Protocol bugs have been a huge job to debug, this is only used for that.
             }
-            vRecv >> addrMe;                                        // Try it now anyway, or throw the error
+            vRecv >> addrMe;                                        //! Try it now anyway, or throw the error
 
         } else
             vRecv >> addrMe;
 
-        // If there is still more data to receive, it should be "from" address nonce values
+        //! If there is still more data to receive, it should be the "from" address
         // if( fBadProtocol ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", ::GetSerializeSize(addrFrom, SER_NETWORK, PROTOCOL_VERSION), vRecv.size() );
 
         if( !vRecv.empty() )
             vRecv >> addrFrom;
 
-        // Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
-        // Values like these have been found: 0xa224000000000083 &  0xa124000000000083
-        addrMe.nServices &= 0xFF;         // Purge undefined service bits
-        addrFrom.nServices &= 0xFF;       // Purge undefined service bits
+        //! Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
+        //! In this software release, we may remove this at a later date after more research by the development team is done.
+        //! Values like these have been found: 0xa224000000000083 &  0xa124000000000083
+        /* pfrom->nServices &= 0xFF; Leave unchanged as declared for viewing the full value sent to us. */
+        pfrom->addr.nServices = pfrom->nServices & 0xFF;    //! Make sure our node copy of their address is the same while purging undefined service bits
+        addrMe.nServices &= 0xFF;                           //! Purge undefined service bits for my address
+        addrFrom.nServices = pfrom->nServices & 0xFF;       //! Make sure they are the same while purging undefined service bits for their from address
+        //! The pfrom->addr and addFrom addresses will be used later to update addrman, which one depends on the inbound or outbound state
+        //! Unauthorized sharing of undefined service bits through peer addresses is not allowed in this version
 
-        // Any peer with a lesser version than our newest level needs special attention.
-        // So we keep our inhouse database correct when receiving i2p destination addresses.
-        // Starting with v70009 we introduce the concept of a GarlicCat-agory address to
-        // the CNetAddr object classes private ip 16 byte array field, its value is now
-        // selected as a specific IP6/48 formated address, one we can always identify as
-        // indicating an I2P address.  This is left out of the details received from
-        // any peer with a lesser version.  In the future we'll change this again to a new
-        // protocol level, one which optimizes the storage required for I2P Destination
-        // keys (& possible optional certificate), without even using the base64 format
-        // anymore.
+        //! Any peer with a lesser version than our newest level needs special attention.
+        //! So we keep our inhouse database correct when receiving i2p destination addresses.
+        //! Starting with v70009 we introduce the concept of a GarlicCat-agory address to
+        //! the CNetAddr object classes private ip 16 byte array field, its value is now
+        //! selected as a specific IP6/48 formated address, one we can always identify as
+        //! indicating an I2P address.  This is left out of the details received from
+        //! any peer with a lesser version.  In the future we'll change this again to a new
+        //! protocol level, one which optimizes the storage required for I2P Destination
+        //! keys (& possible optional certificate), without even using the base64 format
+        //! anymore.
 
-        // Whenever we receive these addresses, if its from an i2p destination, the ip address should be the GarlicCat, if not, set them up correctly,
-        // as we count on it after this, and a peer could be trying to send us anything... So if we're not on I2P make sure these fields are blank
-        // As it came from the outside world, check everything and  fix it if necessary:
+        //! Whenever we receive these addresses, if its from an i2p destination, the ip address should be the GarlicCat, if not, set them up correctly,
+        //! as we count on it after this, and a peer could be trying to send us anything... So if we're not on I2P make sure these fields are blank
+        //! As it came from the outside world, check everything and  fix it if necessary:
         if( pfrom->addr.IsNativeI2P() ) {
             addrMe.CheckAndSetGarlicCat();
-            addrMe.SetPort( 0 );              // Make sure the CService port is set to ZERO so AddrMan's commands can work with matching.
-            //
-            // Nodes lie about their From address, even over i2p.  When that happens, CheckAndSetGarlicCat below returns false,
-            // as it was not able to correctly fix the addrFrom field.  In that case, we 'COULD' correct the address here, as we know
-            // from which i2p destination they connect from.  However, this now takes on a new and special role for dynamic i2p peers
-            // An option has been added to the anoncoin.conf file -i2p.mydestination.shareaddr which allows the user to set the behavior,
-            // the default is to share our destination if we are running with static, and not share it if a dynamic destination is being used.
-            // Allowing the user to decide, is done in the config file otherwise.
-            // This new feature, does not require rebuilding software just to change the setting.
-            addrFrom.SetPort( 0 );            // Make sure the CService port is set to ZERO, so AddrMan's commands can work with matching
+            addrMe.SetPort( 0 );              //! Make sure the CService port is set to ZERO so AddrMan's commands can work with matching.
+            //! Nodes lie about their From address, even over i2p.  When that happens, CheckAndSetGarlicCat below returns false,
+            //! as it was not able to correctly fix the addrFrom field.  In that case, we 'COULD' correct the address here, as we know
+            //! from which i2p destination they connect from.  However, this now takes on a new and special role for dynamic i2p peers
+            //! An option has been added to the anoncoin.conf file -i2p.mydestination.shareaddr which allows the user to set the behavior,
+            //! the default is to share our destination if we are running with static, and not share it if a dynamic destination is being used.
+            //! Allowing the user to decide, is done in the config file otherwise.
+            //! This new feature, does not require rebuilding software just to change the setting.
+            addrFrom.SetPort( 0 );            //! Make sure the CService port is set to ZERO, so AddrMan's commands can work with matching
             bool fFromChanged = addrFrom.CheckAndSetGarlicCat();
             if( (CService)pfrom->addr != (CService)addrFrom ) {
                 LogPrint( "version", "I2P Peer @ %s, protocol %d is reporting a different destination addrFrom=%s\n", pfrom->addr.ToString(), pfrom->nVersion, addrFrom.ToString() );
             }
-        } else {            // must be a clearnet address in the IP field, and not have a I2P address.
-            // In the future this could be used to autoswitch the node to a more secure network, like I2P!
-            // At the present time (March 2015) the development team opinion is: Being able to link an ip addresses to an i2p destination is a bad idea
-            // These next 2 lines wipe out the I2P field, if anything was there.
+        } else {            //! must be a clearnet address in the IP field, and not have a I2P address.
+            //! In the future this could be used to autoswitch the node to a more secure network, like I2P!
+            //! At the present time (March 2015) the development team opinion is: Being able to link an ip addresses to an i2p destination is a bad idea
+            //! These next 2 lines wipe out the I2P field, if anything was there.
             addrMe.SetI2pDestination( "" );
             addrFrom.SetI2pDestination( "" );
             if( (CNetAddr)pfrom->addr != (CNetAddr)addrFrom )
@@ -3793,7 +4132,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 LogPrint( "version", "Clearnet Peer @ %s, protocol %d matches ip addrFrom, but ports differ, addrFrom=%s\n", pfrom->addrName, pfrom->nVersion, addrFrom.ToString() );
         }
 
-        // Now we should have the right address data for addrMe and addrFrom, with or without buggy brained builds.  If not, these LogPrintf lines help us debug it.
+        //! Now we should have the right address data for addrMe and addrFrom, with or without buggy brained builds.  If not, these LogPrintf lines help us debug it.
         // if( fBadProtocol ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( nNonce ), vRecv.size() );
 
         if( !vRecv.empty() )
@@ -3801,7 +4140,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         // if( fBadProtocol ) LogPrintf( "Size of next object =unknown, Remainder in buffer=%d\n", vRecv.size() );
 
-        // If it is still not empty input, get us the subversion string as well, plus sanitize it
+        //! If it is still not empty input, get us the subversion string as well, plus sanitize it
         if (!vRecv.empty()) {
             vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
             if( pfrom->strSubVer.size() < 3 )
@@ -3810,8 +4149,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
         }
 
-        // Disconnect certain incompatible clients
-        // ToDo: At some point start disconnecting nodes that report no or very tiny subver strings, or need to be cleaned just to pass.
+        //! Disconnect certain incompatible clients
+        //! ToDo: At some point start disconnecting nodes that report no or very tiny subver strings, or need to be cleaned just to pass.
+        //!       Also we have one satoshi client the keeps trying to connect, it is not compatible an should have its version added here.
         const char *badSubVers[] = { "/potcoinseeder", "/reddcoinseeder", "/worldcoinseeder" };
         for (int x = 0; x < 3; x++)
         {
@@ -3826,164 +4166,198 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         // if( fBadProtocol ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->nStartingHeight ), vRecv.size() );
 
-        // Finally if there is still more data on the input stream, it should be the starting block height...
+        //! Finally if there is still more data on the input stream, it should be the starting block height...
         if (!vRecv.empty())
             vRecv >> pfrom->nStartingHeight;
 
         // if( fBadProtocol ) LogPrintf( "Size of next object =%d, Remainder in buffer=%d\n", sizeof( pfrom->fRelayTxes ), vRecv.size() );
 
-        // The last field possible is the optional Relay Tx value
+        //! The last field possible is the optional Relay Tx value
         if (!vRecv.empty())
-            vRecv >> pfrom->fRelayTxes; // set to true after we get the first filter* message
+            vRecv >> pfrom->fRelayTxes; //! set to true after we get the first filter* message
         else
             pfrom->fRelayTxes = true;
 
-        if (nNonce == nLocalHostNonce && nNonce > 1) {                                      // Disconnect if we connected to ourself
+        if (nNonce == nLocalHostNonce && nNonce > 1) {                                      //! Disconnect if we connected to ourself
             LogPrintf("connected to self at %s, disconnecting\n", pfrom->addrName);
             pfrom->fDisconnect = true;
             return true;
         }
-        // ToDo: Once we have the nNonce value, we want to compare it with the nNonce values for all the other nodes we are connected to
-        // if there is a match, it means we are connected to the same machine over multiple network types, and should disconnect this
-        // node.  We many need to do this instead periodically, as initially the nNonce is more than likely different right now, further
-        // investigation is required as to how to solve this problem.
+        //! ToDo: Once we have the nNonce value, we want to compare it with the nNonce values for all the other nodes we are connected to
+        //! if there is a match, it means we are connected to the same machine over multiple network types, and should disconnect this
+        //! node.  We many need to do this instead periodically, as initially the nNonce is more than likely different right now, further
+        //! investigation is required as to how to solve this problem.
 
-        pfrom->addrLocal = addrMe;                                                          // Always assign the nodes local address
-        if( pfrom->fInbound && addrMe.IsRoutable() )
-            SeenLocal(addrMe);                                                              // If inbound score seen & advertise ourselves
+        pfrom->addrLocal = addrMe;                      //! Always assign the nodes local address
+        //! This next code is unique to Anoncoin too, we've added a new type of local address discovery source (LOCAL_PEER)
+        //! If we are outbound, and connected and do not yet know our local address, we add it to the map with the lowest
+        //! possible score above NONE.  As time progresses it may become the best possible local address we know of, if
+        //! no other discovery finds our external IP address, if its an inbound connection we bump its score by one as it
+        //! was seen, that part of this code works just like it always has in past versions, although for many coins
+        //! they fail to do the AddLocal step so marking it as seen had no effect on the mapLocalHost list.
+        //! One problem of course is that, the port given could be all over the place, so we be sure and cast the address
+        //! passed to AddLocal as only a CNetAddr object, then the default listen port gets set to our default listen port,
+        //! and that is what is added to the map correctly, otherwise you will get many different local addresses all with
+        //! different ports.
+        //! So for outbound connections this has the effect of bumping our score +1 on local addresses when AddLocal is
+        //! called & we already have the address setup in the map, in that regard, it now works like SeenLocal does for only
+        //! inbound connections, where the score is, and always bumped +1 when a new peer shows up.  The problem was it
+        //! did nothing if that local address was never found in the 1st place.
+        if( addrMe.IsRoutable() )
+            pfrom->fInbound ? SeenLocal(addrMe) : AddLocal( (CNetAddr)addrMe, LOCAL_PEER );
 
-#ifdef ENABLE_I2PSAM
-        // Here if the node does not seem to support that I2P service, we keep the IP only setting for our send stream.
-
-
-        // Both versions 70008 and 70007 work this way.  But have this code in different places.
-        // If it does support that I2P service, then we (should) switch to sending full CNetAddr objects with contain both
-        // IP and I2P destination information.
-        // Also see: SetRecvStreamType() in the verack message
+        //! Here if the node does not seem to support that I2P service, we keep the IP only setting for our send stream.
+        //! Both versions 70008 and 70007 work this way.  But have this code in different places.
+        //! If it does support that I2P service, then we (should) switch to sending full CNetAddr objects with contain both
+        //! IP and I2P destination information.
+        //! Also see: SetRecvStreamType() in the verack message
         if( (pfrom->nVersion < 70009) && !pfrom->addr.IsNativeI2P() ) {
-            // Protocol 70006 builds on clearnet lie, they do not even have the i2p address space built into their wallet software and report NODE_I2P as a service
-            // which they can not offer.  Fix that now and don't bother changing the stream type
+            //! Protocol 70006 builds on clearnet lie, they do not even have the i2p address space built into their wallet software and report NODE_I2P as a service
+            //! which they can not offer.  Fix that now and don't bother changing the stream type
             if( pfrom->nVersion == 70006 ) {
                 pfrom->nServices &= ~NODE_I2P;
-                LogPrint( "version", "node %s lies about the services it supports, correcting it before continuing.\n", pfrom->addrName );
+                LogPrint( "version", "peer %s lies about the services it supports, correcting it before continuing.\n", pfrom->addrName );
             }
             else {
-                // If their services do not list NODE_I2P, we now have that covered in 70009, most <=70008 protocol nodes should switch,
-                // there stream type BEFORE pushing their version, if we've made an outbound connection to them, we've already told them
-                // that we support it.  So we do that here now too before pushing our version back to them.  But only for the Send Stream
-                // not until we get the verack message back, do we switch the receiver stream, by convention, as per the older protocols.
+                //! If their services do not list NODE_I2P, we now have that covered in 70009, most <=70008 protocol nodes should switch,
+                //! there stream type BEFORE pushing their version, if we've made an outbound connection to them, we've already told them
+                //! that we support it.  So we do that here now too before pushing our version back to them.  But only for the Send Stream
+                //! not until we get the verack message back, do we switch the receiver stream, by convention, as per the older protocols.
                 u_int uBefore = pfrom->GetSendStreamType();
                 pfrom->SetSendStreamType( uBefore & ((pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
-                LogPrint( "version", "node %s, setting send stream type, was %08x, now set to %08x\n", pfrom->addrName, uBefore, pfrom->GetSendStreamType() );
+                LogPrint( "version", "peer %s, setting send stream type, was %08x, now set to %08x\n", pfrom->addrName, uBefore, pfrom->GetSendStreamType() );
             }
         }
-#endif
-        // If this message was inbound, they've sent us a version, so we should now send ours back.
-        // They did that, when creating a peer as our node address in the 1st place.
-        // Now that we have their version, we push ours so they know who we are too, after this all kind of things can happen.
-        // V9 clients (protocols > 70007) always have NODE_I2P set.  On clearnet, it could be either way for versions < 70008,
-        // depending on how they obtained our address and what services were listed!  Its NOT deterministic!
+        //! If this message was inbound, they've sent us a version, so we should now send ours back.
+        //! They did that, when creating a peer as our node address in the 1st place.
+        //! Now that we have their version, we push ours so they know who we are too, after this all kind of things can happen.
+        //! V9 clients (protocols > 70007) always have NODE_I2P set.  On clearnet, it could be either way for versions < 70008,
+        //! depending on how they obtained our address and what services were listed!  Its NOT deterministic!
         if( pfrom->fInbound )
             pfrom->PushVersion();
 
-        // This flag, fClient gets set TRUE, if the other node is NOT even a full node supporting full blockchain data services
+        //! This flag, fClient gets set TRUE, if the other node is NOT even a full node supporting full blockchain data services
         pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
 
-        // Change version
+        //! Potentially mark this peer as a preferred download peer.
+        UpdatePreferredDownload(pfrom, State(pfrom->GetId()));
+
+        //! Change version
         pfrom->PushMessage("verack");
 
-        // When we send to that node, use his protocol version, or our version, whichever is less...
+        //! When we send to that node, use his protocol version, or our version, whichever is less...
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
 
-        // We still only exchange ip addresses in the version messages if on clearnet with Protocol 70009, This makes the handshake
-        // deterministic.  Not based at all on services, which may have been a lie, depending on how the information was obtained,
-        // or the software was built (70006).
-        // We must not change our send stream type, until after our version is pushed on inbound connections, because
-        // the other node does not yet know for sure, whom we are and what services we really support.
-        // If our connection was outbound, then the peer is now responding with it's version.  We do not want to change our receiver
-        // stream type until after that handshake has been made.
+        //! We still only exchange ip addresses in the version messages if on clearnet with Protocol 70009, This makes the handshake
+        //! deterministic.  Not based at all on services, which may have been a lie, depending on how the information was obtained,
+        //! or the software was built (70006).
+        //! We must not change our send stream type, until after our version is pushed on inbound connections, because
+        //! the other node does not yet know for sure, whom we are and what services we really support.
+        //! If our connection was outbound, then the peer is now responding with it's version.  We do not want to change our receiver
+        //! stream type until after that handshake has been made.
 
-        // At this point we want to always send/receive to other 70009+ peers with full ip/i2p destinations as the stream type setting.
-        // Yet we can ONLY do that "if" they are NOW reporting that they support the NODE_I2P service.  This allows for the development
-        // of other software & services, one's that use the new protocol, but do not claim to support the larger address space, for
-        // whatever reason. As deterministically as possible, with a new routine, we attempt now to work for all the various ways the
-        // inbound/outbound connections may behave as peers using this software...
-        if( pfrom->nVersion >= 70009 )
-            pfrom->SetStreamTypeBasedOnServices();      // We set both in/out stream types strictly based on the peers NODE_I2P service
+        //! So at this point we want to always send/receive to other 70009+ peers with full ip/i2p destinations as the stream type setting.
+        //! Yet we can ONLY do that "if" they are NOW reporting that they support the NODE_I2P service.  This allows for the development
+        //! of other software & services, one's that use the new protocol, but do not claim to support the larger address space, for
+        //! whatever reason. As deterministically as possible, with a new routine, we attempt now to work for all the various ways the
+        //! inbound/outbound connections may behave as peers using this software...
+        if( pfrom->nVersion >= 70009 ) {
+            bool fBefore = (pfrom->GetStreamType() & SER_IPADDRONLY) == 0;
+            pfrom->SetStreamTypeBasedOnServices();      //! We set both in/out stream types strictly based on the peers NODE_I2P service
+            bool fAfter = (pfrom->GetStreamType() & SER_IPADDRONLY) == 0;
+            //! Over i2p we don't really need to report anything, as the streamtype is always full size, we are here initially for debugging.
+            //! on clearnet we log the before & after states of the decision made, as the NODE_I2P service determines what this peer supports.
+            if( !pfrom->addr.IsI2P() ) {
+                LogPrint( "version", "clearnet peer %s is protocol 70009+, IP handshake completed. NODE_I2P service indicates %s, stream type %s.\n",
+                          pfrom->addrName, fAfter ? "full I2P support" : "no I2P support", fBefore != fAfter ? "switched to full I2P" : "left unchanged" );
+            } else if( (pfrom->nServices & NODE_I2P) == 0 ) {
+                //! Just encase someone tries to not have NODE_I2P set, while running over I2P, make sure it IS set, because otherwise they it is a lie
+                LogPrint( "version", "WARNING - I2P peer %s is protocol 70009+, Hard setting NODE_I2P service.  That should not be required.\n", pfrom->addrName );
+                pfrom->nServices |= NODE_I2P;
+            } else
+                LogPrint( "version", "I2P peer %s is protocol 70009+, version handshake completed normally.\n", pfrom->addrName );
+        }
 
         if (!pfrom->fInbound)
         {
-            // Advertise our address, by doing this now after the version exchange, the other node may pass it on to nodes
-            // connected to them, nearly right away, at which point we may soon start to see inbound connections to us.
-            // so we want to be sure and listen for them (we always do on i2p), and only if we're pretty sure we know what
-            // our ip address is, on i2p we always know for sure, but over clearnet its only a maybe.
-            // NEW Parameter: If its over I2P, only push it if -i2p.mydestination.shareaddr=1 (true)
-#ifdef ENABLE_I2PSAM
-            if( ( pfrom->addr.IsI2P() || !fNoListen ) && !IsInitialBlockDownload() )
-#else
-            if( !fNoListen && !IsInitialBlockDownload() )
-#endif
+            //! Advertise our address, by doing this now after the version exchange, the other node may pass it on to nodes
+            //! connected to them, nearly right away, at which point we may soon start to see inbound connections to us.
+            //! so we want to be sure and listen for them (we always do on i2p), and only if we're pretty sure we know what
+            //! our ip address is, on i2p we always know for sure, but over clearnet its only a maybe.
+            //! NEW Parameter: If its over I2P, only push it if -i2p.mydestination.shareaddr=1 (true) This is now done in the
+            //! call to GetLocalAddress(), making it incompatible with the new code for clearnet by calling IsPeerAddrLocalGood()
+            //! So we need to NOT do that if operating over i2p.
+            if( ( pfrom->addr.IsI2P() || fListen ) && !IsInitialBlockDownload() )
             {
-                // If its an i2p destination we needed to get in here, ignoring the fNoListen flag, now we can check
-                // to see if our destination is really shared or not
-                if( !pfrom->addr.IsI2P() || IsMyDestinationShared() ) {
-                    CAddress addr = GetLocalAddress(&pfrom->addr);
-                    if( addr.IsRoutable() )                         // One last check!  Is our local address routable?
-                        pfrom->PushAddress(addr);
+                //! If its an i2p destination we needed to get in here, ignoring the fNoListen flag, if our
+                //! destination is not shared, GetLocalAddress returns an unroutable 0.0.0.0 destination
+                CAddress addr = GetLocalAddress(&pfrom->addr);
+                if( addr.IsRoutable() ) {                        //! One last check!  Is our local address routable?
+                    pfrom->PushAddress(addr);
+                } else if( !pfrom->addr.IsI2P() && IsPeerAddrLocalGood(pfrom) ) {
+                    //! What this does is after this outbound connection has been made, where we
+                    //! only have a bad local address for ourselves.  It will discover that the
+                    //! peers address for us is much better and push that back to them instead.
+                    //! Something we don't want to do for dynamic i2p destinations that are not shared.
+                    addr.SetIP(pfrom->addrLocal);
+                    pfrom->PushAddress(addr);
                 }
             }
 
-            // Get recent addresses, if we're new and hungry for peers, lets get them...
+            //! Get recent addresses, if we're new and hungry for peers, lets get them...
             if (pfrom->fOneShot || pfrom->nVersion >= MIN_PEER_PROTO_VERSION || addrman.size() < 1000)
             {
                 pfrom->PushMessage("getaddr");
                 pfrom->fGetAddr = true;
             }
-            // So at this point we're about to update the addrman, and know what the node services are, directly from them
-            // we can copy that into the CAddress object, before calling Good
-            pfrom->addr.nServices = pfrom->nServices;           // So addrman can update our records, if its needed.
-            // ToDo: if any changes to the port setting are needed, is complicated to figure out, diagnostic output being printed
-            addrman.Good(pfrom->addr);              // If its an outbound connection, it must always be in the addrman already
+            //! ToDo: if any changes to the port setting are needed, diagnostic output is being logged for evaluation.
+            addrman.Good(pfrom->addr);              //! If its an outbound connection, it must always be in the addrman already
         } else {
-            // Lots of peers on cryptocoin networks lie about what address they are really from, this standard code from bitcoin
-            // allows them to do that, in many cases the peer does not yet know for sure what their ip address is.
-            // Happens all the time.
-            // When an inbound connection ip does not match the reported ip in that peer's version information address, their
-            // 'real' ip address is not added to AddrMan, marked as Good, and used later on to find connections by this peer
-            // or otherwise passed on. They have connected to the network, while keeping their destination secret.
-            // If they have collected lots of addresses, they can make plenty of outbound connections, without ever seeing an
-            // inbound connection, because no other peers know about them.
-            //
-            // Best guess this developer can come up with is that in some cases they do not want their ip address advertised.
-            // The code is left as is in Anoncoin v9.4, protocol 70009, for clearnet operation.  It's place and use in
-            // cryptocurrency history is left upto the informed mind to figure out why a peer is reporting a different ip...
-            //
-            // This behavior is also seen on the i2p network, peers reporting their addrFrom address incorrectly, this is a
-            // situation which at first glance, seemed really stupid to this developer.  I2P destinations are not a 'maybe'
-            // like on clearnet, except their is a case where the destination is not very useful longterm.  When the node
-            // is using a dynamically generated destination.
-            // After further investigation, it now seems like a great idea to implement this in our standard code,
-            // it offers a solution to what is a different problem, one where the peer is not running a static i2p address,
-            // and it would be best to NOT include their address in our addrman or pass it on to other peers anyway.  So
-            // starting with v9.5 software running protocol 70009+, it will now have a new parameter and option in the
-            // anoncoin.conf file.  That is....it will allow any user to override what is our new default behavior.
-            // For dynamic destinations, the 'from' field gets zero'd out before pushing our version message out.  When
-            // running a static i2p destination it will report it correctly and work as it should. If a user does want it
-            // advertised, they can choose to override this setting in the config file.  Independent of the static/dynamic
-            // destination selection.  See our anoncoin.conf.sample file for more details.
+            //! Lots of peers on cryptocoin networks lie about what address they are really from, this standard code from bitcoin
+            //! allows them to do that, in many cases the peer does not yet know for sure what their ip address is.
+            //! Happens all the time.
+            //! When an inbound connection ip does not match the reported ip in that peer's version information address, their
+            //! 'real' ip address is not added to AddrMan, marked as Good, and used later on to find connections by this peer
+            //! or otherwise passed on. They have connected to the network, while keeping their destination secret.
+            //! If they have collected lots of addresses, they can make plenty of outbound connections, without ever seeing an
+            //! inbound connection, because no other peers know about them.
+            //!
+            //! Best guess this developer can come up with is that in some cases they do not want their ip address advertised.
+            //! The code is left as is in Anoncoin v9.4, protocol 70009, for clearnet operation.  It's place and use in
+            //! cryptocurrency history is left upto the informed mind to figure out why a peer is reporting a different ip...
+            //!
+            //! This behavior is also seen on the i2p network, peers reporting their addrFrom address incorrectly, this is a
+            //! situation which at first glance, seemed really stupid to this developer.  I2P destinations are not a 'maybe'
+            //! like on clearnet, except their is a case where the destination is not very useful longterm.  When the node
+            //! is using a dynamically generated destination.
+            //! After further investigation, it now seems like a great idea to implement this in our standard code,
+            //! it offers a solution to what is a different problem, one where the peer is not running a static i2p address,
+            //! and it would be best to NOT include their address in our addrman or pass it on to other peers anyway.  So
+            //! starting with v9.5 software running protocol 70009+, it will now have a new parameter and option in the
+            //! anoncoin.conf file.  That is....it will allow any user to override what is our new default behavior.
+            //! For dynamic destinations, the 'from' field gets zero'd out before pushing our version message out.  When
+            //! running a static i2p destination it will report it correctly and work as it should. If a user does want it
+            //! advertised, they can choose to override this setting in the config file.  Independent of the static/dynamic
+            //! destination selection.  See our anoncoin.conf.sample file for more details.
             if( ((CNetAddr)pfrom->addr) == (CNetAddr)addrFrom )
             {
+                //! When addrman receives Add commands like this it realizes the address is inbound and checks to make sure
+                //! that the address nService and Port values match what the node itself tells it they should be, if they
+                //! are different it updates its record.
+                //! The default port should already have been set be the peer when it created the CAddress object to send us,
+                //! and tests show this must normally be the case.  As an inbound connection port is not likely the default
+                //! Anoncoin network port  This needs to work really well for both I2P destinations and clearnet addresses.
                 addrman.Add(addrFrom, addrFrom);
                 addrman.Good(addrFrom);
             }
         }
 
-        // Relay alerts
+        //! Relay alerts
         RelayAlerts(pfrom);
 
         pfrom->fSuccessfullyConnected = true;
 
-        LogPrintf("receive version message: %s: version %d, blocks=%d, services=%04x us=%s, them=%s, peer=%s\n", pfrom->cleanSubVer, pfrom->nVersion, pfrom->nStartingHeight, pfrom->nServices, addrMe.ToString(), addrFrom.ToString(), pfrom->addrName);
+        LogPrintf("receive version message: %s: version %d, blocks=%d, services=0x%016x us=%s, them=%s, peer=%s\n", pfrom->cleanSubVer, pfrom->nVersion, pfrom->nStartingHeight, pfrom->nServices, addrMe.ToString(), addrFrom.ToString(), pfrom->addrName);
 
         AddTimeData(pfrom->addr, nTime);
     }
@@ -4000,44 +4374,42 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if (strCommand == "verack")
     {
         pfrom->SetRecvVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
-        // Mark this node as currently connected, so we update its timestamp later.
+        //! Mark this node as currently connected, so we update its timestamp later.
         if (pfrom->fNetworkNode) {
             LOCK(cs_main);
             State(pfrom->GetId())->fCurrentlyConnected = true;
         }
 
-#ifdef ENABLE_I2PSAM
-        // Older protocols < 70008 may not always have NODE_I2P in their services, if not we make sure
-        // our stream type for receiving stays IP only.  Why we wait to switch the receiver stream after
-        // the verack makes no sense to this developer, this should be done at the same time as the
-        // send stream is switched (if need be, based on the nodes service options), however it was
-        // in older protocols, so sticking with it here now as well in v70009.
+        //! Older protocols < 70008 may not always have NODE_I2P in their services, if not we make sure
+        //! our stream type for receiving stays IP only.  Why we wait to switch the receiver stream after
+        //! the verack makes no sense to this developer, this should be done at the same time as the
+        //! send stream is switched (if need be, based on the nodes service options), however it was
+        //! in older protocols, so sticking with it here now as well in v70009.
         if( (pfrom->nVersion < 70009) && !pfrom->addr.IsNativeI2P() ) {
-            // Protocol 70006 builds on clearnet lie, they do not even have the i2p address space built into their wallet software
-            // and report NODE_I2P as a service which they can not offer.  That has already been fixed in the version message,
-            // and we do nothing here for those builds.
+            //! Protocol 70006 builds on clearnet lie, they do not even have the i2p address space built into their wallet software
+            //! and report NODE_I2P as a service which they can not offer.  That has already been fixed in the version message,
+            //! and we do nothing here for those builds.
             if( pfrom->nVersion != 70006 ) {
                 u_int uBefore = pfrom->GetRecvStreamType();
                 pfrom->SetRecvStreamType( uBefore & ((pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
                 LogPrint( "version", "verack from %s, recv stream type was %08x, now set to %08x\n", pfrom->addrName, uBefore, pfrom->GetRecvStreamType() );
             }
         }
-#endif
     }
 
 
     else if (strCommand == "addr")
     {
-        // Nodes lie about the services they support, in some cases we receive addresses that are not serialized properly, even though the node
-        // claims to support NODE_I2P it sends us only IP address payloads.  An attempt was made to double check the vRecv buffers version type
-        // even it lies, so they must not be compiled to even include the i2p address payload.  The 1st error that hits on the CDatastream
-        // read now is the only place we can finally detect the error and correct the stream type and services for these type of
-        // nodes.  No special checking is done there atm, it's been learned that Protocols 70006 are the nodes that are not setup properly,
-        // so actions have been taken to design the problem away before an error is generated...
+        //! Nodes lie about the services they support, in some cases we receive addresses that are not serialized properly, even though the node
+        //! claims to support NODE_I2P it sends us only IP address payloads.  An attempt was made to double check the vRecv buffers version type
+        //! even it lies, so they must not be compiled to even include the i2p address payload.  The 1st error that hits on the CDatastream
+        //! read now is the only place we can finally detect the error and correct the stream type and services for these type of
+        //! nodes.  No special checking is done there now, it's been learned that Protocols 70006 are the nodes that are not setup properly,
+        //! so actions have been taken to design the problem away before an error is generated...
         vector<CAddress> vAddr;
         vRecv >> vAddr;
 
-        // Don't want addr from older versions...
+        //! Don't want addr from older versions...
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && addrman.size() > 1000)
             return true;
         if (vAddr.size() > 1000) {
@@ -4045,82 +4417,82 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return error("message addr size() = %u", vAddr.size());
         }
 
-        // Store the new addresses
+        //! Store the new addresses
         vector<CAddress> vAddrOk;
         int64_t nNow = GetAdjustedTime();
-        int64_t nSince = nNow - 10 * 60;                    // Set to 10 minutes ago
+        int64_t nSince = nNow - 10 * 60;                    //! Set to 10 minutes ago
         // bool fPossibleI2pAddrs = (pfrom->nServices & NODE_I2P ) != 0;
-        // Hopefully the services supported by the peer show it supports I2P addresses. (services can lie), look at the stream type for now
+        //! Hopefully the services supported by the peer show it supports I2P addresses. (services can lie), look at the stream type for now
         bool fPossibleI2pAddrs = (pfrom->GetRecvStreamType() & SER_IPADDRONLY ) == 0;
-        // Hopefully that stream type was set correctly before we do this, it should have been done correctly before this message is processed.
+        //! Hopefully that stream type was set correctly before we do this, it should have been done correctly before this message is processed.
 
-        // Any peer addresses should be checked, as their size could include I2P destination addresses,
-        // we don't know what they are sending us, could be clearnet ip's or full i2p base64 destinations,
-        // perhaps with or without the correct GarlicCat field set in the ip address space....
-        LogPrint( "net", "received %d addresses, serialized size %u bytes each, from peer: %s\n",
-                   vAddr.size(), ::GetSerializeSize(pfrom->addr, pfrom->GetRecvStreamType(), pfrom->nVersion), pfrom->addrName );
+        //! Any peer addresses should be checked, as their size could include I2P destination addresses,
+        //! we don't know what they are sending us, could be clearnet ip's or full i2p base64 destinations,
+        //! perhaps with or without the correct GarlicCat field set in the ip address space....
+        LogPrint( "net", "received %d addresses, serialized size %u bytes each, from %s\n",
+                   vAddr.size(), ::GetSerializeSize(pfrom->addr, pfrom->GetRecvStreamType(), pfrom->nVersion), GetPeerLogStr(pfrom) );
 
-        // Fix problems with Addresses, before normal processing is done:
-        // If any of those addresses are I2P destinations we introduce some new stress testing on them to confirm
-        // they are valid and setup correctly before adding or sharing them with others.
-        // If the StreamType is IP only, our memory should have been cleared and zeroed out when the CAddress object
-        // was created, only the ip/port fields have been filled in when the address deserialized, but at times the port has been zeroed out
-        // if it is an NODE_I2P source, but claims its an ip address, we make sure the i2p field is zero.  If it is an i2p addr we make sure
-        // the garliccat ip addr has been setup correctly.
+        //! Fix problems with Addresses, before normal processing is done:
+        //! If any of those addresses are I2P destinations we introduce some new stress testing on them to confirm
+        //! they are valid and setup correctly before adding or sharing them with others.
+        //! If the StreamType is IP only, our memory should have been cleared and zeroed out when the CAddress object
+        //! was created, only the ip/port fields have been filled in when the address deserialized, but at times the port has been zeroed out
+        //! if it is an NODE_I2P source, but claims its an ip address, we make sure the i2p field is zero.  If it is an i2p addr we make sure
+        //! the garliccat ip addr has been setup correctly.
         BOOST_FOREACH(CAddress& addr, vAddr) {
-            if( fPossibleI2pAddrs ) {                       // So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
-                addr.CheckAndSetGarlicCat();                // Fix the address by adding the GarlicCat field, if it came in not set correctly
-                if( addr.IsNativeI2P() )                    // For native I2P Addresses...
-                    addr.SetPort( 0 );                      // Make sure the CService port is set to ZERO so AddrMan's lookups can match I2P addresses correctly
-                else                                        // This should not be necessary, but comparisons and everything else assumes the i2p adddress area is zero for ip addrs
-                    addr.SetI2pDestination( "" );           // Clears the I2P destination field, but leaves the ip field as it was found
+            if( fPossibleI2pAddrs ) {                       //! So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
+                addr.CheckAndSetGarlicCat();                //! Fix the address by adding the GarlicCat field, if it came in not set correctly
+                if( addr.IsNativeI2P() )                    //! For native I2P Addresses...
+                    addr.SetPort( 0 );                      //! Make sure the CService port is set to ZERO so AddrMan's lookups can match I2P addresses correctly
+                else                                        //! This should not be necessary, but comparisons and everything else assumes the i2p adddress area is zero for ip addrs
+                    addr.SetI2pDestination( "" );           //! Clears the I2P destination field, but leaves the ip field as it was found
             } else
-                assert( addr.GetI2pDestination() == "" );   // Only ip addresses came in, programming error if the i2p destination field is not zero
-            // Regardless of the node service type source of this address, if its an ip address, check and fix the port
-            if( !addr.IsNativeI2P() && addr.GetPort() == 0 ) { // Clearnet CAddress objects often get their ports zero'd out, due to our efforts to get i2p addrs to work?
+                assert( addr.GetI2pDestination() == "" );   //! Only ip addresses came in, programming error if the i2p destination field is not zero
+            //! Regardless of the node service type source of this address, if its an ip address, check and fix the port
+            if( !addr.IsNativeI2P() && addr.GetPort() == 0 ) { //! Clearnet CAddress objects often get their ports zero'd out, due to our efforts to get i2p addrs to work?
                 // LogPrintf( "Set address %s port to default\n", addr.ToString() );
-                addr.SetPort( Params().GetDefaultPort() );    // So set it to the default port, so 'most' will match correctly in AddrMan lookups later on
+                addr.SetPort( Params().GetDefaultPort() );    //! So set it to the default port, so 'most' will match correctly in AddrMan lookups later on
             }
-            // Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
-            // Values like these have been found: 0xa224000000000083 &  0xa124000000000083
-            addr.nServices &= 0xFF;         // Purge undefined service bits
+            //! Someone/Somehow we're getting addresses with garbage in the upper service bits, so clear everything above what we currently have defined.
+            //! Values like these have been found: 0xa224000000000083 &  0xa124000000000083
+            addr.nServices &= 0xFF;         //! Purge undefined service bits
         }
 
-        // Many routines, GetNetwork(), IsI2P() and others on an address, only work properly if the above GarlicCat field has been setup
+        //! Many routines, GetNetwork(), IsI2P() and others on an address, only work properly if the above GarlicCat field has been setup
         BOOST_FOREACH(CAddress& addr, vAddr)
         {
             boost::this_thread::interruption_point();
 
-            // IsReachable looks at this nodes configuration, if this address is for a network that
-            // is outside of how this node is configuration atm, then it will be false.  If there
-            // is a local address available for the network which this addresses is for, then it
-            // returns true.  Regardless, we consider all I2P addresses to be reachable, so they
-            // are passed on and shared with all nodes.
+            //! IsReachable looks at this nodes configuration, if this address is for a network that
+            //! is outside of how this node is configuration atm, then it will be false.  If there
+            //! is a local address available for the network which this addresses is for, then it
+            //! returns true.  Regardless, we consider all I2P addresses to be reachable, so they
+            //! are passed on and shared with all nodes.
             bool fReachable = IsReachable(addr) || addr.IsI2P();
-            // We're now going to start having all the folks on clearnet help us out.  While at the
-            // same time not destroy the beautiful random way this works.  Sharing good I2P addresses
-            // is something we want to have done by all peers, regardless of any personal benefit to
-            // those running on clearnet only.  Could really help out those of us running mixed mode,
-            // which in turn, will filter over into helping those out on i2p only as well.
+            //! We're now going to start having all the folks on clearnet help us out.  While at the
+            //! same time not destroy the beautiful random way this works.  Sharing good I2P addresses
+            //! is something we want to have done by all peers, regardless of any personal benefit to
+            //! those running on clearnet only.  Could really help out those of us running mixed mode,
+            //! which in turn, will filter over into helping those out on i2p only as well.
 
-            // Set the time on this address to be 5 days old, if their time is all screwed up
+            //! Set the time on this address to be 5 days old, if their time is all screwed up
             if (addr.nTime <= 100000000 || addr.nTime > nNow + 10 * 60)
                 addr.nTime = nNow - 5 * 24 * 60 * 60;
             pfrom->AddAddressKnown(addr);               // Mark this address as known by the peer
 
-            // Here if its just a few addresses, really new (10 minutes) & routeable we pay special
-            // attention, and forward those addresses on randomly to our peers.
-            // IsRoutable() looks at this node's setup, a call in there to IsLocal() makes sure those
-            // addresses will not be included  Any other considerations are just validity checks on
-            // the addresses themselves.  PushAddress does more checking based on the node its about
-            // to be pushed TO, if it gets that far.
+            //! Here if its just a few addresses, really new (10 minutes) & routeable we pay special
+            //! attention, and forward those addresses on randomly to our peers.
+            //! IsRoutable() looks at this node's setup, a call in there to IsLocal() makes sure those
+            //! addresses will not be included  Any other considerations are just validity checks on
+            //! the addresses themselves.  PushAddress does more checking based on the node its about
+            //! to be pushed TO, if it gets that far.
             if( addr.nTime > nSince && !pfrom->fGetAddr && vAddr.size() <= 10 && addr.IsRoutable() )
             {
-                // Relay to a limited number of other nodes
+                //! Relay to a limited number of other nodes
                 {
                     LOCK(cs_vNodes);
-                    // Use deterministic randomness to send to the same nodes for 24 hours
-                    // at a time so the setAddrKnowns of the chosen nodes prevent repeats
+                    //! Use deterministic randomness to send to the same nodes for 24 hours
+                    //! at a time so the setAddrKnowns of the chosen nodes prevent repeats
                     static uint256 hashSalt;
                     if (hashSalt == 0)
                         hashSalt = GetRandHash();
@@ -4138,24 +4510,24 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                         hashKey = Hash(BEGIN(hashKey), END(hashKey));
                         mapMix.insert(make_pair(hashKey, pnode));
                     }
-                    int nRelayNodes = fReachable ? 2 : 1;   // limited relaying of addresses outside our network(s)
-                    if( addr.IsI2P() ) nRelayNodes *= 2;        // If its an I2P address double the number of peers we share it with
+                    int nRelayNodes = fReachable ? 2 : 1;       //! limited relaying of addresses outside our network(s)
+                    if( addr.IsI2P() ) nRelayNodes *= 2;        //! If its an I2P address double the number of peers we share it with
                     for (multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && nRelayNodes-- > 0; ++mi) {
-                        CNode* pToNode = ((*mi).second);    // Local copy of the node pointer, this time whom we are relaying it too...
-                        // If its not an I2P addr push it, if it is, consider the services that peer is capable of, before doing that.
-                        // ToDo: More logic here would make the pushes smarter about getting i2p addrs to nodes connected via i2p
+                        CNode* pToNode = ((*mi).second);        //! Local copy of the node pointer, this time whom we are relaying it too...
+                        //! If its not an I2P addr push it, if it is, consider the services that peer is capable of, before doing that.
+                        //! ToDo: More logic here would make the pushes smarter about getting i2p addrs to nodes connected via i2p
                         if( !addr.IsI2P() || ( (pToNode->nServices & NODE_I2P) != 0 ) )
                             pToNode->PushAddress(addr);
                     }
                 }
             }
 
-            // Do not store addresses outside our network, unless its an I2P destination, then we keep it
-            // The other special case is, if we're running i2ponly, then we only keep addresses that are also i2p
+            //! Do not store addresses outside our network, unless its an I2P destination, then we keep it
+            //! The other special case is, if we're running i2ponly, then we only keep addresses that are also i2p
             if( fReachable && (!IsI2POnly() || addr.IsI2P()) )
                 vAddrOk.push_back(addr);
         }
-        addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);         // Add the vector of addresses to our book, marking them as 2hrs old
+        addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);         //! Add the vector of addresses to our book, marking them as 2hrs old
         if (vAddr.size() < 1000)
             pfrom->fGetAddr = false;
         if (pfrom->fOneShot)
@@ -4177,6 +4549,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         std::vector<CInv> vToFetch;
 
+        uint8_t nTxOrphansInPayload = 0;
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++)
         {
             const CInv &inv = vInv[nInv];
@@ -4186,11 +4559,39 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
             bool fAlreadyHave = AlreadyHave(inv);
             LogPrint("net", "  got inventory: %s  %s\n", inv.ToString(), fAlreadyHave ? "have" : "new");
+            if( inv.type != MSG_BLOCK ) {
+                //! An additional check for transaction inventory. If we are not up-to-date with current
+                //! blocks, do NOT ask for tx inventory...
+                //! Otherwise we get a bunch of transaction orphans that would otherwise have been known about
+                //! soon enough when the blocks arrive....
+                if( !fAlreadyHave && !IsInitialBlockDownload() ) {
+                    //! One last check, when found we must do something, there are good peers propagating bad Tx's too,
+                    //! so we do one important step for sure.  We do NOT AskFor from that peer the Tx and stop
+                    //! the propagation of the bad Inv messages as one of protection steps.  Until everyone upgrades we
+                    //! can not mark the peer as misbehaving and disconnect.  Plus consideration of gateways between
+                    //! I2P and clearnet maybe the source, all good traffic would also be cut off, so Misbehaving here
+                    //! is not easy to know what action maybe best regarding this peer.
+                    if( fTxIndex ) {
+                        // LogPrintf( "Double checking TxIndex for hash %s\n", inv.hash.ToString() );
+                        CDiskTxPos postx;
+                        if( pblocktree->ReadTxIndex(inv.hash, postx) ) {
+                            LogPrintf( "WARNING - Tx hash found, likely old pruned coins in blockchain. Double spend attack?\n" );
+                            Misbehaving(pfrom->GetId(), 1);
+                            fAlreadyHave = true;
+                            if( ++nTxOrphansInPayload == 100 ) {
+                                LogPrintf( "Dumping the remaining %d transactions in this inventory...\n", vInv.size() - nTxOrphansInPayload );
+                                break;
+                            }
 
-            if (!fAlreadyHave && !fImporting && !fReindex && inv.type != MSG_BLOCK)
-                pfrom->AskFor(inv);
+                        } // else
+                            // LogPrintf( "Inventory hash not found in TxIndex.\n");
+                    } // else
+                        // LogPrintf( "Need TxIndex enabled to ensure this node is protected from double spend transaction attacks.\n");
 
-            if (inv.type == MSG_BLOCK) {
+                    if( !fAlreadyHave )
+                        pfrom->AskFor(inv);
+                }
+            } else {                        // inv.type == MSG_BLOCK
                 UpdateBlockAvailability(pfrom->GetId(), inv.hash);
                 if (!fAlreadyHave && !fImporting && !fReindex && !mapBlocksInFlight.count(inv.hash)) {
                     // First request the headers preceeding the announced block. In the normal fully-synced
@@ -4210,7 +4611,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                         // later (within the same cs_main lock, though).
                         MarkBlockAsInFlight(pfrom->GetId(), inv.hash);
                     }
-                    LogPrint("net", "getheaders (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(), pfrom->id);
+                    LogPrint("net", "getheaders (%d) %s to %s\n", pindexBestHeader->nHeight, inv.hash.ToString(), GetPeerLogStr(pfrom));
                 }
             }
 
@@ -4232,17 +4633,16 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     {
         vector<CInv> vInv;
         vRecv >> vInv;
-        if (vInv.size() > MAX_INV_SZ)
-        {
+        int32_t nInvSize = vInv.size();
+        if( nInvSize > MAX_INV_SZ ) {
             Misbehaving(pfrom->GetId(), 20);
-            return error("message getdata size() = %u", vInv.size());
+            return error("message getdata size() = %u", nInvSize);
         }
 
-        if (fDebug || (vInv.size() != 1))
-            LogPrint("net", "received getdata (%u invsz)\n", vInv.size());
-
-        if ((fDebug && vInv.size() > 0) || (vInv.size() == 1))
-            LogPrint("net", "received getdata for: %s\n", vInv[0].ToString());
+        if( nInvSize != 1 )
+            LogPrint("net", "received getdata (%u invsz) from %s\n", nInvSize, GetPeerLogStr(pfrom));
+        else
+            LogPrint("net", "received getdata for: %s from %s\n", vInv[0].ToString(), GetPeerLogStr(pfrom));
 
         pfrom->vRecvGetData.insert(pfrom->vRecvGetData.end(), vInv.begin(), vInv.end());
         ProcessGetData(pfrom);
@@ -4252,7 +4652,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if (strCommand == "getblocks")
     {
         CBlockLocator locator;
-        uint256 hashStop;
+        uintFakeHash hashStop;
         vRecv >> locator >> hashStop;
 
         LOCK(cs_main);
@@ -4264,21 +4664,21 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (pindex)
             pindex = chainActive.Next(pindex);
         int nLimit = 500;
-        LogPrint("net", "getblocks %d to %s limit %d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(), nLimit);
+        LogPrint("net", "getblocks %d to %s limit %d\n", (pindex ? pindex->nHeight : -1), hashStop.GetRealHash().ToString(), nLimit);
         for (; pindex; pindex = chainActive.Next(pindex))
         {
-            if (pindex->GetBlockHash() == hashStop)
+            if (pindex->GetBlockSha256dHash() == hashStop)
             {
                 LogPrint("net", "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
                 break;
             }
-            pfrom->PushInventory(CInv(MSG_BLOCK, pindex->GetBlockHash()));
+            pfrom->PushInventory(CInv(MSG_BLOCK, pindex->GetBlockSha256dHash()));
             if (--nLimit <= 0)
             {
                 // When this block is requested, we'll send an inv that'll make them
                 // getblocks the next batch of inventory.
                 LogPrint("net", "  getblocks stopping at limit %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
-                pfrom->hashContinue = pindex->GetBlockHash();
+                pfrom->hashContinue = pindex->GetBlockSha256dHash();
                 break;
             }
         }
@@ -4288,7 +4688,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if (strCommand == "getheaders")
     {
         CBlockLocator locator;
-        uint256 hashStop;
+        uintFakeHash hashStop;
         vRecv >> locator >> hashStop;
 
         LOCK(cs_main);
@@ -4297,7 +4697,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (locator.IsNull())
         {
             // If locator is null, return the hashStop block
-            BlockMap::iterator mi = mapBlockIndex.find(hashStop);
+            uint256 aRealHash = hashStop.GetRealHash();
+            BlockMap::iterator mi = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
             if (mi == mapBlockIndex.end())
                 return true;
             pindex = (*mi).second;
@@ -4310,9 +4711,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 pindex = chainActive.Next(pindex);
         }
 
-        if( pindex )
-            UpdateBlockAvailability(pfrom->GetId(), pindex->GetBlockHash());
-
         // we must use CBlocks, as CBlockHeaders won't include the 0x00 nTx count at the end
         vector<CBlock> vHeaders;
         int nLimit = 2000;
@@ -4320,7 +4718,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         for (; pindex; pindex = chainActive.Next(pindex))
         {
             vHeaders.push_back(pindex->GetBlockHeader());
-            if (--nLimit <= 0 || pindex->GetBlockHash() == hashStop)
+            if (--nLimit <= 0 || pindex->GetBlockSha256dHash() == hashStop)
                 break;
         }
         pfrom->PushMessage("headers", vHeaders);
@@ -4351,8 +4749,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             vWorkQueue.push_back(inv.hash);
             vEraseQueue.push_back(inv.hash);
 
-            LogPrint("mempool", "AcceptToMemoryPool: peer=%s %s : accepted %s (poolsz %u)\n",
-                pfrom->addrName, pfrom->cleanSubVer,
+            LogPrint("mempool", "AcceptToMemoryPool: %s %s : accepted %s (poolsz %u)\n",
+                GetPeerLogStr(pfrom), pfrom->cleanSubVer,
                 tx.GetHash().ToString(),
                 mempool.mapTx.size());
 
@@ -4415,12 +4813,17 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             unsigned int nEvicted = LimitOrphanTxSize(nMaxOrphanTx);
             if (nEvicted > 0)
                 LogPrint("mempool", "mapOrphan overflow, removed %u tx\n", nEvicted);
+        } else if (pfrom->fWhitelisted) {
+            // Always relay transactions received from whitelisted peers, even
+            // if they are already in the mempool (allowing the node to function
+            // as a gateway for nodes hidden behind it).
+            RelayTransaction(tx);
         }
         int nDoS = 0;
         if (state.IsInvalid(nDoS))
         {
-            LogPrint("mempool", "%s from peer=%s %s was not accepted into the memory pool: %s\n", tx.GetHash().ToString(),
-                pfrom->addrName, pfrom->cleanSubVer,
+            LogPrint("mempool", "%s from %s %s was not accepted into the memory pool: %s\n", tx.GetHash().ToString(),
+                GetPeerLogStr(pfrom), pfrom->cleanSubVer,
                 state.GetRejectReason());
             pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),
                                state.GetRejectReason(), inv.hash);
@@ -4455,7 +4858,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CBlockIndex *pindexLast = NULL;
         BOOST_FOREACH(const CBlockHeader& header, headers) {
             CValidationState state;
-            if (pindexLast != NULL && header.hashPrevBlock != pindexLast->GetBlockHash()) {
+            uint256 aRealHash = header.hashPrevBlock.GetRealHash();
+            if (pindexLast != NULL && aRealHash != 0 && aRealHash != pindexLast->GetBlockHash()) {
                 Misbehaving(pfrom->GetId(), 20);
                 return error("non-continuous headers sequence");
             }
@@ -4470,13 +4874,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         }
 
         if (pindexLast)
-            UpdateBlockAvailability(pfrom->GetId(), pindexLast->GetBlockHash());
+            UpdateBlockAvailability(pfrom->GetId(), pindexLast->GetBlockSha256dHash());
 
         if (nCount == MAX_HEADERS_RESULTS && pindexLast) {
             // Headers message had its maximum size; the peer may have more headers.
             // TODO: optimize: if pindexLast is an ancestor of chainActive.Tip or pindexBestHeader, continue
             // from there instead.
-            LogPrint("net", "more getheaders (%d) to end to peer=%s (startheight:%d)\n", pindexLast->nHeight, pfrom->addrName, pfrom->nStartingHeight);
+            LogPrint("net", "more getheaders (%d) to end to %s (startheight:%d)\n", pindexLast->nHeight, GetPeerLogStr(pfrom), pfrom->nStartingHeight);
             pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256(0));
         }
     }
@@ -4486,10 +4890,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CBlock block;
         vRecv >> block;
 
-        CInv inv(MSG_BLOCK, block.GetHash());
-        LogPrint("net", "received block %s peer=%d\n", inv.hash.ToString(), pfrom->addrName);
-
-        LogPrint("net", "received block %s\n", block.GetHash().ToString());
+        CInv inv(MSG_BLOCK, block.CalcSha256dHash());
+        LogPrint("net", "received block %s %s\n", block.GetHash().ToString(), GetPeerLogStr(pfrom));
+        // LogPrint("net", "received block %s\n", block.GetHash().ToString());
         // block.print();
 
         pfrom->AddInventoryKnown(inv);
@@ -4507,6 +4910,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         }
     }
 
+
     // This asymmetric behavior for inbound and outbound connections was introduced
     // to prevent a fingerprinting attack: an attacker can send specific fake addresses
     // to users' AddrMan and later request them by sending getaddr messages.
@@ -4515,7 +4919,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     else if ((strCommand == "getaddr") && (pfrom->fInbound))
     {
         pfrom->vAddrToSend.clear();
-        bool fIpOnly = pfrom->addr.nServices & NODE_I2P != 0;
+        bool fIpOnly = (pfrom->addr.nServices & NODE_I2P) != 0;
         bool fI2pOnly = pfrom->addr.IsI2P();
         vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
         BOOST_FOREACH(const CAddress &addr, vAddr)
@@ -4550,23 +4954,20 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else if (strCommand == "ping")
     {
-        if (pfrom->nVersion > BIP0031_VERSION)
-        {
-            uint64_t nonce = 0;
-            vRecv >> nonce;
-            // Echo the message back with the nonce. This allows for two useful features:
-            //
-            // 1) A remote node can quickly check if the connection is operational
-            // 2) Remote nodes can measure the latency of the network thread. If this node
-            //    is overloaded it won't respond to pings quickly and the remote node can
-            //    avoid sending us more work, like chain download requests.
-            //
-            // The nonce stops the remote getting confused between different pings: without
-            // it, if the remote node sends a ping once per second and this node takes 5
-            // seconds to respond to each, the 5th ping the remote sends would appear to
-            // return very quickly.
-            pfrom->PushMessage("pong", nonce);
-        }
+        uint64_t nonce = 0;
+        vRecv >> nonce;
+        // Echo the message back with the nonce. This allows for two useful features:
+        //
+        // 1) A remote node can quickly check if the connection is operational
+        // 2) Remote nodes can measure the latency of the network thread. If this node
+        //    is overloaded it won't respond to pings quickly and the remote node can
+        //    avoid sending us more work, like chain download requests.
+        //
+        // The nonce stops the remote getting confused between different pings: without
+        // it, if the remote node sends a ping once per second and this node takes 5
+        // seconds to respond to each, the 5th ping the remote sends would appear to
+        // return very quickly.
+        pfrom->PushMessage("pong", nonce);
     }
 
 
@@ -4614,7 +5015,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         if (!(sProblem.empty())) {
             LogPrint("net", "pong %s %s: %s, %x expected, %x received, %u bytes\n",
-                pfrom->addrName,
+                GetPeerLogStr(pfrom),
                 pfrom->cleanSubVer,
                 sProblem,
                 pfrom->nPingNonceSent,
@@ -4679,7 +5080,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else if (strCommand == "filteradd")
     {
-        vector<unsigned char> vData;
+        vector<uint8_t> vData;
         vRecv >> vData;
 
         // Nodes must NEVER send a data item > 520 bytes (the max size for a script data object,
@@ -4708,32 +5109,30 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else if (strCommand == "reject")
     {
-        if (fDebug) {
-            try {
-                string strMsg; unsigned char ccode; string strReason;
-                vRecv >> LIMITED_STRING(strMsg, CMessageHeader::COMMAND_SIZE) >> ccode >> LIMITED_STRING(strReason, 111);
+        try {
+            string strMsg; uint8_t ccode; string strReason;
+            vRecv >> LIMITED_STRING(strMsg, CMessageHeader::COMMAND_SIZE) >> ccode >> LIMITED_STRING(strReason, 111);
 
-                ostringstream ss;
-                ss << strMsg << " code " << itostr(ccode) << ": " << strReason;
+            ostringstream ss;
+            ss << strMsg << " code " << itostr(ccode) << ": " << strReason;
 
-                if (strMsg == "block" || strMsg == "tx")
-                {
-                    uint256 hash;
-                    vRecv >> hash;
-                    ss << ": hash " << hash.ToString();
-                }
-                LogPrint("net", "Reject %s\n", SanitizeString(ss.str()));
-            } catch (std::ios_base::failure& e) {
-                // Avoid feedback loops by preventing reject messages from triggering a new reject message.
-                LogPrint("net", "Unparseable reject message received\n");
+            if (strMsg == "block" || strMsg == "tx")
+            {
+                uint256 hash;
+                vRecv >> hash;
+                ss << ": hash " << hash.ToString();
             }
+            LogPrint("net", "Reject %s from %s\n", SanitizeString(ss.str()), GetPeerLogStr(pfrom));
+        } catch (const std::ios_base::failure& e) {
+            // Avoid feedback loops by preventing reject messages from triggering a new reject message.
+            LogPrint("net", "Unparseable reject message received from %s\n", GetPeerLogStr(pfrom));
         }
     }
 
     else
     {
         // Ignore unknown commands for extensibility
-        LogPrint("net", "Unknown command \"%s\" from peer=%d\n", SanitizeString(strCommand), pfrom->addrName);
+        LogPrint("net", "Unknown command \"%s\" from %s\n", SanitizeString(strCommand), GetPeerLogStr(pfrom));
     }
 
     return true;
@@ -4808,8 +5207,8 @@ bool ProcessMessages(CNode* pfrom)
         memcpy(&nChecksum, &hash, sizeof(nChecksum));
         if (nChecksum != hdr.nChecksum)
         {
-            LogPrintf("ProcessMessages(%s, %u bytes) : CHECKSUM ERROR nChecksum=%08x hdr.nChecksum=%08x\n",
-               strCommand, nMessageSize, nChecksum, hdr.nChecksum);
+            LogPrintf("ProcessMessages(%s, %u bytes) : CHECKSUM ERROR nChecksum=%08x hdr.nChecksum=%08x from %s\n",
+               strCommand, nMessageSize, nChecksum, hdr.nChecksum, GetPeerLogStr(pfrom));
             continue;
         }
 
@@ -4820,35 +5219,35 @@ bool ProcessMessages(CNode* pfrom)
             fRet = ProcessMessage(pfrom, strCommand, vRecv);
             boost::this_thread::interruption_point();
         }
-        catch (std::ios_base::failure& e)
+        catch (const std::ios_base::failure& e)
         {
             pfrom->PushMessage("reject", strCommand, REJECT_MALFORMED, string("error parsing message"));
             if (strstr(e.what(), "end of data"))
             {
                 // Allow exceptions from under-length message on vRecv
-                LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught, normally caused by a message being shorter than its stated length\n", strCommand, nMessageSize, e.what());
+                LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught, normally caused by a message being shorter than its stated length, from %s\n", strCommand, nMessageSize, e.what(), GetPeerLogStr(pfrom));
             }
             else if (strstr(e.what(), "size too large"))
             {
                 // Allow exceptions from over-long size
-                LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught\n", strCommand, nMessageSize, e.what());
+                LogPrintf("ProcessMessages(%s, %u bytes) : Exception '%s' caught, from %s\n", strCommand, nMessageSize, e.what(), GetPeerLogStr(pfrom));
             }
             else
             {
                 PrintExceptionContinue(&e, "ProcessMessages()");
             }
         }
-        catch (boost::thread_interrupted) {
+        catch (const boost::thread_interrupted&) {
             throw;
         }
-        catch (std::exception& e) {
+        catch (const std::exception& e) {
             PrintExceptionContinue(&e, "ProcessMessages()");
         } catch (...) {
             PrintExceptionContinue(NULL, "ProcessMessages()");
         }
 
         if (!fRet)
-            LogPrintf("ProcessMessage(%s, %u bytes) FAILED\n", strCommand, nMessageSize);
+            LogPrintf("ProcessMessage(%s, %u bytes) FAILED, from %s\n", strCommand, nMessageSize, GetPeerLogStr(pfrom));
 
         break;
     }
@@ -4883,18 +5282,12 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         if (pingSend) {
             uint64_t nonce = 0;
             while (nonce == 0) {
-                RAND_bytes((unsigned char*)&nonce, sizeof(nonce));
+                GetRandBytes((uint8_t*)&nonce, sizeof(nonce));
             }
             pto->fPingQueued = false;
             pto->nPingUsecStart = GetTimeMicros();
-            if (pto->nVersion > BIP0031_VERSION) {
-                pto->nPingNonceSent = nonce;
-                pto->PushMessage("ping", nonce);
-            } else {
-                // Peer is too old to support ping command with nonce, pong will never arrive.
-                pto->nPingNonceSent = 0;
-                pto->PushMessage("ping");
-            }
+            pto->nPingNonceSent = nonce;
+            pto->PushMessage("ping", nonce);
         }
 
         TRY_LOCK(cs_main, lockMain); // Acquire cs_main for IsInitialBlockDownload() and CNodeState()
@@ -4905,14 +5298,16 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         static int64_t nLastRebroadcast;
         if (!IsInitialBlockDownload() && (GetTime() - nLastRebroadcast > 24 * 60 * 60))
         {
+            LOCK(cs_vNodes);
+            BOOST_FOREACH(CNode* pnode, vNodes)
             {
-                LOCK(cs_vNodes);
                 // Periodically clear setAddrKnown to allow refresh broadcasts
-                BOOST_FOREACH(CNode* pnode, vNodes)
-                    if (nLastRebroadcast)
-                        pnode->setAddrKnown.clear();
+                if (nLastRebroadcast)
+                    pnode->setAddrKnown.clear();
+
+                // Rebroadcast our address
+                AdvertizeLocal(pnode);
             }
-            AdvertizeLocal();   // Now we can broadcast our address to everybody
             if (!vNodes.empty())
                 nLastRebroadcast = GetTime();
         }
@@ -4930,15 +5325,15 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 if (pto->setAddrKnown.insert(addr).second)
                 {
                     vAddr.push_back(addr);
-                    // I2P addresses are MUCH larger than IP addresses, a trickle set to 1K is over 1/2 megabyte of payload
-                    // over 33x larger per addr, so lets reduce that amount, down to what the max addrman will return
-                    // or 1000, whichever is less.  Any more than 1K, and various nodes will start marking ours as misbehaving.
-                    // This change however does not stop addrman from generating what is still a very huge list and payload to
-                    // send, it just breaks it up into smaller chunks.  See the variable ADDRMAN_GETADDR_MAX as defined in
-                    // addrman.h for what that value is set to, and more details.
-                    // Also see: The 'getaddr' message processing for details on restricting the results based on the nodes
-                    // network and service settings.
-                    // was if (vAddr.size() >= 1000)
+                    //! I2P addresses are MUCH larger than IP addresses, a trickle set to 1K is over 1/2 megabyte of payload
+                    //! over 33x larger per addr, so lets reduce that amount, down to what the max addrman will return
+                    //! or 1000, whichever is less.  Any more than 1K, and various nodes will start marking ours as misbehaving.
+                    //! This change however does not stop addrman from generating what is still a very huge list and payload to
+                    //! send, it just breaks it up into smaller chunks.  See the variable ADDRMAN_GETADDR_MAX as defined in
+                    //! addrman.h for what that value is set to, and more details.
+                    //! Also see: The 'getaddr' message processing for details on restricting the results based on the nodes
+                    //! network and service settings.
+                    //! was if (vAddr.size() >= 1000)
 #if ADDRMAN_GETADDR_MAX < 1000
                     if( vAddr.size() >= ADDRMAN_GETADDR_MAX )
 #else
@@ -4957,13 +5352,18 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         CNodeState &state = *State(pto->GetId());
         if (state.fShouldBan) {
-            if (pto->addr.IsLocal())
-                LogPrintf("Warning: not banning local node %s!\n", pto->addr.ToString());
+            if (pto->fWhitelisted)
+                LogPrintf("Warning: not punishing whitelisted %s!\n", GetPeerLogStr(pto));
             else {
                 pto->fDisconnect = true;
-                CNode::Ban(pto->addr);
+                if (pto->addr.IsLocal())
+                    LogPrintf("Warning: not banning local %s!\n", GetPeerLogStr(pto));
+                else
+                {
+                    CNode::Ban(pto->addr);
+                }
+                state.fShouldBan = false;
             }
-            state.fShouldBan = false;
         }
 
         BOOST_FOREACH(const CBlockReject& reject, state.rejects)
@@ -4981,7 +5381,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 state.fSyncStarted = true;
                 nSyncStarted++;
                 CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-                LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
+                LogPrint("net", "initial getheaders (%d) to %s (startheight:%d)\n", pindexStart->nHeight, GetPeerLogStr(pto), pto->nStartingHeight);
                 pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
             }
         }
@@ -4989,7 +5389,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Resend wallet transactions that haven't gotten in a block yet
         // Except during reindex, importing and IBD, when old wallet
         // transactions become unconfirmed and spams other nodes.
-        if (!fReindex && !fImporting && !IsInitialBlockDownload())
+        if (!IsInitialBlockDownload())
         {
             g_signals.Broadcast();
         }
@@ -5052,8 +5452,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             // Stalling only triggers when the block download window cannot move. During normal steady state,
             // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
             // should only happen during initial block download.
-            // LogPrintf("Peer=%d is stalling block download, disconnecting\n", pto->id);
-            LogPrintf("Peer %s is stalling block download, disconnecting\n", state.name);
+            LogPrintf("%s is stalling block download, disconnecting\n", GetPeerLogStr(pto));
             pto->fDisconnect = true;
         }
         // In case there is a block that has been in flight from this peer for (2 + 0.5 * N) times the block interval
@@ -5062,8 +5461,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
         // to unreasonably increase our timeout.
         if (!pto->fDisconnect && state.vBlocksInFlight.size() > 0 && state.vBlocksInFlight.front().nTime < nNow - 500000 * nTargetSpacing * (4 + state.vBlocksInFlight.front().nValidatedQueuedBefore)) {
-            // LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", state.vBlocksInFlight.front().hash.ToString(), pto->id);
-            LogPrintf("Timeout downloading block %s from peer=%s, disconnecting\n", state.vBlocksInFlight.front().hash.ToString(), state.name);
+            LogPrintf("Timeout downloading block %s from %s, disconnecting\n", state.vBlocksInFlight.front().hash.ToString(), GetPeerLogStr(pto));
             pto->fDisconnect = true;
         }
 
@@ -5076,10 +5474,9 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             NodeId staller = -1;
             FindNextBlocksToDownload(pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state.nBlocksInFlight, vToDownload, staller);
             BOOST_FOREACH(CBlockIndex *pindex, vToDownload) {
-                vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
-                MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);
-                // LogPrint("net", "Requesting block %s (%d) peer=%d\n", pindex->GetBlockHash().ToString(), pindex->nHeight, pto->id);
-                LogPrint("net", "Requesting block %s (%d) peer=%s\n", pindex->GetBlockHash().ToString(), pindex->nHeight, state.name);
+                vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockSha256dHash()));
+                MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockSha256dHash(), pindex);
+                LogPrint("net", "Requesting block %s (%d) from %s\n", pindex->GetBlockHash().ToString(), pindex->nHeight, GetPeerLogStr(pto));
             }
             if (state.nBlocksInFlight == 0 && staller != -1) {
                 if (State(staller)->nStallingSince == 0) {
@@ -5097,9 +5494,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             const CInv& inv = (*pto->mapAskFor.begin()).second;
             if (!AlreadyHave(inv))
             {
-                if (fDebug)
-                    LogPrint("net", "Requesting %s peer=%s\n", inv.ToString(), pto->addrName);
-                    LogPrint("net", "sending getdata: %s\n", inv.ToString());
+                LogPrint("net", "Requesting %s from %s\n", inv.ToString(), GetPeerLogStr(pto));
                 vGetData.push_back(inv);
                 if (vGetData.size() >= 1000)
                 {
@@ -5157,7 +5552,7 @@ bool CBlockUndo::ReadFromDisk(const CDiskBlockPos &pos, const uint256 &hashBlock
         filein >> *this;
         filein >> hashChecksum;
     }
-    catch (std::exception &e) {
+    catch (const std::exception& e) {
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
 
@@ -5171,22 +5566,30 @@ bool CBlockUndo::ReadFromDisk(const CDiskBlockPos &pos, const uint256 &hashBlock
     return true;
 }
 
-
+ std::string CBlockFileInfo::ToString() const {
+     return strprintf("CBlockFileInfo(blocks=%u, size=%u, heights=%u...%u, time=%s...%s)", nBlocks, nSize, nHeightFirst, nHeightLast, DateTimeStrFormat("%Y-%m-%d", nTimeFirst), DateTimeStrFormat("%Y-%m-%d", nTimeLast));
+ }
 
 class CMainCleanup
 {
 public:
     CMainCleanup() {}
     ~CMainCleanup() {
+        // This is far from complete, proper cleanup is a big job, the OS had best take care of it
+        // ToDo: Detail everything in main the could be taking up memory and specifically deallocate it.
+
         // block headers
         BlockMap::iterator it1 = mapBlockIndex.begin();
         for (; it1 != mapBlockIndex.end(); it1++)
             delete (*it1).second;
         mapBlockIndex.clear();
+        // cross reference block hash map
+        mapBlockHashCrossReference.clear();
 
         // orphan transactions
         mapOrphanTransactions.clear();
         mapOrphanTransactionsByPrev.clear();
+
     }
 } instance_of_cmaincleanup;
 

@@ -10,7 +10,132 @@
 #endif
 static const char UNUSED *anoncoin_strings[] = {
 QT_TRANSLATE_NOOP("anoncoin-core", ""
-"%s, you must set a rpcpassword in the configuration file:\n"
+"       Or start with our anoncoin.conf.sample file, which has even more "
+"settings.\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"      Setting them there, before starting your node, allows Cli to always "
+"work with whatever configuration your using atm.)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"      Then only anoncoin-cli <command> <params> need be entered on the "
+"command line, to use this utility.)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"   Standard I2P network Routers are not as likely to find your destination "
+"with it.\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"   most peers will likely be able to find you by this Base32 hash of the "
+"Public Key.\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"****** Save the above text at the end of your configuration file and keep it "
+"secret.\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Allow JSON-RPC connections from specified source. Valid for <ip> are a "
+"single IP (e.g. 1.2.3.4), a network/netmask (e.g. 1.2.3.4/255.255.255.0) or "
+"a network/CIDR (e.g. 1.2.3.4/24). This option can be specified multiple times"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"An error occurred while setting up the RPC address %s port %u for listening: "
+"%s"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Bind to given address and always listen on it. Use [host]:port notation for "
+"IPv6"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Bind to given address and whitelist peers connecting to it. Use [host]:port "
+"notation for IPv6"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Bind to given address to listen for JSON-RPC connections. Use [host]:port "
+"notation for IPv6. This option can be specified multiple times (default: "
+"bind to all interfaces)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Cannot obtain a lock on data directory %s. Anoncoin Core is probably already "
+"running."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Continuously rate-limit free transactions to <n>*1000 bytes per minute "
+"(default:%u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Distributed under the MIT software license, see the accompanying file "
+"COPYING or <http://www.opensource.org/licenses/mit-license.php>."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Enter regression test mode, which uses a special chain in which blocks can "
+"be solved instantly. This is intended for regression testing tools and app "
+"development."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Enter regression test mode, which uses a special chain in which blocks can "
+"be solved instantly."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Error loading wallet.dat: Wallet requires newer version of Anoncoin Core"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Error: Listening for incoming connections failed (listen returned error %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Error: Unsupported argument -socks found. Setting SOCKS version isn't "
+"possible anymore, only SOCKS5 proxies are supported."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Execute command when a relevant alert is received or we see a really long "
+"fork (%s in cmd is replaced by message)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Execute command when a wallet transaction changes (%s in cmd is replaced by "
+"TxID)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Execute command when the best block changes (%s in cmd is replaced by the "
+"real block hash)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Fees (in ANC/Kb) smaller than this are considered zero fee for relaying "
+"(default: %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Fees (in ANC/Kb) smaller than this are considered zero fee for transaction "
+"creation (default: %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Flush database activity from memory pool to disk log every <n> megabytes "
+"(default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"How thorough the block verification of -checkblocks is (0-4, default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"If paytxfee is not set, include enough fee so transactions begin "
+"confirmation on average within n blocks (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"In this mode -genproclimit controls how many blocks are generated "
+"immediately."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay "
+"fee of %s to prevent stuck transactions)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Log transaction priority and fee per kB when mining blocks (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Maintain a full transaction index, used by the getrawtransaction rpc call "
+"(default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Maximum total fees to use in a single wallet transaction, setting too low "
+"may abort large transactions (default: %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Note: If not otherwise specified, any of the above settings found in your "
+"configuration file, will be used to make the connection.)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Number of seconds to keep misbehaving peers from reconnecting (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Output debugging information (default: %u, supplying <category> is optional)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Output only the hex-encoded transaction id of the resultant transaction."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Query for peer addresses via DNS lookup, if low on addresses (default: 1 "
+"unless -connect)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Require high priority for relaying free or low-fee transactions (default:%u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Set enabled=1 in the [i2p.options] section of your anoncoin.conf file to use "
+"onlynet=i2p"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Set maximum size of high-priority/low-fee transactions in bytes (default: %d)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Set the number of script verification threads (%u to %d, 0 = auto, <0 = "
+"leave that many cores free, default: %d)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Set the number of threads for coin generation if enabled (-1 = all cores, "
+"default: %d)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"This product includes software developed by the OpenSSL Project for use in "
+"the OpenSSL Toolkit <https://www.openssl.org/> and cryptographic software "
+"written by Eric Young and UPnP software written by Thomas Bernard."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"To use anoncoind, or the -server option to anoncoin-qt, you must set an "
+"rpcpassword in the configuration file:\n"
 "%s\n"
 "It is recommended you use the following random password:\n"
 "rpcuser=anoncoinrpc\n"
@@ -23,87 +148,25 @@ QT_TRANSLATE_NOOP("anoncoin-core", ""
 "for example: alertnotify=echo %%s | mail -s \"Anoncoin Alert\" admin@foo."
 "com\n"),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!"
-"3DES:@STRENGTH)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"An error occurred while setting up the RPC port %u for listening on IPv4: %s"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"An error occurred while setting up the RPC port %u for listening on IPv6, "
-"falling back to IPv4: %s"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Bind to given address and always listen on it. Use [host]:port notation for "
-"IPv6"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Cannot obtain a lock on data directory %s. Anoncoin Core is probably already "
-"running."),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Continuously rate-limit free transactions to <n>*1000 bytes per minute "
-"(default:15)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Enter regression test mode, which uses a special chain in which blocks can "
-"be solved instantly."),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Error: Listening for incoming connections failed (listen returned error %s)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Error: The transaction was rejected! This might happen if some of the coins "
-"in your wallet were already spent, such as if you used a copy of wallet.dat "
-"and coins were spent in the copy but not marked as spent here."),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Error: This transaction requires a transaction fee of at least %s because of "
-"its amount, complexity, or use of recently received funds!"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Error: Unsupported argument -socks found. Setting SOCKS version isn't "
-"possible anymore, only SOCKS5 proxies are supported."),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Execute command when a relevant alert is received or we see a really long "
-"fork (%s in cmd is replaced by message)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Execute command when a wallet transaction changes (%s in cmd is replaced by "
-"TxID)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Execute command when the best block changes (%s in cmd is replaced by block "
-"hash)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Fees smaller than this are considered zero fee (for transaction creation) "
-"(default:"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Flush database activity from memory pool to disk log every <n> megabytes "
-"(default: 100)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"How thorough the block verification of -checkblocks is (0-4, default: 3)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"In this mode -genproclimit controls how many blocks are generated "
-"immediately."),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Listen for JSON-RPC connections on <port> (default: 9332 or testnet: 19332)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Number of seconds to keep misbehaving peers from reconnecting (default: "
-"86400)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Output debugging information (default: 0, supplying <category> is optional)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Query for peer addresses via DNS lookup, if low on addresses (default: 1 "
-"unless -connect)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Set maximum size of high-priority/low-fee transactions in bytes (default: %d)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Set the number of script verification threads (%u to %d, 0 = auto, <0 = "
-"leave that many cores free, default: %d)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Set the processor limit for when generation is on (-1 = unlimited, default: "
-"-1)"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
-"This is a pre-release test build - use at your own risk - do not use for "
-"mining or merchant applications"),
-QT_TRANSLATE_NOOP("anoncoin-core", ""
 "Unable to bind to %s on this computer. Anoncoin Core is probably already "
 "running."),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
-"Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: -"
-"proxy)"),
+"Unable to obtain I2P SAM Session for the -generatei2pdestination command"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Unable to run -generatei2pdestination, see the debug.log for possible "
+"solutions to fix the problem."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: "
+"%s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Warning: -maxtxfee is set very high! Fees this large could be paid on a "
+"single transaction."),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
 "Warning: -paytxfee is set very high! This is the transaction fee you will "
 "pay if you send a transaction."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Warning: Please check that your computer's date and time are correct! If "
+"your clock is wrong Bitcoin Core will not work properly."),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
 "Warning: The network does not appear to fully agree! Some miners appear to "
 "be experiencing issues."),
@@ -118,172 +181,225 @@ QT_TRANSLATE_NOOP("anoncoin-core", ""
 "wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect "
 "you should restore from a backup."),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
-"\n"
-"If you want to use a permanent I2P-address you have to set options in the "
-"configuration file:\n"
-"Your Config file is: "),
+"Whitelist peers connecting from the given netmask or IP address. Can be "
+"specified multiple times."),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"Whitelisted peers cannot be DoS banned and their transactions are always "
+"relayed, even if they are already in the mempool, useful e.g. for a gateway"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"You must set rpcpassword=<password> in the configuration file:\n"
+"%s\n"
+"If the file does not exist, create it with owner-readable-only file "
+"permissions.\n"
+"If server was started with other than the default data directory, you must "
+"specify that location too. Try -help."),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
 "\n"
-"This is your Address + private key (save this text in the configuration file "
-"and keep it secret):\n"),
+"This is your I2P Public Key:\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"\n"
+"To have a permanent I2P Destination address, you have to set options in "
+"anoncoin.conf:\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"\n"
+"Your I2P Destination Private Key anoncoin.conf file settings are:\n"
+"\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", ""
+"\n"
+"Your personal b32.i2p Destination:\n"),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
 "\n"
 "\n"
-"This is your Address (you can make it public):\n"),
+"** Anoncoin peers now have built-in name resolution, once your on I2P for a "
+"few hours,\n"),
 QT_TRANSLATE_NOOP("anoncoin-core", ""
 "\n"
 "\n"
-"Your Short base32-address:\n"),
+"**** You can advertise the Public Key, all I2P Routers will know how to "
+"locate it.\n"),
+QT_TRANSLATE_NOOP("anoncoin-core", "(default: %s)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "(default: 1)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "(default: wallet.dat)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "<category> can be:"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Accept command line and JSON-RPC commands"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Accept connections from outside (default: 1 if no -proxy or -connect)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Accept public REST requests (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Acceptable ciphers (default: %s)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Add a node to connect to and attempt to keep the connection open"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Add address-based output to TX"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Add input to TX"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Add raw script output to TX"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Add zero or more signatures to transaction"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Allow DNS lookups for -addnode, -seednode and -connect"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Allow JSON-RPC connections from specified IP address"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Always query for peer addresses via DNS lookup (default: 0)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Always query for peer addresses via DNS lookup (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Anoncoin Core Daemon"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Anoncoin Core RPC client version"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Anoncoin Core anoncoin-tx utility version"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Anoncoin is running on clearnet!"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Attempt to recover private keys from a corrupt wallet.dat"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Block creation options:"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Building cross reference..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Cannot downgrade wallet"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Cannot resolve -bind address: '%s'"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Cannot resolve -externalip address: '%s'"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Cannot resolve -whitebind address: '%s'"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Cannot write default address"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Checking proof-of-work too..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Clear list of wallet transactions (diagnostic tool; implies -rescan)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Commands:"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Connect only to the specified node(s)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Connect through SOCKS5 proxy"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Connect to JSON-RPC on <port> (default: %u or testnet: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Connect to a node to retrieve peer addresses, and disconnect"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Connecting to the I2P Router..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Connection options:"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Copyright (C) 2013-%i The Anoncoin Core Developers"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Corrupted block database detected"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Could not parse -rpcbind value %s as network address"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Create hex-encoded anoncoin transaction"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Create new, empty TX."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Debugging/Testing options:"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Disable safemode, override a real safe mode event (default: 0)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Delete input N from TX"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Delete output N from TX"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Disable safemode, override a real safe mode event (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Discover own IP address (default: 1 when listening and no -externalip)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Do not load the wallet and disable wallet RPC calls"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Do you want to rebuild the block database now?"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Done loading"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Error - Unable to Generate I2P Destination."),
-QT_TRANSLATE_NOOP("anoncoin-core", "Error - Unable to report I2P Destination."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error initializing block database"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error initializing wallet database environment %s!"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error loading block database"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error loading wallet.dat"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error loading wallet.dat: Wallet corrupted"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Error loading wallet.dat: Wallet requires newer version of Anoncoin"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error opening block database"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Error reading from database, shutting down."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error: Disk space is low!"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Error: Unsupported argument -tor found, use -onion."),
-QT_TRANSLATE_NOOP("anoncoin-core", "Error: Wallet locked, unable to create transaction!"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Error: system error: "),
 QT_TRANSLATE_NOOP("anoncoin-core", "Failed to listen on any port. Use -listen=0 if you want this."),
-QT_TRANSLATE_NOOP("anoncoin-core", "Failed to read block info"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Failed to read block"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Failed to sync block index"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Failed to write block index"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Failed to write block info"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Failed to write block"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Failed to write file info"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Failed to write to coin database"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Failed to write transaction index"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Failed to write undo data"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Fee (in ANC/kB) to add to transactions you send (default: %s)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Fee per kB to add to transactions you send"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Fees smaller than this are considered zero fee (for relaying) (default:"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Force safe mode (default: 0)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Finishing block index setup..."),
+QT_TRANSLATE_NOOP("anoncoin-core", "Force safe mode (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Generate coins (default: 0)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Generated an I2P destination for you."),
-QT_TRANSLATE_NOOP("anoncoin-core", "How many blocks to check at startup (default: 288, 0 = all)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Generated I2P Destination"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Get help for a command"),
+QT_TRANSLATE_NOOP("anoncoin-core", "How many blocks to check at startup (default: %u, 0 = all)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "If <category> is not supplied, output all debugging information."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Importing..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Imports blocks from external blk000??.dat file"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Include IP addresses in debug output (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Incorrect or no genesis block found. Wrong datadir for network?"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Information"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Initialization sanity check failed. Anoncoin Core is shutting down."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Insufficient funds"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Internal ERROR - Invalid BlockIndex"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Invalid -onion address: '%s'"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Invalid -proxy address: '%s'"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Invalid amount for -maxtxfee=<amount>: '%s'"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Invalid amount for -minrelaytxfee=<amount>: '%s'"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Invalid amount for -mintxfee=<amount>: '%s'"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Invalid amount for -paytxfee=<amount>: '%s'"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Invalid amount"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Keep at most <n> unconnectable blocks in memory (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Invalid netmask specified in -whitelist: '%s'"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Keep at most <n> unconnectable transactions in memory (default: %u)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Limit size of signature cache to <n> entries (default: 50000)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Listen for connections on <port> (default: 9333 or testnet: 19333)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Limit size of signature cache to <n> entries (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "List commands"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Listen for JSON-RPC connections on <port> (default: %u or testnet: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Listen for connections on <port> (default: %u or testnet: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Load JSON file FILENAME into register NAME"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Loading addresses..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Loading block index..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Loading wallet..."),
-QT_TRANSLATE_NOOP("anoncoin-core", "Log transaction priority and fee per kB when mining blocks (default: 0)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Maintain a full transaction index (default: 0)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Maintain at most <n> connections to peers (default: 125)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Maximum per-connection receive buffer, <n>*1000 bytes (default: 5000)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Maximum per-connection send buffer, <n>*1000 bytes (default: 1000)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Maintain at most <n> connections to peers (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Maximum per-connection receive buffer, <n>*1000 bytes (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Maximum per-connection send buffer, <n>*1000 bytes (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Need to specify a port with -whitebind: '%s'"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Node relay options:"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Not enough file descriptors available."),
-QT_TRANSLATE_NOOP("anoncoin-core", "Only accept block chain matching built-in checkpoints (default: 1)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Only accept block chain matching built-in checkpoints (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Only connect to nodes in network <net> (ipv4, ipv6, onion or i2p)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Options:"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Password for JSON-RPC connections"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Prepend debug output with timestamp (default: 1)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Prepend debug output with timestamp (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Print block on startup, if found in block index"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Print block tree on startup (default: 0)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "RPC SSL options: (see the Bitcoin Wiki for SSL setup instructions)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "RPC SSL options: (see the Wiki for SSL setup instructions)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "RPC server options:"),
+QT_TRANSLATE_NOOP("anoncoin-core", "RPC support for HTTP persistent connections (default: %d)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Randomly drop 1 of every <n> network messages"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Randomly fuzz 1 of every <n> network messages"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Rebuild block chain index from current blk000??.dat files"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Relay and mine data carrier transactions (default: 1)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Register Commands:"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Relay and mine data carrier transactions (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Rescan the block chain for missing wallet transactions"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Rescanning..."),
-QT_TRANSLATE_NOOP("anoncoin-core", "Results also written to your debug.log file"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Run a thread to flush wallet periodically (default: 1)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Run a thread to flush wallet periodically (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Run in the background as a daemon and accept commands"),
+QT_TRANSLATE_NOOP("anoncoin-core", "SSL options: (see the Wiki for SSL setup instructions)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Select JSON output"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Send command to Anoncoin Core"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Send commands to node running on <ip> (default: %s)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Send trace/debug info to console instead of debug.log file"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Server certificate file (default: server.cert)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Server private key (default: server.pem)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Send transactions as zero-fee transactions if possible (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Server certificate file (default: %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Server private key (default: %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Set TX lock time to N"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Set TX version to N"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Set database cache size in megabytes (%d to %d, default: %d)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Set key pool size to <n> (default: 100)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Set key pool size to <n> (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Set maximum block size in bytes (default: %d)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Set minimum block size in bytes (default: 0)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Set the number of threads to service RPC calls (default: 4)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Sets the DB_PRIVATE flag in the wallet db environment (default: 1)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Set minimum block size in bytes (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Set register NAME to given JSON-STRING"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Set the number of threads to service RPC calls (default: %d)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Sets the DB_PRIVATE flag in the wallet db environment (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Show all debugging options (usage: --help -help-debug)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Show benchmark information (default: 0)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Shrink debug.log file on client startup (default: 1 when no -debug)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Signing transaction failed"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Specify configuration file (default: anoncoin.conf)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Specify connection timeout in milliseconds (default: 20000)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Specify configuration file (default: %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Specify connection timeout in milliseconds (minimum: 1, default: %d)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Specify data directory"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Specify pid file (default: anoncoind.pid)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Specify pid file (default: %s)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Specify wallet file (within data directory)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Specify your own public address"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Spend unconfirmed change when sending transactions (default: 1)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "System error: "),
+QT_TRANSLATE_NOOP("anoncoin-core", "Spend unconfirmed change when sending transactions (default: %u)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Start Anoncoin Core Daemon"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Stop running after importing blocks from disk (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "This help message"),
+QT_TRANSLATE_NOOP("anoncoin-core", "This is a pre-release test build - use at your own risk"),
+QT_TRANSLATE_NOOP("anoncoin-core", "This is experimental software."),
 QT_TRANSLATE_NOOP("anoncoin-core", "This is intended for regression testing tools and app development."),
-QT_TRANSLATE_NOOP("anoncoin-core", "Threshold for disconnecting misbehaving peers (default: 100)"),
-QT_TRANSLATE_NOOP("anoncoin-core", "To use the %s option"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Threshold for disconnecting misbehaving peers (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Transaction amount too small"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Transaction amounts must be positive"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Transaction too large"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Unable to bind to %s on this computer (bind returned error %s)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Unable to create I2P SAM session"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Unknown network specified in -onlynet: '%s'"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Update hex-encoded anoncoin transaction"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Upgrade wallet to latest format"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Usage:"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Use OpenSSL (https) for JSON-RPC connections"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Use UPnP to map the listening port (default: 0)"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Use UPnP to map the listening port (default: %u)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Use UPnP to map the listening port (default: 1 when listening)"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Use the test network"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Username for JSON-RPC connections"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Verifying blocks..."),
+QT_TRANSLATE_NOOP("anoncoin-core", "Verifying latest blocks..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "Verifying wallet..."),
+QT_TRANSLATE_NOOP("anoncoin-core", "Wait for RPC server to start"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Wallet %s resides outside data directory %s"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Wallet needed to be rewritten: restart Anoncoin to complete"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Wallet needed to be rewritten: restart Anoncoin Core to complete"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Wallet options:"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Warning"),
-QT_TRANSLATE_NOOP("anoncoin-core", "Warning: Deprecated argument -debugnet ignored, use -debug=net"),
 QT_TRANSLATE_NOOP("anoncoin-core", "Warning: This version is obsolete, upgrade required!"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Warning: Unsupported argument -benchmark ignored, use -debug=bench."),
+QT_TRANSLATE_NOOP("anoncoin-core", "Warning: Unsupported argument -debugnet ignored, use -debug=net."),
 QT_TRANSLATE_NOOP("anoncoin-core", "You need to rebuild the database using -reindex to change -txindex"),
+QT_TRANSLATE_NOOP("anoncoin-core", "Your Config file is: "),
 QT_TRANSLATE_NOOP("anoncoin-core", "Zapping all transactions from wallet..."),
 QT_TRANSLATE_NOOP("anoncoin-core", "on startup"),
+QT_TRANSLATE_NOOP("anoncoin-core", "version"),
 QT_TRANSLATE_NOOP("anoncoin-core", "wallet.dat corrupt, salvage failed"),
 };

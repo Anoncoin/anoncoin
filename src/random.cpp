@@ -71,11 +71,11 @@ void RandAddSeedPerfmon()
     if (ret == ERROR_SUCCESS) {
         RAND_add(begin_ptr(vData), nSize, nSize / 100.0);
         OPENSSL_cleanse(begin_ptr(vData), nSize);
-        LogPrint("rand", "%s: %lu bytes\n", __func__, nSize);
+        LogPrint("rand", "%s : %lu bytes\n", __func__, nSize);
     } else {
         static bool warned = false; // Warn only once
         if (!warned) {
-            LogPrintf("%s: Warning: RegQueryValueExA(HKEY_PERFORMANCE_DATA) failed with code %i\n", __func__, ret);
+            LogPrintf("%s : Warning: RegQueryValueExA(HKEY_PERFORMANCE_DATA) failed with code %i\n", __func__, ret);
             warned = true;
         }
     }
@@ -85,7 +85,7 @@ void RandAddSeedPerfmon()
 void GetRandBytes(unsigned char* buf, int num)
 {
     if (RAND_bytes(buf, num) != 1) {
-        LogPrintf("%s: OpenSSL RAND_bytes() failed with error: %s\n", __func__, ERR_error_string(ERR_get_error(), NULL));
+        LogPrintf("%s : OpenSSL RAND_bytes() failed with error: %s\n", __func__, ERR_error_string(ERR_get_error(), NULL));
         assert(false);
     }
 }

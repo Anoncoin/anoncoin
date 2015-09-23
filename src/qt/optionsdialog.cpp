@@ -1,13 +1,10 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
-
 #include "optionsdialog.h"
+// Anoncoin-config.h has been loaded...
 #include "ui_optionsdialog.h"
 
 #include "anoncoinunits.h"
@@ -15,7 +12,7 @@
 #include "monitoreddatamapper.h"
 #include "optionsmodel.h"
 
-#include "main.h" // for CTransaction::nMinTxFee and MAX_SCRIPTCHECK_THREADS
+#include "main.h" // for tx_nMinTxFee and MAX_SCRIPTCHECK_THREADS
 #include "netbase.h"
 #include "txdb.h" // for -dbcache defaults
 
@@ -25,7 +22,7 @@
 #include <QMessageBox>
 #include <QTimer>
 
-OptionsDialog::OptionsDialog(QWidget *parent) :
+OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
     ui(new Ui::OptionsDialog),
     model(0),
@@ -61,11 +58,15 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tabWindow));
 #endif
 
+    /* remove Wallet tab in case of -disablewallet */
+    if (!enableWallet) {
+        ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tabWallet));
+    }
+
     /* Display elements init */
     QDir translations(":translations");
-
     ui->lang->addItem(QString("(") + tr("default") + QString(")"), QVariant(""));
-    foreach(const QString &langStr, translations.entryList())
+    Q_FOREACH(const QString &langStr, translations.entryList())
     {
         QLocale locale(langStr);
 
@@ -96,7 +97,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 #endif
 
     ui->unit->setModel(new AnoncoinUnits(this));
-    ui->transactionFee->setSingleStep(CTransaction::nMinTxFee);
+    ui->transactionFee->setSingleStep(tx_nMinTxFee);
 
     /* Widget-to-option mapper */
     mapper = new MonitoredDataMapper(this);
@@ -288,7 +289,7 @@ bool OptionsDialog::eventFilter(QObject *object, QEvent *event)
     {
         if(object == ui->proxyIp)
         {
-            emit proxyIpChecks(ui->proxyIp, ui->proxyPort->text().toInt());
+            Q_EMIT proxyIpChecks(ui->proxyIp, ui->proxyPort->text().toInt());
         }
     }
     return QDialog::eventFilter(object, event);

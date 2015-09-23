@@ -70,7 +70,7 @@ public:
         MODAL               = 0x10000000U,
         /** Don't bring GUI to foreground. Use for messages during initialization */
         NOSHOWGUI           = 0x20000000U,
-        /** New v10 definition (running out of bits...), Do not print contents of message to debug log */
+        /** Do not print contents of message to debug log */
         SECURE              = 0x40000000U,
 
         /** Predefined combinations for certain default usage cases */
@@ -88,9 +88,6 @@ public:
     /** Translate a message to the native language of the user. */
     boost::signals2::signal<std::string (const char* psz)> Translate;
 
-    /** Block chain changed. */
-    boost::signals2::signal<void ()> NotifyBlocksChanged;
-
     /** Number of network connections changed. */
     boost::signals2::signal<void (int newNumConnections)> NotifyNumConnectionsChanged;
 
@@ -102,6 +99,12 @@ public:
 
     /** A wallet has been loaded. */
     boost::signals2::signal<void (CWallet* wallet)> LoadWallet;
+
+    /** Show progress e.g. for verifychain */
+    boost::signals2::signal<void (const std::string &title, int nProgress)> ShowProgress;
+
+    /** New block has been accepted */
+    boost::signals2::signal<void (const uint256& hash)> NotifyBlockTip;
 };
 
 extern CClientUIInterface uiInterface;

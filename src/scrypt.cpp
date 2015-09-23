@@ -35,7 +35,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <openssl/sha.h>
+
+#include <boost/scoped_ptr.hpp>
 
 #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
 #ifdef _MSC_VER
@@ -46,6 +49,9 @@
 #include <cpuid.h>
 #endif
 #endif
+
+//! Constants found in this source codes header(.h)
+const int32_t SCRYPT_SCRATCHPAD_SIZE = 131072 + 63;
 
 static inline uint32_t be32dec(const void *pp)
 {
@@ -327,6 +333,15 @@ void scrypt_detect_sse2()
 
 void scrypt_1024_1_1_256(const char *input, char *output)
 {
-	char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
-    scrypt_1024_1_1_256_sp(input, output, scratchpad);
+    //! Switch to using a scoped pointer for the scratchpad buffer...
+    boost::scoped_ptr<char> spScratchPad( new char[ SCRYPT_SCRATCHPAD_SIZE ] );
+
+    //char* pScratchPadBuffer = (char*) ::operator new (SCRYPT_SCRATCHPAD_SIZE, std::nothrow);
+	// char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
+//	if( pScratchPadBuffer ) {
+        scrypt_1024_1_1_256_sp(input, output, spScratchPad.get());
+//        scrypt_1024_1_1_256_sp(input, output, pScratchPadBuffer);
+//        delete pScratchPadBuffer;
+//	} else
+//        LogPrintf( "ERROR - System failure while attempting to calculate block scrypt hash, ran out of memory allocating scratchpad buffer.\n" );
 }

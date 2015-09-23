@@ -101,13 +101,13 @@ CInv::CInv()
     hash = 0;
 }
 
-CInv::CInv(int typeIn, const uint256& hashIn)
+CInv::CInv(int typeIn, const uintFakeHash& hashIn)
 {
     type = typeIn;
     hash = hashIn;
 }
 
-CInv::CInv(const std::string& strType, const uint256& hashIn)
+CInv::CInv(const std::string& strType, const uintFakeHash& hashIn)
 {
     unsigned int i;
     for (i = 1; i < ARRAYLEN(ppszTypeName); i++)
@@ -142,7 +142,7 @@ const char* CInv::GetCommand() const
 
 std::string CInv::ToString() const
 {
-    return strprintf("%s %s", GetCommand(), hash.ToString());
+    return strprintf("%s %s", GetCommand(), (type == MSG_BLOCK || type == MSG_FILTERED_BLOCK) ? hash.GetRealHash().ToString() : hash.ToString());
 }
 
 void CInv::print() const

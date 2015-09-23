@@ -5,10 +5,12 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "base58.h"
+#include "core_io.h"
 #include "rpcserver.h"
 #include "init.h"
 #include "net.h"
 #include "netbase.h"
+#include "sync.h"
 #include "timedata.h"
 #include "wallet.h"
 #include "walletdb.h"
@@ -16,12 +18,11 @@
 #include <stdint.h>
 
 #include <boost/assign/list_of.hpp>
+
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 
 using namespace std;
-using namespace boost;
-using namespace boost::assign;
 using namespace json_spirit;
 
 int64_t nWalletUnlockTime;
@@ -32,6 +33,18 @@ std::string HelpRequiringPassphrase()
     return pwalletMain && pwalletMain->IsCrypted()
         ? "\nRequires wallet passphrase to be set with walletpassphrase call."
         : "";
+}
+
+bool EnsureWalletIsAvailable(bool avoidException)
+{
+    if (!pwalletMain)
+    {
+        if (!avoidException)
+            throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
+        else
+            return false;
+    }
+    return true;
 }
 
 void EnsureWalletIsUnlocked()
@@ -48,9 +61,14 @@ void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
         entry.push_back(Pair("generated", true));
     if (confirms > 0)
     {
-        entry.push_back(Pair("blockhash", wtx.hashBlock.GetHex()));
+        uintFakeHash wtxSha256dHash( wtx.GetTxBlockHash() );
+        uint256 wtxRealHash = wtxSha256dHash != 0 ? wtxSha256dHash.GetRealHash() : 0;
+        BlockMap::const_iterator bimp = (wtxRealHash != 0) ? mapBlockIndex.find(wtxRealHash) : mapBlockIndex.end();
+        int64_t nBlockTime = bimp != mapBlockIndex.end() ? bimp->second->GetBlockTime() : -1;
+        //! We intentionally show the user the sha256d Block Hash, as WalletTx's refer to them in memory and as stored on disk
+        entry.push_back(Pair("blockhash", wtxSha256dHash.GetHex()));
         entry.push_back(Pair("blockindex", wtx.nIndex));
-        entry.push_back(Pair("blocktime", (int64_t)(mapBlockIndex[wtx.hashBlock]->nTime)));
+        entry.push_back(Pair("blocktime", nBlockTime));
     }
     uint256 hash = wtx.GetHash();
     entry.push_back(Pair("txid", hash.GetHex()));
@@ -74,22 +92,29 @@ string AccountFromValue(const Value& value)
 
 Value getnewaddress(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 1)
         throw runtime_error(
-            "getnewaddress ( \"account\" )\n"
-            "\nReturns a new Anoncoin address for receiving payments.\n"
-            "If 'account' is specified (recommended), it is added to the address book \n"
-            "so payments received with the address will be credited to 'account'.\n"
+            "getnewaddress [\"account\"]\n"
+            "\n Returns a new Anoncoin address for receiving payments.\n"
+            " If 'account' is specified (recommended), it is added to the address book \n"
+            " so payments received with the address will be credited to 'account'.\n"
             "\nArguments:\n"
-            "1. \"account\"        (string, optional) The account name for the address to be linked to. if not provided, the default account \"\" is used. It can also be set to the empty string \"\" to represent the default account. The account does not need to exist, it will be created if there is no account by the given name.\n"
+            " 1. \"account\" (string, optional) The account name for the address to be linked to. if not provided, the default account \"\" is used.\n"
+            "                                It can also be set to the empty string \"\" to represent the default account. The account does not\n"
+            "                                need to exist, it will be created if there is no account by the given name.\n"
             "\nResult:\n"
-            "\"anoncoinaddress\"    (string) The new anoncoin address\n"
+            " \"address\"    (string) The new Anoncoin address\n"
             "\nExamples:\n"
             + HelpExampleCli("getnewaddress", "")
             + HelpExampleCli("getnewaddress", "\"\"")
             + HelpExampleCli("getnewaddress", "\"myaccount\"")
             + HelpExampleRpc("getnewaddress", "\"myaccount\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     // Parse the account first so we don't generate a key if there's an error
     string strAccount;
@@ -123,8 +148,7 @@ CAnoncoinAddress GetAccountAddress(string strAccount, bool bForceNew=false)
     // Check if the current key has been used
     if (account.vchPubKey.IsValid())
     {
-        CScript scriptPubKey;
-        scriptPubKey.SetDestination(account.vchPubKey.GetID());
+        CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
         for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin();
              it != pwalletMain->mapWallet.end() && account.vchPubKey.IsValid();
              ++it)
@@ -151,14 +175,18 @@ CAnoncoinAddress GetAccountAddress(string strAccount, bool bForceNew=false)
 
 Value getaccountaddress(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "getaccountaddress \"account\"\n"
-            "\nReturns the current Anoncoin address for receiving payments to this account.\n"
+            "getaccountaddress <\"account\">\n"
+            "\n Returns the current Anoncoin address for receiving payments to this account.\n"
             "\nArguments:\n"
-            "1. \"account\"       (string, required) The account name for the address. It can also be set to the empty string \"\" to represent the default account. The account does not need to exist, it will be created and a new address created  if there is no account by the given name.\n"
+            " 1. \"account\" (string, required) The account name for the address. It can also be set to the empty string \"\" to represent the default account.\n"
+            "                                 It need not exist, if necessary a new account & new address for it, will be created.\n"
             "\nResult:\n"
-            "\"anoncoinaddress\"   (string) The account anoncoin address\n"
+            " \"address\"    (string) The account Anoncoin address\n"
             "\nExamples:\n"
             + HelpExampleCli("getaccountaddress", "")
             + HelpExampleCli("getaccountaddress", "\"\"")
@@ -166,30 +194,36 @@ Value getaccountaddress(const Array& params, bool fHelp)
             + HelpExampleRpc("getaccountaddress", "\"myaccount\"")
         );
 
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     // Parse the account first so we don't generate a key if there's an error
     string strAccount = AccountFromValue(params[0]);
 
     Value ret;
 
     ret = GetAccountAddress(strAccount).ToString();
-
     return ret;
 }
 
 
 Value getrawchangeaddress(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "getrawchangeaddress\n"
-            "\nReturns a new Anoncoin address, for receiving change.\n"
-            "This is for use with raw transactions, NOT normal use.\n"
+            "\n Returns a new Anoncoin address, for receiving change. This is for use\n"
+            " with raw transactions, not normally needed by the typical wallet user.\n"
             "\nResult:\n"
-            "\"address\"    (string) The address\n"
+            "\"address\" (string) An Anoncoin address needed for raw transactions.\n"
             "\nExamples:\n"
             + HelpExampleCli("getrawchangeaddress", "")
             + HelpExampleRpc("getrawchangeaddress", "")
        );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (!pwalletMain->IsLocked())
         pwalletMain->TopUpKeyPool();
@@ -209,17 +243,22 @@ Value getrawchangeaddress(const Array& params, bool fHelp)
 
 Value setaccount(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "setaccount \"anoncoinaddress\" \"account\"\n"
-            "\nSets the account associated with the given address.\n"
+            "setaccount <\"address\"> <\"account\">\n"
+            "\n Associates the given address, to the given account.\n"
             "\nArguments:\n"
-            "1. \"anoncoinaddress\"  (string, required) The anoncoin address to be associated with an account.\n"
-            "2. \"account\"         (string, required) The account to assign the address to.\n"
+            " 1. \"address\" (string, required) The Anoncoin address to be associated with an account.\n"
+            " 2. \"account\" (string, required) The account to assign the address to.\n"
             "\nExamples:\n"
-            + HelpExampleCli("setaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"tabby\"")
-            + HelpExampleRpc("setaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\", \"tabby\"")
+            + HelpExampleCli("setaccount", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\" \"tabby\"")
+            + HelpExampleRpc("setaccount", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\", \"tabby\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     CAnoncoinAddress address(params[0].get_str());
     if (!address.IsValid())
@@ -246,18 +285,23 @@ Value setaccount(const Array& params, bool fHelp)
 
 Value getaccount(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "getaccount \"anoncoinaddress\"\n"
-            "\nReturns the account associated with the given address.\n"
+            "getaccount <\"anoncoinaddress\">\n"
+            "\n Returns the account associated with the given address.\n"
             "\nArguments:\n"
-            "1. \"anoncoinaddress\"  (string, required) The anoncoin address for account lookup.\n"
+            " 1. \"anoncoinaddress\" (string, required) The anoncoin address for account lookup.\n"
             "\nResult:\n"
-            "\"accountname\"        (string) the account address\n"
+            " \"accountname\"        (string) the account address\n"
             "\nExamples:\n"
-            + HelpExampleCli("getaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\"")
-            + HelpExampleRpc("getaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\"")
+            + HelpExampleCli("getaccount", "\"AeUnB4SoBg8cCR9Gv8N6jwtQdursgstgu2\"")
+            + HelpExampleRpc("getaccount", "\"AeUnB4SoBg8cCR9Gv8N6jwtQdursgstgu2\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     CAnoncoinAddress address(params[0].get_str());
     if (!address.IsValid())
@@ -273,21 +317,26 @@ Value getaccount(const Array& params, bool fHelp)
 
 Value getaddressesbyaccount(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "getaddressesbyaccount \"account\"\n"
-            "\nReturns the list of addresses for the given account.\n"
+            "getaddressesbyaccount <\"account\">\n"
+            "\n Returns the list of Anoncoin addresses for the given account.\n"
             "\nArguments:\n"
-            "1. \"account\"  (string, required) The account name.\n"
+            " 1. \"account\" (string, required) The account name.\n"
             "\nResult:\n"
-            "[                     (json array of string)\n"
-            "  \"anoncoinaddress\"  (string) a anoncoin address associated with the given account\n"
+            "[             (json array of string)\n"
+            "  \"address\"   (string) a Anoncoin address associated with the given account\n"
             "  ,...\n"
             "]\n"
             "\nExamples:\n"
             + HelpExampleCli("getaddressesbyaccount", "\"tabby\"")
             + HelpExampleRpc("getaddressesbyaccount", "\"tabby\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     string strAccount = AccountFromValue(params[0]);
 
@@ -303,28 +352,66 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
     return ret;
 }
 
+static void SendMoney(const CTxDestination &address, CAmount nValue, CWalletTx& wtxNew)
+{
+    // Check amount
+    if (nValue <= 0)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
+
+    if (nValue > pwalletMain->GetBalance())
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
+
+    string strError;
+    if (pwalletMain->IsLocked())
+    {
+        strError = "Error: Wallet locked, unable to create transaction!";
+        LogPrintf("SendMoney() : %s", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+
+    // Parse Anoncoin address
+    CScript scriptPubKey = GetScriptForDestination(address);
+
+    // Create and send the transaction
+    CReserveKey reservekey(pwalletMain);
+    CAmount nFeeRequired;
+    if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError))
+    {
+        if (nValue + nFeeRequired > pwalletMain->GetBalance())
+            strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));
+        LogPrintf("SendMoney() : %s\n", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+    if (!pwalletMain->CommitTransaction(wtxNew, reservekey))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
+}
+
 Value sendtoaddress(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-            "sendtoaddress \"anoncoinaddress\" amount ( \"comment\" \"comment-to\" )\n"
-            "\nSent an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n"
+            "sendtoaddress <\"anoncoinaddress\"> <amount> [\"comment\"] [\"comment-to\"]\n"
+            "\n Sent an amount to a given address. The amount is a real number and is rounded to the nearest 0.00000001\n"
             + HelpRequiringPassphrase() +
             "\nArguments:\n"
-            "1. \"anoncoinaddress\"  (string, required) The anoncoin address to send to.\n"
-            "2. \"amount\"      (numeric, required) The amount in btc to send. eg 0.1\n"
-            "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
-            "                             This is not part of the transaction, just kept in your wallet.\n"
-            "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
-            "                             to which you're sending the transaction. This is not part of the \n"
-            "                             transaction, just kept in your wallet.\n"
+            " 1. \"address\"    (string, required) The Anoncoin address to send to.\n"
+            " 2. amount       (numeric, required) The amount in ANC to send. eg 2.1\n"
+            " 3. \"comment\"    (string, optional) A comment used to store what the transaction is for. \n"
+            "                                    This is not part of the transaction, just kept in your wallet.\n"
+            " 4. \"comment-to\" (string, optional) A comment to store the name of the person or organization to which you're sending\n"
+            "                                    the transaction. This is not part of the transaction, just kept in your wallet.\n"
             "\nResult:\n"
-            "\"transactionid\"  (string) The transaction id.\n"
+            " \"transactionid\" (string) The transaction id.\n"
             "\nExamples:\n"
-            + HelpExampleCli("sendtoaddress", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1")
-            + HelpExampleCli("sendtoaddress", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1 \"donation\" \"seans outpost\"")
-            + HelpExampleRpc("sendtoaddress", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\", 0.1, \"donation\", \"seans outpost\"")
+            + HelpExampleCli("sendtoaddress", "\"AeUnB4SoBg8cCR9Gv8N6jwtQdursgstgu2\" 0.1")
+            + HelpExampleCli("sendtoaddress", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\" 0.1 \"donation\" \"seans outpost\"")
+            + HelpExampleRpc("sendtoaddress", "\"AeUnB4SoBg8cCR9Gv8N6jwtQdursgstgu2\", 0.1, \"donation\", \"seans outpost\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     CAnoncoinAddress address(params[0].get_str());
     if (!address.IsValid())
@@ -342,28 +429,28 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, wtx);
-    if (strError != "")
-        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    SendMoney(address.Get(), nAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }
 
 Value listaddressgroupings(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp)
         throw runtime_error(
             "listaddressgroupings\n"
-            "\nLists groups of addresses which have had their common ownership\n"
-            "made public by common use as inputs or as the resulting change\n"
-            "in past transactions\n"
+            "\n Lists groups of addresses which have had their common ownership made public by\n"
+            " common use as inputs or as the resulting change in past transactions.\n"
             "\nResult:\n"
             "[\n"
             "  [\n"
             "    [\n"
-            "      \"anoncoinaddress\",     (string) The anoncoin address\n"
-            "      amount,                 (numeric) The amount in btc\n"
-            "      \"account\"             (string, optional) The account\n"
+            "      \"address\", (string) The anoncoin address\n"
+            "      amount,    (numeric) The amount in anc\n"
+            "      \"account\"  (string, optional) The account\n"
             "    ]\n"
             "    ,...\n"
             "  ]\n"
@@ -373,6 +460,8 @@ Value listaddressgroupings(const Array& params, bool fHelp)
             + HelpExampleCli("listaddressgroupings", "")
             + HelpExampleRpc("listaddressgroupings", "")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     Array jsonGroupings;
     map<CTxDestination, int64_t> balances = pwalletMain->GetAddressBalances();
@@ -398,26 +487,31 @@ Value listaddressgroupings(const Array& params, bool fHelp)
 
 Value signmessage(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() != 2)
         throw runtime_error(
-            "signmessage \"anoncoinaddress\" \"message\"\n"
-            "\nSign a message with the private key of an address"
+            "signmessage <\"anoncoinaddress\"> <\"message\">\n"
+            "\n Sign a message with the private key of an address"
             + HelpRequiringPassphrase() + "\n"
             "\nArguments:\n"
-            "1. \"anoncoinaddress\"  (string, required) The anoncoin address to use for the private key.\n"
-            "2. \"message\"         (string, required) The message to create a signature of.\n"
+            " 1. \"address\" (string, required) The Anoncoin address to use for the private key.\n"
+            " 2. \"message\" (string, required) The message to create a signature of.\n"
             "\nResult:\n"
-            "\"signature\"          (string) The signature of the message encoded in base 64\n"
+            " \"signature\"  (string) The signature of the message encoded in base 64\n"
             "\nExamples:\n"
             "\nUnlock the wallet for 30 seconds\n"
             + HelpExampleCli("walletpassphrase", "\"mypassphrase\" 30") +
             "\nCreate the signature\n"
-            + HelpExampleCli("signmessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"my message\"") +
+            + HelpExampleCli("signmessage", "\"AZLDu3XZFMYaYDvvp9GfaiE7vuy9yWbpbm\" \"my message\"") +
             "\nVerify the signature\n"
-            + HelpExampleCli("verifymessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"signature\" \"my message\"") +
+            + HelpExampleCli("verifymessage", "\"AZLDu3XZFMYaYDvvp9GfaiE7vuy9yWbpbm\" \"signature\" \"my message\"") +
             "\nAs json rpc\n"
-            + HelpExampleRpc("signmessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\", \"my message\"")
+            + HelpExampleRpc("signmessage", "\"AZLDu3XZFMYaYDvvp9GfaiE7vuy9yWbpbm\", \"my message\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     EnsureWalletIsUnlocked();
 
@@ -449,25 +543,30 @@ Value signmessage(const Array& params, bool fHelp)
 
 Value getreceivedbyaddress(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getreceivedbyaddress \"anoncoinaddress\" ( minconf )\n"
-            "\nReturns the total amount received by the given anoncoinaddress in transactions with at least minconf confirmations.\n"
+            "getreceivedbyaddress <\"address\"> [minconf]\n"
+            "\n Returns the total amount received by the given Anoncoin address in transactions with at least minconf confirmations.\n"
             "\nArguments:\n"
-            "1. \"anoncoinaddress\"  (string, required) The anoncoin address for transactions.\n"
-            "2. minconf             (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
+            " 1. \"address\" (string, required) The Anoncoin address for transactions.\n"
+            " 2. minconf   (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
             "\nResult:\n"
-            "amount   (numeric) The total amount in btc received at this address.\n"
+            " amount       (numeric) The total amount in ANC received at this address.\n"
             "\nExamples:\n"
             "\nThe amount from transactions with at least 1 confirmation\n"
-            + HelpExampleCli("getreceivedbyaddress", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\"") +
+            + HelpExampleCli("getreceivedbyaddress", "\"AZLDu3XZFMYaYDvvp9GfaiE7vuy9yWbpbm\"") +
             "\nThe amount including unconfirmed transactions, zero confirmations\n"
-            + HelpExampleCli("getreceivedbyaddress", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" 0") +
+            + HelpExampleCli("getreceivedbyaddress", "\"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\" 0") +
             "\nThe amount with at least 6 confirmation, very safe\n"
-            + HelpExampleCli("getreceivedbyaddress", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" 6") +
+            + HelpExampleCli("getreceivedbyaddress", "\"AZLDu3XZFMYaYDvvp9GfaiE7vuy9yWbpbm\" 6") +
             "\nAs a json rpc call\n"
-            + HelpExampleRpc("getreceivedbyaddress", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\", 6")
+            + HelpExampleRpc("getreceivedbyaddress", "\"AZLDu3XZFMYaYDvvp9GfaiE7vuy9yWbpbm\", 6")
        );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     // Anoncoin address
     CAnoncoinAddress address = CAnoncoinAddress(params[0].get_str());
@@ -503,15 +602,18 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 
 Value getreceivedbyaccount(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getreceivedbyaccount \"account\" ( minconf )\n"
-            "\nReturns the total amount received by addresses with <account> in transactions with at least [minconf] confirmations.\n"
+            "getreceivedbyaccount <\"account\"> [minconf]\n"
+            "\n Returns the total amount received by addresses with <account> in transactions with at least [minconf] confirmations.\n"
             "\nArguments:\n"
-            "1. \"account\"      (string, required) The selected account, may be the default account using \"\".\n"
-            "2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
+            " 1. \"account\" (string, required) The selected account, may be the default account using \"\".\n"
+            " 2. minconf   (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
             "\nResult:\n"
-            "amount              (numeric) The total amount in btc received for this account.\n"
+            " amount       (numeric) The total amount in ANC received for this account.\n"
             "\nExamples:\n"
             "\nAmount received by the default account with at least 1 confirmation\n"
             + HelpExampleCli("getreceivedbyaccount", "\"\"") +
@@ -522,6 +624,8 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
             "\nAs a json rpc call\n"
             + HelpExampleRpc("getreceivedbyaccount", "\"tabby\", 6")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     // Minimum confirmations
     int nMinDepth = 1;
@@ -553,9 +657,9 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
 }
 
 
-int64_t GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMinDepth, const isminefilter& filter)
+CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMinDepth, const isminefilter filter)
 {
-    int64_t nBalance = 0;
+    CAmount nBalance = 0;
 
     // Tally wallet transactions
     for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
@@ -564,7 +668,7 @@ int64_t GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
         if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0)
             continue;
 
-        int64_t nReceived, nSent, nFee;
+        CAmount nReceived, nSent, nFee;
         wtx.GetAccountAmounts(strAccount, nReceived, nSent, nFee, filter);
 
         if (nReceived != 0 && wtx.GetDepthInMainChain() >= nMinDepth)
@@ -578,7 +682,7 @@ int64_t GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     return nBalance;
 }
 
-int64_t GetAccountBalance(const string& strAccount, int nMinDepth, const isminefilter& filter)
+CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const isminefilter filter)
 {
     CWalletDB walletdb(pwalletMain->strWalletFile);
     return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
@@ -587,19 +691,22 @@ int64_t GetAccountBalance(const string& strAccount, int nMinDepth, const isminef
 
 Value getbalance(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 3)
         throw runtime_error(
-            "getbalance ( \"account\" minconf includeWatchonly )\n"
-            "\nIf account is not specified, returns the server's total available balance.\n"
-            "If account is specified, returns the balance in the account.\n"
-            "Note that the account \"\" is not the same as leaving the parameter out.\n"
-            "The server total may be different to the balance in the default \"\" account.\n"
+            "getbalance [\"account\"] [minconf] [includeWatchonly]\n"
+            "\n If account is not specified, returns the server's total available balance.\n"
+            " If account is specified, returns the balance in the account.\n"
+            " Note: The account \"\" is not the same as leaving the parameter out.\n"
+            "       The server total may be different then the balance in the default \"\" account.\n"
             "\nArguments:\n"
-            "1. \"account\"      (string, optional) The selected account, or \"*\" for entire wallet. It may be the default account using \"\".\n"
-            "2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
-            "3. includeWatchonly (bool, optional, default=false) Also include balance in watchonly addresses (see 'importaddress')\n"
+            " 1. \"account\"        (string, optional) The selected account, or \"*\" for entire wallet. It may be the default account using \"\".\n"
+            " 2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
+            " 3. includeWatchonly (bool, optional, default=false) Also include balance in watchonly addresses (see 'importaddress')\n"
             "\nResult:\n"
-            "amount              (numeric) The total amount in btc received for this account.\n"
+            " amount              (numeric) The total amount in anc received for this account.\n"
             "\nExamples:\n"
             "\nThe total amount in the server across all accounts\n"
             + HelpExampleCli("getbalance", "") +
@@ -612,6 +719,8 @@ Value getbalance(const Array& params, bool fHelp)
             "\nAs a json rpc call\n"
             + HelpExampleRpc("getbalance", "\"tabby\", 6")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (params.size() == 0)
         return  ValueFromAmount(pwalletMain->GetBalance());
@@ -654,42 +763,53 @@ Value getbalance(const Array& params, bool fHelp)
 
     string strAccount = AccountFromValue(params[0]);
 
-    int64_t nBalance = GetAccountBalance(strAccount, nMinDepth, filter);
+    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, filter);
 
     return ValueFromAmount(nBalance);
 }
 
 Value getunconfirmedbalance(const Array &params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 0)
         throw runtime_error(
                 "getunconfirmedbalance\n"
                 "Returns the server's total unconfirmed balance\n");
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     return ValueFromAmount(pwalletMain->GetUnconfirmedBalance());
 }
 
 
 Value movecmd(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 3 || params.size() > 5)
         throw runtime_error(
-            "move \"fromaccount\" \"toaccount\" amount ( minconf \"comment\" )\n"
-            "\nMove a specified amount from one account in your wallet to another.\n"
+            "move <\"fromaccount\"> <\"toaccount\"> <amount> [minconf] [\"comment\"]\n"
+            "\n Move a specified amount from one account in your wallet to another.\n"
             "\nArguments:\n"
-            "1. \"fromaccount\"   (string, required) The name of the account to move funds from. May be the default account using \"\".\n"
-            "2. \"toaccount\"     (string, required) The name of the account to move funds to. May be the default account using \"\".\n"
-            "3. minconf           (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
-            "4. \"comment\"       (string, optional) An optional comment, stored in the wallet only.\n"
+            " 1. \"fromaccount\" (string, required) The name of the account to move funds from. May be the default account using \"\".\n"
+            " 2. \"toaccount\"   (string, required) The name of the account to move funds to. May be the default account using \"\".\n"
+            " 3. amount        (numeric, required) The amount of funds to move.\n"
+            " 4. minconf       (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
+            " 5. \"comment\"     (string, optional) An optional comment, stored in the wallet only.\n"
             "\nResult:\n"
-            "true|false           (boolean) true if successfull.\n"
+            " true|false       (boolean) true if successful.\n"
             "\nExamples:\n"
-            "\nMove 0.01 btc from the default account to the account named tabby\n"
-            + HelpExampleCli("move", "\"\" \"tabby\" 0.01") +
-            "\nMove 0.01 btc timotei to akiko with a comment and funds have 6 confirmations\n"
+            "\nMove 2.01 ANC from the default account to the account named tabby\n"
+            + HelpExampleCli("move", "\"\" \"tabby\" 2.01") +
+            "\nMove 0.01 ANC timotei to akiko with a comment and funds have 6 confirmations\n"
             + HelpExampleCli("move", "\"timotei\" \"akiko\" 0.01 6 \"happy birthday!\"") +
             "\nAs a json rpc call\n"
             + HelpExampleRpc("move", "\"timotei\", \"akiko\", 0.01, 6, \"happy birthday!\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     string strFrom = AccountFromValue(params[0]);
     string strTo = AccountFromValue(params[1]);
@@ -736,38 +856,42 @@ Value movecmd(const Array& params, bool fHelp)
 
 Value sendfrom(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw runtime_error(
-            "sendfrom \"fromaccount\" \"toanoncoinaddress\" amount ( minconf \"comment\" \"comment-to\" )\n"
-            "\nSent an amount from an account to a anoncoin address.\n"
-            "The amount is a real and is rounded to the nearest 0.00000001."
+            "sendfrom <\"fromaccount\"> <\"toanoncoinaddress\"> <amount> [minconf] [\"comment\"] [\"comment-to\"]\n"
+            "\n Sent an amount from an account to an Anoncoin address.\n"
+            " The amount is a real number and rounded to the nearest 0.00000001."
             + HelpRequiringPassphrase() + "\n"
             "\nArguments:\n"
-            "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
-            "2. \"toanoncoinaddress\"  (string, required) The anoncoin address to send funds to.\n"
-            "3. amount                (numeric, required) The amount in btc. (transaction fee is added on top).\n"
-            "4. minconf               (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
-            "5. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
+            " 1. \"fromaccount\" (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
+            " 2. \"toaddress\"   (string, required) The anoncoin address to send funds to.\n"
+            " 3. amount        (numeric, required) The amount in anc. (transaction fee is added on top).\n"
+            " 4. minconf       (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
+            " 5. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
             "                                     This is not part of the transaction, just kept in your wallet.\n"
-            "6. \"comment-to\"        (string, optional) An optional comment to store the name of the person or organization \n"
-            "                                     to which you're sending the transaction. This is not part of the transaction, \n"
-            "                                     it is just kept in your wallet.\n"
+            " 6. \"comment-to\"  (string, optional) An optional comment to store the name of the person or organization to which you're sending\n"
+            "                                     the transaction. This is not part of the transaction, it is just kept in your wallet.\n"
             "\nResult:\n"
-            "\"transactionid\"        (string) The transaction id.\n"
+            " \"transactionid\"  (string) The transaction id.\n"
             "\nExamples:\n"
-            "\nSend 0.01 btc from the default account to the address, must have at least 1 confirmation\n"
-            + HelpExampleCli("sendfrom", "\"\" \"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.01") +
+            "\nSend 0.01 anc from the default account to the address, must have at least 1 confirmation\n"
+            + HelpExampleCli("sendfrom", "\"\" \"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\" 0.01") +
             "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n"
-            + HelpExampleCli("sendfrom", "\"tabby\" \"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.01 6 \"donation\" \"seans outpost\"") +
+            + HelpExampleCli("sendfrom", "\"tabby\" \"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\" 0.01 6 \"donation\" \"seans outpost\"") +
             "\nAs a json rpc call\n"
-            + HelpExampleRpc("sendfrom", "\"tabby\", \"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\", 0.01, 6, \"donation\", \"seans outpost\"")
+            + HelpExampleRpc("sendfrom", "\"tabby\", \"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\", 0.01, 6, \"donation\", \"seans outpost\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     string strAccount = AccountFromValue(params[0]);
     CAnoncoinAddress address(params[1].get_str());
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Anoncoin address");
-    int64_t nAmount = AmountFromValue(params[2]);
+    CAmount nAmount = AmountFromValue(params[2]);
     int nMinDepth = 1;
     if (params.size() > 3)
         nMinDepth = params[3].get_int();
@@ -782,14 +906,11 @@ Value sendfrom(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     // Check funds
-    int64_t nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
+    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
     if (nAmount > nBalance)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
-    // Send
-    string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, wtx);
-    if (strError != "")
-        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    SendMoney(address.Get(), nAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }
@@ -797,31 +918,36 @@ Value sendfrom(const Array& params, bool fHelp)
 
 Value sendmany(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-            "sendmany \"fromaccount\" {\"address\":amount,...} ( minconf \"comment\" )\n"
-            "\nSend multiple times. Amounts are double-precision floating point numbers."
+            "sendmany <\"fromaccount\"> <{\"address\":amount,...}> [minconf] [\"comment\"]\n"
+            "\n Send multiple times. Amounts are double-precision floating point numbers."
             + HelpRequiringPassphrase() + "\n"
             "\nArguments:\n"
-            "1. \"fromaccount\"         (string, required) The account to send the funds from, can be \"\" for the default account\n"
-            "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
-            "    {\n"
-            "      \"address\":amount   (numeric) The anoncoin address is the key, the numeric amount in btc is the value\n"
-            "      ,...\n"
-            "    }\n"
-            "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many times.\n"
-            "4. \"comment\"             (string, optional) A comment\n"
+            " 1. \"fromaccount\"       (string, required) The account to send the funds from, can be \"\" for the default account\n"
+            " 2. \"amounts\"           (string, required) A json object with addresses and amounts\n"
+            "     {\n"
+            "       \"address\":amount (numeric) The Anoncoin address is the key, the numeric amount in ANC is the value\n"
+            "       ,...\n"
+            "     }\n"
+            " 3. minconf             (numeric, optional, default=1) Only use the balance confirmed at least this many times.\n"
+            " 4. \"comment\"           (string, optional) A comment\n"
             "\nResult:\n"
-            "\"transactionid\"          (string) The transaction id for the send. Only 1 transaction is created regardless of \n"
-            "                                    the number of addresses.\n"
+            " \"transactionid\"        (string) The transaction id for the send. Only 1 transaction is created regardless of \n"
+            "                                 the number of addresses.\n"
             "\nExamples:\n"
             "\nSend two amounts to two different addresses:\n"
-            + HelpExampleCli("sendmany", "\"tabby\" \"{\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\":0.01,\\\"1353tsE8YMTA4EuV7dgUXGjNFf9KpVvKHz\\\":0.02}\"") +
+            + HelpExampleCli("sendmany", "\"tabby\" \"{\\\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\\\":0.01,\\\"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\\\":0.02}\"") +
             "\nSend two amounts to two different addresses setting the confirmation and comment:\n"
-            + HelpExampleCli("sendmany", "\"tabby\" \"{\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\":0.01,\\\"1353tsE8YMTA4EuV7dgUXGjNFf9KpVvKHz\\\":0.02}\" 6 \"testing\"") +
+            + HelpExampleCli("sendmany", "\"tabby\" \"{\\\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\\\":0.01,\\\"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\\\":0.02}\" 6 \"testing\"") +
             "\nAs a json rpc call\n"
-            + HelpExampleRpc("sendmany", "\"tabby\", \"{\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\":0.01,\\\"1353tsE8YMTA4EuV7dgUXGjNFf9KpVvKHz\\\":0.02}\", 6, \"testing\"")
+            + HelpExampleRpc("sendmany", "\"tabby\", \"{\\\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\\\":0.01,\\\"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\\\":0.02}\", 6, \"testing\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     string strAccount = AccountFromValue(params[0]);
     Object sendTo = params[1].get_obj();
@@ -848,9 +974,8 @@ Value sendmany(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+s.name_);
         setAddress.insert(address);
 
-        CScript scriptPubKey;
-        scriptPubKey.SetDestination(address.Get());
-        int64_t nAmount = AmountFromValue(s.value_);
+        CScript scriptPubKey = GetScriptForDestination(address.Get());
+        CAmount nAmount = AmountFromValue(s.value_);
         totalAmount += nAmount;
 
         vecSend.push_back(make_pair(scriptPubKey, nAmount));
@@ -859,13 +984,13 @@ Value sendmany(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     // Check funds
-    int64_t nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
+    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
     if (totalAmount > nBalance)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     // Send
     CReserveKey keyChange(pwalletMain);
-    int64_t nFeeRequired = 0;
+    CAmount nFeeRequired = 0;
     string strFailReason;
     bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired, strFailReason);
     if (!fCreated)
@@ -881,33 +1006,37 @@ extern CScript _createmultisig_redeemScript(const Array& params);
 
 Value addmultisigaddress(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 2 || params.size() > 3)
     {
-        string msg = "addmultisigaddress nrequired [\"key\",...] ( \"account\" )\n"
-            "\nAdd a nrequired-to-sign multisignature address to the wallet.\n"
-            "Each key is a Anoncoin address or hex-encoded public key.\n"
-            "If 'account' is specified, assign address to that account.\n"
+        string msg = "addmultisigaddress <nrequired> <[\"key\",...]> [\"account\"]\n"
+            "\n Add a nrequired-to-sign multisignature address to the wallet.\n"
+            " Each key is a Anoncoin address or hex-encoded public key.\n"
+            " If 'account' is specified, assign the address to that account.\n"
 
             "\nArguments:\n"
-            "1. nrequired        (numeric, required) The number of required signatures out of the n keys or addresses.\n"
-            "2. \"keysobject\"   (string, required) A json array of anoncoin addresses or hex-encoded public keys\n"
-            "     [\n"
-            "       \"address\"  (string) anoncoin address or hex-encoded public key\n"
-            "       ...,\n"
-            "     ]\n"
-            "3. \"account\"      (string, optional) An account to assign the addresses to.\n"
-
+            " 1. nrequired     (numeric, required) The number of required signatures out of the n keys or addresses.\n"
+            " 2. \"keysobject\"  (string, required) A json array of anoncoin addresses or hex-encoded public keys\n"
+            "      [\n"
+            "        \"address\" (string) Anoncoin address or hex-encoded public key\n"
+            "        ...,\n"
+            "      ]\n"
+            " 3. \"account\"     (string, optional) An account to assign the addresses to.\n"
             "\nResult:\n"
-            "\"anoncoinaddress\"  (string) A anoncoin address associated with the keys.\n"
+            " \"address\"        (string) A Anoncoin address associated with the keys.\n"
 
             "\nExamples:\n"
-            "\nAdd a multisig address from 2 addresses\n"
-            + HelpExampleCli("addmultisigaddress", "2 \"[\\\"16sSauSf5pF2UkUwvKGq4qjNRzBZYqgEL5\\\",\\\"171sgjn4YtPu27adkKGrdDwzRTxnRkBfKV\\\"]\"") +
-            "\nAs json rpc call\n"
-            + HelpExampleRpc("addmultisigaddress", "2, \"[\\\"16sSauSf5pF2UkUwvKGq4qjNRzBZYqgEL5\\\",\\\"171sgjn4YtPu27adkKGrdDwzRTxnRkBfKV\\\"]\"")
+            "\n Add a multisig address from 2 addresses\n"
+            + HelpExampleCli("addmultisigaddress", "2 \"[\\\"AeUnB4SoBg8cCR9Gv8N6jwtQdursgstgu2\\\",\\\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\\\"]\"") +
+            "\n As json rpc call\n"
+            + HelpExampleRpc("addmultisigaddress", "2, \"[\\\"AeUnB4SoBg8cCR9Gv8N6jwtQdursgstgu2\\\",\\\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\\\"]\"")
         ;
         throw runtime_error(msg);
     }
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     string strAccount;
     if (params.size() > 2)
@@ -1018,7 +1147,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
         {
             Object obj;
             if(fIsWatchonly)
-                obj.push_back(Pair("involvesWatchonly", true));
+                obj.push_back(Pair("involveswatchonly", true));
             obj.push_back(Pair("address",       address.ToString()));
             obj.push_back(Pair("account",       strAccount));
             obj.push_back(Pair("amount",        ValueFromAmount(nAmount)));
@@ -1044,7 +1173,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
             int nConf = (*it).second.nConf;
             Object obj;
             if((*it).second.fIsWatchonly)
-                obj.push_back(Pair("involvesWatchonly", true));
+                obj.push_back(Pair("involveswatchonly", true));
             obj.push_back(Pair("account",       (*it).first));
             obj.push_back(Pair("amount",        ValueFromAmount(nAmount)));
             obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
@@ -1057,26 +1186,28 @@ Value ListReceived(const Array& params, bool fByAccounts)
 
 Value listreceivedbyaddress(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 3)
         throw runtime_error(
-            "listreceivedbyaddress ( minconf includeempty includeWatchonly)\n"
-            "\nList balances by receiving address.\n"
+            "listreceivedbyaddress [minconf] [includeEmpty] [includeWatchonly]\n"
+            "\n List balances by receiving address.\n"
             "\nArguments:\n"
-            "1. minconf       (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
-            "2. includeempty  (numeric, optional, dafault=false) Whether to include addresses that haven't received any payments.\n"
-            "3. includeWatchonly (bool, optional, default=false) Whether to include watchonly addresses (see 'importaddress').\n"
-
+            " 1. minconf          (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
+            " 2. includeEmpty     (numeric, optional, dafault=false) Whether to include addresses that haven't received any payments.\n"
+            " 3. includeWatchonly (bool, optional, default=false) Whether to include watchonly addresses (see 'importaddress').\n"
             "\nResult:\n"
-            "[\n"
-            "  {\n"
-            "    \"involvesWatchonly\" : \"true\",    (bool) Only returned if imported addresses were involved in transaction\n"
-            "    \"address\" : \"receivingaddress\",  (string) The receiving address\n"
-            "    \"account\" : \"accountname\",       (string) The account of the receiving address. The default account is \"\".\n"
-            "    \"amount\" : x.xxx,                  (numeric) The total amount in btc received by the address\n"
-            "    \"confirmations\" : n                (numeric) The number of confirmations of the most recent transaction included\n"
-            "  }\n"
-            "  ,...\n"
-            "]\n"
+            " [\n"
+            "   {\n"
+            "     \"involveswatchonly\" : true|false, (bool) Only returned if imported addresses were involved in transaction\n"
+            "     \"address\" : \"receivingaddress\",   (string) The receiving address\n"
+            "     \"account\" : \"accountname\",        (string) The account of the receiving address. The default account is \"\".\n"
+            "     \"amount\" : x.xxx,                 (numeric) The total amount in anc received by the address\n"
+            "     \"confirmations\" : n               (numeric) The number of confirmations of the most recent transaction included\n"
+            "   }\n"
+            "   ,...\n"
+            " ]\n"
 
             "\nExamples:\n"
             + HelpExampleCli("listreceivedbyaddress", "")
@@ -1084,27 +1215,32 @@ Value listreceivedbyaddress(const Array& params, bool fHelp)
             + HelpExampleRpc("listreceivedbyaddress", "6, true, true")
         );
 
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     return ListReceived(params, false);
 }
 
 Value listreceivedbyaccount(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 3)
         throw runtime_error(
-            "listreceivedbyaccount ( minconf includeempty includeWatchonly)\n"
-            "\nList balances by account.\n"
+            "listreceivedbyaccount [minconf] [includeempty] [includeWatchonly]\n"
+            "\n List balances by account.\n"
             "\nArguments:\n"
-            "1. minconf      (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
-            "2. includeempty (boolean, optional, default=false) Whether to include accounts that haven't received any payments.\n"
-            "3. includeWatchonly (bool, optional, default=false) Whether to include watchonly addresses (see 'importaddress').\n"
+            " 1. minconf          (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
+            " 2. includeempty     (boolean, optional, default=false) Whether to include accounts that haven't received any payments.\n"
+            " 3. includeWatchonly (bool, optional, default=false) Whether to include watchonly addresses (see 'importaddress').\n"
 
             "\nResult:\n"
             "[\n"
             "  {\n"
-            "    \"involvesWatchonly\" : \"true\",    (bool) Only returned if imported addresses were involved in transaction\n"
-            "    \"account\" : \"accountname\",  (string) The account name of the receiving account\n"
-            "    \"amount\" : x.xxx,             (numeric) The total amount received by addresses with this account\n"
-            "    \"confirmations\" : n           (numeric) The number of confirmations of the most recent transaction included\n"
+            "    \"involveswatchonly\" : true|false, (bool) Only returned if imported addresses were involved in transaction\n"
+            "    \"account\" : \"accountname\",        (string) The account name of the receiving account\n"
+            "    \"amount\" : x.xxx,                 (numeric) The total amount received by addresses with this account\n"
+            "    \"confirmations\" : n               (numeric) The number of confirmations of the most recent transaction included\n"
             "  }\n"
             "  ,...\n"
             "]\n"
@@ -1114,6 +1250,8 @@ Value listreceivedbyaccount(const Array& params, bool fHelp)
             + HelpExampleCli("listreceivedbyaccount", "6 true")
             + HelpExampleRpc("listreceivedbyaccount", "6, true, true")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     return ListReceived(params, true);
 }
@@ -1125,7 +1263,7 @@ static void MaybePushAddress(Object & entry, const CTxDestination &dest)
         entry.push_back(Pair("address", addr.ToString()));
 }
 
-void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
+void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter filter)
 {
     int64_t nFee;
     string strSentAccount;
@@ -1135,7 +1273,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
     wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, filter);
 
     bool fAllAccounts = (strAccount == string("*"));
-    bool involvesWatchonly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
+    bool fInvolvesWatchOnly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
 
     // Sent
     if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount))
@@ -1143,8 +1281,8 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
         BOOST_FOREACH(const PAIRTYPE(CTxDestination, int64_t)& s, listSent)
         {
             Object entry;
-            if(involvesWatchonly || (::IsMine(*pwalletMain, s.first) & ISMINE_WATCH_ONLY))
-                entry.push_back(Pair("involvesWatchonly", true));
+            if(fInvolvesWatchOnly || (::IsMine(*pwalletMain, s.first) & ISMINE_WATCH_ONLY))
+                entry.push_back(Pair("involveswatchonly", true));
             entry.push_back(Pair("account", strSentAccount));
             MaybePushAddress(entry, s.first);
             entry.push_back(Pair("category", "send"));
@@ -1167,8 +1305,8 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             if (fAllAccounts || (account == strAccount))
             {
                 Object entry;
-                if(involvesWatchonly || (::IsMine(*pwalletMain, r.first) & ISMINE_WATCH_ONLY))
-                    entry.push_back(Pair("involvesWatchonly", true));
+                if(fInvolvesWatchOnly || (::IsMine(*pwalletMain, r.first) & ISMINE_WATCH_ONLY))
+                    entry.push_back(Pair("involveswatchonly", true));
                 entry.push_back(Pair("account", account));
                 MaybePushAddress(entry, r.first);
                 if (wtx.IsCoinBase())
@@ -1212,46 +1350,48 @@ void AcentryToJSON(const CAccountingEntry& acentry, const string& strAccount, Ar
 
 Value listtransactions(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 4)
         throw runtime_error(
-            "listtransactions ( \"account\" count from includeWatchonly)\n"
-            "\nReturns up to 'count' most recent transactions skipping the first 'from' transactions for account 'account'.\n"
+            "listtransactions [\"account\"] [count] [from] [includeWatchonly]\n"
+            "\n Returns up to 'count' most recent transactions skipping the first 'from' transactions for account 'account'.\n"
             "\nArguments:\n"
-            "1. \"account\"    (string, optional) The account name. If not included, it will list all transactions for all accounts.\n"
-            "                                     If \"\" is set, it will list transactions for the default account.\n"
-            "2. count          (numeric, optional, default=10) The number of transactions to return\n"
-            "3. from           (numeric, optional, default=0) The number of transactions to skip\n"
-            "4. includeWatchonly (bool, optional, default=false) Include transactions to watchonly addresses (see 'importaddress')\n"
+            " 1. \"account\"        (string, optional) The account name. If not included, it will list all transactions for all accounts.\n"
+            "                                        If \"\" is set, it will list transactions for the default account.\n"
+            " 2. count            (numeric, optional, default=10) The number of transactions to return\n"
+            " 3. from             (numeric, optional, default=0) The number of transactions to skip\n"
+            " 4. includeWatchonly (bool, optional, default=false) Include transactions to/from watchonly addresses (see 'importaddress')\n"
             "\nResult:\n"
             "[\n"
             "  {\n"
-            "    \"account\":\"accountname\",       (string) The account name associated with the transaction. \n"
-            "                                                It will be \"\" for the default account.\n"
-            "    \"address\":\"anoncoinaddress\",    (string) The anoncoin address of the transaction. Not present for \n"
-            "                                                move transactions (category = move).\n"
+            "    \"account\":\"account\",         (string) The account name associated with the transaction. \n"
+            "                                          It will be \"\" for the default account.\n"
+            "    \"address\":\"address\",         (string) The Anoncoin address of the transaction. Not present for \n"
+            "                                          move transactions (category = move).\n"
             "    \"category\":\"send|receive|move\", (string) The transaction category. 'move' is a local (off blockchain)\n"
-            "                                                transaction between accounts, and not associated with an address,\n"
-            "                                                transaction id or block. 'send' and 'receive' transactions are \n"
-            "                                                associated with an address, transaction id and block details\n"
-            "    \"amount\": x.xxx,          (numeric) The amount in btc. This is negative for the 'send' category, and for the\n"
-            "                                         'move' category for moves outbound. It is positive for the 'receive' category,\n"
-            "                                         and for the 'move' category for inbound funds.\n"
-            "    \"fee\": x.xxx,             (numeric) The amount of the fee in btc. This is negative and only available for the \n"
-            "                                         'send' category of transactions.\n"
-            "    \"confirmations\": n,       (numeric) The number of confirmations for the transaction. Available for 'send' and \n"
-            "                                         'receive' category of transactions.\n"
-            "    \"blockhash\": \"hashvalue\", (string) The block hash containing the transaction. Available for 'send' and 'receive'\n"
-            "                                          category of transactions.\n"
-            "    \"blockindex\": n,          (numeric) The block index containing the transaction. Available for 'send' and 'receive'\n"
-            "                                          category of transactions.\n"
-            "    \"txid\": \"transactionid\", (string) The transaction id. Available for 'send' and 'receive' category of transactions.\n"
-            "    \"time\": xxx,              (numeric) The transaction time in seconds since epoch (midnight Jan 1 1970 GMT).\n"
-            "    \"timereceived\": xxx,      (numeric) The time received in seconds since epoch (midnight Jan 1 1970 GMT). Available \n"
-            "                                          for 'send' and 'receive' category of transactions.\n"
-            "    \"comment\": \"...\",       (string) If a comment is associated with the transaction.\n"
-            "    \"otheraccount\": \"accountname\",  (string) For the 'move' category of transactions, the account the funds came \n"
-            "                                          from (for receiving funds, positive amounts), or went to (for sending funds,\n"
-            "                                          negative amounts).\n"
+            "                                             transaction between accounts, and not associated with an address,\n"
+            "                                             transaction id or block. 'send' and 'receive' transactions are \n"
+            "                                             associated with an address, transaction id and block details\n"
+            "    \"amount\": x.xxx,             (numeric) The amount in ANC. This is negative for the 'send' category, and for the\n"
+            "                                           'move' category for moves outbound. It is positive for the 'receive' category,\n"
+            "                                           and for the 'move' category for inbound funds.\n"
+            "    \"fee\": x.xxx,                (numeric) The amount of the fee in anc. This is negative and only available for the \n"
+            "                                           'send' category of transactions.\n"
+            "    \"confirmations\": n,          (numeric) The number of confirmations for the transaction. Available for 'send' and \n"
+            "                                           'receive' category of transactions.\n"
+            "    \"blockhash\": \"hashvalue\",    (string)  The block hash containing the transaction. Available for 'send' and 'receive'\n"
+            "                                           category of transactions.\n"
+            "    \"blockindex\": n,             (numeric) The block index containing the transaction. Available for 'send' and 'receive'\n"
+            "                                           category of transactions.\n"
+            "    \"txid\": \"transactionid\",     (string)  The transaction id. Available for 'send' and 'receive' category of transactions.\n"
+            "    \"time\": xxx,                 (numeric) The transaction time in seconds since epoch (midnight Jan 1 1970 GMT).\n"
+            "    \"timereceived\": xxx,         (numeric) The time received in seconds since epoch (midnight Jan 1 1970 GMT). Available \n"
+            "                                           for 'send' and 'receive' category of transactions.\n"
+            "    \"comment\": \"...\",            (string)  If a comment is associated with the transaction.\n"
+            "    \"otheraccount\": \"account\",   (string) For the 'move' category of transactions, the account the funds came from,\n"
+            "                                          (for receiving funds, positive amounts), or went to (for sending funds,negative amounts).\n"
             "  }\n"
             "]\n"
 
@@ -1265,6 +1405,8 @@ Value listtransactions(const Array& params, bool fHelp)
             "\nAs a json rpc call\n"
             + HelpExampleRpc("listtransactions", "\"tabby\", 20, 100")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     string strAccount = "*";
     if (params.size() > 0)
@@ -1323,15 +1465,18 @@ Value listtransactions(const Array& params, bool fHelp)
 
 Value listaccounts(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 2)
         throw runtime_error(
-            "listaccounts ( minconf includeWatchonly)\n"
-            "\nReturns Object that has account names as keys, account balances as values.\n"
+            "listaccounts [minconf] [includeWatchonly]\n"
+            "\n Returns Object that has account names as keys, account balances as values.\n"
             "\nArguments:\n"
-            "1. minconf          (numeric, optional, default=1) Only onclude transactions with at least this many confirmations\n"
-            "2. includeWatchonly (bool, optional, default=false) Include balances in watchonly addresses (see 'importaddress')\n"
+            " 1. minconf          (numeric, optional, default=1) Only onclude transactions with at least this many confirmations\n"
+            " 2. includeWatchonly (bool, optional, default=false) Include balances in watchonly addresses (see 'importaddress')\n"
             "\nResult:\n"
-            "{                      (json object where keys are account names, and values are numeric balances\n"
+            "{                    (json object where keys are account names, and values are numeric balances\n"
             "  \"account\": x.xxx,  (numeric) The property name is the account name, and the value is the total balance for the account.\n"
             "  ...\n"
             "}\n"
@@ -1345,6 +1490,8 @@ Value listaccounts(const Array& params, bool fHelp)
             "\nAs json rpc call\n"
             + HelpExampleRpc("listaccounts", "6")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     int nMinDepth = 1;
     if (params.size() > 0)
@@ -1398,34 +1545,37 @@ Value listaccounts(const Array& params, bool fHelp)
 
 Value listsinceblock(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp)
         throw runtime_error(
-            "listsinceblock ( \"blockhash\" target-confirmations includeWatchonly)\n"
-            "\nGet all transactions in blocks since block [blockhash], or all transactions if omitted\n"
+            "listsinceblock [\"blockhash\"] [target-confirmations] [includeWatchonly]\n"
+            "\n Lists all transactions found in your wallet, in blocks since block [blockhash], or all transactions if omitted.\n"
             "\nArguments:\n"
-            "1. \"blockhash\"   (string, optional) The block hash to list transactions since\n"
-            "2. target-confirmations:    (numeric, optional) The confirmations required, must be 1 or more\n"
-            "3. includeWatchonly:        (bool, optional, default=false) Include transactions to watchonly addresses (see 'importaddress')"
+            " 1. \"blockhash\"                  (string, optional) The block hash (either scrypt or sha256d) to list transactions since\n"
+            " 2. target-confirmations:        (numeric, optional) The confirmations required, must be 1 or more\n"
+            " 3. includeWatchonly:            (bool, optional, default=false) Include transactions to watchonly addresses (see 'importaddress')"
             "\nResult:\n"
             "{\n"
             "  \"transactions\": [\n"
-            "    \"account\":\"accountname\",       (string) The account name associated with the transaction. Will be \"\" for the default account.\n"
-            "    \"address\":\"anoncoinaddress\",    (string) The anoncoin address of the transaction. Not present for move transactions (category = move).\n"
-            "    \"category\":\"send|receive\",     (string) The transaction category. 'send' has negative amounts, 'receive' has positive amounts.\n"
-            "    \"amount\": x.xxx,          (numeric) The amount in btc. This is negative for the 'send' category, and for the 'move' category for moves \n"
-            "                                          outbound. It is positive for the 'receive' category, and for the 'move' category for inbound funds.\n"
-            "    \"fee\": x.xxx,             (numeric) The amount of the fee in btc. This is negative and only available for the 'send' category of transactions.\n"
-            "    \"confirmations\": n,       (numeric) The number of confirmations for the transaction. Available for 'send' and 'receive' category of transactions.\n"
-            "    \"blockhash\": \"hashvalue\",     (string) The block hash containing the transaction. Available for 'send' and 'receive' category of transactions.\n"
-            "    \"blockindex\": n,          (numeric) The block index containing the transaction. Available for 'send' and 'receive' category of transactions.\n"
-            "    \"blocktime\": xxx,         (numeric) The block time in seconds since epoch (1 Jan 1970 GMT).\n"
-            "    \"txid\": \"transactionid\",  (string) The transaction id. Available for 'send' and 'receive' category of transactions.\n"
-            "    \"time\": xxx,              (numeric) The transaction time in seconds since epoch (Jan 1 1970 GMT).\n"
-            "    \"timereceived\": xxx,      (numeric) The time received in seconds since epoch (Jan 1 1970 GMT). Available for 'send' and 'receive' category of transactions.\n"
-            "    \"comment\": \"...\",       (string) If a comment is associated with the transaction.\n"
-            "    \"to\": \"...\",            (string) If a comment to is associated with the transaction.\n"
+            "    \"account\":\"accountname\",     (string) The account name associated with the transaction. Will be \"\" for the default account.\n"
+            "    \"address\":\"anoncoinaddress\", (string) The anoncoin address of the transaction. Not present for move transactions (category = move).\n"
+            "    \"category\":\"send|receive\",   (string) The transaction category. 'send' has negative amounts, 'receive' has positive amounts.\n"
+            "    \"amount\": x.xxx,             (numeric) The amount in anc. This is negative for the 'send' category, and for the 'move' category for moves \n"
+            "                                           outbound. It is positive for the 'receive' category, and for the 'move' category for inbound funds.\n"
+            "    \"fee\": x.xxx,                (numeric) The amount of the fee in anc. This is negative and only available for the 'send' category of transactions.\n"
+            "    \"confirmations\": n,          (numeric) The number of confirmations for the transaction. Available for 'send' and 'receive' category of transactions.\n"
+            "    \"blockhash\": \"hashvalue\",    (string) The block hash containing the transaction. Available for 'send' and 'receive' category of transactions.\n"
+            "    \"blockindex\": n,             (numeric) The block index containing the transaction. Available for 'send' and 'receive' category of transactions.\n"
+            "    \"blocktime\": xxx,            (numeric) The block time in seconds since epoch (1 Jan 1970 GMT).\n"
+            "    \"txid\": \"transactionid\",     (string) The transaction id. Available for 'send' and 'receive' category of transactions.\n"
+            "    \"time\": xxx,                 (numeric) The transaction time in seconds since epoch (Jan 1 1970 GMT).\n"
+            "    \"timereceived\": xxx,         (numeric) The time received in seconds since epoch (Jan 1 1970 GMT). Available for 'send' and 'receive' category of transactions.\n"
+            "    \"comment\": \"...\",            (string) If a comment is associated with the transaction.\n"
+            "    \"to\": \"...\",                 (string) If a comment to is associated with the transaction.\n"
              "  ],\n"
-            "  \"lastblock\": \"lastblockhash\"     (string) The hash of the last block\n"
+            "  \"lastblock\": \"lastblockhash\"   (string) The hash of the last block\n"
             "}\n"
             "\nExamples:\n"
             + HelpExampleCli("listsinceblock", "")
@@ -1433,18 +1583,23 @@ Value listsinceblock(const Array& params, bool fHelp)
             + HelpExampleRpc("listsinceblock", "\"000000000000000bacf66f7497b7dc45ef753ee9a7d38571037cdb1a57f663ad\", 6")
         );
 
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     CBlockIndex *pindex = NULL;
     int target_confirms = 1;
     isminefilter filter = ISMINE_SPENDABLE;
 
     if (params.size() > 0)
     {
-        uint256 blockId = 0;
-
+        uintFakeHash blockId = 0;
         blockId.SetHex(params[0].get_str());
-        BlockMap::iterator it = mapBlockIndex.find(blockId);
-        if (it != mapBlockIndex.end())
-            pindex = it->second;
+        //! Allow the user to enter either the real block hash value or the sha256d hash,
+        //! so we can better have backwards compatibility while working with rpc input.
+        uint256 aRealHash = blockId.GetRealHash();
+        if(aRealHash != 0)  blockId = aRealHash;
+        BlockMap::const_iterator bimp = mapBlockIndex.find( blockId );
+        if (bimp != mapBlockIndex.end())
+            pindex = bimp->second;
     }
 
     if (params.size() > 1)
@@ -1483,33 +1638,36 @@ Value listsinceblock(const Array& params, bool fHelp)
 
 Value gettransaction(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "gettransaction \"txid\" ( includeWatchonly )\n"
-            "\nGet detailed information about in-wallet transaction <txid>\n"
+            "gettransaction <\"txid\"> [includeWatchonly]\n"
+            "\n Get detailed information about in-wallet transaction <txid>\n"
             "\nArguments:\n"
-            "1. \"txid\"    (string, required) The transaction id\n"
-            "2. \"includeWatchonly\"    (bool, optional, default=false) Whether to include watchonly addresses in balance calculation and details[]\n"
+            " 1. \"txid\"                  (string, required) The transaction id\n"
+            " 2. includeWatchonly        (bool, optional, default=false) Whether to include watchonly addresses in balance calculation and details[]\n"
             "\nResult:\n"
             "{\n"
-            "  \"amount\" : x.xxx,        (numeric) The transaction amount in btc\n"
-            "  \"confirmations\" : n,     (numeric) The number of confirmations\n"
-            "  \"blockhash\" : \"hash\",  (string) The block hash\n"
-            "  \"blockindex\" : xx,       (numeric) The block index\n"
-            "  \"blocktime\" : ttt,       (numeric) The time in seconds since epoch (1 Jan 1970 GMT)\n"
-            "  \"txid\" : \"transactionid\",   (string) The transaction id.\n"
-            "  \"time\" : ttt,            (numeric) The transaction time in seconds since epoch (1 Jan 1970 GMT)\n"
-            "  \"timereceived\" : ttt,    (numeric) The time received in seconds since epoch (1 Jan 1970 GMT)\n"
+            "  \"amount\" : x.xxx,         (numeric) The transaction amount in anc\n"
+            "  \"confirmations\" : n,      (numeric) The number of confirmations\n"
+            "  \"blockhash\" : \"hash\",     (string) The sha256d hash of this block\n"
+            "  \"blockindex\" : xx,        (numeric) The block index\n"
+            "  \"blocktime\" : ttt,        (numeric) The time in seconds since epoch (1 Jan 1970 GMT)\n"
+            "  \"txid\" : \"transactionid\", (string) The transaction id.\n"
+            "  \"time\" : ttt,             (numeric) The transaction time in seconds since epoch (1 Jan 1970 GMT)\n"
+            "  \"timereceived\" : ttt,     (numeric) The time received in seconds since epoch (1 Jan 1970 GMT)\n"
             "  \"details\" : [\n"
             "    {\n"
-            "      \"account\" : \"accountname\",  (string) The account name involved in the transaction, can be \"\" for the default account.\n"
-            "      \"address\" : \"anoncoinaddress\",   (string) The anoncoin address involved in the transaction\n"
-            "      \"category\" : \"send|receive\",    (string) The category, either 'send' or 'receive'\n"
-            "      \"amount\" : x.xxx                  (numeric) The amount in btc\n"
+            "      \"account\" : \"accountname\",     (string) The account name involved in the transaction, can be \"\" for the default account.\n"
+            "      \"address\" : \"anoncoinaddress\", (string) The anoncoin address involved in the transaction\n"
+            "      \"category\" : \"send|receive\",   (string) The category, either 'send' or 'receive'\n"
+            "      \"amount\" : x.xxx               (numeric) The amount in anc\n"
             "    }\n"
             "    ,...\n"
             "  ],\n"
-            "  \"hex\" : \"data\"         (string) Raw data for transaction\n"
+            "  \"hex\" : \"data\"                     (string) Raw data for transaction\n"
             "}\n"
 
             "\nbExamples\n"
@@ -1517,6 +1675,8 @@ Value gettransaction(const Array& params, bool fHelp)
             + HelpExampleCli("gettransaction", "\"1075db55d416d3ca199f55b6084e2115b9345e16c5cf302fc80e9d5fbf5d48d\" true")
             + HelpExampleRpc("gettransaction", "\"1075db55d416d3ca199f55b6084e2115b9345e16c5cf302fc80e9d5fbf5d48d\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     uint256 hash;
     hash.SetHex(params[0].get_str());
@@ -1546,9 +1706,7 @@ Value gettransaction(const Array& params, bool fHelp)
     ListTransactions(wtx, "*", 0, false, details, filter);
     entry.push_back(Pair("details", details));
 
-    CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
-    ssTx << static_cast<CTransaction>(wtx);
-    string strHex = HexStr(ssTx.begin(), ssTx.end());
+    string strHex = EncodeHexTx(static_cast<CTransaction>(wtx));
     entry.push_back(Pair("hex", strHex));
 
     return entry;
@@ -1557,16 +1715,21 @@ Value gettransaction(const Array& params, bool fHelp)
 
 Value backupwallet(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "backupwallet \"destination\"\n"
-            "\nSafely copies wallet.dat to destination, which can be a directory or a path with filename.\n"
+            "backupwallet <\"destination\">\n"
+            "\n Safely copies wallet.dat to destination, which can be a directory or a path with filename.\n"
             "\nArguments:\n"
-            "1. \"destination\"   (string) The destination directory or file\n"
+            " 1. \"destination\" (string, required) The destination directory or file\n"
             "\nExamples:\n"
             + HelpExampleCli("backupwallet", "\"backup.dat\"")
             + HelpExampleRpc("backupwallet", "\"backup.dat\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     string strDest = params[0].get_str();
     if (!BackupWallet(*pwalletMain, strDest))
@@ -1578,20 +1741,25 @@ Value backupwallet(const Array& params, bool fHelp)
 
 Value keypoolrefill(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 1)
         throw runtime_error(
-            "keypoolrefill ( newsize )\n"
-            "\nFills the keypool."
+            "keypoolrefill [newsize]\n"
+            "\n Fills the keypool."
             + HelpRequiringPassphrase() + "\n"
             "\nArguments\n"
-            "1. newsize     (numeric, optional, default=100) The new keypool size\n"
+            " 1. newsize     (numeric, optional, default=100) The new keypool size\n"
             "\nExamples:\n"
             + HelpExampleCli("keypoolrefill", "")
             + HelpExampleRpc("keypoolrefill", "")
         );
 
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     // 0 is interpreted by TopUpKeyPool() as the default keypool size given by -keypool
-    unsigned int kpSize = 0;
+    uint32_t kpSize = 0;
     if (params.size() > 0) {
         if (params[0].get_int() < 0)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid size.");
@@ -1617,14 +1785,19 @@ static void LockWallet(CWallet* pWallet)
 
 Value walletpassphrase(const Array& params, bool fHelp)
 {
-    if (pwalletMain->IsCrypted() && (fHelp || params.size() != 2))
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
+    // if (pwalletMain->IsCrypted() && (fHelp || params.size() != 2))
+    // ToDo: Figure out why someone thought enforcing the wallet to be encrypted for the help response was necessary, see extra protection below
+    if( fHelp || params.size() != 2 )
         throw runtime_error(
-            "walletpassphrase \"passphrase\" timeout\n"
-            "\nStores the wallet decryption key in memory for 'timeout' seconds.\n"
-            "This is needed prior to performing transactions related to private keys such as sending anoncoins\n"
+            "walletpassphrase <\"passphrase\"> <timeout>\n"
+            "\n Stores the wallet decryption key in memory for 'timeout' seconds.\n"
+            " This is needed prior to performing transactions related to private keys such as sending anoncoins\n"
             "\nArguments:\n"
-            "1. \"passphrase\"     (string, required) The wallet passphrase\n"
-            "2. timeout            (numeric, required) The time to keep the decryption key in seconds.\n"
+            " 1. \"passphrase\"       (string, required) The wallet passphrase\n"
+            " 2. timeout            (numeric, required) The time to keep the decryption key in seconds.\n"
             "\nNote:\n"
             "Issuing the walletpassphrase command while the wallet is already unlocked will set a new unlock\n"
             "time that overrides the old one.\n"
@@ -1636,6 +1809,8 @@ Value walletpassphrase(const Array& params, bool fHelp)
             "\nAs json rpc call\n"
             + HelpExampleRpc("walletpassphrase", "\"my pass phrase\", 60")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (fHelp)
         return true;
@@ -1657,7 +1832,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
     else
         throw runtime_error(
             "walletpassphrase <passphrase> <timeout>\n"
-            "Stores the wallet decryption key in memory for <timeout> seconds.");
+            " Stores the wallet decryption key in memory for <timeout> seconds.");
 
     pwalletMain->TopUpKeyPool();
 
@@ -1672,17 +1847,25 @@ Value walletpassphrase(const Array& params, bool fHelp)
 
 Value walletpassphrasechange(const Array& params, bool fHelp)
 {
-    if (pwalletMain->IsCrypted() && (fHelp || params.size() != 2))
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
+    // if (pwalletMain->IsCrypted() && (fHelp || params.size() != 2))
+    // ToDo: Figure out why someone thought enforcing the wallet to be encrypted for the help response was necessary, see extra protection below
+    if( fHelp || params.size() != 2 )
         throw runtime_error(
-            "walletpassphrasechange \"oldpassphrase\" \"newpassphrase\"\n"
-            "\nChanges the wallet passphrase from 'oldpassphrase' to 'newpassphrase'.\n"
+            "walletpassphrasechange <\"oldpassphrase\"> <\"newpassphrase\">\n"
+            "\n Changes the wallet passphrase from 'oldpassphrase' to 'newpassphrase'.\n"
+            " Before you can use this command, your wallet must have been encrypted.\n"
             "\nArguments:\n"
-            "1. \"oldpassphrase\"      (string) The current passphrase\n"
-            "2. \"newpassphrase\"      (string) The new passphrase\n"
+            " 1. \"oldpassphrase\" (string, required) The current passphrase\n"
+            " 2. \"newpassphrase\" (string, required) The new passphrase\n"
             "\nExamples:\n"
             + HelpExampleCli("walletpassphrasechange", "\"old one\" \"new one\"")
             + HelpExampleRpc("walletpassphrasechange", "\"old one\", \"new one\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (fHelp)
         return true;
@@ -1702,7 +1885,7 @@ Value walletpassphrasechange(const Array& params, bool fHelp)
     if (strOldWalletPass.length() < 1 || strNewWalletPass.length() < 1)
         throw runtime_error(
             "walletpassphrasechange <oldpassphrase> <newpassphrase>\n"
-            "Changes the wallet passphrase from <oldpassphrase> to <newpassphrase>.");
+            " Changes the wallet passphrase from <oldpassphrase> to <newpassphrase>.");
 
     if (!pwalletMain->ChangeWalletPassphrase(strOldWalletPass, strNewWalletPass))
         throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
@@ -1713,22 +1896,29 @@ Value walletpassphrasechange(const Array& params, bool fHelp)
 
 Value walletlock(const Array& params, bool fHelp)
 {
-    if (pwalletMain->IsCrypted() && (fHelp || params.size() != 0))
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
+    // if (pwalletMain->IsCrypted() && (fHelp || params.size() != 0))
+    // ToDo: Figure out why someone thought enforcing the wallet to be encrypted for the help response was necessary, see extra protection below
+    if( fHelp || params.size() != 0 )
         throw runtime_error(
             "walletlock\n"
-            "\nRemoves the wallet encryption key from memory, locking the wallet.\n"
-            "After calling this method, you will need to call walletpassphrase again\n"
-            "before being able to call any methods which require the wallet to be unlocked.\n"
+            "\n Removes the wallet encryption key from memory, locking the wallet.\n"
+            " After calling this method, you will need to call walletpassphrase again\n"
+            " before being able to call any methods which require the wallet to be unlocked.\n"
             "\nExamples:\n"
-            "\nSet the passphrase for 2 minutes to perform a transaction\n"
+            "\n Set the passphrase for 2 minutes to perform a transaction\n"
             + HelpExampleCli("walletpassphrase", "\"my pass phrase\" 120") +
-            "\nPerform a send (requires passphrase set)\n"
-            + HelpExampleCli("sendtoaddress", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 1.0") +
-            "\nClear the passphrase since we are done before 2 minutes is up\n"
+            "\n Perform a send (requires passphrase set)\n"
+            + HelpExampleCli("sendtoaddress", "\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\" 1.0") +
+            "\n Clear the passphrase since we are done before 2 minutes is up\n"
             + HelpExampleCli("walletlock", "") +
-            "\nAs json rpc call\n"
+            "\n As json rpc call\n"
             + HelpExampleRpc("walletlock", "")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (fHelp)
         return true;
@@ -1747,29 +1937,36 @@ Value walletlock(const Array& params, bool fHelp)
 
 Value encryptwallet(const Array& params, bool fHelp)
 {
-    if (!pwalletMain->IsCrypted() && (fHelp || params.size() != 1))
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
+    // if (!pwalletMain->IsCrypted() && (fHelp || params.size() != 1))
+    // ToDo: Figure out why someone thought enforcing the wallet to be encrypted for the help response was necessary, see extra protection below
+    if( fHelp || params.size() != 1 )
         throw runtime_error(
-            "encryptwallet \"passphrase\"\n"
-            "\nEncrypts the wallet with 'passphrase'. This is for first time encryption.\n"
-            "After this, any calls that interact with private keys such as sending or signing \n"
-            "will require the passphrase to be set prior the making these calls.\n"
-            "Use the walletpassphrase call for this, and then walletlock call.\n"
-            "If the wallet is already encrypted, use the walletpassphrasechange call.\n"
-            "Note that this will shutdown the server.\n"
+            "encryptwallet <\"passphrase\">\n"
+            "\n Encrypts the wallet with 'passphrase'. This is for first time encryption.\n"
+            " After this, any calls that interact with private keys such as sending or signing\n"
+            " will require the passphrase to be set prior to making these calls.\n"
+            " Use the walletpassphrase call for this, and then walletlock call.\n"
+            " If the wallet is already encrypted, use the walletpassphrasechange call.\n"
+            " Note: Executing this command will shutdown the server.\n"
             "\nArguments:\n"
-            "1. \"passphrase\"    (string) The pass phrase to encrypt the wallet with. It must be at least 1 character, but should be long.\n"
+            " 1. \"passphrase\" (string. required) The pass phrase to encrypt the wallet with. It must be at least 1 character, but should be long.\n"
             "\nExamples:\n"
-            "\nEncrypt you wallet\n"
+            "\n Encrypt you wallet\n"
             + HelpExampleCli("encryptwallet", "\"my pass phrase\"") +
-            "\nNow set the passphrase to use the wallet, such as for signing or sending anoncoin\n"
+            "\n Now set the passphrase to use the wallet, such as for signing or sending Anoncoin\n"
             + HelpExampleCli("walletpassphrase", "\"my pass phrase\"") +
-            "\nNow we can so something like sign\n"
+            "\n Now we can so something like sign\n"
             + HelpExampleCli("signmessage", "\"anoncoinaddress\" \"test message\"") +
-            "\nNow lock the wallet again by removing the passphrase\n"
+            "\n Now lock the wallet again by removing the passphrase\n"
             + HelpExampleCli("walletlock", "") +
-            "\nAs a json rpc call\n"
+            "\n As a json rpc call\n"
             + HelpExampleRpc("encryptwallet", "\"my pass phrase\"")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (fHelp)
         return true;
@@ -1790,37 +1987,37 @@ Value encryptwallet(const Array& params, bool fHelp)
     if (!pwalletMain->EncryptWallet(strWalletPass))
         throw JSONRPCError(RPC_WALLET_ENCRYPTION_FAILED, "Error: Failed to encrypt the wallet.");
 
-    // BDB seems to have a bad habit of writing old data into
-    // slack space in .dat files; that is bad if the old data is
-    // unencrypted private keys. So:
+    // BDB seems to have a bad habit of writing old data into slack space in .dat files; that is bad if the old data is unencrypted private keys. So:
     StartShutdown();
     return "wallet encrypted; Anoncoin server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.";
 }
 
 Value lockunspent(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "lockunspent unlock [{\"txid\":\"txid\",\"vout\":n},...]\n"
-            "\nUpdates list of temporarily unspendable outputs.\n"
-            "Temporarily lock (unlock=false) or unlock (unlock=true) specified transaction outputs.\n"
-            "A locked transaction output will not be chosen by automatic coin selection, when spending anoncoins.\n"
-            "Locks are stored in memory only. Nodes start with zero locked outputs, and the locked output list\n"
-            "is always cleared (by virtue of process exit) when a node stops or fails.\n"
-            "Also see the listunspent call\n"
+            "lockunspent <unlock> <[{\"txid\":\"txid\",\"vout\":n},...]>\n"
+            "\n Updates list of temporarily unspendable outputs.\n"
+            " Temporarily lock (unlock=false) or unlock (unlock=true) specified transaction outputs.\n"
+            " A locked transaction output will not be chosen by automatic coin selection, when spending Anoncoins.\n"
+            " Locks are stored in memory only. Nodes start with zero locked outputs, and the locked output list\n"
+            " is always cleared (by virtue of process exit) when a node stops or fails. Also see the listunspent call.\n"
             "\nArguments:\n"
-            "1. unlock            (boolean, required) Whether to unlock (true) or lock (false) the specified transactions\n"
-            "2. \"transactions\"  (string, required) A json array of objects. Each object the txid (string) vout (numeric)\n"
-            "     [           (json array of json objects)\n"
+            "  1. unlock           (boolean, required) Whether to unlock (true) or lock (false) the specified transactions\n"
+            "  2. \"transactions\"   (string, required) A json array of objects. Each object the txid (string) vout (numeric)\n"
+            "     [\n"
             "       {\n"
-            "         \"txid\":\"id\",    (string) The transaction id\n"
-            "         \"vout\": n         (numeric) The output number\n"
+            "         \"txid\":\"id\", (string) The transaction id\n"
+            "         \"vout\": n    (numeric) The output number\n"
             "       }\n"
             "       ,...\n"
             "     ]\n"
 
             "\nResult:\n"
-            "true|false    (boolean) Whether the command was successful or not\n"
+            "true|false            (boolean) Whether the command was successful or not\n"
 
             "\nExamples:\n"
             "\nList the unspent transactions\n"
@@ -1835,10 +2032,12 @@ Value lockunspent(const Array& params, bool fHelp)
             + HelpExampleRpc("lockunspent", "false, \"[{\\\"txid\\\":\\\"a08e6907dbbd3d809776dbfc5d82e371b764ed838b5655e72f463568df1aadf0\\\",\\\"vout\\\":1}]\"")
         );
 
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
     if (params.size() == 1)
-        RPCTypeCheck(params, list_of(bool_type));
+        RPCTypeCheck(params, boost::assign::list_of(bool_type));
     else
-        RPCTypeCheck(params, list_of(bool_type)(array_type));
+        RPCTypeCheck(params, boost::assign::list_of(bool_type)(array_type));
 
     bool fUnlock = params[0].get_bool();
 
@@ -1855,7 +2054,7 @@ Value lockunspent(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected object");
         const Object& o = output.get_obj();
 
-        RPCTypeCheck(o, map_list_of("txid", str_type)("vout", int_type));
+        RPCTypeCheck(o, boost::assign::map_list_of("txid", str_type)("vout", int_type));
 
         string txid = find_value(o, "txid").get_str();
         if (!IsHex(txid))
@@ -1878,16 +2077,19 @@ Value lockunspent(const Array& params, bool fHelp)
 
 Value listlockunspent(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() > 0)
         throw runtime_error(
             "listlockunspent\n"
-            "\nReturns list of temporarily unspendable outputs.\n"
-            "See the lockunspent call to lock and unlock transactions for spending.\n"
+            "\n Returns list of temporarily unspendable outputs.\n"
+            "\n See the lockunspent call to lock and unlock transactions for spending.\n"
             "\nResult:\n"
             "[\n"
             "  {\n"
-            "    \"txid\" : \"transactionid\",     (string) The transaction id locked\n"
-            "    \"vout\" : n                      (numeric) The vout value\n"
+            "    \"txid\" : \"transactionid\", (string) The transaction id locked\n"
+            "    \"vout\" : n                (numeric) The vout value\n"
             "  }\n"
             "  ,...\n"
             "]\n"
@@ -1903,6 +2105,8 @@ Value listlockunspent(const Array& params, bool fHelp)
             "\nAs a json rpc call\n"
             + HelpExampleRpc("listlockunspent", "")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     vector<COutPoint> vOutpts;
     pwalletMain->ListLockedCoins(vOutpts);
@@ -1922,18 +2126,23 @@ Value listlockunspent(const Array& params, bool fHelp)
 
 Value settxfee(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() < 1 || params.size() > 1)
         throw runtime_error(
-            "settxfee amount\n"
-            "\nSet the transaction fee per kB.\n"
+            "settxfee <amount>\n"
+            "\n Set the transaction fee per kB.\n"
             "\nArguments:\n"
-            "1. amount         (numeric, required) The transaction fee in ANC/kB rounded to the nearest 0.00000001\n"
+            "  1. amount    (numeric, required) The transaction fee in ANC/kB rounded to the nearest 0.00000001\n"
             "\nResult\n"
-            "true|false        (boolean) Returns true if successful\n"
+            "true|false     (boolean) Returns true if successful\n"
             "\nExamples:\n"
             + HelpExampleCli("settxfee", "0.00001")
             + HelpExampleRpc("settxfee", "0.00001")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     // Amount
     int64_t nAmount = 0;
@@ -1946,23 +2155,28 @@ Value settxfee(const Array& params, bool fHelp)
 
 Value getwalletinfo(const Array& params, bool fHelp)
 {
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "getwalletinfo\n"
-            "Returns an object containing various wallet state info.\n"
+            "\n Returns an object containing various wallet state info.\n"
             "\nResult:\n"
             "{\n"
-            "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-            "  \"balance\": xxxxxxx,         (numeric) the total anoncoin balance of the wallet\n"
-            "  \"txcount\": xxxxxxx,         (numeric) the total number of transactions in the wallet\n"
-            "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
-            "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
-            "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
+            "  \"walletversion\": xxxxx,  (numeric) the wallet version\n"
+            "  \"balance\": xxxxxxx,      (numeric) the total anoncoin balance of the wallet\n"
+            "  \"txcount\": xxxxxxx,      (numeric) the total number of transactions in the wallet\n"
+            "  \"keypoololdest\": xxxxxx, (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
+            "  \"keypoolsize\": xxxx,     (numeric) how many new keys are pre-generated\n"
+            "  \"unlocked_until\": ttt,   (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
             "}\n"
             "\nExamples:\n"
             + HelpExampleCli("getwalletinfo", "")
             + HelpExampleRpc("getwalletinfo", "")
         );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
 
     Object obj;
     obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
@@ -1973,4 +2187,139 @@ Value getwalletinfo(const Array& params, bool fHelp)
     if (pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
     return obj;
+}
+
+Value resendwallettransactions(const Array& params, bool fHelp)
+{
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "resendwallettransactions\n"
+            "\n Immediately re-broadcast unconfirmed wallet transactions to all peers.\n"
+            " Intended only for testing; the wallet code periodically re-broadcasts\n"
+            " automatically.\n"
+            "Returns: array of transaction ids that were re-broadcast.\n"
+            );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    std::vector<uint256> txids = pwalletMain->ResendWalletTransactionsBefore(GetTime());
+    Array result;
+    BOOST_FOREACH(const uint256& txid, txids)
+    {
+        result.push_back(txid.ToString());
+    }
+    return result;
+}
+
+Value listunspent(const Array& params, bool fHelp)
+{
+    if (!EnsureWalletIsAvailable(fHelp))
+        return Value::null;
+
+    if (fHelp || params.size() > 3)
+        throw runtime_error(
+            "listunspent [minconf] [maxconf]  [\"address\",...] )\n"
+            "\n Returns array of unspent transaction outputs with between minconf and maxconf (inclusive)\n"
+            " confirmations. Optionally filter to only include txouts paid to specified addresses.\n"
+            " Results are an array of Objects, each of which has: {txid, vout, scriptPubKey, amount, confirmations}\n"
+            "\nArguments:\n"
+            " 1. minconf                 (numeric, optional, default=1) The minimum confirmations to filter\n"
+            " 2. maxconf                 (numeric, optional, default=9999999) The maximum confirmations to filter\n"
+            " 3. \"addresses\"             (string, optional) A json array of anoncoin addresses to filter\n"
+            "    [\n"
+            "      \"address\"             (string) Anoncoin address\n"
+            "      ,...\n"
+            "    ]\n"
+            "\nResult\n"
+            "[                           (array of json object)\n"
+            "  {\n"
+            "    \"txid\" : \"txid\",        (string) the transaction id \n"
+            "    \"vout\" : n,             (numeric) the vout value\n"
+            "    \"address\" : \"address\",  (string) the anoncoin address\n"
+            "    \"account\" : \"account\",  (string) The associated account, or \"\" for the default account\n"
+            "    \"scriptPubKey\" : \"key\", (string) the script key\n"
+            "    \"amount\" : x.xxx,       (numeric) the transaction amount in anc\n"
+            "    \"confirmations\" : n     (numeric) The number of confirmations\n"
+            "  }\n"
+            "  ,...\n"
+            "]\n"
+
+            "\nExamples\n"
+            + HelpExampleCli("listunspent", "")
+            + HelpExampleCli("listunspent", "6 9999999 \"[\\\"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\\\",\\\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\\\"]\"")
+            + HelpExampleRpc("listunspent", "6, 9999999 \"[\\\"ATYigKH95fhAWLzdNRvCR6KYC4XZoy4nrG\\\",\\\"AH6PLNDHFeNAngkjkeLhbDsFZQTYFH94i3\\\"]\"")
+        );
+
+    RPCTypeCheck(params, boost::assign::list_of(int_type)(int_type)(array_type));
+
+    int nMinDepth = 1;
+    if (params.size() > 0)
+        nMinDepth = params[0].get_int();
+
+    int nMaxDepth = 9999999;
+    if (params.size() > 1)
+        nMaxDepth = params[1].get_int();
+
+    set<CAnoncoinAddress> setAddress;
+    if (params.size() > 2) {
+        Array inputs = params[2].get_array();
+        BOOST_FOREACH(Value& input, inputs) {
+            CAnoncoinAddress address(input.get_str());
+            if (!address.IsValid())
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Anoncoin address: ")+input.get_str());
+            if (setAddress.count(address))
+                throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+input.get_str());
+           setAddress.insert(address);
+        }
+    }
+
+    Array results;
+    vector<COutput> vecOutputs;
+    assert(pwalletMain != NULL);
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+    pwalletMain->AvailableCoins(vecOutputs, false);
+    BOOST_FOREACH(const COutput& out, vecOutputs) {
+        if (out.nDepth < nMinDepth || out.nDepth > nMaxDepth)
+            continue;
+
+        if (setAddress.size()) {
+            CTxDestination address;
+            if (!ExtractDestination(out.tx->vout[out.i].scriptPubKey, address))
+                continue;
+
+            if (!setAddress.count(address))
+                continue;
+        }
+
+        int64_t nValue = out.tx->vout[out.i].nValue;
+        const CScript& pk = out.tx->vout[out.i].scriptPubKey;
+        Object entry;
+        entry.push_back(Pair("txid", out.tx->GetHash().GetHex()));
+        entry.push_back(Pair("vout", out.i));
+        CTxDestination address;
+        if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, address)) {
+            entry.push_back(Pair("address", CAnoncoinAddress(address).ToString()));
+            if (pwalletMain->mapAddressBook.count(address))
+                entry.push_back(Pair("account", pwalletMain->mapAddressBook[address].name));
+        }
+        entry.push_back(Pair("scriptPubKey", HexStr(pk.begin(), pk.end())));
+        if (pk.IsPayToScriptHash()) {
+            CTxDestination address;
+            if (ExtractDestination(pk, address)) {
+                const CScriptID& hash = boost::get<const CScriptID&>(address);
+                CScript redeemScript;
+                if (pwalletMain->GetCScript(hash, redeemScript))
+                    entry.push_back(Pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));
+            }
+        }
+        entry.push_back(Pair("amount",ValueFromAmount(nValue)));
+        entry.push_back(Pair("confirmations",out.nDepth));
+        entry.push_back(Pair("spendable", out.fSpendable));
+        results.push_back(entry);
+    }
+
+    return results;
 }

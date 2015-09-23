@@ -18,9 +18,9 @@ class CBaseMainParams : public CBaseChainParams
 public:
     CBaseMainParams()
     {
+        networkID = MAIN;
         nRPCPort = 9376;
     }
-    virtual Network NetworkID() const { return CBaseChainParams::MAIN; }
 };
 static CBaseMainParams mainParams;
 
@@ -32,10 +32,10 @@ class CBaseTestNetParams : public CBaseMainParams
 public:
     CBaseTestNetParams()
     {
+        networkID = TESTNET;
         nRPCPort = 19376;
         strDataDir = "testnet";
     }
-    virtual Network NetworkID() const { return CBaseChainParams::TESTNET; }
 };
 static CBaseTestNetParams testNetParams;
 
@@ -47,10 +47,10 @@ class CBaseRegTestParams : public CBaseTestNetParams
 public:
     CBaseRegTestParams()
     {
+        networkID = REGTEST;
         nRPCPort = 19443;
         strDataDir = "regtest";
     }
-    virtual Network NetworkID() const { return CBaseChainParams::REGTEST; }
 };
 static CBaseRegTestParams regTestParams;
 
@@ -62,6 +62,7 @@ class CBaseUnitTestParams : public CBaseMainParams
 public:
     CBaseUnitTestParams()
     {
+        networkID = UNITTEST;
         strDataDir = "unittest";
     }
 };
@@ -86,6 +87,9 @@ void SelectBaseParams(CBaseChainParams::Network network)
         break;
     case CBaseChainParams::REGTEST:
         pCurrentBaseParams = &regTestParams;
+        break;
+    case CBaseChainParams::UNITTEST:
+        pCurrentBaseParams = &unitTestParams;
         break;
     default:
         assert(false && "Unimplemented network");

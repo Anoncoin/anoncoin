@@ -14,9 +14,12 @@ pkgconfigdir = $(libdir)/pkgconfig
 endif
 
 ANONCOIND_BIN=$(top_builddir)/src/anoncoind$(EXEEXT)
-ANONCOIN_QT_BIN=$(top_builddir)/src/qt/anoncoin-qt$(EXEEXT)
+ANONCOIN_QTC_BIN=$(top_builddir)/src/qt/anoncoin-qtc$(EXEEXT)
+ANONCOIN_QTT_BIN=$(top_builddir)/src/qthemes/anoncoin-qtt$(EXEEXT)
 ANONCOIN_CLI_BIN=$(top_builddir)/src/anoncoin-cli$(EXEEXT)
-ANONCOIN_WIN_INSTALLER=$(PACKAGE)-$(PACKAGE_VERSION)-win$(WINDOWS_BITS)-setup$(EXEEXT)
+ANONCOIN_TX_BIN=$(top_builddir)/src/anoncoin-tx$(EXEEXT)
+ANONCOIN_TEST_BIN=$(top_builddir)/src/test/test_anoncoin$(EXEEXT)
+ANONCOIN_WIN_INSTALLER=$(top_builddir)/release/$(PACKAGE)-$(PACKAGE_VERSION)-win$(WINDOWS_BITS)-setup$(EXEEXT)
 
 OSX_APP=Anoncoin.app
 OSX_DMG=Anoncoin.dmg
@@ -60,8 +63,11 @@ distcleancheck:
 $(ANONCOIN_WIN_INSTALLER): all-recursive
 	$(MKDIR_P) $(top_builddir)/release
 	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(ANONCOIND_BIN) $(top_builddir)/release
-	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(ANONCOIN_QT_BIN) $(top_builddir)/release
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(ANONCOIN_QTC_BIN) $(top_builddir)/release
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(ANONCOIN_QTT_BIN) $(top_builddir)/release
 	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(ANONCOIN_CLI_BIN) $(top_builddir)/release
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(ANONCOIN_TX_BIN) $(top_builddir)/release
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(ANONCOIN_TEST_BIN) $(top_builddir)/release
 	@test -f $(MAKENSIS) && $(MAKENSIS) $(top_builddir)/share/setup.nsi || \
 	  echo error: could not build $@
 
@@ -84,7 +90,7 @@ $(OSX_APP)/Contents/Resources/anoncoin.icns: $(OSX_INSTALLER_ICONS)
 	$(MKDIR_P) $(@D)
 	$(INSTALL_DATA) $< $@
 
-$(OSX_APP)/Contents/MacOS/Anoncoin: $(ANONCOIN_QT_BIN)
+$(OSX_APP)/Contents/MacOS/Anoncoin: $(ANONCOIN_QTC_BIN) $(ANONCOIN_QTT_BIN)
 	$(MKDIR_P) $(@D)
 	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM)  $< $@
 
@@ -129,9 +135,15 @@ endif
 if TARGET_WINDOWS
 deploy: $(ANONCOIN_WIN_INSTALLER)
 endif
+#if TARGET_LINUX
+#deploy: $(ANONCOIN_LINUX_INSTALLER)
+#endif
 
-$(ANONCOIN_QT_BIN): FORCE
+$(ANONCOIN_QTC_BIN): FORCE
 	$(MAKE) -C src qt/$(@F)
+
+$(ANONCOIN_QTT_BIN): FORCE
+	$(MAKE) -C src qthemes/$(@F)
 
 $(ANONCOIND_BIN): FORCE
 	$(MAKE) -C src $(@F)
@@ -201,9 +213,10 @@ endif
 
 EXTRA_DIST = $(top_srcdir)/share/genbuild.sh qa/pull-tester/rpc-tests.sh qa/pull-tester/run-anoncoin-cli qa/rpc-tests $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING)
 
-CLEANFILES = $(OSX_DMG) $(ANONCOIN_WIN_INSTALLER)
+CLEANFILES = $(OSX_DMG)
 
 .INTERMEDIATE: $(COVERAGE_INFO)
 
 clean-local:
 	rm -rf test_anoncoin.coverage/ total.coverage/ $(OSX_APP)
+	rm -rf $(top_builddir)/release

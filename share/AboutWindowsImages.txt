@@ -1,0 +1,29 @@
+GIMP can be used to create nsis-wizard.bmp and nsis-header.bmp files,
+but it is very tricky and difficult to get right or what happens is
+the nsis produced setup.exe file will not show them during the user
+installation process...
+
+
+The correct size MUST be used when creating the output files:
+nsis-header.bmp must be 150 x 57 pixels
+nsis-wizard.bmp must be 164 x 314 pixels
+
+...a larger height for nsis-wizard.bmp has been found to work for values upto 337
+
+The only known formats to work while exporting .BMP files to be used in Windows builds are:
+
+RGB 24 bit -  DO NOT use 32
+When exporting be sure that under compatibility options you select:
+
+DO NOT WRITE color space information.  Or your file will not work
+Under advanced options, be sure the 24 bit R8-G8-B8 format is selected.
+
+Another possible facter is DPI resolution, the only known value to work is 72 dpi
+
+
+When updating the Icon file anoncoin.ico, be sure to run the qt/make_windows_icon.sh script found here under share/qt, it uses the linux 'convert' program to build multiple resolution copies of the icon, which are then placed into one anoncoin.ico file.  Running that causes an update to the one here (in share/pixmaps/) that is used for the Windows setup.exe file, also anoncoin.ico is updated in the src/qt/res/icons subdirectory, for use with the main QT executable.  The source is currently defined as this file: src/qt/res/src/Anon-logo_400.png
+
+
+Also you can run: make_windows_testnet_icon.sh
+to generate the testnet icon file for the QT executable, no output is generated or needed for the setup.exe in that case.
+

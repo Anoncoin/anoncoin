@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -15,16 +15,15 @@
 #include <utility>
 #include <vector>
 
-class CBigNum;
 class CCoins;
 class uint256;
 
-// -dbcache default (MiB)
-static const int64_t nDefaultDbCache = 200;
-// max. -dbcache in (MiB)
-static const int64_t nMaxDbCache = sizeof(void*) > 4 ? 4096 : 1024;
-// min. -dbcache in (MiB)
-static const int64_t nMinDbCache = 4;
+//! -dbcache default (MiB)
+extern const int64_t nDefaultDbCache;
+//! max. -dbcache in (MiB)
+extern const int64_t nMaxDbCache;
+//! min. -dbcache in (MiB)
+extern const int64_t nMinDbCache;
 
 /** CCoinsView backed by the LevelDB coin database (chainstate/) */
 class CCoinsViewDB : public CCoinsView
@@ -34,13 +33,24 @@ protected:
 public:
     CCoinsViewDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
 
-    bool GetCoins(const uint256 &txid, CCoins &coins);
-    bool SetCoins(const uint256 &txid, const CCoins &coins);
-    bool HaveCoins(const uint256 &txid);
-    uint256 GetBestBlock();
-    bool SetBestBlock(const uint256 &hashBlock);
-    bool BatchWrite(const std::map<uint256, CCoins> &mapCoins, const uint256 &hashBlock);
-    bool GetStats(CCoinsStats &stats);
+    bool GetCoins(const uint256 &txid, CCoins &coins) const;
+    bool HaveCoins(const uint256 &txid) const;
+    uint256 GetBestBlock() const;
+    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock);
+    bool GetStats(CCoinsStats &stats) const;
+};
+
+//! We now return and sort the following structure of details during a LoadBlockIndexGuts() call.
+//! This allows us to give a faster load time than could otherwise be done during initialization.
+//! Using this we do not need to calculate every Scrypt hash, for every block in order to build
+//! the cross-reference map, that information is already available as the 'key' field in the LevelDB
+//! database.
+struct BlockTreeEntry
+{
+    int nHeight;
+    CBlockIndex* pBlockIndex;
+    uint256 uintRealHash;
+    bool operator <(const BlockTreeEntry& s2) const { return nHeight < s2.nHeight; }
 };
 
 /** Access to the block database (blocks/index/) */
@@ -53,7 +63,6 @@ private:
     void operator=(const CBlockTreeDB&);
 public:
     bool WriteBlockIndex(const CDiskBlockIndex& blockindex);
-    bool WriteBestInvalidWork(const CBigNum& bnBestInvalidWork);
     bool ReadBlockFileInfo(int nFile, CBlockFileInfo &fileinfo);
     bool WriteBlockFileInfo(int nFile, const CBlockFileInfo &fileinfo);
     bool ReadLastBlockFile(int &nFile);
@@ -64,7 +73,7 @@ public:
     bool WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> > &list);
     bool WriteFlag(const std::string &name, bool fValue);
     bool ReadFlag(const std::string &name, bool &fValue);
-    bool LoadBlockIndexGuts();
+    bool LoadBlockIndexGuts( std::vector<BlockTreeEntry>& vSortedByHeight );
 };
 
 #endif // ANONCOIN_TXDB_LEVELDB_H

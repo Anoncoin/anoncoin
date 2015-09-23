@@ -18,20 +18,44 @@ class CWallet;
 
 struct CBlockTemplate;
 
+extern uint64_t nLastBlockTx;
+extern uint64_t nLastBlockSize;
+
+struct HashMeterStats
+{
+    uint8_t nIDsReporting;
+    uint16_t nFastCount;
+    uint16_t nSlowCount;
+    int64_t nEarliestStartTime;
+    int64_t nMiningStoppedTime;
+    int64_t nRunTime;
+    int64_t nCumulativeTime;
+    int64_t nCumulativeHashes;
+    double dFastKHPS;
+    double dSlowKHPS;
+    double dCumulativeMHPH;
+};
+
+//! Extensive result summarization and state reporting
+extern bool GetHashMeterStats( HashMeterStats& HashMeterState );
+//! Helper and final result funtions
+extern bool ClearHashMeterSlowMRU();
+extern bool IsMinersRunning();
+extern double GetFastMiningKHPS();
+extern double GetSlowMiningKHPS();
+
 /** Run the miner threads */
-void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads);
+extern void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads);
 /** Generate a new block, without valid proof-of-work */
-CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn);
-CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey);
+extern CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn);
+//!
+extern CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey);
 /** Modify the extranonce in a block */
-void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
+extern void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 
-/** Check mined block, needed for older style getwork rpc calls */
-bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
+/** Do mining precalculation, also used in rpcmining.cpp for the old getwork() */
+extern void FormatHashBuffers(const CBlockHeader* pblock, char* pmidstate, char* pdata, char* phash1);
 
-void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
-
-extern double dHashesPerSec;
-extern int64_t nHPSTimerStart;
+extern void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
 
 #endif // ANONCOIN_MINER_H

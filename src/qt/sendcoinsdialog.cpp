@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "sendcoinsdialog.h"
@@ -18,6 +18,7 @@
 #include "coincontrol.h"
 #include "ui_interface.h"
 
+#include <QDebug>
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QTextDocument>
@@ -141,7 +142,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 
     // Format confirmation message
     QStringList formatted;
-    foreach(const SendCoinsRecipient &rcp, recipients)
+    Q_FOREACH(const SendCoinsRecipient &rcp, recipients)
     {
         // generate bold amount string
         QString amount = "<b>" + AnoncoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), rcp.amount);
@@ -221,7 +222,7 @@ void SendCoinsDialog::on_sendButton_clicked()
     questionString.append("<hr />");
     qint64 totalAmount = currentTransaction.getTotalTransactionAmount() + txFee;
     QStringList alternativeUnits;
-    foreach(AnoncoinUnits::Unit u, AnoncoinUnits::availableUnits())
+    Q_FOREACH(AnoncoinUnits::Unit u, AnoncoinUnits::availableUnits())
     {
         if(u != model->getOptionsModel()->getDisplayUnit())
             alternativeUnits.append(AnoncoinUnits::formatWithUnit(u, totalAmount));
@@ -385,7 +386,7 @@ bool SendCoinsDialog::handlePaymentRequest(const SendCoinsRecipient &rv)
         const payments::PaymentDetails& details = rv.paymentRequest.getDetails();
         if (details.has_expires() && (int64_t)details.expires() < GetTime())
         {
-            emit message(strSendCoins, tr("Payment request expired"),
+            Q_EMIT message(strSendCoins, tr("Payment request expired"),
                 CClientUIInterface::MSG_WARNING);
             return false;
         }
@@ -393,7 +394,7 @@ bool SendCoinsDialog::handlePaymentRequest(const SendCoinsRecipient &rv)
     else {
         CAnoncoinAddress address(rv.address.toStdString());
         if (!address.IsValid()) {
-            emit message(strSendCoins, tr("Invalid payment address %1").arg(rv.address),
+            Q_EMIT message(strSendCoins, tr("Invalid payment address %1").arg(rv.address),
                 CClientUIInterface::MSG_WARNING);
             return false;
         }
@@ -412,10 +413,10 @@ void SendCoinsDialog::setBalance(qint64 balance, qint64 unconfirmedBalance, qint
     Q_UNUSED(watchUnconfirmedBalance);
     Q_UNUSED(watchImmatureBalance);
 
-    if(model && model->getOptionsModel())
-    {
+    if(model && model->getOptionsModel()) {
         ui->labelBalance->setText(AnoncoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), balance));
-    }
+    } else
+        qDebug() << "SendCoinsDialog::setBalance: ERROR - Programming bug detected. walletModel or OptionsModel pointers undefined.";
 }
 
 void SendCoinsDialog::updateDisplayUnit()
@@ -463,7 +464,7 @@ void SendCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn 
         return;
     }
 
-    emit message(tr("Send Coins"), msgParams.first, msgParams.second);
+    Q_EMIT message(tr("Send Coins"), msgParams.first, msgParams.second);
 }
 
 // Coin Control: copy label "Quantity" to clipboard

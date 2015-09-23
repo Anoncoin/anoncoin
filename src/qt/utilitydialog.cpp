@@ -1,10 +1,10 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "utilitydialog.h"
-
+// Anoncoin-config.h has been loaded...
 #include "ui_aboutdialog.h"
 #include "ui_helpmessagedialog.h"
 
@@ -114,7 +114,9 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent) :
             "  -rootcertificates=<file>  " + tr("Set SSL root certificates for payment request (default: -system-)") + "\n" +
             "  -splash                   " + tr("Show splash screen on startup (default: 1)");
 
-        ui->helpMessageLabel->setFont(GUIUtil::anoncoinAddressFont());
+        QFont aFont = GUIUtil::anoncoinAddressFont();
+        aFont.setPointSize(10);
+        ui->helpMessageLabel->setFont(aFont);
         text = version + "\n" + header + "\n" + coreOptions + "\n" + uiOptions;
         ui->helpMessageLabel->setText(text);    // Set help message text
     }

@@ -9,19 +9,17 @@
 
 #include "serialize.h"
 
-#include <stdlib.h>
-#include <string>
-
 typedef int64_t CAmount;
 
-static const CAmount COIN = 100000000;
-static const CAmount CENT = 1000000;
-
-/** No amount larger than this (in satoshi) is valid */
-//! This value was set wrong in Anoncoin v0.8.x clients, v9 wallets use the maximum value based on our subsidy
-static const CAmount MAX_MONEY = 3105156 * COIN;
+extern const CAmount COIN;
+extern const CAmount CENT;
+extern const CAmount MAX_MONEY;
 
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
+
+extern std::string FormatMoney(const CAmount& n, bool fPlus=false);
+extern bool ParseMoney(const std::string& str, CAmount& nRet);
+extern bool ParseMoney(const char* pszIn, CAmount& nRet);
 
 /** Type-safe wrapper class to for fee rates
  * (how much to pay based on transaction size)

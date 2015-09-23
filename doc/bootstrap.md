@@ -1,24 +1,17 @@
-How to use a bootstrap file to speed up blockchain synchronization
-==================================================================
+### Bootstrap the Blockchain Synchronization
 
-The Anoncoin client will normally download the blockchain from the network by synching with the other clients. The blockchain will continue to grow with time. The first time that Anoncoin is run, full synchronization could take from several hours to more than a day. Fortunately, this process can be speeded up substantially by use of a bootstrap file.
-=======
-Normally the Anoncoin client will download the transaction and network information, called the blockchain, from the network by syncing with the other clients. This can be a process that can take multiple days as the Anoncoin block chain has grown, and is now more than 364 megabytes. Luckily there is a safe and fast way to speed up this process. We’ll show you how to bootstrap your blockchain to bring your client up to speed in just a few simple steps.
+Normally the Anoncoin client will download the transaction and network information, called the blockchain, from the network by syncing with the other clients. This can be a process that can take multiple days as the Anoncoin block chain has grown, and is now more than 324 megabytes. Luckily there is a safe and fast way to speed up this process. We’ll show you how to bootstrap your blockchain to bring your client up to speed in just a few simple steps.
 
-To use a bootstrap file to speed up initial network synchronization, follow these simple steps.
+### Requirements
 
-Download the bootstrap file
----------------------------
+A fresh install of the Anoncoin client software.
 
-The official Anoncoin bootstrap file can be downloaded either from the [anoncoin.net](https://anoncoin.net/downloads/bootstrap/) web site or by the i2p BitTorrent port i2psnark (filename: anoncoin.bootstrap.tar.xz). The compressed file is currently about 100 Mb in size. After uncompressing the file, locate the file bootstrap.dat and verify its SHA1 and MD5 checksums and GPG detached signature.
+### Download the blockchain via Bittorent
 
-Copy the bootstrap file to the Anoncoin data directory
------------------------------------------------------
+Anoncoin core developers, offer an [torrent file]for bootstrapping purposes. Bittorrent is a protocol that speeds up the downloading of large files by using the other clients in the network. Examples of free and safe open-source clients are [Deluge](http://deluge-torrent.org/) or [QBittorent](http://www.qbittorrent.org/). A guide to installing and configuring the torrent clients can be found [here](http://dev.deluge-torrent.org/wiki/UserGuide) for Deluge and [here](http://qbforums.shiki.hu/) for QBittorent. A further in-depth tutorial on Bittorent can be found [here](http://www.howtogeek.com/howto/31846/bittorrent-for-beginners-how-get-started-downloading-torrents/).
 
-Before importing the bootstrap.dat file, you will need to copy it to the correct location on your computer. If you have never used the Anoncoin software before, please start it once and then exit to create the required data directories. If the data directories already exist, please ensure that the Anoncoin software is not running. 
+With the client installed we’ll proceed to download the blockchain torrent file. Use the following magnet link:
 
-Place the bootstrap.dat file into the Anoncoin data folder. The location of this folder depends upon your platform.
-=======
 	magnet:?xt=urn: TODO: [define here]
 
  or go to TODO: [define here] for a signed magnet link. Alternately you can use the [.torrent file] TODO: [define here]  found in our Github repository..
@@ -45,29 +38,29 @@ The download page should look like this, with a countdown to the download. If it
 Exit the Anoncoin Client software if you have it running. Be sure not to have an actively used wallet in use. We are going to copy the download of the blockchain to the Anoncoin client data directory. You should run the client software at least once so it can generate the data directory. Copy the downloaded bootstrap.dat file into the Anoncoin data folder, after unarchiving it.  Compression saves allot of bandwidth, but requires that one extra step.
 
 **For Windows users:**
-
 Open explorer, and type into the address bar:
 
 	%APPDATA%\Anoncoin
 
-**For OSX users:**
+This will open up the data folder. It should look like the image below. Copy over the bootstrap.dat from your download folder to this directory.
+![Fig4](img/bootstrap4.png)
 
-Open the Finder by pressing [shift] + [cmd] + [g] and then enter:
+**For OSX users:**
+Open Finder by pressing Press [shift] + [cmd] + [g] and enter:
 
 	~/Library/Application Support/Anoncoin/
 
 **For Linux users:**
-
 The directory is hidden in your User folder. Go to:
 
 	~/.anoncoin/
 
-Import the blockchain
----------------------
+### Importing the blockchain
+Now start the Anoncoin client software. It should show "Importing blocks from disk" like the image below.
+![Fig5](img/bootstrap5.png)
 
-To import the bootstrap file, simply start the Anoncoin client software. When the wallet appears, you should see the text "Importing blocks from disk" in the lower left corner of the wallet. This process should take about 20 minutes, and after this, the client will begin to download the most recent blocks that were not in the bootstrap.dat file.
+Wait until the import finishes. The client will download the last days not covered by the import. Congratulations you have successfully imported the blockchain!
 
-Is this safe?
--------------
+### Is this safe?
 
-Yes, the above method is safe. The download contains only the raw blockchain data and the client verifies this when it is imported.
+Yes, the above method is safe. The download contains only raw block chain data and the client verifies this on import. Do not download the blockchain from unofficial sources, especially if they provide `*.rev` and `*.sst` files. These files are not verified and can contain malicious edits.

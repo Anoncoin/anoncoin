@@ -3,8 +3,16 @@ TOR Support in Anoncoin
 
 It is possible to run Anoncoin as a Tor hidden service, and connect to such services.
 
-The following directions assume you have a Tor proxy running on port 9050. Many distributions default to having a SOCKS proxy listening on port 9050, but others may not. In particular, the Tor Browser Bundle defaults to listening on port 9150. See [Tor Project FAQ:TBBSocksPort](https://www.torproject.org/docs/faq.html.en#TBBSocksPort) for how to properly
-configure Tor.
+NOTE: This document needs to be upgraded to the v9.5 Anoncoin Core level, it is obsolete.
+Every effort possible to support Tor has been made, however we now only support SOCKS5
+proxies and need testers to confirm operation over Tor, with and without clearnet and I2P
+mixed modes of operation.  Port #'s are about all that has been updated.
+
+The following directions assume you have a Tor proxy running on port 9050. Many distributions default
+to having a SOCKS proxy listening on port 9050, but others may not. In particular, the Tor Browser
+Bundle defaults to listening on port 9150.
+See [Tor Project FAQ:TBBSocksPort](https://www.torproject.org/docs/faq.html.en#TBBSocksPort) for how
+to properly configure Tor.
 
 
 1. Run anoncoin behind a Tor proxy
@@ -16,18 +24,18 @@ The first step is running Anoncoin behind a Tor proxy. This will already make al
 	                of doing a (leaking) local DNS lookup. SOCKS5 is the default,
 	                but SOCKS4 does not support this. (SOCKS4a does, but isn't
 	                implemented).
-	
+
 	-proxy=ip:port  Set the proxy server. If SOCKS5 is selected (default), this proxy
 	                server will be used to try to reach .onion addresses as well.
-	
+
 	-onion=ip:port  Set the proxy server to use for tor hidden services. You do not
 	                need to set this if it's the same as -proxy. You can use -noonion
 	                to explicitly disable access to hidden service.
-	
+
 	-listen         When using -proxy, listening is disabled by default. If you want
 	                to run a hidden service (see next section), you'll need to enable
 	                it explicitly.
-	
+
 	-connect=X      When behind a Tor proxy, you can specify .onion addresses instead
 	-addnode=X      of IP addresses or hostnames in these parameters. It requires
 	-seednode=X     SOCKS5. In Tor mode, such addresses can also be exchanged with
@@ -46,11 +54,11 @@ reachable from the Tor network. Add these lines to your /etc/tor/torrc (or equiv
 config file):
 
 	HiddenServiceDir /var/lib/tor/anoncoin-service/
-	HiddenServicePort 8333 127.0.0.1:8333
-	HiddenServicePort 18333 127.0.0.1:18333
+	HiddenServicePort 9377 127.0.0.1:9377
+	HiddenServicePort 18333 127.0.0.1:19377
 
 The directory can be different of course, but (both) port numbers should be equal to
-your anoncoind's P2P listen port (8333 by default).
+your anoncoind's P2P listen port (9377 by default).
 
 	-externalip=X   You can tell anoncoin about its publicly reachable address using
 	                this option, and this can be a .onion address. Given the above
@@ -59,10 +67,10 @@ your anoncoind's P2P listen port (8333 by default).
 	                preference for your node to advertize itself with, for connections
 	                coming from unroutable addresses (such as 127.0.0.1, where the
 	                Tor proxy typically runs).
-	
+
 	-listen         You'll need to enable listening for incoming connections, as this
 	                is off by default behind a proxy.
-	
+
 	-discover       When -externalip is specified, no attempt is made to discover local
 	                IPv4 or IPv6 addresses. If you want to run a dual stack, reachable
 	                from both Tor and IPv4 (or IPv6), you'll need to either pass your
@@ -80,7 +88,7 @@ specify:
 
 	./anoncoind ... -discover
 
-and open port 8333 on your firewall (or use -upnp).
+and open port 9377 on your firewall (or use -upnp).
 
 If you only want to use Tor to reach onion addresses, but not use it as a proxy
 for normal IPv4/IPv6 communication, use:

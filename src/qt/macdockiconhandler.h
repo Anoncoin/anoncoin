@@ -37,7 +37,7 @@ public:
 
     void handleDockIconClickEvent();
 
-signals:
+Q_SIGNALS:
     void dockIconClicked();
 
 private:

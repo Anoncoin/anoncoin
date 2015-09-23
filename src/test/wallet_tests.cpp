@@ -1,6 +1,6 @@
 // Copyright (c) 2012-2014 The Bitcoin Core developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
@@ -29,19 +29,22 @@ BOOST_AUTO_TEST_SUITE(wallet_tests)
 static CWallet wallet;
 static vector<COutput> vCoins;
 
-static void add_coin(int64_t nValue, int nAge = 6*24, bool fIsFromMe = false, int nInput=0)
+static void add_coin(const CAmount& nValue, int nAge = 6*24, bool fIsFromMe = false, int nInput=0)
 {
     static int nextLockTime = 0;
-    CTransaction tx;
-    tx.nLockTime = nextLockTime++;        // so all transactions get different hashes
-    tx.vout.resize(nInput+1);
-    tx.vout[nInput].nValue = nValue;
+    CMutableTransaction mtx;
+    mtx.nLockTime = nextLockTime++;        // so all transactions get different hashes
+    mtx.vout.resize(nInput+1);
+    mtx.vout[nInput].nValue = nValue;
+    if (fIsFromMe) {
+        // IsFromMe() returns (GetDebit() > 0), and GetDebit() is 0 if vin.empty(),
+        // so stop vin being empty, and cache a non-zero Debit to fake out IsFromMe()
+        mtx.vin.resize(1);
+    }
+    CTransaction tx( mtx );
     CWalletTx* wtx = new CWalletTx(&wallet, tx);
     if (fIsFromMe)
     {
-        // IsFromMe() returns (GetDebit() > 0), and GetDebit() is 0 if vin.empty(),
-        // so stop vin being empty, and cache a non-zero Debit to fake out IsFromMe()
-        wtx->vin.resize(1);
         wtx->fDebitCached = true;
         wtx->nDebitCached = 1;
     }
@@ -65,7 +68,7 @@ static bool equal_sets(CoinSet a, CoinSet b)
 BOOST_AUTO_TEST_CASE(coin_selection_tests)
 {
     CoinSet setCoinsRet, setCoinsRet2;
-    int64_t nValueRet;
+    CAmount nValueRet;
 
     LOCK(wallet.cs_wallet);
 
@@ -184,11 +187,16 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
 
         // empty the wallet and start again, now with fractions of a cent, to test sub-cent change avoidance
         empty_wallet();
-        add_coin(0.1*CENT);
-        add_coin(0.2*CENT);
-        add_coin(0.3*CENT);
-        add_coin(0.4*CENT);
-        add_coin(0.5*CENT);
+        // add_coin(0.1*CENT);
+        add_coin( CENT / 10 );
+        // add_coin(0.2*CENT);
+        add_coin( CENT / 5 );
+        // add_coin(0.3*CENT);
+        add_coin( (CENT * 3) / 10 );
+        // add_coin(0.4*CENT);
+        add_coin( (CENT * 2) / 5 );
+        // add_coin(0.5*CENT);
+        add_coin( CENT / 2 );
 
         // try making 1 cent from 0.1 + 0.2 + 0.3 + 0.4 + 0.5 = 1.5 cents
         // we'll get sub-cent change whatever happens, so can expect 1.0 exactly
@@ -203,8 +211,10 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
         BOOST_CHECK_EQUAL(nValueRet, 1 * CENT); // we should get the exact amount
 
         // if we add more sub-cent coins:
-        add_coin(0.6*CENT);
-        add_coin(0.7*CENT);
+        // add_coin(0.6*CENT);
+        add_coin( (CENT * 3) / 5 );
+        // add_coin(0.7*CENT);
+        add_coin( (CENT * 7) / 10 );
 
         // and try again to make 1.0 cents, we can still make 1.0 cents
         BOOST_CHECK( wallet.SelectCoinsMinConf(1 * CENT, 1, 1, vCoins, setCoinsRet, nValueRet));
@@ -225,9 +235,12 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
 
         // sometimes it will fail, and so we use the next biggest coin:
         empty_wallet();
-        add_coin(0.5 * CENT);
-        add_coin(0.6 * CENT);
-        add_coin(0.7 * CENT);
+        // add_coin(0.5 * CENT);
+        add_coin( CENT / 2  );
+        // add_coin(0.6 * CENT);
+        add_coin( (CENT * 3) / 5 );
+        // add_coin(0.7 * CENT);
+        add_coin( (CENT * 7) / 10  );
         add_coin(1111 * CENT);
         BOOST_CHECK( wallet.SelectCoinsMinConf(1 * CENT, 1, 1, vCoins, setCoinsRet, nValueRet));
         BOOST_CHECK_EQUAL(nValueRet, 1111 * CENT); // we get the bigger coin
@@ -235,9 +248,12 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
 
         // but sometimes it's possible, and we use an exact subset (0.4 + 0.6 = 1.0)
         empty_wallet();
-        add_coin(0.4 * CENT);
-        add_coin(0.6 * CENT);
-        add_coin(0.8 * CENT);
+        // add_coin(0.4 * CENT);
+        add_coin( (CENT * 2) / 5  );
+        // add_coin(0.6 * CENT);
+        add_coin( (CENT * 3) / 5 );
+        // add_coin(0.8 * CENT);
+        add_coin( (CENT * 4) / 5);
         add_coin(1111 * CENT);
         BOOST_CHECK( wallet.SelectCoinsMinConf(1 * CENT, 1, 1, vCoins, setCoinsRet, nValueRet));
         BOOST_CHECK_EQUAL(nValueRet, 1 * CENT);   // we should get the exact amount
@@ -245,18 +261,24 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
 
         // test avoiding sub-cent change
         empty_wallet();
-        add_coin(0.0005 * COIN);
-        add_coin(0.01 * COIN);
+        // add_coin(0.0005 * COIN);
+        add_coin(COIN / 2000);
+        //add_coin(0.01 * COIN);
+        add_coin(COIN / 100);
         add_coin(1 * COIN);
 
         // trying to make 1.0001 from these three coins
-        BOOST_CHECK( wallet.SelectCoinsMinConf(1.0001 * COIN, 1, 1, vCoins, setCoinsRet, nValueRet));
-        BOOST_CHECK_EQUAL(nValueRet, 1.0105 * COIN);   // we should get all coins
+        // BOOST_CHECK( wallet.SelectCoinsMinConf(1.0001 * COIN, 1, 1, vCoins, setCoinsRet, nValueRet));
+        BOOST_CHECK( wallet.SelectCoinsMinConf(COIN + (COIN / 10000), 1, 1, vCoins, setCoinsRet, nValueRet));
+        // BOOST_CHECK_EQUAL(nValueRet, 1.0105 * COIN);   // we should get all coins
+        BOOST_CHECK_EQUAL(nValueRet, COIN + CENT + (CENT / 20));   // we should get all coins
         BOOST_CHECK_EQUAL(setCoinsRet.size(), 3U);
 
         // but if we try to make 0.999, we should take the bigger of the two small coins to avoid sub-cent change
-        BOOST_CHECK( wallet.SelectCoinsMinConf(0.999 * COIN, 1, 1, vCoins, setCoinsRet, nValueRet));
-        BOOST_CHECK_EQUAL(nValueRet, 1.01 * COIN);   // we should get 1 + 0.01
+        // BOOST_CHECK( wallet.SelectCoinsMinConf(0.999 * COIN, 1, 1, vCoins, setCoinsRet, nValueRet));
+        BOOST_CHECK( wallet.SelectCoinsMinConf( COIN - (CENT / 10), 1, 1, vCoins, setCoinsRet, nValueRet));
+        // BOOST_CHECK_EQUAL(nValueRet, 1.01 * COIN);   // we should get 1 + 0.01
+        BOOST_CHECK_EQUAL(nValueRet, COIN + CENT);   // we should get 1 + 0.01
         BOOST_CHECK_EQUAL(setCoinsRet.size(), 2U);
 
         // test randomness

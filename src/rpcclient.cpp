@@ -8,7 +8,6 @@
 
 #include "rpcprotocol.h"
 #include "util.h"
-#include "ui_interface.h"
 
 #include <set>
 #include <stdint.h>
@@ -23,15 +22,19 @@ public:
     int paramIdx;                      //! 0-based idx of param to convert
 };
 
+//! Any parameters you need, for a given command, which are NOT of type string need to be added to this table so that they are converted to int, bool, obj etc...
+//! This table is not used within rpcserver space but referenced in at least the following places: anoncoin-cli, the qt rpcconsole, rpc_tests
 static const CRPCConvertParam vRPCConvertParams[] =
 {
-    { "stop", 0 },
+    { "setmocktime", 0 },
     { "getaddednodeinfo", 0 },
     { "setgenerate", 0 },
     { "setgenerate", 1 },
+    { "generate", 0 },
     { "getnetworkhashps", 0 },
     { "getnetworkhashps", 1 },
     { "sendtoaddress", 1 },
+    { "sendtoaddress", 4 },
     { "settxfee", 0 },
     { "getreceivedbyaddress", 1 },
     { "getreceivedbyaccount", 1 },
@@ -59,6 +62,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "listsinceblock", 2 },
     { "sendmany", 1 },
     { "sendmany", 2 },
+    { "sendmany", 4 },
     { "addmultisigaddress", 0 },
     { "addmultisigaddress", 1 },
     { "createmultisig", 0 },
@@ -76,6 +80,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "sendrawtransaction", 1 },
     { "gettxout", 1 },
     { "gettxout", 2 },
+    { "gettxoutproof", 0 },
     { "lockunspent", 0 },
     { "lockunspent", 1 },
     { "importprivkey", 2 },
@@ -84,7 +89,11 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "verifychain", 1 },
     { "keypoolrefill", 0 },
     { "getrawmempool", 0 },
-#if CLIENT_VERSION_IS_RELEASE != true
+    { "estimatefee", 0 },
+    { "estimatepriority", 0 },
+    { "prioritisetransaction", 1 },
+    { "prioritisetransaction", 2 },
+// #if CLIENT_VERSION_IS_RELEASE != true
     { "sendalert", 2 },
     { "sendalert", 3 },
     { "sendalert", 5 },
@@ -92,7 +101,10 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "sendalert", 7 },
     { "sendalert", 8 },
     { "sendalert", 9 },
-#endif
+// #endif
+    { "getretargetpid", 0 },
+    { "getretargetpid", 1 },
+    { "gethashmeter", 0 }
 };
 
 class CRPCConvertTable

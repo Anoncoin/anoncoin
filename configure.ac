@@ -2,15 +2,16 @@ dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 0)
 define(_CLIENT_VERSION_MINOR, 9)
-define(_CLIENT_VERSION_REVISION, 4)
-define(_CLIENT_VERSION_BUILD, 4)
-define(_CLIENT_VERSION_IS_RELEASE, false)
+define(_CLIENT_VERSION_REVISION, 6)
+define(_CLIENT_VERSION_BUILD, 9)
+define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2015)
 
 # In configure.ac, lines commented with '#' that occur after AC_INIT will appear in the resulting configure script. dnl comments will not.
 # One purpose of dnl is to discard unwanted newlines in an effort to make the configure script readable.
 # Convention here is to discard lines which begin with ## preceded only by whitespace. (Although ### comments carry through to the Makefile.in)
-AC_INIT([Anoncoin Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[contact@anoncoin.net],[anoncoin])
+AC_INIT([Anoncoin Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION._CLIENT_VERSION_BUILD],[contact@anoncoin.net],
+[anoncoin-_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION._CLIENT_VERSION_BUILD],[https://anoncoin.net/])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS([src/config/anoncoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -251,9 +252,8 @@ case $host in
        AC_MSG_ERROR("windres not found")
      fi
 
-     CPPFLAGS="$CPPFLAGS -D_MT -DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -msse2 -mstackrealign"
+     CPPFLAGS="$CPPFLAGS -D_MT -DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB"
      LEVELDB_TARGET_FLAGS="TARGET_OS=OS_WINDOWS_CROSSCOMPILE"
-     I2PSAM_TARGET_FLAGS="TARGET_OS=OS_WINDOWS_CROSSCOMPILE"
      if test "x$CXXFLAGS_overridden" = "xno"; then
        CXXFLAGS="$CXXFLAGS -w"
      fi
@@ -276,7 +276,6 @@ case $host in
   *darwin*)
      TARGET_OS=darwin
      LEVELDB_TARGET_FLAGS="TARGET_OS=Darwin"
-     I2PSAM_TARGET_FLAGS="TARGET_OS=Darwin"
      if  test x$cross_compiling != xyes; then
        BUILD_OS=darwin
        AC_CHECK_PROG([PORT],port, port)
@@ -529,13 +528,6 @@ if test x$enable_wallet != xno; then
     ANONCOIN_FIND_BDB48
 fi
 
-dnl Build the I2PSam Interface module
-I2PSAM_CPPFLAGS=
-LIBI2PSAM=
-AM_CONDITIONAL([EMBEDDED_I2PSAM],[true])
-AC_SUBST(I2PSAM_CPPFLAGS)
-AC_SUBST(LIBI2PSAM)
-
 dnl Check for libminiupnpc (optional)
 if test x$use_upnp != xno; then
   AC_CHECK_HEADERS(
@@ -560,7 +552,7 @@ if test x$use_boost = xyes; then
 
 dnl Check for boost libs
 dnl Anoncoin & i2pd needs libraries=chrono,date_time,filesystem,iostreams,program_options,regex,system,thread,test
-dnl GR Note: The unit_test_framework is figured out, dependant on user selection of use_tests
+dnl GR Note: The unit_test_framework is figured out, dependent on user selection of use_tests
 AX_BOOST_BASE
 AX_BOOST_CHRONO
 AX_BOOST_DATE_TIME
@@ -931,7 +923,6 @@ AC_SUBST(USE_QRCODE)
 AC_SUBST(BOOST_LIBS)
 AC_SUBST(TESTDEFS)
 AC_SUBST(LEVELDB_TARGET_FLAGS)
-AC_SUBST(I2PSAM_TARGET_FLAGS)
 AC_SUBST(BUILD_TEST)
 AC_SUBST(BUILD_QT)
 AC_SUBST(BUILD_TEST_QT)

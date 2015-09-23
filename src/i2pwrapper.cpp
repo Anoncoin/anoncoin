@@ -1,6 +1,6 @@
 // Copyright (c) 2013-2015 The Anoncoin Core developers
 // Copyright (c) 2012-2013 giv
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //--------------------------------------------------------------------------------------------------
 
@@ -11,11 +11,13 @@
 
 #include "i2pwrapper.h"
 
-#include "hash.h"
+#include "netbase.h"
 #include "ui_interface.h"                                   // Include this if you want language translation capability in your source files
+#include "uint256.h"
 #include "util.h"
 
 #include <boost/thread/shared_mutex.hpp>
+#include <openssl/sha.h>
 
 namespace SAM
 {
@@ -323,46 +325,6 @@ void InitializeI2pSettings( const bool fGenerated )
     BuildI2pOptionsString();   // Now build the I2P options string that's need to open a session
 }
 
-// This test should pass for both public and private keys, as the first part of the private key is the public key.
-bool isValidI2pAddress( const std::string& I2pAddr )
-{
-    if( I2pAddr.size() < NATIVE_I2P_DESTINATION_SIZE ) return false;
-    return (I2pAddr.substr( NATIVE_I2P_DESTINATION_SIZE - 4, 4 ) == "AAAA");
-}
-
-bool isValidI2pB32( const std::string& B32Address )
-{
-    return (B32Address.size() == NATIVE_I2P_B32ADDR_SIZE) && (B32Address.substr(B32Address.size() - 8, 8) == ".b32.i2p");
-}
-
-bool isStringI2pDestination( const std::string & strName )
-{
-    return isValidI2pB32( strName ) || isValidI2pAddress( strName );
-}
-
-uint256 GetI2pDestinationHash( const std::string& destination )
-{
-    std::string canonicalDest = destination;                    // Copy the string locally, so we can modify it & its not a const
-
-    for (size_t pos = canonicalDest.find_first_of('-'); pos != std::string::npos; pos = canonicalDest.find_first_of('-', pos))
-        canonicalDest[pos] = '+';
-    for (size_t pos = canonicalDest.find_first_of('~'); pos != std::string::npos; pos = canonicalDest.find_first_of('~', pos))
-        canonicalDest[pos] = '/';
-    std::string rawDest = DecodeBase64(canonicalDest);
-    uint256 b32hash;
-    SHA256((const unsigned char*)rawDest.c_str(), rawDest.size(), (unsigned char*)&b32hash);
-    return b32hash;
-}
-
-std::string B32AddressFromDestination(const std::string& destination)
-{
-    uint256 b32hash = GetI2pDestinationHash( destination );
-    std::string result = EncodeBase32(b32hash.begin(), b32hash.end() - b32hash.begin()) + ".b32.i2p";
-    for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
-        result.erase(pos, 1);
-    return result;
-}
-
 /**
  * Functions we need for I2P functionality
  */
@@ -370,50 +332,6 @@ std::string FormatI2PNativeFullVersion()
 {
     // We need to NOT talk to the SAM module if I2P is unavailable
     return IsI2PEnabled() ? I2PSession::Instance().getSAMVersion() : "?.??";
-}
-
-// GR note...doodled for abit on code cleanup, trying to figure out where these best fit into the scheme of I2P implementation upon the 0.9.3 codebase,
-// in the end, put them here for now...the only reason was because of NATIVE_I2P_NET_STRING being defined in netbase.h, which is included
-// within our net.h header, where netbase.h is included as a dependency....clear as mud?
-// mud is right, the rest of it is now all wrong haha
-bool IsTorOnly()
-{
-    bool torOnly = false;
-    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-    torOnly = (onlyNets.size() == 1) && ( (onlyNets[0] == "tor") || (onlyNets[0] == "onion") );
-    return torOnly;
-}
-
-bool IsI2POnly()
-{
-    bool i2pOnly = false;
-    if (mapArgs.count("-onlynet")) {
-        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "i2p");
-    }
-    return i2pOnly;
-}
-
-// If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
-bool IsDarknetOnly()
-{
-    return IsI2POnly() || IsTorOnly() || ( IsI2PEnabled() && ((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) );
-}
-
-// We now just check the -i2p.options.enabled parameter here, and return its value true or false
-bool IsI2PEnabled()
-{
-    return GetBoolArg("-i2p.options.enabled", false);
-}
-
-bool IsMyDestinationShared()
-{
-    return GetBoolArg("-i2p.mydestination.shareaddr", false);
-}
-
-bool IsBehindDarknet()
-{
-    return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
 }
 
 std::string GenerateI2pDestinationMessage( const std::string& pub, const std::string& priv, const std::string& b32, const std::string& configFileName )
@@ -442,3 +360,4 @@ std::string GenerateI2pDestinationMessage( const std::string& pub, const std::st
 
     return msg;
 }
+

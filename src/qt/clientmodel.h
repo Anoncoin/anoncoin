@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef CLIENTMODEL_H
@@ -113,25 +113,29 @@ private:
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
 
-/**
- * Note signal functions like this are created here in the header file, yet no source implmentation
- * will be found in the developer code.  It's upto the build process to create moc_xx files, from which
- * is generated sufficant information that QT runs & the linker is able to create an execuable.
+/** Keep in mind...
+ * Note signal functions like this are created here in the header file, yet no source implementation
+ * will be found in the developer code.  It's up-to the build process to create moc_xx files, from which
+ * is generated sufficient information that QT runs & the linker is able to create an executable.
  */
-signals:
+Q_SIGNALS:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count);
     void alertsChanged(const QString &warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
+
     //! Fired when a message should be reported to the user
     void message(const QString &title, const QString &message, unsigned int style);
 
-/**
-*  From: https://qt-project.org/doc/qt-5-snapshot/signalsandslots.html
-*  A slot is a function that is called in response to a particular signal. Qt's widgets have many pre-defined slots,
-*  but it is common practice to subclass widgets and add slots so that you can handle the signals that you are interested in...
-*/
-public slots:
+    //! Show progress dialog e.g. for verifychain
+    void showProgress(const QString &title, int nProgress);
+
+/** Keep in mind...
+ * From: https://qt-project.org/doc/qt-5-snapshot/signalsandslots.html
+ * A slot is a function that is called in response to a particular signal. Qt's widgets have many pre-defined slots,
+ * but it is common practice to subclass widgets and add slots so that you can handle the signals that you are interested in...
+ */
+public Q_SLOTS:
     void updateTimer();
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);

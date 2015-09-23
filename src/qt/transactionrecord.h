@@ -1,11 +1,12 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef TRANSACTIONRECORD_H
-#define TRANSACTIONRECORD_H
+#ifndef ANONCOIN_TRANSACTIONRECORD_H
+#define ANONCOIN_TRANSACTIONRECORD_H
 
+#include "amount.h"
 #include "uint256.h"
 
 #include <QList>
@@ -94,8 +95,8 @@ public:
     }
 
     TransactionRecord(uint256 hash, qint64 time,
-                Type type, const std::string &address,
-                qint64 debit, qint64 credit):
+                Type type, const std::string& address,
+                const CAmount& debit, const CAmount& credit):
             hash(hash), time(time), type(type), address(address), debit(debit), credit(credit),
             idx(0)
     {
@@ -112,8 +113,8 @@ public:
     qint64 time;
     Type type;
     std::string address;
-    qint64 debit;
-    qint64 credit;
+    CAmount debit;
+    CAmount credit;
     /**@}*/
 
     /** Subtransaction index, for sort key */
@@ -140,4 +141,4 @@ public:
     bool statusUpdateNeeded();
 };
 
-#endif // TRANSACTIONRECORD_H
+#endif // ANONCOIN_TRANSACTIONRECORD_H

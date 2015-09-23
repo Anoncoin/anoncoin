@@ -8,57 +8,202 @@
 
 #include "block.h"
 #include "chain.h"
-//#include "main.h"
-#include "uint256.h"
+#include "chainparams.h"
+#include "checkpoints.h"
+#include "miner.h"
+#include "sync.h"
+#include "timedata.h"
 #include "util.h"
-//#include "init.h"
+
+#include <stdint.h>
 
 //! Only required if your writing debug output to a streamed file
-// #include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/fstream.hpp>
 
-using namespace boost;
 using namespace std;
 
+#define TIPFILTERBLOCKS_DEFAULT "121"
+#define USESHEADER_DEFAULT false
 // #define LOG_DEBUG_OUTPUT
 
-// This value defines the Anoncoin block rate production, difficulty calculations and Proof Of Work functions should use this as the goal...
-// nTargetSpacing = 180;      the definition has been in main.h, and various other places for global visibility. Anoncoin uses 3 minute
-// spacing, that is a target block time, in seconds of 3 minutes * 60 secs/min = 180, has been since KGW era... and anybody using this
-// variable now should include pow.h to access it.  All this source and topic are about is getting our blockchain to meet that goal.
+//! This value defines the Anoncoin block rate production, difficulty calculations and Proof Of Work functions all use this as the goal...
+//! Anoncoin uses 3 minute spacing, so nTargetSpacing = 180 seconds, and has since the KGW era, it serves no purpose to make it a variable,
+//! as PID parameter gains are different for each and every TargetSpacing value.
+//! Any program using this constant, now needs to include pow.h to access it, as this is the primary place where its value is of major importance.
 const int64_t nTargetSpacing = 180;
 
-// Difficulty Protocols have changed over time, at specific points in Anoncoin's history
-// the following SwitchHeight values are those blocks where an event occurred which
-// required changing in the way things were calculated. aka HARDFORK
+//! Difficulty Protocols have changed over the years, at specific points in Anoncoin's history the following SwitchHeight values are those blocks
+//! where an event occurred which required changing the way things are calculated. aka HARDFORK
 static const int nDifficultySwitchHeight = 15420;   // Protocol 1 happened here
 static const int nDifficultySwitchHeight2 = 77777;  // Protocol 2 starts at this block
 static const int nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
 #if defined( HARDFORK_BLOCK )
-static const int nDifficultySwitchHeight4 = HARDFORK_BLOCK;
+static const int32_t nDifficultySwitchHeight4 = HARDFORK_BLOCK;
 #endif
 
-/*
+//! The master Retarget PID pointer and all its operations are protected by a CritialSection LOCK,
+//! the pointer itself is initialized to NULL upon program load, and until initialized should allow
+//! any unit testing software to run without producing segment faults or other types of software
+//! failure.  It will not be able to provide a retarget goal for any value other than the minimum
+//! network difficulty, but that would be true for any retarget system having no blockchain or at
+//! most the genesis block.  Once initialized it runs when needed, as fast as possible, and from
+//! whatever thread is calling it for a GetNextWorkRequired() result...GR
+static CCriticalSection cs_retargetpid;
+CRetargetPidController *pRetargetPid = NULL;
+
+//! Primary routine and methodology used to convert an unsigned 256bit value to something
+//! small enough which can be converted to a double floating point number and represent
+//! Difficulty in a meaningful way.  The only value not allowed is 0.  This process inverts
+//! Difficulty value, which is normally thought of as getting harder as the value gets
+//! smaller.  Larger proof values, indicate harder difficulty, and visa-versa...
+uint256 GetWorkProof(const uint256& uintTarget)
+{
+    // We need to compute 2**256 / (Target+1), but we can't represent 2**256
+    // as it's too large for a uint256. However, as 2**256 is at least as large
+    // as Target+1, it is equal to ((2**256 - Target - 1) / (Target+1)) + 1,
+    // or ~Target / (Target+1) + 1.
+    return !uintTarget.IsNull() ? (~uintTarget / (uintTarget + 1)) + 1 : uint256(0);
+}
+
+//! Block proofs are based on the nBits field found within the block, not the actual hash
+uint256 GetBlockProof(const CBlockIndex& block)
+{
+    uint256 bnTarget;
+    bool fNegative;
+    bool fOverflow;
+
+    bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
+    return (!fNegative && !fOverflow) ? GetWorkProof( bnTarget ) : uint256(0);
+}
+
+//! The primary method of providing difficulty to the user requires the use of a logarithm scale, that can not be done
+//! for 256bit numbers unless they are first converted to a work proof, then its value can be returned as a double
+//! floating point value which is meaningful.
+double GetLog2Work( const uint256& uintDifficulty )
+{
+    double dResult = 0.0;   //! Return zero, if there are any errors
+
+    uint256 uintWorkProof = GetWorkProof( uintDifficulty );
+    if( !uintWorkProof.IsNull() ) {
+        double dWorkProof = uintWorkProof.getdouble();
+        dResult = (dWorkProof != 0.0) ? log(dWorkProof) / log(2.0) : 0.0;
+    }
+    return dResult;
+}
+
+//! The secondary method of providing difficulty to the user is linear and based on the minimum work required.
+//! It is done in such a way that 3 digits of precision to the right of the decimal point is produced in the
+//! result returned.
+//! NOTE: The largest possible 256bit Number needs to be less than this PowLimit x the multiplier, or overflow will result
+//! Once initialized with the main or testnet limit, and as only Scrypt mining is currently being used, the 256bit big
+//! number x 1000 calculation need not be done over and over, so we detect that and store it for later use.
+double GetLinearWork( const uint256& uintDifficulty, const uint256& uintPowLimit )
+{
+    static uint256 uintPowLimitLast;
+    static uint256 uintPowLimitX1K;
+
+    //! This adds the storage cost of 64 bytes & a time cost of one 256 bit comparison, but stops the needless calculation
+    //! of a 256 bit multiply by an unsigned integer that never changes. Once multi-algo implementations are used, that will
+    //! not always be the case.
+    if( uintPowLimit != uintPowLimitLast ) {
+        uintPowLimitX1K = uintPowLimit * 1000;
+        uintPowLimitLast = uintPowLimit;
+    }
+    //! Reducing the calculation required to one 256 bit divide, conversion of that to double, and then one double divide...
+    return uint256(uintPowLimitX1K / uintDifficulty).getdouble() / 1000.0;
+}
+
+/**
+ * The primary routine which verifies a blocks claim of Proof Of Work
+ */
+bool CheckProofOfWork(const uint256& hash, unsigned int nBits)
+{
+    bool fNegative;
+    bool fOverflow;
+    uint256 bnTarget;
+
+    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+    //! Check range of the Target Difficulty value stored in a block
+    if( fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) )
+        return error("CheckProofOfWork() : nBits below minimum work");
+
+    //! Check the proof of work matches claimed amount
+    if (hash > bnTarget) {
+        //! There is one possibility where this is allowed, if this is TestNet and this hash is better than the minimum
+        //! and the Target hash (as found in the block) is equal to the starting difficulty.  Then we assume this check
+        //! is being called for one of the first mocktime blocks used to initialize the chain.
+        bool fTestNet = TestNet();
+        uint256 uintStartingDiff;
+        if( fTestNet ) uintStartingDiff = pRetargetPid->GetTestNetStartingDifficulty();
+        if( !fTestNet || hash > Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) || uintStartingDiff.GetCompact() != nBits ) {
+            LogPrintf( "%s : Failed. ", __func__ );
+            if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
+            LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
+            return error("CheckProofOfWork() : hash doesn't match nBits");
+        }
+    }
+
+    return true;
+}
+
+//! Return average network hashes per second based on the last 'lookup' blocks, a minimum of 2 are required.
+int64_t CalcNetworkHashPS( const CBlockIndex* pBI, int32_t nLookup )
+{
+    if( !pBI || !pBI->nHeight )
+        return 0;
+
+    //! If lookup is anything less than 2, use 2 blocks, it will not be a very good calculation
+    if( nLookup < 2 ) nLookup = 2;
+
+    //! If lookup is not > than the given block index (chain) height selected, then we can not
+    //! possibly do the calculation for more than that height...
+    if (nLookup > pBI->nHeight) nLookup = pBI->nHeight;
+
+    int64_t minTime = pBI->GetBlockTime();
+    int64_t maxTime = minTime;
+    int64_t nTime;
+    const CBlockIndex* pBI0 = pBI;
+    //! Added null pointer safety & do not include the genesis block time for testnet, or the timespan is so large it calculates zero
+    for( int32_t i = 1; i < nLookup && pBI0->nHeight > 1; i++ ) {
+        pBI0 = pBI0->pprev;
+        nTime = pBI0->GetBlockTime();
+        if( nTime < minTime ) minTime = nTime;
+        if( nTime > maxTime ) maxTime = nTime;
+    }
+
+    //! In case there's a situation where minTime == maxTime, we don't want a divide by zero exception.
+    if (minTime == maxTime)
+        return 0;
+
+    //! The calculation will be wrong by one time difference, because spacing is 1 less than the number of blocks, unless we carefully
+    //! scale the values before dividing them.  Chain work proofs have already been calculated for us, and are in the index, so we use them.
+    uint256 uintWorkDiff = pBI->nChainWork - pBI0->nChainWork;
+    double dWorkDiff = uintWorkDiff.getdouble() / (double)nLookup;
+    double dTimeDiff = (double)( maxTime - minTime ) / (double)(nLookup - 1);
+
+    return roundint64( dWorkDiff / dTimeDiff );
+}
+
+/**
  *  Difficulty formula, Anoncoin - From the early months, when blocks were very new...
  */
-unsigned int static OriginalGetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const uint256 &bnProofOfWorkLimit)
+static uint256 OriginalGetNextWorkRequired(const CBlockIndex* pindexLast)
 {
-    // These legacy values define the Anoncoin block rate production and are used in this difficulty calculation only...
-    static const int64_t nLegacyTargetSpacing = 205;    // Originally 3.42 minutes * 60 secs was Anoncoin spacing target in seconds
-    static const int64_t nLegacyTargetTimespan = 86184; // in Seconds - Anoncoin legacy value is ~23.94hrs, it came from a
-                                                        // 420 blocks * 205.2 seconds/block calculation, now used only in original NextWorkRequired function.
+    //! These legacy values define the Anoncoin block rate production and are used in this difficulty calculation only...
+    static const int64_t nLegacyTargetSpacing = 205;    //! Originally 3.42 minutes * 60 secs was Anoncoin spacing target in seconds
+    static const int64_t nLegacyTargetTimespan = 86184; //! in Seconds - Anoncoin legacy value is ~23.94hrs, it came from a
+                                                        //! 420 blocks * 205.2 seconds/block calculation, now used only in original NextWorkRequired function.
 
-    if (pindexLast == NULL)                                 // If the last block was the Genesis block, we're done
-        return bnProofOfWorkLimit.GetCompact();
-
-    // Anoncoin difficulty adjustment protocol switch (Thanks to FeatherCoin for this idea)
-    static const int newTargetTimespan = 2050;              // For when another adjustment in the timespan was made
+    //! Anoncoin difficulty adjustment protocol switch (Thanks to FeatherCoin for this idea)
+    static const int newTargetTimespan = 2050;              //! For when another adjustment in the timespan was made
     int nHeight = pindexLast->nHeight + 1;
     bool fNewDifficultyProtocol = nHeight >= nDifficultySwitchHeight;
     bool fNewDifficultyProtocol2 = false;
     int64_t nTargetTimespanCurrent = nLegacyTargetTimespan;
     int64_t nLegacyInterval;
 
-    if( nHeight >= nDifficultySwitchHeight2 ) {         // Jump back to sqrt(2) as the factor of adjustment.
+    if( nHeight >= nDifficultySwitchHeight2 ) {         //! Jump back to sqrt(2) as the factor of adjustment.
         fNewDifficultyProtocol2 = true;
         fNewDifficultyProtocol = false;
     }
@@ -67,24 +212,24 @@ unsigned int static OriginalGetNextWorkRequired(const CBlockIndex* pindexLast, c
     if (fNewDifficultyProtocol2) nTargetTimespanCurrent = newTargetTimespan;
     nLegacyInterval = nTargetTimespanCurrent / nLegacyTargetSpacing;
 
-    // Only change once per interval, or at protocol switch height
+    //! Only change once per interval, or at protocol switch height
     if( nHeight % nLegacyInterval != 0 && !fNewDifficultyProtocol2 && nHeight != nDifficultySwitchHeight )
-        return pindexLast->nBits;
+        return uint256().SetCompact( pindexLast->nBits );
 
-    // Anoncoin: This fixes an issue where a 51% attack can change difficulty at will.
-    // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
+    //! Anoncoin: This fixes an issue where a 51% attack can change difficulty at will.
+    //! Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
     int blockstogoback = nLegacyInterval-1;
     if ((pindexLast->nHeight+1) != nLegacyInterval)
         blockstogoback = nLegacyInterval;
 
-    // Go back by what we want to be 14 days worth of blocks
+    //! Go back by what we want to be 14 days worth of blocks
     const CBlockIndex* pindexFirst = pindexLast;
     blockstogoback = fNewDifficultyProtocol2 ? (newTargetTimespan/205) : blockstogoback;
     for (int i = 0; pindexFirst && i < blockstogoback; i++)
         pindexFirst = pindexFirst->pprev;
     assert(pindexFirst);
 
-    // Limit adjustment step
+    //! Limit adjustment step
     int64_t nNewSetpoint = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     int64_t nAveragedTimespanMax = fNewDifficultyProtocol ? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
     int64_t nAveragedTimespanMin = fNewDifficultyProtocol ? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
@@ -105,29 +250,32 @@ unsigned int static OriginalGetNextWorkRequired(const CBlockIndex* pindexLast, c
             nNewSetpoint = nAveragedTimespanMax;
     }
 
-    // Retarget
+    //! Retarget
     uint256 bnNew;
     bnNew.SetCompact(pindexLast->nBits);
     bnNew *= nNewSetpoint;
     bnNew /= fNewDifficultyProtocol2 ? nTargetTimespanCurrent : nLegacyTargetTimespan;
-    if (bnNew > bnProofOfWorkLimit) bnNew = bnProofOfWorkLimit;
-
     // debug print
 #if defined( LOG_DEBUG_OUTPUT )
     LogPrintf("Difficulty Retarget - pre-Kimoto Gravity Well era\n");
     LogPrintf("  TargetTimespan = %lld    ActualTimespan = %lld\n", nLegacyTargetTimespan, nNewSetpoint);
-    LogPrintf("  Before: %08x  %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).getuint256().ToString());
-    LogPrintf("  After : %08x  %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString());
+    LogPrintf("  Before: %08x  %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).ToString());
+    LogPrintf("  After : %08x  %s\n", bnNew.GetCompact(), bnNew.ToString());
 #endif
-    return bnNew.GetCompact();
+    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+    if( bnNew > uintPOWlimit ) {
+        LogPrint( "retarget", "Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", nHeight, bnNew.GetCompact(), uintPOWlimit.GetCompact());
+        bnNew = uintPOWlimit;
+    }
+    return bnNew;
 }
 
-/*
- *  Difficulty formula, Anoncoin - kimoto gravity well, use of it continues in 2015
+/**
+ *  Difficulty formula, Anoncoin - kimoto gravity well, use of it continues into 2015
  */
-static bool fDoneOnce = true;
 static const int32_t nMinBlocksToAvg = (SECONDSPERDAY * 0.25) / nTargetSpacing;
 static const int32_t nMaxBlocksToAvg = (SECONDSPERDAY * 7) / nTargetSpacing;
+
 static const double kgw_blockmass_curve[ nMaxBlocksToAvg ] = {
     317.7726609803, 136.2330546899, 83.1945064501, 58.7321888328, 44.8947447056, 36.0895628164, 30.0380400348, 25.6463827580, 22.3273988660, 19.7390552992, 17.6693043262,
     15.9800451614, 14.5776702210, 13.3965964865, 12.3895778306, 11.5217590972, 10.7668927183, 10.1048554768, 9.5199740272, 8.9998686827, 8.5346381268, 8.1162736601,
@@ -436,7 +584,7 @@ static const double kgw_blockmass_curve[ nMaxBlocksToAvg ] = {
     1.0148863853, 1.0148809221, 1.0148754625, 1.0148700066, 1.0148645543, 1.0148591056, 1.0148536606, 1.0148482191, 1.0148427813, 1.0148373471, 1.0148319165,
     1.0148264895, 1.0148210662, 1.0148156464, 1.0148102302, 1.0148048176 };
 
-/********************************************//**
+/********************************************************************************************************************************************************//**
  * \brief New fast lookup table version of the old kgw algo.
  *
  *        Attributes include, but are not limited to:
@@ -458,19 +606,17 @@ static const double kgw_blockmass_curve[ nMaxBlocksToAvg ] = {
  *        for a current list of send to addresses, or just to let me know it worked for you as well...GR
  *
  * \param pindexLast const CBlockIndex*
- * \param pblock const CBlockHeader*
- * \param bnProofOfWorkLimit const uint256&
- * \return unsigned int
+ * \return the calculated new difficulty result
  *
- ***********************************************/
-unsigned int static NextWorkRequiredKgwV2(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const uint256 &bnProofOfWorkLimit)
+ ***********************************************************************************************************************************************************/
+static uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast)
 {
     uint32_t nActualRateSecs = 0;
     uint32_t nTargetRateSecs = 0;
     int32_t  nBlockMass = 1;
     int64_t  nLastBlockSolvedTime = pindexLast->GetBlockTime();
     double   dRateAdjustmentRatio;
-    uint256  uintDifficultyAvg = bnProofOfWorkLimit;                //! If the loop can't even start, this ensures the min pow gets returned.
+    uint256  uintDifficultyAvg = ~uint256(0);                       //! If the loop can't even start, this ensures the min pow gets returned.
     const CBlockIndex *pBlockReading = pindexLast;                  //! Start out with the last known block index
 
     //! A minimum of .25 days worth of blocks needs to be available before the Kgw algo can execute
@@ -519,207 +665,947 @@ unsigned int static NextWorkRequiredKgwV2(const CBlockIndex* pindexLast, const C
         uintNewDifficulty *= nActualRateSecs;                                               //! Apply 1 / <adj ratio> using unsigned big integer math
         uintNewDifficulty /= nTargetRateSecs;                                               //! This ties the new difficulty to how far off the time target we are.
     }
-    if( uintNewDifficulty > bnProofOfWorkLimit ) uintNewDifficulty = bnProofOfWorkLimit;
     // debug print
 #if defined( LOG_DEBUG_OUTPUT )
     LogPrintf("Difficulty Retarget - Kimoto Gravity Well v2.0\n");
     LogPrintf("  Before: %08x %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).ToString());
     LogPrintf("  After : %08x %s\n", uintNewDifficulty.GetCompact(), uintNewDifficulty.ToString());
 #endif
-    return uintNewDifficulty.GetCompact();
+    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+    if( uintNewDifficulty > uintPOWlimit ) {
+        LogPrint( "retarget", "Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", pindexLast->nHeight, uintNewDifficulty.GetCompact(), uintPOWlimit.GetCompact());
+        uintNewDifficulty = uintPOWlimit;
+    }
+    return uintNewDifficulty;
 }
 
-
+CRetargetPidController::CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegratorTimeIn, const double dDerivativeGainIn ) :
+    dProportionalGain(dProportionalGainIn), nIntegrationTime(nIntegratorTimeIn), dDerivativeGain(dDerivativeGainIn)
+{
+    fTipFilterInitialized = false;
+    nIntegratorHeight = nIndexFilterHeight = 0;
+    nLastCalculationTime = 0;
+    nBlocksSampled = 0;
+    uintTestNetStartingDifficulty = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 #if defined( HARDFORK_BLOCK )
-
-#define ALGO_COUNT_BEING_USED 1
-#define MULTIALGO_AVERAGING_INTERVAL (CBlockIndex::nMedianTimeSpan - 1)         // in blocks (10) This value is one less nMedianTimeSpan...
-#define MULTIALGO_TARGET_SPACING  ALGO_COUNT_BEING_USED * (nTargetSpacing/2)    // in seconds, Anoncoin with 1 algo = target spacing is 90 seconds
-                                                                                // nTargetSpacing is now defined in main.h, and has been 180 seconds (3mins) since KGW era
-
-static const int64_t nIntegratedTargetTimespan = MULTIALGO_AVERAGING_INTERVAL * MULTIALGO_TARGET_SPACING;   // in Seconds 10x2x90 = 1800 or 900 for 1 algo
-static const int64_t nIncreasingDifficultyLimit = ( nIntegratedTargetTimespan * (1000 - 120) ) / 1000;      // in Seconds the adjustment limit per retarget, set to 12%
-static const int64_t nDecreasingDifficultyLimit = ( nIntegratedTargetTimespan * (1000 + 160) ) / 1000;      // in Seconds the adjustment limit per retarget, set to 16%
-
-// New Block version type #3 definitions we'll be using
-enum BlockMinedWith {
-    BLOCK_VERSION_DEFAULT        = 3,           // Up the default block version by one, to version #3, and default to algo SCRYPT
-    BLOCK_VERSION_SHA256D        = (1 << 8) | 3,// The next byte up, now represents the algo this block was mined with, if zero then it was SCRYPT and simply is a version 3 block
-    BLOCK_VERSION_ALGOS          = (7 << 8) | 3 // This mask can be used to expose the 3 bits in the byte above version #, allowing for up to 7 algos + scrypt
-};
-
-CChainParams::MinedWithAlgo GetAlgo(int nVersion)
-{
-    CChainParams::MinedWithAlgo mwa;
-    switch( (BlockMinedWith)nVersion )
-    {
-        case BLOCK_VERSION_SHA256D:
-            mwa = CChainParams::ALGO_SHA256D;
-        default: mwa = CChainParams::ALGO_SCRYPT;     // Version 1, 2 or anything else, we set the Algo returned to SCRYPT
+    if( isMainNetwork() ) {
+        nTipFilterBlocks = atoi( TIPFILTERBLOCKS_DEFAULT );
+        fUsesHeader = USESHEADER_DEFAULT;
+    } else {
+        nTipFilterBlocks = atoi( GetArg("-retargetpid.tipfilterblocks", TIPFILTERBLOCKS_DEFAULT ).c_str() );
+        if( nTipFilterBlocks < 5 ) nTipFilterBlocks = 5;
+        fUsesHeader = GetBoolArg( "-retargetpid.useheader", USESHEADER_DEFAULT );
     }
-    return mwa;
-}
-
-/** \brief Returns a string, that represents a give algo name
- *
- * \param Algo CChainParams::MinedWithAlgo
- * \return std::string
- *
- */
-std::string GetAlgoName(CChainParams::MinedWithAlgo Algo)
-{
-    switch (Algo)
-    {
-        case CChainParams::ALGO_SCRYPT:
-            return std::string("scrypt");
-        case CChainParams::ALGO_SHA256D:
-            return std::string("sha256");
-    }
-    return std::string("unknown");
-}
-
-CChainParams::MinedWithAlgo GetBlockAlgo( const CBlockIndex* pIndex ) { return GetAlgo( pIndex->nVersion ); }
-
-/**
- * Here we hunt back in time from the given block index, to the newest block mined of the given algo,
- * if the block index search takes us back to the genesis or before the HARDFORK_BLOCK, then we know the algo was SCRYPT,
- * and can stop looking any further...
- */
-const CBlockIndex* GetLastBlockIndexForAlgo(const CBlockIndex* pindex, CChainParams::MinedWithAlgo mwa)
-{
-    while( pindex && (mwa == CChainParams::ALGO_SCRYPT || pindex->nHeight > HARDFORK_BLOCK) )
-    {
-        if( GetBlockAlgo( pindex ) == mwa )
-            return pindex;
-        pindex = pindex->pprev;
-    }
-    return NULL;
-}
-
-/*
- *  Difficulty formula, Anoncoin - Early in 2015, due to continuous attack & weakness exploits known about the KGW difficulty algo, this was implemented as a solution
- */
-unsigned int static GetNextWorkRequiredAfterKgw(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const uint256 &bnProofOfWorkLimit )
-{
-    CChainParams::MinedWithAlgo algo = CChainParams::ALGO_SCRYPT;       // Temporary variable for now with just one algo
-
-    const CBlockIndex* pindexFirst = pindexLast;                        // find first block in averaging interval
-    for (int i = 0; pindexFirst && i < ALGO_COUNT_BEING_USED * MULTIALGO_AVERAGING_INTERVAL; i++)
-        pindexFirst = pindexFirst->pprev;
-
-    const CBlockIndex* pPrevBlockSameAlgo = GetLastBlockIndexForAlgo(pindexLast, algo);
-    if( pindexFirst == NULL || pPrevBlockSameAlgo == NULL )             // Not much more we can do then...
-        return bnProofOfWorkLimit.GetCompact();                         // not enough blocks available
-
-    LogPrintf("AncSheild-P1v0.1 RETARGET: Integrating constants in seconds: TimeSpan=%lld, Difficulty UpLimit=%lld, DownLimit=%lld\n", nIntegratedTargetTimespan, nIncreasingDifficultyLimit, nDecreasingDifficultyLimit );
-    // Use medians to prevent time-warp attacks
-    int64_t nLatestAvgMedian = pindexLast->GetMedianTimePast();
-    int64_t nOlderAvgMedian = pindexFirst->GetMedianTimePast();
-    int64_t nNewSetpoint = nLatestAvgMedian - nOlderAvgMedian;
-    LogPrintf("  Integrated Setpoint = %lld using TimeMedian=%lld from block %d & TimeMedian=%lld from block %d\n", nNewSetpoint, nLatestAvgMedian, pindexLast->nHeight, nOlderAvgMedian, pindexFirst->nHeight);
-    int64_t nTimespanDiff = (nNewSetpoint - nIntegratedTargetTimespan) / (ALGO_COUNT_BEING_USED + 1);
-
-    boost::filesystem::path pathRetarget = GetDataDir() / "retarget.csv";
-    ofstream csvfile( pathRetarget.string().c_str(), ofstream::out | ofstream::app );
-    if (csvfile.is_open())
-    {
-        csvfile << GetAlgoName( algo ) << "," << GetTime() << "," << GetAdjustedTime() << ",";
-        csvfile << pindexLast->nHeight << "," << pindexLast->nTime << "," << nLatestAvgMedian << ",";
-        csvfile << pindexFirst->nHeight << "," << pindexFirst->nTime << "," << nOlderAvgMedian << ",";
-        csvfile << nTimespanDiff << "," << nNewSetpoint << ",";
-    }
-
-    // Here now we finally have a new target time that will bring our integrated average block time back to what it should be with the differential added.
-    nNewSetpoint = nIntegratedTargetTimespan + nTimespanDiff;
-    LogPrintf("  Differential = %lld secs & New Setpoint = %lld before bound limits applied\n", nTimespanDiff, nNewSetpoint );
-    csvfile << nNewSetpoint << ",";
-
-    // Limit adjustment step...
-    if (nNewSetpoint < nIncreasingDifficultyLimit)
-        nNewSetpoint = nIncreasingDifficultyLimit;
-    if (nNewSetpoint > nDecreasingDifficultyLimit)
-        nNewSetpoint = nDecreasingDifficultyLimit;
-    csvfile << nNewSetpoint << ",";
-
-    // Global retarget
-    uint256 bnNew;
-    bnNew.SetCompact(pPrevBlockSameAlgo->nBits);
-    bnNew *= nNewSetpoint;
-    bnNew /= nIntegratedTargetTimespan;
-
-    if( bnNew > bnProofOfWorkLimit ) bnNew = bnProofOfWorkLimit;
-    LogPrintf("  nNewSetpoint used after bounds = %lld\n", nNewSetpoint);
-    LogPrintf("  Before: %08x %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
-    LogPrintf("  After : %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
-
-    csvfile << pindexLast->nBits << "," << uint256().SetCompact(pindexLast->nBits).getuint256().ToString() << ",";
-    csvfile << bnNew.GetCompact() << "," << bnNew.getuint256().ToString();
-    csvfile.close();
-
-	return bnNew.GetCompact();
-}
-
-#endif // defined( HARD_FORK )
-
-// The following function are all that is seen from the outside world and used throughout
-// the rest of the source code for Anoncoin, everything above should be static and only
-// referenced from within this file.
-
-/*
- * The workhorse routine, which oversees the blockchain Proof Of Work algorithms
- */
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
-{
-    const uint256 &bnProofOfWorkLimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
-
-    assert(pindexLast);
-    if( TestNet() || pindexLast->nHeight > nDifficultySwitchHeight3 ) {
-#if defined( HARDFORK_BLOCK )
-        if( TestNet() && pindexLast->nHeight <= 22 )
-            return bnProofOfWorkLimit.GetCompact();
-        if( pindexLast->nHeight > nDifficultySwitchHeight4 || TestNet() ) {             // Otherwise this new algo will happen at the hardfork block value you have set for mainnet.
-            return GetNextWorkRequiredAfterKgw(pindexLast, pblock, bnProofOfWorkLimit );// Or if we are running Testnet...
-        } else
+#else
+    // Before the hardfork build, we allow programmable settings on both mainnet and testnets
+    nTipFilterBlocks = atoi( GetArg("-retargetpid.tipfilterblocks", TIPFILTERBLOCKS_DEFAULT ).c_str() );
+    if( nTipFilterBlocks < 5 ) nTipFilterBlocks = 5;
+    fUsesHeader = GetBoolArg( "-retargetpid.useheader", USESHEADER_DEFAULT );
 #endif
-            return NextWorkRequiredKgwV2(pindexLast, pblock, bnProofOfWorkLimit );
-    } else
-        return OriginalGetNextWorkRequired(pindexLast, pblock, bnProofOfWorkLimit );
+    //! This is only an issue for TestNets...
+    //! The starting difficulty value provided is the number of times greater than the minimum difficulty, so in order
+    //! to calculate the block difficulty, we take the user selected value and simply divide the minimum difficulty by
+    //! that amount.
+    if( !isMainNetwork() ) {
+        int32_t nConfigStartingDifficulty;
+        nConfigStartingDifficulty = roundint( atof( GetArg("-retargetpid.startingdiff", "1.0" ).c_str() ) );
+        if( nConfigStartingDifficulty < 1 ) nConfigStartingDifficulty = 1;
+        uintTestNetStartingDifficulty /= (uint32_t)nConfigStartingDifficulty;
+    }
+
+    //! (Re)generate CSV report headers
+    fRetargetNewLog = true;
+    fDiffCurvesNewLog = true;
+    fLogDiffLimits = GetBoolArg( "-retargetpid.logdifflimits", true );
+
+    int32_t nDifficulty;
+    //! Difficulty is harder as the 256bit number goes down.  the Previous Difficulty is divided by maxdiffincrease, and compared
+    //! to the calculated value, if it is less than that value, the output is set to it as the maximum change.
+    nDifficulty = atoi( GetArg("-retargetpid.maxdiffincrease", "3" ).c_str() );
+    if( nDifficulty < 2 ) nDifficulty = 2;
+    nMaxDiffIncrease = (uint32_t)nDifficulty;
+
+    //! maxdiffdecrease is a divider upon the prevDifficulty
+    //! Difficulty is easier as the 256bit number goes up.  the Previous Difficulty is multiplied by maxdiffdecrease, and compared
+    //! to the calculated value, if it is more than that value, the output is set to it as the maximum change.
+    nDifficulty = atoi( GetArg("-retargetpid.maxdiffdecrease", "5" ).c_str() );
+    if( nDifficulty < 2 ) nDifficulty = 2;
+    nMaxDiffDecrease = (uint32_t)nDifficulty;
 }
 
-
-/**
- * The primary routine, which verifies a claim of Proof Of Work
- */
-bool CheckProofOfWork(uint256 hash, unsigned int nBits)
+//! As the retargetpid data is all private we must have public routines to access various values, this one gets the terms
+void CRetargetPidController::GetPidTerms( double* pProportinalGainOut, int64_t* pIntegratorTimeOut, double* pDerivativeGainOut )
 {
-    bool fNegative;
-    bool fOverflow;
-    uint256 bnTarget;
+    *pProportinalGainOut = dProportionalGain;
+    *pIntegratorTimeOut = nIntegrationTime;
+    *pDerivativeGainOut = dDerivativeGain;
+}
 
-    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+//! Class method definitions for the CRetargetPidController
+bool CRetargetPidController::IsPidUpdateRequired( const CBlockIndex* pIndex, const CBlockHeader* pBlockHeader )
+{
+    assert( pIndex && pBlockHeader );
+    return nIntegratorHeight != pIndex->nHeight || nLastCalculationTime != pBlockHeader->GetBlockTime() || nIndexFilterHeight != pIndex->nHeight;
+}
 
-    // Check range
-    if( fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) )
-        return error("CheckProofOfWork() : nBits below minimum work");
+//! Return the output result, used internally while LOCK is held.
+uint256 CRetargetPidController::GetRetargetOutput()
+{
+    return uintTargetAfterLimits;
+}
 
-    // Check proof of work matches claimed amount
-    if (hash > bnTarget)
-        return error("CheckProofOfWork() : hash doesn't match nBits");
+//! Returns the number of seconds per block that the current chain is operating at.
+//! This result spans the oldest to newest blockindex integration period, and is returned as an int64_t value rounded
+//! up/down from the calculated double blocktime to the nearest second
+double CRetargetPidController::GetIntegrationBlockTime( void )
+{
+    return dIntegratorBlockTime;
+}
+
+//! Returns the number of blocks used by the Tip Filter
+int32_t CRetargetPidController::GetTipFilterBlocks()
+{
+    return nTipFilterBlocks;
+}
+
+//! Returns true if this retargetpid uses headers in the output difficulty calculations
+bool CRetargetPidController::UsesHeader()
+{
+    return fUsesHeader;
+}
+
+//! Returns the testnet difficulty used to initialize the chain
+uint256 CRetargetPidController::GetTestNetStartingDifficulty( void )
+{
+    return uintTestNetStartingDifficulty;
+}
+
+bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit )
+{
+    bool fLimited = false;                                  //! Assume no limit need be applied to the result
+
+    if( uintCalculated < uintPrevDiffForLimits ) {                   //! Then difficulty is increasing
+        if( uintCalculated < uintDiffAtMaxIncrease ) {
+            uintResult = uintDiffAtMaxIncrease;             //! Set the result equal to the maximum difficulty increase limit
+            fLimited = true;
+        } else
+            uintResult = uintCalculated;                    //! Set the result equal to the calculated target difficulty
+    } else {                                                //! Then difficulty is decreasing or the same as it was last time
+        if( uintCalculated > uintDiffAtMaxDecrease ) {
+            uintResult = uintDiffAtMaxDecrease;             //! Set the result equal to the maximum difficulty decrease limit
+            fLimited = true;
+        } else
+            uintResult = uintCalculated;                    //! Set the result equal to the calculated target difficulty
+    }
+
+    //! Lastly a check is made to see that the difficulty is not less than the absolute limit, this is also done it NextWorkRequired, but we need it
+    //! done here too for TestNets and diagnostic logging.
+    if( uintCalculated > uintPOWlimit ) {
+        uintResult = uintPOWlimit;
+        fLimited = true;
+    }
+
+    return fLimited;
+}
+
+bool CRetargetPidController::UpdateFilterTimingResults( std::vector<FilterPoint>& vFilterPoints )
+{
+    uint32_t nDividerSum = 0;
+    uint32_t nBlockSpacingSum = 0;
+    int64_t nBlockSpacing, nTimeError, nTimeError0, nChangeRate;
+
+    //! If the header is included, the size of the filter is one larger than the TipFilterBlocks,
+    //! by using the given filters size, instead of that constant, this code works either way.
+    int32_t nFilterSize = vFilterPoints.size();
+    //! Initialize the results, we are about to calculate new values for.  Note also that the
+    //! total weight values will be used and updated.
+    dSpacingError = 0.0;
+    dRateOfChange = 0.0;
+    for( int32_t i = 1; i <= nFilterSize; i++ ) {
+        //! Process the time values
+        if( i < nFilterSize ) {
+            nBlockSpacing = vFilterPoints[i].nBlockTime - vFilterPoints[i - 1].nBlockTime;
+            vFilterPoints[i].nSpacing = (int32_t)nBlockSpacing;
+            nBlockSpacingSum += (uint32_t)nBlockSpacing;
+            nTimeError = nBlockSpacing - nTargetSpacing;
+            vFilterPoints[i].nSpacingError = (int32_t)nTimeError;
+            if( i > 1 ) {
+                nChangeRate = nTimeError - nTimeError0;
+                vFilterPoints[i].nRateOfChange = (int32_t)nChangeRate;
+                dRateOfChange += (double)( (int32_t)nChangeRate * (i - 1) );
+            }
+            nTimeError0 = nTimeError;
+            dSpacingError += (double)( (int32_t)nTimeError * i );
+            nDividerSum += i;
+        } else {
+            dAverageTipSpacing = (double)nBlockSpacingSum / (double)(i - 1);
+            nSpacingErrorWeight = nDividerSum;
+            dSpacingError /= (double)nDividerSum;
+            nRateChangeWeight = nDividerSum - i + 1;
+            dRateOfChange /= (double)nRateChangeWeight;
+        }
+    }
+}
+
+//! Anoncoin retarget system can consider the case of the next new block which has not yet
+//! been mined.  The option is available for both the P and D terms.  This can not be enabled,
+//! unless a precise control of peer clocks is considered as well, no block times from the
+//! future can be allowed, if the header is included in retargeting difficulty.  If used,
+//! the spacing error here can be positive or negative, unlike the tip filter, where all
+//! times are first sorted.
+//! Both the spacing error and rate of change use the most recent block time from the filter
+//! as reference, to create the header values, then if enabled they carry equal weight to
+//! all the past error, not just more important as the tip filter handles newer block times
+//! from the index.  The header spacing error, and thus by reference the rate of change is
+//! equal in importance to ALL the past error.
+
+//! If the header (nTipTime) is not used by this controller, the Tip Filter already has the
+//! results we need calculated from past block values, and so this routine does little more
+//! than assign the results to the parameter references specified by the caller.
+//!
+//! So with all of that in mind, let us move on to considering our source of samples, how
+//! the rest of the software works and see if we can come up with a calculation that is fast,
+//! smart and deals well with reporting block time error at the tip...
+//! NOTE: ToDo: external miners wanting access to the above difficulty adjustment calculation.
+bool CRetargetPidController::CalcBlockTimeErrors( const int64_t nTipTime )
+{
+    bool fErrorCalculated = true;                                   //! Assume success
+
+    if( fTipFilterInitialized ) {
+        //! If the header is used, the block time spacing error and rate of change must be calculated now.
+        if( fUsesHeader ) {
+            bool fHeaderAdded = false;
+            FilterPoint aHeaderPoint;
+            //! Build a blank Tip Filter data point with the TipTime set.
+            aHeaderPoint.nBlockTime = nTipTime;
+            //! The header point can be identified, because it is the only one for which difficulty is infinite (0)
+            aHeaderPoint.nDiffBits = 0;
+            aHeaderPoint.nSpacing = aHeaderPoint.nSpacingError = aHeaderPoint.nRateOfChange = 0;
+            //! Build the finalized tip filter, inserting the header block at the correctly sorted time position
+            vTipFilterWithHeader.clear();
+            //! We need to keep the oldest index entry, as it is used to calculate the previous difficulty, or i could start at 1
+            for( int32_t i = 0; i < nTipFilterBlocks; i++ ) {
+                if( !fHeaderAdded && nTipTime < vIndexTipFilter[i].nBlockTime ) {
+                    vTipFilterWithHeader.push_back( aHeaderPoint );
+                    fHeaderAdded = true;
+                }
+                vTipFilterWithHeader.push_back( vIndexTipFilter[i] );
+            }
+            //! If the new tiptime header was not yet added, it must be newer than all previous block times, so place it at the end of the filter
+            if( !fHeaderAdded )
+                vTipFilterWithHeader.push_back( aHeaderPoint );
+
+            assert( vTipFilterWithHeader.size() == nTipFilterBlocks + 1 );
+            UpdateFilterTimingResults( vTipFilterWithHeader );
+        }
+        //! else we already have the calculations done, when the index tip filter was initialized, no further processing is needed.
+
+        //! At this point we have a one, or if need be two sorted tip filters. The samples have been weighted and used to calculate
+        //! spacing error and rate of change. The previous difficulty was always only calculated from the index blocks and no added
+        //! information can be gleaned from a header.
+        //!
+        //! If header information is to be used, it is important to understand why all the above code and extra filter needed to be
+        //! setup and used.  The nTipTime may NOT have been > the the last block time in the index, in fact it could be much less,
+        //! and the spacing error very negative, that is why the above process is done, to ensure the times remain and are processed
+        //! in a sorted order.  Also if a negative time header was being considered, its weight important will be far less than if it
+        //! had been the most recent and newer than any other block time, normally this is what will happen, and the header time will
+        //! be considered the most important weighted time in spacing and rate of change calculations.
+        //! By having this technology available as a separate method, it is also easy to run difficulty curves and project new retarget
+        //! outputs, without allot of overhead and unnecessary calculations being done.
+    } else
+        fErrorCalculated = false;
+
+    return fErrorCalculated;
+}
+
+//! Updates the TipFilter based on on the BlockIndex, used to calculate instantaneous block spacing, rate of changes & limits.
+bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
+{
+    //! We use the given block index height as our starting point, but we must make sure we have enough
+    //! blocks, and that it does not include the genesis block's time, that is very old and should not be used.
+    if( pIndex->nHeight < nTipFilterBlocks )
+        return false;
+
+    //! This matters if fUsesHeader has been turned on.
+    //! Make sure to force a new block spacing error calculation next time GetNextWorkRequired is run.
+    //! Otherwise what could happen is the most recent results may only 'appear' to have been set correctly.
+    //! When in fact, they are not for this BlockIndex height, and go undetected by the IsPidUpdateRequired()
+    nLastCalculationTime = 0;
+
+    //! Unless some task is requesting the filter to re-initialized, if this is being called for the exact same
+    //! height as our previous calculation, then we are done.
+    if( fTipFilterInitialized && nIndexFilterHeight == pIndex->nHeight )
+        return true;
+
+    //! Initialize the Tip Filter data points based on the block index values
+    // To aid in debugging problems, it maybe useful to clear the block timing results involved in these calculations.
+    nSpacingErrorWeight = nRateChangeWeight = 0;
+    dAverageTipSpacing = dSpacingError = dRateOfChange = 0.0;
+    vIndexTipFilter.clear();
+
+    // bool fDiffPrevFromHash = GetBoolArg( "-retargetpid.diffprevfromhash", false );
+    FilterPoint aFilterPoint;
+    const CBlockIndex* pIndexSearch = pIndex;
+    for( int32_t i = nTipFilterBlocks - 1; i >= 0  && pIndexSearch; i--, pIndexSearch = pIndexSearch->pprev ) {
+        aFilterPoint.nBlockTime = pIndexSearch->GetBlockTime();
+        // aFilterPoint.nDiffBits = fDiffPrevFromHash ? pIndexSearch->GetBlockHash() : pIndexSearch->nBits;
+        aFilterPoint.nDiffBits = pIndexSearch->nBits;
+        aFilterPoint.nSpacing = aFilterPoint.nSpacingError = aFilterPoint.nRateOfChange = 0;
+        vIndexTipFilter.push_back( aFilterPoint );
+    }
+
+    //! Sort the TipFilter block data by time.  The result is then setup as an output vector of structures
+    //! containing all the filter information which can be accessed and referenced as needed.
+    assert( vIndexTipFilter.size() == nTipFilterBlocks );            //! The array of strutures is constant in size and assumed.
+    sort(vIndexTipFilter.begin(), vIndexTipFilter.end());                 //! Thank you sort routine, now it matters not the time order in which the blocks were mined
+
+    uint32_t nDividerSum = 0;
+    uint256 uintBlockPOW;
+    uintPrevDiffCalculated.SetNull();
+    //! Process the difficulty values
+    for( int32_t i = 1; i <= nTipFilterBlocks; i++ ) {
+        uintBlockPOW.SetCompact( vIndexTipFilter[i - 1].nDiffBits );
+        uintBlockPOW *= (uint32_t)i;
+        uintPrevDiffCalculated += uintBlockPOW;
+        nDividerSum += i;                           //! Bump the weighted sum, the newer it is the more it counts
+    }
+    nPrevDiffWeight = nDividerSum;
+    uintPrevDiffCalculated /= nDividerSum;
+
+    //! Once we know the tipfilter has been setup, an output calculation is likely to soon follow,
+    //! plus we now have 2 ways to define the previous difficulty.  Whichever method is chosen,
+    //! defines the maximum increase and maximum decrease limit values.
+    // Use the previous block in the index.
+    if( GetBoolArg( "-retargetpid.limitfromprevblock", false ) )
+        uintPrevDiffForLimits.SetCompact( pIndex->nBits );
+    else //! Use the calculated previous difficulty to set the limits on max increase and decrease...
+        uintPrevDiffForLimits = uintPrevDiffCalculated;
+    uintDiffAtMaxIncrease = uintPrevDiffForLimits / nMaxDiffIncrease;
+    uintDiffAtMaxDecrease = uintPrevDiffForLimits * nMaxDiffDecrease;
+
+    //! If fUsesHeader is set, we update the spacing errors and rate of change results each time a new header time is given.
+    //! If not, then the spacing error and rate of change results can be done now, and will be ready when this call returns.
+    if( !fUsesHeader )
+        UpdateFilterTimingResults( vIndexTipFilter );
+
+    //! Remember what Height we last made these calculations
+    nIndexFilterHeight = pIndex->nHeight;
+    //! Signal this retargetpid is ready to process output calculations
+    fTipFilterInitialized = true;
+
+    return fTipFilterInitialized;
+}
+
+//! This is one of the hardest steps to do well for crypto coins in general.  It is also a difficult
+//! step to do well for process controllers when discrete samples are filled with noise.  Solutions
+//! which improve controller response attempt to model the nature of that noise, yet any action taken
+//! will introduce lag into the error calculation.  That can not be helped, as we must consider possible
+//! noise sources which include human intent.  What this does is work with the most recent 11 blocks or
+//! 10 block time spans at the tip.  For Anoncoin @ 3min target spacing that = 30 minutes. That gives us
+//! enough information to calculate both a block timing error and the differential error in one step.
+bool CRetargetPidController::SetBlockTimeError( const CBlockIndex* pIndex, const CBlockHeader* pBlockHeader )
+{
+    bool fResult = false;                                           //! Until we know the error has been calculated
+    int64_t nNewBlockTime = pBlockHeader->GetBlockTime();           //! We are about to calculate the errors for this new header time
+    if( UpdateIndexTipFilter( pIndex ) ) {
+        //! The last entry into the TipTimesFilter will be set to nTipTime in the CalcBlockTimeErrors() method and
+        //! the final error calculations done, we also store those results in our retargetpid objects data fields for later processing
+        //! by the OutputUpdate routine.  No error will be ever be returned by the call to CalcBlockTimeErrors() from here.
+        fResult = CalcBlockTimeErrors( nNewBlockTime );
+        nLastCalculationTime = nNewBlockTime;
+    }
+    return fResult;
+}
+
+/********************************************//**
+ * \brief The primary integral calculation
+ *
+ * \param pIndex const CBlockIndex* Only the blockindex is required
+ * \return bool true of the calculation is ready for use
+ *
+ ***********************************************/
+bool CRetargetPidController::ChargeIntegrator( const CBlockIndex* pIndex )       //! Returns true if the full integration time was able to done
+{
+    if( !pIndex || !pIndex->pprev )                 //! Its over if we do not have enough data to even start
+        return false;
+
+    //! The integrator does not care what the next block time is, instantaneous error is not its concern.
+    //! If this is being called because that has changed, yet our previous calculation was done for this
+    //! same block height, we are done and already have the integrator value calculated.
+    if( nIntegratorHeight != pIndex->nHeight ) {    //! The pIndex value is changed throughout this routine, save the height now.
+        nIntegratorHeight = pIndex->nHeight;        //! Remember when we last calculated this
+        pChargedToIndex = pIndex;                   //! Remember the pointer to, so we don't need to search for it when restoring a previous state.
+    }
+    else                                            //! We have the results for this height already
+        return true;
+
+    //! The nIntegrationTime can be set to zero
+    if( !nIntegrationTime ) {
+        nBlocksSampled = 0;
+        nIntegratorChargeTime = 0;
+        dIntegratorBlockTime = (double)nTargetSpacing;
+        return true;
+    }
+
+    //! And some interm values used in the loop
+    const int64_t nMostRecentBlockTime = pIndex->GetBlockTime();
+    const int64_t nOldestBlockTime = nMostRecentBlockTime - nIntegrationTime;
+    int64_t nBlockTime;
+
+    //! Initialize the number of samples we have taken.  For any case greater than 2 blocks, a failure to
+    //! have a sufficient BlockIndex will cause this next loop to exit with the samples taken set correctly.
+    nBlocksSampled = 1;
+
+    //! This loop always gets executed at least once, or we would not have made it this far.
+    //! If we run into a previous blockindex that is null or what normally happens is the
+    //! block time about to be added to the sample set, has a time that is less that the
+    //! nIntegrationTime defined by the user and as started with the MostRecentBlockTime.
+    //! When that is found, it falls through the loop with what data it was able to gather.
+    do {
+        pIndex = pIndex->pprev;                                 //! Always moving backwards to the previous block from the starting blockindex entry given
+        nBlockTime = pIndex->GetBlockTime();                    //! Get a local copy of the absolute time when this block was mined
+        nBlocksSampled++;                                       //! Maintain an accurate count of the blocks we have sampled
+    } while( pIndex->pprev && nOldestBlockTime < pIndex->pprev->GetBlockTime() );
+    //! If we're about to hit a block with a time older than our integration period, do not include it,
+    //! it could be the genesis block and ancient, which leads to a period of 678+days of blocktime summed
+
+    //! Calc how much time has past between this data point and the starting blockindex entry given
+    nIntegratorChargeTime = nMostRecentBlockTime - nBlockTime;
+
+    //! At this point the amount of time that has past, the sum of all the difficulties
+    //! as well as the number of blocks we sampled are all known values.
+    //! Given that information, the Integrator term (should be) now easy to calculate and ready
+    //! for use as part of the new pid retarget output.  Save the results for the next steps...
+    dIntegratorBlockTime = (double)nIntegratorChargeTime / (double)(nBlocksSampled - 1);
 
     return true;
 }
 
-uint256 GetBlockProof(const CBlockIndex& block)
+/**
+ *  Difficulty formula Calculation - Throughout its life and well into 2015, due in part to the known flaws &
+ *  weakness exploits to exist in the KGW algo.  A new PID controller Re-Targeting Engine was born.  Invented
+ *  and introduced here for the 1st time, by its developer... GroundRod
+ *
+ *  THE MAIN RetargetPID functionality comes from calling this class method.
+ */
+bool CRetargetPidController::UpdateOutput( const CBlockIndex* pIndex, const CBlockHeader* pBlockHeader )
 {
-    uint256 bnTarget;
-    bool fNegative;
-    bool fOverflow;
-    bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
-    if (fNegative || fOverflow || bnTarget == 0)
-        return 0;
-    // We need to compute 2**256 / (bnTarget+1), but we can't represent 2**256
-    // as it's too large for a uint256. However, as 2**256 is at least as large
-    // as bnTarget+1, it is equal to ((2**256 - bnTarget - 1) / (bnTarget+1)) + 1,
-    // or ~bnTarget / (nTarget+1) + 1.
-    return (~bnTarget / (bnTarget + 1)) + 1;
+    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+
+    if( IsPidUpdateRequired(pIndex, pBlockHeader) ) {
+        if( !ChargeIntegrator(pIndex) || !SetBlockTimeError(pIndex, pBlockHeader) ) {
+            //! For cases where we can not calculate the PID output, we set the result to the minimum difficulty.
+            uintTargetAfterLimits = uintPOWlimit;
+            return false;
+        }
+
+        //! We can now calculate the controllers output time, but not the dimensionless number which is divided by nTargetSpacing and
+        //! applied to the new overall Proof-of-Work that will be required as the minimum.
+        //! That final calculation here in float math yields a value somewhere around '1' and would not convert to unsigned integer
+        //! math in any meaningful way.  Short term errors will show up here as a correction to the time output, thanks to the 'P'
+        //! and 'D' terms times whatever you have their gains set to.
+        dProportionalTerm = dProportionalGain * dSpacingError;
+
+        //! This next line of code is gold.  GR
+        //! Although there is no proof-of-work behind it, a great deal of 'my' time was spent before realizing it was
+        //! just this simple.  Not at all easy to come up with, and then finally decide to use.  That is why here all
+        //! you see is it being assignment to a new local variable.  It is worth being written as 10K lines of code...
+        dIntegratorTerm = dIntegratorBlockTime;
+
+        //! The derivative term
+        dDerivativeTerm = dDerivativeGain * dRateOfChange;
+
+        //! Finally!  The pid controller loop output value
+        dPidOutputTime = dProportionalTerm + dIntegratorTerm + dDerivativeTerm;
+
+        //! Now we convert double back into an unsigned integer, so it can be used with the uint256 class math.  Only one multiply and divide
+        //! need be done.
+        nPidOutputTime = roundint64( dPidOutputTime );  //! Round up or down as required, see util.h for that one, our resolution here now will be to the nearest second.
+        uintTargetBeforeLimits = uintPrevDiffCalculated;
+        //! The Pid Output time should definitely be positive now, as the integrator value will dominate.  However if the gain
+        //! were set to high while the instantaneous error is very large, it could be possible for it to be negative.  We do not want the uint256 math
+        //! to be multiplying by any value smaller than 1 second or it is out of range by design.  The POWlimit sets the design limit on the
+        //! other end, for which no difficulty can be less then.  That is checked for all the algorithm's in the parent routines final output stage.
+        if( nPidOutputTime < 1 ) {
+            nPidOutputTime = 1;     // From here only the positive whole number of seconds is used in the calculation of output difficulty adjustment
+            dPidOutputTime = 1.0;   // Also make sure the PidOutputTime (double) value does not show a negative either, although it is only used for reporting after this
+            fPidOutputLimited = true;
+        } else
+            fPidOutputLimited = false;
+
+        //! The final new minimum Proof-Of-Work value can now be calculated, and if necessary, range limited to Anoncoin's minimum.
+        uintTargetBeforeLimits *= (uint32_t)nPidOutputTime;
+        uintTargetBeforeLimits /= (uint32_t)nTargetSpacing;
+
+        //! Now we can place limits on the amount of change allowed, based only on the most recent past block, and the bounds set by the software
+        fDifficultyLimited = LimitOutputDifficultyChange( uintTargetAfterLimits, uintTargetBeforeLimits, uintPOWlimit );
+    }
+    return true;
 }
+
+void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlockHeader *pBlockHeader )
+{
+    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+
+    if( !UpdateOutput( pIndex, pBlockHeader ) )
+        return;
+
+    //! We report the current spacing, and keep track of the sum and count for a debugging column which runs from the moment this retargetpid was
+    //! created until the program is terminated or a new external reset command is given.
+    const int64_t nCurrentSpacing = nLastCalculationTime - pIndex->GetBlockTime();
+
+    //! Only log the pid statistics when they have been recomputed & changed.  Plus only log the Integrator precharge data the 1st time it is computed
+    //! Setup for writing to diagnostic spreadsheet
+    ofstream csvfile;
+    if( GetBoolArg("-retargetpid.retargetcsv", false) ) {
+        boost::filesystem::path pathRetarget = GetDataDir() / "retarget.csv";
+        csvfile.open( pathRetarget.string().c_str(), ofstream::out | ofstream::app );
+    }
+
+    if( fRetargetNewLog ) {
+        LogPrintf( "RetargetPID-v3.0 NextWorkRequired for TargetSpacing=%d using constants PropGain=%f, IntTime=%d and DevGain=%f\n",
+                  nTargetSpacing, dProportionalGain, nIntegrationTime, dDerivativeGain );
+        LogPrintf( "Integrator Charged for=%d days %02d:%02d:%02d with %d samples",
+                   nIntegratorChargeTime / SECONDSPERDAY, (nIntegratorChargeTime % SECONDSPERDAY) / 3600,
+                   (nIntegratorChargeTime % 3600) / 60, nIntegratorChargeTime % 60, nBlocksSampled );
+        LogPrintf( ". Actual BlockTime=%fsecs\n", dIntegratorBlockTime );
+        if( csvfile.is_open() ) {
+            csvfile << "OS_Time" << "," << "Offset" << "," << "Height" << ",";
+            csvfile << "MinTime" << "," << "IndexTime" << "," << "BlockTime" << "," << "Space" << ",";
+            csvfile << "TipsAvg" << "," << "<--" << ",";
+            csvfile << "SpaceErr" << ",";
+            csvfile << "ICharge" << "," << "IBlocks" << ",";
+            csvfile << "RateOfChg" << ",";
+            csvfile << "-->" << "," << "PropTerm" << "," << "IntTerm" << "," << "DerTerm" << "," << "PIDout" << ",";
+            if( fLogDiffLimits )
+                csvfile << "LimPrev" << "," << "LimUpDiff" << "," << "LimDnDiff" << ",";
+            csvfile << "PrevDiff" << "," << "NewDiff" << ",";
+            csvfile << "NetKHPS" << "," << "MineKHPS" << ",";
+            csvfile << "PrevLog2" << "," << "NewLog2" << "," << "ChainLog2" << ",";
+#if defined( HARDFORK_BLOCK )
+            if( isMainNetwork() && pIndex->nHeight < HARDFORK_BLOCK ) {
+#else
+            if( isMainNetwork() ) {
+#endif
+                csvfile << "KgwDiff" << "," << "KgwLog2" << ",";
+            }
+            csvfile << "PID_Difficulty_as_256_bits" << "\n";
+        }
+        fRetargetNewLog = false;
+    }
+
+    //! Always produce a minimum of debug.log information
+    LogPrint( "retarget", "RetargetPID charged to height=%d output terms P=%f I=%f D=%f, ProofOfWork Required=0x%08x Header=0x%08x\n",
+              nIntegratorHeight, dProportionalTerm, dIntegratorTerm, dDerivativeTerm, uintTargetAfterLimits.GetCompact(), pBlockHeader->nBits );
+
+    if( fPidOutputLimited )
+        LogPrint( "retarget", "RetargetPID NOTE: OutputTime %f was < 1 second, out-of-range value set to %d.\n", dPidOutputTime, nPidOutputTime );
+
+    if( fDifficultyLimited )
+        LogPrint( "retarget", "RetargetPID NOTE: Difficulty %0x was out of range and set to limit %0x\n", uintTargetBeforeLimits.GetCompact(), uintTargetAfterLimits.GetCompact());
+
+// #if defined( HARDFORK_BLOCK )
+    //if( isMainNetwork() && pIndex->nHeight < HARDFORK_BLOCK )
+// #else
+    //if( isMainNetwork() )
+// #endif
+        //LogPrint("retarget", "Prev KGW: %08x %s\n", pIndex->nBits, uint256().SetCompact(pIndex->nBits).ToString());
+    //else
+        //LogPrint("retarget", "  Before: %08x %s\n", pIndex->nBits, uint256().SetCompact(pIndex->nBits).ToString());
+    //LogPrint("retarget", "  After : %08x %s\n", uintTargetBeforeLimits.GetCompact(), uintTargetBeforeLimits.ToString());
+
+    if( csvfile.is_open() && ( nIntegratorHeight > Checkpoints::GetTotalBlocksEstimate() || GetBoolArg("-retargetpid.logallblocks", false) ) ) {
+        csvfile << GetTime() << "," << GetTimeOffset() << "," << nIntegratorHeight << ",";
+        csvfile << (pIndex->GetMedianTimePast() + 1) << "," << pIndex->GetBlockTime() << "," << nLastCalculationTime << "," << nCurrentSpacing << ",";
+        csvfile << dAverageTipSpacing << ",,";
+        csvfile << dSpacingError << ",";
+        csvfile << nIntegratorChargeTime << "," << nBlocksSampled << ",";
+        csvfile << dRateOfChange << ",";
+        string sErrors;
+        if( fPidOutputLimited ) sErrors += "+";
+        if( fDifficultyLimited ) sErrors += "*";
+        if( sErrors.size() == 0 ) sErrors = "ok";
+        csvfile << sErrors << "," << dProportionalTerm << "," << dIntegratorTerm << "," << dDerivativeTerm << ",";
+        csvfile <<  dPidOutputTime << ",";
+        //! If enabled, Calculate and add the limit difficulties
+        if( fLogDiffLimits )
+            csvfile << GetLinearWork(uintPrevDiffForLimits, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxIncrease, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxDecrease, uintPOWlimit) << ",";
+        //! Calculate and add the linear Difficulty calculations
+        csvfile << GetLinearWork(uintPrevDiffCalculated, uintPOWlimit) << "," << GetLinearWork(uintTargetAfterLimits, uintPOWlimit) << ",";
+        //! Include Details about Network Hashes per second and Miners HashMeter results if they are running
+        double dNetKHPS = CalcNetworkHashPS(pIndex, nTipFilterBlocks) / 1000.0;
+        double dMinerKHPS = GetFastMiningKHPS();
+        csvfile << dNetKHPS << "," << dMinerKHPS << ",";
+        //! Calculate and add the Log2 work calculations
+        csvfile << GetLog2Work(uintPrevDiffCalculated) << "," << GetLog2Work(uintTargetAfterLimits) << "," << GetLog2Work(pIndex->nChainWork) << ",";
+#if defined( HARDFORK_BLOCK )
+        if( isMainNetwork() && pIndex->nHeight <= HARDFORK_BLOCK ) {
+#else
+        if( isMainNetwork() ) {
+#endif
+            //! Add the KGW value for work, it is simply the nBits as found in the current blockheader
+            uint256 KgwDiff;
+            KgwDiff.SetCompact(pBlockHeader->nBits);
+            csvfile << GetLinearWork(KgwDiff, uintPOWlimit) <<  "," << GetLog2Work(KgwDiff) <<  ",";
+        }
+        csvfile << "\"0x" << uintTargetAfterLimits.ToString() << "\"" << "\n";
+        csvfile.close();
+
+        //! Generate a predictive difficulty curve for the next new block
+        if( GetBoolArg("-retargetpid.diffcurves", false) ) {
+            boost::filesystem::path pathDiffCurves = GetDataDir() / "diffcurves.csv";
+            csvfile.open( pathDiffCurves.string().c_str(), ofstream::out | ofstream::app );
+            //! The diffcurves.csv output will have at least these columns:
+            //! Height, IndexTime, TipTime, Spacing, Pterm, Iterm, Dterm , PiOut, PidOut, PiLog2, PidLog2, PiDiff, PidDiff
+            if( fDiffCurvesNewLog ) {
+                csvfile << "Height" << "," << "IndexTime" << "," << "F" << "," << "TipTime" << "," << "Space" << ",";
+                csvfile << "PTerm" << "," << "ITerm" << ","<< "DTerm" << ","<< "PIout" << ","<< "PIDout" << ",";
+                csvfile << "PIlog2" << "," << "PIDlog2" << ",";
+                csvfile << "PIdiff" <<  "," << "PIDdiff" << "\n";
+                fDiffCurvesNewLog = false;
+            }
+
+            bool fBestTime = false;
+            bool fActualTime = false;
+            bool fFullLine = false;
+            int64_t nSecsPerSample = nTargetSpacing / 6;
+            int64_t nTimeOfCalc;
+
+            assert(nSecsPerSample > 0 );
+            const int64_t nMinTime = pIndex->GetMedianTimePast()+1;
+            const int64_t nLastBlockIndexTime = pIndex->GetBlockTime();
+            const int64_t nNextBestBlockTime = nLastBlockIndexTime + nTargetSpacing;
+            const int64_t nMaxTime = nLastBlockIndexTime + nTargetSpacing * 8;  // 7 intervals past the best time
+            double dTimeErrorAt, dDiffErrorAt;
+            double dProportionalCalc, dDerivativeCalc;
+            double dPiLog2, dPidLog2;
+            uint256 uintDiffPi, uintDiffPid;
+            uint256 uintDiffCalc;
+            // string sFlags;
+
+            for( int64_t nTipTime = nMinTime; nTipTime <= nMaxTime; nTipTime += nSecsPerSample ) {
+#if defined( DONT_COMPILE )
+            for( int64_t nTipTime = nLastBlockIndexTime - 3 * nSecsPerSample; nTipTime <= nMaxTime; nTipTime += nSecsPerSample ) {
+                if( !fUsesHeader ) {    // No point in running curves, we're done
+                    if( !fBestTime )
+                        fBestTime = true;
+                    else
+                        break;
+                }
+#endif
+                if( !fBestTime ) {
+                    nTimeOfCalc = nNextBestBlockTime;
+                    fBestTime = fFullLine = true;
+                } else if( !fActualTime ) {
+                    nTimeOfCalc = nLastCalculationTime;
+                    fActualTime = fFullLine = true;
+                } else
+                    nTimeOfCalc = nTipTime;
+
+                CalcBlockTimeErrors( nTimeOfCalc );
+                dProportionalCalc = dProportionalGain * dSpacingError;
+                dDerivativeCalc = dDerivativeGain * dRateOfChange;
+
+                //! Run the PI controller calculations
+                int64_t nOutputTimePi = roundint64( dProportionalCalc + dIntegratorTerm );
+                if( nOutputTimePi < 1 ) nOutputTimePi = 1;
+                uintDiffCalc = uintPrevDiffCalculated;
+                uintDiffCalc *= (uint32_t)nOutputTimePi;
+                uintDiffCalc /= (uint32_t)nTargetSpacing;
+                LimitOutputDifficultyChange( uintDiffPi, uintDiffCalc, uintPOWlimit );
+                double dNewLog2Pi = GetLog2Work( uintDiffPi );
+                double dNewDiffPi = GetLinearWork(uintDiffPi, uintPOWlimit);
+
+                //! Run the PID controller calculations
+                int64_t nOutputTimePid = roundint64( dProportionalCalc + dIntegratorTerm + dDerivativeCalc );
+                if( nOutputTimePid < 1 ) nOutputTimePid = 1;
+                uintDiffCalc = uintPrevDiffCalculated;
+                uintDiffCalc *= (uint32_t)nOutputTimePid;
+                uintDiffCalc /= (uint32_t)nTargetSpacing;
+                LimitOutputDifficultyChange( uintDiffPid, uintDiffCalc, uintPOWlimit );
+                double dNewLog2Pid = GetLog2Work( uintDiffPid );
+                double dNewDiffPid = GetLinearWork(uintDiffPid, uintPOWlimit);
+
+                //! Log the result calculations
+                if( fFullLine ) {
+                    csvfile << nIntegratorHeight << "," << nLastBlockIndexTime << "," << (fActualTime ? "@" : "#") << ",";
+                    nTipTime -= nSecsPerSample;
+                    fFullLine = false;
+                } else
+                    csvfile << nIntegratorHeight << "," << "," << ",";
+                csvfile << nTimeOfCalc << "," << (nTimeOfCalc - nLastBlockIndexTime) << ",";
+                csvfile << dProportionalCalc << "," << dIntegratorTerm << "," << dDerivativeCalc << "," << nOutputTimePi << "," << nOutputTimePid << ",";
+                csvfile << dNewLog2Pi << "," << dNewLog2Pid << ",";
+                csvfile << dNewDiffPi << "," << dNewDiffPid << "\n";
+            }
+            csvfile.close();
+        }
+    }
+}
+
+/********************************************//**
+ * \brief Returns the number of blocks required to integrate over 1 full Integration Time period.
+ *
+ * \param pIndex const CBlockIndex*  If this value is NULL an estimate is returned
+ * \return uint32_t
+ *         The number of blockindex entries that will be required to cover the IntegrationTime span or the ideal as an estimate
+ *
+ ***********************************************/
+uint32_t CRetargetPidController::CalcBlockIndexRequired( const CBlockIndex* pIndex )
+{
+    LOCK( cs_retargetpid );
+
+    if( !pIndex || !pIndex->pprev )                             //! Its over if we do not have enough data to even start
+        return (uint32_t)(nIntegrationTime / nTargetSpacing);   //! Return a close approximation to the number of blocks that would be required
+
+    const int64_t nOldestBlockTime = pIndex->GetBlockTime() - nIntegrationTime;
+
+    //! Initialize the number of samples we have taken.  For any case greater than 2 blocks, a failure to
+    //! have a sufficient BlockIndex will cause this next loop to exit with the samples taken set correctly.
+    uint32_t nBlkSam = 1;
+    //! Loop back in time through the blocks looking for the last one which is less than the oldest required.
+    do {
+        pIndex = pIndex->pprev;                                 //! Always moving backwards to the previous block from the active chain tip
+        nBlkSam++;                                              //! Maintain an accurate count of the blocks we are sampling
+    } while( pIndex->pprev && nOldestBlockTime < pIndex->pprev->GetBlockTime() );
+
+    return nBlkSam;
+}
+
+//! Return a copy of all the current state parameters
+int32_t CRetargetPidController::GetTipFilterSize( void )
+{
+    LOCK( cs_retargetpid );
+
+    int32_t nResult = nTipFilterBlocks;
+    if( fUsesHeader ) nResult++;
+    return nResult;
+}
+
+//! Return a copy of all the current state parameters
+bool CRetargetPidController::GetRetargetStats( RetargetStats& RetargetState, uint32_t& nHeight, const CBlockIndex* pIndexAtTip )
+{
+    LOCK( cs_retargetpid );
+
+    //! At least store all the static constant, infrequently changing and non-output variables details in the result structure
+    RetargetState.dProportionalGain = dProportionalGain;
+    RetargetState.nIntegrationTime = nIntegrationTime;
+    RetargetState.dDerivativeGain = dDerivativeGain;
+    RetargetState.fUsesHeader = fUsesHeader;
+    RetargetState.nTipFilterSize = nTipFilterBlocks;
+    if( fUsesHeader ) RetargetState.nTipFilterSize++;
+    RetargetState.nMaxDiffIncrease = nMaxDiffIncrease;
+    RetargetState.nMaxDiffDecrease = nMaxDiffDecrease;
+    RetargetState.nPrevDiffWeight = nPrevDiffWeight;
+    RetargetState.nSpacingErrorWeight = nSpacingErrorWeight;
+    RetargetState.nRateChangeWeight = nRateChangeWeight;
+
+    const CBlockIndex* pPrevCharge = pChargedToIndex;
+    uint32_t nPrevChargeHeight = nIntegratorHeight;     //! Remember where the pid Integrator and filter calculations was set to before this command.
+
+    //! Make sure we can even run the calculations, otherwise the above state values is all that we can copy and provide as valid
+    if( pIndexAtTip == NULL || pIndexAtTip->nHeight < nTipFilterBlocks || (nHeight != 0 && nHeight <= nTipFilterBlocks ) )
+        return false;
+
+    //! If height=0 is passed, use the height at the tip, also if the height given - 1 is equal to the current charge height, we do not need to setup a different one
+    //! If the height being reported is greater than the height of the index tip, create a dummy header with the timestamp for this moment,
+    //! otherwise, pull the validated header information from the block index data itself, and run the calculations with that block time
+    const CBlockIndex* pIndexCharge = NULL;
+    CBlockHeader aHeader;
+    if( nHeight == 0 || nHeight > pIndexAtTip->nHeight ) {
+        nHeight = pIndexAtTip->nHeight + 1;
+        aHeader.nTime = GetAdjustedTime();
+        pIndexCharge = pIndexAtTip;
+    } else {
+        const CBlockIndex* pIndexAtHeight = pIndexAtTip;
+        while( pIndexAtHeight->nHeight > nHeight )
+            pIndexAtHeight = pIndexAtHeight->pprev;
+        aHeader = pIndexAtHeight->GetBlockHeader();
+        //! In the case where the Header is used, the nBits needs to be zero, so the getretargetpid query can identify the block, if fUsesHeader is false
+        //! then the only thing used for reporting is the block time anyway.
+        aHeader.nBits = 0;
+        pIndexCharge = pIndexAtHeight->pprev;
+    }
+
+    if( UpdateOutput( pIndexCharge, &aHeader ) ) {
+        RetargetState.nMinTimeAllowed = pIndexCharge->GetMedianTimePast() + 1;
+        RetargetState.nLastCalculationTime = nLastCalculationTime;
+        RetargetState.nIntegratorHeight = nIntegratorHeight;
+        RetargetState.nBlocksSampled = nBlocksSampled;
+        RetargetState.nIntegratorChargeTime = nIntegratorChargeTime;
+        RetargetState.dSpacingError = dSpacingError;
+        RetargetState.dRateOfChange = dRateOfChange;
+        RetargetState.dProportionalTerm = dProportionalTerm;
+        RetargetState.dIntegratorTerm = dIntegratorTerm;
+        RetargetState.dDerivativeTerm = dDerivativeTerm;
+        RetargetState.dPidOutputTime = dPidOutputTime;
+        RetargetState.uintPrevDiff = uintPrevDiffCalculated;
+        RetargetState.fPidOutputLimited = fPidOutputLimited;
+        RetargetState.fDifficultyLimited = fDifficultyLimited;
+        RetargetState.uintTargetDiff = uintTargetAfterLimits;
+        RetargetState.dAverageTipSpacing = dAverageTipSpacing;
+        RetargetState.vTipFilter = fUsesHeader ? vTipFilterWithHeader : vIndexTipFilter;
+        RetargetState.nBlockSpacing = nLastCalculationTime - pIndexCharge->GetBlockTime();
+        RetargetState.uintPrevShad = pIndexCharge->fakeBIhash;
+    }
+    // Restore the Integrator charge and filter calculations to previous settings, before we unlock the retarget pid
+    if( nPrevChargeHeight != 0 && pPrevCharge && pPrevCharge != pChargedToIndex ) {
+        ChargeIntegrator(pPrevCharge);
+        UpdateIndexTipFilter(pPrevCharge);
+    }
+    return true;
+}
+
+//! Only the following global functions are seen from the outside world and used throughout
+//! the rest of the source code for Anoncoin, everything above should be static or defined
+//! within the CRetargetPID class.
+
+//! The workhorse routine, which oversees BlockChain Proof-Of-Work difficulty retarget algorithms
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader)
+{
+    //! Any call to this routine needs to have at least 1 block and the header of a new block.
+    //! ...NULL pointers are not allowed...GR
+    assert(pindexLast);
+    assert( pBlockHeader );
+
+    //! All networks now always calculate the RetargetPID output, it needs to have been setup
+    //! during initialization, if unit tests are being run, perhaps where the genesis block
+    //! has been added to the index, but no pRetargetPID setup yet then we detect it here and
+    //! return minimum difficulty for the next block, in any other case the programmer should
+    //! have already at least created a RetargetPID class object and set the master pointer up.
+    uint256 uintResult;
+    if( pRetargetPid ) {
+        //! Under normal conditions, update the PID output and return the next new difficulty required.
+        //! We do this while locked, once the Output Result is captured, it is immediately unlocked.
+        //! Based on height, perhaps during a blockchain initial load, other older algos will need to
+        //! be run, and their result returned.  That is detected below and processed accordingly.
+        {
+            LOCK( cs_retargetpid );
+            if( !pRetargetPid->UpdateOutput( pindexLast, pBlockHeader) )
+                LogPrint( "retarget", "Insufficient BlockIndex, unable to set RetargetPID output values.\n");
+            uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
+        }
+        //! Testnets always use the P-I-D Retarget Controller, only the MAIN network might not...
+        if( isMainNetwork() ) {
+            if( pindexLast->nHeight > nDifficultySwitchHeight3 ) {      //! Start of KGW era
+#if defined( HARDFORK_BLOCK )
+                //! The new P-I-D retarget algo will start at this hardfork block + 1
+                if( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
+#endif
+                    uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+            } else
+                uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
+        }
+    } else
+        uintResult = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+
+    //! Finish by converting the resulting uint256 value into a compact 32 bit 'nBits' value
+    return uintResult.GetCompact();
+}
+
+void RetargetPidReset( string strParams, const CBlockIndex* pIndex )
+{
+    LOCK( cs_retargetpid );
+
+    bool fCreateNew = true;
+    double dPropGain, dPropGainNow;
+    int64_t nIntTime, nIntTimeNow;
+    double dDevGain, dDevGainNow;
+    istringstream issParams(strParams);
+    try {
+        issParams >> dPropGain >> nIntTime >> dDevGain;
+        if( pRetargetPid ) {
+            pRetargetPid->GetPidTerms( &dPropGainNow, &nIntTimeNow, &dDevGainNow );
+            //! Check to see if we have already reset the PID controller to the new values, if so do not keep executing a reset
+            if( (dPropGainNow == dPropGain) && (nIntTimeNow == nIntTime) && (dDevGainNow == dDevGain) )
+                fCreateNew = false;
+            else
+                delete pRetargetPid;
+        }
+    } catch( const std::exception& ) {
+        fCreateNew = false;
+    }
+
+    if( fCreateNew ) {
+        pRetargetPid = new CRetargetPidController( dPropGain, nIntTime, dDevGain );
+        pRetargetPid->ChargeIntegrator(pIndex);
+        pRetargetPid->UpdateIndexTipFilter(pIndex);
+        //! At this point mining can resume and reporting will begin as if it was a new start.
+    } else
+        LogPrintf( "While Resetting RetargetPID Parameters, the values matched current settings or an error was thrown while reading them.\n" );
+}
+
+//! This routine handles lock and diagnostics as well as charging the Integrator after
+//! a new block has been processed and verified, or any other time the Tip() changes.
+//!
+//! We also run reports and update the TipFilter values, so future calls to calculate a new output retarget result can be done fast.
+bool SetRetargetToBlock( const CBlockIndex* pIndex )
+{
+    //! A null pointer shows up here when running test_anoncoin while loading the genesis block, do nothing.
+    if( !pRetargetPid )
+        return false;
+
+    LOCK( cs_retargetpid );
+
+    //! When this is called we have just updated the tip block or have finished loading the blockchain index during initialization.
+    //! We want to now report all the results from the previous block height, as if this current new index entry was a new header.
+    //! This means being one block behind in reporting, but in every other regard works well for when fUsesHeader is true or false.
+    if( pIndex && pIndex->pprev ) {
+        CBlockHeader aHeader = pIndex->GetBlockHeader();
+        pRetargetPid->RunReports( pIndex->pprev, &aHeader );
+    } else
+        return false;
+
+    //! Making it this far means we can now finally charge the Integror and setup the TipFilter to height as requested by the caller
+    bool fResult1 = pRetargetPid->ChargeIntegrator(pIndex);
+    bool fResult2 = pRetargetPid->UpdateIndexTipFilter(pIndex);
+
+    //! Now we build a string with the correct text for use in Log reporting output,
+    //! that will primarily be based on the build condition and network selected.
+    //! Although if UsesHeader() is true the next blocks difficuly is always changing
+    //! and so a computation is made by calling GetNextWorkRequired() using a header
+    //! time of the present moment, which works of coarse for any network and regardless
+    //! of wither or not a header time is important for the retarget output value.  This
+    //! then is used to log the health and result of the retargetpid, for a next new
+    //! block.
+    bool fBasedOnKGW = false;
+    string sNextWorkRequired;
+
+    if( isMainNetwork() ) {
+#if defined( HARDFORK_BLOCK )
+        //! The new algo will happen at the hardfork block + 1, otherwise its an old KGW block.
+        int32_t nDistance = nDifficultySwitchHeight4 - pIndex->nHeight;
+        fBasedOnKGW = nDistance >= 0;
+        if( nDistance > 0 ) {         // likekly KGW is being used
+            sNextWorkRequired = ( pIndex->nHeight > nDifficultySwitchHeight3 ) ?
+                                  strprintf( "For this and next %s blocks, ProofOfWork based on KGW. Required=", nDistance ) :
+                                  "Next ProofOfWork based on old algo. Required=";
+        }
+        else if( nDistance == 0 )   // Last KGW block
+            sNextWorkRequired = "Last Block based on KGW. ProofOfWork Required=";
+        else {                      // RetargetPID is used
+            sNextWorkRequired = strprintf( "For %d blocks ProofOfWork based on RetargetPID, Next Required=", -nDistance );
+            //! A special case exists for when the 1st next new block is about to be mined, This triggers an event
+            //! within the HARDFORK build, so all non-whitelisted nodes get disconnected and private forks of
+            //! the main chain can be run for evaluation purposes.
+            // if( nDistance == 1 )
+        }
+#else
+        sNextWorkRequired = "Next ProofOfWork based on old algo. Required=";
+#endif
+    } else
+        sNextWorkRequired = "Next ProofOfWork Required=";
+
+    if( !fBasedOnKGW && fResult1 && fResult2 && pRetargetPid->UsesHeader() ) sNextWorkRequired += "dynamic RightNow=";
+
+    //! Create a dummy header, with the present moment as the block time. calculate the Next Work Required and report that.
+    CBlockHeader aHeader;
+    aHeader.nTime = GetAdjustedTime();
+    uint32_t nNextBits = GetNextWorkRequired(pIndex, &aHeader);
+    sNextWorkRequired += strprintf( "0x%08x", nNextBits );
+
+    LogPrint( "retarget", "RetargetPID %s to height=%d, tipfilter %s, %s\n", fResult1 ? "charged" : "Integrator failed charge", pIndex->nHeight, fResult2 ? "updated" : "update failed", sNextWorkRequired );
+
+    return fResult1 && fResult2;
+}
+

@@ -1,12 +1,13 @@
 // Copyright (c) 2013 The Bitcoin Core developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
 #include "main.h"
+#include "random.h"
 #include "util.h"
 #include "serialize.h"
 #include "version.h"
@@ -29,7 +30,7 @@ uint256 static SignatureHashOld(CScript scriptCode, const CTransaction& txTo, un
         printf("ERROR: SignatureHash() : nIn=%d out of range\n", nIn);
         return 1;
     }
-    CTransaction txTmp(txTo);
+    CMutableTransaction txTmp(txTo);
 
     // In case concatenating two scripts ends up with two codeseparators,
     // or an extra one at the end, this prevents all those possible incompatibilities.
@@ -91,7 +92,8 @@ void static RandomScript(CScript &script) {
         script << oplist[insecure_rand() % (sizeof(oplist)/sizeof(oplist[0]))];
 }
 
-void static RandomTransaction(CTransaction &tx, bool fSingle) {
+void static RandomTransaction(CMutableTransaction &tx, bool fSingle)
+{
     tx.nVersion = insecure_rand();
     tx.vin.clear();
     tx.vout.clear();
@@ -131,13 +133,14 @@ BOOST_AUTO_TEST_CASE(sighash_test)
     #endif
     for (int i=0; i<nRandomTests; i++) {
         int nHashType = insecure_rand();
-        CTransaction txTo;
-        RandomTransaction(txTo, (nHashType & 0x1f) == SIGHASH_SINGLE);
+        CMutableTransaction mtxTo;
+        RandomTransaction(mtxTo, (nHashType & 0x1f) == SIGHASH_SINGLE);
         CScript scriptCode;
         RandomScript(scriptCode);
-        int nIn = insecure_rand() % txTo.vin.size();
+        int nIn = insecure_rand() % mtxTo.vin.size();
 
         uint256 sh, sho;
+        CTransaction txTo( mtxTo );
         sho = SignatureHashOld(scriptCode, txTo, nIn, nHashType);
         sh = SignatureHash(scriptCode, txTo, nIn, nHashType);
         #if defined(PRINT_SIGHASH_JSON)
@@ -181,7 +184,7 @@ BOOST_AUTO_TEST_CASE(sighash_from_data)
         std::string raw_tx, raw_script, sigHashHex;
         int nIn, nHashType;
         uint256 sh;
-        CTransaction tx;
+        CMutableTransaction mtx;
         CScript scriptCode = CScript();
 
         try {
@@ -194,9 +197,11 @@ BOOST_AUTO_TEST_CASE(sighash_from_data)
 
           uint256 sh;
           CDataStream stream(ParseHex(raw_tx), SER_NETWORK, PROTOCOL_VERSION);
-          stream >> tx;
+          stream >> mtx;
 
           CValidationState state;
+          CTransaction tx( mtx );
+
           BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), strTest);
           BOOST_CHECK(state.IsValid());
 
@@ -206,7 +211,7 @@ BOOST_AUTO_TEST_CASE(sighash_from_data)
           BOOST_ERROR("Bad test, couldn't deserialize data: " << strTest);
           continue;
         }
-
+        CTransaction tx( mtx );
         sh = SignatureHash(scriptCode, tx, nIn, nHashType);
         BOOST_CHECK_MESSAGE(sh.GetHex() == sigHashHex, strTest);
     }

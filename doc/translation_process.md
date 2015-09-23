@@ -36,7 +36,7 @@ this file must be updated to reflect those changes. A  custom script is used
 to extract strings from the non-Qt parts. This script makes use of `gettext`,
 so make sure that utility is installed (ie, `apt-get install gettext` on 
 Ubuntu/Debian). Once this has been updated, lupdate (included in the Qt SDK)
-is used to update bitcoin_en.ts. This process has been automated, from src/qt,
+is used to update anoncoin_en.ts. This process has been automated, from src/qt,
 simply run:
 
     make translate

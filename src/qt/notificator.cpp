@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "notificator.h"
@@ -30,7 +30,9 @@
 
 
 // https://wiki.ubuntu.com/NotificationDevelopmentGuidelines recommends at least 128
+#ifdef USE_DBUS
 const int FREEDESKTOP_NOTIFICATION_ICON_SIZE = 128;
+#endif
 
 Notificator::Notificator(const QString &programName, QSystemTrayIcon *trayicon, QWidget *parent) :
     QObject(parent),

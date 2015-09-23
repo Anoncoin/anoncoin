@@ -1,9 +1,10 @@
 // Copyright (c) 2013 The Bitcoin Core developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "hash.h"
+// #include "hash.h"
+#include "crypto/hmac_sha512.h"
 #include "util.h"
 
 #include <boost/test/unit_test.hpp>
@@ -116,11 +117,13 @@ BOOST_AUTO_TEST_CASE(hmacsha512_testvectors)
         vector<unsigned char> vchData = ParseHex(vtest[n].pszData);
         vector<unsigned char> vchMAC  = ParseHex(vtest[n].pszMAC);
         unsigned char vchTemp[64];
-
-        HMAC_SHA512_CTX ctx;
-        HMAC_SHA512_Init(&ctx, &vchKey[0], vchKey.size());
-        HMAC_SHA512_Update(&ctx, &vchData[0], vchData.size());
-        HMAC_SHA512_Final(&vchTemp[0], &ctx);
+        CHMAC_SHA512 ctx( &vchKey[0], vchKey.size() );
+        ctx.Write( &vchData[0], vchData.size() );
+        ctx.Finalize( &vchTemp[0] );
+        // HMAC_SHA512_CTX ctx;
+        // HMAC_SHA512_Init(&ctx, &vchKey[0], vchKey.size());
+        // HMAC_SHA512_Update(&ctx, &vchData[0], vchData.size());
+        // HMAC_SHA512_Final(&vchTemp[0], &ctx);
 
         BOOST_CHECK(memcmp(&vchTemp[0], &vchMAC[0], 64) == 0);
 

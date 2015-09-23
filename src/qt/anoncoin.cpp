@@ -1,10 +1,17 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2013-2015 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "anoncoingui.h"
-// Anoncoin-config.h has been loaded...
+
+// Many builder specific things set in the config file, for any source files where we rely on moc_xxx files being generated
+// it is best to include the anoncoin-config.h in the header file itself.  This file is unusual in that it has a .moc file
+// generated for the cpp src itself, with ENABLE_WALLET dependencies, so we include it again here now, attempting to resolve
+// some missing slots for windows builds, although the problem appears to be in anoncoingui...
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include "clientmodel.h"
 #include "guiconstants.h"
@@ -33,6 +40,7 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <QApplication>
+#include <QDebug>
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QMessageBox>
@@ -73,6 +81,7 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 
 // Declare meta types used for QMetaObject::invokeMethod
 Q_DECLARE_METATYPE(bool*)
+Q_DECLARE_METATYPE(CAmount)
 
 static void InitMessage(const std::string &message)
 {
@@ -144,14 +153,14 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
 void DebugMessageHandler(QtMsgType type, const char *msg)
 {
     Q_UNUSED(type);
-    LogPrint("qt", "GUI: %s\n", msg);
+    LogPrint("gui", "GUI: %s\n", msg);
 }
 #else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString &msg)
 {
     Q_UNUSED(type);
     Q_UNUSED(context);
-    LogPrint("qt", "GUI: %s\n", qPrintable(msg));
+    LogPrint("gui", "GUI: %s\n", qPrintable(msg));
 }
 #endif
 
@@ -164,11 +173,11 @@ class AnoncoinCoin: public QObject
 public:
     explicit AnoncoinCoin();
 
-public slots:
+public Q_SLOTS:
     void initialize();
     void shutdown();
 
-signals:
+Q_SIGNALS:
     void initializeResult(int retval);
     void shutdownResult(int retval);
     void runawayException(const QString &message);
@@ -210,13 +219,13 @@ public:
     /// Get window identifier of QMainWindow (AnoncoinGUI)
     WId getMainWinId() const;
 
-public slots:
+public Q_SLOTS:
     void initializeResult(int retval);
     void shutdownResult(int retval);
     /// Handle runaway exceptions. Shows a message box with the problem and quits the program.
     void handleRunawayException(const QString &message);
 
-signals:
+Q_SIGNALS:
     void requestedInitialize();
     void requestedShutdown();
     void stopThread();
@@ -247,7 +256,7 @@ AnoncoinCoin::AnoncoinCoin():
 void AnoncoinCoin::handleRunawayException(std::exception *e)
 {
     PrintExceptionContinue(e, "Runaway exception");
-    emit runawayException(QString::fromStdString(strMiscWarning));
+    Q_EMIT runawayException(QString::fromStdString(strMiscWarning));
 }
 
 void AnoncoinCoin::initialize()
@@ -263,7 +272,7 @@ void AnoncoinCoin::initialize()
              */
             StartDummyRPCThread();
         }
-        emit initializeResult(rv);
+        Q_EMIT initializeResult(rv);
     } catch (std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
@@ -280,7 +289,7 @@ void AnoncoinCoin::shutdown()
         threadGroup.join_all();
         Shutdown();
         LogPrintf("Shutdown finished\n");
-        emit shutdownResult(1);
+        Q_EMIT shutdownResult(1);
     } catch (std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
@@ -309,7 +318,7 @@ AnoncoinApplication::~AnoncoinApplication()
     if(coreThread)
     {
         LogPrintf("Stopping thread\n");
-        emit stopThread();
+        Q_EMIT stopThread();
         coreThread->wait();
         LogPrintf("Stopped thread\n");
     }
@@ -378,7 +387,7 @@ void AnoncoinApplication::requestInitialize()
 {
     LogPrintf("Requesting initialize\n");
     startThread();
-    emit requestedInitialize();
+    Q_EMIT requestedInitialize();
 }
 
 void AnoncoinApplication::requestShutdown()
@@ -401,7 +410,7 @@ void AnoncoinApplication::requestShutdown()
     ShutdownWindow::showShutdownWindow(window);
 
     // Request shutdown from core thread
-    emit requestedShutdown();
+    Q_EMIT requestedShutdown();
 }
 
 void AnoncoinApplication::initializeResult(int retval)
@@ -447,7 +456,7 @@ void AnoncoinApplication::initializeResult(int retval)
         {
             window->show();
         }
-        emit splashFinished(window);
+        Q_EMIT splashFinished(window);
 
 #ifdef ENABLE_WALLET
         // Now that initialization/startup is done, process any command-line
@@ -522,6 +531,9 @@ int main(int argc, char *argv[])
 
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
+    //   Need to pass name here as CAmount is a typedef (see http://qt-project.org/doc/qt-5/qmetatype.html#qRegisterMetaType)
+    //   IMPORTANT if it is no longer a typedef use the normal variant above
+    qRegisterMetaType< CAmount >("CAmount");
 
     /// 3. Application identification
     // must be set before OptionsModel is initialized or translations are loaded,
@@ -619,7 +631,7 @@ int main(int argc, char *argv[])
     if (!PaymentServer::ipcParseCommandLine(argc, argv))
         exit(0);
 #endif
-    bool isaTestNet = BaseParams().NetworkID() != CBaseChainParams::MAIN;
+    bool isaTestNet = !isMainNetwork();
     // Allow for separate UI settings for testnets
     if (isaTestNet)
         QApplication::setApplicationName(QAPP_APP_NAME_TESTNET);

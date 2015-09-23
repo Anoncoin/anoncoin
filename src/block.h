@@ -11,8 +11,34 @@
 #include "serialize.h"
 #include "uint256.h"
 
+#include <boost/unordered_map.hpp>
+
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
-static const unsigned int MAX_BLOCK_SIZE = 1000000;
+extern const uint32_t MAX_BLOCK_SIZE;
+
+/**
+ * Because Block headers for Anoncoin are made up of meaningless SHA256 double hashes, we introduce a new solution
+ * to the fact block hashes != block proof-of-work
+ * Legacy support of old blocks running under v10 requires this, as does every block mined today
+ */
+class uintFakeHash : public uint256
+{
+public:
+    uintFakeHash() {}
+    uintFakeHash(uint64_t b) : uint256(b) {}
+    uintFakeHash( const uint256& hashin ) : uint256( hashin) {}
+    // uintFakeHash( uint256& hashin ) : uint256( hashin) {}
+    uint256 GetRealHash() const;
+    void SetRealHash( const uint256& realHash );
+};
+
+struct BlockHashCorrector
+{
+    size_t operator()(const uint256& fakehash) const { return fakehash.GetLow64(); }
+};
+
+typedef boost::unordered_map<uintFakeHash, uint256, BlockHashCorrector> BlockHashCorrectionMap;
+extern BlockHashCorrectionMap mapBlockHashCrossReference;
 
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work
@@ -23,11 +49,17 @@ static const unsigned int MAX_BLOCK_SIZE = 1000000;
  */
 class CBlockHeader
 {
+private:
+    mutable bool fCalcScrypt;
+    mutable bool fCalcSha256d;
+    mutable uint256 therealHash;
+    mutable uintFakeHash sha256dHash;
+
 public:
     // header
     static const int32_t CURRENT_VERSION=2;
     int32_t nVersion;
-    uint256 hashPrevBlock;
+    uintFakeHash hashPrevBlock;
     uint256 hashMerkleRoot;
     uint32_t nTime;
     uint32_t nBits;
@@ -42,6 +74,11 @@ public:
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+        //! If (when) we read this header make sure we re-calculate the hashes when they are asked for.
+        if (ser_action.ForRead()) {
+            fCalcScrypt = false;
+            fCalcSha256d = false;
+        }
         READWRITE(this->nVersion);
         nVersion = this->nVersion;
         READWRITE(hashPrevBlock);
@@ -54,11 +91,13 @@ public:
     void SetNull()
     {
         nVersion = CBlockHeader::CURRENT_VERSION;
-        hashPrevBlock = 0;
-        hashMerkleRoot = 0;
+        hashPrevBlock.SetNull();
+        hashMerkleRoot.SetNull();
         nTime = 0;
         nBits = 0;
         nNonce = 0;
+        fCalcScrypt = false;
+        fCalcSha256d = false;
     }
 
     bool IsNull() const
@@ -66,8 +105,8 @@ public:
         return (nBits == 0);
     }
 
-    uint256 GetHash() const;
-    uint256 GetPowHash() const;
+    uintFakeHash CalcSha256dHash( const bool fForceUpdate = false ) const;
+    uint256 GetHash( const bool fForceUpdate = false ) const;
 
     int64_t GetBlockTime() const
     {
@@ -129,13 +168,6 @@ public:
     // merkle root).
     uint256 BuildMerkleTree(bool* mutated = NULL) const;
 
-    // V9 compatibility requirement for BIP30 testing, can be removed after v10 upgrade complete
-    const uint256 &GetTxHash(unsigned int nIndex) const {
-        assert(vMerkleTree.size() > 0); // BuildMerkleTree must have been called first
-        assert(nIndex < vtx.size());
-        return vMerkleTree[nIndex];
-    }
-
     std::vector<uint256> GetMerkleBranch(int nIndex) const;
     static uint256 CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMerkleBranch, int nIndex);
     std::string ToString() const;
@@ -148,11 +180,11 @@ public:
  */
 struct CBlockLocator
 {
-    std::vector<uint256> vHave;
+    std::vector<uintFakeHash> vHave;
 
     CBlockLocator() {}
 
-    CBlockLocator(const std::vector<uint256>& vHaveIn)
+    CBlockLocator(const std::vector<uintFakeHash>& vHaveIn)
     {
         vHave = vHaveIn;
     }
@@ -171,7 +203,7 @@ struct CBlockLocator
         vHave.clear();
     }
 
-    bool IsNull()
+    bool IsNull() const
     {
         return vHave.empty();
     }

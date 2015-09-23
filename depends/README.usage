@@ -6,9 +6,6 @@ directory, under this one called sources/
 If the name & hash matches the package definition, it will unarchive it here and compile
 the source for you, as required. 
 
-This package includes what should be required to also build zerocoin and i2pd, as far as
-BOOST goes, no crypto++ yet.
-
 Over 680MB's of source will be downloaded if you select all types of targets to build,
 so you may want to limit your downloads to just those needed to build on your system.
 

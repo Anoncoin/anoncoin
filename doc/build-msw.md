@@ -4,20 +4,29 @@ WINDOWS BUILD NOTES
 
 Compilers Supported
 -------------------
-TODO: What works?
-Note: releases are cross-compiled using mingw running on Linux.
+TODO: What works? Only barely started updating this,  there are many more dependencies and details to
+      document here, nor do we any longer include source to build with the executables.
+      This document needs to be upgraded to the v9.5 Anoncoin Core level, it is very outdated.
+
+      The boost library requires two or three additional components which you must add over what most
+      other coins require.
+
+Note: Releases are cross-compiled using mingw running on Linux.  That is one possible way to do it.
+      Another is to follow the thread on bitcointalk.org, specifically setup for building on Windows.
 
 
 Dependencies
 ------------
-Libraries you need to download separately and build:
+Libraries you need to download separately and build:  This is no longer a requirement if you use the depends directory
+to build your libraries before building the main Anoncoin software, it is setup for that and takes care of the download
+process as well.
 
 	name            default path               download
 	--------------------------------------------------------------------------------------------------------------------
-	OpenSSL         \openssl-1.0.1c-mgw        http://www.openssl.org/source/
-	Berkeley DB     \db-4.8.30.NC-mgw          http://www.oracle.com/technology/software/products/berkeley-db/index.html
-	Boost           \boost-1.50.0-mgw          http://www.boost.org/users/download/
-	miniupnpc       \miniupnpc-1.6-mgw         http://miniupnp.tuxfamily.org/files/
+	OpenSSL         \openssl-1.0.1j            http://www.openssl.org/source/
+	Berkeley DB     \db-4.8.30.NC              http://www.oracle.com/technology/software/products/berkeley-db/index.html
+	Boost           \boost-1.57.0              http://www.boost.org/users/download/
+	miniupnpc       \miniupnpc-1.9.20140701    http://miniupnp.tuxfamily.org/files/
 
 Their licenses:
 
@@ -28,11 +37,13 @@ Their licenses:
 
 Versions used in this release:
 
-	OpenSSL      1.0.1c
-	Berkeley DB  4.8.30.NC
-	Boost        1.50.0
-	miniupnpc    1.6
+	OpenSSL      openssl-1.0.1j.tar.gz
+	Berkeley DB  db-4.8.30.NC.tar.gz
+	Boost        boost_1_57_0.tar.bz2
+	miniupnpc    miniupnpc-1.9.20140701.tar.gz
 
+
+Most of the following details are incorrect or not needed.
 
 OpenSSL
 -------
@@ -72,11 +83,11 @@ MSYS shell:
 	mkdir miniupnpc
 	cp *.h miniupnpc/
 
-Bitcoin
+Anoncoin
 -------
 MSYS shell:
 
-	cd \bitcoin
+	cd \anoncoin
 	sh autogen.sh
 	sh configure
 	mingw32-make

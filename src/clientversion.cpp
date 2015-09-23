@@ -1,13 +1,17 @@
 // Copyright (c) 2012-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
+// Copyright (c) 2013-2015 The Anoncoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientversion.h"
 
 #include "tinyformat.h"
-
 #include <string>
+
+const int CLIENT_VERSION = 1000000 * CLIENT_VERSION_MAJOR
+                         +   10000 * CLIENT_VERSION_MINOR
+                         +     100 * CLIENT_VERSION_REVISION
+                         +       1 * CLIENT_VERSION_BUILD;
 
 /**
  * Name of client reported in the 'version' message. Report the same name

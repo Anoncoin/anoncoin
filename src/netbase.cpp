@@ -4,23 +4,18 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-// Many builder specific things set in the config file, don't forget to include it this way in your source files.
-#ifdef HAVE_CONFIG_H
-#include "config/anoncoin-config.h"
-#endif
-
-#ifdef HAVE_GETADDRINFO_A
-#include <netdb.h>
-#endif
-
 #include "netbase.h"
 
-#include "addrman.h"        // For looking up local b32.i2p addresses as base64 i2p destinations
+#include "addrman.h"        // For looking up b32.i2p addresses as base64 i2p destinations
 #include "hash.h"
 #include "sync.h"
 #include "ui_interface.h"
 #include "uint256.h"
 #include "util.h"
+
+#ifdef HAVE_GETADDRINFO_A
+#include <netdb.h>
+#endif
 
 #ifndef WIN32
 #if HAVE_INET_PTON
@@ -31,7 +26,8 @@
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_lower()
 #include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
-#include <boost/foreach.hpp>
+#include <boost/thread.hpp>
+#include <openssl/sha.h>
 
 #if !defined(HAVE_MSG_NOSIGNAL) && !defined(MSG_NOSIGNAL)
 #define MSG_NOSIGNAL 0
@@ -39,27 +35,32 @@
 
 using namespace std;
 
+//! Constants found in this source codes header(.h)
+/** -timeout default */
+const int32_t DEFAULT_CONNECT_TIMEOUT = 20000;
+//! ToDo: Further analysis from debugging i2p connections may reveal that this setting needs more adjustment.
+//!       Connected peer table entries show ping times >13000ms  20000 sets this number's default
+//!       to 4 times what btc had (5000) .. Or possibly we need to add a new variable for I2p specifically.
+
 // Settings
 static proxyType proxyInfo[NET_MAX];
 static CService nameProxy;
 static CCriticalSection cs_proxyInfos;
-// ToDo: Further analysis from debuging i2p connections may reveal that this setting is too low.
-//       Connected peertable entries show ping times >13000ms  Changing this number's default
-//       to 4 times what Bitcoin had it set too... Or possibly add a new variable for I2p specifically.
-// int nConnectTimeout = 5000;
-int nConnectTimeout = 20000;
+int nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;      //! See netbase.h for setting value, i2p requires setting this higher
 bool fNameLookup = false;
+CAddrMan addrman;               //! This must be here, not in net.cpp so that lib_common can contain CAddrman code, as well as timedata
 
 static const unsigned char pchIPv4[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff };
+
+// Need ample time for negotiation for very slow proxies such as Tor (milliseconds)
+static const int SOCKS5_RECV_TIMEOUT = 20 * 1000;
 
 enum Network ParseNetwork(std::string net) {
     boost::to_lower(net);
     if (net == "ipv4") return NET_IPV4;
     if (net == "ipv6") return NET_IPV6;
     if (net == "tor" || net == "onion")  return NET_TOR;
-#ifdef ENABLE_I2PSAM
     if (net == "i2p") return NET_I2P;
-#endif
     return NET_UNROUTABLE;
 }
 
@@ -69,9 +70,7 @@ std::string GetNetworkName(enum Network net) {
     case NET_IPV4: return "ipv4";
     case NET_IPV6: return "ipv6";
     case NET_TOR : return "tor";
-#ifdef ENABLE_I2PSAM
     case NET_I2P: return "i2p";
-#endif
 
     default: return "???";
     }
@@ -84,12 +83,10 @@ void SplitHostPort(std::string in, int &portOut, std::string &hostOut) {
     bool fBracketed = fHaveColon && (in[0]=='[' && in[colon-1]==']'); // if there is a colon, and in[0]=='[', colon is not 0, so in[colon-1] is safe
     bool fMultiColon = fHaveColon && (in.find_last_of(':',colon-1) != in.npos);
     if (fHaveColon && (colon==0 || fBracketed || !fMultiColon)) {
-        char *endp = NULL;
-        int n = strtol(in.c_str() + colon + 1, &endp, 10);
-        if (endp && *endp == 0 && n >= 0) {
+        int32_t n;
+        if (ParseInt32(in.substr(colon + 1), &n) && n > 0 && n < 0x10000) {
             in = in.substr(0, colon);
-            if (n > 0 && n < 0x10000)
-                portOut = n;
+            portOut = n;
         }
     }
     if (in.size()>0 && in[0] == '[' && in[in.size()-1] == ']')
@@ -109,13 +106,11 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
             vIP.push_back(addr);
             return true;
         }
-#ifdef ENABLE_I2PSAM
         // The problem is:  if SetSpecial returns false, we don't know why it failed or what happen
         else if( isStringI2pDestination( strName ) ) {
             // LogPrintf( "...." );  so SetSpecial now has extensive logging support of errors, need more put it here
             return false;   // we're done here, a dns seed node could not be found or any I2P type destination address failed to be found
         }
-#endif
     }
 
 #ifdef HAVE_GETADDRINFO_A
@@ -216,11 +211,6 @@ bool LookupHost(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nM
     return LookupIntern(strHost.c_str(), vIP, nMaxSolutions, fAllowLookup);
 }
 
-bool LookupHostNumeric(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions)
-{
-    return LookupHost(pszName, vIP, nMaxSolutions, false);
-}
-
 bool Lookup(const char *pszName, std::vector<CService>& vAddr, int portDefault, bool fAllowLookup, unsigned int nMaxSolutions)
 {
     if (pszName[0] == 0)
@@ -254,60 +244,161 @@ bool LookupNumeric(const char *pszName, CService& addr, int portDefault)
     return Lookup(pszName, addr, portDefault, false);
 }
 
+/**
+ * Convert milliseconds to a struct timeval for select.
+ */
+struct timeval static MillisToTimeval(int64_t nTimeout)
+{
+    struct timeval timeout;
+    timeout.tv_sec  = nTimeout / 1000;
+    timeout.tv_usec = (nTimeout % 1000) * 1000;
+    return timeout;
+}
+
+/**
+ * Read bytes from socket. This will either read the full number of bytes requested
+ * or return False on error or timeout.
+ * This function can be interrupted by boost thread interrupt.
+ *
+ * @param data Buffer to receive into
+ * @param len  Length of data to receive
+ * @param timeout  Timeout in milliseconds for receive operation
+ *
+ * @note This function requires that hSocket is in non-blocking mode.
+ */
+bool static InterruptibleRecv(char* data, size_t len, int timeout, SOCKET& hSocket)
+{
+    int64_t curTime = GetTimeMillis();
+    int64_t endTime = curTime + timeout;
+    // Maximum time to wait in one select call. It will take up until this time (in millis)
+    // to break off in case of an interruption.
+    const int64_t maxWait = 1000;
+    while (len > 0 && curTime < endTime) {
+        ssize_t ret = recv(hSocket, data, len, 0); // Optimistically try the recv first
+        if (ret > 0) {
+            len -= ret;
+            data += ret;
+        } else if (ret == 0) { // Unexpected disconnection
+            return false;
+        } else { // Other error or blocking
+            int nErr = WSAGetLastError();
+            if (nErr == WSAEINPROGRESS || nErr == WSAEWOULDBLOCK || nErr == WSAEINVAL) {
+                struct timeval tval = MillisToTimeval(std::min(endTime - curTime, maxWait));
+                fd_set fdset;
+                FD_ZERO(&fdset);
+                FD_SET(hSocket, &fdset);
+                int nRet = select(hSocket + 1, &fdset, NULL, NULL, &tval);
+                if (nRet == SOCKET_ERROR) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        boost::this_thread::interruption_point();
+        curTime = GetTimeMillis();
+    }
+    return len == 0;
+}
+
+struct ProxyCredentials
+{
+    std::string username;
+    std::string password;
+};
+
+/** Connect using SOCKS5 (as described in RFC1928) */
+// static bool Socks5(const std::string& strDest, int port, const ProxyCredentials *auth, SOCKET& hSocket)
 bool static Socks5(string strDest, int port, SOCKET& hSocket)
 {
+    ProxyCredentials* auth = NULL;                  // Do no yet support authentication ToDo:
+
     LogPrintf("SOCKS5 connecting %s\n", strDest);
-    if (strDest.size() > 255)
-    {
-        closesocket(hSocket);
+    if (strDest.size() > 255) {
+        CloseSocket(hSocket);
         return error("Hostname too long");
     }
-    char pszSocks5Init[] = "\5\1\0";
-    ssize_t nSize = sizeof(pszSocks5Init) - 1;
-
-    ssize_t ret = send(hSocket, pszSocks5Init, nSize, MSG_NOSIGNAL);
-    if (ret != nSize)
-    {
-        closesocket(hSocket);
+    // Accepted authentication methods
+    std::vector<uint8_t> vSocks5Init;
+    vSocks5Init.push_back(0x05);
+    if (auth) {
+        vSocks5Init.push_back(0x02); // # METHODS
+        vSocks5Init.push_back(0x00); // X'00' NO AUTHENTICATION REQUIRED
+        vSocks5Init.push_back(0x02); // X'02' USERNAME/PASSWORD (RFC1929)
+    } else {
+        vSocks5Init.push_back(0x01); // # METHODS
+        vSocks5Init.push_back(0x00); // X'00' NO AUTHENTICATION REQUIRED
+    }
+    ssize_t ret = send(hSocket, (const char*)begin_ptr(vSocks5Init), vSocks5Init.size(), MSG_NOSIGNAL);
+    if (ret != (ssize_t)vSocks5Init.size()) {
+        CloseSocket(hSocket);
         return error("Error sending to proxy");
     }
     char pchRet1[2];
-    if (recv(hSocket, pchRet1, 2, 0) != 2)
-    {
-        closesocket(hSocket);
+    if (!InterruptibleRecv(pchRet1, 2, SOCKS5_RECV_TIMEOUT, hSocket)) {
+        CloseSocket(hSocket);
         return error("Error reading proxy response");
     }
-    if (pchRet1[0] != 0x05 || pchRet1[1] != 0x00)
-    {
-        closesocket(hSocket);
+    if (pchRet1[0] != 0x05) {
+        CloseSocket(hSocket);
         return error("Proxy failed to initialize");
     }
-    string strSocks5("\5\1");
-    strSocks5 += '\000'; strSocks5 += '\003';
-    strSocks5 += static_cast<char>(std::min((int)strDest.size(), 255));
-    strSocks5 += strDest;
-    strSocks5 += static_cast<char>((port >> 8) & 0xFF);
-    strSocks5 += static_cast<char>((port >> 0) & 0xFF);
-    ret = send(hSocket, strSocks5.c_str(), strSocks5.size(), MSG_NOSIGNAL);
-    if (ret != (ssize_t)strSocks5.size())
-    {
-        closesocket(hSocket);
+    if (pchRet1[1] == 0x02 && auth) {
+        // Perform username/password authentication (as described in RFC1929)
+        std::vector<uint8_t> vAuth;
+        vAuth.push_back(0x01);
+        if (auth->username.size() > 255 || auth->password.size() > 255)
+            return error("Proxy username or password too long");
+        vAuth.push_back(auth->username.size());
+        vAuth.insert(vAuth.end(), auth->username.begin(), auth->username.end());
+        vAuth.push_back(auth->password.size());
+        vAuth.insert(vAuth.end(), auth->password.begin(), auth->password.end());
+        ret = send(hSocket, (const char*)begin_ptr(vAuth), vAuth.size(), MSG_NOSIGNAL);
+        if (ret != (ssize_t)vAuth.size()) {
+            CloseSocket(hSocket);
+            return error("Error sending authentication to proxy");
+        }
+        LogPrint("proxy", "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
+        char pchRetA[2];
+        if (!InterruptibleRecv(pchRetA, 2, SOCKS5_RECV_TIMEOUT, hSocket)) {
+            CloseSocket(hSocket);
+            return error("Error reading proxy authentication response");
+        }
+        if (pchRetA[0] != 0x01 || pchRetA[1] != 0x00) {
+            CloseSocket(hSocket);
+            return error("Proxy authentication unsuccesful");
+        }
+    } else if (pchRet1[1] == 0x00) {
+        // Perform no authentication
+    } else {
+        CloseSocket(hSocket);
+        return error("Proxy requested wrong authentication method %02x", pchRet1[1]);
+    }
+    std::vector<uint8_t> vSocks5;
+    vSocks5.push_back(0x05); // VER protocol version
+    vSocks5.push_back(0x01); // CMD CONNECT
+    vSocks5.push_back(0x00); // RSV Reserved
+    vSocks5.push_back(0x03); // ATYP DOMAINNAME
+    vSocks5.push_back(strDest.size()); // Length<=255 is checked at beginning of function
+    vSocks5.insert(vSocks5.end(), strDest.begin(), strDest.end());
+    vSocks5.push_back((port >> 8) & 0xFF);
+    vSocks5.push_back((port >> 0) & 0xFF);
+    ret = send(hSocket, (const char*)begin_ptr(vSocks5), vSocks5.size(), MSG_NOSIGNAL);
+    if (ret != (ssize_t)vSocks5.size()) {
+        CloseSocket(hSocket);
         return error("Error sending to proxy");
     }
     char pchRet2[4];
-    if (recv(hSocket, pchRet2, 4, 0) != 4)
-    {
-        closesocket(hSocket);
+    if (!InterruptibleRecv(pchRet2, 4, SOCKS5_RECV_TIMEOUT, hSocket)) {
+        CloseSocket(hSocket);
         return error("Error reading proxy response");
     }
-    if (pchRet2[0] != 0x05)
-    {
-        closesocket(hSocket);
+    if (pchRet2[0] != 0x05) {
+        CloseSocket(hSocket);
         return error("Proxy failed to accept request");
     }
-    if (pchRet2[1] != 0x00)
-    {
-        closesocket(hSocket);
+    if (pchRet2[1] != 0x00) {
+        CloseSocket(hSocket);
         switch (pchRet2[1])
         {
             case 0x01: return error("Proxy error: general failure");
@@ -321,37 +412,34 @@ bool static Socks5(string strDest, int port, SOCKET& hSocket)
             default:   return error("Proxy error: unknown");
         }
     }
-    if (pchRet2[2] != 0x00)
-    {
-        closesocket(hSocket);
+    if (pchRet2[2] != 0x00) {
+        CloseSocket(hSocket);
         return error("Error: malformed proxy response");
     }
     char pchRet3[256];
     switch (pchRet2[3])
     {
-        case 0x01: ret = recv(hSocket, pchRet3, 4, 0) != 4; break;
-        case 0x04: ret = recv(hSocket, pchRet3, 16, 0) != 16; break;
+        case 0x01: ret = InterruptibleRecv(pchRet3, 4, SOCKS5_RECV_TIMEOUT, hSocket); break;
+        case 0x04: ret = InterruptibleRecv(pchRet3, 16, SOCKS5_RECV_TIMEOUT, hSocket); break;
         case 0x03:
         {
-            ret = recv(hSocket, pchRet3, 1, 0) != 1;
-            if (ret) {
-                closesocket(hSocket);
+            ret = InterruptibleRecv(pchRet3, 1, SOCKS5_RECV_TIMEOUT, hSocket);
+            if (!ret) {
+                CloseSocket(hSocket);
                 return error("Error reading from proxy");
             }
             int nRecv = pchRet3[0];
-            ret = recv(hSocket, pchRet3, nRecv, 0) != nRecv;
+            ret = InterruptibleRecv(pchRet3, nRecv, SOCKS5_RECV_TIMEOUT, hSocket);
             break;
         }
-        default: closesocket(hSocket); return error("Error: malformed proxy response");
+        default: CloseSocket(hSocket); return error("Error: malformed proxy response");
     }
-    if (ret)
-    {
-        closesocket(hSocket);
+    if (!ret) {
+        CloseSocket(hSocket);
         return error("Error reading from proxy");
     }
-    if (recv(hSocket, pchRet3, 2, 0) != 2)
-    {
-        closesocket(hSocket);
+    if (!InterruptibleRecv(pchRet3, 2, SOCKS5_RECV_TIMEOUT, hSocket)) {
+        CloseSocket(hSocket);
         return error("Error reading from proxy");
     }
     LogPrintf("SOCKS5 connected %s\n", strDest);
@@ -372,32 +460,24 @@ bool static ConnectSocketDirectly(const CService &addrConnect, SOCKET& hSocketRe
     SOCKET hSocket = socket(((struct sockaddr*)&sockaddr)->sa_family, SOCK_STREAM, IPPROTO_TCP);
     if (hSocket == INVALID_SOCKET)
         return false;
+
 #ifdef SO_NOSIGPIPE
     int set = 1;
+    // Different way of disabling SIGPIPE on BSD
     setsockopt(hSocket, SOL_SOCKET, SO_NOSIGPIPE, (void*)&set, sizeof(int));
 #endif
 
-#ifdef WIN32
-    u_long fNonblock = 1;
-    if (ioctlsocket(hSocket, FIONBIO, &fNonblock) == SOCKET_ERROR)
-#else
-    int fFlags = fcntl(hSocket, F_GETFL, 0);
-    if (fcntl(hSocket, F_SETFL, fFlags | O_NONBLOCK) == -1)
-#endif
-    {
-        closesocket(hSocket);
-        return false;
-    }
+    // Set to non-blocking
+    if (!SetSocketNonBlocking(hSocket, true))
+        return error("ConnectSocketDirectly: Setting socket to non-blocking failed, error %s\n", NetworkErrorString(WSAGetLastError()));
 
     if (connect(hSocket, (struct sockaddr*)&sockaddr, len) == SOCKET_ERROR)
     {
+        int nErr = WSAGetLastError();
         // WSAEINVAL is here because some legacy version of winsock uses it
-        if (WSAGetLastError() == WSAEINPROGRESS || WSAGetLastError() == WSAEWOULDBLOCK || WSAGetLastError() == WSAEINVAL)
+        if (nErr == WSAEINPROGRESS || nErr == WSAEWOULDBLOCK || nErr == WSAEINVAL)
         {
-            struct timeval timeout;
-            timeout.tv_sec  = nTimeout / 1000;
-            timeout.tv_usec = (nTimeout % 1000) * 1000;
-
+            struct timeval timeout = MillisToTimeval(nTimeout);
             fd_set fdset;
             FD_ZERO(&fdset);
             FD_SET(hSocket, &fdset);
@@ -405,13 +485,13 @@ bool static ConnectSocketDirectly(const CService &addrConnect, SOCKET& hSocketRe
             if (nRet == 0)
             {
                 LogPrint("net", "connection to %s timeout\n", addrConnect.ToString());
-                closesocket(hSocket);
+                CloseSocket(hSocket);
                 return false;
             }
             if (nRet == SOCKET_ERROR)
             {
                 LogPrintf("select() for %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
-                closesocket(hSocket);
+                CloseSocket(hSocket);
                 return false;
             }
             socklen_t nRetSize = sizeof(nRet);
@@ -422,13 +502,13 @@ bool static ConnectSocketDirectly(const CService &addrConnect, SOCKET& hSocketRe
 #endif
             {
                 LogPrintf("getsockopt() for %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
-                closesocket(hSocket);
+                CloseSocket(hSocket);
                 return false;
             }
             if (nRet != 0)
             {
                 LogPrintf("connect() to %s failed after select(): %s\n", addrConnect.ToString(), NetworkErrorString(nRet));
-                closesocket(hSocket);
+                CloseSocket(hSocket);
                 return false;
             }
         }
@@ -439,24 +519,9 @@ bool static ConnectSocketDirectly(const CService &addrConnect, SOCKET& hSocketRe
 #endif
         {
             LogPrintf("connect() to %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
-            closesocket(hSocket);
+            CloseSocket(hSocket);
             return false;
         }
-    }
-
-    // this isn't even strictly necessary
-    // CNode::ConnectNode immediately turns the socket back to non-blocking
-    // but we'll turn it back to blocking just in case
-#ifdef WIN32
-    fNonblock = 0;
-    if (ioctlsocket(hSocket, FIONBIO, &fNonblock) == SOCKET_ERROR)
-#else
-    fFlags = fcntl(hSocket, F_GETFL, 0);
-    if (fcntl(hSocket, F_SETFL, fFlags & ~O_NONBLOCK) == SOCKET_ERROR)
-#endif
-    {
-        closesocket(hSocket);
-        return false;
     }
 
     hSocketRet = hSocket;
@@ -511,50 +576,55 @@ bool IsProxy(const CNetAddr &addr) {
     return false;
 }
 
-#ifdef ENABLE_I2PSAM
-// All this really does is for i2p connect & accept is set the socket to nonblocking, code could more than
-// likely be removed and use the regular ip version in places where the code overlapps anyway.
-bool SetI2pSocketOptions(SOCKET& hSocket)
+#if defined( DONT_COMPILE )
+static bool ConnectThroughProxy(const proxyType &proxy, const std::string& strDest, int port, SOCKET& hSocketRet, int nTimeout, bool *outProxyConnectionFailed)
 {
-    if (hSocket == INVALID_SOCKET)
-        return false;
-#ifdef SO_NOSIGPIPE
-    int set = 1;
-    setsockopt(hSocket, SOL_SOCKET, SO_NOSIGPIPE, (void*)&set, sizeof(int));
-#endif
-
-#ifdef WIN32
-    u_long fNonblock = 1;
-    if (ioctlsocket(hSocket, FIONBIO, &fNonblock) == SOCKET_ERROR)
-#else
-    int fFlags = fcntl(hSocket, F_GETFL, 0);
-    if (fcntl(hSocket, F_SETFL, fFlags | O_NONBLOCK) == -1)
-#endif
-    {
-        closesocket(hSocket);
-        hSocket = INVALID_SOCKET;
+    SOCKET hSocket = INVALID_SOCKET;
+    // first connect to proxy server
+    if (!ConnectSocketDirectly(proxy.proxy, hSocket, nTimeout)) {
+        if (outProxyConnectionFailed)
+            *outProxyConnectionFailed = true;
         return false;
     }
+    // do socks negotiation
+    if (proxy.randomize_credentials) {
+        ProxyCredentials random_auth;
+        random_auth.username = strprintf("%i", insecure_rand());
+        random_auth.password = strprintf("%i", insecure_rand());
+        if (!Socks5(strDest, (unsigned short)port, &random_auth, hSocket))
+            return false;
+    } else {
+        if (!Socks5(strDest, (unsigned short)port, 0, hSocket))
+            return false;
+    }
+
+    hSocketRet = hSocket;
     return true;
 }
-#endif // ENABLE_I2PSAM
+#endif // defined
 
-bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
+bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout, bool *outProxyConnectionFailed)
 {
-    proxyType proxy;
+    proxyType proxy;                                                    //! Not needed by i2p, but might be for clearnet or tor
 
+    if (outProxyConnectionFailed) *outProxyConnectionFailed = false;    //! Assume success
 #ifdef ENABLE_I2PSAM
     if( addrDest.IsI2P() ) {
         assert( addrDest.IsNativeI2P() );
         SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2pDestination(), false/*, streamSocket*/);
-        if( SetI2pSocketOptions(streamSocket) ) {
+        if (SetSocketNonBlocking(streamSocket, true)) {                 //! Set to non-blocking
             hSocketRet = streamSocket;
             return true;
         }
+        hSocketRet = INVALID_SOCKET;
         return false;
     }
-#endif // ENABLE_I2PSAM
-
+#else
+    LogPrintf( "This Build does NOT support I2P Communications, network connection failed for: %s\n", addrDest.ToB32String() );
+    if (outProxyConnectionFailed) *outProxyConnectionFailed = true;
+    hSocketRet = INVALID_SOCKET;
+    return false;
+#endif
     // no proxy needed (none set for target network)
     if (!GetProxy(addrDest.GetNetwork(), proxy))
         return ConnectSocketDirectly(addrDest, hSocketRet, nTimeout);
@@ -562,8 +632,11 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
     SOCKET hSocket = INVALID_SOCKET;
 
     // first connect to proxy server
-    if (!ConnectSocketDirectly(proxy, hSocket, nTimeout))
+    if (!ConnectSocketDirectly(proxy, hSocket, nTimeout)) {
+        if (outProxyConnectionFailed)
+            *outProxyConnectionFailed = true;
         return false;
+    }
     // do socks negotiation
     if (!Socks5(addrDest.ToStringIP(), addrDest.GetPort(), hSocket))
         return false;
@@ -572,11 +645,15 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
     return true;
 }
 
-bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault, int nTimeout)
+bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault, int nTimeout, bool *outProxyConnectionFailed)
 {
     string strDest;
     int port = portDefault;
-    SplitHostPort(string(pszDest), port, strDest);          // Also strips off any leading and trailing [ ] characters
+
+    if (outProxyConnectionFailed)
+        *outProxyConnectionFailed = false;                  //! Assume success
+
+    SplitHostPort(string(pszDest), port, strDest);          //! Also strips off any leading and trailing [ ] characters
 
     SOCKET hSocket = INVALID_SOCKET;
 
@@ -594,8 +671,11 @@ bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest
     if (!HaveNameProxy())
         return false;
     // first connect to name proxy server
-    if (!ConnectSocketDirectly(nameProxy, hSocket, nTimeout))
+    if (!ConnectSocketDirectly(nameProxy, hSocket, nTimeout)) {
+        if (outProxyConnectionFailed)
+            *outProxyConnectionFailed = true;
         return false;
+    }
     // do socks negotiation
     if (!Socks5(strDest, (unsigned short)port, hSocket))
         return false;
@@ -607,17 +687,13 @@ bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest
 void CNetAddr::Init()
 {
     memset(ip, 0, sizeof(ip));
-#ifdef ENABLE_I2PSAM
     memset(i2pDest, 0, I2P_DESTINATION_STORE);
-#endif
 }
 
 void CNetAddr::SetIP(const CNetAddr& ipIn)
 {
     memcpy(ip, ipIn.ip, sizeof(ip));
-#ifdef ENABLE_I2PSAM
     memcpy(i2pDest, ipIn.i2pDest, I2P_DESTINATION_STORE);
-#endif
 }
 
 void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
@@ -634,9 +710,7 @@ void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
         default:
             assert(!"invalid network");
     }
-#ifdef ENABLE_I2PSAM
     memset(i2pDest, 0, I2P_DESTINATION_STORE);
-#endif
 }
 
 static const unsigned char pchOnionCat[] = {0xFD,0x87,0xD8,0x7E,0xEB,0x43};
@@ -657,7 +731,6 @@ static const unsigned char pchGarlicCat[] = { 0xFD,0x60, 0xDB,0x4D, 0xDD,0xB5 };
  */
 bool CNetAddr::SetSpecial(const std::string &strName)
 {
-#ifdef ENABLE_I2PSAM
     // Any address that ends in b32.i2p should be valid here, as the router itself is used to lookup the base64 destination, it returns without an address
     // if the string can not be found, if it's a base64 address, we can use it as is, to setup a new correctly formated CNetAddr object
     if( isStringI2pDestination( strName ) )                                      // Perhaps we've been given a I2P address, they come in 2 different ways
@@ -676,7 +749,11 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             if( IsI2PEnabled() && fNameLookup ) {                           // Check for dns set, we should at least log the error, if not.
                 int64_t iNow = GetTime();
                 if( !addr.size() )                                          // If we couldn't find it, much more to do..
+#ifdef ENABLE_I2PSAM
                     addr = I2PSession::Instance().namingLookup(strName);    // Expensive, but lets try, this could take a very long while...
+#else
+                    LogPrintf( "This Build does NOT support I2P Communications, network lookup failed for: %s\n", strName );
+#endif
                 else
                     LogPrintf( "The i2p destination %s was found locally.\n", strName );
                 // If the address returned is a non-zero length string, the lookup was successful
@@ -697,7 +774,6 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         memcpy(i2pDest, addr.c_str(), I2P_DESTINATION_STORE);         // So now copy it to our CNetAddr object variable
         return true;                                                        // Special handling taken care of
     }
-#endif // ENABLE_I2PSAM
 
     if (strName.size()>6 && strName.substr(strName.size() - 6, 6) == ".onion") {
         std::vector<unsigned char> vchAddr = DecodeBase32(strName.substr(0, strName.size() - 6).c_str());
@@ -755,11 +831,7 @@ bool CNetAddr::IsIPv4() const
 
 bool CNetAddr::IsIPv6() const
 {
-#ifdef ENABLE_I2PSAM
     return (!IsIPv4() && !IsTor() && !IsI2P());
-#else   // Original Code
-    return (!IsIPv4() && !IsTor());
-#endif
 }
 
 bool CNetAddr::IsRFC1918() const
@@ -770,9 +842,26 @@ bool CNetAddr::IsRFC1918() const
         (GetByte(3) == 172 && (GetByte(2) >= 16 && GetByte(2) <= 31)));
 }
 
+bool CNetAddr::IsRFC2544() const
+{
+    return IsIPv4() && GetByte(3) == 198 && (GetByte(2) == 18 || GetByte(2) == 19);
+}
+
 bool CNetAddr::IsRFC3927() const
 {
     return IsIPv4() && (GetByte(3) == 169 && GetByte(2) == 254);
+}
+
+bool CNetAddr::IsRFC6598() const
+{
+    return IsIPv4() && GetByte(3) == 100 && GetByte(2) >= 64 && GetByte(2) <= 127;
+}
+
+bool CNetAddr::IsRFC5737() const
+{
+    return IsIPv4() && ((GetByte(3) == 192 && GetByte(2) == 0 && GetByte(1) == 2) ||
+        (GetByte(3) == 198 && GetByte(2) == 51 && GetByte(1) == 100) ||
+        (GetByte(3) == 203 && GetByte(2) == 0 && GetByte(1) == 113));
 }
 
 bool CNetAddr::IsRFC3849() const
@@ -823,7 +912,6 @@ bool CNetAddr::IsTor() const
     return (memcmp(ip, pchOnionCat, sizeof(pchOnionCat)) == 0);
 }
 
-#ifdef ENABLE_I2PSAM
 bool CNetAddr::IsI2P() const
 {
     return (memcmp(ip, pchGarlicCat, sizeof(pchGarlicCat)) == 0);
@@ -861,7 +949,7 @@ bool CNetAddr::CheckAndSetGarlicCat( void )
 }
 
 /** \brief Sets the i2pDest field to the callers given string
-    The ip field is not touched, if the parameter given is zero length, otherwise it is set to the GarlicCat
+ *  The ip field is not touched, if the parameter given is zero length, otherwise it is set to the GarlicCat
  *
  * \param sBase64Dest const std::string
  * \return bool true if the address is now set to a valid i2p destination, otherwise false
@@ -887,11 +975,9 @@ std::string CNetAddr::ToB32String() const
 {
     return B32AddressFromDestination( GetI2pDestination() );
 }
-#endif // ENABLE_I2PSAM
 
 bool CNetAddr::IsLocal() const
 {
-#ifdef ENABLE_I2PSAM
     // This address is local if it is the same as the public key of the session we have open,
     // ToDo: Compare the destination address with the session mydestination, this works for
     // now (maybe), but should be done better with getting the info from the i2psam module
@@ -905,7 +991,6 @@ bool CNetAddr::IsLocal() const
     //    string sMyDest = GetArg("-i2p.mydestination.publickey", "");
     //    return sMyDest == GetI2pDestination();
     // }
-#endif
 
     // IPv4 loopback
    if (IsIPv4() && (GetByte(3) == 127 || GetByte(3) == 0))
@@ -927,10 +1012,8 @@ bool CNetAddr::IsMulticast() const
 
 bool CNetAddr::IsValid() const
 {
-#ifdef ENABLE_I2PSAM
     if( IsI2P() )
         return IsNativeI2P();
-#endif
     // Cleanup 3-byte shifted addresses caused by garbage in size field
     // of addr messages from versions before 0.2.9 checksum.
     // Two consecutive addr messages look like this:
@@ -967,14 +1050,21 @@ bool CNetAddr::IsValid() const
 
 bool CNetAddr::IsRoutable() const
 {
-    // By allowing RFC1918 addresses you can have routes setup for connections on your local ipv4 network, this is BAD if done
-    // improperly, and is actually complicated to solve if you want to allow local private networks to share p2p data, but
-    // not have it shared externally.  However our newest builds detect this, reject sharing those private addresses outside
-    // yet allow p2p exchange to work well over the private network with separate destinations on each side.
-    bool fDetermined = IsValid() && !(IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
-    // bool fDetermined = IsValid() && !(IsRFC1918() || IsRFC3927() || IsRFC4862() || ( IsRFC4193() && !(IsTor() || IsI2P()) ) || IsRFC4843() || IsLocal());
-    // LogPrintf( "Is this address %s routable? %s  It appears it is Valid=%s, Local=%s, I2P=%s\n", ToString(), fDetermined ? "YES" : "NO", IsValid() ? "1" : "0", IsLocal() ? "1" : "0", IsI2P() ? "1" : "0");
-    // LogPrintf( "RFC1918=%s RFC3927=%s RFC4862=%s RFC4193=%s RFC4843=%s\n", IsRFC1918() ? "1" : "0", IsRFC3927() ? "1" : "0", IsRFC4862() ? "1" : "0", IsRFC4193() ? "1" : "0", IsRFC4843() ? "1" : "0" );
+    bool fDetermined = IsValid() && !(IsRFC1918() || IsRFC2544() || IsRFC3927() || IsRFC4862() || IsRFC6598() || IsRFC5737() || (IsRFC4193() && !(IsTor() || IsI2P())) || IsRFC4843() || IsLocal());
+    /* LogPrintf( "Is this address %s routable? %s  It appears Valid=%s, Local=%s, I2P=%s\n", ToString(),
+                  fDetermined ? "YES" : "NO",
+                  IsValid() ? "1" : "0",
+                  IsLocal() ? "1" : "0",
+                  IsI2P() ? "1" : "0");
+    LogPrintf( "RFC1918=%s RFC2544=%s RFC3927=%s RFC4862=%s RFC6598=%s RFC5737=%s RFC4193=%s RFC4843=%s\n",
+                  IsRFC1918() ? "1" : "0",
+                  IsRFC2544() ? "1" : "0",
+                  IsRFC3927() ? "1" : "0",
+                  IsRFC4862() ? "1" : "0",
+                  IsRFC6598() ? "1" : "0",
+                  IsRFC5737() ? "1" : "0",
+                  IsRFC4193() ? "1" : "0",
+                  IsRFC4843() ? "1" : "0" ); */
     return fDetermined;
 }
 
@@ -989,19 +1079,15 @@ enum Network CNetAddr::GetNetwork() const
     if (IsTor())
         return NET_TOR;
 
-#ifdef ENABLE_I2PSAM
     if (IsI2P()) return NET_I2P;
-#endif
 
     return NET_IPV6;
 }
 
 std::string CNetAddr::ToStringIP() const
 {
-#ifdef ENABLE_I2PSAM
     if( IsI2P() )
         return IsNativeI2P() ? ToB32String() : "???.b32.i2p";
-#endif
     if (IsTor())
         return EncodeBase32(&ip[6], 10) + ".onion";
     CService serv(*this, 0);
@@ -1029,29 +1115,17 @@ std::string CNetAddr::ToString() const
 
 bool operator==(const CNetAddr& a, const CNetAddr& b)
 {
-#ifdef ENABLE_I2PSAM
     return (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, I2P_DESTINATION_STORE) == 0);
-#else                                               // Use the original code
-    return (memcmp(a.ip, b.ip, 16) == 0);
-#endif
 }
 
 bool operator!=(const CNetAddr& a, const CNetAddr& b)
 {
-#ifdef ENABLE_I2PSAM
     return (memcmp(a.ip, b.ip, 16) != 0 || memcmp(a.i2pDest, b.i2pDest, I2P_DESTINATION_STORE) != 0);
-#else                                               // Use the original code
-    return (memcmp(a.ip, b.ip, 16) != 0);
-#endif
 }
 
 bool operator<(const CNetAddr& a, const CNetAddr& b)
 {
-#ifdef ENABLE_I2PSAM
     return (memcmp(a.ip, b.ip, 16) < 0 || (memcmp(a.ip, b.ip, 16) == 0 && memcmp(a.i2pDest, b.i2pDest, I2P_DESTINATION_STORE) < 0));
-#else                                               // Use the original code
-    return (memcmp(a.ip, b.ip, 16) < 0);
-#endif
 }
 
 bool CNetAddr::GetInAddr(struct in_addr* pipv4Addr) const
@@ -1064,9 +1138,7 @@ bool CNetAddr::GetInAddr(struct in_addr* pipv4Addr) const
 
 bool CNetAddr::GetIn6Addr(struct in6_addr* pipv6Addr) const
 {
-#ifdef ENABLE_I2PSAM
     if (IsNativeI2P()) return false;
-#endif
     memcpy(pipv6Addr, ip, 16);
     return true;
 }
@@ -1080,14 +1152,12 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
     int nStartByte = 0;
     int nBits = 16;
 
-#ifdef ENABLE_I2PSAM
     if( IsI2P() ) {
         vchRet.resize(I2P_DESTINATION_STORE + 1);
         vchRet[0] = NET_I2P;
         memcpy(&vchRet[1], i2pDest, I2P_DESTINATION_STORE);
         return vchRet;
     }
-#endif // ENABLE_I2PSAM
 
     // all local addresses belong to the same group
     if (IsLocal())
@@ -1130,11 +1200,7 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
         nBits = 4;
     }
     // for he.net, use /36 groups
-    // ToDo: Figure out why this different between the Anoncoin v0.8.5.5 and v0.8.5.6 versions.
-    // the line from v0.8.5.5 is now commented out.  Bitcoin v10 has the same value as Anoncoin v0.8.5.6, so using that.
-    // Which is correct?
     else if (GetByte(15) == 0x20 && GetByte(14) == 0x01 && GetByte(13) == 0x04 && GetByte(12) == 0x70)
-    // else if (GetByte(15) == 0x20 && GetByte(14) == 0x11 && GetByte(13) == 0x04 && GetByte(12) == 0x70)
         nBits = 36;
     // for the rest of the IPv6 network, use /32 groups
     else
@@ -1155,11 +1221,7 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
 
 uint64_t CNetAddr::GetHash() const
 {
-#ifdef ENABLE_I2PSAM
     uint256 hash = IsI2P() ? Hash(i2pDest, i2pDest + I2P_DESTINATION_STORE) : Hash(&ip[0], &ip[16]);
-#else                                               // Use the original code
-    uint256 hash = Hash(&ip[0], &ip[16]);
-#endif
     uint64_t nRet;
     memcpy(&nRet, &hash, sizeof(nRet));
     return nRet;
@@ -1216,13 +1278,11 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         case NET_IPV4:   return REACH_IPV4;
         case NET_IPV6:   return fTunnel ? REACH_IPV6_WEAK : REACH_IPV6_STRONG; // only prefer giving our IPv6 address if it's not tunnelled
         }
-#ifdef ENABLE_I2PSAM
     case NET_I2P:
         switch(ourNet) {
         default:             return REACH_UNREACHABLE;
         case NET_I2P: return REACH_PRIVATE;
         }
-#endif
     case NET_TOR:
         switch(ourNet) {
         default:         return REACH_DEFAULT;
@@ -1245,16 +1305,17 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         case NET_IPV6:    return REACH_IPV6_WEAK;
         case NET_IPV4:    return REACH_IPV4;
         case NET_TOR:     return REACH_PRIVATE; // either from Tor, or don't care about our address
-#ifdef ENABLE_I2PSAM
         case NET_I2P: return REACH_PRIVATE;  // Same for i2p
-#endif
         }
     }
 }
 
 void CService::Init()
 {
-    port = 0;                   // This initialization fact becomes important to the programmer for object comparisons and other details, as we do not use the port for services on i2p
+    //! This initialization fact becomes very important to the programmer
+    //! for service object comparisons and other details.  We do not use
+    //! the port for i2p and so its important that it remain zero,
+    port = 0;
 }
 
 CService::CService()
@@ -1350,7 +1411,6 @@ bool operator<(const CService& a, const CService& b)
     return (CNetAddr)a < (CNetAddr)b || ((CNetAddr)a == (CNetAddr)b && a.port < b.port);
 }
 
-
 bool CService::GetSockAddr(struct sockaddr* paddr, socklen_t *addrlen) const
 {
     if (IsIPv4()) {
@@ -1384,7 +1444,6 @@ std::vector<unsigned char> CService::GetKey() const
 {
      std::vector<unsigned char> vKey;
 
-#ifdef ENABLE_I2PSAM
     if (IsNativeI2P())
     {
         assert( IsI2P() );
@@ -1392,7 +1451,6 @@ std::vector<unsigned char> CService::GetKey() const
         memcpy(&vKey[0], i2pDest, I2P_DESTINATION_STORE);
         return vKey;
     }
-#endif
      vKey.resize(18);
      memcpy(&vKey[0], ip, 16);
      vKey[16] = port / 0x100;
@@ -1407,14 +1465,9 @@ std::string CService::ToStringPort() const
 
 std::string CService::ToStringIPPort() const
 {
-#ifdef ENABLE_I2PSAM
     if( IsI2P() ) return ToStringIP();                // Drop the port for i2p addresses
     std:string PortStr = ToStringPort();
     return ( IsIPv4() || IsTor() ) ? ToStringIP() + ":" + PortStr : "[" + ToStringIP() + "]:" + PortStr;
-#else
-    std:string PortStr = ToStringPort();
-    return ( IsIPv4() || IsTor() ) ? ToStringIP() + ":" + PortStr : "[" + ToStringIP() + "]:" + PortStr;
-#endif
 }
 
 std::string CService::ToString() const
@@ -1497,12 +1550,19 @@ CSubNet::CSubNet(const std::string &strSubnet, bool fAllowLookup)
 
 bool CSubNet::Match(const CNetAddr &addr) const
 {
+    bool fResult = true;        // Assume success
+
     if (!valid || !addr.IsValid())
-        return false;
-    for(int x=0; x<16; ++x)
-        if ((addr.GetByte(x) & netmask[15-x]) != network.GetByte(x))
-            return false;
-    return true;
+        fResult = false;
+    else {
+        for(int x=0; x<16; ++x)
+            if ((addr.GetByte(x) & netmask[15-x]) != network.GetByte(x)) {
+                fResult = false;
+                break;
+            }
+    }
+    LogPrint("rpcio", "CSubNet::Match() %s with CNetAddr: %s has %s\n", ToString(), addr.ToString(), fResult ? "passed" : "failed" );
+    return fResult;
 }
 
 std::string CSubNet::ToString() const
@@ -1561,9 +1621,146 @@ std::string NetworkErrorString(int err)
 #ifdef STRERROR_R_CHAR_P /* GNU variant can return a pointer outside the passed buffer */
     s = strerror_r(err, buf, sizeof(buf));
 #else /* POSIX variant always returns message in buffer */
-    (void) strerror_r(err, buf, sizeof(buf));
+    if (strerror_r(err, buf, sizeof(buf)))
+        buf[0] = 0;
 #endif
     return strprintf("%s (%d)", s, err);
 }
 #endif
 
+bool CloseSocket(SOCKET& hSocket)
+{
+    if (hSocket == INVALID_SOCKET)
+        return false;
+#ifdef WIN32
+    int ret = closesocket(hSocket);
+#else
+    int ret = close(hSocket);
+#endif
+    hSocket = INVALID_SOCKET;
+    return ret != SOCKET_ERROR;
+}
+
+bool SetSocketNonBlocking(SOCKET& hSocket, bool fNonBlocking)
+{
+    if (fNonBlocking) {
+#ifdef WIN32
+        u_long nOne = 1;
+        if (ioctlsocket(hSocket, FIONBIO, &nOne) == SOCKET_ERROR) {
+#else
+        int fFlags = fcntl(hSocket, F_GETFL, 0);
+        if (fcntl(hSocket, F_SETFL, fFlags | O_NONBLOCK) == SOCKET_ERROR) {
+#endif
+            CloseSocket(hSocket);
+            return false;
+        }
+    } else {
+#ifdef WIN32
+        u_long nZero = 0;
+        if (ioctlsocket(hSocket, FIONBIO, &nZero) == SOCKET_ERROR) {
+#else
+        int fFlags = fcntl(hSocket, F_GETFL, 0);
+        if (fcntl(hSocket, F_SETFL, fFlags & ~O_NONBLOCK) == SOCKET_ERROR) {
+#endif
+            CloseSocket(hSocket);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Specific functions we need to implement I2P functionality
+ */
+
+//! GR note...Figuring out where these best fit into the scheme of I2P implementation has been a difficult problem.
+//!
+//! the ones below work with or without building i2psam enabled and are used here to implement i2p address space
+//! regardless of an i2p router interface being defined or included in your build.
+//! NATIVE_I2P_NET_STRING and I2P_DESTINATION_STORE are both defined as the same size 516 bytes.  However, the first
+//! is defined and used in the hardware specific code.  The later is defined for this module and determines the exact
+//! storage allocated in the CNetAddr object so we can support I2P destination address space.
+//!
+//! We plan on changing the details inside that object for addresses, In the future we'll store them in binary, not
+//! base64, and have variable length certificates at the end of the keys, conforming to the new I2P definition, yet
+//! not changing the size of of the object here in each CNetAddr.
+bool IsTorOnly()
+{
+    bool torOnly = false;
+    const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+    torOnly = (onlyNets.size() == 1) && ( (onlyNets[0] == "tor") || (onlyNets[0] == "onion") );
+    return torOnly;
+}
+
+bool IsI2POnly()
+{
+    bool i2pOnly = false;
+    if (mapArgs.count("-onlynet")) {
+        const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "i2p");
+    }
+    return i2pOnly;
+}
+
+// If either/or dark net or if we're running a proxy or onion and in either of those cases if i2p is also enabled
+bool IsDarknetOnly()
+{
+    return IsI2POnly() || IsTorOnly() || ( IsI2PEnabled() && ((mapArgs.count("-proxy") && mapArgs["-proxy"] != "0") || (mapArgs.count("-onion") && mapArgs["-onion"] != "0")) );
+}
+
+// We now just check the -i2p.options.enabled parameter here, and return its value true or false
+bool IsI2PEnabled()
+{
+    return GetBoolArg("-i2p.options.enabled", false);
+}
+
+bool IsBehindDarknet()
+{
+    return IsDarknetOnly() || (mapArgs.count("-onion") && mapArgs["-onion"] != "0");
+}
+
+bool IsMyDestinationShared()
+{
+    return GetBoolArg("-i2p.mydestination.shareaddr", false);
+}
+
+// This test should pass for both public and private keys, as the first part of the private key is the public key.
+bool isValidI2pAddress( const std::string& I2pAddr )
+{
+    if( I2pAddr.size() < I2P_DESTINATION_STORE ) return false;
+    return (I2pAddr.substr( I2P_DESTINATION_STORE - 4, 4 ) == "AAAA");
+}
+
+bool isValidI2pB32( const std::string& B32Address )
+{
+    return (B32Address.size() == NATIVE_I2P_B32ADDR_SIZE) && (B32Address.substr(B32Address.size() - 8, 8) == ".b32.i2p");
+}
+
+bool isStringI2pDestination( const std::string & strName )
+{
+    return isValidI2pB32( strName ) || isValidI2pAddress( strName );
+}
+
+uint256 GetI2pDestinationHash( const std::string& destination )
+{
+    std::string canonicalDest = destination;                    // Copy the string locally, so we can modify it & its not a const
+
+    for (size_t pos = canonicalDest.find_first_of('-'); pos != std::string::npos; pos = canonicalDest.find_first_of('-', pos))
+        canonicalDest[pos] = '+';
+    for (size_t pos = canonicalDest.find_first_of('~'); pos != std::string::npos; pos = canonicalDest.find_first_of('~', pos))
+        canonicalDest[pos] = '/';
+    std::string rawDest = DecodeBase64(canonicalDest);
+    uint256 b32hash;
+    SHA256((const unsigned char*)rawDest.c_str(), rawDest.size(), (unsigned char*)&b32hash);
+    return b32hash;
+}
+
+std::string B32AddressFromDestination(const std::string& destination)
+{
+    uint256 b32hash = GetI2pDestinationHash( destination );
+    std::string result = EncodeBase32(b32hash.begin(), b32hash.end() - b32hash.begin()) + ".b32.i2p";
+    for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
+        result.erase(pos, 1);
+    return result;
+}

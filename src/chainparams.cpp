@@ -47,6 +47,7 @@ static const string I2pDestinationSeeds[] = {
 class CMainParams : public CChainParams {
 public:
     CMainParams() {
+        networkID = CBaseChainParams::MAIN;
         strNetworkID = "main";
 
         // The message start string is designed to be unlikely to occur in normal data.
@@ -73,7 +74,7 @@ public:
 
         nDefaultPort = 9377;
 
-        // As of April '15, SCRYPT is all that matters, future mining a SHA256D algo may soon be supported as well, set those limits here.
+        // 2015 SCRYPT is currently used.  Future mining maybe offered as a SHA256D algo.  Set those limits here.
         bnProofOfWorkLimit[ALGO_SCRYPT] = uint256().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 32;       // ToDo: set SHA256D min work
 
@@ -104,9 +105,10 @@ public:
         genesis.nBits    = 0x1e0ffff0;
         genesis.nNonce   = 347089008;
 
-        hashGenesisBlock = genesis.GetHash();
+        hashGenesisBlock = genesis.GetHash(true);                   //! true here is not really needed for main as it will be the 1st one
+        assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
         // printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
-        assert(hashGenesisBlock == uint256("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
+        assert(hashGenesisBlock == uint256("0x00000be19c5a519257aa921349037d55548af7cabf112741eb905a26bb73e468"));
         assert(genesis.hashMerkleRoot == uint256("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
         // vSeeds.push_back(CDNSSeedData("coinpool.in", "anoncoin.dnsseed.coinpool.in"));                           // Normal Seednode, NO DNS-SEED!
@@ -184,6 +186,8 @@ static CMainParams mainParams;
 class CTestNetParams : public CMainParams {
 public:
     CTestNetParams() {
+        networkID = CBaseChainParams::TESTNET;
+        strNetworkID = "testnet";
         // The message start string is designed to be unlikely to occur in normal data.
         // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
         // a large 4-byte int at any alignment.
@@ -193,8 +197,6 @@ public:
         pchMessageStart[2] = 0xa7;
         pchMessageStart[3] = 0x4b;
 
-        strNetworkID = "testnet";
-
         // GR Note: 1/26/2015 - New secp256k1 key values generated for testnet....
         vAlertPubKey = ParseHex("0442ccd085e52f7b74ee594826e36e417706af91ff7e7236a430b2dd16fe9f1a8132d0718e0bf5a3b7105354bf5bf954330097b21824c26c466836df9538f3d33e");
         // Private key for alert generation, anyone on the development and test team can use it:
@@ -203,18 +205,20 @@ public:
         nDefaultPort = 19377;
 
         // ToDo: Proof of work limits for testnet.  Adjust as needed...
-        bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 17;
+        // bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 17;
+        bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 12;
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 20;
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         // These values have been set to the same as the v0.8.5.6 client had, so testing should be possible with that client, although maynot be required.
         genesis.nTime = 1373625296;
         genesis.nNonce = 346280655;
-        hashGenesisBlock = genesis.GetHash();
+        hashGenesisBlock = genesis.GetHash(true);                   //! true here as recalc is needed, because main has already done it once
+        assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
 
         // This Genesis block hash matches the v0.8.5.6 client builds
         // printf("Testnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
-        assert(hashGenesisBlock == uint256("0x66d320494074f837363642a0c848ead1dbbbc9f7b854f8cda1f3eabbf08eb48c"));
+        assert(hashGenesisBlock == uint256("0x0000063bf46c94fdf4158dbd7d7c2e44ca806782a9cc2491e1861ed40736473d"));
 
         // During intialization, the DNS and Fixed seed node vectors are filled up as the class is derived from CMainParams, so has a copy of those values.
         // Dump those here, and add any that might really be useful for testnet...
@@ -244,6 +248,7 @@ static CTestNetParams testNetParams;
 class CRegTestParams : public CTestNetParams {
 public:
     CRegTestParams() {
+        networkID = CBaseChainParams::REGTEST;
         strNetworkID = "regtest";
 
         pchMessageStart[0] = 0xfa;
@@ -252,17 +257,21 @@ public:
         pchMessageStart[3] = 0xda;
 
         // ToDo: Proof of work limits, for regression testing are very small, more than likely these should work
-        bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 10;
-        bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 10;
+        bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 12;
+        bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 12;
 
-        genesis.nTime = 1296688602;
-        genesis.nBits = 0x207fffff;
-        genesis.nNonce = 2;
-        hashGenesisBlock = genesis.GetHash();
+        // genesis.nTime = 1296688602;
+        // genesis.nBits = 0x207fffff;
+        // genesis.nNonce = 2;
+        //! If we ever calculated some changes for regtest these would be needed, as they are the same as testnet, commented out for now
+        /*
+        hashGenesisBlock = genesis.GetHash(true);                   //! true here recalc is needed, because main and testnet have already done the calc twice
+        assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+        */
         nDefaultPort = 19444;
 
         // printf("RegTest Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
-        assert(hashGenesisBlock == uint256("0x03ab995e27af2435ad33284ccb89095e6abe47d0846a4e8c34a3d0fc2d167ceb"));
+        assert(hashGenesisBlock == uint256("0x0000063bf46c94fdf4158dbd7d7c2e44ca806782a9cc2491e1861ed40736473d"));
 
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
     }
@@ -320,3 +329,7 @@ bool SelectParamsFromCommandLine() {
     }
     return true;
 }
+
+bool TestNet() { return BaseParams().GetNetworkID() == CBaseChainParams::TESTNET; }
+bool RegTest() { return BaseParams().GetNetworkID() == CBaseChainParams::REGTEST; }
+bool isMainNetwork() { return BaseParams().GetNetworkID() == CBaseChainParams::MAIN; }

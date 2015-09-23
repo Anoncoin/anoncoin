@@ -10,6 +10,8 @@
 #include "tinyformat.h"
 #include "util.h"
 
+using namespace std;
+
 int64_t tx_nMinTxFee;               // These 2 static values are used throughout v9 code,
 int64_t tx_nMinRelayTxFee;          // and must remain until a v10 upgrade is completed.
 

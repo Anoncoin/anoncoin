@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef SPLASHSCREEN_H
@@ -18,7 +18,7 @@ public:
     explicit SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f, bool isTestNet);
     ~SplashScreen();
 
-public slots:
+public Q_SLOTS:
     /** Slot to call finish() method as it's not defined as slot */
     void slotFinish(QWidget *mainWin);
 

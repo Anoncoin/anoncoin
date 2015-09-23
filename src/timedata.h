@@ -26,11 +26,23 @@ private:
     unsigned int nSize;
 
 public:
+    CMedianFilter(unsigned int size) : nSize(size)
+    {
+        vValues.resize(size);
+        vSorted.resize(size);
+    }
+
     CMedianFilter(unsigned int size, T initial_value) : nSize(size)
     {
         vValues.reserve(size);
         vValues.push_back(initial_value);
         vSorted = vValues;
+    }
+
+    void sort(void)
+    {
+        std::copy(vValues.begin(), vValues.end(), vSorted.begin());
+        std::sort(vSorted.begin(), vSorted.end());
     }
 
     void input(T value)
@@ -67,11 +79,25 @@ public:
     {
         return vSorted;
     }
+
+    T getvalue( const int8_t nIndex ) const
+    {
+        assert( nIndex >= 0 && nIndex < vValues.size() );
+        return vValues[ nIndex ];
+    }
+
+    void setvalue( const int8_t nIndex, const T nNewValue )
+    {
+        assert( nIndex >= 0 && nIndex < vValues.size() );
+        vValues[ nIndex ] = nNewValue;
+    }
 };
 
 /** Functions to keep track of adjusted P2P time */
-int64_t GetTimeOffset();
-int64_t GetAdjustedTime();
-void AddTimeData(const CNetAddr& ip, int64_t nTime);
+extern int64_t GetTimeOffset();
+extern int64_t GetAdjustedTime();
+extern void AddTimeData(const CNetAddr& ip, int64_t nTime);
+//! If the peers do not agree with our Adjusted time, miners (both RPC and Internal) can be stopped or not allowed to start because of this condition.
+extern bool PeersAgreeWithOurAdjustedTime();
 
 #endif // ANONCOIN_TIMEDATA_H

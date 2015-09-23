@@ -18,6 +18,7 @@
 #include "config/anoncoin-config.h"
 #endif
 
+#include "block.h"
 #include "netbase.h"
 #include "serialize.h"
 #include "uint256.h"
@@ -88,9 +89,7 @@ enum
 // Todo: Check/consider the above new commentary.  Perhaps we should move the I2P service bit over even more.
 //       However, for compatibility with existing nodes running 0.8.5 we need to establish this position as indicating
 //       the I2P network.  Consider the possibly of requesting it's allocation via the BIP process, as mentioned above.
-#ifdef ENABLE_I2PSAM
     NODE_I2P = (1 << 7),
-#endif
 };
 
 /** A CService class structure with information about it as a peer... what a mess.
@@ -116,14 +115,13 @@ class CAddress : public CService
             Init();
         if (nType & SER_DISK)
             READWRITE(nVersion);
-        if ((nType & SER_DISK) ||
-            (nVersion >= CADDR_TIME_VERSION && !(nType & SER_GETHASH)))
+        if ((nType & SER_DISK) || (nType & SER_GETHASH))
             READWRITE(nTime);
         READWRITE(nServices);
         READWRITE(*(CService*)this);
     }
 
-    // void print() const; Nobody wrote a routine for this, use CService via inheretance
+    // void print() const; Nobody wrote a routine for this, use CService via inheritance
 
     // TODO: make private (improves encapsulation)
     public:
@@ -136,13 +134,13 @@ class CAddress : public CService
         int64_t nLastTry;
 };
 
-/** inv message data */
+/** inv message data, sha256d hashes are used for the MSG_BLOCK && MSG_FILTERED_BLOCK types and must be translated, before use. */
 class CInv
 {
     public:
         CInv();
-        CInv(int typeIn, const uint256& hashIn);
-        CInv(const std::string& strType, const uint256& hashIn);
+        CInv(int typeIn, const uintFakeHash& hashIn);
+        CInv(const std::string& strType, const uintFakeHash& hashIn);
 
         ADD_SERIALIZE_METHODS;
 
@@ -163,7 +161,7 @@ class CInv
     // TODO: make private (improves encapsulation)
     public:
         int type;
-        uint256 hash;
+        uintFakeHash hash;
 };
 
 enum

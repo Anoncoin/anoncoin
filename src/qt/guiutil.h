@@ -1,10 +1,17 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
-// Copyright (c) 2013-2014 The Anoncoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef GUIUTIL_H
 #define GUIUTIL_H
+
+// Many builder specific things set in the config file, for any source files where we rely on moc_xxx files being generated
+// it is best to include the anoncoin-config.h in the header file itself.  Not the .cpp src file, because otherwise any
+// conditional compilation guidelines, which rely on the build configuration, will not be present in the moc_xxx files.
+#if defined(HAVE_CONFIG_H)
+#include "config/anoncoin-config.h"
+#endif
 
 #include <QEvent>
 #include <QHeaderView>
@@ -49,7 +56,7 @@ namespace GUIUtil
     QString formatAnoncoinURI(const SendCoinsRecipient &info);
 
     // Returns true if given address+amount meets "dust" definition
-    bool isDust(const QString& address, qint64 amount);
+    bool isDust(const QString& address, const qint64& amount);
 
     // HTML escaping for rich text controls
     QString HtmlEscape(const QString& str, bool fMultiLine=false);
@@ -161,7 +168,7 @@ namespace GUIUtil
             void setViewHeaderResizeMode(int logicalIndex, QHeaderView::ResizeMode resizeMode);
             void resizeColumn(int nColumnIndex, int width);
 
-        private slots:
+        private Q_SLOTS:
             void on_sectionResized(int logicalIndex, int oldSize, int newSize);
             void on_geometriesChanged();
     };
