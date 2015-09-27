@@ -334,7 +334,7 @@ void scrypt_detect_sse2()
 void scrypt_1024_1_1_256(const char *input, char *output)
 {
     //! Switch to using a scoped pointer for the scratchpad buffer...
-    boost::scoped_ptr<char> spScratchPad( new char[ SCRYPT_SCRATCHPAD_SIZE ] );
+    boost::scoped_array<char> spScratchPad( new char[ SCRYPT_SCRATCHPAD_SIZE ] );
 
     //char* pScratchPadBuffer = (char*) ::operator new (SCRYPT_SCRATCHPAD_SIZE, std::nothrow);
 	// char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
