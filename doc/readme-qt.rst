@@ -32,7 +32,7 @@ For Qt 5 you need the following, otherwise you get an error with lrelease when r
 
 ::
 
-    apt-get install qt5-qmake libqt5gui5 libqt5core5 libqt5dbus5 qttools5-dev-tools
+    apt-get install qt5-qmake libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev-tools
 
 then execute the following:
 
