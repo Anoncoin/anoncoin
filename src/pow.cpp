@@ -721,14 +721,14 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
     int32_t nDifficulty;
     //! Difficulty is harder as the 256bit number goes down.  the Previous Difficulty is divided by maxdiffincrease, and compared
     //! to the calculated value, if it is less than that value, the output is set to it as the maximum change.
-    nDifficulty = atoi( GetArg("-retargetpid.maxdiffincrease", "3" ).c_str() );
+    nDifficulty = atoi( GetArg("-retargetpid.maxdiffincrease", "2" ).c_str() );
     if( nDifficulty < 2 ) nDifficulty = 2;
     nMaxDiffIncrease = (uint32_t)nDifficulty;
 
     //! maxdiffdecrease is a divider upon the prevDifficulty
     //! Difficulty is easier as the 256bit number goes up.  the Previous Difficulty is multiplied by maxdiffdecrease, and compared
     //! to the calculated value, if it is more than that value, the output is set to it as the maximum change.
-    nDifficulty = atoi( GetArg("-retargetpid.maxdiffdecrease", "5" ).c_str() );
+    nDifficulty = atoi( GetArg("-retargetpid.maxdiffdecrease", "2" ).c_str() );
     if( nDifficulty < 2 ) nDifficulty = 2;
     nMaxDiffDecrease = (uint32_t)nDifficulty;
 }
