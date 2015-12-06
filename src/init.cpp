@@ -1229,9 +1229,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     //! ********************************************************* Step 7: load block chain
     //!
     //! Final value selection for Anoncoin retarget controller P-I and D terms are set here
-#define PID_PROPORTIONALGAIN "6.7"
-#define PID_INTEGRATORTIME "1209600"
-#define PID_DERIVATIVEGAIN "3.3"
+#define PID_PROPORTIONALGAIN "2.5"
+#define PID_INTEGRATORTIME "604800"
+#define PID_DERIVATIVEGAIN "0"
 
     double dProportionalGainIn; //! The Proportional gain of the control loop
     int64_t nIntegrationTimeIn; //! The Integration period in seconds.
