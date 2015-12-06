@@ -22,7 +22,7 @@
 
 using namespace std;
 
-#define TIPFILTERBLOCKS_DEFAULT "121"
+#define TIPFILTERBLOCKS_DEFAULT "31"
 #define USESHEADER_DEFAULT false
 // #define LOG_DEBUG_OUTPUT
 
@@ -1608,4 +1608,3 @@ bool SetRetargetToBlock( const CBlockIndex* pIndex )
 
     return fResult1 && fResult2;
 }
-
