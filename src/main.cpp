@@ -2723,8 +2723,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     int nHeight = pindexPrev->nHeight+1;
 
     // Check proof of work
-    if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) 
+    if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
+        if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
             return state.DoS(100, error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+    }        
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
