@@ -1408,6 +1408,7 @@ static const char *strMainNetDNSSeed[][2] = {
     {"anoncoin.net", "dnsseed01.anoncoin.net"}, // Normal Seednode, NO DNS-SEED!
     {"anoncoin.darkgamex.ch", "anc.dnsseed01.anoncoin.darkgamex.ch"}, // K1773R's DNSSeed
     {"www.virtual-currency.com", "anc.dnsseed01.anoncoin.virtual-currency.com"}, // keystroke's DNSSeed
+    {"cryptoslave.com", "anc.dnsseed02.anoncoin.darkgamex.ch"}, // Cryptoslaves's DNSSeed
     {NULL, NULL}
 };
 
