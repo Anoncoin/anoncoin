@@ -129,9 +129,6 @@ class CAddress : public CService
 
         // disk and network only
         unsigned int nTime;
-
-        // memory only
-        int64_t nLastTry;
 };
 
 /** inv message data, sha256d hashes are used for the MSG_BLOCK && MSG_FILTERED_BLOCK types and must be translated, before use. */

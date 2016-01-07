@@ -9,8 +9,6 @@
 #include "random.h"
 #include "streams.h"
 
-using namespace std;
-
 int CAddrInfo::GetTriedBucket(const uint256& nKey) const
 {
     CDataStream ss1(SER_GETHASH, 0);
@@ -81,15 +79,12 @@ double CAddrInfo::GetChance(int64_t nNow) const
     if (nSinceLastTry < 0)
         nSinceLastTry = 0;
 
-    fChance *= 600.0 / (600.0 + nSinceLastSeen);
-
     // deprioritize very recent attempts away
     if (nSinceLastTry < 60 * 10)
         fChance *= 0.01;
 
-    // deprioritize 50% after each failed attempt
-    for (int n = 0; n < nAttempts; n++)
-        fChance /= 1.5;
+    // deprioritize 66% after each failed attempt, but at most 1/28th to avoid the search taking forever or overly penalizing outages.
+    fChance *= pow(0.66, std::min(nAttempts, 8));
 
     return fChance;
 }
@@ -442,7 +437,7 @@ bool CAddrMan::Add_(const CAddress& addrIn, const CNetAddr& source, int64_t nTim
         bool fCurrentlyOnline = (GetAdjustedTime() - addr.nTime < 24 * 60 * 60);
         int64_t nUpdateInterval = (fCurrentlyOnline ? 60 * 60 : 24 * 60 * 60);
         if (addr.nTime && (!pinfo->nTime || pinfo->nTime < addr.nTime - nUpdateInterval - nTimePenalty))
-            pinfo->nTime = max((int64_t)0, addr.nTime - nTimePenalty);
+            pinfo->nTime = std::max((int64_t)0, addr.nTime - nTimePenalty);
 
         /**
          * Only do the following, IF the source of this information is the node itself (source),
@@ -492,7 +487,7 @@ bool CAddrMan::Add_(const CAddress& addrIn, const CNetAddr& source, int64_t nTim
             return false;
     } else {
         pinfo = Create(addr, source, &nId);
-        pinfo->nTime = max((int64_t)0, (int64_t)pinfo->nTime - nTimePenalty);
+        pinfo->nTime = std::max((int64_t)0, (int64_t)pinfo->nTime - nTimePenalty);
         nNew++;
         fNew = true;
     }
@@ -544,21 +539,22 @@ void CAddrMan::Attempt_(const CService& addr, int64_t nTime)
     info.nAttempts++;
 }
 
-CAddress CAddrMan::Select_(int nUnkBias)
+CAddrInfo CAddrMan::Select_()
 {
     if (size() == 0)
-        return CAddress();
+        return CAddrInfo();
 
-    double nCorTried = sqrt(nTried) * (100.0 - nUnkBias);
-    double nCorNew = sqrt(nNew) * nUnkBias;
-    if ((nCorTried + nCorNew) * GetRandInt(1 << 30) / (1 << 30) < nCorTried) {
+    // Use a 50% chance for choosing between tried and new table entries.
+	if (nTried > 0 && (nNew == 0 || GetRandInt(2) == 0)) {
         // use a tried node
         double fChanceFactor = 1.0;
         while (1) {
             int nKBucket = GetRandInt(ADDRMAN_TRIED_BUCKET_COUNT);
 			int nKBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
-			if (vvTried[nKBucket][nKBucketPos] == -1)
-                continue;
+			while (vvTried[nKBucket][nKBucketPos] == -1) {
+				nKBucket = (nKBucket + insecure_rand()) % ADDRMAN_TRIED_BUCKET_COUNT;
+				nKBucketPos = (nKBucketPos + insecure_rand()) % ADDRMAN_BUCKET_SIZE;
+			}
             int nId = vvTried[nKBucket][nKBucketPos];
 			assert(mapInfo.count(nId) == 1);
 			CAddrInfo& info = mapInfo[nId];
@@ -572,8 +568,10 @@ CAddress CAddrMan::Select_(int nUnkBias)
         while (1) {
             int nUBucket = GetRandInt(ADDRMAN_NEW_BUCKET_COUNT);
 			int nUBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
-			if (vvNew[nUBucket][nUBucketPos] == -1)
-                continue;
+			while (vvNew[nUBucket][nUBucketPos] == -1) {
+				nUBucket = (nUBucket + insecure_rand()) % ADDRMAN_NEW_BUCKET_COUNT;
+				nUBucketPos = (nUBucketPos + insecure_rand()) % ADDRMAN_BUCKET_SIZE;
+			}
             int nId = vvNew[nUBucket][nUBucketPos];
 			assert(mapInfo.count(nId) == 1);
 			CAddrInfo& info = mapInfo[nId];

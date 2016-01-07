@@ -1712,10 +1712,11 @@ void ThreadOpenConnections()
             // value, we need better math here to scale the value passed to addrman select.
             // The programmed target range is now 10..90% using fast integer math, other than that point, any
             // value can be now set and this will approximate the correct percentage.
-            int nNewBias = (nOutbound * 80) / MAX_OUTBOUND_CONNECTIONS;
+            // int nNewBias = (nOutbound * 80) / MAX_OUTBOUND_CONNECTIONS;
             // Keep the max value less than 100%, as the routine expects
-            nNewBias = min( nNewBias, 99 );
-            CAddress addr = addrman.Select(10 + nNewBias);
+            // nNewBias = min( nNewBias, 99 );
+			// CSlave removed
+            CAddrInfo addr = addrman.Select();
 
             // if we selected an invalid address, restart
             if (!addr.IsValid() || setConnected.count(addr.GetGroup()) || IsLocal(addr))
