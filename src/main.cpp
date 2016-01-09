@@ -80,13 +80,13 @@ const int32_t COINBASE_MATURITY = 100;
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
 const uint32_t LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 /** Maximum number of script-checking threads allowed */
-const int32_t MAX_SCRIPTCHECK_THREADS = 16;
+const int32_t MAX_SCRIPTCHECK_THREADS = 12; //! CSlave changed from 16 to 12 */
 /** -par default (number of script-checking threads, 0 = auto) */
-const int32_t DEFAULT_SCRIPTCHECK_THREADS = 0;
+const int32_t DEFAULT_SCRIPTCHECK_THREADS = 0; 
 /** Number of blocks that can be requested at any given time from a single peer. */
-const int32_t MAX_BLOCKS_IN_TRANSIT_PER_PEER = 16;
+const int32_t MAX_BLOCKS_IN_TRANSIT_PER_PEER = 8; //! CSlave changed from 16 to 8 */
 /** Timeout in seconds during which a peer must stall block download progress before being disconnected. */
-const uint32_t BLOCK_STALLING_TIMEOUT = 15;      //! We wait at least 15sec over i2p before stalling out a peer
+const uint32_t BLOCK_STALLING_TIMEOUT = 75;      //! CSlave changed to 75sec - We wait at least 15sec over i2p before stalling out a peer
 /** Number of headers sent in one getheaders result. We rely on the assumption that if a peer sends
  *  less than this number, we reached their tip. Changing this value is a protocol upgrade. */
 const uint32_t MAX_HEADERS_RESULTS = 2000;
@@ -109,7 +109,7 @@ const uint32_t MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/4;         // 250KB  block so
 // For I2p, this could be considerably longer, up'n the value by double
 // static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 60;
 /** Timeout in seconds before considering a block download peer unresponsive. */
-const uint32_t BLOCK_DOWNLOAD_TIMEOUT = 120;
+const uint32_t BLOCK_DOWNLOAD_TIMEOUT = 240; //! CSlave changed from 120 to 240
 
 /** Dust Soft Limit, allowed with additional fee per output */
 // This value matches the v0.8.5.6 client, however does not exist in v10
@@ -2725,7 +2725,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // Check proof of work
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
         if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
-            return state.DoS(100, error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+            return state.DoS(7, error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits"); //CSlave changed from 100 to 7 to try to avoid the insta-ban of peers when using the PID on I2P (issue #91)
     }        
 
     // Check timestamp against prev
@@ -2801,8 +2801,8 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
         return true;
     }
 
-    if (!CheckBlockHeader(block, state))
-        return false;
+    //if (!CheckBlockHeader(block, state))
+    //    return false;
 
     // Get prev block index
     CBlockIndex* pindexPrev = NULL;
@@ -4611,7 +4611,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                         // later (within the same cs_main lock, though).
                         MarkBlockAsInFlight(pfrom->GetId(), inv.hash);
                     }
-                    LogPrint("net", "getheaders (%d) %s to %s\n", pindexBestHeader->nHeight, inv.hash.ToString(), GetPeerLogStr(pfrom));
+                    LogPrint("net", "getheaders (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(), pfrom->id);
                 }
             }
 
@@ -4713,8 +4713,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         // we must use CBlocks, as CBlockHeaders won't include the 0x00 nTx count at the end
         vector<CBlock> vHeaders;
-        int nLimit = 2000;
-        LogPrint("net", "getheaders %d to %s\n", (pindex ? pindex->nHeight : -1), hashStop.ToString());
+        int nLimit = MAX_HEADERS_RESULTS;
+        LogPrint("net", "getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(), pfrom->id);
         for (; pindex; pindex = chainActive.Next(pindex))
         {
             vHeaders.push_back(pindex->GetBlockHeader());
@@ -4880,8 +4880,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             // Headers message had its maximum size; the peer may have more headers.
             // TODO: optimize: if pindexLast is an ancestor of chainActive.Tip or pindexBestHeader, continue
             // from there instead.
-            LogPrint("net", "more getheaders (%d) to end to %s (startheight:%d)\n", pindexLast->nHeight, GetPeerLogStr(pfrom), pfrom->nStartingHeight);
-            pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256(0));
+             LogPrint("net", "more getheaders (%d) to end to peer=%d (startheight:%d)\n", pindexLast->nHeight, pfrom->id, pfrom->nStartingHeight);
+pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256(0));
         }
     }
 
@@ -5375,21 +5375,21 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             pindexBestHeader = chainActive.Tip();
         // Download if this is a nice peer, or we have no nice peers and this one might do.
         bool fFetch = state.fPreferredDownload || (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot);
-        if (!state.fSyncStarted && !pto->fClient && fFetch && !fImporting && !fReindex) {
+        if (!state.fSyncStarted && !pto->fClient && !fImporting && !fReindex) {
             // Only actively request headers from a single peer, unless we're close to today.
-            if (nSyncStarted == 0 || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
+            if ((nSyncStarted == 0 && fFetch) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                 state.fSyncStarted = true;
                 nSyncStarted++;
                 CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-                LogPrint("net", "initial getheaders (%d) to %s (startheight:%d)\n", pindexStart->nHeight, GetPeerLogStr(pto), pto->nStartingHeight);
-                pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
+				LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
+				pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256());
             }
         }
 
         // Resend wallet transactions that haven't gotten in a block yet
         // Except during reindex, importing and IBD, when old wallet
         // transactions become unconfirmed and spams other nodes.
-        if (!IsInitialBlockDownload())
+        if (!fReindex && !fImporting && !IsInitialBlockDownload())
         {
             g_signals.Broadcast();
         }
@@ -5469,7 +5469,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Message: getdata (blocks)
         //
         vector<CInv> vGetData;
-       if (!pto->fDisconnect && !pto->fClient && fFetch && state.nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
+        if (!pto->fDisconnect && !pto->fClient && (fFetch || !IsInitialBlockDownload()) && state.nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
             vector<CBlockIndex*> vToDownload;
             NodeId staller = -1;
             FindNextBlocksToDownload(pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state.nBlocksInFlight, vToDownload, staller);
