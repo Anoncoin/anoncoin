@@ -976,10 +976,11 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     //! plus we now have 2 ways to define the previous difficulty.  Whichever method is chosen,
     //! defines the maximum increase and maximum decrease limit values.
     // Use the previous block in the index.
-    if( GetBoolArg( "-retargetpid.limitfromprevblock", false ) )
+    // if( GetBoolArg( "-retargetpid.limitfromprevblock", false ) )
+	// CSlave: hardcoded to use the difficulty of the very last block and not the smoothed difficulty value of the tipfilter
         uintPrevDiffForLimits.SetCompact( pIndex->nBits );
-    else //! Use the calculated previous difficulty to set the limits on max increase and decrease...
-        uintPrevDiffForLimits = uintPrevDiffCalculated;
+    // else //! Use the calculated previous difficulty to set the limits on max increase and decrease...
+    //    uintPrevDiffForLimits = uintPrevDiffCalculated;
     uintDiffAtMaxIncrease = uintPrevDiffForLimits / nMaxDiffIncrease;
     uintDiffAtMaxDecrease = uintPrevDiffForLimits * nMaxDiffDecrease;
 
