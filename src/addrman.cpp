@@ -39,11 +39,11 @@ int CAddrInfo::GetNewBucket(const uint256& nKey, const CNetAddr& src) const
 
 int CAddrInfo::GetBucketPosition(const uint256 &nKey, bool fNew, int nBucket) const
 {
-	CDataStream ss1(SER_GETHASH, 0);
-	std::vector<unsigned char> vchKey = GetKey();
-	ss1 << nKey << (fNew ? 'N' : 'K') << nBucket << vchKey;
-	uint64_t hash1 = Hash(ss1.begin(), ss1.end()).GetLow64();
-	return hash1 % ADDRMAN_BUCKET_SIZE;
+    CDataStream ss1(SER_GETHASH, 0);
+    std::vector<unsigned char> vchKey = GetKey();
+    ss1 << nKey << (fNew ? 'N' : 'K') << nBucket << vchKey;
+    uint64_t hash1 = Hash(ss1.begin(), ss1.end()).GetLow64();
+    return hash1 % ADDRMAN_BUCKET_SIZE;
 }
 
 
@@ -220,16 +220,16 @@ void CAddrMan::SwapRandom(unsigned int nRndPos1, unsigned int nRndPos2)
 
 void CAddrMan::Delete(int nId)
 {
-	assert(mapInfo.count(nId) != 0);
-	CAddrInfo& info = mapInfo[nId];
-	assert(!info.fInTried);
-	assert(info.nRefCount == 0);
-	
-	SwapRandom(info.nRandomPos, vRandom.size() - 1);
-	vRandom.pop_back();
-	mapAddr.erase(info);
-	mapInfo.erase(nId);
-	nNew--;
+    assert(mapInfo.count(nId) != 0);
+    CAddrInfo& info = mapInfo[nId];
+    assert(!info.fInTried);
+    assert(info.nRefCount == 0);
+
+    SwapRandom(info.nRandomPos, vRandom.size() - 1);
+    vRandom.pop_back();
+    mapAddr.erase(info);
+    mapInfo.erase(nId);
+    nNew--;
 }
 
 #ifdef I2PADDRMAN_EXTENSIONS
@@ -258,20 +258,20 @@ void CAddrMan::CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible 
 
 void CAddrMan::ClearNew(int nUBucket, int nUBucketPos)
 {
-	// if there is an entry in the specified bucket, delete it.
-	if (vvNew[nUBucket][nUBucketPos] != -1) {
-	int nIdDelete = vvNew[nUBucket][nUBucketPos];
-	CAddrInfo& infoDelete = mapInfo[nIdDelete];
-	assert(infoDelete.nRefCount > 0);
-	infoDelete.nRefCount--;
-	vvNew[nUBucket][nUBucketPos] = -1;
-	if (infoDelete.nRefCount == 0) {
+    // if there is an entry in the specified bucket, delete it.
+    if (vvNew[nUBucket][nUBucketPos] != -1) {
+    int nIdDelete = vvNew[nUBucket][nUBucketPos];
+    CAddrInfo& infoDelete = mapInfo[nIdDelete];
+    assert(infoDelete.nRefCount > 0);
+    infoDelete.nRefCount--;
+    vvNew[nUBucket][nUBucketPos] = -1;
+    if (infoDelete.nRefCount == 0) {
 #ifdef I2PADDRMAN_EXTENSIONS
     CheckAndDeleteB32Hash( nIdDelete, infoDelete);
 #endif
- 	Delete(nIdDelete);
-		}
-	}
+    Delete(nIdDelete);
+        }
+    }
 }
 
 
@@ -279,12 +279,12 @@ void CAddrMan::MakeTried(CAddrInfo& info, int nId)
 {
     // remove the entry from all new buckets
     for (int bucket = 0; bucket < ADDRMAN_NEW_BUCKET_COUNT; bucket++) {
-	int pos = info.GetBucketPosition(nKey, true, bucket);
-	if (vvNew[bucket][pos] == nId) {
-	vvNew[bucket][pos] = -1;
+    int pos = info.GetBucketPosition(nKey, true, bucket);
+    if (vvNew[bucket][pos] == nId) {
+    vvNew[bucket][pos] = -1;
             info.nRefCount--;
-		}
-	}
+        }
+    }
     nNew--;
 
     assert(info.nRefCount == 0);
@@ -293,33 +293,33 @@ void CAddrMan::MakeTried(CAddrInfo& info, int nId)
     int nKBucket = info.GetTriedBucket(nKey);
     int nKBucketPos = info.GetBucketPosition(nKey, false, nKBucket);
 
-	// first make space to add it (the existing tried entry there is moved to new, deleting whatever is there).
-	if (vvTried[nKBucket][nKBucketPos] != -1) {
-	// find an item to evict
-	int nIdEvict = vvTried[nKBucket][nKBucketPos];
-	assert(mapInfo.count(nIdEvict) == 1);
-	CAddrInfo& infoOld = mapInfo[nIdEvict];
+    // first make space to add it (the existing tried entry there is moved to new, deleting whatever is there).
+    if (vvTried[nKBucket][nKBucketPos] != -1) {
+    // find an item to evict
+    int nIdEvict = vvTried[nKBucket][nKBucketPos];
+    assert(mapInfo.count(nIdEvict) == 1);
+    CAddrInfo& infoOld = mapInfo[nIdEvict];
  
-	// Remove the to-be-evicted item from the tried set.
-	infoOld.fInTried = false;
-	vvTried[nKBucket][nKBucketPos] = -1;
-	nTried--;
+    // Remove the to-be-evicted item from the tried set.
+    infoOld.fInTried = false;
+    vvTried[nKBucket][nKBucketPos] = -1;
+    nTried--;
  
-	// find which new bucket it belongs to
-	int nUBucket = infoOld.GetNewBucket(nKey);
-	int nUBucketPos = infoOld.GetBucketPosition(nKey, true, nUBucket);
-	ClearNew(nUBucket, nUBucketPos);
-	assert(vvNew[nUBucket][nUBucketPos] == -1);
+    // find which new bucket it belongs to
+    int nUBucket = infoOld.GetNewBucket(nKey);
+    int nUBucketPos = infoOld.GetBucketPosition(nKey, true, nUBucket);
+    ClearNew(nUBucket, nUBucketPos);
+    assert(vvNew[nUBucket][nUBucketPos] == -1);
  
-	// Enter it into the new set again.
-	infoOld.nRefCount = 1;
-	vvNew[nUBucket][nUBucketPos] = nIdEvict;
-	nNew++;
+    // Enter it into the new set again.
+    infoOld.nRefCount = 1;
+    vvNew[nUBucket][nUBucketPos] = nIdEvict;
+    nNew++;
     }
     assert(vvTried[nKBucket][nKBucketPos] == -1);
 
     vvTried[nKBucket][nKBucketPos] = nId;
-	nTried++;
+    nTried++;
     info.fInTried = true;
 }
 
@@ -380,9 +380,9 @@ void CAddrMan::Good_(const CAddress& addr, int64_t nTime)
     int nRnd = GetRandInt(ADDRMAN_NEW_BUCKET_COUNT);
     int nUBucket = -1;
     for (unsigned int n = 0; n < ADDRMAN_NEW_BUCKET_COUNT; n++) {
-	int nB = (n + nRnd) % ADDRMAN_NEW_BUCKET_COUNT;
-	int nBpos = info.GetBucketPosition(nKey, true, nB);
-	if (vvNew[nB][nBpos] == nId) {
+    int nB = (n + nRnd) % ADDRMAN_NEW_BUCKET_COUNT;
+    int nBpos = info.GetBucketPosition(nKey, true, nB);
+    if (vvNew[nB][nBpos] == nId) {
             nUBucket = nB;
             break;
         }
@@ -494,24 +494,24 @@ bool CAddrMan::Add_(const CAddress& addrIn, const CNetAddr& source, int64_t nTim
 
     int nUBucket = pinfo->GetNewBucket(nKey, source);
     int nUBucketPos = pinfo->GetBucketPosition(nKey, true, nUBucket);
-	if (vvNew[nUBucket][nUBucketPos] != nId) {
-		bool fInsert = vvNew[nUBucket][nUBucketPos] == -1;
-		if (!fInsert) {
-			CAddrInfo& infoExisting = mapInfo[vvNew[nUBucket][nUBucketPos]];
-			if (infoExisting.IsTerrible() || (infoExisting.nRefCount > 1 && pinfo->nRefCount == 0)) {
-			// Overwrite the existing new table entry.
-			fInsert = true;
-			}
-		}
-	if (fInsert) {
-		ClearNew(nUBucket, nUBucketPos);
-		pinfo->nRefCount++;
-		vvNew[nUBucket][nUBucketPos] = nId;
-		} else {
-			if (pinfo->nRefCount == 0) {
-				Delete(nId);
-			}
-		}
+    if (vvNew[nUBucket][nUBucketPos] != nId) {
+        bool fInsert = vvNew[nUBucket][nUBucketPos] == -1;
+        if (!fInsert) {
+            CAddrInfo& infoExisting = mapInfo[vvNew[nUBucket][nUBucketPos]];
+            if (infoExisting.IsTerrible() || (infoExisting.nRefCount > 1 && pinfo->nRefCount == 0)) {
+            // Overwrite the existing new table entry.
+            fInsert = true;
+            }
+        }
+    if (fInsert) {
+        ClearNew(nUBucket, nUBucketPos);
+        pinfo->nRefCount++;
+        vvNew[nUBucket][nUBucketPos] = nId;
+        } else {
+            if (pinfo->nRefCount == 0) {
+                Delete(nId);
+            }
+        }
     }
     return fNew;
 }
@@ -545,19 +545,19 @@ CAddrInfo CAddrMan::Select_()
         return CAddrInfo();
 
     // Use a 50% chance for choosing between tried and new table entries.
-	if (nTried > 0 && (nNew == 0 || GetRandInt(2) == 0)) {
+    if (nTried > 0 && (nNew == 0 || GetRandInt(2) == 0)) {
         // use a tried node
         double fChanceFactor = 1.0;
         while (1) {
             int nKBucket = GetRandInt(ADDRMAN_TRIED_BUCKET_COUNT);
-			int nKBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
-			while (vvTried[nKBucket][nKBucketPos] == -1) {
-				nKBucket = (nKBucket + insecure_rand()) % ADDRMAN_TRIED_BUCKET_COUNT;
-				nKBucketPos = (nKBucketPos + insecure_rand()) % ADDRMAN_BUCKET_SIZE;
-			}
+            int nKBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
+            while (vvTried[nKBucket][nKBucketPos] == -1) {
+                nKBucket = (nKBucket + insecure_rand()) % ADDRMAN_TRIED_BUCKET_COUNT;
+                nKBucketPos = (nKBucketPos + insecure_rand()) % ADDRMAN_BUCKET_SIZE;
+            }
             int nId = vvTried[nKBucket][nKBucketPos];
-			assert(mapInfo.count(nId) == 1);
-			CAddrInfo& info = mapInfo[nId];
+            assert(mapInfo.count(nId) == 1);
+            CAddrInfo& info = mapInfo[nId];
             if (GetRandInt(1 << 30) < fChanceFactor * info.GetChance() * (1 << 30))
                 return info;
             fChanceFactor *= 1.2;
@@ -567,14 +567,14 @@ CAddrInfo CAddrMan::Select_()
         double fChanceFactor = 1.0;
         while (1) {
             int nUBucket = GetRandInt(ADDRMAN_NEW_BUCKET_COUNT);
-			int nUBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
-			while (vvNew[nUBucket][nUBucketPos] == -1) {
-				nUBucket = (nUBucket + insecure_rand()) % ADDRMAN_NEW_BUCKET_COUNT;
-				nUBucketPos = (nUBucketPos + insecure_rand()) % ADDRMAN_BUCKET_SIZE;
-			}
+            int nUBucketPos = GetRandInt(ADDRMAN_BUCKET_SIZE);
+            while (vvNew[nUBucket][nUBucketPos] == -1) {
+                nUBucket = (nUBucket + insecure_rand()) % ADDRMAN_NEW_BUCKET_COUNT;
+                nUBucketPos = (nUBucketPos + insecure_rand()) % ADDRMAN_BUCKET_SIZE;
+            }
             int nId = vvNew[nUBucket][nUBucketPos];
-			assert(mapInfo.count(nId) == 1);
-			CAddrInfo& info = mapInfo[nId];
+            assert(mapInfo.count(nId) == 1);
+            CAddrInfo& info = mapInfo[nId];
             if (GetRandInt(1 << 30) < fChanceFactor * info.GetChance() * (1 << 30))
                 return info;
             fChanceFactor *= 1.2;
@@ -623,29 +623,29 @@ int CAddrMan::Check_()
         return -10;
 
     for (int n = 0; n < ADDRMAN_TRIED_BUCKET_COUNT; n++) {
-		for (int i = 0; i < ADDRMAN_BUCKET_SIZE; i++) {
-			if (vvTried[n][i] != -1) {
-				if (!setTried.count(vvTried[n][i]))
-				return -11;
-				if (mapInfo[vvTried[n][i]].GetTriedBucket(nKey) != n)
-				return -17;
-				if (mapInfo[vvTried[n][i]].GetBucketPosition(nKey, false, n) != i)
-				return -18;
-				setTried.erase(vvTried[n][i]);
-			}
+        for (int i = 0; i < ADDRMAN_BUCKET_SIZE; i++) {
+            if (vvTried[n][i] != -1) {
+                if (!setTried.count(vvTried[n][i]))
+                return -11;
+                if (mapInfo[vvTried[n][i]].GetTriedBucket(nKey) != n)
+                return -17;
+                if (mapInfo[vvTried[n][i]].GetBucketPosition(nKey, false, n) != i)
+                return -18;
+                setTried.erase(vvTried[n][i]);
+            }
         }
     }
 
     for (int n = 0; n < ADDRMAN_NEW_BUCKET_COUNT; n++) {
-		for (int i = 0; i < ADDRMAN_BUCKET_SIZE; i++) {
-			if (vvNew[n][i] != -1) {
-				if (!mapNew.count(vvNew[n][i]))
-					return -12;
-				if (mapInfo[vvNew[n][i]].GetBucketPosition(nKey, true, n) != i)
-					return -19;
-				if (--mapNew[vvNew[n][i]] == 0)
-					mapNew.erase(vvNew[n][i]);
-			}
+        for (int i = 0; i < ADDRMAN_BUCKET_SIZE; i++) {
+            if (vvNew[n][i] != -1) {
+                if (!mapNew.count(vvNew[n][i]))
+                    return -12;
+                if (mapInfo[vvNew[n][i]].GetBucketPosition(nKey, true, n) != i)
+                    return -19;
+                if (--mapNew[vvNew[n][i]] == 0)
+                    mapNew.erase(vvNew[n][i]);
+            }
         }
     }
 
@@ -653,8 +653,8 @@ int CAddrMan::Check_()
         return -13;
     if (mapNew.size())
         return -15;
-   	if (nKey.IsNull())
-      	return -16;
+    if (nKey.IsNull())
+        return -16;
 
     return 0;
 }

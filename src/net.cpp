@@ -1715,7 +1715,7 @@ void ThreadOpenConnections()
             // int nNewBias = (nOutbound * 80) / MAX_OUTBOUND_CONNECTIONS;
             // Keep the max value less than 100%, as the routine expects
             // nNewBias = min( nNewBias, 99 );
-			// CSlave removed
+            // CSlave removed
             CAddrInfo addr = addrman.Select();
 
             // if we selected an invalid address, restart

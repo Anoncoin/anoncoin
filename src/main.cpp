@@ -4596,7 +4596,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 if (!fAlreadyHave && !fImporting && !fReindex && !IsInitialBlockDownload() && !mapBlocksInFlight.count(inv.hash)) {
                     /* Cslave: !IsInitialBlockDownload() is needed otherwise it start to download the same headers several time per peer and from all peers, wasting a lot of computing time and bandwidth */
 
-					// First request the headers preceeding the announced block. In the normal fully-synced
+                    // First request the headers preceeding the announced block. In the normal fully-synced
                     // case where a new block is announced that succeeds the current tip (no reorganization),
                     // there are no such headers.
                     // Secondly, and only when we are close to being synced, we request the announced block directly,
@@ -4695,10 +4695,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         LOCK(cs_main);
 
-		if (IsInitialBlockDownload()) {
-			LogPrint("net", "Ignoring getheaders from peer=%d because node is in initial block download\n", pfrom->id);
-			return true;
-		}
+        if (IsInitialBlockDownload()) {
+            LogPrint("net", "Ignoring getheaders from peer=%d because node is in initial block download\n", pfrom->id);
+            return true;
+        }
 
         CBlockIndex* pindex = NULL;
         if (locator.IsNull())
