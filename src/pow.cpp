@@ -734,9 +734,9 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
 }
 
 //! As the retargetpid data is all private we must have public routines to access various values, this one gets the terms
-void CRetargetPidController::GetPidTerms( double* pProportinalGainOut, int64_t* pIntegratorTimeOut, double* pDerivativeGainOut )
+void CRetargetPidController::GetPidTerms( double* pProportionalGainOut, int64_t* pIntegratorTimeOut, double* pDerivativeGainOut )
 {
-    *pProportinalGainOut = dProportionalGain;
+    *pProportionalGainOut = dProportionalGain;
     *pIntegratorTimeOut = nIntegrationTime;
     *pDerivativeGainOut = dDerivativeGain;
 }

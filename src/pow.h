@@ -169,7 +169,7 @@ public:
     ~CRetargetPidController() {}
 
     //! Returns the PID terms the controller is set to
-    void GetPidTerms( double* pProportinalGainOut, int64_t* pIntegratorTimeOut, double* pDerivativeGainOut );
+    void GetPidTerms( double* pProportionalGainOut, int64_t* pIntegratorTimeOut, double* pDerivativeGainOut );
     //! Runs the Control loop update and calculates the new output difficulty, should only be called with LOCK set from GetNextWorkRequired()
     bool UpdateOutput( const CBlockIndex* pIndex, const CBlockHeader* pBlockHeader );
     //! Returns true if the full integration period block times and difficulty values were able to be setup.  Should only be called with LOCK set

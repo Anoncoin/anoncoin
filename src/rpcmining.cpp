@@ -1193,7 +1193,7 @@ Value getretargetpid(const Array& params, bool fHelp)
 
     Object result;
     if( fStaticValues ) {
-        result.push_back(Pair("proportiongain", (double)RetargetState.dProportionalGain));
+        result.push_back(Pair("proportionalgain", (double)RetargetState.dProportionalGain));
         result.push_back(Pair("integratortime", (int64_t)RetargetState.nIntegrationTime));
         result.push_back(Pair("derivativegain", (double)RetargetState.dDerivativeGain));
         result.push_back(Pair("targetspacing", (int64_t)nTargetSpacing ));
