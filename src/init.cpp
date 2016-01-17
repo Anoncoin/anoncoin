@@ -51,6 +51,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
 #include <openssl/crypto.h>
 
 using namespace std;
@@ -1240,19 +1241,35 @@ bool AppInit2(boost::thread_group& threadGroup)
     //! Before we do any block details, create a retargetpid so we can calculate next-work-required
     //! Testnet requires the user to be able to change some settings. so here we handle that too.
     if( isMainNetwork() ) {
-        dProportionalGainIn = atof( PID_PROPORTIONALGAIN );
-        nIntegrationTimeIn = atoi( PID_INTEGRATORTIME );
-        dDerivativeGainIn = atof( PID_DERIVATIVEGAIN );
+        dProportionalGainIn = boost::lexical_cast<float>( PID_PROPORTIONALGAIN );
+        nIntegrationTimeIn = boost::lexical_cast<int>( PID_INTEGRATORTIME );
+        dDerivativeGainIn = boost::lexical_cast<float>( PID_DERIVATIVEGAIN );
     } else {
-        dProportionalGainIn = atof( GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN ).c_str() );
-        nIntegrationTimeIn = atoi( GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME ).c_str() );
-        dDerivativeGainIn = atof( GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN ).c_str() );
+    std::string dProportionalGainInGetArg = GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN );
+	dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg.c_str() );
+	std::string nIntegrationTimeInGetArg = GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME );
+    nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg.c_str() );
+    std::string dDerivativeGainInGetArg = GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN );
+	dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg.c_str() );
+
+LogPrint("retarget", "dProportionalGainInGetArg=%f and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
+LogPrint("retarget", "nIntegrationTimeInGetArg=%d and nIntegrationTimeIn=%d and PID_PROPORTIONALGAIN=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
+LogPrint("retarget", "dDerivativeGainInGetArg=%f and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
     }
 #else
     // Before the hardfork build, we allow programmable settings on both mainnet and testnets
-    dProportionalGainIn = atof( GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN ).c_str() );
-    nIntegrationTimeIn = atoi( GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME ).c_str() );
-    dDerivativeGainIn = atof( GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN ).c_str() );
+    
+    std::string dProportionalGainInGetArg = GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN );
+	dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg.c_str() );
+	std::string nIntegrationTimeInGetArg = GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME );
+    nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg.c_str() );
+    std::string dDerivativeGainInGetArg = GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN );
+	dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg.c_str() );
+
+LogPrint("retarget", "dProportionalGainInGetArg=%f and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
+LogPrint("retarget", "nIntegrationTimeInGetArg=%d and nIntegrationTimeIn=%d and PID_PROPORTIONALGAIN=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
+LogPrint("retarget", "dDerivativeGainInGetArg=%f and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
+
 #endif
     pRetargetPid = new CRetargetPidController( dProportionalGainIn, nIntegrationTimeIn, dDerivativeGainIn );
 
