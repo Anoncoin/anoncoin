@@ -1246,15 +1246,15 @@ bool AppInit2(boost::thread_group& threadGroup)
     dDerivativeGainIn = boost::lexical_cast<float>( PID_DERIVATIVEGAIN );
     } else {
     std::string dProportionalGainInGetArg = GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN );
-    dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg.c_str() );
+    dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg );
     std::string nIntegrationTimeInGetArg = GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME );
-    nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg.c_str() );
+    nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg );
     std::string dDerivativeGainInGetArg = GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN );
-    dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg.c_str() );
+    dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg );
 
-    LogPrint("retarget", "dProportionalGainInGetArg=%f and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
-    LogPrint("retarget", "nIntegrationTimeInGetArg=%d and nIntegrationTimeIn=%d and PID_INTEGRATORTIME=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
-    LogPrint("retarget", "dDerivativeGainInGetArg=%f and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
+    LogPrint("retarget", "dProportionalGainInGetArg=%s and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
+    LogPrint("retarget", "nIntegrationTimeInGetArg=%s and nIntegrationTimeIn=%d and PID_INTEGRATORTIME=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
+    LogPrint("retarget", "dDerivativeGainInGetArg=%s and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
     }
 #else
     // Before the hardfork build, we allow programmable settings on both mainnet and testnets
@@ -1263,15 +1263,15 @@ bool AppInit2(boost::thread_group& threadGroup)
     // at the dot on certain system that use the comma as a separator in regional settings.
     
     std::string dProportionalGainInGetArg = GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN );
-    dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg.c_str() );
+    dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg );
     std::string nIntegrationTimeInGetArg = GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME );
-    nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg.c_str() );
+    nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg );
     std::string dDerivativeGainInGetArg = GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN );
-    dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg.c_str() );
+    dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg );
 
-    LogPrint("retarget", "dProportionalGainInGetArg=%f and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
-    LogPrint("retarget", "nIntegrationTimeInGetArg=%d and nIntegrationTimeIn=%d and PID_INTEGRATORTIME=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
-    LogPrint("retarget", "dDerivativeGainInGetArg=%f and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
+    LogPrint("retarget", "dProportionalGainInGetArg=%s and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
+    LogPrint("retarget", "nIntegrationTimeInGetArg=%s and nIntegrationTimeIn=%d and PID_INTEGRATORTIME=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
+    LogPrint("retarget", "dDerivativeGainInGetArg=%s and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
 
 #endif
     pRetargetPid = new CRetargetPidController( dProportionalGainIn, nIntegrationTimeIn, dDerivativeGainIn );
