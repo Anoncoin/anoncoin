@@ -984,19 +984,21 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
 
     if (nMaxDiffIncrease <= 10 ) {
         LogPrintf("Error: nMaxDiffIncrease <= 10, DiffAtMaxIncrease is set to * 1.1 \n");
-        nMaxDiffIncrease = 11; }  
+        nMaxDiffIncrease = 11;
+    }
     uintPrevDiffForLimitsIncrease = uintPrevDiffForLimits * 10;
     uintDiffAtMaxIncrease = uintPrevDiffForLimitsIncrease / nMaxDiffIncrease;
-    
-	// CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we use now tenths.
+
+    // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we use now tenths.
     // The minimum value for the difficulty retarget limits is thus set to 11 which is equivalent to a 1.1 multiplier or divider.
 
     if (nMaxDiffDecrease <= 10 ) {
         LogPrintf("Error: nMaxDiffDecrease <= 10, DiffAtMaxDecrease is set to / 1.1\n");
-        nMaxDiffDecrease = 11; }
+        nMaxDiffDecrease = 11;
+    }
     uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits / 10;
     uintDiffAtMaxDecrease = uintPrevDiffForLimitsDecrease * nMaxDiffDecrease;
-	
+
 
     //! If fUsesHeader is set, we update the spacing errors and rate of change results each time a new header time is given.
     //! If not, then the spacing error and rate of change results can be done now, and will be ready when this call returns.
