@@ -2725,7 +2725,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // Check proof of work
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
         if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
-            return state.DoS(100, error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+            return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
     }        
 
     // Check timestamp against prev
@@ -2810,7 +2810,7 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
         uint256 realPrevHash = block.hashPrevBlock.GetRealHash();
         BlockMap::iterator mi = ( realPrevHash != 0 ) ? mapBlockIndex.find( realPrevHash ) : mapBlockIndex.end();
         if (mi == mapBlockIndex.end())
-            return state.DoS(10, error("%s : prev block not found", __func__), 0, "bad-prevblk");
+            return state.Invalid(error("%s : prev block not found", __func__), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
             return state.DoS(100, error("%s : prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
