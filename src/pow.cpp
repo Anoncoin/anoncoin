@@ -982,21 +982,21 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     // else //! Use the calculated previous difficulty to set the limits on max increase and decrease...
     //    uintPrevDiffForLimits = uintPrevDiffCalculated;
 
-    if (nMaxDiffIncrease <= 10 ) {
-        LogPrintf("Error: nMaxDiffIncrease <= 10, DiffAtMaxIncrease is set to * 1.1 \n");
-        nMaxDiffIncrease = 11;
+    if (nMaxDiffIncrease <= 100 ) {
+        LogPrintf("Error: nMaxDiffIncrease <= 100, DiffAtMaxIncrease is set to * 1.1 \n");
+        nMaxDiffIncrease = 110;
     }
-    uintPrevDiffForLimitsIncrease = uintPrevDiffForLimits * 10;
+    uintPrevDiffForLimitsIncrease = uintPrevDiffForLimits * 100;
     uintDiffAtMaxIncrease = uintPrevDiffForLimitsIncrease / nMaxDiffIncrease;
 
     // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we use now tenths.
     // The minimum value for the difficulty retarget limits is thus set to 11 which is equivalent to a 1.1 multiplier or divider.
 
-    if (nMaxDiffDecrease <= 10 ) {
-        LogPrintf("Error: nMaxDiffDecrease <= 10, DiffAtMaxDecrease is set to / 1.1\n");
-        nMaxDiffDecrease = 11;
+    if (nMaxDiffDecrease <= 100 ) {
+        LogPrintf("Error: nMaxDiffDecrease <= 100, DiffAtMaxDecrease is set to / 1.1\n");
+        nMaxDiffDecrease = 110;
     }
-    uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits / 10;
+    uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits / 100;
     uintDiffAtMaxDecrease = uintPrevDiffForLimitsDecrease * nMaxDiffDecrease;
 
 
