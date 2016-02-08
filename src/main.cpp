@@ -2747,7 +2747,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority test was
     // set to always return false.  As of 3/15/2015 in the last 10000 blocks over 700 where version 1 blocks
     if( block.nVersion < 2 && nHeight > HARDFORK_BLOCK )                // We'll start enforcing the new rule
-        return state.Invalid(error("%s : rejected nVersion=1 block"), __func__, REJECT_OBSOLETE, "bad-version");
+        return state.Invalid(error("%s : rejected nVersion=1 block", __func__), REJECT_OBSOLETE, "bad-version");
 #endif
 #if defined( DONT_COMPILE )
     // Reject block.nVersion=2 blocks when 95% (75% on testnet) of the network has upgraded:

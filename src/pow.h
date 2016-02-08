@@ -11,7 +11,7 @@
 #include "uint256.h"
 
 #include <stdint.h>
-//#define HARDFORK_BLOCK 500000
+#define HARDFORK_BLOCK 500000
 
 class CBlockHeader;
 class CBlockIndex;
