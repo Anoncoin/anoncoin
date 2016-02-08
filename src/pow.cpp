@@ -23,7 +23,10 @@
 using namespace std;
 
 #define TIPFILTERBLOCKS_DEFAULT "31"
+#define NMAXDIFFINCREASE_DEFAULT "133"
+#define NMAXDIFFDECREASE_DEFAULT "150"
 #define USESHEADER_DEFAULT false
+
 // #define LOG_DEBUG_OUTPUT
 
 //! This value defines the Anoncoin block rate production, difficulty calculations and Proof Of Work functions all use this as the goal...
@@ -718,6 +721,11 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
     fDiffCurvesNewLog = true;
     fLogDiffLimits = GetBoolArg( "-retargetpid.logdifflimits", true );
 
+    if( isMainNetwork() ) {
+        nMaxDiffIncrease = atoi( NMAXDIFFINCREASE_DEFAULT );
+        nMaxDiffDecrease = atoi( NMAXDIFFDECREASE_DEFAULT );
+    } else {
+
     int32_t nDifficulty;
     //! Difficulty is harder as the 256bit number goes down.  the Previous Difficulty is divided by maxdiffincrease, and compared
     //! to the calculated value, if it is less than that value, the output is set to it as the maximum change.
@@ -731,6 +739,7 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
     nDifficulty = atoi( GetArg("-retargetpid.maxdiffdecrease", "2" ).c_str() );
     if( nDifficulty < 2 ) nDifficulty = 2;
     nMaxDiffDecrease = (uint32_t)nDifficulty;
+    }
 }
 
 //! As the retargetpid data is all private we must have public routines to access various values, this one gets the terms
