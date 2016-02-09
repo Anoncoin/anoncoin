@@ -2642,7 +2642,9 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     // not be used unless this value is reduced to mere seconds.
     int64_t nTimeLimit = GetAdjustedTime();
 #if defined( HARDFORK_BLOCK )
-    nTimeLimit += ( chainActive.Tip()->nHeight < HARDFORK_BLOCK ) ? 2 * 60 * 60 : 15 * 60;
+    CBlockIndex *tip = chainActive.Tip();
+    assert(tip != NULL);                    // GNOSIS: why does this assertion fail?
+    nTimeLimit += ( tip->nHeight < HARDFORK_BLOCK ) ? 2 * 60 * 60 : 15 * 60;
 #else
     nTimeLimit += 2 * 60 * 60;
 #endif
