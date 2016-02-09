@@ -729,15 +729,15 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
     int32_t nDifficulty;
     //! Difficulty is harder as the 256bit number goes down.  the Previous Difficulty is divided by maxdiffincrease, and compared
     //! to the calculated value, if it is less than that value, the output is set to it as the maximum change.
-    nDifficulty = atoi( GetArg("-retargetpid.maxdiffincrease", "2" ).c_str() );
-    if( nDifficulty < 2 ) nDifficulty = 2;
+    nDifficulty = atoi( GetArg("-retargetpid.maxdiffincrease", "101" ).c_str() );
+    if( nDifficulty < 101 ) nDifficulty = 101;
     nMaxDiffIncrease = (uint32_t)nDifficulty;
 
     //! maxdiffdecrease is a divider upon the prevDifficulty
     //! Difficulty is easier as the 256bit number goes up.  the Previous Difficulty is multiplied by maxdiffdecrease, and compared
     //! to the calculated value, if it is more than that value, the output is set to it as the maximum change.
-    nDifficulty = atoi( GetArg("-retargetpid.maxdiffdecrease", "2" ).c_str() );
-    if( nDifficulty < 2 ) nDifficulty = 2;
+    nDifficulty = atoi( GetArg("-retargetpid.maxdiffdecrease", "101" ).c_str() );
+    if( nDifficulty < 101 ) nDifficulty = 101;
     nMaxDiffDecrease = (uint32_t)nDifficulty;
     }
 }
@@ -991,19 +991,19 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     // else //! Use the calculated previous difficulty to set the limits on max increase and decrease...
     //    uintPrevDiffForLimits = uintPrevDiffCalculated;
 
-    if (nMaxDiffIncrease <= 100 ) {
-        LogPrintf("Error: nMaxDiffIncrease <= 100, DiffAtMaxIncrease is set to * 1.1 \n");
-        nMaxDiffIncrease = 110;
+    if (nMaxDiffIncrease <= 101 ) {
+        LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 101% \n");
+        nMaxDiffIncrease = 101;
     }
     uintPrevDiffForLimitsIncrease = uintPrevDiffForLimits * 100;
     uintDiffAtMaxIncrease = uintPrevDiffForLimitsIncrease / nMaxDiffIncrease;
 
-    // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we now use hundredths.
-    // The minimum value for the difficulty retarget limits is thus set to 11 which is equivalent to a 1.1 multiplier or divider.
+    // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we now use hundredths (percents).
+    // The minimum value for the difficulty retarget limits is thus set to 101% which is equivalent to a 1.01 multiplier or divider.
 
-    if (nMaxDiffDecrease <= 100 ) {
-        LogPrintf("Error: nMaxDiffDecrease <= 100, DiffAtMaxDecrease is set to / 1.1\n");
-        nMaxDiffDecrease = 110;
+    if (nMaxDiffDecrease <= 101 ) {
+        LogPrintf("Error: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 101% \n");
+        nMaxDiffDecrease = 101;
     }
     uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits / 100;
     uintDiffAtMaxDecrease = uintPrevDiffForLimitsDecrease * nMaxDiffDecrease;
