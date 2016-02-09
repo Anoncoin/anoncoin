@@ -998,7 +998,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     uintPrevDiffForLimitsIncrease = uintPrevDiffForLimits * 100;
     uintDiffAtMaxIncrease = uintPrevDiffForLimitsIncrease / nMaxDiffIncrease;
 
-    // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we use now tenths.
+    // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we now use hundredths.
     // The minimum value for the difficulty retarget limits is thus set to 11 which is equivalent to a 1.1 multiplier or divider.
 
     if (nMaxDiffDecrease <= 100 ) {
