@@ -11,7 +11,7 @@
 #include "uint256.h"
 
 #include <stdint.h>
-#define HARDFORK_BLOCK 500000
+#define HARDFORK_BLOCK 487000
 
 class CBlockHeader;
 class CBlockIndex;
@@ -31,6 +31,7 @@ struct RetargetStats
 {
     double dProportionalGain;       //! The Proportional gain of the control loop
     int64_t nIntegrationTime;       //! The Integration period in seconds.
+    double dIntegratorGain;         //! The Integration gain of the control loop
     double dDerivativeGain;         //! The Derivative gain of the control loop
 
     bool fUsesHeader;
@@ -92,6 +93,7 @@ private:
     //! The PID Control loop values as defined by the user
     const double dProportionalGain; //! The Proportional gain of the control loop
     const int64_t nIntegrationTime; //! The Integration period in seconds.
+    const double dIntegratorGain;   //! The Integration gain of the control loop
     const double dDerivativeGain;   //! The Derivative gain of the control loop
 
     //! Operational constants, intermediate results and logging options
@@ -168,11 +170,11 @@ private:
     bool LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit );
 
 public:
-    CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegratorTimeIn, const double dDerivativeGainIn );
+    CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegratorTimeIn, const double dIntegratorGainIn, const double dDerivativeGainIn );
     ~CRetargetPidController() {}
 
     //! Returns the PID terms the controller is set to
-    void GetPidTerms( double* pProportionalGainOut, int64_t* pIntegratorTimeOut, double* pDerivativeGainOut );
+    void GetPidTerms( double* pProportionalGainOut, int64_t* pIntegratorTimeOut, double* pIntegratorGainOut, double* pDerivativeGainOut );
     //! Runs the Control loop update and calculates the new output difficulty, should only be called with LOCK set from GetNextWorkRequired()
     bool UpdateOutput( const CBlockIndex* pIndex, const CBlockHeader* pBlockHeader );
     //! Returns true if the full integration period block times and difficulty values were able to be setup.  Should only be called with LOCK set

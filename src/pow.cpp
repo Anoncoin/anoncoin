@@ -25,6 +25,7 @@ using namespace std;
 #define TIPFILTERBLOCKS_DEFAULT "31"
 #define NMAXDIFFINCREASE_DEFAULT "133"
 #define NMAXDIFFDECREASE_DEFAULT "150"
+#define DINTEGRATORGAIN_DEFAULT "2"
 #define USESHEADER_DEFAULT false
 
 // #define LOG_DEBUG_OUTPUT
@@ -682,8 +683,8 @@ static uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast)
     return uintNewDifficulty;
 }
 
-CRetargetPidController::CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegratorTimeIn, const double dDerivativeGainIn ) :
-    dProportionalGain(dProportionalGainIn), nIntegrationTime(nIntegratorTimeIn), dDerivativeGain(dDerivativeGainIn)
+CRetargetPidController::CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegratorTimeIn, const double dIntegratorGainIn, const double dDerivativeGainIn ) :
+    dProportionalGain(dProportionalGainIn), nIntegrationTime(nIntegratorTimeIn), dIntegratorGain(dIntegratorGainIn), dDerivativeGain(dDerivativeGainIn)
 {
     fTipFilterInitialized = false;
     nIntegratorHeight = nIndexFilterHeight = 0;
@@ -743,10 +744,11 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
 }
 
 //! As the retargetpid data is all private we must have public routines to access various values, this one gets the terms
-void CRetargetPidController::GetPidTerms( double* pProportionalGainOut, int64_t* pIntegratorTimeOut, double* pDerivativeGainOut )
+void CRetargetPidController::GetPidTerms( double* pProportionalGainOut, int64_t* pIntegratorTimeOut, double* pIntegratorGainOut, double* pDerivativeGainOut )
 {
     *pProportionalGainOut = dProportionalGain;
     *pIntegratorTimeOut = nIntegrationTime;
+    *pIntegratorGainOut = dIntegratorGain;
     *pDerivativeGainOut = dDerivativeGain;
 }
 
@@ -992,7 +994,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     //    uintPrevDiffForLimits = uintPrevDiffCalculated;
 
     if (nMaxDiffIncrease <= 101 ) {
-        LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 101%% \n");
+        LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
         nMaxDiffIncrease = 101;
     }
     uintPrevDiffForLimitsIncrease = uintPrevDiffForLimits * 100;
@@ -1002,7 +1004,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     // The minimum value for the difficulty retarget limits is thus set to 101% which is equivalent to a 1.01 multiplier or divider.
 
     if (nMaxDiffDecrease <= 101 ) {
-        LogPrintf("Error: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 101%% \n");
+        LogPrintf("Error: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 1.01 \n");
         nMaxDiffDecrease = 101;
     }
     uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits / 100;
@@ -1136,7 +1138,7 @@ bool CRetargetPidController::UpdateOutput( const CBlockIndex* pIndex, const CBlo
         //! Although there is no proof-of-work behind it, a great deal of 'my' time was spent before realizing it was
         //! just this simple.  Not at all easy to come up with, and then finally decide to use.  That is why here all
         //! you see is it being assignment to a new local variable.  It is worth being written as 10K lines of code...
-        dIntegratorTerm = dIntegratorBlockTime;
+        dIntegratorTerm = (dIntegratorBlockTime - (double)nTargetSpacing) * dIntegratorGain + (double)nTargetSpacing;
 
         //! The derivative term
         dDerivativeTerm = dDerivativeGain * dRateOfChange;
@@ -1189,8 +1191,8 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
     }
 
     if( fRetargetNewLog ) {
-        LogPrintf( "RetargetPID-v3.0 NextWorkRequired for TargetSpacing=%d using constants PropGain=%f, IntTime=%d and DevGain=%f\n",
-                  nTargetSpacing, dProportionalGain, nIntegrationTime, dDerivativeGain );
+        LogPrintf( "RetargetPID-v3.0 NextWorkRequired for TargetSpacing=%d using constants PropGain=%f, IntTime=%d, IntGain=%f and DevGain=%f\n",
+                  nTargetSpacing, dProportionalGain, nIntegrationTime, dIntegratorGain, dDerivativeGain );
         LogPrintf( "Integrator Charged for=%d days %02d:%02d:%02d with %d samples",
                    nIntegratorChargeTime / SECONDSPERDAY, (nIntegratorChargeTime % SECONDSPERDAY) / 3600,
                    (nIntegratorChargeTime % 3600) / 60, nIntegratorChargeTime % 60, nBlocksSampled );
@@ -1416,6 +1418,7 @@ bool CRetargetPidController::GetRetargetStats( RetargetStats& RetargetState, uin
     //! At least store all the static constant, infrequently changing and non-output variables details in the result structure
     RetargetState.dProportionalGain = dProportionalGain;
     RetargetState.nIntegrationTime = nIntegrationTime;
+    RetargetState.dIntegratorGain = dIntegratorGain;
     RetargetState.dDerivativeGain = dDerivativeGain;
     RetargetState.fUsesHeader = fUsesHeader;
     RetargetState.nTipFilterSize = nTipFilterBlocks;
@@ -1536,14 +1539,15 @@ void RetargetPidReset( string strParams, const CBlockIndex* pIndex )
     bool fCreateNew = true;
     double dPropGain, dPropGainNow;
     int64_t nIntTime, nIntTimeNow;
+    double dIntGain, dIntGainNow;
     double dDevGain, dDevGainNow;
     istringstream issParams(strParams);
     try {
-        issParams >> dPropGain >> nIntTime >> dDevGain;
+        issParams >> dPropGain >> nIntTime >> dIntGain >> dDevGain;
         if( pRetargetPid ) {
-            pRetargetPid->GetPidTerms( &dPropGainNow, &nIntTimeNow, &dDevGainNow );
+            pRetargetPid->GetPidTerms( &dPropGainNow, &nIntTimeNow, &dIntGainNow, &dDevGainNow );
             //! Check to see if we have already reset the PID controller to the new values, if so do not keep executing a reset
-            if( (dPropGainNow == dPropGain) && (nIntTimeNow == nIntTime) && (dDevGainNow == dDevGain) )
+            if( (dPropGainNow == dPropGain) && (nIntTimeNow == nIntTime) && (dIntGainNow == dIntGain) && (dDevGainNow == dDevGain) )
                 fCreateNew = false;
             else
                 delete pRetargetPid;
@@ -1553,7 +1557,7 @@ void RetargetPidReset( string strParams, const CBlockIndex* pIndex )
     }
 
     if( fCreateNew ) {
-        pRetargetPid = new CRetargetPidController( dPropGain, nIntTime, dDevGain );
+        pRetargetPid = new CRetargetPidController( dPropGain, nIntTime, dIntGain, dDevGain );
         pRetargetPid->ChargeIntegrator(pIndex);
         pRetargetPid->UpdateIndexTipFilter(pIndex);
         //! At this point mining can resume and reporting will begin as if it was a new start.
