@@ -26,6 +26,8 @@ using namespace std;
 #define NMAXDIFFINCREASE_DEFAULT "133"
 #define NMAXDIFFDECREASE_DEFAULT "150"
 #define DINTEGRATORGAIN_DEFAULT "2"
+#define DMININTEGRATOR_DEFAULT 178
+#define DMAXINTEGRATOR_DEFAULT 182
 #define USESHEADER_DEFAULT false
 
 // #define LOG_DEBUG_OUTPUT
@@ -1105,6 +1107,11 @@ bool CRetargetPidController::ChargeIntegrator( const CBlockIndex* pIndex )      
     //! Given that information, the Integrator term (should be) now easy to calculate and ready
     //! for use as part of the new pid retarget output.  Save the results for the next steps...
     dIntegratorBlockTime = (double)nIntegratorChargeTime / (double)(nBlocksSampled - 1);
+    if (dIntegratorBlockTime < DMININTEGRATOR_DEFAULT) { 
+        dIntegratorBlockTime = DMININTEGRATOR_DEFAULT;    //! Capped to prevent integrator windup 
+    } else if (dIntegratorBlockTime > DMAXINTEGRATOR_DEFAULT) {
+        dIntegratorBlockTime = DMAXINTEGRATOR_DEFAULT;
+    }
 
     return true;
 }
@@ -1138,6 +1145,7 @@ bool CRetargetPidController::UpdateOutput( const CBlockIndex* pIndex, const CBlo
         //! Although there is no proof-of-work behind it, a great deal of 'my' time was spent before realizing it was
         //! just this simple.  Not at all easy to come up with, and then finally decide to use.  That is why here all
         //! you see is it being assignment to a new local variable.  It is worth being written as 10K lines of code...
+        //! CSlave: GR simple equation was latter changed to include a dIntegratorGain to settle at the setpoint
         dIntegratorTerm = (dIntegratorBlockTime - (double)nTargetSpacing) * dIntegratorGain + (double)nTargetSpacing;
 
         //! The derivative term

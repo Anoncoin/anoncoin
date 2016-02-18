@@ -1231,8 +1231,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     //!
     //! Final value selection for Anoncoin retarget controller P-I and D terms are set here
 #define PID_PROPORTIONALGAIN "2.5"
-#define PID_INTEGRATORTIME "144000"
-#define PID_INTEGRATORGAIN "2"
+#define PID_INTEGRATORTIME "604800"
+#define PID_INTEGRATORGAIN "5"
 #define PID_DERIVATIVEGAIN "0"
 
 
