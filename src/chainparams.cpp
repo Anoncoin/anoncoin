@@ -25,7 +25,7 @@ using namespace boost::assign;
 //
 unsigned int pnSeed[] =
 {
-    0x0
+    0xddd2a6bc, 0xa888652e, 0x0 //! Singapore and Germany Seed Nodes
 };
 
 #ifdef ENABLE_I2PSAM
