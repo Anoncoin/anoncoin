@@ -11,7 +11,7 @@
 #include "uint256.h"
 
 #include <stdint.h>
-//#define HARDFORK_BLOCK 500000 //! CSlave: Let's remove the hardfork until the time is set in stone
+//! CSlave: The hardfork block can be defined with "configure --with-hardfork=block"
 
 class CBlockHeader;
 class CBlockIndex;

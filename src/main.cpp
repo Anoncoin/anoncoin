@@ -52,7 +52,7 @@ const uint8_t REJECT_CHECKPOINT = 0x43;
 
 //! disconnect from peers older than this proto version, anything older than a build
 //! from client version v0.8.5.5 has not been seen or supported on the network
-static const int32_t MIN_PEER_PROTO_VERSION = 70006;
+static const int32_t MIN_PEER_PROTO_VERSION = 70010;
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 const uint32_t DEFAULT_BLOCK_MAX_SIZE = 750000;

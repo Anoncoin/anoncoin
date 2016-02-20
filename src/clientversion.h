@@ -23,16 +23,16 @@
 #define CLIENT_VERSION_MAJOR       0
 #define CLIENT_VERSION_MINOR       9
 #define CLIENT_VERSION_REVISION    6
-#define CLIENT_VERSION_BUILD       9
+#define CLIENT_VERSION_BUILD       10
 
 // Set to true for release, false for prerelease or test build
-#define CLIENT_VERSION_IS_RELEASE  true
+#define CLIENT_VERSION_IS_RELEASE  false
 
 /**
  * Copyright year (2013-this)
  * Todo: update this when changing our copyright comments in the source
  */
-#define COPYRIGHT_YEAR 2015
+#define COPYRIGHT_YEAR 2016
 
 #endif //HAVE_CONFIG_H
 
