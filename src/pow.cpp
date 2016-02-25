@@ -23,12 +23,11 @@
 using namespace std;
 
 #define TIPFILTERBLOCKS_DEFAULT "31"
-#define NMAXDIFFINCREASE_DEFAULT "133"
-#define NMAXDIFFDECREASE_DEFAULT "150"
-#define DINTEGRATORGAIN_DEFAULT "2"
-#define DMININTEGRATOR_DEFAULT 177
-#define DMAXINTEGRATOR_DEFAULT 184
 #define USESHEADER_DEFAULT false
+#define NMAXDIFFINCREASE "133"
+#define NMAXDIFFDECREASE "150"
+#define DMININTEGRATOR 179
+#define DMAXINTEGRATOR 182
 
 // #define LOG_DEBUG_OUTPUT
 
@@ -725,8 +724,8 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
     fLogDiffLimits = GetBoolArg( "-retargetpid.logdifflimits", true );
 
     if( isMainNetwork() ) {
-        nMaxDiffIncrease = atoi( NMAXDIFFINCREASE_DEFAULT );
-        nMaxDiffDecrease = atoi( NMAXDIFFDECREASE_DEFAULT );
+        nMaxDiffIncrease = atoi( NMAXDIFFINCREASE );
+        nMaxDiffDecrease = atoi( NMAXDIFFDECREASE );
     } else {
 
     int32_t nDifficulty;
@@ -1107,10 +1106,10 @@ bool CRetargetPidController::ChargeIntegrator( const CBlockIndex* pIndex )      
     //! Given that information, the Integrator term (should be) now easy to calculate and ready
     //! for use as part of the new pid retarget output.  Save the results for the next steps...
     dIntegratorBlockTime = (double)nIntegratorChargeTime / (double)(nBlocksSampled - 1);
-    if (dIntegratorBlockTime < DMININTEGRATOR_DEFAULT) { 
-        dIntegratorBlockTime = DMININTEGRATOR_DEFAULT;    //! Capped to prevent integrator windup 
-    } else if (dIntegratorBlockTime > DMAXINTEGRATOR_DEFAULT) {
-        dIntegratorBlockTime = DMAXINTEGRATOR_DEFAULT;
+    if (dIntegratorBlockTime < DMININTEGRATOR) { 
+        dIntegratorBlockTime = DMININTEGRATOR;    //! Capped to prevent integrator windup 
+    } else if (dIntegratorBlockTime > DMAXINTEGRATOR) {
+        dIntegratorBlockTime = DMAXINTEGRATOR;
     }
 
     return true;
