@@ -52,7 +52,8 @@ const uint8_t REJECT_CHECKPOINT = 0x43;
 
 //! disconnect from peers older than this proto version, anything older than a build
 //! from client version v0.8.5.5 has not been seen or supported on the network
-static const int32_t MIN_PEER_PROTO_VERSION = 70010;
+static const int32_t MIN_PEER_PROTO_VERSION = 70006;
+static const int32_t MIN_PEER_PROTO_VERSION_AFTER_HF = 70010; //! After the Hardfork Block is reached, this version will be obligatory
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 const uint32_t DEFAULT_BLOCK_MAX_SIZE = 750000;
@@ -2726,7 +2727,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // Check proof of work
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
         if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
-            return state.DoS(5, error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+            return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
     }        
 
     // Check timestamp against prev
@@ -2811,7 +2812,7 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
         uint256 realPrevHash = block.hashPrevBlock.GetRealHash();
         BlockMap::iterator mi = ( realPrevHash != 0 ) ? mapBlockIndex.find( realPrevHash ) : mapBlockIndex.end();
         if (mi == mapBlockIndex.end())
-            return state.DoS(5, error("%s : prev block not found", __func__), 0, "bad-prevblk");
+            return state.Invalid(error("%s : prev block not found", __func__), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
             return state.DoS(100, error("%s : prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
@@ -4020,6 +4021,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
 
         //! If it's to old, its easy, just disconnect and your out of here.
+        
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             //! relay alerts prior to disconnection
@@ -4031,7 +4033,20 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             pfrom->fDisconnect = true;
             return true;
         }
-
+#if defined( HARDFORK_BLOCK )
+        if( pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF && chainActive.Height() > HARDFORK_BLOCK ) //! If the hardfork block is reached, send an error message and disconnect.
+        {
+            //! relay alerts prior to disconnection
+            RelayAlerts(pfrom);
+            //! disconnect from peers older than this proto version
+            LogPrintf("partner %s using version %i obsolete since the HARDFORK_BLOCK %d was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK);
+            pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
+                               strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK));
+            pfrom->fDisconnect = true;
+            return true;
+        }
+#endif
+              
         //! Protocol 70009 uses only IP addresses on initiating connections over clearnet, after that full size addresses
         //! are always used for any network type, the i2p destination maybe zero, or if not the ip field must be set to the
         //! new GarlicCat field (an IP6/48) specifier.  This is checked and fixed, if found to be incorrect.
