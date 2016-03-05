@@ -1509,7 +1509,7 @@ void ThreadDNSAddressSeed()
         (!GetBoolArg("-forcednsseed", false))) {
         // MilliSleep(11 * 1000);
         MilliSleep(120 * 1000);
-
+        
         LOCK(cs_vNodes);
         if (vNodes.size() >= 2) {
             LogPrintf("P2P peers available. Skipped DNS seeding.\n");
@@ -1664,17 +1664,26 @@ void ThreadOpenConnections()
         // destination base64 addresses in the code, put them in addrman, so it can start looking.
         // As we have no clearnet fixed seeds, this is pointless unless the i2p network is available
 #ifdef ENABLE_I2PSAM
-        if( addrman.size() == 0 && IsI2PEnabled() ) {
-#else
-        if( addrman.size() == 0 && (GetTime() - nStart > 60) ) {
-#endif
-            static bool done = false;
-            if (!done) {
+        if( addrman.size() < 10 && IsI2PEnabled() ) {
+            static bool donei2pseeds = false;
+            if (!donei2pseeds) {
                 LogPrintf("Adding fixed i2p destination seednodes...\n");
-                addrman.Add(Params().FixedSeeds(), CNetAddr("127.0.0.1"));
-                done = true;
+                addrman.Add(Params().FixedI2PSeeds(), CNetAddr("127.0.0.1"));
+                donei2pseeds = true;
             }
         }
+#endif
+
+        if( (GetTime() - nStart > 60) && !IsDarknetOnly() ) {
+        // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
+            static bool doneDNSseeds = false;
+            if (!doneDNSseeds) {
+                LogPrintf("Adding fixed seed nodes as DNS doesn't seem to be available.\n");
+                addrman.Add(Params().FixedSeeds(), CNetAddr("127.0.0.1"));
+                doneDNSseeds = true;
+            }
+        }
+
         // Note on I2P seed nodes: They are stored now in Chainparams, and loaded based on what Network we are running.
         // No special code needs to be introduced here, as was the case in 0.8.5.6 builds.
 
@@ -1733,7 +1742,7 @@ void ThreadOpenConnections()
                 continue;
 
             // only consider very recently tried nodes after 30 failed attempts
-            if (nANow - addr.nLastTry < 600 && nTries < 30)
+            if (nANow - addr.nLastTry < 180 && nTries < 30)
                 continue;
 
             // do not allow non-default ports, unless after 50 invalid addresses selected already
@@ -1743,7 +1752,6 @@ void ThreadOpenConnections()
             addrConnect = addr;
             break;
         }
-
         if (addrConnect.IsValid())
             OpenNetworkConnection(addrConnect, &grant);
     }

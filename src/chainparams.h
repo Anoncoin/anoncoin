@@ -80,6 +80,7 @@ public:
 #endif
     const std::vector<unsigned char> &Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     virtual const vector<CAddress>& FixedSeeds() const = 0;
+    virtual const vector<CAddress>& FixedI2PSeeds() const = 0;
 protected:
     CChainParams() {}
 

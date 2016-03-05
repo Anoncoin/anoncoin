@@ -23,9 +23,10 @@ using namespace boost::assign;
 //
 // Main network clearnet fixed seeds, atm none defined
 //
+
 unsigned int pnSeed[] =
 {
-    0xa888652e, 0xe0bba6bc, 0x2c07c452, 0x0 //! Singapore and Germany Seed Nodes
+    0xa888652e, 0x5d11a6bc, 0x6119cb9f, 0xc82fc780, 0x1f9d4a50 //! FRA1 AMS3 TOR1 AMS DKG Seed Nodes
 };
 
 #ifdef ENABLE_I2PSAM
@@ -38,7 +39,9 @@ static const string I2pDestinationSeeds[] = {
     "UmCjD3EY6cEeCv5N9b9cRWBkU8~EwacG7nY6Tx9vPCne5fP-LIMxR~42hyrPGN4-ZXpGbns5Pu4JEvckj~mkXnJxM2-b6An2QsVYJCCqBmnqjK43HZC32s0Z2qFW5Y3agNs3eAtSK~GXy~IvQYewhSlmIOs8W~eAkLzF~C2~VzSmaWs55uBzLUINeJr7E7woPFnnrP8EjfMJHNUbmTkw1bepf3K7~BWy-LBlBaWvylTtRiAPDlqI2Q9ZZUn3wYQbHLZSGHkjdouRJ3zndcFTjwTEHzh4XQcHQK9hud7USUGnasl1IXsxizJo5lzsP5SvytkzdI07FjhpxSAYDKHn6SW4UXM5rQmAq44zHu4AzY76p3Wk9iUtwz1rFQNLqTwouZYe5hviiB1GAaWZBOhz9KsG0DzxeFRV5ou8Ps8-xlhU36mjrw3L6CYEpT6WejbNnXlIC~aUI057MAjr2sLfvVBhmycwJdSMOIT5fVkm8aTmiIM-YgpYUpInNHxH5fKEAAAA",
     "rR~bh73tiGezgHUs82cKHX83z~Jmp7pfyTWbwjrQgzM3at-DUh7TVQnsB5FnfJrbH89P1zXTdTqUR~OjQnjlt1WZZISrBVoUNe0O8xruhUsGR77WmRbSrb1K1o6LG0eX9dZk7ZTrLa-Bj0xG3jk8IYOLOdkCjld7VzBdkTcGN7G8QWx33cJn2778i9gSGNza0egyiEd4QnCjgZlI0wYTyLz-35F~to9unN6uq8AMK9uJa8a67l~HyDl1dGC5Ye~KKRBWgD5ZCoJAJBOipjsdAZqHUTa64xX4cX6EPEVBdikAZrRQS2l-FyLcuHvXFQ~rRuOEfO0VGmhJOIzNMdvK4UfsT118kt~pPe1nI4GEQ1xWP5thcFv-WN4mtDzU4fqFivhb7hijygUhQ7zrZFCbDypzYZTPBSXjABknbcz8j0iPy9GgEHsF8Zltt~i77Vc2e8cTcNMSpxm1uvMFJiB373Lri2vGj5oB0apixV-HUj1Bdpb1HTm96PDpf963jhj~AAAA",
     "6Njy3LSSCG4KrIeEubXoyWIw~FIKIVesPuzWjNTyNxwmvK65udJCmvTuQyrkPNkARZDNE4-pL4aAI4EhOsWzE3LkSOsvQTG4yhzRE7r97Fg0x~nE50SnrqWoJrsGHUcJtq-wL77WSzdcMD-aA5z4fROKwf3kvXCiOcRu9V9VdOlPuiynl838zOIOqApIFUfKzNcKMvEGfa9D998dL2FI-QnNgjLTcYn1YIK7muNSrhBgDJIfZPZRi21K-Q4fUSXRyutx6pP~ipLmsCJZOFrf-y0GThoSLy2DGNJ77s~UB~ANyuglLFvqDWqKp8KOuU4GTpmEfLPrurKr2kXc3jbqmw3YLVonJev-wcH2boS9WLcODtyytzQLBfz83bMACI-YbBQESjD1dZAAR3zDztKzdQcxzbyMGuoJe-6~QrEy~35TPL2TKIr2BjTWNwt3HQ65NFHLsA7HneiLf0Ntr~wcewxK7bRY3~qI7J7oUsf-QhyjkKqHJ6ohmAMTY1U3CT3ZAAAA",
-    "kvGu5BRTohvsGsNqkQW5glv-Q1Zxzwm40mFWK9g8Jte7561SmQxkKrklKX1bfuoCQ9hn1Ty3406-7xQb7bhoD9YC1mPm9hoBDNBzb4f8jn~Zry4SUY~AfCSvD1EBW4cvme9VZ1mIu3Jtj9qyv7j0gKgGyXAkX55gXT5EhRUoWspsWxao18PsB-HUTIyMP-At8GOcAeoI4GXbFSCa170o6pggoJrsXfg28Iww1VJB7MQl5IE2Q~i-WGuynKjmVUFshH9tC-vIW0nvaY-vnxNL7GNVBHVmcyi0I3nYxym~74BfdEioV-c5Q20aztYzxgvTelJu-56AMTP9GJKnn9BjVhKs2jppZLd6WFs30wGZMoK3a7Q8~kRcHKXX82pGisnBUxAbFQyOhAUOMw2wvKUeHh6-WBE8WU6zCALyLJ2532tvf8Bb~k0S7ZD96vgaMGGiR2daHcFf1e~zmVILPf27ya8bg874HZoq7WcrUsF5tLha2cMHFx1RXwMAAPlL3mYVAAAA"
+    "kvGu5BRTohvsGsNqkQW5glv-Q1Zxzwm40mFWK9g8Jte7561SmQxkKrklKX1bfuoCQ9hn1Ty3406-7xQb7bhoD9YC1mPm9hoBDNBzb4f8jn~Zry4SUY~AfCSvD1EBW4cvme9VZ1mIu3Jtj9qyv7j0gKgGyXAkX55gXT5EhRUoWspsWxao18PsB-HUTIyMP-At8GOcAeoI4GXbFSCa170o6pggoJrsXfg28Iww1VJB7MQl5IE2Q~i-WGuynKjmVUFshH9tC-vIW0nvaY-vnxNL7GNVBHVmcyi0I3nYxym~74BfdEioV-c5Q20aztYzxgvTelJu-56AMTP9GJKnn9BjVhKs2jppZLd6WFs30wGZMoK3a7Q8~kRcHKXX82pGisnBUxAbFQyOhAUOMw2wvKUeHh6-WBE8WU6zCALyLJ2532tvf8Bb~k0S7ZD96vgaMGGiR2daHcFf1e~zmVILPf27ya8bg874HZoq7WcrUsF5tLha2cMHFx1RXwMAAPlL3mYVAAAA",
+    "apuLsXH2KdmTVUgY-PIJcRyVEOExQCmX4-1olVrOg1g5adVW~DQX9wfwXEMVZTPQn9FqyaU2vrvgXsJuQEECRWGewf4DIylJG9dn-ac6N9LniTbWmbSNyWDOv54qc4yO3LeHyp3Gm2UvaSpdmjXQ0PnLirWXo-HxmvTpD~UunIraX4SRZcijNzBG6jYAdjp8-sTq17kjb9S3Ar33UmJR0G9ir4UrY93zKvUojiylLpNrJKeBkp4YB2RurXkwy6zHt2mavhae7~sKa0YfXcn-ZnUIVbIp~KC~dxhEO~L6VBsbtfki-4M1xRn39~ygI0Y-Ca2nSDgRsEZ9bi8uUbBQgYzSZfsDzAgUNWcQHYZHHX39cP-S8Du~yU4Ioy3cC~pa31Inv3RcfR9ZX1qxrBsPiDEdgtfvbO1ahNxgeTVnhYg-6n--jxqLDEI1rOpzFJD0yHfNKcjeJ5nKq5cwFBRjeAlBKGNmHioILIOcz48Woq1OQdnfthA6zDGEfnwmN~eYAAAA",
+    "S-cet3-RrmyWZAHunl5sK43PI8RK4YphgR7agwi2z2Cyj5hQ8k2ZSE9GW3zNtazZiSeee1alFjW7LaxjfZ936aK3T5bLwRMrgjUNeuC96I8Csl-ze63gRcVWsLsQLo66kXoZS9dEAbi4tPJdMggYvvJQDi~wLPC1ZVqai0CoVs67DmGJlBKHMabdeGGhEMKHwEMxEdEvzTnwjoWDr5zjKoyW9DCeJvIE5QrMywjsnBPo8bY5YuQCymVdx5Ib1sFuWsgnUOsh2wiGjonKZKNR-Wb7PpzXlQNJM5DYT1d6np1t0vf9TI3EHSv7D9XkmdWZDjEQkWEk5NNh-l05zvwUc2~7r-YOchKkchRPBEhvOvayxNmwAfIEg1TtPNLNoKpQk4HrGpbkG6rF6ZAM1eME8LVjDCJqXeVoyv3YoAz7WAUuvuKI7fmnXxUiePQKnAxxMAMEeeRkCw0-4CY6BUKvt~BULkc5DFLoEechkzfL0W99KiruQchWlOk0ebci5sBcAAAA"
 //    "8w-NRnXaxoGZdyupTXX78~CmF8csc~RhJr8XR2vMbNpazKhGjWNfRjhCmwqXkkW9vwkNjovW2AAbof7PfVnMCff0sHSxMTiBNsH8cuHJS2ckBSJI3h4G4ffJLc5gflangrG1raHKrMXCw8Cn56pisx4RKokEKUYdeEPiMdyJUO5yjZW2oyk4NpaUaQCqFmcglIvNOCYzVe~LK124wjJQAJc5iME1Sg9sOHaGMPL5N2qkAm5osOg2S7cZNRdIkoNOq-ztxghrv5bDL0ybeC0sfIQzvxDiKugCrSHEHCvwkA~xOu9nhNlUvoPDyCRRi~ImeomdNoqke28di~h2JF7wBGE~3ACxxOMaa0I~c9LV3O7pRU2Xj9HDn76eMGL7YCcCU4dRByu97oqfB3E~qqmmFp8W1tgvnEAMtXFTFZPYc33ZaCaIJQD7UXcQRSRV7vjw39jhx49XFsmYV3K6~D8bN8U4sRJnKQpzOJGpOSEJWh88bII0XuA55bJsfrR4VEQ5AAAA",
 //    "hL51K8bxVvqX2Z4epXReUYlWTNUAK-1XdlbBd7e796s2A3icCQRhJvGlaa6PX~tgPvos-2IJp9hFQrVa0lyKyYmpQN9X7GOErtsL-JbMQpglQsEd94jDRAsiBuvgyPZij~NNdBxKRMDvNm9s7eovzhEFTAimTSB-sgeZ4Afxx2IrNXDFM6KS8AUm8YsaMldzX9zKQDeuV0slp4ZfIAVQhZZy9zTZSmUNPnXQR7XPh5w7FkXzmKMTKSyG~layJ3AorQWqzZXmykzf4z3CE4zkzQcwc0~ZIcAg9tYvM2AdQIdgeN6ISMim6L8q6ku6abuONkyw-NJTi3NopeGHZva21Tc3uHetsKoW434N24HBVUtIjJVjGsbZ7xBfz2xM5kyhPl6SlD-RJarCw47Rovmfc9Piq6q3S~Zw-rvRl-xDMJzwraIYNjAROouDwjI9Bqnguq9DH5uFBxf4uN69X7T~yWTAjdvelZKp6BGe~HGo7bNQjBmymhlH4erCKZEXOaxDAAAA"
 };
@@ -121,6 +124,7 @@ public:
         /**
          *  See net.cpp->ThreadDNSAddressSeed() for how these are used.
          */
+
         i2pvSeeds.push_back(CDNSSeedData("7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p", "7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p")); // lunokhod's seednode
         i2pvSeeds.push_back(CDNSSeedData("b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p", "b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p")); // K1773R's seednode (dnsseed01)
         i2pvSeeds.push_back(CDNSSeedData("ypwvq7jcu3uwyg4ufjqt4a26ca6pxdcnshv6q2okmmjsof5dxzkq.b32.i2p", "ypwvq7jcu3uwyg4ufjqt4a26ca6pxdcnshv6q2okmmjsof5dxzkq.b32.i2p")); // keystroke's seednode
@@ -152,6 +156,21 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E);
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4);
 
+        // Convert the pnSeeds array into usable address objects.
+        for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
+        {
+            // It'll only connect to one or two seed nodes because once it connects,
+            // it'll get a pile of addresses with newer timestamps.
+            // Seed nodes are given a random 'last seen time' of between one and two
+            // weeks ago.
+            const int64_t nOneWeek = 7*24*60*60;
+            struct in_addr ip;
+            memcpy(&ip, &pnSeed[i], sizeof(ip));
+            CAddress addr(CService(ip, GetDefaultPort()));
+            addr.nTime = GetTime() - GetRand(nOneWeek) - nOneWeek;
+            vFixedSeeds.push_back(addr);
+        }
+
 #ifdef ENABLE_I2PSAM
         // As of 12/26/2014, there are NO entries for the above clearnet pnSeed array,
         // only using I2P for fixed seeding now, the strings are base64 encoded I2P
@@ -168,16 +187,18 @@ public:
             // and the correct values found out after the peer version details have been learned.
             CAddress addr( CService( CNetAddr( I2pDestinationSeeds[i] ), 0 ), NODE_NETWORK | NODE_I2P );
             addr.nTime = GetTime() - GetRand(nOneWeek) - nOneWeek;
-            vFixedSeeds.push_back(addr);
+            vFixedI2PSeeds.push_back(addr);
         }
 #endif
     }
 
     virtual const CBlock& GenesisBlock() const { return genesis; }
     virtual const vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
+    virtual const vector<CAddress>& FixedI2PSeeds() const { return vFixedI2PSeeds; }
 protected:
     CBlock genesis;
     vector<CAddress> vFixedSeeds;
+    vector<CAddress> vFixedI2PSeeds;
 };
 // This initializes the 1st CMainParams object, used as the primary network type, under normal operating modes.
 static CMainParams mainParams;
