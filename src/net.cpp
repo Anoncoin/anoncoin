@@ -2461,9 +2461,8 @@ unsigned int SendBufferSize() { return 1000*GetArg("-maxsendbuffer", 1*1000); }
 //! As i2p addrs are MUCH larger than ip addresses, we're reducing the most-recently-used(mru) setAddrKnown to 1250, to have a smaller memory profile per node.
 CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) :
     ssSend(SER_NETWORK, INIT_PROTO_VERSION),
-    addrKnown(1250, 0.001, insecure_rand()),
-    setInventoryKnown(SendBufferSize() / 1000)
-{
+    addrKnown(1250, 0.001, insecure_rand())
+    {
     //! Protocol 70009 changes the node creation process so it is deterministic.
     //! Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
     //! During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
@@ -2505,6 +2504,7 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     nStartingHeight = -1;
     fGetAddr = false;
     fRelayTxes = false;
+    setInventoryKnown.max_size(SendBufferSize() / 1000);
     pfilter = new CBloomFilter();
     nPingNonceSent = 0;
     nPingUsecStart = 0;
