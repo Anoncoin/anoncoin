@@ -460,14 +460,14 @@ void MarkBlockAsInFlight(NodeId nodeid, const uintFakeHash& hash, CBlockIndex *p
 void ProcessBlockAvailability(NodeId nodeid) {
     CNodeState *state = State(nodeid);
     assert(state != NULL);
+
     if (!state->hashLastUnknownBlock.IsNull()) {
         uint256 aRealHash = state->hashLastUnknownBlock.GetRealHash();
         BlockMap::iterator itOld = (aRealHash != 0) ? mapBlockIndex.find(aRealHash) : mapBlockIndex.end();
         if (itOld != mapBlockIndex.end() && itOld->second->nChainWork > 0) {
-            if (state->pindexBestKnownBlock == NULL || itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork){
+            if (state->pindexBestKnownBlock == NULL || itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
                 state->pindexBestKnownBlock = itOld->second;
             state->hashLastUnknownBlock.SetNull();
-           }
         }
     }
 }
@@ -526,12 +526,13 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
         // This peer has nothing interesting.
         return;
     }
-    
+
     if (state->pindexLastCommonBlock == NULL) {
         // Bootstrap quickly by guessing a parent of our best tip is the forking point.
         // Guessing wrong in either direction is not a problem.
         state->pindexLastCommonBlock = chainActive[std::min(state->pindexBestKnownBlock->nHeight, chainActive.Height())];
     }
+
     // If the peer reorganized, our previous pindexLastCommonBlock may not be an ancestor
     // of their current tip anymore. Go back enough to fix that.
     state->pindexLastCommonBlock = LastCommonAncestor(state->pindexLastCommonBlock, state->pindexBestKnownBlock);
@@ -567,8 +568,8 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
                 return;
             }
             if (pindex->nStatus & BLOCK_HAVE_DATA) {
-                if (pindex->nChainTx){
-                    state->pindexLastCommonBlock = pindex;}
+                if (pindex->nChainTx)
+                    state->pindexLastCommonBlock = pindex;
             } else if (mapBlocksInFlight.count(pindex->GetBlockSha256dHash()) == 0) {
                 // The block is not already downloaded, and not yet in flight.
                 if (pindex->nHeight > nWindowEnd) {
@@ -4308,19 +4309,19 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 //! destination is not shared, GetLocalAddress returns an unroutable 0.0.0.0 destination
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if( addr.IsRoutable() ) {                        //! One last check!  Is our local address routable?
-                pfrom->PushAddress(addr);
+                    pfrom->PushAddress(addr);
                 } else if( !pfrom->addr.IsI2P() && IsPeerAddrLocalGood(pfrom) ) {
                     //! What this does is after this outbound connection has been made, where we
                     //! only have a bad local address for ourselves.  It will discover that the
                     //! peers address for us is much better and push that back to them instead.
                     //! Something we don't want to do for dynamic i2p destinations that are not shared.
-                addr.SetIP(pfrom->addrLocal);
-                pfrom->PushAddress(addr);
+                    addr.SetIP(pfrom->addrLocal);
+                    pfrom->PushAddress(addr);
                 }
-             }
+            }
 
             //! Get recent addresses, if we're new and hungry for peers, lets get them... But not from peers running the old protocol version!
-            if (pfrom->fOneShot || addrman.size() < 1000 && (pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF))
+            if ((pfrom->fOneShot || addrman.size() < 1000) && (pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF))
             {
                 pfrom->PushMessage("getaddr");
                 pfrom->fGetAddr = true;
@@ -4944,7 +4945,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     // getaddr message mitigates the attack.
    // else if ((strCommand == "getaddr") && (pfrom->fInbound))
     
-    else if ((strCommand == "getaddr"))
+    else if (strCommand == "getaddr")
     {
         pfrom->vAddrToSend.clear();
         bool fIpOnly = (pfrom->addr.nServices & NODE_I2P) != 0;
@@ -5398,7 +5399,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             pto->PushMessage("reject", (string)"block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
         state.rejects.clear();
 
- // Start block sync
+        // Start block sync
         if (pindexBestHeader == NULL)
             pindexBestHeader = chainActive.Tip();
         // Download if this is a nice peer, or we have no nice peers and this one might do.
@@ -5419,7 +5420,6 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         }     
        
 
-     
         // Resend wallet transactions that haven't gotten in a block yet
         // Except during reindex, importing and IBD, when old wallet
         // transactions become unconfirmed and spams other nodes.
@@ -5512,7 +5512,6 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockSha256dHash(), pindex);
                 LogPrint("net", "Requesting block %s (%d) from %s\n", pindex->GetBlockHash().ToString(), pindex->nHeight, GetPeerLogStr(pto));
             }
-
             if (state.nBlocksInFlight == 0 && staller != -1) {
                 if (State(staller)->nStallingSince == 0) {
                     State(staller)->nStallingSince = nNow;
