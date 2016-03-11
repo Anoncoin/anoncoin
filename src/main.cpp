@@ -85,7 +85,7 @@ const int32_t MAX_SCRIPTCHECK_THREADS = 16;
 /** -par default (number of script-checking threads, 0 = auto) */
 const int32_t DEFAULT_SCRIPTCHECK_THREADS = 0;
 /** Number of blocks that can be requested at any given time from a single peer. */
-const int32_t MAX_BLOCKS_IN_TRANSIT_PER_PEER = 16;
+const int32_t MAX_BLOCKS_IN_TRANSIT_PER_PEER = 32;
 /** Timeout in seconds during which a peer must stall block download progress before being disconnected. */
 const uint32_t BLOCK_STALLING_TIMEOUT = 15;      //! We wait at least 15sec over i2p before stalling out a peer
 /** Number of headers sent in one getheaders result. We rely on the assumption that if a peer sends
@@ -95,7 +95,7 @@ const uint32_t MAX_HEADERS_RESULTS = 2000;
  *  Larger windows tolerate larger download speed differences between peer, but increase the potential
  *  degree of disordering of blocks on disk (which make reindexing and in the future perhaps pruning
  *  harder). We'll probably want to make this a per-peer adaptive value at some point. */
-const uint32_t BLOCK_DOWNLOAD_WINDOW = 1024;
+const uint32_t BLOCK_DOWNLOAD_WINDOW = 4096;
 /** Time to wait (in seconds) between writing blockchain state to disk. */
 const uint32_t DATABASE_WRITE_INTERVAL = 3600;
 /** Maximum length of reject messages. */
@@ -397,7 +397,7 @@ void UpdatePreferredDownload(CNode* node, CNodeState* state)
     nPreferredDownload -= state->fPreferredDownload;
 
     // Whether this node should be marked as a preferred download node.
-    state->fPreferredDownload = (!node->fInbound || node->fWhitelisted) && !node->fOneShot && !node->fClient;
+    state->fPreferredDownload = (!node->fInbound || node->fWhitelisted || IsI2POnly()) && !node->fOneShot && !node->fClient;
 
     nPreferredDownload += state->fPreferredDownload;
 }
@@ -460,14 +460,14 @@ void MarkBlockAsInFlight(NodeId nodeid, const uintFakeHash& hash, CBlockIndex *p
 void ProcessBlockAvailability(NodeId nodeid) {
     CNodeState *state = State(nodeid);
     assert(state != NULL);
-
     if (!state->hashLastUnknownBlock.IsNull()) {
         uint256 aRealHash = state->hashLastUnknownBlock.GetRealHash();
         BlockMap::iterator itOld = (aRealHash != 0) ? mapBlockIndex.find(aRealHash) : mapBlockIndex.end();
         if (itOld != mapBlockIndex.end() && itOld->second->nChainWork > 0) {
-            if (state->pindexBestKnownBlock == NULL || itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork)
+            if (state->pindexBestKnownBlock == NULL || itOld->second->nChainWork >= state->pindexBestKnownBlock->nChainWork){
                 state->pindexBestKnownBlock = itOld->second;
             state->hashLastUnknownBlock.SetNull();
+           }
         }
     }
 }
@@ -526,13 +526,12 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
         // This peer has nothing interesting.
         return;
     }
-
+    
     if (state->pindexLastCommonBlock == NULL) {
         // Bootstrap quickly by guessing a parent of our best tip is the forking point.
         // Guessing wrong in either direction is not a problem.
         state->pindexLastCommonBlock = chainActive[std::min(state->pindexBestKnownBlock->nHeight, chainActive.Height())];
     }
-
     // If the peer reorganized, our previous pindexLastCommonBlock may not be an ancestor
     // of their current tip anymore. Go back enough to fix that.
     state->pindexLastCommonBlock = LastCommonAncestor(state->pindexLastCommonBlock, state->pindexBestKnownBlock);
@@ -568,8 +567,8 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
                 return;
             }
             if (pindex->nStatus & BLOCK_HAVE_DATA) {
-                if (pindex->nChainTx)
-                    state->pindexLastCommonBlock = pindex;
+                if (pindex->nChainTx){
+                    state->pindexLastCommonBlock = pindex;}
             } else if (mapBlocksInFlight.count(pindex->GetBlockSha256dHash()) == 0) {
                 // The block is not already downloaded, and not yet in flight.
                 if (pindex->nHeight > nWindowEnd) {
@@ -4309,19 +4308,19 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 //! destination is not shared, GetLocalAddress returns an unroutable 0.0.0.0 destination
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if( addr.IsRoutable() ) {                        //! One last check!  Is our local address routable?
-                    pfrom->PushAddress(addr);
+                pfrom->PushAddress(addr);
                 } else if( !pfrom->addr.IsI2P() && IsPeerAddrLocalGood(pfrom) ) {
                     //! What this does is after this outbound connection has been made, where we
                     //! only have a bad local address for ourselves.  It will discover that the
                     //! peers address for us is much better and push that back to them instead.
                     //! Something we don't want to do for dynamic i2p destinations that are not shared.
-                    addr.SetIP(pfrom->addrLocal);
-                    pfrom->PushAddress(addr);
+                addr.SetIP(pfrom->addrLocal);
+                pfrom->PushAddress(addr);
                 }
-            }
+             }
 
-            //! Get recent addresses, if we're new and hungry for peers, lets get them...
-            if (pfrom->fOneShot || pfrom->nVersion >= MIN_PEER_PROTO_VERSION || addrman.size() < 1000)
+            //! Get recent addresses, if we're new and hungry for peers, lets get them... But not from peers running the old protocol version!
+            if (pfrom->fOneShot || addrman.size() < 1000 && (pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF))
             {
                 pfrom->PushMessage("getaddr");
                 pfrom->fGetAddr = true;
@@ -4425,8 +4424,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vector<CAddress> vAddr;
         vRecv >> vAddr;
 
-        //! Don't want addr from older versions...
-        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && addrman.size() > 1000)
+        //! Don't want addr from older versions... 
+        //! Old 8.5.6 nodes are spamming the network with HUGE peers.dat, overwhelming the addrman!
+        //if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && addrman.size() > 1000)
+        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF) {
+            LogPrint("addrman", "Don't want addr from older peer with older protocol versions such as %d \n", pfrom->nVersion);
+            }          
             return true;
         if (vAddr.size() > 1000) {
             Misbehaving(pfrom->GetId(), 20);
@@ -4939,14 +4942,16 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     // to users' AddrMan and later request them by sending getaddr messages.
     // Making users (which are behind NAT and can only make outgoing connections) ignore
     // getaddr message mitigates the attack.
-    else if ((strCommand == "getaddr") && (pfrom->fInbound))
+   // else if ((strCommand == "getaddr") && (pfrom->fInbound))
+    
+    else if ((strCommand == "getaddr"))
     {
         pfrom->vAddrToSend.clear();
         bool fIpOnly = (pfrom->addr.nServices & NODE_I2P) != 0;
         bool fI2pOnly = pfrom->addr.IsI2P();
         vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
         BOOST_FOREACH(const CAddress &addr, vAddr)
-            pfrom->PushAddress(addr);
+        pfrom->PushAddress(addr);
     }
 
 
@@ -5393,22 +5398,28 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             pto->PushMessage("reject", (string)"block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
         state.rejects.clear();
 
-        // Start block sync
+ // Start block sync
         if (pindexBestHeader == NULL)
             pindexBestHeader = chainActive.Tip();
         // Download if this is a nice peer, or we have no nice peers and this one might do.
         bool fFetch = state.fPreferredDownload || (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot);
         if (!state.fSyncStarted && !pto->fClient && !fImporting && !fReindex) {
-            // Only actively request headers from a single peer, unless we're close to today.
-            if ((nSyncStarted == 0 && fFetch) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
-                state.fSyncStarted = true;
-                nSyncStarted++;
-                CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-                LogPrint("net", "initial getheaders (%d) to %s (startheight:%d)\n", pindexStart->nHeight, GetPeerLogStr(pto), pto->nStartingHeight);
-                pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
-            }
-        }
+            // Only actively request headers from up to two peers, of a version ready for hardfork, unless we're close to today. This is to minimize the likelyhood of downtime, while keeping bandwidth and computing ressource to a minimum.
+            if ( fFetch || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
+                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload()) {
+                    if ((nSyncStarted <= 1) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
+                    state.fSyncStarted = true;
+                    nSyncStarted++;                
+                    CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
+                    LogPrint("net", "initial getheaders (%d) to %s (startheight:%d)\n", pindexStart->nHeight, GetPeerLogStr(pto), pto->nStartingHeight);
+                    pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
+                    }
+                }
+            }  
+        }     
+       
 
+     
         // Resend wallet transactions that haven't gotten in a block yet
         // Except during reindex, importing and IBD, when old wallet
         // transactions become unconfirmed and spams other nodes.
@@ -5501,6 +5512,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockSha256dHash(), pindex);
                 LogPrint("net", "Requesting block %s (%d) from %s\n", pindex->GetBlockHash().ToString(), pindex->nHeight, GetPeerLogStr(pto));
             }
+
             if (state.nBlocksInFlight == 0 && staller != -1) {
                 if (State(staller)->nStallingSince == 0) {
                     State(staller)->nStallingSince = nNow;
