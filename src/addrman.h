@@ -310,11 +310,11 @@ protected:
 #endif
 
     //! Select several addresses at once.
-#ifdef I2PADDRMAN_EXTENSIONS
-    void GetAddr_(std::vector<CAddress> &vAddr, const bool fIpOnly, const bool fI2pOnly);
-#else
+//#ifdef I2PADDRMAN_EXTENSIONS
+ //   void GetAddr_(std::vector<CAddress> &vAddr, const bool fIpOnly, const bool fI2pOnly);
+//#else
     void GetAddr_(std::vector<CAddress> &vAddr);
-#endif
+//#endif
 
     //! Mark an entry as currently-connected-to.
     void Connected_(const CService &addr, int64_t nTime);
@@ -687,21 +687,21 @@ public:
     }
 
     //! Return a bunch of addresses, selected at random.
-#ifdef I2PADDRMAN_EXTENSIONS
-    std::vector<CAddress> GetAddr(const bool fIpOnly, const bool fI2pOnly)
-#else
+//#ifdef I2PADDRMAN_EXTENSIONS
+   // std::vector<CAddress> GetAddr(const bool fIpOnly, const bool fI2pOnly)
+//#else
     std::vector<CAddress> GetAddr()
-#endif
+//#endif
     {
         Check();
         std::vector<CAddress> vAddr;
         {
             LOCK(cs);
-#ifdef I2PADDRMAN_EXTENSIONS
-            GetAddr_(vAddr, fIpOnly, fI2pOnly);
-#else
+//#ifdef I2PADDRMAN_EXTENSIONS
+  //          GetAddr_(vAddr, fIpOnly, fI2pOnly);
+//#else
             GetAddr_(vAddr);
-#endif
+//#endif
         }
         Check();
         return vAddr;

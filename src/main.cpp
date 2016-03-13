@@ -4950,12 +4950,16 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     
     else if (strCommand == "getaddr")
     {
+ LogPrintf("LOGMAIN50 getaddr received from %s (startheight:%d) nVersion %d \n", GetPeerLogStr(pfrom), pfrom->nStartingHeight, pfrom->nVersion);
         pfrom->vAddrToSend.clear();
         bool fIpOnly = (pfrom->addr.nServices & NODE_I2P) != 0;
         bool fI2pOnly = pfrom->addr.IsI2P();
-        vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
-        BOOST_FOREACH(const CAddress &addr, vAddr)
+        //vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
+        vector<CAddress> vAddr = addrman.GetAddr();
+        BOOST_FOREACH(const CAddress &addr, vAddr) {
+        LogPrintf("LOGMAIN51 getaddr BOOST addr \n");
         pfrom->PushAddress(addr);
+        }
     }
 
 
