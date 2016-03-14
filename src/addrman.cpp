@@ -660,11 +660,11 @@ int CAddrMan::Check_()
 }
 #endif
 
-//#ifdef I2PADDRMAN_EXTENSIONS
-//void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr, const bool fIpOnly, const bool fI2pOnly)
-//#else
+#ifdef I2PADDRMAN_EXTENSIONS
+void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr, const bool fIpOnly, const bool fI2pOnly)
+#else
 void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr)
-//#endif
+#endif
 {
     unsigned int nNodes = ADDRMAN_GETADDR_MAX_PCT * vRandom.size() / 100;
     if (nNodes > ADDRMAN_GETADDR_MAX)
@@ -681,15 +681,15 @@ void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr)
 
         const CAddrInfo& ai = mapInfo[vRandom[n]];
         //! Don't send terrible addresses in response to GetAddr requests
-//#ifdef I2PADDRMAN_EXTENSIONS
+#ifdef I2PADDRMAN_EXTENSIONS
         //! Additional checks, don't send addresses to nodes that cant process them or don't care about them.
         //! Inclusion of a check for RFC1918() addresses, means any local whitelisted peers that have made
         //! it into the address manager and are RFC1918 IPs will not be globally shared with peers on the
         //! Anoncoin network, originally done for software testing, now seems like a good idea to leave it.
- //       if( !ai.IsTerrible() && !ai.IsRFC1918() && (!fIpOnly || !ai.IsI2P()) && (!fI2pOnly || ai.IsI2P()) )
-//#else
+        if( !ai.IsTerrible() && !ai.IsRFC1918() && (!fIpOnly || !ai.IsI2P()) && (!fI2pOnly || ai.IsI2P()) )
+#else
         if(!ai.IsTerrible())
-//#endif
+#endif
             vAddr.push_back(ai);
     }
 }
@@ -721,3 +721,4 @@ void CAddrMan::Connected_(const CService& addr, int64_t nTime)
     if (nTime - info.nTime > nUpdateInterval)
         info.nTime = nTime;
 }
+

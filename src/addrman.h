@@ -181,12 +181,11 @@ public:
 //! how old addresses can maximally be
 // CSlave_changed
 // #define ADDRMAN_HORIZON_DAYS 30
-#define ADDRMAN_HORIZON_DAYS 17
+#define ADDRMAN_HORIZON_DAYS 20
 
 //! after how many failed attempts we give up on a new node
-// CSlave_changed
-// #define ADDRMAN_RETRIES 3
-#define ADDRMAN_RETRIES 4
+#define ADDRMAN_RETRIES 3
+
 
 //! how many successive failures are allowed ...
 // CSlave_changed
@@ -203,7 +202,7 @@ public:
 // #define ADDRMAN_GETADDR_MAX_PCT 23
 // #define ADDRMAN_GETADDR_MAX_PCT 100
 // CSlave_changed
-#define ADDRMAN_GETADDR_MAX_PCT 33
+#define ADDRMAN_GETADDR_MAX_PCT 70
 
 //! the maximum number of nodes to return in a getaddr call
 // was #define ADDRMAN_GETADDR_MAX 2500
@@ -310,11 +309,11 @@ protected:
 #endif
 
     //! Select several addresses at once.
-//#ifdef I2PADDRMAN_EXTENSIONS
- //   void GetAddr_(std::vector<CAddress> &vAddr, const bool fIpOnly, const bool fI2pOnly);
-//#else
+#ifdef I2PADDRMAN_EXTENSIONS
+    void GetAddr_(std::vector<CAddress> &vAddr, const bool fIpOnly, const bool fI2pOnly);
+#else
     void GetAddr_(std::vector<CAddress> &vAddr);
-//#endif
+#endif
 
     //! Mark an entry as currently-connected-to.
     void Connected_(const CService &addr, int64_t nTime);
@@ -687,21 +686,21 @@ public:
     }
 
     //! Return a bunch of addresses, selected at random.
-//#ifdef I2PADDRMAN_EXTENSIONS
-   // std::vector<CAddress> GetAddr(const bool fIpOnly, const bool fI2pOnly)
-//#else
+#ifdef I2PADDRMAN_EXTENSIONS
+    std::vector<CAddress> GetAddr(const bool fIpOnly, const bool fI2pOnly)
+#else
     std::vector<CAddress> GetAddr()
-//#endif
+#endif
     {
         Check();
         std::vector<CAddress> vAddr;
         {
             LOCK(cs);
-//#ifdef I2PADDRMAN_EXTENSIONS
-  //          GetAddr_(vAddr, fIpOnly, fI2pOnly);
-//#else
+#ifdef I2PADDRMAN_EXTENSIONS
+            GetAddr_(vAddr, fIpOnly, fI2pOnly);
+#else
             GetAddr_(vAddr);
-//#endif
+#endif
         }
         Check();
         return vAddr;

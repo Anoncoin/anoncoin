@@ -4294,7 +4294,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 LogPrint( "version", "I2P peer %s is protocol 70009+, version handshake completed normally.\n", pfrom->addrName );
         }
 
-        if (!pfrom->fInbound)
+        if (!pfrom->fInbound || IsDarknetOnly()) //Authorize inbound getaddr request if we are in Darknet only
         {
             //! Advertise our address, by doing this now after the version exchange, the other node may pass it on to nodes
             //! connected to them, nearly right away, at which point we may soon start to see inbound connections to us.
@@ -4429,14 +4429,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         //! Old 8.5.6 nodes are spamming the network with HUGE peers.dat, overwhelming the addrman!
         //if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && addrman.size() > 1000)
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF) {
-            LogPrint("addrman", "Don't want addr from older peer with older protocol versions such as %d \n", pfrom->nVersion);
-            }          
-            return true;
+            LogPrint("addrman", "Don't want addr from older peer with older protocol versions such as %d \n", pfrom->nVersion);           
+            return true;}
         if (vAddr.size() > 1000) {
             Misbehaving(pfrom->GetId(), 20);
             return error("message addr size() = %u", vAddr.size());
         }
-
         //! Store the new addresses
         vector<CAddress> vAddrOk;
         int64_t nNow = GetAdjustedTime();
@@ -4444,14 +4442,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // bool fPossibleI2pAddrs = (pfrom->nServices & NODE_I2P ) != 0;
         //! Hopefully the services supported by the peer show it supports I2P addresses. (services can lie), look at the stream type for now
         bool fPossibleI2pAddrs = (pfrom->GetRecvStreamType() & SER_IPADDRONLY ) == 0;
-        //! Hopefully that stream type was set correctly before we do this, it should have been done correctly before this message is processed.
+       //! Hopefully that stream type was set correctly before we do this, it should have been done correctly before this message is processed.
 
         //! Any peer addresses should be checked, as their size could include I2P destination addresses,
         //! we don't know what they are sending us, could be clearnet ip's or full i2p base64 destinations,
         //! perhaps with or without the correct GarlicCat field set in the ip address space....
-        LogPrint( "net", "received %d addresses, serialized size %u bytes each, from %s\n",
+        LogPrint( "addrman", "received %d addresses, serialized size %u bytes each, from %s\n",
                    vAddr.size(), ::GetSerializeSize(pfrom->addr, pfrom->GetRecvStreamType(), pfrom->nVersion), GetPeerLogStr(pfrom) );
-
         //! Fix problems with Addresses, before normal processing is done:
         //! If any of those addresses are I2P destinations we introduce some new stress testing on them to confirm
         //! they are valid and setup correctly before adding or sharing them with others.
@@ -4460,6 +4457,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         //! if it is an NODE_I2P source, but claims its an ip address, we make sure the i2p field is zero.  If it is an i2p addr we make sure
         //! the garliccat ip addr has been setup correctly.
         BOOST_FOREACH(CAddress& addr, vAddr) {
+            LogPrint("addrman", "addrman: address received from %s \n", GetPeerLogStr(pfrom)); 
+            addr.print ();
             if( fPossibleI2pAddrs ) {                       //! So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
                 addr.CheckAndSetGarlicCat();                //! Fix the address by adding the GarlicCat field, if it came in not set correctly
                 if( addr.IsNativeI2P() )                    //! For native I2P Addresses...
@@ -4950,16 +4949,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     
     else if (strCommand == "getaddr")
     {
- LogPrintf("LOGMAIN50 getaddr received from %s (startheight:%d) nVersion %d \n", GetPeerLogStr(pfrom), pfrom->nStartingHeight, pfrom->nVersion);
+        LogPrint("addrman", "addrman: getaddr received from %s (startheight:%d) nVersion %d \n", GetPeerLogStr(pfrom), pfrom->nStartingHeight, pfrom->nVersion);
         pfrom->vAddrToSend.clear();
         bool fIpOnly = (pfrom->addr.nServices & NODE_I2P) != 0;
         bool fI2pOnly = pfrom->addr.IsI2P();
-        //vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
-        vector<CAddress> vAddr = addrman.GetAddr();
-        BOOST_FOREACH(const CAddress &addr, vAddr) {
-        LogPrintf("LOGMAIN51 getaddr BOOST addr \n");
-        pfrom->PushAddress(addr);
-        }
+        vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
+        BOOST_FOREACH(const CAddress &addr, vAddr){
+        LogPrint("addrman", "addrman: getaddr received, address sent to %s \n", GetPeerLogStr(pfrom)); 
+        addr.print ();
+        pfrom->PushAddress(addr);}
     }
 
 
