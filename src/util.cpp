@@ -899,9 +899,9 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
     {
-        // Default behavior without anoncoin.conf file, is to startup in onlynet=i2p with default values
-        // if (mapSettingsRet.count("onlynet") == 0)
-            // mapSettingsRet["onlynet"] = "i2p";
+        //Default behavior without anoncoin.conf file, is to startup in onlynet=i2p with default values
+        if (mapSettingsRet.count("onlynet") == 0)
+            mapSettingsRet["onlynet"] = "i2p";
 
         // ToDo: This is where I could write a 'firstconfig'....
         return; // No anoncoin.conf file is OK

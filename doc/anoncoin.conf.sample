@@ -1,535 +1,121 @@
-#anoncoin.conf.sample
-#
-# Updated April 19th, 2015 for Anoncoin Core v0.9.5+ for both node and wallet builds.
-#
-# The Anoncoin development team is now able to offer gateway service builds for those folks which would
-# simply like to run the software as a gateway between clearnet and the I2P network.  We want to encourage
-# everyone to participate in that effort.
-#
-# Allot of effort has gone into specific details about how to use Anoncoin that can be found no where else
-# but this sample file.  Anoncoin will run without an anoncoin.conf file in your data directory.  It has
-# default values to help the new user get started.  Parameter decisions and interactions will be logged
-# in your debug.log file.  If you have trouble and are trying to debug parameter settings, there has been
-# allot of software development work put into re-writing the initialization process several times.  Every
-# detail about the initialization is recorded there for you to analysis.  It has become one of the most
-# complex parts of the Anoncoin system.  We no longer use Anoncoin-QT for settings, other than those few
-# which control default windows sizes and positions plus a few system values which have changed little
-# since early days.  We do offer a read-only display of your private I2P destination values and settings
-# as read from then anoncoin.conf file, that is on the menu bar, under settings->i2p destination details
-#
-# Everything is now handled through complex parameter interactions during initialization code that runs
-# as a common denominator for all the growing family of Anoncoin Core executables. All the settings here
-# (and many more) can be tested first from the command line, if that is how you start the software up,
-# otherwise editing your Windows shortcut is another topic. This sample file does cover those settings
-# which are personal, and for security reasons can only be setup by you.  Other parameters here are
-# documented because nothing else like them existed anywhere else in the cryptocoin world.
-#
-# So of course a good place to start is, copy this file into your data directory and rename it to
-# anoncoin.conf  That location varies allot & depends on which OS you are running, it is not going to be
-# covered here again, as has been done so many other places for the 100th time.  You can also find the
-# location of your data directory by running anoncoin (d or qt) with the rpc server=1 enabled, it will
-# expect you to have setup already, as a bare minimum, the user name and password.  If that has not been
-# done, then suggestions are given to you, and the location of your data directory, before shutting down.
-#
-# This documentation is ongoing but does attempt to help explain some of the critical parameters we offer,
-# how they work and what choices you have in setting them up on your system.
-#
-# Best regards,
-# GroundRod
-#
-# True or False boolean parameter values should use 0 or 1 when setting the value in this configuration file.
-#
-# First up,
-############ Using and running the RPC Server!
-#
-# It is an advanced part of the software, and built into every anoncoind or anoncoin-qt program as a service.
-# With the anoncoin-cli and anoncoin-tx programs acting as clients to those servers. Any program you care to
-# design, build or use can talk with the RPC server once properly configured.  Anoncoin servers now even
-# have built-in public http rest support with full support for binary, hex and json output.  If you want to
-# enable it, let more of the public know and learn about Anoncoin right here while operating your FULL node!
-#
-# QT has two versions of the RPC built-in, which you can use, one you can access anytime from the Help->Debug
-# menu Console tab.  The other is reached from the backside, just like anoncoind, without a GUI interface.
-# Instead it responses to the same commands and queries, returning json response strings, likely most of you
-# reading this are already familiar with, although there are slight variations to the command set we offer.
-# And the parameter values we allow as input strings maybe unfamiliar to many of you as they can be full I2P
-# network destinations in base64, or the much shorter b32.i2p representation we have built-in technology for.
-# As setup it better suits our needs for I2P support, enhanced parameter availability, the dual nature
-# each block has regarding the real mined hash or its sha256d hash, by which they can be is referenced.  The
-# built-in b32.i2p destination reference offers extensive output on the i2p destinations available which this
-# software can connect to if you have installed and configured an I2P Router to work with it.
-# Just some of the many aspects which make Anoncoin a very unique system within the crypto-coin industry.
-#
-# This backside RPC server is only available if enabled here, when running QT by setting server=1.
-#
-# So we'll first cover these two options which interact with one another, depending on the server program
-# you are using, they work slightly different.
-#
-# Controlling the RPC functionality for Anoncoin-QT...
-#
-# When running Anoncoin-QT, if the server parameter is not set true, then the command line tools like
-# anoncoin-cli, miner software programs or any other program you may intend on using, will not be able
-# to access the backside RPC.  It will not respond to commands, which is a good security measure, if you have
-# no use for it.
-# Keep in mind, if you hard set it false here, you will not be able to access anoncoind, if you ever try to
-# start it!  You'll have better security for anoncoin-qt, if that is all you ever care about and use.
-#
-# Controlling the RPC functionality for Anoncoind...
-#
-# We recommend you set daemon=1 here, so anoncoind can be used by default in that mode.
-# If the daemon parameter is set true, when running anoncoind, the server value is soft set to true as well.
-# So the best thing to do if you don't use the backside rpc much, is leave server undefined here.
-# Then QT will be secure when you run it, and yet anoncoind can also run just fine without it being set.
-# Anoncoind no longer has any RPC client command processing of its own.  It is strictly an RPC server, and
-# if your running it as a daemon, the preferred method, then the server parameter MUST be set true, which it
-# will automatically do for you, unless told otherwise specifically here.
-# There is no point to the server parameter for anoncoind, but there is for anoncoind-qt, and it is often
-# confusing to new users as to how the parameters interact.
-
 daemon=1
-#server=1
+server=1
+rpcuser=************USER***************
+rpcpassword=**************SECRETPASS*********
 
-# Next restrict your RPC calls to/from only a specific IP address might be a good idea, if not specified,
-# the default is to allow any valid IPv6/IPv4 local addresses.  Valid values are a single IP (e.g. 1.2.3.4),
-# a network/netmask (e.g. 1.2.3.4/255.255.255.0) or a network/CIDR (e.g. 1.2.3.4/24).
-# The rpcbind option may be new to some of you, so let me try to explain.  You can NOT use rpcbind without having 1st
-# specified a rpcallowip address or range of addresses.  Then if no rpcbind is set, the default is to bind to any
-# valid IPv6/IPv4 address on the default port.  Which may or MAYNOT be what you have set with rpcallowip like you
-# have done in past versions of this software.  Either don't set these, or set both of them is my recommendation.
-# It can cause you problems, if not done correctly, and leave you trying to figure out how to connect to the daemon
-# to shut it down and fix this.  You need to know and tell it specifically here which IP anoncoind is to bind
-# with, otherwise setting rpcallowip may not yield the same result you expected to have worked in past version.
-
-#rpcallowip=192.168.1.25
-#rpcbind=192.168.1.25
-
-# If bind succeeds in dual IPv6/IPv4 mode, it skips binding to IPv4 separately.  Local loopback adapter IPv6/IPv4
-# addresses are always allowed for the machine you are running on though, and is the default.  If you are having
-# trouble connecting to anoncoind, consider trying anoncoin-cli with -rpcconnect=127.0.0.1 or another local address,
-# depending on your network setup.
-#
-# A secure approach to username and password settings is forced upon you by the software, should you fail to set these,
-# during startup it will suggest a brand new randomly generated base58 key for you to use, and start the shutdown
-# sequence. Everyone using the RPC must have values set, in order to use the software as intended.
-
-#rpcuser=anoncoinrpc
-#rpcpassword=5ik3UkbLcYEjWAqJSDSBYxVRawXmQve6uFqzkUkRrva5
-
-# Quickly changing between mainnet, testnet and regtest operating modes:
-# Do it right here in the config file, no command line option required.  Simply uncomment the alternative network
-# setting below that you would like to use, then run any of the anoncoin executables as normal.  The default
-# rpcports are shown, but the recommendation is to leave them commented out, this allows you can quickly switch
-# between mainnet, testnet and/or regtest without having to change the port numbers too.
-
-# The default MainNet RPC port:
-# rpcport=9376
-
-#testnet=1
-# rpcport=19376
-
-#regtest=1
-# rpcport=19444
-
-# And finally for anoncoin-cli, if it can find these lines in your anoncoin.conf file, it will use them, so if you
-# match the value to your rpcbind setting (above), it should allow you to not need it placed on the command line
-# when using the RPC utility with other than the default address of 127.0.0.1, as is the case for IPv4 networks.
-
-#rpcconnect=192.168.1.25
+#rpcallowip=192.168.0.0/24
+#rpcallowip=192.168.2.0/255.255.255.0
+#rpcbind=192.168.2.55
+#rpcconnect=192.168.2.55
 #rpcwait=1
 
-# The later 'rpcwait' handles the case where your server is still in the process of initialization, and 'warming up',
-# without it, anoncoin-cli will return with an error, if the server is not ready yet to accept commands, but knows
-# that some have been issued.
-#
-# As some people do not use the default data directory, having the option -conf=<YourDataPathFileName> following
-# the command may still be required, this can be confusing at first, but the program does not know where to look
-# for the settings you have selected, unless in the default location.  Anymore than the other programs would, if
-# you've setup something other than the default, then you need to tell anoncoin-cli & anoncoin-tx where to look.
-#
-# Interestingly, its worth mentioning that you can change these later settings and save your anoncoin.conf file,
-# even after the server has started, because anoncoin-cli reads the file quick each time it is run, so if you
-# forgot to change or set them correctly here, you need not shut everything down and start over.  You can simply
-# change or add the option for the command line utility, it will then start working right away with those settings.
-# For the anoncoind or anoncoin-qt server programs anything you have here is read once, during initialization.
-# Those programs take time to get started, whatever the values were, perhaps in the distant past after many days
-# of running or edits you have made, those changes will not be known to the software.  Until you shut the server
-# down, and restart it the next time.
-#
-# Next up,
+#rest=1
+
+#rpcssl=1
+#rpcsslcertificatechainfile
+#rpcsslprivatekeyfile
+#rpcsslciphers
+#rpcport=443
+
 ############ Running a version of ONLYNET:
-#
-# Running I2P Only is our preferred method of operating Anoncoin in a most secure possible network environment.
-#
-# In order to do that you need to know about and have setup this as the only network you intend on using.
-# These onlynet options enforce other options, through parameter interactions, those will appear at the top of
-# your next run of the software in the debug.log file.  Pay attention to what they are telling you, as other
-# settings may get modified when certain combinations of values are specified here or methods of application.
-# Settings can be found here in the anoncoin.conf file or from the command line where those settings override
-# the ones you have set here.  Specifying command line parameters does not necessarily remove ones you have
-# set here though...
-# For example:  If you have onlynet=i2p set here, and do an onlynet=ipv4 on the command line, it boot's up your
-# software running in mixed mode, with both i2p and ipv4 as the two ONLY valid networks your willing to connect!
-# To set I2P only mode, it can be done on the commandline, or here with this next line, simply remove the '#'
-# comment character in front of it and have your I2P Router online and warmed up to activate those settings,
-# just make sure you also have the i2p.options.enable set!
 
-#onlynet=i2p
-
-# Clearnet ipv6/ipv4 or tor network options are also available to the onlynet user.  You will need to setup
-# a proxy server to use tor. (not yet documented or tested) and the term onlynet=onion is a synonym for tor
-# when used here.
-
-#onlynet=ipv4
+onlynet=i2p       # I2P-only enabled!
+#onlynet=ipv4     # IPV4 disabled!
 #onlynet=ipv6
 #onlynet=tor
-#onlynet=onion
 
-# NOTE: Networks i2p & tor are considered by the software to pass the IsDarkNet() function test.
-#
-#
 ############ MISC Settings
-#
-# By default Anoncoin runs the verifychain command near the end of initialization at level 3, checking the last
-# 980 blocks you have at level 3. By the time that runs, we have already done an extensive test of your complete
-# blockchain while building the new block hash cross reference, during that step we verify the proof-of-work for
-# every block in your copy of the chain.  Checkblocks does even more, it disassembles in memory the blockchain,
-# every block and transaction from your most current block backwards in time. Levels 0, 1 & 2 are quicker tests,
-# level 4 reassembles the blocks forward in time after level 3. All are pretty extensive tests, depending on how
-# many blocks you pick to check this can take some additional time to initialize.  By the time your copy of the
-# software is running and synchronizing with peers on the network allot of work has been done to make sure your
-# copy of the Anoncoin blockchain is a good one. These parameters effect the 'Verifing Latest Blocks...' step.
 
-#checklevel=3
-#checkblocks=10
+#stopafterblockimport=1      # useful when using bootstrap.dat, to shutdown the qt-client when file-synching is done
+#loadblock=/home/groundrod/.anoncoin/blocks-src/blk00000.dat #to use raw blk#####.dat instead of bootstrap.dat
 
-# Default binds connect to your loopback adapter 127.0.0.1, and never allows inbound connections to work
-# right for some folks without setting it to a local network address.  Perhaps despite your best efforts
-# to configure your network to allow them, you've found nothing that seems to get it to work.  Try
-# setting this to your non-loopback adapter address.  If your behind a router and have setup port
-# forwarding properly, setting this bind value can solve your last remaining hurdle! Getting inbound
-# peers connected is important, if you care about contributing to the network.  Specifically telling
-# this software which port to 'bind' with maybe all that is required to finally solve that issue for you.
-# Assuming a local net of 192.168.... fill in the .xx.xx below with your values:
+#bind=192.168.0.11   # set this node local-network address if you do a multi-nodes local network or for port-forwarding, else comment it!
+#whitelist=192.168.0.11      #c hange this to another local node local-network address to allow it to connect!
+#whitebind=192.168.2.55
 
-#bind=192.168.xx.xx
+#checkblocks=50000
 
-# bind is a clearnet only setting. I2P handles bind separate and very differently.
-#
-# When using the externalip parameter, a new local address will be bound to the address specified, this can solve
-# the problem of discovery for some folks, or perhaps you have a static ip which removes the need for discovery.
-# Perhaps you want to setup multiple peers on a local network using the new whitelist parameters, there are a number
-# of very good uses for externalip, but its parameter interaction is also complex to understand and the use for it
-# can vary greatly, depending on the context of your setup.
+#externalip=???
+#connect=192.168.0.101    # only connect to this node
 
-#externalip=91.189.70.15
-#externalip=192.168.1.20
-
-# that parameter is also a clearnet only setting, I2P works with destinations, not IP addresses.
-#
-# connect=<some address> here in the configuration file causes the node to boot up and immediately ONLY connect to that
-# address(es), and no others and the software defaults to listen set to false.
-#
-# The thread which makes outbound connections is caught in a tight loop because of this parameter, you may also
-# specify multiple ones, but those are the only connections that will be attempted outbound.  Which maybe what you want
-# sometimes.
-# Keep in mind, that if inbound peers know your IP address, they will connect to you anyway, unless listen is set false.
-# If you want to only make a specific connection(s) when the software is run on the machine setup this way, it is important
-# you hard set listen=0 too.  If you do not specify listen, it could be set to 1 through other parameter interaction, for
-# example the bind or whitebind parameters default behavior is to set listen to true, so it is best to not count on the
-# connect parameters default behavior to set listen false.
-#
-# externalip can be useful here too, it will set your node local address to the value specified, and stop the external
-# IP discovery process, however keep in mind that your node may not advertise itself!  For example when also being used
-# with the connect=<some addr> if you have not specifically set or other parameter interaction turned listen on, this
-# could be a problem, as no connection from any other address would be possible.
-#
-### Parameter interaction, can drive you crazy!
-
-#connect=192.168.1.20
-#connect=71.182.78.65
-#connect=a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p
-
-# connect can be used with any valid clearnet IP address(s) either IPv4 or IPv6 and it also can work with I2P destination(s)
-# either b32.i2p or base64 keys.
-#
-# The setting value listen takes on, has allot of parameter interaction. At the present time in our software I2P is
-# always listening and ignores this value.  How all the other network types behave if listen is disabled, is that
-# they stop listening for inbound connections.  Best advice is to leave it commented out here, unless you are certain
-# that you do not want to listen, or you specifically need it to be told to listen.  If I2P is enabled, your node
-# will always listen for inbound connections from the I2P network, discovery is not needed, as every destination is
-# known.  You may have to use bind= in order to get this setting to work the way it use too for other clearnet coins.
-
-#listen=1
-
-# Here is another parameter with allot of interaction that takes place depending on the value set for other
-# parameters. Discovery is only necessary if you want to turn it off or care about clearnet operation finding
-# your real IP address using concepts that are becoming obsolete. We do not reference or use any IRC site to find
-# our IP and our code is capable now of not even referencing an external internet service site to 'discover' what
-# our IP address is.  We have built-in v10 technology to learn that over time from our peers.  Although we still
-# start up a thread during initialization to do discovery, as v9 software does, depending on this setting and can
-# quickly find out what our IP address is to share the right value quickly with our peers. We really no longer
-# need it, even for clearnet operations.
-
-#discover=0
-
-# The use of upnp is still fully supported and the latest version built into our software, you can disable or
-# enable it here.  This may need to be on for you, and for many it works very well, so is fully supported.
-# If you don't know or don't care it is a wasted process and thread running on your system to try and figure
-# out your setup. This developer is not a fan nor uses upnp to discover what my external ip address is set to.
-# So we set it to false
-
-upnp=0
-
-# discover & upnp are settings that are only a concern to clearnet operations.
-#
-# Its important to understand for Anoncoin the dnsseed & dns parameters carry a dual meaning.  The use of these
-# 2 parameters cover not just clearnet lookup via dns for ip address(es), but also b32.i2p addresses are
-# considered something that must be 'looked up' over the I2P network.  If they can not be found locally with
-# our new built-in b32.i2p smart address manager (AddrMan).  The default is for both dns and dnsseed to be
-# enabled.
+#listen=1 # NOTE: Listen only refers to clearnet IPs, I2P always listens, if enabled.
+#discover=0    # Try to discover our own IP address
+#upnp=1    # enable upnp to open port for inbound connection on clearnet
 
 #dns=0
-#dnsseed=0
-
-# If dnsseed is false, it disables the loading of our named IP seednodes and named b32.i2p seednodes, depending
-# on which network you have setup to use (could be both).
-#
-# The IP domain names we have hard coded in our software and the b32.i2p destinations can not be tried without
-# dnsseed enabled.  That can not be enabled, unless dns is also enabled (set to true) or the software will be
-# running in a mode where you can only use IP addresses for clearnet and base64 I2P destinations for the I2P
-# network.  This rule applies to commands like addnode, where you can normally enter any type of domain name
-# or b32.i2p destination, these will not work without dns=1 set in your configuration.
-#
-# I2P *.b32.i2p addresses need to be looked up locally and/or sent to the I2P Router for lookup.  A full base64
-# destination key needs to first exist in our address manager or be found in order to resolve them, as b32.i2p
-# destinations are the hash of the keys.  Our new internal AddrMan can, for the 1st time in any cryptocoin
-# resolve those for you, but only if dns=1 is set.  Confirming that a full base64 destination can be located,
-# is the job for your I2P Router.  Also the person on the other end must have that machine with that destination
-# turned on, and still be using that as its destination.  This is why its important to setup a static I2P
-# destination for yourself.  See the static=1 parameter below.
-
+#dnsseed=1
 #forcednsseed=1
 
-# This parameter is kinda the opposite of dnsseed=0, it causes the dnsseeds to load immediately, Anoncoin now
-# has a 60 sec delay before trying to load them, this allows extra time for at least a few i2p nodes to get
-# connected. If your peers.dat file is empty (where the addresses and destinations are stored), the delay is
-# skipped and this parameter has no effect, because the software knows it must immediately start fetching new
-# addresses. In either case if dnsseed=0 is set then no seednodes are ever loaded.
-#
-# Commands and parameters like addnode, connect, seednode and others all check that dns settings when trying
-# to figure out what to do with an address you've given them. Optionally IPv6, Onion and I2P Addresses can be
-# inside square brackets [ ] if you prefer....
-#
-# If your mining, signing multisig transactions or offering exchange and merchant services you want to run with
-# a full transaction index, it defaults to false, and is a pain to rebuild your blockchain index and coins
-# transaction database afterwards, should you decide that you want some feature that the service offers you.
-# If you start out with this set while upgrading all those services will be ready, should the need arise.
-# Keep in mind that a an index rebuild will be required, should you decide to turn it off, and another to turn
-# it back on. (default: 0)
+#stfu=1    # Tired of the 'running on clearnet warning' during startup?  Try this...
 
-txindex=1
+#txindex=0    #enable it to use multisig transactions
+dbcache=400   #larger peer address space supported by Anoncoin for I2P
 
-# Do to the much larger peer address space supported by Anoncoin for I2P, we have set the default dbcache to
-# 200MB, and with all the other specific features we are now running, enlarging it even more maybe required,
-# if you have the memory give some of it to the cache for faster processing...  This developer has found that
-# verifychain @ level 4 tests work well with 400, same goes for loading the bootstrap.dat file and other
-# activities..  Analysis needs to be done to fine tune what it should be set to based on real world memory
-# space usage and disk activity.  Needs may differ allot, factors include, but are not limited to maintaining
-# a full transaction index (above), that does come into play here in the calculations, so unless you have
-# a low memory profile, we are recommending the following setting.
-
-dbcache=400
-
-# Tired of the 'running on clearnet warning' during startup?  Try this...
-
-#stfu=1
-
-# ...or better yet, switch to I2P!!!
-# Next up...
 ############ Debugging Options
-#
-# This is a really good thing to know!
-
-#debug=
-
-# Wasn't easy to figure out for this developer, although it tells you this right in the command help menu,
-# got tired of always having to place it on the command line. Simply declare the parameter here, followed by
-# the '=' sign.  (Remove the leading # comment character above).
-# Doing that you can turn ALL debugging ON, here in the anoncoin.conf file.  It produces allot of output.
-#
-# Technically this is true for any boolean parameter, no '1' need be specified, if the parameter exists, a value
-# of true is assumed, when it has no associated assignment.  If you want a parameter to be false you must explicitly
-# set it to <parameter name>=0 in this file.
-#
-# WARNING - Leave all debugging off, if your bootstrapping the blockchain or doing a re-index for the 1st time.
-#           Otherwise it will greatly slow down the process, and produce perhaps a GB of debug.log file output
-#           on your disk drive.  This software is 'IN' development, and we have a great deal of diagnostic
-#           information depending on this flag, if it is set.
-#
-# Late breaking news:  We are just starting to implement the new option below, it defaults to off and causes only
-# node ID numbers to be displayed in the debug.log file, which is fine in some cases, but initially we want to see
-# the full IP addresses and I2P b32.i2p destinations appear in the logs for debugging purposes.  V0.9.5.0 only has
-# two spots in the code where this is starting to be used, there will be more in the next builds, its up to you.
-
-logips=1
-
-# A new advanced diagnostic option checkblockindex, really for the developers though, as its to complex to even
-# easily explain.  Periodically it does an exhaustive check of the in memory data structures and verification of
-# your blockchain index. It may aid you in providing us with additional details, if a problem should occur with
-# the installation.
 
 #checkblockindex=1
+#checkmempool=1
+#logips=1 
+#logtimestamps=0
 
-# Another new parameter that could be useful for everyone 'stopafterblockimport' it can be the best way to load
-# your bootstrap.dat or import the set of blk0000x.dat files you have on your disk drive to initialize the
-# blockchain index to work with this new software.
+#debug=    # enable ALL debug category except bench and estimatefee
 
-#stopafterblockimport=1
-
-# If specified and the software started, it automatically shuts down afterward initialization. So you can leave it
-# unattended.  Knowing that a time consuming 1st step will have completed so that when you return, nothing more
-# will have been done.  Perhaps you want to run over the I2P network, and don't have the router setup and configured
-# yet, lots of reasons one might NOT want to proceed immediately with network synchronizing and wallet transaction
-# updates.
-#
-# WARNING - After using this new parameter once, DON'T forget to shut it off (comment it out here, or set it to 0)
-# before running the software again.  Otherwise next time it will go through the initialization processes, look at
-# this flag, and once again shutdown.  Great new tool, but you must remember to disable it for normal operations.
-#
-# The current list of category specific debug options you can selectively experiment with are as follows:
-
-#debug=addrman
+#debug=addrman    # category specific debug log
 #debug=alert
 #debug=coindb
 #debug=db
 #debug=lock
+#debug=gui
 #debug=mempool
 #debug=net
-#debug=gui          (Any debug message handler output, from within the QT executable shows up with this enabled)
-#debug=rand         (Only referenced one place and only from within Window builds, when the random seed data is updated)
-#debug=rpc          (Allows all JSON RPC command requests to be logged)
-#debug=selectcoins  (Specific to wallet SelectCoins subset selection for coincontrol debugging)
-
-# new ones, recently added...
+#debug=rand
+#debug=retarget
+#debug=rpc
+#debug=rpcio
+#debug=selectcoins
+#debug=timedata
 #debug=version
+
 #debug=bench
 #debug=estimatefee
 
-# Use of Specific categories can reduce the volume of information you have to look over, when you are really
-# trying to just analyze one specific aspect of the software behavior.  Turning them ALL on for Anoncoin now covers
-# a vast array of details in some areas.
-# Because of that, selective ones maybe turned off, even if all debugging has been set with the single debug=
-# command.  The 'bench' and 'estimatefee' are in this group atm, as they produce to much output in the log for the average
-# user. Unless specifically defined as a debug category to log, entries related to these categories will not appear
-# in the output.  For example if 'bench' is turned on, timing results will be added for every new block as it is being
-# added to the blockchain index.
-#
-# Some of the debug output which you will see in the log file, has not yet been categorized or documented as to it
-# being in a specific group.  If it has, you will see it in the log as something like received: or sending: these
-# are in the debug=net category and used for network diagnostics.  The new debug=version setting documents the initial
-# handshake between every peer as a new connection is made during the version/verack message processing.  It is an
-# advanced piece of programming which allows backwards compatibility with both clearnet and I2P builds of wallet
-# software using protocols 70006, 70007 and 70008, and was re-written numerous times before we were able to finally
-# invent protocol 70009 which is now what you will be using.  Protocol 70009 is deterministic in how it handles the
-# peer address space model, and should offer us a good start into a new future of peer-to-peer networking.
-#
-# Specific categories offer you targeted debugging. You may just want to monitor mining fee estimates, or peer to
-# peer connection issues.  The debug log gives you hints as to the inner workings of your new wallet.
-#
-# Every effort possible is being made to create ones that are descriptive and useful.
-# Details about the i2p network, i2p SAM interface and router connection, advanced b32.i2p address lookup table
-# operation diagnostics is already included in the system.  Block hash translation and cross reference details,
-# advanced mining option debugging & new next-work-required calculation development are just some in the softwares
-# debugging details now, or in development.  Multi algo mining of the chain, zerocoin integration & the list goes on.
-# Categorizing debug options takes time and doing it so language translation can be done is always an issue too.
-# Feel free to experiment or offer to help out, we are, after all an open source development project.....   :)
+############ Mining Options, enable TestNet and start a new one with initial conditions valid.
 
-############ Mining Options
-# NOTE: Non-functional in v0.9.5, as well as the RPC commands and queries related to mining.  We are working on a
-#       v0.9.5.1 build which will be out shortly, specifically to address the known issues which remain here.
-#       These were working great in March, and have only recently became a problem, due to upgrading the software.
-#
-# Generating coins with the built-in miner, if you set it hear, just as soon as initialization has completed the
-# software will start mining for you. It defaults to 0, and should be left off for most people using the software.
+#keypool=100
 
-#gen=1
+#gen=0                  
+#genproclimit=1	
 
-# When generate coins is set on, the following value is an example which will limit your mining to one processor
-# thread, or you can leave it at default and it will run your machine at close to 100%, trying to create a block
-# and mint you some Anoncoins!
+rpcport=9376  # The default MainNet RPC port
+#rpcport=9377 # The default TestNet RPC port
 
-#genproclimit=1
+#testnet=0
+#testnetstart=0             # only one master per testnet! For the master it has to be testnetstart=1
+
+#utctimeisknown=1
+
+
+############ New RetargetPID parameter control and csv file logging options in this new [ ] section
+
+[retargetpid]
+
+# HARDCODED VALUES
+
+retargetcsv=1
 
 ############ Anoncoin IP2 network Destination settings.
-#
-# If you are running your node over I2P, and want other peers to be able to quickly find you again, you want to run
-# with a static i2p destination. You do that here, by setting static=1 and defining your unique private base64 key string.
-# And invalid sample is shown as the example, so you know what they should look like.  Keep this information confidential,
-# the public key pair is embedded in the first 516 characters of the private key you place here, those details are now all
-# taken care of for you with our software. If you do not have a static destination, each time you run Anoncoin a new one
-# will be generated for you.  Which is fine for privacy, but not so good for participating in a peer-to-peer network where
-# you want to quickly be re-connected again to others on the network.  A dynamic destination is lost once you shut down.
-# See the -generatei2pdestination parameter on how to create one for yourself, using anoncoind or anoncoin-qt.  Anoncoin
-# generates a new dynamic destination every time you run the software with I2P enabled, until you have a static one setup.
-# Those details can be easily accessed from our new Anoncoin-QT software, and are still found under the settings menu,
-# however they are now read-only, you must place that information here in order for it to be used.
 
 [i2p.mydestination]
-#static=1
-#privatekey=uRnA93apngFTwIElkbD9wemy3itMe4~Cj2tR0imzVB~wboJTOM72Eo68nw7tOdvD5HRTxwkB6RuQRi5pYFHROP2lqHX5F86i9wmu1cXS8aEMp8DIoBsHCO6bRMM7Cy2AlwlvaAafYd9xw6vyIZJI9g~QjnJMhL8fzrkl3ebA7BfKD8TNc534ugbRiIA4Ldji5ODWQUZ7BzH~tbzc6444r7Yiya~I041cI83ao1V7rkCzPTt3eFlFoENsr6wMdkdQERjnvIaMVnz9qzFh22tKqsaDILRWnxJ26bPrz0Rdf09SBN35cRQRSkCNz7j0Q9CAsJZs1Y05W6U7vwGmzJtnMJumXywmME8T9Ho8hw4ZWuY1Kn1UfS-L91QtT1YwUdfVJ-34z8SP6iXMaR6iR-nO2CofbkBn~4dR5PpEvGj-sTBWyCd7vCakmg3thWvJRvmnabpR8W7OxQGbxwn49aYfghsTzxftg-0OTh17h67JLmKKrReV-fYmYCiklTNcAAAAXG1qsqreMNghI0RxaMaDD8TEkQpHp9lw29Y~OTCKXOhNpWUhFfDdHJlZ0fxx5YOnzIruB7mq9JnW2846REORmjw5YrLb0xDkICN6dIcCSpc9QbznOw4ohOYL~liqqMLlSkaUDo6umOMjOaG6nPo84sGS8WTC9MrWSKSTRs-lMMYTT-saFvtu4czmtSzgSx~2bBTjKA27ogYX5hcLjwfavGmHPCznBeIgIBDyKFu8RT9PxZLCxJw~NGN06Hh3df~cR7DjY3qg0AbKou3bTnP32RvGW3bhHwQmkiseZVkf0de8KHwXzF5jml50BhKWXLBOYwayPBpFEzGSVatryEh78oqxcAGOa8L35eKAHvgoZvVqCE9C
+static=1          # uncomment after having copied the "privatekey" parameter below
+#privatekey=       # copy here the settings->I2P Destination details-> "privatekey" parameter
 
-#shareaddr=1
-
-# Another new option in the [i2p.mydestionation] settings group, called 'shareaddr' Its behavior is to be false for dynamic
-# i2p destinations and true for static ones.  The user can choose here to override that behavior, for example if you want to
-# run with a dynamic destination for some number of days or weeks, it would be best to set shareaddr=1 here, otherwise your
-# address will not get into other node peer tables and this node will likely never see an inbound connection. The shareaddr
-# effects several areas within the code, first and the most immediate impact is on the version message exchange.  When a
-# connection to a peer on i2p is made, the addrFrom field will be zero'd out.  That immediately impacts the other nodes address
-# manager, as the address you are using here does not get added and it will not be shared (by them) with any other nodes on the
-# network!
-#
-# Clearnet has the problem of not knowing for sure, what your IP address is, a complex problem that takes time to resolve.
-# Also the technique has been used for years by a few, that know how to build crypto currency software, perhaps to try and
-# hide their identity (very poorly) or there are various reasons merchants or individuals would want to do this.  The reason
-# is not our concern. By allowing users to decide here in the configuration file, Anoncoin brings this concept into the open
-# for the first time, it means that any user can decide, at least for over the i2p network, how this behavior operates for them
-# without having to learn to build special source code modifications from scratch.  The default behavior, leaving it commented
-# out, is best for the network, but it is up to you.
-#
-# PRIVACY NOTE: Manually entered destinations, such as when using addnode to make an outbound connection, 'always' add the
-#               destination you entered into the address manager. If you ever do that with an i2p destination your trying to
-#               keep super private, it will now be shared with other peers during requests from them for addresses from you.
-#               Your secret destination will be 'out of the bag'.  Anyone you connect with, is also able to do that very same
-#               thing, as they know your destination, most would never notice or do that, so this technique works pretty well,
-#               but if they did, once again your destination would not be kept secret.  The only way to ever keep a destination
-#               secret over a peer-to-peer network, is never use it, or use it once and throw it away.  Anoncoin can work both
-#               ways. The shareaddr parameter gives you a way to tell the peers don't bother keeping and sharing this address
-#               its not worth knowing about very long.
-#
-# The purpose of this variable is not to solve that complex programming problem, which goes to trying to guess the intent of the user.
-# What this is being used for, is solving the problem of dynamic destinations not lasting very long, nor being useful to a network trying
-# to locate peers worth connecting to, that is what a static destination is for, and why you should set one up as soon as possible.
-# Then we all can enjoy a fast and secure Anoncoin i2p p2p network.
+shareaddr=1       # sharing of dynamic and static I2P address is enabled by default.
 
 ############ Anoncoin IP2 Options settings.
-#
-# The enabled option is responsible for allot of decisions during the initialization process, and then at various places throughout
-# the code it is also checked, and decisions made based on its value.  If no configuration is found, it defaults to disabled.  In the
-# case where you have specifically selected -onlynet(s) != i2p on the command line or in this configuration file, it is hard set to
-# false(0) during initialization, as a convenience for you.  So you do not have to change this here every time you want to switch to
-# running clearnet only for example.  Other than that one case, the value you have set here will be used.  If you do not have a
-# configuration file setup yet, this (and any other) parameter can be placed on the command line, for example:
-# "anoncoind -i2p.options.enabled=1" would start running the Anoncoin daemon in mixed mode right after you've just installed and
-# started the java i2p router, for the 1st time with default values this is a quick way to get started.
-#
-# The host, port and session name are pretty self explanatory, the extra= in the options section can be used by developers, if set
-# to anything other than blank, it is added (after a space) to the end of the long list of other options (below) which we already
-# send to the i2p router when a new session is first created during initialization.
 
 [i2p.options]
-enabled=0
-samhost=127.0.0.1
+enabled=1             # always enable to use I2P
+samhost=127.0.0.1     # set to I2P-SAM local address of the I2P router, after enabling SAM in it
 samport=7656
 sessionname=Anoncoin-client
 extra=
@@ -540,7 +126,7 @@ quantity=3
 length=3
 lengthvariance=0
 backupquantity=1
-allowzerohop=1
+allowzerohop=0
 iprestriction=2
 
 # Outbound parameters options
@@ -549,39 +135,7 @@ quantity=3
 length=3
 lengthvariance=0
 backupquantity=1
-allowzerohop=1
+allowzerohop=0
 iprestriction=2
 priority=0
 
-# Thats it for the I2P parameter options.
-# DO NOT store any additional settings here, after those sections of parameters.  Always place them above the section
-# groups.  We may develop a way to deal with finding the end of category sections to allow you to do that, but it has
-# not yet been coded in any fashion which would be easy to explain.
-#
-# Several potential problems, particularly for the anoncoind user exist & especially to a new user, just trying to get
-# setup.  For example, if you enabled the RPC server and forgot to set your username & password while having the
-# bootstrap.dat file in place to initialize the blockchain or an unknown problem is about to happen connecting to the
-# I2P Router, or a wallet needs to be upgraded or the list goes on....  The software may have issued a warning to you
-# and started the shutdown sequence.  The startup sequence however is still in the process of initializing.  It is after
-# all, a multitasking, multi-threaded piece of code, so your now caught in a shutdown sequence waiting to run.
-#
-# We are working to detect & improve these worse case shutdown sequences, as long as the steps taken do not require us
-# to sacrifice security.  A simple mistake like not setting your password can cause a long wait, only to end with shut
-# down eventually.
-#
-# If it does happen to you, keep reading...
-# You have a couple of options,  first let those tasks finish, have lunch and enjoy a sunny day.  Another option, look
-# in the anoncoin data directory for a file called anoncoin.pid  Type the contents of that file, it should have only
-# one simple number in it.  That gives you the process PID number assigned to the software.  Windows users may require
-# a different methodology to obtain the PID number.  Regardless of how its obtained, once you have it.  It should be
-# a simple matter of killing the process.  Then you can fix whatever was causing the problem(s), restart the software
-# and hopefully get everything running again quickly.  There are other possible issues which could require additional
-# action on your part, one such file is also in the data directory, and called .lock, it may need to be deleted or the
-# software will think the program is still running, even after you've killed the process or rebooted.
-#
-# Good LUCK and once setup correctly v0.9.5 has been working great in most regards, we are in the final stages of
-# testing and preparing for an official release.
-#
-# Enjoy!
-#
-# GR

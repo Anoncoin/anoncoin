@@ -1722,7 +1722,7 @@ bool IsBehindDarknet()
 
 bool IsMyDestinationShared()
 {
-    return GetBoolArg("-i2p.mydestination.shareaddr", false);
+    return GetBoolArg("-i2p.mydestination.shareaddr", true); //CSlave: sharing enabled by default unless specified shareaddr=0  
 }
 
 // This test should pass for both public and private keys, as the first part of the private key is the public key.

@@ -1018,7 +1018,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             HardSetBoolArg("-i2p.mydestination.static", false);
             LogPrintf( "AppInit2 : parameter interaction: -generatei2pdestination -> hard setting -i2p.mydestination.static=0\n");
         }
-
+        
         // At this point if the user has the correct configuration set, we can continue, just one more detail to check, and error out if its not setup correctly.
         if( !fI2pEnabled )  {
             LogPrintf( "AppInit2 : To use -generatei2pdestination, the i2p router must be warmed up. Include [i2p.options] enabled=1 in your anoncoin.conf,\n" );
@@ -1027,6 +1027,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             LogPrintf( "         : the I2P SAM module will try to create a session with default values, to access the i2p router.\n" );
             return InitError(_("Unable to run -generatei2pdestination, see the debug.log for possible solutions to fix the problem." ) );
         }
+       
     }
 
     // Initialize some stuff here a early, so the values are available later on, if i2p is  enabled or not, GenI2pDest is run etc...
@@ -1083,8 +1084,13 @@ bool AppInit2(boost::thread_group& threadGroup)
         // Does the user want to have a shared destination?
         // If we're not running i2p enabled, having it undefined is ok too, defaults to same as static setting here though,
         // as it will be used as soon as an i2p node is created in an outbound connection, or upon processing a version message from an inbound connection.
-        if( SoftSetBoolArg("-i2p.mydestination.shareaddr", fI2pStaticDest) )
-            LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=%s\n", fI2pStaticDest ? "1" : "0" );
+        //if( SoftSetBoolArg("-i2p.mydestination.shareaddr", fI2pStaticDest) )
+          //  LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=%s\n", fI2pStaticDest ? "1" : "0" );
+        //CSlave changed to allow sharing of every I2P address whether dynamic and static per default        
+
+        if( SoftSetBoolArg("-i2p.mydestination.shareaddr", true) )
+            LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=1\n");
+
         // bool fI2pSharedAddr = GetBoolArg("-i2p.mydestination.shareaddr", false);
 
         // Many more settings to do, moved them into i2pwrapper.cpp, we make sure all our parameters are loaded into

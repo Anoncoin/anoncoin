@@ -179,9 +179,9 @@ public:
 #define ADDRMAN_NEW_BUCKETS_PER_ADDRESS 8
 
 //! how old addresses can maximally be
-// CSlave_changed
+// CSlave_changed to 10 since enabled the sharing by default of dynamic I2P addresses
 // #define ADDRMAN_HORIZON_DAYS 30
-#define ADDRMAN_HORIZON_DAYS 20
+#define ADDRMAN_HORIZON_DAYS 10
 
 //! after how many failed attempts we give up on a new node
 #define ADDRMAN_RETRIES 3

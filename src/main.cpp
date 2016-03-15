@@ -4315,6 +4315,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                     //! only have a bad local address for ourselves.  It will discover that the
                     //! peers address for us is much better and push that back to them instead.
                     //! Something we don't want to do for dynamic i2p destinations that are not shared.
+                    //! CSlave: Changed that setting now dynamic i2p destination are also shared by default.
                     addr.SetIP(pfrom->addrLocal);
                     pfrom->PushAddress(addr);
                 }
