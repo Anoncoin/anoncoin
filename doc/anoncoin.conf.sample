@@ -1,7 +1,20 @@
+################################################################################################################################################################################################
+########################    anoncoin.conf.sample: Sample anoncoin.conf to be renamed anoncoin.conf and saved in:   #############################################################################
+########################    * Windows: %appdata%/anoncoin               ########################################################################################################################
+########################    * Linux: ~/.anoncoin                        ########################################################################################################################
+################################################################################################################################################################################################
+############ In case the i2p router was not enabled, please install it following https://wiki.anoncoin.net/How_to_setup_your_Anoncoin_wallet#Setting_up_your_client_to_use_I2P_.289.6.9.29   ###
+############ After I2P SAM was enabled and the router is warmed up (local tunnels are green in the router console http://127.0.0.1:7657/index.jsp),                                          ###
+############ Run once again the Generate I2P static privatekey from your Start menu or run anoncoin-qtc "-i2p.options.enabled=1 -generatei2pdestination -onlynet=i2p"                        ###
+############ With the default parameters for I2P SAM, the generated private key will be displayed and shall be added at the [i2p.mydestination] section at privatekey= (without the #)       ###
+############ Now you have to change your rpcuser= and rpcpassword= and do not forget to encrypt your wallet.dat from inside the program                                                      ###
+############ Plenty of settings are here customizable but most of the settings default values are best for the average user                                                                  ###
+################################################################################################################################################################################################
+
 daemon=1
 server=1
-rpcuser=************USER***************
-rpcpassword=**************SECRETPASS*********
+rpcuser=************USER***************                     #Change it! (no need to remember)
+rpcpassword=**************SECRETPASS*********               #Change it! (no need to remember)
 
 #rpcallowip=192.168.0.0/24
 #rpcallowip=192.168.2.0/255.255.255.0
@@ -17,12 +30,14 @@ rpcpassword=**************SECRETPASS*********
 #rpcsslciphers
 #rpcport=443
 
-############ Running a version of ONLYNET:
+############ Running a version of ONLYNET:       #If everything is commented out, then we are in mixed mode (clearnet and I2P if [i2p.options] enabled=1)
 
 onlynet=i2p       # I2P-only enabled!
 #onlynet=ipv4     # IPV4 disabled!
 #onlynet=ipv6
 #onlynet=tor
+#onlynet=onion
+
 
 ############ MISC Settings
 
@@ -107,7 +122,7 @@ retargetcsv=1
 
 [i2p.mydestination]
 static=1          # uncomment after having copied the "privatekey" parameter below
-#privatekey=       # copy here the settings->I2P Destination details-> "privatekey" parameter
+#privatekey=       # copy here the settings->I2P Destination details-> "privatekey" parameter and remove the #
 
 shareaddr=1       # sharing of dynamic and static I2P address is enabled by default.
 

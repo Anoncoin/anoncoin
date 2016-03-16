@@ -21,7 +21,9 @@ SetCompressor /SOLID lzma
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "@PACKAGE_NAME@"
-!define MUI_FINISHPAGE_RUN $INSTDIR\anoncoin-qtc.exe
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "Generate an I2P static privatekey"
+!define MUI_FINISHPAGE_RUN_FUNCTION "Launchlink"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "@abs_top_srcdir@/share/pixmaps/nsis-wizard.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -104,6 +106,7 @@ Section -post SEC0001
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Classic.lnk" $INSTDIR\anoncoin-qtc.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Generate I2P static privatekey.lnk" "$INSTDIR\anoncoin-qtc.exe" "-i2p.options.enabled=1 -onlynet=i2p -generatei2pdestination -stfu=1"   
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
@@ -151,6 +154,7 @@ Section -un.post UNSEC0001
     DeleteRegKey HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name) Classic.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Generate I2P static privatekey.lnk"
     Delete /REBOOTOK "$SMSTARTUP\Anoncoin.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     Delete /REBOOTOK $INSTDIR\debug.log
@@ -181,6 +185,11 @@ Function .onInit
       Abort
     ${EndIf}
 !endif
+FunctionEnd
+
+Function Launchlink
+    ExecShell "" "$SMPROGRAMS\$StartMenuGroup\Generate I2P static privatekey.lnk"
+    ExecShell "open" "$INSTDIR\doc\anoncoin.conf.sample"
 FunctionEnd
 
 # Uninstaller functions
