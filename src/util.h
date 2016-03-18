@@ -46,7 +46,7 @@ extern bool fLogTimestamps;
 extern bool fLogIPs;        // New v10 param
 extern bool fLogI2Ps;       // Anoncoin specific
 extern volatile bool fReopenDebugLog;
-extern I2PManager::I2PManager *I2PManager;
+extern I2PManager *I2PManager;
 
 void SetupEnvironment();
 

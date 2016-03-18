@@ -145,3 +145,7 @@ src/qt/paymentrequest.pb.h
 #
 
 src/qthemes
+.project
+.cproject
+src/qt/anoncoin-qtc
+depends/*

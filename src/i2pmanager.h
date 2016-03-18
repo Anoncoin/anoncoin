@@ -1,6 +1,8 @@
 #ifndef __I2P_MANAGER__
 #define __I2P_MANAGER__
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <string>
 #include "stdint.h"
 #include "i2pdata.h"
@@ -8,7 +10,7 @@
 class I2PManager
 {
 public:
-    void I2PManager(void);
+    I2PManager();
     ~I2PManager();
 
     boost::filesystem::path GetI2PSettingsFilePath(void) const;

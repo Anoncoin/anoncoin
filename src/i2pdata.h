@@ -83,7 +83,7 @@ typedef struct i2psettings_t
 class I2PDataFile
 {
 public:
-    void I2PDataFile(void);
+    I2PDataFile();
     ~I2PDataFile();
 
     void initHeader(void);

@@ -101,7 +101,7 @@ I2PDataFile *pFile_I2P_Object;
 //    Return:       N/A
 //
 //******************************************************************************
-void I2PManager::I2PManager(void)
+I2PManager::I2PManager()
 {
     pFile_I2P_Object = new I2PDataFile();
     assert(pFile_I2P_Object);
