@@ -16,7 +16,7 @@ public:
     bool ReadI2PSettingsFile(void);
     const I2P_Data_File_t* getFileI2PPtr(void) const;
     void LogDataFile(void);
-    UpdateMapArguments();
+    void UpdateMapArguments(void);
 
 private:
     I2PDataFile FileI2P;

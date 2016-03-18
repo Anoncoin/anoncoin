@@ -264,4 +264,161 @@ const bool I2PDataFile::getStatic(void) const
     return I2PData.fileData.isStatic;
 }
 
+//-----------------------------------------------------------
+//
+//              GET INBOUND PROPERTIES
+//
+//-----------------------------------------------------------
 
+const int32_t I2PDataFile::getInboundQuantity(void) const{
+    return I2PData.fileData.inbound.quantity;
+}
+
+const int32_t I2PDataFile::getInboundBackupQuantity(void) const
+{
+    return I2PData.fileData.inbound.backupquantity;
+}
+
+const int32_t I2PDataFile::getInboundLength(void) const
+{
+    return I2PData.fileData.inbound.length;
+}
+const int32_t I2PDataFile::getInboundLengthVariance(void) const
+{
+    return I2PData.fileData.inbound.lengthvariance;
+}
+
+const int32_t I2PDataFile::getInboundIPRestriction(void) const
+{
+    return I2PData.fileData.inbound.iprestriction;
+}
+
+const int32_t I2PDataFile::getInboundAllowZeroHop(void) const
+{
+    return I2PData.fileData.inbound.allowzerohop;
+}
+
+const int32_t I2PDataFile::getOutboundQuantity(void) const
+{
+    return I2PData.fileData.outbound.quantity;
+}
+
+const int32_t I2PDataFile::getOutboundPriority(void) const
+{
+    return I2PData.fileData.outbound.priority;
+}
+
+//-----------------------------------------------------------
+//
+//              GET OUTBOUND PROPERTIES
+//
+//-----------------------------------------------------------
+
+const int32_t I2PDataFile::getOutboundQuantity(void) const{
+    return I2PData.fileData.outbound.quantity;
+}
+
+const int32_t I2PDataFile::getOutboundBackupQuantity(void) const
+{
+    return I2PData.fileData.outbound.backupquantity;
+}
+
+const int32_t I2PDataFile::getOutboundLength(void) const
+{
+    return I2PData.fileData.outbound.length;
+}
+const int32_t I2PDataFile::getOutboundLengthVariance(void) const
+{
+    return I2PData.fileData.outbound.lengthvariance;
+}
+
+const int32_t I2PDataFile::getOutboundIPRestriction(void) const
+{
+    return I2PData.fileData.outbound.iprestriction;
+}
+
+const int32_t I2PDataFile::getOutboundAllowZeroHop(void) const
+{
+    return I2PData.fileData.outbound.allowzerohop;
+}
+
+const int32_t I2PDataFile::getOutboundQuantity(void) const
+{
+    return I2PData.fileData.outbound.quantity;
+}
+
+//-----------------------------------------------------------
+//
+//              SET INBOUND PROPERTIES
+//
+//-----------------------------------------------------------
+
+void I2PDataFile::setInboundQuantity(int32_t quantity) const{
+    I2PData.fileData.inbound.quantity = quantity;
+}
+
+void I2PDataFile::setInboundBackupQuantity(int32_t backupQuantity) const
+{
+    I2PData.fileData.inbound.backupquantity = backupQuantity;
+}
+
+void I2PDataFile::setInboundLength(int32_t length) const
+{
+    I2PData.fileData.inbound.length = length;
+}
+
+void I2PDataFile::setInboundLengthVariance(int32_t lengthVariance) const
+{
+    I2PData.fileData.inbound.lengthvariance = lengthVariance;
+}
+
+void I2PDataFile::setInboundIPRestriction(int32_t iprestriction) const
+{
+    I2PData.fileData.inbound.iprestriction = iprestriction;
+}
+
+void I2PDataFile::setInboundAllowZeroHop(int32_t allowzerohop) const
+{
+    I2PData.fileData.inbound.allowzerohop = allowzerohop;
+}
+
+//-----------------------------------------------------------
+//
+//              SET OUTBOUND PROPERTIES
+//
+//-----------------------------------------------------------
+
+void I2PDataFile::setOutboundQuantity(int32_t quantity) const
+{
+    I2PData.fileData.outbound.quantity = quantity;
+}
+
+void I2PDataFile::setOutboundBackupQuantity(int32_t backupQuantity) const
+{
+    I2PData.fileData.outbound.backupquantity = backupQuantity;
+}
+
+void I2PDataFile::setOutboundLength(int32_t length) const
+{
+    I2PData.fileData.outbound.length = length;
+}
+
+void I2PDataFile::setOutboundLengthVariance(int32_t lengthVariance) const
+{
+    I2PData.fileData.outbound.lengthvariance = lengthVariance;
+}
+
+void I2PDataFile::setOutboundIPRestriction(int32_t iprestriction) const
+{
+    I2PData.fileData.outbound.iprestriction = iprestriction;
+}
+
+void I2PDataFile::setOutboundAllowZeroHop(int32_t allowzerohop) const
+{
+    I2PData.fileData.outbound.allowzerohop = allowzerohop;
+}
+
+void I2PDataFile::setOutboundPriority(int32_t priority) const
+{
+    I2PData.fileData.outbound.priority = priority;
+}

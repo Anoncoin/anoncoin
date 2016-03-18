@@ -88,11 +88,28 @@ public:
 
     void initHeader(void);
     void initDefaultValues(void);
+
     void setPrivateKey(const std::string);
     void setSessionName(const std::string);
     void setSam(const std::string, const int32_t);
     void setEnableStatus(const bool);
     void setStatic(const bool);
+
+    void setInboundQuantity(int32_t) const;
+    void setInboundBackupQuantity(int32_t) const;
+    void setInboundLength(int32_t) const;
+    void setInboundLengthVariance(int32_t) const;
+    void setInboundIPRestriction(int32_t) const;
+    void setInboundAllowZeroHop(int32_t) const;
+
+    void setOutboundPriority(int32_t) const;
+    void setOutboundBackupQuantity(int32_t) const;
+    void setOutboundLength(int32_t) const;
+    void setOutboundLengthVariance(int32_t) const;
+    void setOutboundIPRestriction(int32_t) const;
+    void setOutboundAllowZeroHop(int32_t) const;
+    void setOutboundQuantity(int32_t) const;
+
 
     const std::string getPrivateKey(void) const;
     const std::string getSessionName(void) const;
@@ -100,6 +117,21 @@ public:
     const int32_t getSamPort(void) const;
     const bool getEnableStatus(void) const;
     const bool getStatic(void) const;
+
+    const int32_t getInboundQuantity(void) const;
+    const int32_t getInboundBackupQuantity(void) const;
+    const int32_t getInboundLength(void) const;
+    const int32_t getInboundLengthVariance(void) const;
+    const int32_t getInboundIPRestriction(void) const;
+    const int32_t getInboundAllowZeroHop(void) const;
+
+    const int32_t getOutboundPriority(void) const;
+    const int32_t getOutboundBackupQuantity(void) const;
+    const int32_t getOutboundLength(void) const;
+    const int32_t getOutboundLengthVariance(void) const;
+    const int32_t getOutboundIPRestriction(void) const;
+    const int32_t getOutboundAllowZeroHop(void) const;
+    const int32_t getOutboundQuantity(void) const;
 
 private:
     I2P_Data_File_t I2PData;

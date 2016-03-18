@@ -11,9 +11,7 @@
 #include "random.h"
 #include "uint256.h"
 #include "version.h"
-#if defined(SEPARATED_I2P_SETTINGS_FILE)
 #include "i2pmanager.h"
-#endif
 
 #include <stdarg.h>
 

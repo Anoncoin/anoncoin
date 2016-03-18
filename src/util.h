@@ -15,6 +15,7 @@
 #include "serialize.h"
 #include "sync.h"
 #include "tinyformat.h"
+#include "i2pmanager.h"
 
 #include <cstdio>
 #include <exception>

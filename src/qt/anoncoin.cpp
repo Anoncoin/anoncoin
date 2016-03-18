@@ -591,14 +591,14 @@ int main(int argc, char *argv[])
     }
 #define SEPARATED_I2P_SETTINGS_FILE
 #if defined(SEPARATED_I2P_SETTINGS_FILE)
-    // Check if it exists.
-    //   load settings from file into memory.
-    //   Updating general settings to reflect file
-    //   Update QT to reflect settings from file
+    //   Check if it exists.
+    // x    load settings from file into memory.
+    // x    Updating general settings to reflect file
+    //      Update QT to reflect settings from file
     // If it does not exist
-    //   Create file
-    //   Initialize with default values
-    //   Flush to disk
+    // x   Create file
+    // x   Initialize with default values
+    // x   Flush to disk
     try {
         I2PManager = new I2PManager();
         if (boost::filesystem::exists( I2PManager->GetI2PSettingsFilePath() ))
@@ -613,9 +613,9 @@ int main(int argc, char *argv[])
             I2PManager->FileI2P.initDefaultValues();
             I2PManager->WriteToI2PSettingsFile();
         }
-        IsI2PEnabled();
+
         // Update mapArgs with data file values
-        I2PManager->UpdateMapArgs();
+        I2PManager->UpdateMapArguments();
     } catch(std::exception &e) {
         QMessageBox::critical(0, QObject::tr("Anoncoin"),
                               QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));

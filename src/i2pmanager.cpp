@@ -247,10 +247,26 @@ bool I2PManager::ReadI2PSettingsFile(void)
 
 void I2PManager::UpdateMapArguments(void)
 {
-    mapArgs["-i2p.options.enabled"] = pFile_I2P_Object->getEnableStatus();
-    mapArgs["-i2p.options.static"] = pFile_I2P_Object->getEnableStatus();
-    mapArgs["-i2p.options.enabled"] = pFile_I2P_Object->getEnableStatus();
-    mapArgs["-i2p.options.enabled"] = pFile_I2P_Object->getEnableStatus();
+    mapArgs["-i2p.options.enabled"]                 = pFile_I2P_Object->getEnableStatus();
+    mapArgs["-i2p.options.static"]                  = pFile_I2P_Object->getEnableStatus();
+    mapArgs["-i2p.options.i2p.options.samhost"]     = pFile_I2P_Object->getSamHost();
+    mapArgs["-i2p.options.i2p.options.samport"]     = pFile_I2P_Object->getSamPort();
+    mapArgs["-i2p.options.sessionname"]             = pFile_I2P_Object->getSessionName();
+
+    mapArgs["-i2p.options.inbound.quantity"]        = pFile_I2P_Object->getInboundQuantity();
+    mapArgs["-i2p.options.inbound.length"]          = pFile_I2P_Object->getInboundLength();
+    mapArgs["-i2p.options.inbound.lengthvariance"]  = pFile_I2P_Object->getInboundLengthVariance();
+    mapArgs["-i2p.options.inbound.backupquantity"]  = pFile_I2P_Object->getInboundBackupQuantity();
+    mapArgs["-i2p.options.inbound.allowzerohop"]    = pFile_I2P_Object->getInboundAllowZeroHop();
+    mapArgs["-i2p.options.inbound.iprestriction"]   = pFile_I2P_Object->getInboundIPRestriction();
+
+    mapArgs["-i2p.options.outbound.quantity"]        = pFile_I2P_Object->getOutboundQuantity();
+    mapArgs["-i2p.options.outbound.length"]          = pFile_I2P_Object->getOutboundLength();
+    mapArgs["-i2p.options.outbound.lengthvariance"]  = pFile_I2P_Object->getOutboundLengthVariance();
+    mapArgs["-i2p.options.outbound.backupquantity"]  = pFile_I2P_Object->getOutboundBackupQuantity();
+    mapArgs["-i2p.options.outbound.allowzerohop"]    = pFile_I2P_Object->getOutboundAllowZeroHop();
+    mapArgs["-i2p.options.outbound.iprestriction"]   = pFile_I2P_Object->getOutboundIPRestriction();
+    mapArgs["-i2p.options.outbound.priority"]        = pFile_I2P_Object->getOutboundPriority();
 }
 
 //******************************************************************************
