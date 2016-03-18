@@ -45,6 +45,7 @@ extern bool fLogTimestamps;
 extern bool fLogIPs;        // New v10 param
 extern bool fLogI2Ps;       // Anoncoin specific
 extern volatile bool fReopenDebugLog;
+extern I2PManager::I2PManager *I2PManager;
 
 void SetupEnvironment();
 
@@ -198,7 +199,6 @@ void ShrinkDebugFile();
 int64_t GetTime();
 void SetMockTime(int64_t nMockTimeIn);
 void runCommand(std::string strCommand);
-
 
 inline std::string i64tostr(int64_t n)
 {

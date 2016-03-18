@@ -36,6 +36,8 @@
 #include "wallet.h"
 #endif
 
+#include "i2pmanager.h"
+
 #include <stdint.h>
 
 #include <boost/filesystem/operations.hpp>
@@ -587,6 +589,39 @@ int main(int argc, char *argv[])
                               QObject::tr("Error: Cannot parse configuration file: %1. Only use key=value syntax.").arg(e.what()));
         return false;
     }
+#define SEPARATED_I2P_SETTINGS_FILE
+#if defined(SEPARATED_I2P_SETTINGS_FILE)
+    // Check if it exists.
+    //   load settings from file into memory.
+    //   Updating general settings to reflect file
+    //   Update QT to reflect settings from file
+    // If it does not exist
+    //   Create file
+    //   Initialize with default values
+    //   Flush to disk
+    try {
+        I2PManager = new I2PManager();
+        if (boost::filesystem::exists( I2PManager->GetI2PSettingsFilePath() ))
+        {
+            if (I2PManager->ReadI2PSettingsFile())
+            {
+                I2PManager->LogDataFile();
+            }
+        }
+        else
+        {
+            I2PManager->FileI2P.initDefaultValues();
+            I2PManager->WriteToI2PSettingsFile();
+        }
+        IsI2PEnabled();
+        // Update mapArgs with data file values
+        I2PManager->UpdateMapArgs();
+    } catch(std::exception &e) {
+        QMessageBox::critical(0, QObject::tr("Anoncoin"),
+                              QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));
+        return false;
+    }
+#endif
 
     /// 7. Determine network (and switch to network specific options)
     // - Do not call Params() before this step
