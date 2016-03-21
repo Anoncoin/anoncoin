@@ -99,8 +99,6 @@ bool fLogTimestamps = false;
 bool fLogIPs = false;       // New v10 param
 bool fLogI2Ps = false;      // Anoncoin specific
 volatile bool fReopenDebugLog = false;
-I2PManager::I2PManager *I2PManager;
-
 
 // Init OpenSSL library multithreading support
 static CCriticalSection** ppmutexOpenSSL;

@@ -600,22 +600,22 @@ int main(int argc, char *argv[])
     // x   Initialize with default values
     // x   Flush to disk
     try {
-        I2PManager = new I2PManager();
-        if (boost::filesystem::exists( I2PManager->GetI2PSettingsFilePath() ))
+        pI2PManager = new I2PManager();
+        if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
         {
-            if (I2PManager->ReadI2PSettingsFile())
+            if (pI2PManager->ReadI2PSettingsFile())
             {
-                I2PManager->LogDataFile();
+                pI2PManager->LogDataFile();
             }
         }
         else
         {
-            I2PManager->FileI2P.initDefaultValues();
-            I2PManager->WriteToI2PSettingsFile();
+            pI2PManager->getFileI2PPtr()->initDefaultValues();
+            pI2PManager->WriteToI2PSettingsFile();
         }
 
         // Update mapArgs with data file values
-        I2PManager->UpdateMapArguments();
+        pI2PManager->UpdateMapArguments();
     } catch(std::exception &e) {
         QMessageBox::critical(0, QObject::tr("Anoncoin"),
                               QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));

@@ -16,14 +16,11 @@ public:
     boost::filesystem::path GetI2PSettingsFilePath(void) const;
     bool WriteToI2PSettingsFile(void);
     bool ReadI2PSettingsFile(void);
-    const I2P_Data_File_t* getFileI2PPtr(void) const;
+    I2PDataFile* getFileI2PPtr(void);
     void LogDataFile(void);
     void UpdateMapArguments(void);
-
-private:
-    I2PDataFile FileI2P;
-
 };
 
+extern I2PManager *pI2PManager;
 
 #endif // __I2P_MANAGER__

@@ -15,7 +15,6 @@
 #include "serialize.h"
 #include "sync.h"
 #include "tinyformat.h"
-#include "i2pmanager.h"
 
 #include <cstdio>
 #include <exception>
@@ -46,7 +45,6 @@ extern bool fLogTimestamps;
 extern bool fLogIPs;        // New v10 param
 extern bool fLogI2Ps;       // Anoncoin specific
 extern volatile bool fReopenDebugLog;
-extern I2PManager *I2PManager;
 
 void SetupEnvironment();
 

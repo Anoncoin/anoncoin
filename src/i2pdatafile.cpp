@@ -184,13 +184,13 @@ void I2PDataFile::initOutbound(void)
 void I2PDataFile::initDefaultValues(void)
 {
 
-    I2PDataFile::initInbound();
-    I2PDataFile::initOutbound();
+    this->initInbound();
+    this->initOutbound();
 
-    I2PDataFile::setSessionName(std::string(I2P_DEFAULT_SESSIONNAME));
-    I2PDataFile::setSam(I2P_DEFAULT_SAMHOST, I2P_DEFAULT_SAMPORT);
-    I2PDataFile::setStatic(true);
-    I2PDataFile::setEnableStatus(true);
+    this->setSessionName(std::string(I2P_DEFAULT_SESSIONNAME));
+    this->setSam(I2P_DEFAULT_SAMHOST, I2P_DEFAULT_SAMPORT);
+    this->setStatic(true);
+    this->setEnableStatus(true);
 
     // GENERATE PRIVATE KEY
 }
