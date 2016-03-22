@@ -11,7 +11,6 @@
 #include "random.h"
 #include "uint256.h"
 #include "version.h"
-#include "i2pmanager.h"
 
 #include <stdarg.h>
 
