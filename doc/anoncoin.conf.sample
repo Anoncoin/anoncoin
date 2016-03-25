@@ -70,7 +70,7 @@ dbcache=400   #larger peer address space supported by Anoncoin for I2P
 
 #checkblockindex=1
 #checkmempool=1
-#logips=1 
+#logips=1
 #logtimestamps=0
 
 #debug=    # enable ALL debug category except bench and estimatefee
@@ -98,8 +98,8 @@ dbcache=400   #larger peer address space supported by Anoncoin for I2P
 
 #keypool=100
 
-#gen=0                  
-#genproclimit=1	
+#gen=0
+#genproclimit=1
 
 rpcport=9376  # The default MainNet RPC port
 #rpcport=9377 # The default TestNet RPC port

@@ -144,3 +144,5 @@ src/qt/paymentrequest.pb.h
 # Add any other specific requirements, you may need, below this line...
 #
 
+src/qthemes
+src/qt/anoncoin-qtc
