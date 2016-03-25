@@ -1477,7 +1477,7 @@ std::string CService::ToString() const
 
 void CService::print() const
 {
-    LogPrintf("CService(%s)\n", ToString());
+    LogPrint("net","CService(%s)\n", ToString());
 }
 
 void CService::SetPort(unsigned short portIn)

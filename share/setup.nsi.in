@@ -87,6 +87,7 @@ Section -Main SEC0000
     File /r @abs_top_srcdir@/share/qt/themes/*.*
     SetOutPath $INSTDIR\doc
     File @abs_top_srcdir@/doc/anoncoin.conf.sample
+    File @abs_top_srcdir@/doc/anoncoin.conf.txt
     File @abs_top_srcdir@/doc/bootstrap.md
     File @abs_top_srcdir@/doc/build-msw.md
     File @abs_top_srcdir@/doc/coding.md
@@ -189,7 +190,7 @@ FunctionEnd
 
 Function Launchlink
     ExecShell "" "$SMPROGRAMS\$StartMenuGroup\Generate I2P static privatekey.lnk"
-    ExecShell "open" "$INSTDIR\doc\anoncoin.conf.sample"
+    ExecShell "open" "$INSTDIR\doc\anoncoin.conf.txt"
 FunctionEnd
 
 # Uninstaller functions
