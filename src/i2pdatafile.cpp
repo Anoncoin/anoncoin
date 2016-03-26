@@ -12,7 +12,7 @@
 #include "random.h"
 #include "uint256.h"
 #include "version.h"
-#include "i2pdata.h"
+#include "i2pdatafile.h"
 
 #include <stdarg.h>
 
@@ -293,16 +293,6 @@ const int32_t I2PDataFile::getInboundAllowZeroHop(void) const
     return I2PData.fileData.inbound.allowzerohop;
 }
 
-const int32_t I2PDataFile::getOutboundQuantity(void) const
-{
-    return I2PData.fileData.outbound.quantity;
-}
-
-const int32_t I2PDataFile::getOutboundPriority(void) const
-{
-    return I2PData.fileData.outbound.priority;
-}
-
 //-----------------------------------------------------------
 //
 //              GET OUTBOUND PROPERTIES
@@ -337,9 +327,9 @@ const int32_t I2PDataFile::getOutboundAllowZeroHop(void) const
     return I2PData.fileData.outbound.allowzerohop;
 }
 
-const int32_t I2PDataFile::getOutboundQuantity(void) const
+const int32_t I2PDataFile::getOutboundPriority(void) const
 {
-    return I2PData.fileData.outbound.quantity;
+    return I2PData.fileData.outbound.priority;
 }
 
 //-----------------------------------------------------------
@@ -348,31 +338,32 @@ const int32_t I2PDataFile::getOutboundQuantity(void) const
 //
 //-----------------------------------------------------------
 
-void I2PDataFile::setInboundQuantity(int32_t quantity) const{
+void I2PDataFile::setInboundQuantity(int32_t quantity)
+{
     I2PData.fileData.inbound.quantity = quantity;
 }
 
-void I2PDataFile::setInboundBackupQuantity(int32_t backupQuantity) const
+void I2PDataFile::setInboundBackupQuantity(int32_t backupQuantity)
 {
     I2PData.fileData.inbound.backupquantity = backupQuantity;
 }
 
-void I2PDataFile::setInboundLength(int32_t length) const
+void I2PDataFile::setInboundLength(int32_t length)
 {
     I2PData.fileData.inbound.length = length;
 }
 
-void I2PDataFile::setInboundLengthVariance(int32_t lengthVariance) const
+void I2PDataFile::setInboundLengthVariance(int32_t lengthVariance)
 {
     I2PData.fileData.inbound.lengthvariance = lengthVariance;
 }
 
-void I2PDataFile::setInboundIPRestriction(int32_t iprestriction) const
+void I2PDataFile::setInboundIPRestriction(int32_t iprestriction)
 {
     I2PData.fileData.inbound.iprestriction = iprestriction;
 }
 
-void I2PDataFile::setInboundAllowZeroHop(int32_t allowzerohop) const
+void I2PDataFile::setInboundAllowZeroHop(int32_t allowzerohop)
 {
     I2PData.fileData.inbound.allowzerohop = allowzerohop;
 }
@@ -383,37 +374,37 @@ void I2PDataFile::setInboundAllowZeroHop(int32_t allowzerohop) const
 //
 //-----------------------------------------------------------
 
-void I2PDataFile::setOutboundQuantity(int32_t quantity) const
+void I2PDataFile::setOutboundQuantity(int32_t quantity)
 {
     I2PData.fileData.outbound.quantity = quantity;
 }
 
-void I2PDataFile::setOutboundBackupQuantity(int32_t backupQuantity) const
+void I2PDataFile::setOutboundBackupQuantity(int32_t backupQuantity)
 {
     I2PData.fileData.outbound.backupquantity = backupQuantity;
 }
 
-void I2PDataFile::setOutboundLength(int32_t length) const
+void I2PDataFile::setOutboundLength(int32_t length)
 {
     I2PData.fileData.outbound.length = length;
 }
 
-void I2PDataFile::setOutboundLengthVariance(int32_t lengthVariance) const
+void I2PDataFile::setOutboundLengthVariance(int32_t lengthVariance)
 {
     I2PData.fileData.outbound.lengthvariance = lengthVariance;
 }
 
-void I2PDataFile::setOutboundIPRestriction(int32_t iprestriction) const
+void I2PDataFile::setOutboundIPRestriction(int32_t iprestriction)
 {
     I2PData.fileData.outbound.iprestriction = iprestriction;
 }
 
-void I2PDataFile::setOutboundAllowZeroHop(int32_t allowzerohop) const
+void I2PDataFile::setOutboundAllowZeroHop(int32_t allowzerohop)
 {
     I2PData.fileData.outbound.allowzerohop = allowzerohop;
 }
 
-void I2PDataFile::setOutboundPriority(int32_t priority) const
+void I2PDataFile::setOutboundPriority(int32_t priority)
 {
     I2PData.fileData.outbound.priority = priority;
 }

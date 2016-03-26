@@ -5,16 +5,18 @@
  *      Author: ssuag
  */
 
+#include "clientversion.h"
 #include "util.h"
-
-#include "chainparamsbase.h"
-#include "netbase.h"
 #include "random.h"
 #include "uint256.h"
 #include "version.h"
+#include "streams.h"
+#include "serialize.h"
+#include "hash.h"
 #include "i2pmanager.h"
 
 #include <stdarg.h>
+#include <stdio.h>
 
 #ifndef WIN32
 // for posix_fallocate
@@ -61,28 +63,11 @@
 #include <shlobj.h>
 #endif // WIN32
 
-#include <boost/algorithm/string/case_conv.hpp> // for to_lower()
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/foreach.hpp>
-#include <boost/program_options/detail/config_file.hpp>
-#include <boost/program_options/parsers.hpp>
 
-#include <openssl/crypto.h>
-#include <openssl/rand.h>
-
-// Work around clang compilation problem in Boost 1.46:
-// /usr/include/boost/program_options/detail/config_file.hpp:163:17: error: call to function 'to_internal' that is neither visible in the template definition nor found by argument-dependent lookup
-// See also: http://stackoverflow.com/questions/10020179/compilation-fail-in-boost-librairies-program-options
-//           http://clang.debian.net/status.php?version=3.0&key=CANNOT_FIND_FUNCTION
-namespace boost {
-    namespace program_options {
-        std::string to_internal(const std::string&);
-    }
-} // namespace boost
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -181,22 +166,42 @@ boost::filesystem::path GetI2PSettingsFilePath(void)
 //******************************************************************************
 bool I2PManager::WriteToI2PSettingsFile(void)
 {
-    try {
-        boost::filesystem::ofstream outputFile(GetI2PSettingsFilePath(), std::ios_base::out|std::ios_base::trunc|std::ios_base::binary);
-        if (!outputFile.good())
-        {
-            LogPrintf("[I2P Data] Cannot open i2p data file for output!");
-            return false;
-        }
+    // Generate random temporary filename
+    unsigned short randv = 0;
+    GetRandBytes((unsigned char*)&randv, sizeof(randv));
+    std::string tmpfn = strprintf("i2p.dat.%04x", randv);
+    
+    // serialize addresses, checksum data up to that point, then append checksum
+    CDataStream cdsI2P(SER_DISK, CLIENT_VERSION);
+    cdsI2P << FLATDATA(*pFile_I2P_Object);
 
-        outputFile << (*(this->getFileI2PPtr()));
-        outputFile.close();
-
-        return true;
-    } catch (std::runtime_error &e) {
-        cout << "Unable to write to i2p data file:" << e.what() << endl;
+    uint256 hash = Hash(cdsI2P.begin(), cdsI2P.end());
+    cdsI2P << hash;
+    
+    // Open output file and associate with CAutoFile
+    boost::filesystem::path path = GetDataDir() / tmpfn;
+    FILE *file = fopen(path.string().c_str(), "wb");
+    CAutoFile fileout(file, SER_DISK, CLIENT_VERSION);
+    if (fileout.IsNull())
+    {
+        return error("%s : Failed to open file %s", __func__, path);
     }
-    return false;
+    
+    // Write and commit header, data
+    try {
+        fileout << cdsI2P;
+    }
+    catch (std::exception &e) {
+        return error("%s : Serialize or I/O error - %s", __func__, e.what());
+    }
+    FileCommit(fileout.Get());
+    fileout.fclose();
+
+    // replace existing i2p.dat, if any, with new i2p.dat.XXXX
+    if (!RenameOver(path, GetI2PSettingsFilePath()))
+        return error("%s : Rename-into-place failed", __func__);
+    
+    return true;
 }
 
 //******************************************************************************
@@ -215,34 +220,48 @@ bool I2PManager::WriteToI2PSettingsFile(void)
 //******************************************************************************
 bool I2PManager::ReadI2PSettingsFile(void)
 {
+    // open input file, and associate with CAutoFile
+    FILE *file = fopen(GetI2PSettingsFilePath().string().c_str(), "rb");
+    CAutoFile filein(file, SER_DISK, CLIENT_VERSION);
+    if (filein.IsNull())
+        return error("%s : Failed to open file %s", __func__, GetI2PSettingsFilePath().string());
+
+    // use file size to size memory buffer
+    int fileSize = boost::filesystem::file_size(GetI2PSettingsFilePath());
+    int dataSize = fileSize - sizeof(uint256);
+    // Don't try to resize to a negative number if file is small
+    if (dataSize < 0)
+        dataSize = 0;
+    vector<unsigned char> vchData;
+    vchData.resize(dataSize);
+    uint256 hashIn;
+    
+    // read data and checksum from file
     try {
-        I2P_Data_File_t localI2PObject;
-        boost::filesystem::ifstream inputFile(GetI2PSettingsFilePath());
-        if (!inputFile.good())
-        {
-            LogPrintf("[I2P Data] Cannot open i2p data file for input!");
-            return false;
-        }
-
-        // Read file from disk into local object
-        inputFile.read((char*)&localI2PObject, sizeof(I2P_Data_File_t));
-        inputFile.close();
-
-        // Copy into global for usage
-        if (localI2PObject != NULL)
-        {
-            memcpy((void*)&localI2PObject, (void*)this->getFileI2PPtr(), sizeof(I2P_Data_File_t));
-        }
-        else
-        {
-            LogPrintf("[I2P Data] Unable to read i2p data file into memory.");
-            return false;
-        }
-        return true;
-    } catch (std::runtime_error &e) {
-        cout << "[I2P Data] Unable to read i2p data file:" << e.what() << endl;
+        filein.read((char *)&vchData[0], dataSize);
+        filein >> hashIn;
     }
-    return false;
+    catch (std::exception &e) {
+        return error("%s : Deserialize or I/O error - %s", __func__, e.what());
+    }
+    filein.fclose();
+    
+    CDataStream cdsI2P(vchData, SER_DISK, CLIENT_VERSION);
+
+    // verify stored checksum matches input data
+    uint256 hashTmp = Hash(cdsI2P.begin(), cdsI2P.end());
+    if (hashIn != hashTmp)
+        return error("%s : Checksum mismatch, data corrupted", __func__);
+
+    try {
+        // de-serialize address data into one CAddrMan object
+        cdsI2P >> *(pFile_I2P_Object);
+    }
+    catch (std::exception &e) {
+        return error("%s : Deserialize or I/O error - %s", __func__, e.what());
+    }
+    
+    return true;
 }
 
 void I2PManager::UpdateMapArguments(void)

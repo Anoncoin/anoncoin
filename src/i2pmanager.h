@@ -5,7 +5,7 @@
 #include <boost/filesystem/fstream.hpp>
 #include <string>
 #include "stdint.h"
-#include "i2pdata.h"
+#include "i2pdatafile.h"
 
 class I2PManager
 {
@@ -13,7 +13,7 @@ public:
     I2PManager();
     ~I2PManager();
 
-    boost::filesystem::path GetI2PSettingsFilePath(void) const;
+    boost::filesystem::path GetI2PSettingsFilePath(void);
     bool WriteToI2PSettingsFile(void);
     bool ReadI2PSettingsFile(void);
     I2PDataFile* getFileI2PPtr(void);

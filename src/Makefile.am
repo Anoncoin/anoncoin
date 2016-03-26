@@ -105,6 +105,8 @@ ANONCOIN_CORE_H = \
   crypter.h \
   db.h \
   hash.h \
+  i2pdatafile.h \
+  i2pmanager.h \
   i2psam.h \
   i2pwrapper.h \
   init.h \
@@ -266,6 +268,8 @@ libanoncoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
+  i2pmanager.cpp \
+  i2pdatafile.cpp \
   random.cpp \
   rpcprotocol.cpp \
   sync.cpp \
