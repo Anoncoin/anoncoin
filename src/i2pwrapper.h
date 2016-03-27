@@ -11,6 +11,7 @@
 
 #define I2P_SESSION_NAME_DEFAULT        "Anoncoin-client"
 #define NATIVE_I2P_DESTINATION_SIZE     516
+extern char I2PKeydat [1024];
 
 namespace SAM
 {

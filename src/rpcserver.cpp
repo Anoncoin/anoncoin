@@ -363,7 +363,6 @@ static const CRPCCommand vRPCCommands[] =
     { "hidden",             "sendalert",              &sendalert,              true  },
 #ifdef ENABLE_WALLET
     { "hidden",             "generate",               &generate,               true  },
-    { "hidden",             "resendwallettransactions", &resendwallettransactions, true},
 #endif
 
 #ifdef ENABLE_WALLET
@@ -398,6 +397,7 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "listunspent",            &listunspent,            false },
     { "wallet",             "lockunspent",            &lockunspent,            true  },
     { "wallet",             "move",                   &movecmd,                false },
+    { "wallet",             "resendwallettransactions",&resendwallettransactions,true},
     { "wallet",             "sendfrom",               &sendfrom,               false },
     { "wallet",             "sendmany",               &sendmany,               false },
     { "wallet",             "sendtoaddress",          &sendtoaddress,          false },

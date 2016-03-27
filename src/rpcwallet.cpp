@@ -2198,8 +2198,7 @@ Value resendwallettransactions(const Array& params, bool fHelp)
         throw runtime_error(
             "resendwallettransactions\n"
             "\n Immediately re-broadcast unconfirmed wallet transactions to all peers.\n"
-            " Intended only for testing; the wallet code periodically re-broadcasts\n"
-            " automatically.\n"
+            "Note: the wallet code periodically re-broadcasts automatically.\n"
             "Returns: array of transaction ids that were re-broadcast.\n"
             );
 

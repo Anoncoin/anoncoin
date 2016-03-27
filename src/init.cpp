@@ -901,6 +901,9 @@ bool AppInit2(boost::thread_group& threadGroup)
                 return InitError(_("wallet.dat corrupt, salvage failed"));
         }
     }
+
+
+
 #endif // ENABLE_WALLET
     // ********************************************************* Step 6: network initialization
 
@@ -1035,6 +1038,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     bool fI2pStaticDest;
     SAM::FullDestination myI2pKeys;
     string b32doti2p;
+    
 
     // We still need the keys and b32.i2p address information setup for anoncoin-qt, if any details exist in the config file
     // use them, if not create the Args and set them to null strings.
@@ -1042,10 +1046,26 @@ bool AppInit2(boost::thread_group& threadGroup)
         LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.static=0 -> setting defined.\n");
     fI2pStaticDest = GetBoolArg("-i2p.mydestination.static", false);   // Now we can get a local copy of whatever the real value is set to
 
-    if( SoftSetArg("-i2p.mydestination.privatekey", "") )           // Returns true if the param was undefined and setting its value was possible
-        LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.privatekey= -> setting defined and set to <null>.\n");
-    myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", "");   // Now we can get a local copy of whatever the real value is set to
-
+    if( SoftSetArg("-i2p.mydestination.privatekey", "") ){           // Returns true if the param was undefined and setting its value was possible
+        LogPrintf("I2P mydestination privatekey in anoncoin.conf is undefined");
+        boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
+            if (boost::filesystem::exists(pathI2PKeydat)) {
+                FILE *file = fopen(pathI2PKeydat.string().c_str(), "r");
+                fscanf(file, "%s",I2PKeydat);  //read the I2PKeydat from the file i2pkey.dat
+                fclose(file);
+                LogPrintf("... I2P privatekey read from file i2pkey.dat\n");
+                myI2pKeys.priv = I2PKeydat;
+                fI2pStaticDest = true;
+            } else {
+                LogPrintf("... and there is no file i2pkey.dat present.\n");
+                LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.privatekey= -> setting defined and set to <null>.\n");
+                myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // myI2pKeys.priv will be NULL in this case, preparing for DYN
+            } 
+        } else {
+        LogPrintf("I2P mydestination privatekey in anoncoin.conf is defined, we do not need to check for file i2pkey.dat\n");
+        myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // Now we can get a local copy of whatever the real value is set to
+    }   
+        
     // Now we can validate the privkey, if it's a non-zero string we can use it to set the public and b32.i2p addresses for this node as well.
     // ToDo: We could do a more exhaustive test on the key, to confirm that it is correct
     // This needs to be done with or without I2pEnabled, because Anoncoin-qt will display whatever is set under settings, if there
@@ -1053,7 +1073,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if( myI2pKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE && isValidI2pAddress(myI2pKeys.priv) ) {
         myI2pKeys.pub = myI2pKeys.priv.substr(0, NATIVE_I2P_DESTINATION_SIZE);
         b32doti2p = B32AddressFromDestination(myI2pKeys.pub);
-        // Its not an error to have static false, even though the private key is valid
+         // Its not an error to have static false, even though the private key is valid
     } else if( fI2pStaticDest ) {                // Dam, static is wrong, this will never work, we must hard set it to false and continue dynamic
         if( myI2pKeys.priv.size() ) {            // Only do this if the private key was set to junk
             LogPrintf( "AppInit2 : parameter error: -i2p.mydestination.privatekey= -> key is not valid, hard setting the value to <null>.\n");
@@ -1112,6 +1132,8 @@ bool AppInit2(boost::thread_group& threadGroup)
                 LogPrintf( "With a static destination.\n" );
                 SAM::FullDestination retI2pKeys;                                   // Something we can us to compare our results with
                 retI2pKeys = I2PSession::Instance().getMyDestination();
+            LogPrintf("Running with an I2P mydestination publickey: %s\n", myI2pKeys.pub);
+
                 if( retI2pKeys.priv == myI2pKeys.priv && retI2pKeys.pub == myI2pKeys.pub && retI2pKeys.isGenerated == false ) {
                     myI2pKeys = retI2pKeys;             // Store them outside this one step, so they can be used later
                     fI2pSessionValid = true;
@@ -1155,6 +1177,14 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if( fGenI2pDest ) {
         if( fI2pSessionValid ) {
+            boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
+            FILE* file = fopen(pathI2PKeydat.string().c_str(), "a");
+            if (file) fclose(file);
+            if (boost::filesystem::exists(pathI2PKeydat)) {
+                FILE *file = fopen(pathI2PKeydat.string().c_str(), "w+");
+                fprintf(file, "%s\n",myI2pKeys.priv.c_str());
+                fclose(file);
+            }
             string msg = GenerateI2pDestinationMessage( myI2pKeys.pub, myI2pKeys.priv, b32doti2p, GetConfigFile().string() );
             unsigned int style = CClientUIInterface::ICON_INFORMATION |
                                  CClientUIInterface::NOSHOWGUI |

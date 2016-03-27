@@ -19,6 +19,8 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <openssl/sha.h>
 
+char I2PKeydat [1024] = {'\0'};
+
 namespace SAM
 {
 
@@ -316,7 +318,14 @@ void InitializeI2pSettings( const bool fGenerated )
     // Critical to check here, if we are in dynamic destination mode, the intial session destination MUSTBE default too.
     //  Which may not be what the user has set in the anoncoin.conf file.
     // If the .static i2p destination is to be used, set it now, if not set the TRANSIENT value so the router generates it for us
-    sDestination = fGenerated ? SAM_GENERATE_MY_DESTINATION : GetArg( "-i2p.mydestination.privatekey", "" );
+    if (!I2PKeydat[0]) { // There is an empty I2PKeydat in memory, so no file I2Pkey.dat on disk OR mydestination privatekey in anoncoin.conf is set
+        //LogPrintf("I2Pwrapper: we do not read from I2Pkey.dat\n"); 
+        sDestination = fGenerated ? SAM_GENERATE_MY_DESTINATION : GetArg( "-i2p.mydestination.privatekey", "" ); // either static with privatekey in anoncoin.conf or DYN
+    } else {
+        LogPrintf("I2Pwrapper: SAM destination generated from file i2pkey.dat\n"); 
+        sDestination = fGenerated ? SAM_GENERATE_MY_DESTINATION : I2PKeydat;
+    }
+//sDestination = fGenerated ? SAM_GENERATE_MY_DESTINATION : GetArg( "-i2p.mydestination.privatekey", "" );
     // It's important here that sDestination be setup correctly, for soon when an initial Session object is about to be
     // created.  When that happens, this variable is used to create the SAM session, upon which, after it's opened,
     // the variable is updated to reflect that ACTUAL destination being used.  Whatever that value maybe,
