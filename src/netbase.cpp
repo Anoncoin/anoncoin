@@ -1698,7 +1698,7 @@ bool IsI2POnly()
     bool i2pOnly = false;
     if (mapArgs.count("-onlynet")) {
         const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
-        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "i2p");
+        i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == "i2p") || (onlyNets.size() == 2 && onlyNets[0] == "i2p" && onlyNets[1] == "i2p");
     }
     return i2pOnly;
 }

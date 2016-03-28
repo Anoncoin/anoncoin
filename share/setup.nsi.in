@@ -107,7 +107,7 @@ Section -post SEC0001
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) Classic.lnk" $INSTDIR\anoncoin-qtc.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Generate I2P static privatekey.lnk" "$INSTDIR\anoncoin-qtc.exe" "-i2p.options.enabled=1 -onlynet=i2p -generatei2pdestination -stfu=1"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Generate I2P static privatekey.lnk" "$INSTDIR\anoncoin-qtc.exe" "-i2p.options.enabled=1 -onlynet=i2p -generatei2pdestination"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name) I2P-only.lnk" "$INSTDIR\anoncoin-qtc.exe" "-i2p.options.enabled=1 -onlynet=i2p"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END

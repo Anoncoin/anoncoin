@@ -1178,11 +1178,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     if( fGenI2pDest ) {
         if( fI2pSessionValid ) {
             boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
-            FILE* file = fopen(pathI2PKeydat.string().c_str(), "a");
+            FILE* file = fopen(pathI2PKeydat.string().c_str(), "a");           //create the i2pkey.dat as the write below will not create it anew
             if (file) fclose(file);
             if (boost::filesystem::exists(pathI2PKeydat)) {
                 FILE *file = fopen(pathI2PKeydat.string().c_str(), "w+");
-                fprintf(file, "%s\n",myI2pKeys.priv.c_str());
+                fprintf(file, "%s\n",myI2pKeys.priv.c_str());                 //write the I2PKeydat to the file i2pkey.dat
                 fclose(file);
             }
             string msg = GenerateI2pDestinationMessage( myI2pKeys.pub, myI2pKeys.priv, b32doti2p, GetConfigFile().string() );

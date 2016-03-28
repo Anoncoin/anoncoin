@@ -4908,12 +4908,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             // TODO: optimize: if pindexLast is an ancestor of chainActive.Tip or pindexBestHeader, continue
             // from there instead.
             // For the HardFork we will not accept to synchronize with old version peers 2400 blocks prior to the hardfork.
-            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || pfrom->nStartingHeight < HARDFORK_BLOCK - 2400) {            
+#if defined( HARDFORK_BLOCK )
+            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || pfrom->nStartingHeight < HARDFORK_BLOCK - 2400) {                
+#endif                    
                 LogPrint("net", "more getheaders (%d) to end to %s (startheight:%d)\n", pindexLast->nHeight, GetPeerLogStr(pfrom), pfrom->nStartingHeight);
                 pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256(0));
+#if defined( HARDFORK_BLOCK )      
             }
+#endif
         }
+
     }
+
 
     else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
     {
@@ -5411,10 +5417,13 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Download if this is a nice peer, or we have no nice peers and this one might do.
         bool fFetch = state.fPreferredDownload || (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot);
         if (!state.fSyncStarted && !pto->fClient && !fImporting && !fReindex) {
-            // Only actively request headers from up to two peers, unless we're close to today. This is to minimize the likelyhood of downtime, while keeping bandwidth and computing ressource to a minimum. For the hardfork, we accept IBD from all peers till 2400 blocks before the Hardfork block when the new version will be enforced for synching. This ensure that there is no synching from peers not ready for the hardfork from this time on. Of course, after the hardfork block the new version will still be an obligation.
+            // Only actively request headers from up to two peers, unless we're close to today. This is to minimize the likelihood of downtime, while keeping bandwidth and computing ressource to a minimum. For the hardfork, we accept IBD from all peers till 2400 blocks before the Hardfork block when the new version will be enforced for synching. This ensure that there is no synching from peers not ready for the hardfork from this time on. Of course, after the hardfork block the new version will still be an obligation.
             if ( fFetch || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
-
+#if defined( HARDFORK_BLOCK )
                 if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload() || pto->nStartingHeight < HARDFORK_BLOCK - 2400) {
+#else
+                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload()) {
+#endif
                     if ((nSyncStarted <= 1) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                     state.fSyncStarted = true;
                     nSyncStarted++;                
