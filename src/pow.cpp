@@ -795,24 +795,23 @@ uint256 CRetargetPidController::GetTestNetStartingDifficulty( void )
 bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit )
 {
     bool fLimited = false;                                  //! Assume no limit need be applied to the result
-
-    if( uintCalculated < uintPrevDiffForLimits ) {                   //! Then difficulty is increasing
+    if( uintCalculated < uintPrevDiffForLimits ) { 
         if( uintCalculated < uintDiffAtMaxIncrease ) {
             uintResult = uintDiffAtMaxIncrease;             //! Set the result equal to the maximum difficulty increase limit
             fLimited = true;
-        } else
-            uintResult = uintCalculated;                    //! Set the result equal to the calculated target difficulty
-    } else {                                                //! Then difficulty is decreasing or the same as it was last time
+        } else {
+            uintResult = uintCalculated;   }                 //! Set the result equal to the calculated target difficulty
+    } else { 
         if( uintCalculated > uintDiffAtMaxDecrease ) {
             uintResult = uintDiffAtMaxDecrease;             //! Set the result equal to the maximum difficulty decrease limit
             fLimited = true;
-        } else
-            uintResult = uintCalculated;                    //! Set the result equal to the calculated target difficulty
+        } else {
+            uintResult = uintCalculated; }                   //! Set the result equal to the calculated target difficulty
     }
 
     //! Lastly a check is made to see that the difficulty is not less than the absolute limit, this is also done it NextWorkRequired, but we need it
     //! done here too for TestNets and diagnostic logging.
-    if( uintCalculated > uintPOWlimit ) {
+if( uintResult > uintPOWlimit ) {
         uintResult = uintPOWlimit;
         fLimited = true;
     }
@@ -1008,8 +1007,9 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
         LogPrintf("Error: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 1.01 \n");
         nMaxDiffDecrease = 101;
     }
-    uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits / 100;
-    uintDiffAtMaxDecrease = uintPrevDiffForLimitsDecrease * nMaxDiffDecrease;
+    
+    uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits * nMaxDiffDecrease;
+    uintDiffAtMaxDecrease = uintPrevDiffForLimitsDecrease / 100;
 
 
     //! If fUsesHeader is set, we update the spacing errors and rate of change results each time a new header time is given.
