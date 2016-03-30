@@ -137,7 +137,9 @@ private:
 
     uint256 uintPrevDiffCalculated;      //! The Factorial filter mining difficulty as seen over the tip times periods
     uint256 uintTargetBeforeLimits;          //! Final result, the new retarget output value, before the min proof-of-work has been checked.
-    uint256 uintPrevDiffForLimits;
+    //uint256 uintPrevDiffForLimits;
+    uint256 uintPrevDiffForLimitsLast;     //CSlave: Previous difficulty of the last block
+    uint256 uintPrevDiffForLimitsTip;      //CSlave: Previous difficulty calculated on the full Tip (weighted average)
     uint256 uintPrevDiffForLimitsIncrease; //CSlave: changed from units to hundredths
     uint256 uintPrevDiffForLimitsDecrease;
     uint256 uintDiffAtMaxIncrease;

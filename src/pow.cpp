@@ -795,18 +795,18 @@ uint256 CRetargetPidController::GetTestNetStartingDifficulty( void )
 bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit )
 {
     bool fLimited = false;                                  //! Assume no limit need be applied to the result
-    if( uintCalculated < uintPrevDiffForLimits ) { 
-        if( uintCalculated < uintDiffAtMaxIncrease ) {
+    if( uintCalculated < uintPrevDiffForLimitsLast ) {      //CSlave: If the new diff < previous diff of last block, assume an increase of diff (irrespective of Tip)
+        if( uintCalculated < uintDiffAtMaxIncrease ) {      //... and DiffAtMaxIncrease is calculated on the last block.
             uintResult = uintDiffAtMaxIncrease;             //! Set the result equal to the maximum difficulty increase limit
             fLimited = true;
         } else {
-            uintResult = uintCalculated;   }                 //! Set the result equal to the calculated target difficulty
-    } else { 
-        if( uintCalculated > uintDiffAtMaxDecrease ) {
+            uintResult = uintCalculated;   }                //! Set the result equal to the calculated target difficulty
+    } else {                                                //CSlave: If the new diff > previous diff of last block, assume a decrease of diff (irrespective of Tip)
+        if( uintCalculated > uintDiffAtMaxDecrease ) {      //... but DiffAtMaxDecrease is calculated on the Tip!
             uintResult = uintDiffAtMaxDecrease;             //! Set the result equal to the maximum difficulty decrease limit
             fLimited = true;
         } else {
-            uintResult = uintCalculated; }                   //! Set the result equal to the calculated target difficulty
+            uintResult = uintCalculated; }                  //! Set the result equal to the calculated target difficulty
     }
 
     //! Lastly a check is made to see that the difficulty is not less than the absolute limit, this is also done it NextWorkRequired, but we need it
@@ -989,15 +989,17 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     // Use the previous block in the index.
     // if( GetBoolArg( "-retargetpid.limitfromprevblock", false ) )
     // CSlave: hardcoded to use the difficulty of the very last block and not the smoothed difficulty value of the tipfilter
-        uintPrevDiffForLimits.SetCompact( pIndex->nBits );
+    // CSlave: now using the diff of last block for retarget UP and the diff of the whole tip for retarget DOWN
+    // ...do not forget the diff is inverse, retarget UP is a smaller diff target...
+        uintPrevDiffForLimitsLast.SetCompact( pIndex->nBits );  //Previous difficulty of the last block
     // else //! Use the calculated previous difficulty to set the limits on max increase and decrease...
-    //    uintPrevDiffForLimits = uintPrevDiffCalculated;
+        uintPrevDiffForLimitsTip = uintPrevDiffCalculated; //Previous difficulty calculated on the full Tip
 
     if (nMaxDiffIncrease <= 101 ) {
         LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
         nMaxDiffIncrease = 101;
     }
-    uintPrevDiffForLimitsIncrease = uintPrevDiffForLimits * 100;
+    uintPrevDiffForLimitsIncrease = uintPrevDiffForLimitsLast * 100; //For a quick increase of difficulty, let's take the previous block diff
     uintDiffAtMaxIncrease = uintPrevDiffForLimitsIncrease / nMaxDiffIncrease;
 
     // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we now use hundredths (percents).
@@ -1008,7 +1010,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
         nMaxDiffDecrease = 101;
     }
     
-    uintPrevDiffForLimitsDecrease = uintPrevDiffForLimits * nMaxDiffDecrease;
+    uintPrevDiffForLimitsDecrease = uintPrevDiffForLimitsTip * nMaxDiffDecrease; //For a smoothed decrease of difficulty, let's take the diff from the Tipfilter
     uintDiffAtMaxDecrease = uintPrevDiffForLimitsDecrease / 100;
 
 
@@ -1264,7 +1266,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
         csvfile <<  dPidOutputTime << ",";
         //! If enabled, Calculate and add the limit difficulties
         if( fLogDiffLimits )
-            csvfile << GetLinearWork(uintPrevDiffForLimits, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxIncrease, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxDecrease, uintPOWlimit) << ",";
+            csvfile << GetLinearWork(uintPrevDiffForLimitsLast, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxIncrease, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxDecrease, uintPOWlimit) << ",";
         //! Calculate and add the linear Difficulty calculations
         csvfile << GetLinearWork(uintPrevDiffCalculated, uintPOWlimit) << "," << GetLinearWork(uintTargetAfterLimits, uintPOWlimit) << ",";
         //! Include Details about Network Hashes per second and Miners HashMeter results if they are running
