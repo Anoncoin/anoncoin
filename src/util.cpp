@@ -1260,33 +1260,3 @@ std::string FormatParagraph(const std::string in, size_t width, size_t indent)
     }
     return out.str();
 }
-    #define SEPARATED_I2P_SETTINGS_FILE
-#if defined(SEPARATED_I2P_SETTINGS_FILE)
-bool LoadI2PDataIntoMemory(void)
-{
-    //   Check if it exists.
-    // x    load settings from file into memory.
-    // x    Updating general settings to reflect file
-    //      Update QT to reflect settings from file
-    // If it does not exist
-    // x   Create file
-    // x   Initialize with default values
-    // x   Flush to disk
-        pI2PManager = new I2PManager();
-        if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
-        {
-            if (pI2PManager->ReadI2PSettingsFile())
-            {
-                pI2PManager->LogDataFile();
-            }
-        }
-        else
-        {
-            pI2PManager->getFileI2PPtr()->initDefaultValues();
-            pI2PManager->WriteToI2PSettingsFile();
-        }
-
-        // Update mapArgs with data file values
-        pI2PManager->UpdateMapArguments();
-}
-#endif

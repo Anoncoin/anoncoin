@@ -246,6 +246,8 @@ libanoncoin_common_a_SOURCES = \
   core_read.cpp \
   core_write.cpp \
   block.cpp \
+  i2pmanager.cpp \
+  i2pdatafile.cpp \
   timedata.cpp \
   transaction.cpp \
   hash.cpp \
@@ -268,8 +270,6 @@ libanoncoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
-  i2pmanager.cpp \
-  i2pdatafile.cpp \
   random.cpp \
   rpcprotocol.cpp \
   sync.cpp \
@@ -310,8 +310,8 @@ anoncoind_LDADD = \
   $(LIBANONCOIN_SERVER) \
   $(LIBANONCOIN_COMMON) \
   $(LIBANONCOIN_UNIVALUE) \
-  $(LIBANONCOIN_UTIL) \
   $(LIBANONCOIN_CRYPTO) \
+  $(LIBANONCOIN_UTIL) \
   $(LIBANONCOIN_SCRYPT) \
   $(LIBLEVELDB) \
   $(LIBMEMENV)

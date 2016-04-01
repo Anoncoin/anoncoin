@@ -79,6 +79,12 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 #include <QTextCodec>
 #endif
 
+/**
+ * Begin initialization process for I2P manager
+ * 
+ */
+bool LoadI2PDataIntoMemory(void);
+
 // Declare meta types used for QMetaObject::invokeMethod
 Q_DECLARE_METATYPE(bool*)
 Q_DECLARE_METATYPE(CAmount)
@@ -713,3 +719,34 @@ int main(int argc, char *argv[])
     return app.getReturnValue();
 }
 #endif // ANONCOIN_QT_TEST
+
+    #define SEPARATED_I2P_SETTINGS_FILE
+#if defined(SEPARATED_I2P_SETTINGS_FILE)
+bool LoadI2PDataIntoMemory(void)
+{
+    //   Check if it exists.
+    // x    load settings from file into memory.
+    // x    Updating general settings to reflect file
+    //      Update QT to reflect settings from file
+    // If it does not exist
+    // x   Create file
+    // x   Initialize with default values
+    // x   Flush to disk
+    pI2PManager = new I2PManager();
+    if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
+    {
+        if (pI2PManager->ReadI2PSettingsFile())
+        {
+            pI2PManager->LogDataFile();
+        }
+    }
+    else
+    {
+        pI2PManager->getFileI2PPtr()->initDefaultValues();
+        pI2PManager->WriteToI2PSettingsFile();
+    }
+
+    // Update mapArgs with data file values
+    pI2PManager->UpdateMapArguments();
+}
+#endif

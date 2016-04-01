@@ -12,9 +12,21 @@
 #include "version.h"
 #include "streams.h"
 #include "serialize.h"
+#include "crypto/sha256.h"
 #include "hash.h"
+#include "chainparams.h"
+#include "netbase.h"
+#include "protocol.h"
+#include "sync.h"
+#include "timedata.h"
 #include "i2pmanager.h"
 
+#include <map>
+#include <set>
+#include <stdint.h>
+#include <vector>
+
+#include <openssl/rand.h>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -143,7 +155,7 @@ I2PDataFile* I2PManager::getFileI2PPtr(void)
 //      boost::filesystem::path
 //
 //******************************************************************************
-boost::filesystem::path GetI2PSettingsFilePath(void)
+boost::filesystem::path I2PManager::GetI2PSettingsFilePath(void)
 {
     boost::filesystem::path pathConfigFile(GetArg("-conf", "i2p.dat"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
