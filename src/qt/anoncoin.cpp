@@ -593,21 +593,17 @@ int main(int argc, char *argv[])
                               QObject::tr("Error: Cannot parse configuration file: %1. Only use key=value syntax.").arg(e.what()));
         return false;
     }
-#define SEPARATED_I2P_SETTINGS_FILE
-#if defined(SEPARATED_I2P_SETTINGS_FILE)
-{
+
     /// 6.5 Determine and setup I2P settings
     // - Either from file
     // - Or initialiezd to hard-coded default values
     try {
         LoadI2PDataIntoMemory();
-    } catch {
+    } catch(std::exception &e) {
         QMessageBox::critical(0, QObject::tr("Anoncoin"),
                               QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));
         return false;
     }
-}
-#endif
 
     /// 7. Determine network (and switch to network specific options)
     // - Do not call Params() before this step
