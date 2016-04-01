@@ -15,6 +15,7 @@
 #include "serialize.h"
 #include "sync.h"
 #include "tinyformat.h"
+#include "i2pmanager.h"
 
 #include <cstdio>
 #include <exception>
@@ -45,6 +46,7 @@ extern bool fLogTimestamps;
 extern bool fLogIPs;        // New v10 param
 extern bool fLogI2Ps;       // Anoncoin specific
 extern volatile bool fReopenDebugLog;
+extern I2PManager *pI2PManager;
 
 void SetupEnvironment();
 
@@ -500,5 +502,11 @@ bool ParseInt32(const std::string& str, int32_t *out);
  * indentation to any added line.
  */
 std::string FormatParagraph(const std::string in, size_t width=79, size_t indent=0);
+
+/**
+ * Begin initialization process for I2P manager
+ * 
+ */
+bool LoadI2PDataIntoMemory(void);
 
 #endif // ANONCOIN_UTIL_H

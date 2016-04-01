@@ -36,8 +36,6 @@
 #include "wallet.h"
 #endif
 
-#include "i2pmanager.h"
-
 #include <stdint.h>
 
 #include <boost/filesystem/operations.hpp>
@@ -84,8 +82,6 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 // Declare meta types used for QMetaObject::invokeMethod
 Q_DECLARE_METATYPE(bool*)
 Q_DECLARE_METATYPE(CAmount)
-
-I2PManager *pI2PManager;
 
 static void InitMessage(const std::string &message)
 {
@@ -593,36 +589,18 @@ int main(int argc, char *argv[])
     }
 #define SEPARATED_I2P_SETTINGS_FILE
 #if defined(SEPARATED_I2P_SETTINGS_FILE)
-    //   Check if it exists.
-    // x    load settings from file into memory.
-    // x    Updating general settings to reflect file
-    //      Update QT to reflect settings from file
-    // If it does not exist
-    // x   Create file
-    // x   Initialize with default values
-    // x   Flush to disk
+{
+    /// 6.5 Determine and setup I2P settings
+    // - Either from file
+    // - Or initialiezd to hard-coded default values
     try {
-        pI2PManager = new I2PManager();
-        if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
-        {
-            if (pI2PManager->ReadI2PSettingsFile())
-            {
-                pI2PManager->LogDataFile();
-            }
-        }
-        else
-        {
-            pI2PManager->getFileI2PPtr()->initDefaultValues();
-            pI2PManager->WriteToI2PSettingsFile();
-        }
-
-        // Update mapArgs with data file values
-        pI2PManager->UpdateMapArguments();
-    } catch(std::exception &e) {
+        LoadI2PDataIntoMemory();
+    } catch {
         QMessageBox::critical(0, QObject::tr("Anoncoin"),
                               QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));
         return false;
     }
+}
 #endif
 
     /// 7. Determine network (and switch to network specific options)
