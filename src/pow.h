@@ -111,6 +111,8 @@ private:
     //! previous difficulty values are all calculated as weighted values based on this filter.  If a future block header time is to
     //! be used, the size of the filter grows by 1, in order to accommodate that capability.
     int32_t nTipFilterBlocks;
+    int32_t nWeightedAvgTipBlocksUp;   //CSlave: n last block of the tip for calculus of the weighted difficulty
+    int32_t nWeightedAvgTipBlocksDown;   
     int32_t nIntegratorHeight;      //! Saves recalculating if we already have the Integrator charge at this height
     int32_t nIndexFilterHeight;     //! Same goes for the IndexTipFilter, where the previous difficulty calculation is made
     const CBlockIndex* pChargedToIndex;   //! Its quicker and easier to just keep a copy of the pointer to the BlockIndex, than search for it.
@@ -136,14 +138,21 @@ private:
     double dAverageTipSpacing;
 
     uint256 uintPrevDiffCalculated;      //! The Factorial filter mining difficulty as seen over the tip times periods
+    uint256 uintTipDiffCalculatedUp;       //CSlave: Weighted difficulty on the n last block of the tip
+    uint256 uintTipDiffCalculatedDown;       
     uint256 uintTargetBeforeLimits;          //! Final result, the new retarget output value, before the min proof-of-work has been checked.
     //uint256 uintPrevDiffForLimits;
     uint256 uintPrevDiffForLimitsLast;     //CSlave: Previous difficulty of the last block
-    uint256 uintPrevDiffForLimitsTip;      //CSlave: Previous difficulty calculated on the full Tip (weighted average)
-    uint256 uintPrevDiffForLimitsIncrease; //CSlave: changed from units to hundredths
-    uint256 uintPrevDiffForLimitsDecrease;
-    uint256 uintDiffAtMaxIncrease;
-    uint256 uintDiffAtMaxDecrease;
+    uint256 uintPrevDiffForLimitsTipUp;      //CSlave: Previous difficulty calculated on the partial tip blocks selected for diff UP
+    uint256 uintPrevDiffForLimitsTipDown;      
+    uint256 uintPrevDiffForLimitsIncreaseLast;
+    uint256 uintPrevDiffForLimitsDecreaseLast;
+    uint256 uintPrevDiffForLimitsIncreaseTip;
+    uint256 uintPrevDiffForLimitsDecreaseTip;
+    uint256 uintDiffAtMaxIncreaseLast;
+    uint256 uintDiffAtMaxDecreaseLast;
+    uint256 uintDiffAtMaxIncreaseTip;      //CSlave: The final limit of the weighted average used for diff increase
+    uint256 uintDiffAtMaxDecreaseTip;
     uint256 uintTargetAfterLimits;        //! Final result, the new retarget output value, after all limits have been checked.
     //! This value allows starting TestNet out with a pre-determined difficulty, although the 1st mocktime blocks are mined fast at the minimum
     //! difficulty, this value will be stored in the block as the compact nBits version of this big number value and it allows the experiment'er to

@@ -26,8 +26,10 @@ using namespace std;
 #define USESHEADER_DEFAULT false
 #define NMAXDIFFINCREASE "133"
 #define NMAXDIFFDECREASE "150"
-#define DMININTEGRATOR 179
-#define DMAXINTEGRATOR 182
+#define DMININTEGRATOR 175
+#define DMAXINTEGRATOR 185
+#define WEIGHTEDAVGTIPBLOCKS_UP 7
+#define WEIGHTEDAVGTIPBLOCKS_DOWN 15
 
 // #define LOG_DEBUG_OUTPUT
 
@@ -796,17 +798,21 @@ bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, c
 {
     bool fLimited = false;                                  //! Assume no limit need be applied to the result
     if( uintCalculated < uintPrevDiffForLimitsLast ) {      //CSlave: If the new diff < previous diff of last block, assume an increase of diff (irrespective of Tip)
-        if( uintCalculated < uintDiffAtMaxIncrease ) {      //... and DiffAtMaxIncrease is calculated on the last block.
-            uintResult = uintDiffAtMaxIncrease;             //! Set the result equal to the maximum difficulty increase limit
+        if( uintCalculated < uintDiffAtMaxIncreaseTip ) {  //... and DiffAtMaxIncrease is calculated on the partial tip.
+            uintResult = uintDiffAtMaxIncreaseTip;         //! Set the result equal to the maximum difficulty increase limit
             fLimited = true;
         } else {
             uintResult = uintCalculated;   }                //! Set the result equal to the calculated target difficulty
     } else {                                                //CSlave: If the new diff > previous diff of last block, assume a decrease of diff (irrespective of Tip)
-        if( uintCalculated > uintDiffAtMaxDecrease ) {      //... but DiffAtMaxDecrease is calculated on the Tip!
-            uintResult = uintDiffAtMaxDecrease;             //! Set the result equal to the maximum difficulty decrease limit
+        if( uintCalculated > uintDiffAtMaxDecreaseLast ) {  //... DiffAtMaxDecrease is calculated on the last block.
+            uintResult = uintDiffAtMaxDecreaseLast;         //! Set the result equal to the maximum difficulty decrease limit
             fLimited = true;
-        } else {
-            uintResult = uintCalculated; }                  //! Set the result equal to the calculated target difficulty
+            if( uintResult > uintDiffAtMaxDecreaseTip )         //...is the difficulty decrease lower than the value calculated from the partial tip?
+                uintResult = uintDiffAtMaxDecreaseTip;          //Yes, cap it at the value calculated from the partial tip!
+        } else {                                                // Did not max the last block limit, but have to check for the tip 
+            if( uintCalculated > uintDiffAtMaxDecreaseTip )     //...is the difficulty decrease lower than the value calculated from the partial tip?
+                uintResult = uintDiffAtMaxDecreaseTip; 
+            else uintResult = uintCalculated; }                  //! Set the result equal to the calculated target difficulty
     }
 
     //! Lastly a check is made to see that the difficulty is not less than the absolute limit, this is also done it NextWorkRequired, but we need it
@@ -969,7 +975,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     //! containing all the filter information which can be accessed and referenced as needed.
     assert( vIndexTipFilter.size() == nTipFilterBlocks );            //! The array of strutures is constant in size and assumed.
     sort(vIndexTipFilter.begin(), vIndexTipFilter.end());                 //! Thank you sort routine, now it matters not the time order in which the blocks were mined
-
+    
     uint32_t nDividerSum = 0;
     uint256 uintBlockPOW;
     uintPrevDiffCalculated.SetNull();
@@ -982,25 +988,53 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     }
     nPrevDiffWeight = nDividerSum;
     uintPrevDiffCalculated /= nDividerSum;
+    
+    nDividerSum = 0;
+    nWeightedAvgTipBlocksUp = WEIGHTEDAVGTIPBLOCKS_UP;
+    assert(nWeightedAvgTipBlocksUp <= nTipFilterBlocks);
+    uintTipDiffCalculatedUp.SetNull();
+
+    for( int32_t i = nTipFilterBlocks - nWeightedAvgTipBlocksUp + 1; i <= nTipFilterBlocks; i++ ) { //CSlave: Calculate a weighted moving average on the partial tip for diff UP
+        uintBlockPOW.SetCompact( vIndexTipFilter[i - 1].nDiffBits );
+        uintBlockPOW *= (uint32_t)(i + nWeightedAvgTipBlocksUp - nTipFilterBlocks);
+        uintTipDiffCalculatedUp += uintBlockPOW;
+        nDividerSum += i + nWeightedAvgTipBlocksUp - nTipFilterBlocks;   //! Bump the weighted sum, the newer it is the more it counts
+    }
+    uintTipDiffCalculatedUp /= nDividerSum;
+
+    nDividerSum = 0;
+    nWeightedAvgTipBlocksDown = WEIGHTEDAVGTIPBLOCKS_DOWN;
+    assert(nWeightedAvgTipBlocksDown <= nTipFilterBlocks);
+    uintTipDiffCalculatedDown.SetNull();
+
+    for( int32_t i = nTipFilterBlocks - nWeightedAvgTipBlocksDown + 1; i <= nTipFilterBlocks; i++ ) { //CSlave: Calculate a weighted moving average on the partial tip for diff DOWN
+        uintBlockPOW.SetCompact( vIndexTipFilter[i - 1].nDiffBits );
+        uintBlockPOW *= (uint32_t)(i + nWeightedAvgTipBlocksDown - nTipFilterBlocks);
+        uintTipDiffCalculatedDown += uintBlockPOW;
+        nDividerSum += i + nWeightedAvgTipBlocksDown - nTipFilterBlocks;   //! Bump the weighted sum, the newer it is the more it counts
+    }
+    uintTipDiffCalculatedDown /= nDividerSum;
+
 
     //! Once we know the tipfilter has been setup, an output calculation is likely to soon follow,
     //! plus we now have 2 ways to define the previous difficulty.  Whichever method is chosen,
     //! defines the maximum increase and maximum decrease limit values.
     // Use the previous block in the index.
     // if( GetBoolArg( "-retargetpid.limitfromprevblock", false ) )
-    // CSlave: hardcoded to use the difficulty of the very last block and not the smoothed difficulty value of the tipfilter
-    // CSlave: now using the diff of last block for retarget UP and the diff of the whole tip for retarget DOWN
+    // CSlave: hardcoded to use the smoothed difficulty value of both partial tipfilter UP and DOWN
     // ...do not forget the diff is inverse, retarget UP is a smaller diff target...
-        uintPrevDiffForLimitsLast.SetCompact( pIndex->nBits );  //Previous difficulty of the last block
-    // else //! Use the calculated previous difficulty to set the limits on max increase and decrease...
-        uintPrevDiffForLimitsTip = uintPrevDiffCalculated; //Previous difficulty calculated on the full Tip
+        uintPrevDiffForLimitsLast.SetCompact( pIndex->nBits );    //Previous difficulty of the last block, useful to know if Diff goes UP or DOWN
+        uintPrevDiffForLimitsTipUp = uintTipDiffCalculatedUp;     //Previous difficulty calculated on the partial tip blocks selected for diff UP
+        uintPrevDiffForLimitsTipDown = uintTipDiffCalculatedDown; //Previous difficulty calculated on the partial tip blocks selected for diff DOWN
 
     if (nMaxDiffIncrease <= 101 ) {
         LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
         nMaxDiffIncrease = 101;
     }
-    uintPrevDiffForLimitsIncrease = uintPrevDiffForLimitsLast * 100; //For a quick increase of difficulty, let's take the previous block diff
-    uintDiffAtMaxIncrease = uintPrevDiffForLimitsIncrease / nMaxDiffIncrease;
+    uintPrevDiffForLimitsIncreaseLast = uintPrevDiffForLimitsLast * 100; //For a quick increase of difficulty, let's take the previous block diff
+    uintDiffAtMaxIncreaseLast = uintPrevDiffForLimitsIncreaseLast / nMaxDiffIncrease;
+    uintPrevDiffForLimitsIncreaseTip = uintPrevDiffForLimitsTipUp * 100; //For a smoothed increase of difficulty, let's take the diff from the partial tip blocks
+    uintDiffAtMaxIncreaseTip = uintPrevDiffForLimitsIncreaseTip / nMaxDiffIncrease;
 
     // CSlave: Here is enhanced the accuracy for the maxdiffincrease and maxdiffdecrease limits. Instead of using units we now use hundredths (percents).
     // The minimum value for the difficulty retarget limits is thus set to 101% which is equivalent to a 1.01 multiplier or divider.
@@ -1010,9 +1044,10 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
         nMaxDiffDecrease = 101;
     }
     
-    uintPrevDiffForLimitsDecrease = uintPrevDiffForLimitsTip * nMaxDiffDecrease; //For a smoothed decrease of difficulty, let's take the diff from the Tipfilter
-    uintDiffAtMaxDecrease = uintPrevDiffForLimitsDecrease / 100;
-
+    uintPrevDiffForLimitsDecreaseLast = uintPrevDiffForLimitsLast * nMaxDiffDecrease; //For a quick decrease of difficulty, let's take the diff from the previous block diff
+    uintDiffAtMaxDecreaseLast = uintPrevDiffForLimitsDecreaseLast / 100;
+    uintPrevDiffForLimitsDecreaseTip = uintPrevDiffForLimitsTipDown * nMaxDiffDecrease; //For a smoothed decrease of difficulty, let's take the diff from the partial tip blocks
+    uintDiffAtMaxDecreaseTip = uintPrevDiffForLimitsDecreaseTip / 100;
 
     //! If fUsesHeader is set, we update the spacing errors and rate of change results each time a new header time is given.
     //! If not, then the spacing error and rate of change results can be done now, and will be ready when this call returns.
@@ -1266,7 +1301,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
         csvfile <<  dPidOutputTime << ",";
         //! If enabled, Calculate and add the limit difficulties
         if( fLogDiffLimits )
-            csvfile << GetLinearWork(uintPrevDiffForLimitsLast, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxIncrease, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxDecrease, uintPOWlimit) << ",";
+            csvfile << GetLinearWork(uintPrevDiffForLimitsLast, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxIncreaseTip, uintPOWlimit) << "," << GetLinearWork(uintDiffAtMaxDecreaseTip, uintPOWlimit) << ",";
         //! Calculate and add the linear Difficulty calculations
         csvfile << GetLinearWork(uintPrevDiffCalculated, uintPOWlimit) << "," << GetLinearWork(uintTargetAfterLimits, uintPOWlimit) << ",";
         //! Include Details about Network Hashes per second and Miners HashMeter results if they are running
