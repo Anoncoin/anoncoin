@@ -594,17 +594,6 @@ int main(int argc, char *argv[])
         return false;
     }
 
-    /// 6.5 Determine and setup I2P settings
-    // - Either from file
-    // - Or initialiezd to hard-coded default values
-    try {
-        LoadI2PDataIntoMemory();
-    } catch(std::exception &e) {
-        QMessageBox::critical(0, QObject::tr("Anoncoin"),
-                              QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));
-        return false;
-    }
-
     /// 7. Determine network (and switch to network specific options)
     // - Do not call Params() before this step
     // - Do this after parsing the configuration file, as the network can be switched there
@@ -657,6 +646,18 @@ int main(int argc, char *argv[])
     // Re-initialize translations after changing application name (language in network-specific settings can be different)
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
+    
+    /// 7.5 Determine and setup I2P settings
+    // - Either from file
+    // - Or initialiezd to hard-coded default values
+    try {
+        LoadI2PDataIntoMemory();
+    } catch(std::exception &e) {
+        QMessageBox::critical(0, QObject::tr("Anoncoin"),
+                              QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));
+        return false;
+    }
+    
 #ifdef ENABLE_WALLET
     /// 8. URI IPC sending
     // - Do this early as we don't want to bother initializing if we are just calling IPC

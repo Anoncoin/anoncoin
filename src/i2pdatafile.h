@@ -218,6 +218,9 @@ public:
     {
         LOCK(cs);
         
+        // need to start importing data on offset 25 of serial stream
+        // TODO
+        
         s >> I2PData.fileHeader.file_header_version;
         s >> I2PData.fileHeader.data_offset;
         s >> I2PData.fileHeader.file_size;

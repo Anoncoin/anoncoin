@@ -25,6 +25,15 @@
 #include <set>
 #include <stdint.h>
 #include <vector>
+#include <sstream>
+
+template <typename T>
+  string NumberToString ( T Number )
+  {
+     ostringstream ss;
+     ss << Number;
+     return ss.str();
+  }
 
 #include <openssl/rand.h>
 #include <stdarg.h>
@@ -276,28 +285,45 @@ bool I2PManager::ReadI2PSettingsFile(void)
     return true;
 }
 
+//******************************************************************************
+//
+//    Name:         I2PManager::UpdateMapArguments
+//
+//    Parameters:   void
+//
+//    Description:  Update the map of arguments with what is stored within
+//                  our settings file
+//
+//    Return:       None
+//
+//******************************************************************************
 void I2PManager::UpdateMapArguments(void)
 {
-    mapArgs["-i2p.options.enabled"]                 = pFile_I2P_Object->getEnableStatus();
-    mapArgs["-i2p.options.static"]                  = pFile_I2P_Object->getEnableStatus();
+    mapArgs["-i2p.options.enabled"]                 = pFile_I2P_Object->getEnableStatus() ? "1" : "0";
+    mapArgs["-i2p.mydestination.static"]            = pFile_I2P_Object->getEnableStatus() ? "1" : "0";
     mapArgs["-i2p.options.i2p.options.samhost"]     = pFile_I2P_Object->getSamHost();
-    mapArgs["-i2p.options.i2p.options.samport"]     = pFile_I2P_Object->getSamPort();
+    mapArgs["-i2p.options.i2p.options.samport"]     = NumberToString(pFile_I2P_Object->getSamPort());
     mapArgs["-i2p.options.sessionname"]             = pFile_I2P_Object->getSessionName();
 
-    mapArgs["-i2p.options.inbound.quantity"]        = pFile_I2P_Object->getInboundQuantity();
-    mapArgs["-i2p.options.inbound.length"]          = pFile_I2P_Object->getInboundLength();
-    mapArgs["-i2p.options.inbound.lengthvariance"]  = pFile_I2P_Object->getInboundLengthVariance();
-    mapArgs["-i2p.options.inbound.backupquantity"]  = pFile_I2P_Object->getInboundBackupQuantity();
-    mapArgs["-i2p.options.inbound.allowzerohop"]    = pFile_I2P_Object->getInboundAllowZeroHop();
-    mapArgs["-i2p.options.inbound.iprestriction"]   = pFile_I2P_Object->getInboundIPRestriction();
+    mapArgs["-i2p.options.inbound.quantity"]        = NumberToString(pFile_I2P_Object->getInboundQuantity());
+    mapArgs["-i2p.options.inbound.length"]          = NumberToString(pFile_I2P_Object->getInboundLength());
+    mapArgs["-i2p.options.inbound.lengthvariance"]  = NumberToString(pFile_I2P_Object->getInboundLengthVariance());
+    mapArgs["-i2p.options.inbound.backupquantity"]  = NumberToString(pFile_I2P_Object->getInboundBackupQuantity());
+    mapArgs["-i2p.options.inbound.allowzerohop"]    = NumberToString(pFile_I2P_Object->getInboundAllowZeroHop());
+    mapArgs["-i2p.options.inbound.iprestriction"]   = NumberToString(pFile_I2P_Object->getInboundIPRestriction());
 
-    mapArgs["-i2p.options.outbound.quantity"]        = pFile_I2P_Object->getOutboundQuantity();
-    mapArgs["-i2p.options.outbound.length"]          = pFile_I2P_Object->getOutboundLength();
-    mapArgs["-i2p.options.outbound.lengthvariance"]  = pFile_I2P_Object->getOutboundLengthVariance();
-    mapArgs["-i2p.options.outbound.backupquantity"]  = pFile_I2P_Object->getOutboundBackupQuantity();
-    mapArgs["-i2p.options.outbound.allowzerohop"]    = pFile_I2P_Object->getOutboundAllowZeroHop();
-    mapArgs["-i2p.options.outbound.iprestriction"]   = pFile_I2P_Object->getOutboundIPRestriction();
-    mapArgs["-i2p.options.outbound.priority"]        = pFile_I2P_Object->getOutboundPriority();
+    mapArgs["-i2p.options.outbound.quantity"]        = NumberToString(pFile_I2P_Object->getOutboundQuantity());
+    mapArgs["-i2p.options.outbound.length"]          = NumberToString(pFile_I2P_Object->getOutboundLength());
+    mapArgs["-i2p.options.outbound.lengthvariance"]  = NumberToString(pFile_I2P_Object->getOutboundLengthVariance());
+    mapArgs["-i2p.options.outbound.backupquantity"]  = NumberToString(pFile_I2P_Object->getOutboundBackupQuantity());
+    mapArgs["-i2p.options.outbound.allowzerohop"]    = NumberToString(pFile_I2P_Object->getOutboundAllowZeroHop());
+    mapArgs["-i2p.options.outbound.iprestriction"]   = NumberToString(pFile_I2P_Object->getOutboundIPRestriction());
+    mapArgs["-i2p.options.outbound.priority"]        = NumberToString(pFile_I2P_Object->getOutboundPriority());
+    
+    if ( (mapArgs["-i2p.mydestination.privatekey"] != "") && (pFile_I2P_Object->getPrivateKey() != ""))
+    {
+        mapArgs["-i2p.mydestination.privatekey"] = pFile_I2P_Object->getPrivateKey();
+    }
 }
 
 //******************************************************************************
@@ -316,6 +342,7 @@ void I2PManager::LogDataFile(void)
 {
 #define SPACE 20
     LogPrintf("========== I 2 P   D A T A   F I L E ==========");
+    
     LogPrintf("Enabled: %*s",           SPACE, pFile_I2P_Object->getEnableStatus());
     LogPrintf("Static: %*s",            SPACE, pFile_I2P_Object->getStatic());
     LogPrintf("Session Name: %*s",      SPACE, pFile_I2P_Object->getSessionName());
