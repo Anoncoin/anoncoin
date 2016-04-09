@@ -1051,11 +1051,12 @@ bool AppInit2(boost::thread_group& threadGroup)
         boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
             if (boost::filesystem::exists(pathI2PKeydat)) {
                 FILE *file = fopen(pathI2PKeydat.string().c_str(), "r");
-                fscanf(file, "%s",I2PKeydat);  //read the I2PKeydat from the file i2pkey.dat
-                fclose(file);
-                LogPrintf("... I2P privatekey read from file i2pkey.dat\n");
-                myI2pKeys.priv = I2PKeydat;
-                fI2pStaticDest = true;
+                if (fscanf(file, "%s",I2PKeydat) == 1)  //read the I2PKeydat from the file i2pkey.dat
+                {   fclose(file);
+                    LogPrintf("... I2P privatekey read from file i2pkey.dat\n");
+                    myI2pKeys.priv = I2PKeydat;
+                    fI2pStaticDest = true;
+                }      
             } else {
                 LogPrintf("... and there is no file i2pkey.dat present.\n");
                 LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.privatekey= -> setting defined and set to <null>.\n");
@@ -1266,8 +1267,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     //! ********************************************************* Step 7: load block chain
     //!
     //! Final value selection for Anoncoin retarget controller P-I and D terms are set here
-#define PID_PROPORTIONALGAIN "2.5"
-#define PID_INTEGRATORTIME "259200"
+#define PID_PROPORTIONALGAIN "1.7"
+#define PID_INTEGRATORTIME "172800"
 #define PID_INTEGRATORGAIN "5"
 #define PID_DERIVATIVEGAIN "0"
 
