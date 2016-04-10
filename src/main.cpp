@@ -5422,7 +5422,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 #if defined( HARDFORK_BLOCK )
                 if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload() || pto->nStartingHeight < HARDFORK_BLOCK - 2400) {
 #else
-                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload()) {
+                if( pto->nVersion >= MIN_PEER_PROTO_VERSION || !IsInitialBlockDownload()) {
 #endif
                     if ((nSyncStarted <= 1) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                     state.fSyncStarted = true;
