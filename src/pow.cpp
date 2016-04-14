@@ -22,14 +22,14 @@
 
 using namespace std;
 
-#define TIPFILTERBLOCKS_DEFAULT "31"
+#define TIPFILTERBLOCKS_DEFAULT "21"
 #define USESHEADER_DEFAULT false
-#define NMAXDIFFINCREASE "133"
+#define NMAXDIFFINCREASE "200"
 #define NMAXDIFFDECREASE "150"
-#define DMININTEGRATOR 175
-#define DMAXINTEGRATOR 185
+#define DMININTEGRATOR 170
+#define DMAXINTEGRATOR 190
 #define WEIGHTEDAVGTIPBLOCKS_UP 7
-#define WEIGHTEDAVGTIPBLOCKS_DOWN 15
+#define WEIGHTEDAVGTIPBLOCKS_DOWN 12
 
 // #define LOG_DEBUG_OUTPUT
 
@@ -1534,7 +1534,7 @@ bool CRetargetPidController::GetRetargetStats( RetargetStats& RetargetState, uin
 //! within the CRetargetPID class.
 
 //! The workhorse routine, which oversees BlockChain Proof-Of-Work difficulty retarget algorithms
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader)
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, int algo)
 {
     //! Any call to this routine needs to have at least 1 block and the header of a new block.
     //! ...NULL pointers are not allowed...GR
@@ -1675,7 +1675,8 @@ bool SetRetargetToBlock( const CBlockIndex* pIndex )
     //! Create a dummy header, with the present moment as the block time. calculate the Next Work Required and report that.
     CBlockHeader aHeader;
     aHeader.nTime = GetAdjustedTime();
-    uint32_t nNextBits = GetNextWorkRequired(pIndex, &aHeader);
+    //uint32_t nNextBits = GetNextWorkRequired(pIndex, &aHeader, algo);
+    uint32_t nNextBits = GetNextWorkRequired(pIndex, &aHeader, ALGO_SCRYPT);
     sNextWorkRequired += strprintf( "0x%08x", nNextBits );
 
     LogPrint( "retarget", "RetargetPID %s to height=%d, tipfilter %s, %s\n", fResult1 ? "charged" : "Integrator failed charge", pIndex->nHeight, fResult2 ? "updated" : "update failed", sNextWorkRequired );

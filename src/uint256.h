@@ -343,4 +343,14 @@ public:
     uint64_t GetHash(const uint256& salt) const;
 };
 
+/** 512-bit unsigned big integer. */
+class uint512 : public base_uint<512> {
+public:
+    uint512() {}
+    uint512(const base_uint<512>& b) : base_uint<512>(b) {}
+    uint512(uint64_t b) : base_uint<512>(b) {}
+    explicit uint512(const std::string& str) : base_uint<512>(str) {}
+    explicit uint512(const std::vector<unsigned char>& vch) : base_uint<512>(vch) {}
+};
+
 #endif // ANONCOIN_UINT256_H

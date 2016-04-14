@@ -85,6 +85,7 @@ public:
         // 2015 SCRYPT is currently used.  Future mining maybe offered as a SHA256D algo.  Set those limits here.
         bnProofOfWorkLimit[ALGO_SCRYPT] = uint256().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 32;       // ToDo: set SHA256D min work
+        bnProofOfWorkLimit[ALGO_GROESTL] = ~uint256(0) >> 20;
 
         // Anoncoin Genesis block details:
         //2ca51355580bb293fe369c5f34954069c263e9a9e8d70945ebb4c38f05778558
@@ -239,6 +240,7 @@ public:
         // bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 17;
         bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 12;
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 20;
+        bnProofOfWorkLimit[ALGO_GROESTL] = ~uint256(0) >> 2;
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         // These values have been set to the same as the v0.8.5.6 client had, so testing should be possible with that client, although maynot be required.
@@ -290,6 +292,7 @@ public:
         // ToDo: Proof of work limits, for regression testing are very small, more than likely these should work
         bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 12;
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 12;
+        bnProofOfWorkLimit[ALGO_GROESTL] = ~uint256(0) >> 2;
 
         // genesis.nTime = 1296688602;
         // genesis.nBits = 0x207fffff;

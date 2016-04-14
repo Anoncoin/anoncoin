@@ -24,7 +24,9 @@
 #include "pow.h"
 //#include "random.h"
 #include "rpcserver.h"
+
 #include "scrypt.h"
+
 #include "txdb.h"
 #include "ui_interface.h"                                   // Include this if you want language translation capability in your source files
 #include "util.h"
@@ -296,6 +298,7 @@ std::string HelpMessage(HelpMessageMode hmm)
 
     strUsage += "\n" + _("Connection options:") + "\n";
     strUsage += "  -addnode=<ip>          " + _("Add a node to connect to and attempt to keep the connection open") + "\n";
+    strUsage += "  -algo=<algo>           " + _("Mining algorithm: sha256d, scrypt, groestl") + "\n";
     strUsage += "  -banscore=<n>          " + strprintf(_("Threshold for disconnecting misbehaving peers (default: %u)"), 100) + "\n";
     strUsage += "  -bantime=<n>           " + strprintf(_("Number of seconds to keep misbehaving peers from reconnecting (default: %u)"), 86400) + "\n";
     strUsage += "  -bind=<addr>           " + _("Bind to given address and always listen on it. Use [host]:port notation for IPv6") + "\n";
@@ -656,6 +659,22 @@ bool AppInit2(boost::thread_group& threadGroup)
         if (SoftSetBoolArg("-rescan", true))
             LogPrintf("AppInit2 : parameter interaction: -zapwallettxes=1 -> setting -rescan=1\n");
     }
+
+     // Algo
+     std::string strAlgo = GetArg("-algo", "scrypt");
+     transform(strAlgo.begin(),strAlgo.end(),strAlgo.begin(),::tolower);
+     if (strAlgo == "sha" || strAlgo == "sha256" || strAlgo == "sha256d")
+         miningAlgo = ALGO_SHA256D;
+     else if (strAlgo == "scrypt")
+         miningAlgo = ALGO_SCRYPT;
+     else if (strAlgo == "groestl" || strAlgo == "groestlsha2")
+         miningAlgo = ALGO_GROESTL;
+    //else if (strAlgo == "x11")
+      //  miningAlgo = ALGO_X11;
+    //else if (strAlgo == "blake")
+      //  miningAlgo = ALGO_BLAKE;
+     else
+       miningAlgo = ALGO_SCRYPT;
 
     // Make sure enough file descriptors are available
     int nBind = std::max((int)mapArgs.count("-bind") + (int)mapArgs.count("-whitebind"), 1);
@@ -1051,11 +1070,11 @@ bool AppInit2(boost::thread_group& threadGroup)
         boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
             if (boost::filesystem::exists(pathI2PKeydat)) {
                 FILE *file = fopen(pathI2PKeydat.string().c_str(), "r");
-                fscanf(file, "%s",I2PKeydat);  //read the I2PKeydat from the file i2pkey.dat
-                fclose(file);
-                LogPrintf("... I2P privatekey read from file i2pkey.dat\n");
-                myI2pKeys.priv = I2PKeydat;
-                fI2pStaticDest = true;
+                if (fscanf(file, "%s",I2PKeydat) == 1);  //read the I2PKeydat from the file i2pkey.dat
+                  { fclose(file);
+                    LogPrintf("... I2P privatekey read from file i2pkey.dat\n");
+                    myI2pKeys.priv = I2PKeydat;
+                    fI2pStaticDest = true;}                
             } else {
                 LogPrintf("... and there is no file i2pkey.dat present.\n");
                 LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.privatekey= -> setting defined and set to <null>.\n");
@@ -1266,8 +1285,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     //! ********************************************************* Step 7: load block chain
     //!
     //! Final value selection for Anoncoin retarget controller P-I and D terms are set here
-#define PID_PROPORTIONALGAIN "2.5"
-#define PID_INTEGRATORTIME "259200"
+#define PID_PROPORTIONALGAIN "1.7"
+#define PID_INTEGRATORTIME "172800"
 #define PID_INTEGRATORGAIN "5"
 #define PID_DERIVATIVEGAIN "0"
 

@@ -258,6 +258,6 @@ extern bool SetRetargetToBlock( const CBlockIndex* pIndex );
 //!
 //! The workhorse routine used to calculate retarget difficulty, several different approaches has been used over the years.
 //!
-extern unsigned int GetNextWorkRequired( const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader );
+extern unsigned int GetNextWorkRequired( const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, int algo);
 
 #endif // ANONCOIN_POW_H

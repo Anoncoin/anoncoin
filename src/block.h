@@ -10,8 +10,54 @@
 #include "transaction.h"
 #include "serialize.h"
 #include "uint256.h"
+#include "hashgroestl.h"
 
 #include <boost/unordered_map.hpp>
+
+enum { 
+    ALGO_SCRYPT = 0, 
+    ALGO_SHA256D = 1, 
+    ALGO_GROESTL = 2,
+    NUM_ALGOS };
+
+enum
+{
+    // primary version
+    BLOCK_VERSION_DEFAULT        = 2,
+
+    // algo
+    BLOCK_VERSION_ALGO           = (7 << 9),
+    BLOCK_VERSION_SHA256D         = (1 << 9),
+    BLOCK_VERSION_GROESTL        = (2 << 9),
+};
+
+inline int GetAlgo(int nVersion)
+{
+    switch (nVersion & BLOCK_VERSION_ALGO)
+    {
+        case 0:
+            return ALGO_SCRYPT;
+        case BLOCK_VERSION_SHA256D:
+            return ALGO_SHA256D;
+        case BLOCK_VERSION_GROESTL:
+            return ALGO_GROESTL;
+    }
+    return ALGO_SHA256D;
+}
+
+inline std::string GetAlgoName(int Algo)
+{
+    switch (Algo)
+    {
+        case ALGO_SCRYPT:
+            return std::string("scrypt");
+        case ALGO_SHA256D:
+            return std::string("sha256d");
+        case ALGO_GROESTL:
+            return std::string("groestl");
+    }
+    return std::string("unknown");       
+}
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 extern const uint32_t MAX_BLOCK_SIZE;
@@ -70,6 +116,8 @@ public:
         SetNull();
     }
 
+int GetAlgo() const { return ::GetAlgo(nVersion); } 
+
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
@@ -107,6 +155,22 @@ public:
 
     uintFakeHash CalcSha256dHash( const bool fForceUpdate = false ) const;
     uint256 GetHash( const bool fForceUpdate = false ) const;
+
+// Note: we use explicitly provided algo instead of the one returned by GetAlgo(), because this can be a block
+    // from foreign chain (parent block in merged mining) which does not encode algo in its nVersion field.
+    uint256 GetPoWHash(int algo) const
+    {
+        switch (algo)
+        {
+            case ALGO_SCRYPT:
+                return GetHash();
+            case ALGO_SHA256D:
+                return GetHash();
+            case ALGO_GROESTL:
+                return HashGroestl(BEGIN(nVersion), END(nNonce));
+        }
+        return GetHash();
+    }
 
     int64_t GetBlockTime() const
     {

@@ -163,6 +163,9 @@ CScript COINBASE_FLAGS;
 
 const string strMessageMagic = "Anoncoin Signed Message:\n";
 
+// Settings
+int miningAlgo = ALGO_SCRYPT;
+
 // Internal stuff
 namespace {
 
@@ -2725,7 +2728,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     int nHeight = pindexPrev->nHeight+1;
 
     // Check proof of work
-    if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
+    if (block.nBits != GetNextWorkRequired(pindexPrev, &block, block.GetAlgo()) ) {
         if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
             return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
     }        
@@ -5422,7 +5425,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 #if defined( HARDFORK_BLOCK )
                 if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload() || pto->nStartingHeight < HARDFORK_BLOCK - 2400) {
 #else
-                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload()) {
+                if( pto->nVersion >= MIN_PEER_PROTO_VERSION || !IsInitialBlockDownload()) {
 #endif
                     if ((nSyncStarted <= 1) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                     state.fSyncStarted = true;

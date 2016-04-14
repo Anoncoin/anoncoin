@@ -138,6 +138,7 @@ extern bool fTxIndex;
 extern bool fIsBareMultisigStd;
 extern bool fCheckBlockIndex;
 extern unsigned int nCoinCacheSize;
+extern int miningAlgo;
 extern CFeeRate minRelayTxFee;
 //! Used to initialize Testnet, soon after the genesis block has been created and the system initialized
 extern bool fGenerateInitialTestNetState;

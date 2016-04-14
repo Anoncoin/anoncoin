@@ -7,7 +7,9 @@
 #include "block.h"
 
 #include "hash.h"
+
 #include "scrypt.h"
+
 #include "tinyformat.h"
 #include "util.h"
 

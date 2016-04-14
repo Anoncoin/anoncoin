@@ -128,6 +128,8 @@ ANONCOIN_CORE_H = \
   script.h \
   script_error.h \
   scrypt.h \
+  sph_groestl.h \
+  hashgroestl.h \
   serialize.h \
   sigcache.h \
   sign.h \
@@ -244,6 +246,7 @@ libanoncoin_common_a_SOURCES = \
   core_read.cpp \
   core_write.cpp \
   block.cpp \
+  groestl.c \
   timedata.cpp \
   transaction.cpp \
   hash.cpp \
