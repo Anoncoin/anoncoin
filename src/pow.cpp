@@ -25,11 +25,12 @@ using namespace std;
 #define TIPFILTERBLOCKS_DEFAULT "21"
 #define USESHEADER_DEFAULT false
 #define NMAXDIFFINCREASE "200"
-#define NMAXDIFFDECREASE "150"
+#define NMAXDIFFDECREASE "170"
 #define DMININTEGRATOR 170
 #define DMAXINTEGRATOR 190
 #define WEIGHTEDAVGTIPBLOCKS_UP 7
 #define WEIGHTEDAVGTIPBLOCKS_DOWN 12
+
 
 // #define LOG_DEBUG_OUTPUT
 
@@ -794,30 +795,53 @@ uint256 CRetargetPidController::GetTestNetStartingDifficulty( void )
     return uintTestNetStartingDifficulty;
 }
 
-bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit )
+bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit, const CBlockIndex* pIndex )
 {
-    bool fLimited = false;                                  //! Assume no limit need be applied to the result
-    if( uintCalculated < uintPrevDiffForLimitsLast ) {      //CSlave: If the new diff < previous diff of last block, assume an increase of diff (irrespective of Tip)
-        if( uintCalculated < uintDiffAtMaxIncreaseTip ) {  //... and DiffAtMaxIncrease is calculated on the partial tip.
-            uintResult = uintDiffAtMaxIncreaseTip;         //! Set the result equal to the maximum difficulty increase limit
-            fLimited = true;
-        } else {
-            uintResult = uintCalculated;   }                //! Set the result equal to the calculated target difficulty
-    } else {                                                //CSlave: If the new diff > previous diff of last block, assume a decrease of diff (irrespective of Tip)
-        if( uintCalculated > uintDiffAtMaxDecreaseLast ) {  //... DiffAtMaxDecrease is calculated on the last block.
-            uintResult = uintDiffAtMaxDecreaseLast;         //! Set the result equal to the maximum difficulty decrease limit
-            fLimited = true;
-            if( uintResult > uintDiffAtMaxDecreaseTip )         //...is the difficulty decrease lower than the value calculated from the partial tip?
-                uintResult = uintDiffAtMaxDecreaseTip;          //Yes, cap it at the value calculated from the partial tip!
-        } else {                                                // Did not max the last block limit, but have to check for the tip 
-            if( uintCalculated > uintDiffAtMaxDecreaseTip )     //...is the difficulty decrease lower than the value calculated from the partial tip?
-                uintResult = uintDiffAtMaxDecreaseTip; 
-            else uintResult = uintCalculated; }                  //! Set the result equal to the calculated target difficulty
-    }
+    const int64_t nLastBlockIndexTime = pIndex->GetBlockTime();
+    const int64_t nTimeSinceLastBlock = nLastCalculationTime - nLastBlockIndexTime;
+    const uint32_t nIntervalForceDiffDecrease = 4 * nTargetSpacing;
+    bool fLimited = true;                                   //! Assume limit need to be applied to the result.
+
+    if( uintCalculated < uintPrevDiffForLimitsLast ) {       // CSlave: If the new diff < previous diff of last block, assume an increase of diff.
+        if( uintCalculated < uintDiffAtMaxIncreaseTip ) {    // Check the DiffAtMaxIncrease that is calculated on the partial tip to cap the increase of Diff. 
+            uintResult = uintDiffAtMaxIncreaseTip;           // Set the result equal to the maximum difficulty increase limit. A smaller number is more difficult.
+            if( nTimeSinceLastBlock >= nIntervalForceDiffDecrease ) // Check if the time since last block (updated every other second) is longuer than nIntervalForceDiffDecrease.        
+                uintResult = uintDiffAtMaxDecreaseLast;             // If so, decrease the difficulty to the max decrease value calculated from the last block.
+        } else {                                                    // If the Diff calculated did not hit the upper moving average from the partial tip UP.
+           uintResult = uintCalculated;                             // Give the Diff value the calculated value from the TipFilter
+           fLimited = false; 
+           if( nTimeSinceLastBlock >= nIntervalForceDiffDecrease) { // Check if the time since last block is longuer than nIntervalForceDiffDecrease.
+               fLimited = true; 
+               uintResult = uintDiffAtMaxDecreaseTip;               // Decrease the Diff to the value calculated on the moving average from the partial tip DOWN.
+               if( uintResult > uintDiffAtMaxDecreaseLast)          // Is the Diff we set easier than the Diff decrease we get by calculating on the last block?
+                   uintResult = uintDiffAtMaxDecreaseLast;          // Then set the value to the one calculated on the last block, which is at a higher difficulty.
+           }
+        }
+  
+    } else {                                                 //CSlave: If the new diff > previous diff of last block, assume a decrease of diff.
+        if( uintCalculated > uintDiffAtMaxDecreaseLast && nTimeSinceLastBlock < nIntervalForceDiffDecrease ) {  // Check the last block to cap the decrease of Diff and if the block is not too much delayed.
+            uintResult = uintDiffAtMaxDecreaseLast;          // Set the result equal to the maximum difficulty decrease limit for subsequent block.
+            if( uintResult > uintDiffAtMaxDecreaseTip && nTimeSinceLastBlock < nTargetSpacing ) // Did the difficulty decrease went lower than the value calculated from the partial tip?
+                uintResult = uintDiffAtMaxDecreaseTip;                                          // Yes, cap it at the value calculated from the partial tip average! 
+            //! There was asked for checking the block time: when the block difficulty is below the avg, we keep the avg limit if the block is quick, but if it is slow we let the difficulty drop below the avg.
+        } else {                                             // Did not hit the difficulty limit calculated from the last block, but have to check for the one calculated from the tip, in case the tip is near. 
+            if( uintCalculated > uintDiffAtMaxDecreaseTip && nTimeSinceLastBlock < nTargetSpacing)     // Is the difficulty decrease lower than the value calculated from the partial tip and is this a quick block?
+                uintResult = uintDiffAtMaxDecreaseTip;       // If above the avg DOWN, do not let it go below the partial tip difficulty avg, if below the avg DOWN, let it go up to the partial tip difficulty avg.
+            else {                               //Two possibilities: the difficulty is capped neither by the MaxDecreaseLast or MaxDecreaseTip or else Block interval is greater than nIntervalForceDiffDecrease.
+                if( nTimeSinceLastBlock >= nIntervalForceDiffDecrease) { // Is Block interval greater than nIntervalForceDiffDecrease? Is the block very delayed?
+                    uintResult = uintDiffAtMaxDecreaseTip;       // Decrease the Diff to the value calculated on the moving average from the partial tip DOWN. This can be a huge drop of difficulty!
+                    if( uintResult < uintDiffAtMaxDecreaseLast)  // Is the Diff we set higher than the Diff decrease we get by calculating on the last block?
+                    uintResult = uintDiffAtMaxDecreaseLast;      // Then set the value to the one calculated on the last block, which is at a lower difficulty.
+                } else 
+                uintResult = uintCalculated;                     // Give the Diff value the calculated value from the TipFilter for this not-caped block.
+                fLimited = false; 
+            }
+        }
+    } 
 
     //! Lastly a check is made to see that the difficulty is not less than the absolute limit, this is also done it NextWorkRequired, but we need it
     //! done here too for TestNets and diagnostic logging.
-if( uintResult > uintPOWlimit ) {
+    if( uintResult > uintPOWlimit ) {
         uintResult = uintPOWlimit;
         fLimited = true;
     }
@@ -975,7 +999,6 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     //! containing all the filter information which can be accessed and referenced as needed.
     assert( vIndexTipFilter.size() == nTipFilterBlocks );            //! The array of strutures is constant in size and assumed.
     sort(vIndexTipFilter.begin(), vIndexTipFilter.end());                 //! Thank you sort routine, now it matters not the time order in which the blocks were mined
-    
     uint32_t nDividerSum = 0;
     uint256 uintBlockPOW;
     uintPrevDiffCalculated.SetNull();
@@ -993,7 +1016,6 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     nWeightedAvgTipBlocksUp = WEIGHTEDAVGTIPBLOCKS_UP;
     assert(nWeightedAvgTipBlocksUp <= nTipFilterBlocks);
     uintTipDiffCalculatedUp.SetNull();
-
     for( int32_t i = nTipFilterBlocks - nWeightedAvgTipBlocksUp + 1; i <= nTipFilterBlocks; i++ ) { //CSlave: Calculate a weighted moving average on the partial tip for diff UP
         uintBlockPOW.SetCompact( vIndexTipFilter[i - 1].nDiffBits );
         uintBlockPOW *= (uint32_t)(i + nWeightedAvgTipBlocksUp - nTipFilterBlocks);
@@ -1006,7 +1028,6 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     nWeightedAvgTipBlocksDown = WEIGHTEDAVGTIPBLOCKS_DOWN;
     assert(nWeightedAvgTipBlocksDown <= nTipFilterBlocks);
     uintTipDiffCalculatedDown.SetNull();
-
     for( int32_t i = nTipFilterBlocks - nWeightedAvgTipBlocksDown + 1; i <= nTipFilterBlocks; i++ ) { //CSlave: Calculate a weighted moving average on the partial tip for diff DOWN
         uintBlockPOW.SetCompact( vIndexTipFilter[i - 1].nDiffBits );
         uintBlockPOW *= (uint32_t)(i + nWeightedAvgTipBlocksDown - nTipFilterBlocks);
@@ -1210,7 +1231,7 @@ bool CRetargetPidController::UpdateOutput( const CBlockIndex* pIndex, const CBlo
         uintTargetBeforeLimits /= (uint32_t)nTargetSpacing;
 
         //! Now we can place limits on the amount of change allowed, based only on the most recent past block, and the bounds set by the software
-        fDifficultyLimited = LimitOutputDifficultyChange( uintTargetAfterLimits, uintTargetBeforeLimits, uintPOWlimit );
+        fDifficultyLimited = LimitOutputDifficultyChange( uintTargetAfterLimits, uintTargetBeforeLimits, uintPOWlimit, pIndex);
     }
     return true;
 }
@@ -1384,7 +1405,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
                 uintDiffCalc = uintPrevDiffCalculated;
                 uintDiffCalc *= (uint32_t)nOutputTimePi;
                 uintDiffCalc /= (uint32_t)nTargetSpacing;
-                LimitOutputDifficultyChange( uintDiffPi, uintDiffCalc, uintPOWlimit );
+                LimitOutputDifficultyChange( uintDiffPi, uintDiffCalc, uintPOWlimit, pIndex);
                 double dNewLog2Pi = GetLog2Work( uintDiffPi );
                 double dNewDiffPi = GetLinearWork(uintDiffPi, uintPOWlimit);
 
@@ -1394,7 +1415,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
                 uintDiffCalc = uintPrevDiffCalculated;
                 uintDiffCalc *= (uint32_t)nOutputTimePid;
                 uintDiffCalc /= (uint32_t)nTargetSpacing;
-                LimitOutputDifficultyChange( uintDiffPid, uintDiffCalc, uintPOWlimit );
+                LimitOutputDifficultyChange( uintDiffPid, uintDiffCalc, uintPOWlimit, pIndex);
                 double dNewLog2Pid = GetLog2Work( uintDiffPid );
                 double dNewDiffPid = GetLinearWork(uintDiffPid, uintPOWlimit);
 

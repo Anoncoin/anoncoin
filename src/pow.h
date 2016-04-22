@@ -47,6 +47,7 @@ struct RetargetStats
     uint32_t nRateChangeWeight;
     uint32_t nIntegratorHeight;     //! The last blockchain height we calculated the Integrator Charge for.
     uint32_t nBlocksSampled;        //! The number of blocks sampled during the Integrator charge.
+    uint32_t nIntervalForceDiffDecrease; //The interval without any block found before forcing the difficulty to decrease
 
     int64_t nMinTimeAllowed;
     int64_t nLastCalculationTime;         //! The latest block time, possibly for an as yet un-mined block
@@ -125,6 +126,7 @@ private:
     uint32_t nRateChangeWeight;
 
     int64_t nLastCalculationTime;   //! Keeps the latest block time, possibly for an as yet unmined block at tip height + 1
+    int64_t nTimeSinceLastBlock;
     int64_t nIntegratorChargeTime;
     int64_t nPidOutputTime;         //! The PID output time after being limit checked (1sec), can now only be positive and used to adjust difficulty
 
@@ -178,7 +180,7 @@ private:
     //! Sets the important block timing error near the tip.  Returns true if it can be calculated
     bool SetBlockTimeError( const CBlockIndex* pIndex, const CBlockHeader* pBlockHeader );
     //! Limit an output difficulty calculation change
-    bool LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit );
+    bool LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit, const CBlockIndex* pIndex );
 
 public:
     CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegratorTimeIn, const double dIntegratorGainIn, const double dDerivativeGainIn );
