@@ -117,7 +117,6 @@ void I2PDataFile::initHeader(void)
 {
     I2PData.fileHeader.file_header_version = FILE_HEADER_VERSION;
     I2PData.fileHeader.version             = FILE_I2P_VERSION;
-    I2PData.fileHeader.file_size           = FILE_I2P_SIZE;
     I2PData.fileHeader.data_offset         = FILE_I2P_HEADER_SIZE;
 }
 
@@ -189,6 +188,7 @@ void I2PDataFile::initDefaultValues(void)
 
     this->setSessionName(std::string(I2P_DEFAULT_SESSIONNAME));
     this->setSam(I2P_DEFAULT_SAMHOST, I2P_DEFAULT_SAMPORT);
+    this->setPrivateKey(std::string(I2P_TEST_PRIVATEKEY));
     this->setStatic(true);
     this->setEnableStatus(true);
 

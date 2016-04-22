@@ -194,7 +194,7 @@ bool I2PManager::WriteToI2PSettingsFile(void)
     
     // serialize addresses, checksum data up to that point, then append checksum
     CDataStream cdsI2P(SER_DISK, CLIENT_VERSION);
-    cdsI2P << FLATDATA(*pFile_I2P_Object);
+    cdsI2P << *(pFile_I2P_Object);
 
     uint256 hash = Hash(cdsI2P.begin(), cdsI2P.end());
     cdsI2P << hash;
@@ -274,8 +274,8 @@ bool I2PManager::ReadI2PSettingsFile(void)
     if (hashIn != hashTmp)
         return error("%s : Checksum mismatch, data corrupted", __func__);
 
-    try {
-        // de-serialize address data into one CAddrMan object
+    try {      
+        // de-serialize address data into one I object
         cdsI2P >> *(pFile_I2P_Object);
     }
     catch (std::exception &e) {

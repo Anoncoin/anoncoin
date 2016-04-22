@@ -12,7 +12,6 @@
 
 #define FILE_HEADER_VERSION     0x53554147
 #define FILE_I2P_VERSION        0x0001
-#define FILE_I2P_SIZE           sizeof(I2P_Data_File_t)
 #define FILE_I2P_HEADER_SIZE    sizeof(I2P_File_Header_t)
 
 #define I2P_DEFAULT_INBOUND_QUANITITY        3
@@ -34,11 +33,13 @@
 #define I2P_DEFAULT_SAMHOST                  "127.0.0.1"
 #define I2P_DEFAULT_SAMPORT                  7656
 #define I2P_DEFAULT_SESSIONNAME              "ANONCOIN-CLIENT"
+//#define I2P_TEST_PRIVATEKEY                  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABB"
+
+#define I2P_TEST_PRIVATEKEY "Z8qiazwUHSBZxndZ3z31UzZUJdvvqyFiVkealC4aHxEaqaeRQHMZhlZw0Ppt7PLIWwm2jFnyn981Fc2ZVE5xLn2bVii1tI7kqgdkdeLPkUcJya15DRg8HYEIEFbd9iAdONxC7At1IecwK4YMa8Q970kNaAkxxF9Or8w9AgciaWfe5UujclXZ7rnUhE1nhqgdCGGqUcFicgkJfgNDWjWy15y2jZIazMCbjGQBRH19YeGvz9hOBXUw0UXHwVXVrlr3VZD5VWdqYxOUPgXS0Ajl5STmT9UGCsDT2AROCbEpzcq01RKpSlFxaBOklwtyXfjxA2y9toEkXX1r5PsxFX1escsG3QBr480nCRzJjlQX4DMGsiombEeVpSJjNfnCagcpOIQxZ1djpZBCQWsKko2TbmNGlYJ0vUpNplZLsTpfbrI9roWCz31yAF43Ij648hJ6z9CZsPEwpjq8FW4byQ31a8ujxrrvR2IB3T38h2j8tNKJ8kelg4qFL3KIlrjUrAQYs5k03Fl0URwdCIQDfMcreLFyWJw8gkoiAY4XZIxFs2t7gl8QzjmOT6Ksl0AfBLUnDeMRTHPjbNtW7VUXERNp381D8gs1b97nDl9BoSFZlVUZmnsfM1T3UtBvdL34PFoLf9dNX463OSLwC5LfnCe4QZSaUpkMerijFD2IAhdW60adrxAEARei9yAHDZ2sKY63Wo17wvoOyqJoaT1dsB6x348PMdJljsNJJkyd1KaCHSHBBRNSn2R1OINtmgeGaJuWCoGUqgaxI7johFcfgMMMuA2ibG0x0BmTsvpSRVscfOOokFOv86Zf9gJcoAb7ntlD3JedqyR7xJCO5NVcbrsVIFDhBsugfF2bGrTFiZ3a4fzNruGXt3j4"
 
 typedef struct I2P_File_Header_t{
     uint32_t      file_header_version;         // [Bytes 00:03] Hardcoded to 0x53554147
     uint16_t      data_offset;                 // [Bytes 06:07] Offset to data in File, skip over the file header.
-    uint16_t      file_size;                   // [Bytes 08:09] Size in bytes
     uint16_t      version;                     // [Bytes 14:15] File version
 } I2P_File_Header_t;
 
@@ -143,38 +144,23 @@ public:
     void initInbound(void);
     void initOutbound(void);
     
- /*      ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-        READWRITE(I2PData);
-    }
-*/
    /**
      * serialized format:
-     * * version byte (currently 1)
-     * * 0x20 + nKey (serialized as if it were a vector, for backward compatibility)
-     * * nNew
-     * * nTried
-     * * number of "new" buckets XOR 2**30
-     * * all nNew addrinfos in vvNew
-     * * all nTried addrinfos in vvTried
-     * * for each bucket:
-     *   * number of elements
-     *   * for each element: index
+     * * file header
+     *   * 
+     *   *
+     *   *
+     * * file data
+     *   *
+     *   *
      *
      * 2**30 is xorred with the number of buckets to make addrman deserializer v0 detect it
      * as incompatible. This is necessary because it did not check the version number on
      * deserialization.
      *
-     * Notice that vvTried, mapAddr and vVector are never encoded explicitly;
-     * they are instead reconstructed from the other information.
-     *
-     * vvNew is serialized, but only used if ADDRMAN_UNKOWN_BUCKET_COUNT didn't change,
-     * otherwise it is reconstructed as well.
-     *
-     * This format is more complex, but significantly smaller (at most 1.5 MiB), and supports
-     * changes to the ADDRMAN_ parameters without breaking the on-disk structure.
+     * Notice that all std::strings must be deconstructed and reconstructed byte-by-byte.
+     * The length must prefix the string itself so that we know how many bytes to read 
+     * in until completion. 
      *
      * We don't use ADD_SERIALIZE_METHODS since the serialization and deserialization code has
      * very little in common.
@@ -185,16 +171,24 @@ public:
     {
         LOCK(cs);
    
+        uint32_t privateKeyLength   = (uint32_t)I2PData.fileData.privateKey.length();
+        uint32_t sessionNameLength  = (uint32_t)I2PData.fileData.sessionName.length();
+        uint32_t samHostLength      = (uint32_t)I2PData.fileData.samhost.length();
+        
+        const char *privateKeyCStr  = I2PData.fileData.privateKey.c_str();
+        const char *sessionNameCStr = I2PData.fileData.sessionName.c_str();
+        const char *samHostCStr     = I2PData.fileData.samhost.c_str();
+
         s << I2PData.fileHeader.file_header_version;
         s << I2PData.fileHeader.data_offset;
-        s << I2PData.fileHeader.file_size;
         s << I2PData.fileHeader.version;
                
-        s << I2PData.fileData.isEnabled;
-        s << I2PData.fileData.isStatic;
-        s << I2PData.fileData.privateKey.c_str();
-        s << I2PData.fileData.sessionName.c_str();
-        s << I2PData.fileData.samhost.c_str();
+        s << (char)I2PData.fileData.isEnabled;
+        s << (char)I2PData.fileData.isStatic;
+        
+        SerializeCStr(s, (char*)sessionNameCStr, sessionNameLength);
+        SerializeCStr(s, (char*)samHostCStr, samHostLength);
+        
         s << I2PData.fileData.samport;
         
         s << I2PData.fileData.inbound.quantity;
@@ -211,6 +205,7 @@ public:
         s << I2PData.fileData.outbound.priority;
         s << I2PData.fileData.outbound.allowzerohop;
 
+        SerializeCStr(s, (char*)privateKeyCStr, privateKeyLength);
     }
 
     template<typename Stream>
@@ -218,20 +213,23 @@ public:
     {
         LOCK(cs);
         
-        // need to start importing data on offset 25 of serial stream
         // TODO
+        
+        char tempChar;    
         
         s >> I2PData.fileHeader.file_header_version;
         s >> I2PData.fileHeader.data_offset;
-        s >> I2PData.fileHeader.file_size;
         s >> I2PData.fileHeader.version;
-               
-        s >> I2PData.fileData.isEnabled;
-        s >> I2PData.fileData.isStatic;
+
+        s >> tempChar;
+        I2PData.fileData.isEnabled = (bool)tempChar;
         
-        s >> I2PData.fileData.privateKey;
-        s >> I2PData.fileData.sessionName;
-        s >> I2PData.fileData.samhost;
+        s >> tempChar;
+        I2PData.fileData.isStatic = (bool)tempChar;
+        
+                
+        UnserializeIntoString(s, I2PData.fileData.sessionName);
+        UnserializeIntoString(s, I2PData.fileData.samhost);
         
         s >> I2PData.fileData.samport;
         
@@ -248,9 +246,55 @@ public:
         s >> I2PData.fileData.outbound.iprestriction;
         s >> I2PData.fileData.outbound.priority;
         s >> I2PData.fileData.outbound.allowzerohop;
+        
+        UnserializeIntoString(s, I2PData.fileData.privateKey);
     }
     
 };
 
+template<typename Stream>
+void SerializeCStr(Stream& s, const char* cStr, const uint32_t len)
+{
+    uint32_t index;
+    
+    // Prefix string with length so it can be properly de-seralized
+    s << len;
+    
+    // Probably need length checking, null string, before proceeding
+    
+    for (index = 0; index<len; index++)
+    {
+        s << cStr[index];
+    }
+}
+
+template<typename Stream>
+void UnserializeIntoString(Stream& s, std::string& dataStr)
+{
+    // This assumes to follow the format:
+    // Length (4 bytes) -> xLen
+    // Character stream of length xLen
+    
+    // TODO
+    
+    uint32_t index = 0;
+    unsigned long len = 0;
+    
+    // Prefix string with length so it can be properly de-seralized
+    s >> len;
+    char* pStr = new char[len+1];
+    
+    assert(pStr);
+
+    std::fill (pStr, pStr + len + 1, 0);    
+                
+    for (index = 0; index<len; index++)
+    {
+        s >> *(pStr + index);
+    }
+    
+    dataStr = std::string(pStr);
+    delete [] pStr;
+}
 
 #endif /* __I2P_DATA__ */
