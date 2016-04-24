@@ -126,7 +126,7 @@ private:
     uint32_t nRateChangeWeight;
 
     int64_t nLastCalculationTime;   //! Keeps the latest block time, possibly for an as yet unmined block at tip height + 1
-    int64_t nTimeSinceLastBlock;
+    int64_t nLastBlockSpace;
     int64_t nIntegratorChargeTime;
     int64_t nPidOutputTime;         //! The PID output time after being limit checked (1sec), can now only be positive and used to adjust difficulty
 
@@ -143,7 +143,6 @@ private:
     uint256 uintTipDiffCalculatedUp;       //CSlave: Weighted difficulty on the n last block of the tip
     uint256 uintTipDiffCalculatedDown;       
     uint256 uintTargetBeforeLimits;          //! Final result, the new retarget output value, before the min proof-of-work has been checked.
-    //uint256 uintPrevDiffForLimits;
     uint256 uintPrevDiffForLimitsLast;     //CSlave: Previous difficulty of the last block
     uint256 uintPrevDiffForLimitsTipUp;      //CSlave: Previous difficulty calculated on the partial tip blocks selected for diff UP
     uint256 uintPrevDiffForLimitsTipDown;      
