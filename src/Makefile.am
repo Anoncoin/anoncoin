@@ -128,8 +128,18 @@ ANONCOIN_CORE_H = \
   script.h \
   script_error.h \
   scrypt.h \
-  sph_groestl.h \
-  hashgroestl.h \
+  sph_skein.h \
+  hashskein.h \
+  lyra2.h \
+  lyra2RE.h \
+  sponge.h \
+  sha256_Y.h \
+  sysendian.h \
+  sph_blake.h \
+  sph_cubehash.h \
+  sph_bmw.h \
+  sph_keccak.h \
+  yescrypt.h \
   serialize.h \
   sigcache.h \
   sign.h \
@@ -246,7 +256,6 @@ libanoncoin_common_a_SOURCES = \
   core_read.cpp \
   core_write.cpp \
   block.cpp \
-  groestl.c \
   timedata.cpp \
   transaction.cpp \
   hash.cpp \
@@ -289,6 +298,14 @@ libanoncoin_scrypt_a_CPPFLAGS = $(ANONCOIN_INCLUDES) -msse2 -mstackrealign
 libanoncoin_scrypt_a_SOURCES = \
   scrypt.cpp \
   scrypt-sse2.cpp \
+  skein.c \
+  lyra2.c \
+  lyra2RE.c \
+  sponge.c \
+  yescryptcommon.c \
+  yescrypt-best.c \
+  yescrypt-platform.c \
+  sha256_Y.c \
   $(ANONCOIN_CORE_H)
 
 if GLIBC_BACK_COMPAT
