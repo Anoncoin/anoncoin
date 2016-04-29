@@ -9,33 +9,58 @@
 #define __I2P_DATA__
 
 #include "serialize.h"
+#include "i2psam.h"
 
 #define FILE_HEADER_VERSION     0x53554147
 #define FILE_I2P_VERSION        0x0001
 #define FILE_I2P_HEADER_SIZE    sizeof(I2P_File_Header_t)
 
-#define I2P_DEFAULT_INBOUND_QUANITITY        3
-#define I2P_DEFAULT_INBOUND_LENGTH           3
-#define I2P_DEFAULT_INBOUND_LENGTHVARIANCE   0
-#define I2P_DEFAULT_INBOUND_BACKUPQUANTITY   1
-#define I2P_DEFAULT_INBOUND_ALLOWZEROHOP     0
-#define I2P_DEFAULT_INBOUND_IPRESTRICTION    2
+#define I2P_DEFAULT_INBOUND_QUANITITY        SAM_DEFAULT_INBOUND_QUANTITY
+#define I2P_DEFAULT_INBOUND_LENGTH           SAM_DEFAULT_INBOUND_LENGTH
+#define I2P_DEFAULT_INBOUND_LENGTHVARIANCE   SAM_DEFAULT_INBOUND_LENGTHVARIANCE
+#define I2P_DEFAULT_INBOUND_BACKUPQUANTITY   SAM_DEFAULT_INBOUND_BACKUPQUANTITY
+#define I2P_DEFAULT_INBOUND_ALLOWZEROHOP     SAM_DEFAULT_INBOUND_ALLOWZEROHOP
+#define I2P_DEFAULT_INBOUND_IPRESTRICTION    SAM_DEFAULT_INBOUND_IPRESTRICTION
 
-#define I2P_DEFAULT_OUTBOUND_QUANITITY       3
-#define I2P_DEFAULT_OUTBOUND_LENGTH          3
-#define I2P_DEFAULT_OUTBOUND_LENGTHVARIANCE  0
-#define I2P_DEFAULT_OUTBOUND_BACKUPQUANTITY  1
-#define I2P_DEFAULT_OUTBOUND_ALLOWZEROHOP    0
-#define I2P_DEFAULT_OUTBOUND_IPRESTRICTION   2
-#define I2P_DEFAULT_OUTBOUND_PRIORITY        0
+#define I2P_DEFAULT_OUTBOUND_QUANITITY       SAM_DEFAULT_OUTBOUND_QUANTITY
+#define I2P_DEFAULT_OUTBOUND_LENGTH          SAM_DEFAULT_OUTBOUND_LENGTH
+#define I2P_DEFAULT_OUTBOUND_LENGTHVARIANCE  SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE
+#define I2P_DEFAULT_OUTBOUND_BACKUPQUANTITY  SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY
+#define I2P_DEFAULT_OUTBOUND_ALLOWZEROHOP    SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP
+#define I2P_DEFAULT_OUTBOUND_IPRESTRICTION   SAM_DEFAULT_OUTBOUND_IPRESTRICTION
+#define I2P_DEFAULT_OUTBOUND_PRIORITY        SAM_DEFAULT_OUTBOUND_PRIORITY
 
 #define I2P_DEFAULT_ENABLED                  1
-#define I2P_DEFAULT_SAMHOST                  "127.0.0.1"
-#define I2P_DEFAULT_SAMPORT                  7656
-#define I2P_DEFAULT_SESSIONNAME              "ANONCOIN-CLIENT"
-//#define I2P_TEST_PRIVATEKEY                  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABB"
+#define I2P_DEFAULT_SAMHOST                  SAM_DEFAULT_ADDRESS
+#define I2P_DEFAULT_SAMPORT                  SAM_DEFAULT_PORT
+#define I2P_DEFAULT_SESSIONNAME              "Anoncoin-client"
 
+#define MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY       "-i2p.mydestination.privatekey"
+#define MAP_ARGS_I2P_OPTIONS_ENABLED                "-i2p.options.enabled"
+#define MAP_ARGS_I2P_MYDESTINATION_STATIC           "-i2p.mydestination.static"
+#define MAP_ARGS_I2P_OPTIONS_SAMHOST                "-i2p.options.i2p.options.samhost"
+#define MAP_ARGS_I2P_OPTIONS_SAMPORT                "-i2p.options.i2p.options.samport"
+#define MAP_ARGS_I2P_OPTIONS_SESSION                "-i2p.options.sessionname"
+
+#define MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY       "-i2p.options.inbound.quantity"
+#define MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH         "-i2p.options.inbound.length"
+#define MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE "-i2p.options.inbound.lengthvariance"
+#define MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY "-i2p.options.inbound.backupquantity"
+#define MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP   "-i2p.options.inbound.allowzerohop"
+#define MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION  "-i2p.options.inbound.iprestriction"
+
+#define MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY       "-i2p.options.outbound.quantity"
+#define MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH         "-i2p.options.outbound.length"
+#define MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE "-i2p.options.outbound.lengthvariance"
+#define MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY "-i2p.options.outbound.backupquantity"
+#define MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP   "-i2p.options.outbound.allowzerohop"
+#define MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION  "-i2p.options.outbound.iprestriction"
+#define MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY       "-i2p.options.outbound.priority"
+
+// FOR TESTING ONLY
+/*
 #define I2P_TEST_PRIVATEKEY "Z8qiazwUHSBZxndZ3z31UzZUJdvvqyFiVkealC4aHxEaqaeRQHMZhlZw0Ppt7PLIWwm2jFnyn981Fc2ZVE5xLn2bVii1tI7kqgdkdeLPkUcJya15DRg8HYEIEFbd9iAdONxC7At1IecwK4YMa8Q970kNaAkxxF9Or8w9AgciaWfe5UujclXZ7rnUhE1nhqgdCGGqUcFicgkJfgNDWjWy15y2jZIazMCbjGQBRH19YeGvz9hOBXUw0UXHwVXVrlr3VZD5VWdqYxOUPgXS0Ajl5STmT9UGCsDT2AROCbEpzcq01RKpSlFxaBOklwtyXfjxA2y9toEkXX1r5PsxFX1escsG3QBr480nCRzJjlQX4DMGsiombEeVpSJjNfnCagcpOIQxZ1djpZBCQWsKko2TbmNGlYJ0vUpNplZLsTpfbrI9roWCz31yAF43Ij648hJ6z9CZsPEwpjq8FW4byQ31a8ujxrrvR2IB3T38h2j8tNKJ8kelg4qFL3KIlrjUrAQYs5k03Fl0URwdCIQDfMcreLFyWJw8gkoiAY4XZIxFs2t7gl8QzjmOT6Ksl0AfBLUnDeMRTHPjbNtW7VUXERNp381D8gs1b97nDl9BoSFZlVUZmnsfM1T3UtBvdL34PFoLf9dNX463OSLwC5LfnCe4QZSaUpkMerijFD2IAhdW60adrxAEARei9yAHDZ2sKY63Wo17wvoOyqJoaT1dsB6x348PMdJljsNJJkyd1KaCHSHBBRNSn2R1OINtmgeGaJuWCoGUqgaxI7johFcfgMMMuA2ibG0x0BmTsvpSRVscfOOokFOv86Zf9gJcoAb7ntlD3JedqyR7xJCO5NVcbrsVIFDhBsugfF2bGrTFiZ3a4fzNruGXt3j4"
+*/
 
 typedef struct I2P_File_Header_t{
     uint32_t      file_header_version;         // [Bytes 00:03] Hardcoded to 0x53554147
@@ -84,11 +109,11 @@ typedef struct i2psettings_t
 
 class I2PDataFile
 {
-    
-private: 
+
+private:
     //! critical section to protect the inner data structures
     mutable CCriticalSection cs;
-    
+
 public:
     I2PDataFile();
     ~I2PDataFile();
@@ -143,11 +168,11 @@ public:
     I2P_Data_File_t I2PData;
     void initInbound(void);
     void initOutbound(void);
-    
+
    /**
      * serialized format:
      * * file header
-     *   * 
+     *   *
      *   *
      *   *
      * * file data
@@ -159,8 +184,8 @@ public:
      * deserialization.
      *
      * Notice that all std::strings must be deconstructed and reconstructed byte-by-byte.
-     * The length must prefix the string itself so that we know how many bytes to read 
-     * in until completion. 
+     * The length must prefix the string itself so that we know how many bytes to read
+     * in until completion.
      *
      * We don't use ADD_SERIALIZE_METHODS since the serialization and deserialization code has
      * very little in common.
@@ -170,11 +195,11 @@ public:
     void Serialize(Stream &s, int nType, int nVersionDummy) const
     {
         LOCK(cs);
-   
+
         uint32_t privateKeyLength   = (uint32_t)I2PData.fileData.privateKey.length();
         uint32_t sessionNameLength  = (uint32_t)I2PData.fileData.sessionName.length();
         uint32_t samHostLength      = (uint32_t)I2PData.fileData.samhost.length();
-        
+
         const char *privateKeyCStr  = I2PData.fileData.privateKey.c_str();
         const char *sessionNameCStr = I2PData.fileData.sessionName.c_str();
         const char *samHostCStr     = I2PData.fileData.samhost.c_str();
@@ -182,15 +207,15 @@ public:
         s << I2PData.fileHeader.file_header_version;
         s << I2PData.fileHeader.data_offset;
         s << I2PData.fileHeader.version;
-               
+
         s << (char)I2PData.fileData.isEnabled;
         s << (char)I2PData.fileData.isStatic;
-        
+
         SerializeCStr(s, (char*)sessionNameCStr, sessionNameLength);
         SerializeCStr(s, (char*)samHostCStr, samHostLength);
-        
+
         s << I2PData.fileData.samport;
-        
+
         s << I2PData.fileData.inbound.quantity;
         s << I2PData.fileData.inbound.length;
         s << I2PData.fileData.inbound.lengthvariance;
@@ -212,27 +237,27 @@ public:
     void Unserialize(Stream& s, int nType, int nVersionDummy)
     {
         LOCK(cs);
-        
+
         // TODO
-        
-        char tempChar;    
-        
+
+        char tempChar;
+
         s >> I2PData.fileHeader.file_header_version;
         s >> I2PData.fileHeader.data_offset;
         s >> I2PData.fileHeader.version;
 
         s >> tempChar;
         I2PData.fileData.isEnabled = (bool)tempChar;
-        
+
         s >> tempChar;
         I2PData.fileData.isStatic = (bool)tempChar;
-        
-                
+
+
         UnserializeIntoString(s, I2PData.fileData.sessionName);
         UnserializeIntoString(s, I2PData.fileData.samhost);
-        
+
         s >> I2PData.fileData.samport;
-        
+
         s >> I2PData.fileData.inbound.quantity;
         s >> I2PData.fileData.inbound.length;
         s >> I2PData.fileData.inbound.lengthvariance;
@@ -246,25 +271,26 @@ public:
         s >> I2PData.fileData.outbound.iprestriction;
         s >> I2PData.fileData.outbound.priority;
         s >> I2PData.fileData.outbound.allowzerohop;
-        
+
         UnserializeIntoString(s, I2PData.fileData.privateKey);
     }
-    
+
 };
 
 template<typename Stream>
-void SerializeCStr(Stream& s, const char* cStr, const uint32_t len)
+void SerializeCStr(Stream& s, const char* pCStr, const uint32_t len)
 {
     uint32_t index;
-    
+
     // Prefix string with length so it can be properly de-seralized
     s << len;
-    
-    // Probably need length checking, null string, before proceeding
-    
-    for (index = 0; index<len; index++)
+
+    if ((len != 0) && (pCStr != 0))
     {
-        s << cStr[index];
+        for (index = 0; index<len; index++)
+        {
+            s << pCStr[index];
+        }
     }
 }
 
@@ -274,27 +300,34 @@ void UnserializeIntoString(Stream& s, std::string& dataStr)
     // This assumes to follow the format:
     // Length (4 bytes) -> xLen
     // Character stream of length xLen
-    
-    // TODO
-    
+
     uint32_t index = 0;
     unsigned long len = 0;
-    
-    // Prefix string with length so it can be properly de-seralized
-    s >> len;
-    char* pStr = new char[len+1];
-    
-    assert(pStr);
 
-    std::fill (pStr, pStr + len + 1, 0);    
-                
-    for (index = 0; index<len; index++)
+    //Character stream length
+    s >> len;
+
+    if (len !=0)
     {
-        s >> *(pStr + index);
+        char* pCStr = new char[len+1];
+
+        assert(pCStr);
+
+        std::fill (pCStr, pCStr + len + 1, 0);
+
+        for (index = 0; index<len; index++)
+        {
+            s >> pCStr[index];
+        }
+
+        dataStr = std::string(pCStr);
+
+        delete [] pCStr;
     }
-    
-    dataStr = std::string(pStr);
-    delete [] pStr;
+    else
+    {
+        dataStr = std::string("");
+    }
 }
 
 #endif /* __I2P_DATA__ */

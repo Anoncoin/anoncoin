@@ -93,7 +93,11 @@ template <typename T>
 using namespace std;
 
 
-I2PDataFile *pFile_I2P_Object;
+//----------------------------------
+// Static Declarations
+//----------------------------------
+static void UpdateMapArgumentsIfNotAlreadySet(std::string mapArgStr, std::string value);
+static I2PDataFile *pFile_I2P_Object;
 
 //******************************************************************************
 //
@@ -191,14 +195,14 @@ bool I2PManager::WriteToI2PSettingsFile(void)
     unsigned short randv = 0;
     GetRandBytes((unsigned char*)&randv, sizeof(randv));
     std::string tmpfn = strprintf("i2p.dat.%04x", randv);
-    
+
     // serialize addresses, checksum data up to that point, then append checksum
     CDataStream cdsI2P(SER_DISK, CLIENT_VERSION);
     cdsI2P << *(pFile_I2P_Object);
 
     uint256 hash = Hash(cdsI2P.begin(), cdsI2P.end());
     cdsI2P << hash;
-    
+
     // Open output file and associate with CAutoFile
     boost::filesystem::path path = GetDataDir() / tmpfn;
     FILE *file = fopen(path.string().c_str(), "wb");
@@ -207,7 +211,7 @@ bool I2PManager::WriteToI2PSettingsFile(void)
     {
         return error("%s : Failed to open file %s", __func__, path);
     }
-    
+
     // Write and commit header, data
     try {
         fileout << cdsI2P;
@@ -221,7 +225,7 @@ bool I2PManager::WriteToI2PSettingsFile(void)
     // replace existing i2p.dat, if any, with new i2p.dat.XXXX
     if (!RenameOver(path, GetI2PSettingsFilePath()))
         return error("%s : Rename-into-place failed", __func__);
-    
+
     return true;
 }
 
@@ -256,7 +260,7 @@ bool I2PManager::ReadI2PSettingsFile(void)
     vector<unsigned char> vchData;
     vchData.resize(dataSize);
     uint256 hashIn;
-    
+
     // read data and checksum from file
     try {
         filein.read((char *)&vchData[0], dataSize);
@@ -266,7 +270,7 @@ bool I2PManager::ReadI2PSettingsFile(void)
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
     filein.fclose();
-    
+
     CDataStream cdsI2P(vchData, SER_DISK, CLIENT_VERSION);
 
     // verify stored checksum matches input data
@@ -274,14 +278,14 @@ bool I2PManager::ReadI2PSettingsFile(void)
     if (hashIn != hashTmp)
         return error("%s : Checksum mismatch, data corrupted", __func__);
 
-    try {      
+    try {
         // de-serialize address data into one I object
         cdsI2P >> *(pFile_I2P_Object);
     }
     catch (std::exception &e) {
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
-    
+
     return true;
 }
 
@@ -299,30 +303,30 @@ bool I2PManager::ReadI2PSettingsFile(void)
 //******************************************************************************
 void I2PManager::UpdateMapArguments(void)
 {
-    mapArgs["-i2p.options.enabled"]                 = pFile_I2P_Object->getEnableStatus() ? "1" : "0";
-    mapArgs["-i2p.mydestination.static"]            = pFile_I2P_Object->getEnableStatus() ? "1" : "0";
-    mapArgs["-i2p.options.i2p.options.samhost"]     = pFile_I2P_Object->getSamHost();
-    mapArgs["-i2p.options.i2p.options.samport"]     = NumberToString(pFile_I2P_Object->getSamPort());
-    mapArgs["-i2p.options.sessionname"]             = pFile_I2P_Object->getSessionName();
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_ENABLED, pFile_I2P_Object->getEnableStatus() ? "1" : "0" );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_MYDESTINATION_STATIC, pFile_I2P_Object->getStatic() ? "1" : "0" );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_SAMHOST, pFile_I2P_Object->getSamHost() );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_SAMPORT, NumberToString(pFile_I2P_Object->getSamPort()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_SESSION, pFile_I2P_Object->getSessionName() );
 
-    mapArgs["-i2p.options.inbound.quantity"]        = NumberToString(pFile_I2P_Object->getInboundQuantity());
-    mapArgs["-i2p.options.inbound.length"]          = NumberToString(pFile_I2P_Object->getInboundLength());
-    mapArgs["-i2p.options.inbound.lengthvariance"]  = NumberToString(pFile_I2P_Object->getInboundLengthVariance());
-    mapArgs["-i2p.options.inbound.backupquantity"]  = NumberToString(pFile_I2P_Object->getInboundBackupQuantity());
-    mapArgs["-i2p.options.inbound.allowzerohop"]    = NumberToString(pFile_I2P_Object->getInboundAllowZeroHop());
-    mapArgs["-i2p.options.inbound.iprestriction"]   = NumberToString(pFile_I2P_Object->getInboundIPRestriction());
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY, NumberToString(pFile_I2P_Object->getInboundQuantity()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH, NumberToString(pFile_I2P_Object->getInboundLength()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE, NumberToString(pFile_I2P_Object->getInboundLengthVariance()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY, NumberToString(pFile_I2P_Object->getInboundBackupQuantity()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP, NumberToString(pFile_I2P_Object->getInboundAllowZeroHop()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION, NumberToString(pFile_I2P_Object->getInboundIPRestriction()) );
 
-    mapArgs["-i2p.options.outbound.quantity"]        = NumberToString(pFile_I2P_Object->getOutboundQuantity());
-    mapArgs["-i2p.options.outbound.length"]          = NumberToString(pFile_I2P_Object->getOutboundLength());
-    mapArgs["-i2p.options.outbound.lengthvariance"]  = NumberToString(pFile_I2P_Object->getOutboundLengthVariance());
-    mapArgs["-i2p.options.outbound.backupquantity"]  = NumberToString(pFile_I2P_Object->getOutboundBackupQuantity());
-    mapArgs["-i2p.options.outbound.allowzerohop"]    = NumberToString(pFile_I2P_Object->getOutboundAllowZeroHop());
-    mapArgs["-i2p.options.outbound.iprestriction"]   = NumberToString(pFile_I2P_Object->getOutboundIPRestriction());
-    mapArgs["-i2p.options.outbound.priority"]        = NumberToString(pFile_I2P_Object->getOutboundPriority());
-    
-    if ( (mapArgs["-i2p.mydestination.privatekey"] != "") && (pFile_I2P_Object->getPrivateKey() != ""))
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY, NumberToString(pFile_I2P_Object->getOutboundQuantity()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH, NumberToString(pFile_I2P_Object->getOutboundLength()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE, NumberToString(pFile_I2P_Object->getOutboundLengthVariance()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY, NumberToString(pFile_I2P_Object->getOutboundBackupQuantity()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP, NumberToString(pFile_I2P_Object->getOutboundAllowZeroHop()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION, NumberToString(pFile_I2P_Object->getOutboundIPRestriction()) );
+    UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY, NumberToString(pFile_I2P_Object->getOutboundPriority()) );
+
+    if ( pFile_I2P_Object->getPrivateKey() != "")
     {
-        mapArgs["-i2p.mydestination.privatekey"] = pFile_I2P_Object->getPrivateKey();
+          UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY, pFile_I2P_Object->getPrivateKey() );
     }
 }
 
@@ -342,7 +346,7 @@ void I2PManager::LogDataFile(void)
 {
 #define SPACE 20
     LogPrintf("========== I 2 P   D A T A   F I L E ==========");
-    
+
     LogPrintf("Enabled: %*s",           SPACE, pFile_I2P_Object->getEnableStatus());
     LogPrintf("Static: %*s",            SPACE, pFile_I2P_Object->getStatic());
     LogPrintf("Session Name: %*s",      SPACE, pFile_I2P_Object->getSessionName());
@@ -372,3 +376,10 @@ void I2PManager::LogDataFile(void)
 #undef SPACE
 }
 
+static void UpdateMapArgumentsIfNotAlreadySet(std::string mapArgStr, std::string value)
+{
+    if (!SoftSetArg(mapArgStr,value))
+    {
+        LogPrintf( "I2P Settings Manager : %s has already been set. Ignoring value stored within settings file [%s].\n", mapArgStr, value );
+    }
+}

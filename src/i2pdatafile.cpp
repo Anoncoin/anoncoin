@@ -188,11 +188,9 @@ void I2PDataFile::initDefaultValues(void)
 
     this->setSessionName(std::string(I2P_DEFAULT_SESSIONNAME));
     this->setSam(I2P_DEFAULT_SAMHOST, I2P_DEFAULT_SAMPORT);
-    this->setPrivateKey(std::string(I2P_TEST_PRIVATEKEY));
+    //this->setPrivateKey(std::string(I2P_TEST_PRIVATEKEY));
     this->setStatic(true);
     this->setEnableStatus(true);
-
-    // GENERATE PRIVATE KEY
 }
 
 //******************************************************************************
