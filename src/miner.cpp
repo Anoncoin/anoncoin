@@ -126,11 +126,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, int algo)
     {
         case ALGO_SCRYPT:
             break;
-        case ALGO_SHA256D:
-            pblock->nVersion |= BLOCK_VERSION_SHA256D;
+        //case ALGO_SHA256D:
+          //  pblock->nVersion |= BLOCK_VERSION_SHA256D;
+           // break;
+        case ALGO_LYRA2RE2:
+            pblock->nVersion |= BLOCK_VERSION_LYRA2RE2;
             break;
-        case ALGO_GROESTL:
-            pblock->nVersion |= BLOCK_VERSION_GROESTL;
+        case ALGO_YESCRYPT:
+            pblock->nVersion |= BLOCK_VERSION_YESCRYPT;
             break;
         default:
             error("CreateNewBlock: bad algo");
@@ -936,6 +939,199 @@ void static AnoncoinMiner(CWallet *pwallet)
 
 //** from Digibyte miner.cpp 813-912
 
+void static YeScryptMiner(CWallet *pwallet)
+{
+    // Each thread has its own key and counter
+    CReserveKey reservekey(pwallet);
+    unsigned int nExtraNonce = 0;
+
+    uint8_t nMyID;
+    {
+        LOCK(cs_hashmeter);
+        nMyID = ++nMinerThreadsRunning;
+    }
+
+    boost::scoped_ptr<CHashMeter> spMyMeter(new CHashMeter( nMyID ));
+
+    while(true)
+    {
+        //MinerWaitOnline();
+                if (!RegTest()) {
+                //! Busy-wait for the network to come online so we don't waste time mining
+                //! on an obsolete chain. In regtest mode we expect to fly solo.
+                while (vNodes.empty())
+                    MilliSleep(10000);
+            }
+        
+        //
+        // Create new block
+        //
+        unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+        CBlockIndex* pindexPrev = chainActive.Tip();
+
+        auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, ALGO_YESCRYPT));
+        if (!pblocktemplate.get())
+            return;
+        CBlock *pblock = &pblocktemplate->block;
+        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+            
+        LogPrintf("Running yescrypt miner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+               ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+
+        //
+        // Prebuild hash buffers
+        //
+        char pmidstatebuf[32+16]; char* pmidstate = alignup<16>(pmidstatebuf);
+        char pdatabuf[128+16];    char* pdata     = alignup<16>(pdatabuf);
+        char phash1buf[64+16];    char* phash1    = alignup<16>(phash1buf);
+
+        FormatHashBuffers(pblock, pmidstate, pdata, phash1);
+
+        unsigned int& nBlockTime = *(unsigned int*)(pdata + 64 + 4);
+        unsigned int& nBlockBits = *(unsigned int*)(pdata + 64 + 8);
+
+        //
+        // Search
+        //
+        uint256 hashTarget;
+        hashTarget.SetCompact(pblock->nBits);
+        bool fAccepted = false;
+        int64_t nStart = GetTime();
+        uint16_t nHashesDone = 0;
+        uint256 thash;
+        while(true)
+        {
+            uint16_t nHashesDone = 0;
+            uint256 thash;
+			
+            while(true)
+            {
+				yescrypt_hash_sp(BEGIN(pblock->nVersion), BEGIN(thash));
+
+                if (thash <= hashTarget)
+                {
+                    // Found a solution
+                    SetThreadPriority(THREAD_PRIORITY_NORMAL);
+                    //CheckWork(pblock, *pwallet, reservekey);
+                    fAccepted = ProcessBlockFound(pblock, *pwallet, reservekey);
+                    SetThreadPriority(THREAD_PRIORITY_LOWEST);
+                    break;
+                }
+                //pblock->nNonce += 1;
+                ++pblock->nNonce;
+                nHashesDone += 1;
+                if ((pblock->nNonce & 0xFF) == 0)
+                    break;
+            }
+
+     //       // Meter hashes/sec
+       //     static int64_t nHashCounter;
+      //      if (nHPSTimerStart == 0)
+       //     {
+        //        nHPSTimerStart = GetTimeMillis();
+        //        nHashCounter = 0;
+   //         }
+     //       else
+       //         nHashCounter += nHashesDone;
+         //   if (GetTimeMillis() - nHPSTimerStart > 4000)
+     //       {
+  //              static CCriticalSection cs;
+    //            {
+      //              LOCK(cs);
+        //            if (GetTimeMillis() - nHPSTimerStart > 4000)
+    //                {
+      //                  double dHashesPerSec = 1000.0 * (double)nHashCounter / (double)(GetTimeMillis() - nHPSTimerStart);
+    //                    nHPSTimerStart = GetTimeMillis();
+     ///                   nHashCounter = 0;
+        //                static int64_t nLogTime;
+          //              if (GetTime() - nLogTime > 5 * 60)
+            //            {
+       //                     nLogTime = GetTime();
+         //                   LogPrintf("Yescrypt Miner: %6.0f hash/s\n", dHashesPerSec);
+       //                 }
+      //              }
+      //          }
+      //      }
+
+
+//! Meter hashes/sec production, UpdateFastCounter starts returning true if its time to log results (10 sec.)
+                if( spMyMeter->UpdateFastCounter(nHashesDone) ) {
+                    //! If lock fails, its no big deal, we'll try again next time, the meter update is fast & keeps accumulating...
+                    TRY_LOCK(cs_hashmeter, lockedmeter);
+                    if( lockedmeter ) {
+                        //! Once we have the meter locked we first update our meter results, 'then' the 10 sec summary mru.
+                        bool fUpdateLog = spMyMeter->UpdateAccumulations();
+                        //! Now we store the whole hash meter as another (most recent) data point in the short term sample buffer,
+                        //! its new start time, becomes our final timestamp and can be used outside this thread anytime in the future.
+                        mruFastReadings.insert( *spMyMeter );
+                        //! If it turns out that the 10 minute log update needs to be done, we update that and report it and other stuff as well, otherwise we're done.
+                        if( fUpdateLog ) {
+                            //! Again before saving the sample, we make sure the timestamp is updated and the meters log fields reset for another interval,
+                            //! this call returns the logged HashesPermilliSec, so the value is correct for KiloHashes per second already...cool
+                            double dKiloHashesPerSec = spMyMeter->RestartSlowCounter();
+                            //! Store the whole hash meter as another data point in the long term sample buffer, and report that to the log.
+                            mruSlowReadings.insert( *spMyMeter );
+                            LogPrintf("%s %2d: reporting new 10 min sample update of %6.3f KHashes/Sec.\n", __func__, nMyID, dKiloHashesPerSec );
+#if defined( DONT_COMPILE )
+                            //! If our ID matches the number of threads running, we are the last one, and report some more...
+                            //! ToDo: Note this only works if the last thread always keep running, for an unknown reason it or other threads may have shut down.
+                            //! The HashMeter stats reporting function looks at the data in the 10sec mru, and knows if all threads are reporting results, can
+                            //! even tell which ones are not if we need that information.  Here though, it could fail if the last thread shutdown unexpectedly.
+                            if( nMyID == nMinerThreadsRunning ) {
+                                int nReadings = mruFastReadings.size();
+                                double dCumulativeKHPS = 0.0;
+                                for( mruset<CHashMeter>::const_iterator it = mruFastReadings.begin(); it != mruFastReadings.end(); ++it )
+                                    dCumulativeKHPS += (*it).GetFastKHPS();
+                                dCumulativeKHPS /= (double)nReadings;
+                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10sec) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
+                                nReadings = mruSlowReadings.size();
+                                dCumulativeKHPS = 0.0;
+                                for( mruset<CHashMeter>::const_iterator it = mruSlowReadings.begin(); it != mruSlowReadings.end(); ++it )
+                                    dCumulativeKHPS += (*it).GetSlowKHPS();
+                                dCumulativeKHPS /= (double)nReadings;
+                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10min) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
+                            }
+#endif
+                        }
+                    }
+                }
+
+
+  //! Check for stop or if block needs to be rebuilt
+                boost::this_thread::interruption_point();
+                //! If there are no peers we terminate the miner... except for RegTests
+                if( vNodes.empty() && !RegTest() )
+                    break;
+                //! Having processed more than 65K hashes means updating would be a good idea...
+                if( pblock->nNonce >= 0xffff0000 )
+                    break;
+                //! Checks for transaction changes happen at least 5 times over the coarse of one nTargetSpacing interval
+                if( mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 36 )
+                    break;
+                //! If the previous block has changed, we must as well...
+                if (pindexPrev != chainActive.Tip())
+                    break;
+
+                //! Update nTime and difficulty required (if needed) every so often
+                //! Changing pblock->nTime effects the work required for Anoncoin if the blockheader time is used for PID calculations,
+                //! otherwise it does not.  No older generation of the NextWorkRequired will be effected by time change.
+                UpdateTime(pblock, pindexPrev);
+                pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, ALGO_SCRYPT);  //algo SCRYPT
+                hashTarget.SetCompact(pblock->nBits);
+            } // Looping forever while true and no nonce overflow, transactions updated or new blocks arrived
+        } // Looping forever while true in this thread
+    } // try, errors caught and logged before terminating
+ //   catch (const boost::thread_interrupted&)
+ //   {
+ //       LogPrintf("%s %2d: terminated.\n", __func__, nMyID );
+ //       throw;
+ //   }
+ //   catch (const std::runtime_error &e)
+ //   {
+ //       LogPrintf("%s %2d: runtime error: %s\n", __func__, nMyID, e.what());
+ //       return;
+ //   } 
+
 void static GenericMiner(CWallet *pwallet, int algo)
 {
     // Each thread has its own key and counter
@@ -966,14 +1162,14 @@ void static GenericMiner(CWallet *pwallet, int algo)
         unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
         CBlockIndex* pindexPrev = chainActive.Tip();
 
-        auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, algo));
+        auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, algo));  //LYRA
         if (!pblocktemplate.get())
             return;
         CBlock *pblock = &pblocktemplate->block;
         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
         LogPrintf("Running %s miner with %u transactions in block (%u bytes)\n", 
-               GetAlgoName(algo).c_str(),
+               GetAlgoName(algo).c_str(),                                                 //LYRA
                pblock->vtx.size(),
                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
@@ -1148,16 +1344,19 @@ void static ThreadBitcoinMiner(CWallet *pwallet)
     {
         switch (miningAlgo)
         {
-            case ALGO_SHA256D:
+            //case ALGO_SHA256D:
              //   BitcoinMiner(pwallet);
-                AnoncoinMiner(pwallet);
-                break;
+              //  AnoncoinMiner(pwallet);
+              //  break;
             case ALGO_SCRYPT:
                 AnoncoinMiner(pwallet);
                 break;
-            case ALGO_GROESTL:
-                GenericMiner(pwallet, ALGO_GROESTL);
-                break;            
+            case ALGO_LYRA2RE2:
+                GenericMiner(pwallet, ALGO_LYRA2RE2);
+                break;
+            case ALGO_YESCRYPT:
+                YeScryptMiner(pwallet);
+                break;
         }
     }
     catch (boost::thread_interrupted)

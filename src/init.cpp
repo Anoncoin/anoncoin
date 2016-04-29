@@ -298,7 +298,7 @@ std::string HelpMessage(HelpMessageMode hmm)
 
     strUsage += "\n" + _("Connection options:") + "\n";
     strUsage += "  -addnode=<ip>          " + _("Add a node to connect to and attempt to keep the connection open") + "\n";
-    strUsage += "  -algo=<algo>           " + _("Mining algorithm: sha256d, scrypt, groestl") + "\n";
+    strUsage += "  -algo=<algo>           " + _("Mining algorithm: scrypt, lyra2RE2, Yescrypt") + "\n";
     strUsage += "  -banscore=<n>          " + strprintf(_("Threshold for disconnecting misbehaving peers (default: %u)"), 100) + "\n";
     strUsage += "  -bantime=<n>           " + strprintf(_("Number of seconds to keep misbehaving peers from reconnecting (default: %u)"), 86400) + "\n";
     strUsage += "  -bind=<addr>           " + _("Bind to given address and always listen on it. Use [host]:port notation for IPv6") + "\n";
@@ -663,18 +663,14 @@ bool AppInit2(boost::thread_group& threadGroup)
      // Algo
      std::string strAlgo = GetArg("-algo", "scrypt");
      transform(strAlgo.begin(),strAlgo.end(),strAlgo.begin(),::tolower);
-     if (strAlgo == "sha" || strAlgo == "sha256" || strAlgo == "sha256d")
-         miningAlgo = ALGO_SHA256D;
-     else if (strAlgo == "scrypt")
+     if (strAlgo == "scrypt")
          miningAlgo = ALGO_SCRYPT;
-     else if (strAlgo == "groestl" || strAlgo == "groestlsha2")
-         miningAlgo = ALGO_GROESTL;
-    //else if (strAlgo == "x11")
-      //  miningAlgo = ALGO_X11;
-    //else if (strAlgo == "blake")
-      //  miningAlgo = ALGO_BLAKE;
+     else if (strAlgo == "lyra2RE2")
+         miningAlgo = ALGO_LYRA2RE2;
+     else if (strAlgo == "yescrypt")
+         miningAlgo = ALGO_YESCRYPT;
      else
-       miningAlgo = ALGO_SCRYPT;
+         miningAlgo = ALGO_SCRYPT;
 
     // Make sure enough file descriptors are available
     int nBind = std::max((int)mapArgs.count("-bind") + (int)mapArgs.count("-whitebind"), 1);

@@ -10,14 +10,16 @@
 #include "transaction.h"
 #include "serialize.h"
 #include "uint256.h"
-#include "hashgroestl.h"
+#include "yescrypt.h"
+#include "lyra2RE.h"
 
 #include <boost/unordered_map.hpp>
 
 enum { 
     ALGO_SCRYPT = 0, 
     ALGO_SHA256D = 1, 
-    ALGO_GROESTL = 2,
+    ALGO_LYRA2RE2 = 2,
+    ALGO_YESCRYPT = 3,
     NUM_ALGOS };
 
 enum
@@ -28,7 +30,8 @@ enum
     // algo
     BLOCK_VERSION_ALGO           = (7 << 9),
     BLOCK_VERSION_SHA256D         = (1 << 9),
-    BLOCK_VERSION_GROESTL        = (2 << 9),
+    BLOCK_VERSION_LYRA2RE2        = (2 << 9),
+    BLOCK_VERSION_YESCRYPT        = (3 << 9),
 };
 
 inline int GetAlgo(int nVersion)
@@ -39,10 +42,12 @@ inline int GetAlgo(int nVersion)
             return ALGO_SCRYPT;
         case BLOCK_VERSION_SHA256D:
             return ALGO_SHA256D;
-        case BLOCK_VERSION_GROESTL:
-            return ALGO_GROESTL;
+        case BLOCK_VERSION_LYRA2RE2:
+            return ALGO_LYRA2RE2;
+        case BLOCK_VERSION_YESCRYPT:
+            return ALGO_YESCRYPT;
     }
-    return ALGO_SHA256D;
+    return ALGO_SCRYPT;
 }
 
 inline std::string GetAlgoName(int Algo)
@@ -53,10 +58,12 @@ inline std::string GetAlgoName(int Algo)
             return std::string("scrypt");
         case ALGO_SHA256D:
             return std::string("sha256d");
-        case ALGO_GROESTL:
-            return std::string("groestl");
+        case ALGO_LYRA2RE2:
+            return std::string("Lyra2RE2");
+        case ALGO_YESCRYPT:
+            return std::string("Yescrypt");
     }
-    return std::string("unknown");       
+    return std::string("Unknown");       
 }
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
@@ -166,9 +173,19 @@ int GetAlgo() const { return ::GetAlgo(nVersion); }
                 return GetHash();
             case ALGO_SHA256D:
                 return GetHash();
-            case ALGO_GROESTL:
-                return HashGroestl(BEGIN(nVersion), END(nNonce));
-        }
+            case ALGO_LYRA2RE2:
+                {
+                uint256 thash;
+				lyra2re2_hash(BEGIN(nVersion), BEGIN(thash));
+				return thash;
+                }
+            case ALGO_YESCRYPT:
+				{
+					uint256 thash;
+					yescrypt_hash(BEGIN(nVersion), BEGIN(thash));
+					return thash;
+				}        
+          }
         return GetHash();
     }
 
@@ -176,6 +193,8 @@ int GetAlgo() const { return ::GetAlgo(nVersion); }
     {
         return (int64_t)nTime;
     }
+
+    bool CheckProofOfWork(int nHeight) const;
 };
 
 
