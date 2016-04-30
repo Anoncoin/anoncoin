@@ -126,7 +126,6 @@ private:
     uint32_t nRateChangeWeight;
 
     int64_t nLastCalculationTime;   //! Keeps the latest block time, possibly for an as yet unmined block at tip height + 1
-    int64_t nLastBlockSpace;
     int64_t nIntegratorChargeTime;
     int64_t nPidOutputTime;         //! The PID output time after being limit checked (1sec), can now only be positive and used to adjust difficulty
 

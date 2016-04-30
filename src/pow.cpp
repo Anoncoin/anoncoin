@@ -28,8 +28,8 @@ using namespace std;
 #define NMAXDIFFDECREASE "170"
 #define DMININTEGRATOR 170
 #define DMAXINTEGRATOR 190
-#define WEIGHTEDAVGTIPBLOCKS_UP 7
-#define WEIGHTEDAVGTIPBLOCKS_DOWN 12
+#define WEIGHTEDAVGTIPBLOCKS_UP 4
+#define WEIGHTEDAVGTIPBLOCKS_DOWN 6
 
 
 // #define LOG_DEBUG_OUTPUT
@@ -800,43 +800,45 @@ bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, c
     const int64_t nLastBlockIndexTime = pIndex->GetBlockTime();
     pIndex = pIndex->pprev; 
     const int64_t nPreviousBlockIndexTime = pIndex->GetBlockTime();
+    pIndex = pIndex->pprev;
+    const int64_t nBeforePreviousBlockIndexTime = pIndex->GetBlockTime();
     const int64_t nLastBlockSpace = nLastBlockIndexTime - nPreviousBlockIndexTime;
+    const int64_t nLast2BlockSpace = nLastBlockIndexTime - nBeforePreviousBlockIndexTime;
     const uint32_t nIntervalForceDiffDecrease = 3 * nTargetSpacing;
-    bool fLimited = true;                                   //! Assume limit need to be applied to the result.
-
-    if( uintCalculated < uintPrevDiffForLimitsLast ) {       // CSlave: If the new diff < previous diff of last block, assume an increase of diff.
-        if( uintCalculated < uintDiffAtMaxIncreaseTip ) {    // Check the DiffAtMaxIncrease that is calculated on the partial tip to cap the increase of Diff. 
-            uintResult = uintDiffAtMaxIncreaseTip;           // Set the result equal to the maximum difficulty increase limit. A smaller number is more difficult.
-            if( nLastBlockSpace >= nIntervalForceDiffDecrease ) // Check if the previous block space length is greater than nIntervalForceDiffDecrease.        
-                uintResult = uintDiffAtMaxDecreaseLast;             // If so, decrease the difficulty to the max decrease value calculated from the last block.
-        } else {                                                    // If the Diff calculated did not hit the upper moving average from the partial tip UP.
-           uintResult = uintCalculated;                             // Give the Diff value the calculated value from the TipFilter
+    const uint32_t nInterval2ForceDiffDecrease = 5 * nTargetSpacing;
+    bool fLimited = true;                                       //! Assume limit need to be applied to the result.
+    
+    if( uintCalculated < uintPrevDiffForLimitsLast ) {          // CSlave: If the new diff < previous diff of last block, assume an increase of diff.
+        if( uintCalculated < uintDiffAtMaxIncreaseTip ) {       // Check the DiffAtMaxIncrease that is calculated on the partial tip to cap the increase of Diff. 
+            uintResult = uintDiffAtMaxIncreaseTip;              // Set the result equal to the maximum difficulty increase limit. A smaller number is more difficult.
+            if( nLastBlockSpace >= nIntervalForceDiffDecrease)  // Check if the previous block space length is greater than nIntervalForceDiffDecrease.      
+                uintResult = uintDiffAtMaxDecreaseLast;         // If so, decrease the difficulty to the max decrease value calculated from the last block.
+        } else {                                                // If the Diff calculated did not hit the upper moving average from the partial tip UP...
+           uintResult = uintCalculated;                         // Give the Diff value the calculated value from the TipFilter for not-caped block.
            fLimited = false; 
            if( nLastBlockSpace >= nIntervalForceDiffDecrease) { // Check if the previous block space length is greater than nIntervalForceDiffDecrease.
                fLimited = true; 
-               uintResult = uintDiffAtMaxDecreaseTip;               // Decrease the Diff to the value calculated on the moving average from the partial tip DOWN.
-               if( uintResult > uintDiffAtMaxDecreaseLast)          // Is the Diff we set easier than the Diff decrease we get by calculating on the last block?
-                   uintResult = uintDiffAtMaxDecreaseLast;          // Then set the value to the one calculated on the last block, which is at a higher difficulty.
+               uintResult = uintDiffAtMaxDecreaseTip;           // Decrease the Diff to the value calculated on the moving average from the partial tip DOWN.
+               if( uintResult > uintDiffAtMaxDecreaseLast)      // Is the Diff we set easier than the Diff decrease we get by calculating on the last block?
+                   uintResult = uintDiffAtMaxDecreaseLast;      // Then set the value to the one calculated on the last block, which is at a higher difficulty.
            }
         }
   
-    } else {                                                 //CSlave: If the new diff > previous diff of last block, assume a decrease of diff.
-        if( uintCalculated > uintDiffAtMaxDecreaseLast && nLastBlockSpace < nIntervalForceDiffDecrease ) {  // Check the previous block space length and cap the decrease of Diff.
-            uintResult = uintDiffAtMaxDecreaseLast;          // Set the result equal to the maximum difficulty decrease limit for subsequent block.
+    } else {                                                    // CSlave: If the new diff > previous diff of last block, assume a decrease of diff.
+        if( uintCalculated > uintDiffAtMaxDecreaseLast && nLastBlockSpace < nIntervalForceDiffDecrease && nLast2BlockSpace < nInterval2ForceDiffDecrease) { // Check the 2 previous block space length and cap the decrease of Diff.
+            uintResult = uintDiffAtMaxDecreaseLast;             // Set the result equal to the maximum difficulty decrease limit for subsequent block.
             if( uintResult > uintDiffAtMaxDecreaseTip && nLastBlockSpace < nTargetSpacing ) // Did the difficulty decrease went lower than the value calculated from the partial tip? Was the previous block quick?
-                uintResult = uintDiffAtMaxDecreaseTip;                                          // Yes, cap it at the value calculated from the partial tip average. If the previous block was slow then keep the lower diff! 
-            //! There was asked for checking the block time: when the block difficulty is below the avg, we keep the avg limit if the previous block was quick, but if it was slow we let the difficulty drop below the avg.
+                uintResult = uintDiffAtMaxDecreaseTip;          // Yes, cap it at the value calculated from the partial tip average. If the previous block was slow then keep the lower diff! 
+            //! There was asked for checking the block space: when the block difficulty is below the tip avg DOWN, we keep the avg limit if the previous block was quick, but if it was slow we let the difficulty drop below the avg.
             //! This ensure a more rapid decrease of Diff in the case of huge hash drop, but as soon as the blocks become quick again the difficulty jump back up to the average calculated from the partial tip DOWN.
-        } else {                                             // Did not hit the difficulty limit calculated from the last block, but have to check for the one calculated from the tip, in case the tip is near. 
+        } else {                                                // Did not hit the difficulty limit calculated from the last block, but have to check for the one calculated from the tip, in case the tip is near. 
             if( uintCalculated > uintDiffAtMaxDecreaseTip && nLastBlockSpace < nTargetSpacing)     // Is the decreased difficulty lower than the value calculated from the partial tip and was the previous block quick?
-                uintResult = uintDiffAtMaxDecreaseTip;       // If below the avg of the partial tip DOWN, and the previous block was quick, let it go up to the partial tip difficulty avg.
-            else {                               //Two possibilities here: the difficulty is capped neither by the MaxDecreaseLast or MaxDecreaseTip or else the previous block space length is >= nIntervalForceDiffDecrease.
-                if( nLastBlockSpace >= nIntervalForceDiffDecrease) { // Is the previous block space length greater than nIntervalForceDiffDecrease?
-                    uintResult = uintDiffAtMaxDecreaseTip;       // Decrease the Diff to the value calculated on the moving average from the partial tip DOWN. This can be a huge drop of difficulty!
-                    if( uintResult < uintDiffAtMaxDecreaseLast)  // Is the Diff we set higher than the Diff decrease we get by calculating on the last block?
-                    uintResult = uintDiffAtMaxDecreaseLast;      // Then set the value to the one calculated on the last block, which is at a lower difficulty.
-                } else {
-                uintResult = uintCalculated;                     // Give the Diff value the calculated value from the TipFilter for this not-caped block.
+                uintResult = uintDiffAtMaxDecreaseTip;          // If below the avg of the partial tip DOWN, and the previous block was quick, let it go up to the partial tip difficulty avg.
+            else {       // Several possibilities: the difficulty is capped neither by the MaxDecreaseLast or MaxDecreaseTip or else the previous block space lengths are >= nIntervalForceDiffDecrease or nInterval2ForceDiffDecrease.
+                if( nLastBlockSpace >= nIntervalForceDiffDecrease || nLast2BlockSpace >= nInterval2ForceDiffDecrease) // In case of a very slow block, it will activate twice due to nInterval2ForceDiffDecrease. 
+                    uintResult = uintDiffAtMaxDecreaseLast;              
+                else {
+                uintResult = uintCalculated;                    // Give the Diff value the calculated value from the TipFilter for not-caped block.
                 fLimited = false; }
             }
         }
