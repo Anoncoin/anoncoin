@@ -1042,9 +1042,9 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // We still need the keys and b32.i2p address information setup for anoncoin-qt, if any details exist in the config file
     // use them, if not create the Args and set them to null strings.
-    if( SoftSetBoolArg("-i2p.mydestination.static", false) )    // Returns true if the param was undefined and setting its value was possible
-        LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.static=0 -> setting defined.\n");
-    fI2pStaticDest = GetBoolArg("-i2p.mydestination.static", false);   // Now we can get a local copy of whatever the real value is set to
+    if( SoftSetBoolArg("-i2p.mydestination.static", true) )    // Returns true if the param was undefined and setting its value was possible
+        LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.static=1 -> setting defined.\n");
+    fI2pStaticDest = GetBoolArg("-i2p.mydestination.static", true);   // Now we can get a local copy of whatever the real value is set to
 
     if( SoftSetArg("-i2p.mydestination.privatekey", "") ){           // Returns true if the param was undefined and setting its value was possible
         LogPrintf("I2P mydestination privatekey in anoncoin.conf is undefined");

@@ -140,7 +140,7 @@ extra=
 quantity=3
 length=3
 lengthvariance=0
-backupquantity=1
+backupquantity=0
 allowzerohop=0
 iprestriction=2
 
@@ -149,7 +149,7 @@ iprestriction=2
 quantity=3
 length=3
 lengthvariance=0
-backupquantity=1
+backupquantity=0
 allowzerohop=0
 iprestriction=2
 priority=0
