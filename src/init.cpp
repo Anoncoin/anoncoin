@@ -310,7 +310,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -maxreceivebuffer=<n>  " + strprintf(_("Maximum per-connection receive buffer, <n>*1000 bytes (default: %u)"), 5000) + "\n";
     strUsage += "  -maxsendbuffer=<n>     " + strprintf(_("Maximum per-connection send buffer, <n>*1000 bytes (default: %u)"), 1000) + "\n";
     strUsage += "  -onion=<ip:port>       " + strprintf(_("Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: %s)"), "-proxy") + "\n";
-    strUsage += "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (ipv4, ipv6, onion or i2p)") + "\n";
+    strUsage += "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (ipv4, ipv6, onion, tor or i2p). Cumulative is allowed eg: onlynet=i2p onlynet=tor turn into darknet only mode.") + "\n";
     strUsage += "  -port=<port>           " + strprintf(_("Listen for connections on <port> (default: %u or testnet: %u)"), 9377, 19377) + "\n";
     strUsage += "  -proxy=<ip:port>       " + _("Connect through SOCKS5 proxy") + "\n";
     strUsage += "  -seednode=<ip>         " + _("Connect to a node to retrieve peer addresses, and disconnect") + "\n";
@@ -417,6 +417,17 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -rpcsslcertificatechainfile=<file.cert>  " + strprintf(_("Server certificate file (default: %s)"), "server.cert") + "\n";
     strUsage += "  -rpcsslprivatekeyfile=<file.pem>         " + strprintf(_("Server private key (default: %s)"), "server.pem") + "\n";
     strUsage += "  -rpcsslciphers=<ciphers>                 " + strprintf(_("Acceptable ciphers (default: %s)"), "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH") + "\n";
+
+    strUsage += "\n"+ _("I2P Options:") + "\n";
+    strUsage += "  -generatei2pdestination                         " + _("Generate an I2P destination, print it, save it to i2pkey.dat and exit.") + "\n";
+    strUsage += "  -i2p.mydestination.privatekey=<private i2p key> " + _("Your full destination private keys. If it is not specified, the client will try to read i2pkey.dat for a permanent destination. If both fail the I2P wrapper will generate a random destination for you.") + "\n";
+    strUsage += "  -i2p.options.enabled=1                          " + _("Enable I2P. This is also needed to call -generatei2pdestination.") + "\n";
+    strUsage += "  -onlynet=i2p                                    " + _("Enable I2P only mode.") + "\n";
+    strUsage += "  -i2p.mydestination.static=1                     " + _("To use an I2P permanent destination. If static=0 a dynamic destination will be generated even if a privatekey is found. Default=1.") + "\n";
+    strUsage += "  -i2p.mydestination.shareaddr=1                  " + _("To share your I2P destination. Increase your network connectivity. Default=1.") + "\n";
+    strUsage += "  -i2p.options.samhost=<ip or host name>          " + _("Address of the SAM bridge host. If it is not specified, value will be \"127.0.0.1\".") + "\n";
+    strUsage += "  -i2p.options.samport=<port>                     " + _("Port number of the SAM bridge host. If it is not specified, value will be \"7656\".") + "\n";
+    strUsage += "  -i2p.options.sessionname=<session name>         " + _("Name of an I2P session. If it is not specified, value will be \"Anoncoin-client\"") + "\n";
 
     return strUsage;
 }
