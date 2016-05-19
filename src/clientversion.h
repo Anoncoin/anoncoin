@@ -23,10 +23,10 @@
 #define CLIENT_VERSION_MAJOR       0
 #define CLIENT_VERSION_MINOR       9
 #define CLIENT_VERSION_REVISION    6
-#define CLIENT_VERSION_BUILD       10
+#define CLIENT_VERSION_BUILD       11
 
 // Set to true for release, false for prerelease or test build
-#define CLIENT_VERSION_IS_RELEASE  false
+#define CLIENT_VERSION_IS_RELEASE  true
 
 /**
  * Copyright year (2013-this)

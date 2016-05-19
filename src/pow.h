@@ -11,7 +11,7 @@
 #include "uint256.h"
 
 #include <stdint.h>
-//! CSlave: The hardfork block can be defined with "configure --with-hardfork=block"
+#define HARDFORK_BLOCK 555555 //! CSlave: if not hardcoded, the hardfork block can be defined with "configure --with-hardfork=block"
 
 class CBlockHeader;
 class CBlockIndex;
