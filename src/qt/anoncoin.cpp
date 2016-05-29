@@ -81,7 +81,7 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 
 /**
  * Begin initialization process for I2P manager
- * 
+ *
  */
 bool LoadI2PDataIntoMemory(void);
 
@@ -646,7 +646,7 @@ int main(int argc, char *argv[])
     // Re-initialize translations after changing application name (language in network-specific settings can be different)
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
-    
+
     /// 7.5 Determine and setup I2P settings
     // - Either from file
     // - Or initialiezd to hard-coded default values
@@ -657,7 +657,7 @@ int main(int argc, char *argv[])
                               QObject::tr("Error: Cannot set up I2P Data File file: %1. ").arg(e.what()));
         return false;
     }
-    
+
 #ifdef ENABLE_WALLET
     /// 8. URI IPC sending
     // - Do this early as we don't want to bother initializing if we are just calling IPC
@@ -717,6 +717,19 @@ int main(int argc, char *argv[])
 }
 #endif // ANONCOIN_QT_TEST
 
+//******************************************************************************
+//
+//    Name: LoadI2PDataIntoMemory
+//
+//    Parameters:   N/A
+//
+//    Description:
+//      Update external I2P settings manager from file if it exists,
+//      otherwise initialize the file from default settings
+//
+//    Return:       N/A
+//
+//******************************************************************************
     #define SEPARATED_I2P_SETTINGS_FILE
 #if defined(SEPARATED_I2P_SETTINGS_FILE)
 bool LoadI2PDataIntoMemory(void)
@@ -730,20 +743,28 @@ bool LoadI2PDataIntoMemory(void)
     // x   Initialize with default values
     // x   Flush to disk
     pI2PManager = new I2PManager();
+    LogPrintf("\n\n\n%s I2P Settings Initialization...", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
+
     if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
     {
         if (pI2PManager->ReadI2PSettingsFile())
         {
-            pI2PManager->LogDataFile();
+            // pI2PManager->LogDataFile();
+            LogPrintf( "\n[I2P Settings Manager] Loaded I2P settings from data file.");
+            pI2PManager->UpdateMapArguments();
         }
     }
     else
     {
         pI2PManager->getFileI2PPtr()->initDefaultValues();
-        pI2PManager->WriteToI2PSettingsFile();
+
+        if (pI2PManager->WriteToI2PSettingsFile())
+        {
+            LogPrintf( "\n[I2P Settings Manager] No I2P settings file present. Using default values.");
+            pI2PManager->UpdateMapArguments();
+        }
     }
 
-    // Update mapArgs with data file values
-    pI2PManager->UpdateMapArguments();
+    LogPrintf("\n%s I2P Settings Initialization Complete!\n\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
 }
 #endif

@@ -326,7 +326,7 @@ void I2PManager::UpdateMapArguments(void)
 
     if ( pFile_I2P_Object->getPrivateKey() != "")
     {
-          UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY, pFile_I2P_Object->getPrivateKey() );
+          SoftSetArg(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY,pFile_I2P_Object->getPrivateKey() );
     }
 }
 
@@ -345,41 +345,61 @@ void I2PManager::UpdateMapArguments(void)
 void I2PManager::LogDataFile(void)
 {
 #define SPACE 20
-    LogPrintf("========== I 2 P   D A T A   F I L E ==========");
+    LogPrintf("\n========== I 2 P   D A T A   F I L E ==========\n");
 
-    LogPrintf("Enabled: %*s",           SPACE, pFile_I2P_Object->getEnableStatus());
-    LogPrintf("Static: %*s",            SPACE, pFile_I2P_Object->getStatic());
-    LogPrintf("Session Name: %*s",      SPACE, pFile_I2P_Object->getSessionName());
-    LogPrintf("Sam Host: %*s",          SPACE, pFile_I2P_Object->getSamHost());
-    LogPrintf("Sam Port: %*s",          SPACE, pFile_I2P_Object->getSamPort());
-    LogPrintf("PrivateKey: %*s",        SPACE, pFile_I2P_Object->getPrivateKey());
+    LogPrintf("Please note that the following settings will be applied only if\n");
+    LogPrintf("they have not been previously defined with anoncoin.conf.\n");
 
-    LogPrintf("[Inbound Settings]");
-    LogPrintf("Quantity: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.inbound.quantity);
-    LogPrintf("Backup Quanity: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.inbound.backupquantity);
-    LogPrintf("Length: %*s",            SPACE, pFile_I2P_Object->I2PData.fileData.inbound.length);
-    LogPrintf("Length Variance: %*s",   SPACE, pFile_I2P_Object->I2PData.fileData.inbound.lengthvariance);
-    LogPrintf("Allow Zero Hop: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.inbound.allowzerohop);
-    LogPrintf("IP Restriction: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.inbound.iprestriction);
+    LogPrintf("\nEnabled: %*s",           SPACE, pFile_I2P_Object->getEnableStatus());
+    LogPrintf("\nStatic: %*s",            SPACE, pFile_I2P_Object->getStatic());
+    LogPrintf("\nSession Name: %*s",      SPACE, pFile_I2P_Object->getSessionName());
+    LogPrintf("\nSam Host: %*s",          SPACE, pFile_I2P_Object->getSamHost());
+    LogPrintf("\nSam Port: %*s",          SPACE, pFile_I2P_Object->getSamPort());
+    LogPrintf("\nPrivateKey: %*s",        SPACE, pFile_I2P_Object->getPrivateKey());
+
+    LogPrintf("\n[Inbound Settings]");
+    LogPrintf("\nQuantity: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.inbound.quantity);
+    LogPrintf("\nBackup Quanity: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.inbound.backupquantity);
+    LogPrintf("\nLength: %*s",            SPACE, pFile_I2P_Object->I2PData.fileData.inbound.length);
+    LogPrintf("\nLength Variance: %*s",   SPACE, pFile_I2P_Object->I2PData.fileData.inbound.lengthvariance);
+    LogPrintf("\nAllow Zero Hop: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.inbound.allowzerohop);
+    LogPrintf("\nIP Restriction: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.inbound.iprestriction);
 
 
-    LogPrintf("[Outbound Settings]");
-    LogPrintf("Quantity: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.outbound.quantity);
-    LogPrintf("Backup Quanity: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.backupquantity);
-    LogPrintf("Length: %*s",            SPACE, pFile_I2P_Object->I2PData.fileData.outbound.length);
-    LogPrintf("Length Variance: %*s",   SPACE, pFile_I2P_Object->I2PData.fileData.outbound.lengthvariance);
-    LogPrintf("Allow Zero Hop: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.allowzerohop);
-    LogPrintf("IP Restriction: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.iprestriction);
-    LogPrintf("Priority: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.outbound.priority);
+    LogPrintf("\n[Outbound Settings]");
+    LogPrintf("\nQuantity: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.outbound.quantity);
+    LogPrintf("\nBackup Quanity: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.backupquantity);
+    LogPrintf("\nLength: %*s",            SPACE, pFile_I2P_Object->I2PData.fileData.outbound.length);
+    LogPrintf("\nLength Variance: %*s",   SPACE, pFile_I2P_Object->I2PData.fileData.outbound.lengthvariance);
+    LogPrintf("\nAllow Zero Hop: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.allowzerohop);
+    LogPrintf("\nIP Restriction: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.iprestriction);
+    LogPrintf("\nPriority: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.outbound.priority);
 
-    LogPrintf("========== I 2 P   D A T A   F I L E ==========");
+    LogPrintf("\n========== I 2 P   D A T A   F I L E ==========\n\n");
 #undef SPACE
 }
 
+//******************************************************************************
+//
+//    Name:         I2PManager::UpdateMapArgumentsIfNotAlreadySet
+//
+//    Parameters:   std::string mapArgStr, std::string value
+//
+//    Description:  If map element is not already set via anoncoin.conf, override
+//                  it via the I2P settings file
+//
+//    Return:       None
+//
+//******************************************************************************
 static void UpdateMapArgumentsIfNotAlreadySet(std::string mapArgStr, std::string value)
 {
+    LogPrintf("\n[I2P Settings Manager] %s", mapArgStr);
     if (!SoftSetArg(mapArgStr,value))
     {
-        LogPrintf( "I2P Settings Manager : %s has already been set. Ignoring value stored within settings file [%s].\n", mapArgStr, value );
+        LogPrintf( " (=%s)\n\tIgnoring value stored within settings file [%s].", GetArg(mapArgStr, ""), value );
+    }
+    else
+    {
+        LogPrintf( " (=%s)\n\tUsing settings file value.", value );
     }
 }
