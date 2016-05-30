@@ -103,6 +103,9 @@ Your I2P Public Key:  *This makes the I2P router to router connections possible.
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="plainText">
+      <string>something here</string>
+     </property>
     </widget>
    </item>
    <item>
@@ -121,6 +124,17 @@ Your I2P Public Key:  *This makes the I2P router to router connections possible.
       <bool>true</bool>
      </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QPushButton" name="i2pOptions">
+       <property name="text">
+        <string>I2P Options...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

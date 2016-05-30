@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>I2POptionsWidget</class>
- <widget class="QWidget" name="I2POptionsWidget">
+ <widget class="QDialog" name="I2POptionsWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>549</width>
-    <height>371</height>
+    <height>390</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>I2P Settings Manager</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
@@ -161,13 +167,25 @@
         <string>Current
 I2P-address...</string>
        </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonGenerateI2PAddress">
+      <widget class="QPushButton" name="pushButtonSaveI2PSettings">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
-        <string>Generate
-I2P-address...</string>
+        <string>Save I2P 
+Settings</string>
        </property>
       </widget>
      </item>
@@ -214,7 +232,7 @@ I2P-address...</string>
                <number>16</number>
               </property>
               <property name="value">
-               <number>2</number>
+               <number>3</number>
               </property>
              </widget>
             </item>
@@ -251,7 +269,7 @@ I2P-address...</string>
                <number>7</number>
               </property>
               <property name="value">
-               <number>2</number>
+               <number>3</number>
               </property>
              </widget>
             </item>
@@ -343,7 +361,7 @@ I2P-address...</string>
             <item>
              <widget class="QCheckBox" name="checkBoxInboundAllowZeroHop">
               <property name="checked">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -450,7 +468,7 @@ I2P-address...</string>
                <number>1</number>
               </property>
               <property name="value">
-               <number>2</number>
+               <number>3</number>
               </property>
              </widget>
             </item>
@@ -484,7 +502,7 @@ I2P-address...</string>
                <number>7</number>
               </property>
               <property name="value">
-               <number>2</number>
+               <number>3</number>
               </property>
              </widget>
             </item>
@@ -576,7 +594,7 @@ I2P-address...</string>
             <item>
              <widget class="QCheckBox" name="checkBoxAllowZeroHop">
               <property name="checked">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -678,7 +696,7 @@ I2P-address...</string>
   <tabstop>spinBoxSAMPort</tabstop>
   <tabstop>lineEditTunnelName</tabstop>
   <tabstop>pushButtonCurrentI2PAddress</tabstop>
-  <tabstop>pushButtonGenerateI2PAddress</tabstop>
+  <tabstop>pushButtonSaveI2PSettings</tabstop>
   <tabstop>spinBoxInboundQuantity</tabstop>
   <tabstop>spinBoxInboundLength</tabstop>
   <tabstop>spinBoxInboundLengthVariance</tabstop>

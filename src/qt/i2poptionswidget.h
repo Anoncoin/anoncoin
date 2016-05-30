@@ -5,7 +5,7 @@
 #ifndef I2POPTIONSWIDGET_H
 #define I2POPTIONSWIDGET_H
 
-#include <QWidget>
+#include <QDialog>
 
 class MonitoredDataMapper;
 
@@ -15,27 +15,32 @@ class I2POptionsWidget;
 
 class ClientModel;
 
-class I2POptionsWidget : public QWidget
+class I2POptionsWidget : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit I2POptionsWidget(QWidget *parent = 0);
     ~I2POptionsWidget();
+    void UpdateParameters();
 
     void setMapper(MonitoredDataMapper& mapper);
-    void setModel(ClientModel* model);
+    void reject();
 
 private:
     Ui::I2POptionsWidget *ui;
-    ClientModel* clientModel;
 
-private slots:
-    void ShowCurrentI2PAddress();
-    void GenerateNewI2PAddress();
+private Q_SLOTS:
+//    void ShowCurrentI2PAddress();
+//    void GenerateNewI2PAddress();
+    void WriteToDataFile();
+    void settingsModified();
+    void onCloseDialog();
 
-signals:
-    void settingsChanged();
+
+Q_SIGNALS:
+//    void settingsChanged();
+    void dialogIsClosing();
 };
 
 #endif // I2POPTIONSWIDGET_H

@@ -427,6 +427,8 @@ void AnoncoinApplication::initializeResult(int retval)
     // destination address information into the ShowI2PAddresses class
     // now, and any parameter interaction will have finished.
     window->UpdateI2PAddressDetails();
+    
+    window->UpdateI2POptionsDetails();
 
     // Set exit result: 0 if successful, 1 if failure
     returnValue = retval ? 0 : 1;

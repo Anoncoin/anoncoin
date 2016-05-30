@@ -7,6 +7,9 @@
 #include "config/anoncoin-config.h"
 #endif
 
+#include <QObject>
+#include <QDialog>
+
 #include "i2poptionswidget.h"
 #include "ui_i2poptionswidget.h"
 
@@ -14,36 +17,43 @@
 #include "monitoreddatamapper.h"
 #include "i2pshowaddresses.h"
 #include "util.h"
-#include "clientmodel.h"
+#include "guiutil.h"
 
+#include "i2pmanager.h"
+
+bool changesAreDirty = false;
 
 I2POptionsWidget::I2POptionsWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::I2POptionsWidget),
-    clientModel(0)
+    QDialog(parent),
+    ui(new Ui::I2POptionsWidget)//,
+    //clientModel(0)
 {
     ui->setupUi(this);
 
     QObject::connect(ui->pushButtonCurrentI2PAddress,  SIGNAL(clicked()), this, SLOT(ShowCurrentI2PAddress()));
-    QObject::connect(ui->pushButtonGenerateI2PAddress, SIGNAL(clicked()), this, SLOT(GenerateNewI2PAddress()));
+    QObject::connect(ui->pushButtonSaveI2PSettings, SIGNAL(clicked()), this, SLOT(WriteToDataFile()));
 
-    QObject::connect(ui->checkBoxAllowZeroHop         , SIGNAL(stateChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->checkBoxInboundAllowZeroHop  , SIGNAL(stateChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->checkBoxUseI2POnly           , SIGNAL(stateChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->lineEditSAMHost              , SIGNAL(textChanged(QString)), this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->lineEditTunnelName           , SIGNAL(textChanged(QString)), this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxInboundBackupQuality  , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxInboundIPRestriction  , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxInboundLength         , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxInboundLengthVariance , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxInboundQuantity       , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxOutboundBackupQuantity, SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxOutboundIPRestriction , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxOutboundLength        , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxOutboundLengthVariance, SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxOutboundPriority      , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxOutboundQuantity      , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
-    QObject::connect(ui->spinBoxSAMPort               , SIGNAL(valueChanged(int))   , this, SIGNAL(settingsChanged()));
+    QObject::connect(ui->checkBoxAllowZeroHop         , SIGNAL(stateChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->checkBoxInboundAllowZeroHop  , SIGNAL(stateChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->checkBoxUseI2POnly           , SIGNAL(stateChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->lineEditSAMHost              , SIGNAL(textChanged(QString)), this, SLOT(settingsModified()));
+    QObject::connect(ui->lineEditTunnelName           , SIGNAL(textChanged(QString)), this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxInboundBackupQuality  , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxInboundIPRestriction  , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxInboundLength         , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxInboundLengthVariance , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxInboundQuantity       , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxOutboundBackupQuantity, SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxOutboundIPRestriction , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxOutboundLength        , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxOutboundLengthVariance, SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxOutboundPriority      , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxOutboundQuantity      , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+    QObject::connect(ui->spinBoxSAMPort               , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
+
+    QObject::connect(this, SIGNAL(accepted()), this, SLOT(onCloseDialog()));
+    QObject::connect(this, SIGNAL(rejected()), this, SLOT(onCloseDialog()));
+    QObject::connect(this, SIGNAL(dialogIsClosing()), this, SLOT(onCloseDialog()));
 }
 
 I2POptionsWidget::~I2POptionsWidget()
@@ -71,12 +81,55 @@ void I2POptionsWidget::setMapper(MonitoredDataMapper& mapper)
     mapper.addMapping(ui->spinBoxOutboundIPRestriction , OptionsModel::I2POutboundIPRestriction);
     mapper.addMapping(ui->spinBoxOutboundPriority      , OptionsModel::I2POutboundPriority);
 }
-
+/*
 void I2POptionsWidget::setModel(ClientModel* model)
 {
     clientModel = model;
 }
+*/
 
+void I2POptionsWidget::settingsModified()
+{
+    ui->pushButtonSaveI2PSettings->setEnabled(true);
+
+    changesAreDirty = true;
+}
+
+void I2POptionsWidget::UpdateParameters()
+{
+    //nothing yet...but soon will load from key files
+    //ui->checkBoxAllowZeroHop->setText(ui->checkBoxAllowZeroHop->text() + QString::fromStdString("DID YA SET THE ZEROHOP?"));
+}
+
+void I2POptionsWidget::onCloseDialog()
+{
+    ui->pushButtonSaveI2PSettings->setEnabled(false);
+    changesAreDirty = false;
+}
+
+//void I2POptionsWidget::reject(){
+void I2POptionsWidget::reject()
+{
+    if (changesAreDirty)
+    {
+        QMessageBox::StandardButton resBtn = QMessageBox::question( this, "I2P Settings",
+                                                                tr("Are you sure?\n"),
+                                                                QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                QMessageBox::Yes);
+
+        if (resBtn == QMessageBox::Yes)
+        {
+            //emit dialogIsClosing();
+            QDialog::accept();
+        }
+    }
+    else
+    {
+        //emit dialogIsClosing();
+        QDialog::accept();
+    }
+}
+/*
 void I2POptionsWidget::ShowCurrentI2PAddress()
 {
     if (clientModel)
@@ -86,23 +139,17 @@ void I2POptionsWidget::ShowCurrentI2PAddress()
         const QString b32 = clientModel->getB32Address(pub);
         const QString configFile = QString::fromStdString(GetConfigFile().string());
 
-        ShowI2PAddresses i2pCurrDialog("Your current I2P-address", pub, priv, b32, configFile, this);
-        i2pCurrDialog.exec();
+        //ShowI2PAddresses i2pCurrDialog("Your current I2P-address", pub, priv, b32, configFile, this);
+        //i2pCurrDialog.exec();
     }
 }
-
-void I2POptionsWidget::GenerateNewI2PAddress()
+*/
+void I2POptionsWidget::WriteToDataFile()
 {
-    if (clientModel)
+    if(true)
     {
-        QString pub, priv;
-        clientModel->generateI2PDestination(pub, priv);
-        const QString b32 = clientModel->getB32Address(pub);
-        const QString configFile = QString::fromStdString(GetConfigFile().string());
-
-        ShowI2PAddresses i2pCurrDialog("Generated I2P address", pub, priv, b32, configFile, this);
-        i2pCurrDialog.exec();
+        ui->pushButtonSaveI2PSettings->setEnabled(false);
+        QMessageBox::information(0, QObject::tr("I2P Settings Manager"),
+                              QObject::tr("Successfully wrote setings to I2P data file!") );
     }
 }
-
-
