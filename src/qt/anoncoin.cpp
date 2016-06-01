@@ -427,7 +427,7 @@ void AnoncoinApplication::initializeResult(int retval)
     // destination address information into the ShowI2PAddresses class
     // now, and any parameter interaction will have finished.
     window->UpdateI2PAddressDetails();
-    
+
     window->UpdateI2POptionsDetails();
 
     // Set exit result: 0 if successful, 1 if failure
@@ -747,13 +747,15 @@ bool LoadI2PDataIntoMemory(void)
     pI2PManager = new I2PManager();
     LogPrintf("\n\n\n%s I2P Settings Initialization...", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
 
+    bool privateKeyDefined;
+
     if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
     {
         if (pI2PManager->ReadI2PSettingsFile())
         {
             // pI2PManager->LogDataFile();
             LogPrintf( "\n[I2P Settings Manager] Loaded I2P settings from data file.");
-            pI2PManager->UpdateMapArguments();
+            privateKeyDefined = pI2PManager->UpdateMapArguments();
         }
     }
     else
@@ -763,8 +765,19 @@ bool LoadI2PDataIntoMemory(void)
         if (pI2PManager->WriteToI2PSettingsFile())
         {
             LogPrintf( "\n[I2P Settings Manager] No I2P settings file present. Using default values.");
-            pI2PManager->UpdateMapArguments();
+            privateKeyDefined = pI2PManager->UpdateMapArguments();
         }
+    }
+
+    if (!privateKeyDefined)
+    {
+
+        QMessageBox::critical( 0, QObject::tr("I2P Private Key Failure"),
+                                                    QObject::tr("Private key not found within anoncoin.conf or i2p.dat!\n\n" \
+                                                                "I2P has been disabled.\n\n" \
+                                                                "Please define a key within anoncoin.conf first."),
+                                                    QMessageBox::Ok,
+                                                    QMessageBox::Ok);
     }
 
     LogPrintf("\n%s I2P Settings Initialization Complete!\n\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());

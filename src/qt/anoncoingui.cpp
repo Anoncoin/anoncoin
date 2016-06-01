@@ -155,7 +155,7 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     rpcConsole = new RPCConsole(enableWallet ? this : 0);
 #ifdef ENABLE_I2PSAM
     i2pAddress = new ShowI2PAddresses( this );
-    i2pSettings = new I2POptionsWidget(this);
+    i2pSettings = new I2POptionsDialog(this);
 #endif
 
 #ifdef ENABLE_WALLET

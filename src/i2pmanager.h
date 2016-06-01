@@ -4,8 +4,17 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <string>
+#include <sstream>
 #include "stdint.h"
 #include "i2pdatafile.h"
+
+template <typename T>
+  std::string NumberToString ( T Number )
+  {
+     std::ostringstream ss;
+     ss << Number;
+     return ss.str();
+  }
 
 class I2PManager
 {
@@ -18,7 +27,7 @@ public:
     bool ReadI2PSettingsFile(void);
     I2PDataFile* getFileI2PPtr(void);
     void LogDataFile(void);
-    void UpdateMapArguments(void);
+    bool UpdateMapArguments(void);
 };
 
 extern I2PManager *pI2PManager;

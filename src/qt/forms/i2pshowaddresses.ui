@@ -49,19 +49,28 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>You have to set &quot;i2p.options.enable=1&quot; in your config file or on the commandline,
+      <string>You have to set &quot;i2p.options.enable=1&quot; in your config file, on the commandline, or from the options dialog
 in order to have Anoncoin access the I2P network.  This checkbox indicates that setting.</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QCheckBox" name="staticI2pBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>You also want to have set &quot;i2p.mydestination.static=1&quot; in your config file, this checkbox indicates
+      <string>You also want to have set &quot;i2p.mydestination.static=1&quot; in your config file or from the options dialog, this checkbox indicates
 that setting.  If this is newly generated it will be false, and the destination discarded once you shut down.</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -126,15 +135,7 @@ Your I2P Public Key:  *This makes the I2P router to router connections possible.
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QPushButton" name="i2pOptions">
-       <property name="text">
-        <string>I2P Options...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <layout class="QHBoxLayout" name="horizontalLayout_3"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

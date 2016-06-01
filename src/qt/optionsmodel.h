@@ -48,7 +48,8 @@ public:
         ThreadsScriptVerif,     // int
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
-        eI2PUseI2POnly,
+/*        eI2PUseI2POnly,
+        eI2PStaticPrivateKey,
         eI2PSAMHost,
         eI2PSAMPort,
         eI2PSessionName,
@@ -64,7 +65,7 @@ public:
         I2POutboundBackupQuantity,
         I2POutboundAllowZeroHop,
         I2POutboundIPRestriction,
-        I2POutboundPriority,
+        I2POutboundPriority,*/
         OptionIDRowCount,
     };
 

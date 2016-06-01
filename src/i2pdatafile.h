@@ -35,6 +35,8 @@
 #define I2P_DEFAULT_SAMPORT                  (SAM_DEFAULT_PORT)
 #define I2P_DEFAULT_SESSIONNAME              "Anoncoin-client"
 
+#define MAP_ARGS_I2P_MYDESTINATION_B32KEY           "-i2p.mydestination.base32key"
+#define MAP_ARGS_I2P_MYDESTINATION_PUBLICKEY        "-i2p.mydestination.publickey"
 #define MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY       "-i2p.mydestination.privatekey"
 #define MAP_ARGS_I2P_OPTIONS_ENABLED                "-i2p.options.enabled"
 #define MAP_ARGS_I2P_MYDESTINATION_STATIC           "-i2p.mydestination.static"

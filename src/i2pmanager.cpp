@@ -27,14 +27,6 @@
 #include <vector>
 #include <sstream>
 
-template <typename T>
-  string NumberToString ( T Number )
-  {
-     ostringstream ss;
-     ss << Number;
-     return ss.str();
-  }
-
 #include <openssl/rand.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -298,10 +290,11 @@ bool I2PManager::ReadI2PSettingsFile(void)
 //    Description:  Update the map of arguments with what is stored within
 //                  our settings file
 //
-//    Return:       None
+//    Return:       bool - False if a private key has not been defined
+//                         True otherwise
 //
 //******************************************************************************
-void I2PManager::UpdateMapArguments(void)
+bool I2PManager::UpdateMapArguments(void)
 {
     UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_ENABLED, pFile_I2P_Object->getEnableStatus() ? "1" : "0" );
     UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_MYDESTINATION_STATIC, pFile_I2P_Object->getStatic() ? "1" : "0" );
@@ -324,10 +317,24 @@ void I2PManager::UpdateMapArguments(void)
     UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION, NumberToString(pFile_I2P_Object->getOutboundIPRestriction()) );
     UpdateMapArgumentsIfNotAlreadySet( MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY, NumberToString(pFile_I2P_Object->getOutboundPriority()) );
 
-    if ( pFile_I2P_Object->getPrivateKey() != "")
+    std::string privateKey = GetArg(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY, "");
+
+    if (privateKey != "")
     {
-          SoftSetArg(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY,pFile_I2P_Object->getPrivateKey() );
+        // Private key has been previously defined within config file
+        pFile_I2P_Object->setPrivateKey(privateKey);
     }
+    else if ( (privateKey == "") && (pFile_I2P_Object->getPrivateKey() != "") )
+    {
+        SoftSetArg(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY,pFile_I2P_Object->getPrivateKey() );
+    }
+    else
+    {
+        // Neither have been set, disable I2P and inform the user
+        HardSetArg(MAP_ARGS_I2P_OPTIONS_ENABLED, "0");
+        return false;
+    }
+    return true;
 }
 
 //******************************************************************************

@@ -26,6 +26,7 @@ private:
 private Q_SLOTS:
     void setEnabled( void );
     void setStatic( void );
+    void show( void );
 };
 
 #endif // SHOWI2PADDRESSES_H

@@ -40,6 +40,12 @@ ShowI2PAddresses::~ShowI2PAddresses()
     delete ui;
 }
 
+void ShowI2PAddresses::show()
+{
+    UpdateParameters();
+    QDialog::show();
+}
+
 void ShowI2PAddresses::UpdateParameters( void )
 {
     ui->configText->setText( ui->configText->text() + QString::fromStdString( "<b>" + GetConfigFile().string() + "</b>" ) );

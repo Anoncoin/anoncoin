@@ -15,7 +15,7 @@
 
 #include "amount.h"
 #include "i2pshowaddresses.h"
-#include "i2poptionswidget.h"
+#include "i2poptionsdialog.h"
 
 #include <QLabel>
 #include <QMainWindow>
@@ -130,7 +130,7 @@ private:
     QAction *openI2pAddressAction;
     QAction *openI2pSettingsAction;
     ShowI2PAddresses *i2pAddress;
-    I2POptionsWidget *i2pSettings;
+    I2POptionsDialog *i2pSettings;
 #endif
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
