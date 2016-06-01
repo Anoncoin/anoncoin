@@ -1214,9 +1214,9 @@ Endereço: %4</translation>
     </message>
 </context>
 <context>
-    <name>I2POptionsWidget</name>
+    <name>I2POptionsDialog</name>
     <message>
-        <location filename="../forms/i2poptionswidget.ui" line="+14"/>
+        <location filename="../forms/i2poptionsdialog.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"/>
     </message>
