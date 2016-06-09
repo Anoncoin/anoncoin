@@ -749,6 +749,9 @@ bool LoadI2PDataIntoMemory(void)
 
     bool privateKeyDefined;
 
+    // Take a snapshot of whether or not configuration settings have already been defined
+    pI2PManager->CloneMapArgumentsExistance();
+
     if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
     {
         if (pI2PManager->ReadI2PSettingsFile())

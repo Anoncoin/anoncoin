@@ -40,8 +40,8 @@
 #define MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY       "-i2p.mydestination.privatekey"
 #define MAP_ARGS_I2P_OPTIONS_ENABLED                "-i2p.options.enabled"
 #define MAP_ARGS_I2P_MYDESTINATION_STATIC           "-i2p.mydestination.static"
-#define MAP_ARGS_I2P_OPTIONS_SAMHOST                "-i2p.options.i2p.options.samhost"
-#define MAP_ARGS_I2P_OPTIONS_SAMPORT                "-i2p.options.i2p.options.samport"
+#define MAP_ARGS_I2P_OPTIONS_SAMHOST                "-i2p.options.samhost"
+#define MAP_ARGS_I2P_OPTIONS_SAMPORT                "-i2p.options.samport"
 #define MAP_ARGS_I2P_OPTIONS_SESSION                "-i2p.options.sessionname"
 
 #define MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY       "-i2p.options.inbound.quantity"

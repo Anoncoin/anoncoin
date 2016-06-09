@@ -29,15 +29,15 @@ private:
     Ui::I2POptionsDialog *ui;
     bool WriteToDataFile();
     void WriteToMapArgs();
+    void EnableOrDisableGUIElements(void);
 
 private Q_SLOTS:
-//    void ShowCurrentI2PAddress();
-//    void GenerateNewI2PAddress();
     void settingsModified();
-    void onCloseDialog();
-    void pushButtonSaveI2PSettings();
-    void pushButtonLoadI2PSettings();
     void changeI2PSettingsState();
+    void onAcceptDialog();
+    void onCloseDialog();
+    void pushButtonApply();
+    void pushButtonCancel();
 
 Q_SIGNALS:
 //    void settingsChanged();

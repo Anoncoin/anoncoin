@@ -90,6 +90,7 @@ using namespace std;
 //----------------------------------
 static void UpdateMapArgumentsIfNotAlreadySet(std::string mapArgStr, std::string value);
 static I2PDataFile *pFile_I2P_Object;
+static std::map<std::string, bool> mbConfigFileDefinitions;
 
 //******************************************************************************
 //
@@ -409,4 +410,59 @@ static void UpdateMapArgumentsIfNotAlreadySet(std::string mapArgStr, std::string
     {
         LogPrintf( " (=%s)\n\tUsing settings file value.", value );
     }
+}
+
+//******************************************************************************
+//
+//    Name:         I2PManager::CloneMapArgumentsExistance
+//
+//    Parameters:   N/A
+//
+//    Description:  We need to keep track of whether or not a setting has been
+//                  defined via the configuration file. Do this via map of booleans.
+//
+//    Return:       None
+//
+//******************************************************************************
+void I2PManager::CloneMapArgumentsExistance(void)
+{
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_ENABLED]           =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_ENABLED);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_MYDESTINATION_STATIC]      =  (bool)mapArgs.count(MAP_ARGS_I2P_MYDESTINATION_STATIC);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_SAMHOST]           =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_SAMHOST);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_SAMPORT]           =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_SAMPORT);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_SESSION]           =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_SESSION);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY]  =  (bool)mapArgs.count(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_MYDESTINATION_PUBLICKEY]   =  (bool)mapArgs.count(MAP_ARGS_I2P_MYDESTINATION_PUBLICKEY);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_MYDESTINATION_B32KEY]      =  (bool)mapArgs.count(MAP_ARGS_I2P_MYDESTINATION_B32KEY);
+
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY]  =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH]    =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE] =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY] =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP]   =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION]  =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION);
+
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY]  =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH]    =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE] =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY] =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP]  =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION] =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION);
+    mbConfigFileDefinitions[MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY] =  (bool)mapArgs.count(MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY);
+}
+
+//******************************************************************************
+//
+//    Name:         I2PManager::IsMapArgumentDefinedViaConfigFile
+//
+//    Parameters:   std::string
+//
+//    Description:  Return TRUE if the map argument exists within the conf file
+//
+//    Return:       None
+//
+//******************************************************************************
+bool I2PManager::IsMapArgumentDefinedViaConfigFile(std::string strArg)
+{
+    return (mbConfigFileDefinitions[strArg]);
 }

@@ -28,6 +28,8 @@ public:
     I2PDataFile* getFileI2PPtr(void);
     void LogDataFile(void);
     bool UpdateMapArguments(void);
+    bool IsMapArgumentDefinedViaConfigFile(std::string strArg);
+    void CloneMapArgumentsExistance(void);
 };
 
 extern I2PManager *pI2PManager;
