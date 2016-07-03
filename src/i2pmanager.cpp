@@ -329,10 +329,9 @@ bool I2PManager::UpdateMapArguments(void)
     {
         SoftSetArg(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY,pFile_I2P_Object->getPrivateKey() );
     }
-    else
+    else if (!mapArgs.count("-generatei2pdestination"))
     {
-        // Neither have been set, disable I2P and inform the user
-        HardSetArg(MAP_ARGS_I2P_OPTIONS_ENABLED, "0");
+        // Check to see if it will be generated later on
         return false;
     }
     return true;
@@ -453,16 +452,22 @@ void I2PManager::CloneMapArgumentsExistance(void)
 
 //******************************************************************************
 //
-//    Name:         I2PManager::IsMapArgumentDefinedViaConfigFile
+//    Name:         I2PManager::IsMapArgumentDefinedExternally
 //
 //    Parameters:   std::string
 //
-//    Description:  Return TRUE if the map argument exists within the conf file
+//    Description:  Return TRUE if the map argument has already been defined
+//                  either via arguments or anoncoin.conf
 //
 //    Return:       None
 //
 //******************************************************************************
-bool I2PManager::IsMapArgumentDefinedViaConfigFile(std::string strArg)
+bool I2PManager::IsMapArgumentDefinedExternally(std::string strArg)
 {
     return (mbConfigFileDefinitions[strArg]);
+}
+
+void I2PManager::UpdateI2PKeySettings(void)
+{
+    pFile_I2P_Object->setPrivateKey(GetArg(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY, ""));
 }

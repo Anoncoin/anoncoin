@@ -33,7 +33,8 @@ private:
 
 private Q_SLOTS:
     void settingsModified();
-    void changeI2PSettingsState();
+    void onI2PEnabledCheckBoxModified();
+    void onI2PStaticPKCheckBoxModified();
     void onAcceptDialog();
     void onCloseDialog();
     void pushButtonApply();

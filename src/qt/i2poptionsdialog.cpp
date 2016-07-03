@@ -38,8 +38,8 @@ I2POptionsDialog::I2POptionsDialog(QWidget *parent) :
 
     QObject::connect(ui->checkBoxAllowZeroHop         , SIGNAL(stateChanged(int))   , this, SLOT(settingsModified()));
     QObject::connect(ui->checkBoxInboundAllowZeroHop  , SIGNAL(stateChanged(int))   , this, SLOT(settingsModified()));
-    QObject::connect(ui->checkBoxI2PEnabled           , SIGNAL(stateChanged(int))   , this, SLOT(changeI2PSettingsState()));
-    QObject::connect(ui->checkBoxStaticPrivateKey     , SIGNAL(stateChanged(int))   , this, SLOT(changeI2PSettingsState()));
+    QObject::connect(ui->checkBoxI2PEnabled           , SIGNAL(stateChanged(int))   , this, SLOT(onI2PEnabledCheckBoxModified()));
+    QObject::connect(ui->checkBoxStaticPrivateKey     , SIGNAL(stateChanged(int))   , this, SLOT(onI2PStaticPKCheckBoxModified()));
     QObject::connect(ui->lineEditSAMHost              , SIGNAL(textChanged(QString)), this, SLOT(settingsModified()));
     QObject::connect(ui->lineEditTunnelName           , SIGNAL(textChanged(QString)), this, SLOT(settingsModified()));
     QObject::connect(ui->spinBoxInboundBackupQuantity , SIGNAL(valueChanged(int))   , this, SLOT(settingsModified()));
@@ -63,6 +63,8 @@ I2POptionsDialog::I2POptionsDialog(QWidget *parent) :
     QObject::connect(this, SIGNAL(dialogIsClosing()), this, SLOT(onCloseDialog()));
 
     QObject::connect(ui->pushButtonOK,  SIGNAL(clicked()), this, SLOT(onAcceptDialog()));
+
+    EnableOrDisableGUIElements();
 }
 
 I2POptionsDialog::~I2POptionsDialog()
@@ -94,38 +96,81 @@ I2POptionsDialog::~I2POptionsDialog()
 
 void I2POptionsDialog::settingsModified()
 {
-    //ui->pushButtonApply->setEnabled(true);
+    ui->pushButtonCancel->setEnabled(true);
+    ui->pushButtonApply->setEnabled(true);
     changesAreDirty = true;
 }
 
-void I2POptionsDialog::changeI2PSettingsState()
+void I2POptionsDialog::onI2PStaticPKCheckBoxModified()
 {
+    // If it is defined externally, use that value and disable the checkbox
+    bool bIsStaticCheckBoxExtDef = (pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_MYDESTINATION_STATIC));
+
+    if (!bIsStaticCheckBoxExtDef  & ui->checkBoxI2PEnabled->isChecked())
+    {
+        bool bIsChecked = ui->checkBoxStaticPrivateKey->isChecked();
+        bool bIsPrivateKeyTextBoxExtDef = (pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY));
+
+        ui->checkBoxStaticPrivateKey->setEnabled(true);
+
+        // Dyn IP
+        if (!bIsChecked)
+        {
+            if (!bIsPrivateKeyTextBoxExtDef)
+            {
+                ui->plainTextEditPrivateKey->setEnabled(true);
+                ui->plainTextEditPublicKey->setEnabled(true);
+                ui->lineEditB32Address->setEnabled(true);
+            }
+            else
+            {
+                ui->plainTextEditPrivateKey->setEnabled(false);
+                ui->plainTextEditPublicKey->setEnabled(false);
+                ui->lineEditB32Address->setEnabled(false);
+            }
+        }
+        else
+        {
+            ui->plainTextEditPrivateKey->setEnabled(false);
+            ui->plainTextEditPublicKey->setEnabled(false);
+            ui->lineEditB32Address->setEnabled(false);
+        }
+
+        settingsModified();
+    }
+    else
+    {
+        ui->checkBoxStaticPrivateKey->setEnabled(false);
+        ui->plainTextEditPrivateKey->setEnabled(false);
+        ui->plainTextEditPublicKey->setEnabled(false);
+        ui->lineEditB32Address->setEnabled(false);
+    }
+}
+
+void I2POptionsDialog::onI2PEnabledCheckBoxModified()
+{
+
     bool isI2PEnabledGUI;
-    bool isStaticKeyGUI;
 
-    bool bI2PEnabled              = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_ENABLED));
-    bool bI2PStaticKey            = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_MYDESTINATION_STATIC));
-    bool bSamHost                 = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_SAMHOST));
-    bool bSamPort                 = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_SAMPORT));
-    bool bSessionName             = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_SESSION));
-    bool bInboundQuantity         = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY));
-    bool bInboundLength           = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH));
-    bool bInboundLengthVariance   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE));
-    bool bInboundBackupQuantity   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY));
-    bool bInboundAllowZeroHop     = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP));
-    bool bInboundIPRestriction    = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION));
-    bool bOutboutQuantity         = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY));
-    bool bOutboutLength           = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH));
-    bool bOutboutLengthVariance   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE));
-    bool bOutboutBackupQuantity   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY));
-    bool bOutboutAllowZeroHop     = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP));
-    bool bOutboutIPRestriction    = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION));
-    bool bOutboundPriority        = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY));
-    bool bPrivateKey              = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY));
+    bool bI2PEnabledDefExt              = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_ENABLED));
+    bool bSamHostDefExt                 = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_SAMHOST));
+    bool bSamPortDefExt                 = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_SAMPORT));
+    bool bSessionNameDefExt             = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_SESSION));
+    bool bInboundQuantityDefExt         = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY));
+    bool bInboundLengthDefExt           = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH));
+    bool bInboundLengthVarianceDefExt   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE));
+    bool bInboundBackupQuantityDefExt   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY));
+    bool bInboundAllowZeroHopDefExt     = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP));
+    bool bInboundIPRestrictionDefExt    = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION));
+    bool bOutboutQuantityDefExt         = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY));
+    bool bOutboutLengthDefExt           = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH));
+    bool bOutboutLengthVarianceDefExt   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE));
+    bool bOutboutBackupQuantityDefExt   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY));
+    bool bOutboutAllowZeroHopDefExt     = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP));
+    bool bOutboutIPRestrictionDefExt    = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION));
+    bool bOutboundPriorityDefExt        = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY));
 
-    EnableOrDisableGUIElements();
-
-    if (bI2PEnabled)
+    if (bI2PEnabledDefExt)
     {
         isI2PEnabledGUI = ui->checkBoxI2PEnabled->isChecked();
     }
@@ -133,39 +178,27 @@ void I2POptionsDialog::changeI2PSettingsState()
     {
         isI2PEnabledGUI = false;
     }
-    //bool isI2PEnabled   = ui->checkBoxI2PEnabled->isChecked() & ui->checkBoxI2PEnabled->isEnabled();
 
-    ui->checkBoxStaticPrivateKey->setEnabled(isI2PEnabledGUI & bI2PStaticKey);
-    isStaticKeyGUI    = ui->checkBoxStaticPrivateKey->isChecked() & ui->checkBoxStaticPrivateKey->isEnabled();
+    ui->lineEditSAMHost->setEnabled(isI2PEnabledGUI & bSamHostDefExt);
+    ui->spinBoxSAMPort->setEnabled(isI2PEnabledGUI & bSamPortDefExt);
+    ui->lineEditTunnelName->setEnabled(isI2PEnabledGUI & bSessionNameDefExt);
+    ui->spinBoxInboundQuantity->setEnabled(isI2PEnabledGUI & bInboundQuantityDefExt);
+    ui->spinBoxInboundLength->setEnabled(isI2PEnabledGUI & bInboundLengthDefExt);
+    ui->spinBoxInboundLengthVariance->setEnabled(isI2PEnabledGUI & bInboundLengthVarianceDefExt);
+    ui->spinBoxInboundBackupQuantity->setEnabled(isI2PEnabledGUI & bInboundBackupQuantityDefExt);
+    ui->checkBoxInboundAllowZeroHop->setEnabled(isI2PEnabledGUI & bInboundAllowZeroHopDefExt);
+    ui->spinBoxInboundIPRestriction->setEnabled(isI2PEnabledGUI & bInboundIPRestrictionDefExt);
+    ui->spinBoxOutboundQuantity->setEnabled(isI2PEnabledGUI & bOutboutQuantityDefExt);
+    ui->spinBoxOutboundLength->setEnabled(isI2PEnabledGUI & bOutboutLengthDefExt);
+    ui->spinBoxOutboundLengthVariance->setEnabled(isI2PEnabledGUI & bOutboutLengthVarianceDefExt);
+    ui->spinBoxOutboundBackupQuantity->setEnabled(isI2PEnabledGUI & bOutboutBackupQuantityDefExt);
+    ui->checkBoxAllowZeroHop->setEnabled(isI2PEnabledGUI & bOutboutAllowZeroHopDefExt);
+    ui->spinBoxOutboundIPRestriction->setEnabled(isI2PEnabledGUI & bOutboutIPRestrictionDefExt);
+    ui->spinBoxOutboundPriority->setEnabled(isI2PEnabledGUI & bOutboundPriorityDefExt);
 
-    //ui->checkBoxI2PEnabled->isChecked();
+    onI2PStaticPKCheckBoxModified();
 
-
-    ui->lineEditSAMHost->setEnabled(isI2PEnabledGUI & bSamHost);
-    ui->spinBoxSAMPort->setEnabled(isI2PEnabledGUI & bSamPort);
-    ui->lineEditTunnelName->setEnabled(isI2PEnabledGUI & bSessionName);
-    ui->spinBoxInboundQuantity->setEnabled(isI2PEnabledGUI & bInboundQuantity);
-    ui->spinBoxInboundLength->setEnabled(isI2PEnabledGUI & bInboundLength);
-    ui->spinBoxInboundLengthVariance->setEnabled(isI2PEnabledGUI & bInboundLengthVariance);
-    ui->spinBoxInboundBackupQuantity->setEnabled(isI2PEnabledGUI & bInboundBackupQuantity);
-    ui->checkBoxInboundAllowZeroHop->setEnabled(isI2PEnabledGUI & bInboundAllowZeroHop);
-    ui->spinBoxInboundIPRestriction->setEnabled(isI2PEnabledGUI & bInboundIPRestriction);
-    ui->spinBoxOutboundQuantity->setEnabled(isI2PEnabledGUI & bOutboutQuantity);
-    ui->spinBoxOutboundLength->setEnabled(isI2PEnabledGUI & bOutboutLength);
-    ui->spinBoxOutboundLengthVariance->setEnabled(isI2PEnabledGUI & bOutboutLengthVariance);
-    ui->spinBoxOutboundBackupQuantity->setEnabled(isI2PEnabledGUI & bOutboutBackupQuantity);
-    ui->checkBoxAllowZeroHop->setEnabled(isI2PEnabledGUI & bOutboutAllowZeroHop);
-    ui->spinBoxOutboundIPRestriction->setEnabled(isI2PEnabledGUI & bOutboutIPRestriction);
-    ui->spinBoxOutboundPriority->setEnabled(isI2PEnabledGUI & bOutboundPriority);
-    ui->pushButtonCancel->setEnabled(true);
-    ui->pushButtonApply->setEnabled(true);
-
-    ui->plainTextEditPrivateKey->setEnabled(isStaticKeyGUI & bPrivateKey);
-    ui->plainTextEditPublicKey->setEnabled(isStaticKeyGUI & bPrivateKey);
-    ui->lineEditB32Address->setEnabled(isStaticKeyGUI & bPrivateKey);
-
-    changesAreDirty = true;
-    printf ("\nChanges are dirty\n");
+    settingsModified();
 }
 
 void I2POptionsDialog::UpdateParameters()
@@ -255,7 +288,7 @@ void I2POptionsDialog::UpdateParameters()
     // Outbound Priority
     ui->spinBoxOutboundPriority->setValue( outboundPriority );
 
-    EnableOrDisableGUIElements();
+    //EnableOrDisableGUIElements();
 
     // Settings have been refreshed
     onCloseDialog();
@@ -475,27 +508,27 @@ void I2POptionsDialog::WriteToMapArgs()
 
 void I2POptionsDialog::EnableOrDisableGUIElements(void)
 {
-    bool bI2PEnabled              = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_ENABLED));
-    bool bI2PStaticKey            = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_MYDESTINATION_STATIC));
-    bool bSamHost                 = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_SAMHOST));
-    bool bSamPort                 = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_SAMPORT));
-    bool bSessionName             = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_SESSION));
-    bool bInboundQuantity         = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY));
-    bool bInboundLength           = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH));
-    bool bInboundLengthVariance   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE));
-    bool bInboundBackupQuantity   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY));
-    bool bInboundAllowZeroHop     = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP));
-    bool bInboundIPRestriction    = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION));
-    bool bOutboutQuantity         = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY));
-    bool bOutboutLength           = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH));
-    bool bOutboutLengthVariance   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE));
-    bool bOutboutBackupQuantity   = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY));
-    bool bOutboutAllowZeroHop     = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP));
-    bool bOutboutIPRestriction    = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION));
-    bool bOutboundPriority        = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY));
-    bool bPrivateKey              = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY));
-    //bool bPublicKey               = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_MYDESTINATION_PUBLICKEY));
-    //bool bB32Address              = !(pI2PManager->IsMapArgumentDefinedViaConfigFile(MAP_ARGS_I2P_MYDESTINATION_B32KEY));
+    bool bI2PEnabled              = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_ENABLED));
+    bool bI2PStaticKey            = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_MYDESTINATION_STATIC));
+    bool bSamHost                 = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_SAMHOST));
+    bool bSamPort                 = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_SAMPORT));
+    bool bSessionName             = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_SESSION));
+    bool bInboundQuantity         = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_QUANTITY));
+    bool bInboundLength           = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTH));
+    bool bInboundLengthVariance   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_LENGTHVARIANCE));
+    bool bInboundBackupQuantity   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_BACKUPQUANTITY));
+    bool bInboundAllowZeroHop     = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_ALLOWZEROHOP));
+    bool bInboundIPRestriction    = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_INBOUND_IPRESTRICTION));
+    bool bOutboutQuantity         = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_QUANTITY));
+    bool bOutboutLength           = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTH));
+    bool bOutboutLengthVariance   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_LENGTHVARIANCE));
+    bool bOutboutBackupQuantity   = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_BACKUPQUANTITY));
+    bool bOutboutAllowZeroHop     = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_ALLOWZEROHOP));
+    bool bOutboutIPRestriction    = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION));
+    bool bOutboundPriority        = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY));
+    bool bPrivateKey              = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_MYDESTINATION_PRIVATEKEY));
+    //bool bPublicKey               = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_MYDESTINATION_PUBLICKEY));
+    //bool bB32Address              = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_MYDESTINATION_B32KEY));
 
     ui->checkBoxI2PEnabled->setEnabled(bI2PEnabled);
     ui->checkBoxStaticPrivateKey->setEnabled(bI2PStaticKey);
@@ -516,9 +549,9 @@ void I2POptionsDialog::EnableOrDisableGUIElements(void)
     ui->spinBoxOutboundIPRestriction->setEnabled(bOutboutIPRestriction);
     ui->spinBoxOutboundPriority->setEnabled(bOutboundPriority);
 
-    ui->plainTextEditPrivateKey->setEnabled(bPrivateKey);
-    ui->plainTextEditPublicKey->setEnabled(bPrivateKey);
-    ui->lineEditB32Address->setEnabled(bPrivateKey);
+    ui->plainTextEditPrivateKey->setEnabled(bI2PStaticKey & bPrivateKey);
+    ui->plainTextEditPublicKey->setEnabled(bI2PStaticKey & bPrivateKey);
+    ui->lineEditB32Address->setEnabled(bI2PStaticKey & bPrivateKey);
 }
 
 void I2POptionsDialog::onCloseDialog()

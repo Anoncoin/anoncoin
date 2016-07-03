@@ -40,7 +40,7 @@
       <enum>QFrame::Plain</enum>
      </property>
      <property name="text">
-      <string>Note: Items that are greyed out are defined within anoncoin.conf. They cannot be modified by the GUI.</string>
+      <string>Note: Items that are greyed out are defined externally. They cannot be modified by the GUI.</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
