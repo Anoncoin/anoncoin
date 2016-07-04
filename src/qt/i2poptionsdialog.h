@@ -7,8 +7,6 @@
 
 #include <QDialog>
 
-//class MonitoredDataMapper;
-
 namespace Ui {
 class I2POptionsDialog;
 }
@@ -22,7 +20,6 @@ public:
     ~I2POptionsDialog();
     void UpdateParameters();
 
-    //void setMapper(MonitoredDataMapper& mapper);
     void reject();
 
 private:
@@ -41,7 +38,6 @@ private Q_SLOTS:
     void pushButtonCancel();
 
 Q_SIGNALS:
-//    void settingsChanged();
     void dialogIsClosing();
 };
 

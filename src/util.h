@@ -15,7 +15,10 @@
 #include "serialize.h"
 #include "sync.h"
 #include "tinyformat.h"
+
+#if (ENABLE_I2P_SETTINGS_FILE)
 #include "i2pmanager.h"
+#endif
 
 #include <cstdio>
 #include <exception>

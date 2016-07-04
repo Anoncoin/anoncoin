@@ -42,7 +42,6 @@ QT_FORMS_UI = \
   qt/forms/editaddressdialog.ui \
   qt/forms/helpmessagedialog.ui \
   qt/forms/i2pshowaddresses.ui \
-                                    qt/forms/i2poptionsdialog.ui \
   qt/forms/intro.ui \
   qt/forms/openuridialog.ui \
   qt/forms/optionsdialog.ui \
@@ -54,6 +53,10 @@ QT_FORMS_UI = \
   qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui
+
+if ENABLE_I2P_SETTINGS_FILE
+QT_FORMS_UI +=   qt/forms/i2poptionsdialog.ui
+endif
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -70,7 +73,6 @@ QT_MOC_CPP = \
   qt/moc_editaddressdialog.cpp \
   qt/moc_guiutil.cpp \
   qt/moc_i2pshowaddresses.cpp \
-                                    qt/moc_i2poptionsdialog.cpp \
   qt/moc_intro.cpp \
   qt/moc_macdockiconhandler.cpp \
   qt/moc_macnotificationhandler.cpp \
@@ -102,6 +104,11 @@ QT_MOC_CPP = \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
   qt/moc_walletview.cpp
+
+if ENABLE_I2P_SETTINGS_FILE
+QT_MOC_CPP += qt/moc_i2poptionsdialog.cpp
+endif
+
 
 ANONCOIN_MM = \
   qt/macdockiconhandler.mm \
@@ -138,7 +145,6 @@ ANONCOIN_QT_H = \
   qt/guiconstants.h \
   qt/guiutil.h \
   qt/i2pshowaddresses.h \
-                                    qt/i2poptionsdialog.h \
   qt/intro.h \
   qt/macdockiconhandler.h \
   qt/macnotificationhandler.h \
@@ -174,6 +180,10 @@ ANONCOIN_QT_H = \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
   qt/winshutdownmonitor.h
+
+if ENABLE_I2P_SETTINGS_FILE
+ANONCOIN_QT_H +=   qt/i2poptionsdialog.h
+endif
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -229,7 +239,6 @@ ANONCOIN_QT_CPP = \
   qt/csvmodelwriter.cpp \
   qt/guiutil.cpp \
   qt/i2pshowaddresses.cpp \
-                                    qt/i2poptionsdialog.cpp \
   qt/intro.cpp \
   qt/monitoreddatamapper.cpp \
   qt/notificator.cpp \
@@ -243,6 +252,10 @@ ANONCOIN_QT_CPP = \
   qt/trafficgraphwidget.cpp \
   qt/utilitydialog.cpp \
   qt/winshutdownmonitor.cpp
+
+if ENABLE_I2P_SETTINGS_FILE
+ANONCOIN_QT_CPP +=   qt/i2poptionsdialog.cpp
+endif
 
 if ENABLE_WALLET
 ANONCOIN_QT_CPP += \

@@ -11,7 +11,10 @@
 #include "random.h"
 #include "uint256.h"
 #include "version.h"
+
+#if (ENABLE_I2P_SETTINGS_FILE)
 #include "i2pmanager.h"
+#endif
 
 #include <stdarg.h>
 
@@ -100,7 +103,9 @@ bool fLogIPs = false;       // New v10 param
 bool fLogI2Ps = false;      // Anoncoin specific
 volatile bool fReopenDebugLog = false;
 
+#if (ENABLE_I2P_SETTINGS_FILE)
 I2PManager *pI2PManager;
+#endif
 
 // Init OpenSSL library multithreading support
 static CCriticalSection** ppmutexOpenSSL;

@@ -1168,10 +1168,11 @@ bool AppInit2(boost::thread_group& threadGroup)
             // This way anoncoind always shuts down, as noui_ThreadSafeMessageBox returns false,
             // for the anoncoin-qt user, they can continue if they want to, by selecting the BTN_APPLY button.
 
-            #if 1
+            #if (ENABLE_I2P_SETTINGS_FILE)
+            //Update the settings manager with the latest key
             pI2PManager->UpdateI2PKeySettings();
             #endif
-
+            
         } else
             return InitError(_("Unable to obtain I2P SAM Session for the -generatei2pdestination command") );
     }   // fGenI2pDest

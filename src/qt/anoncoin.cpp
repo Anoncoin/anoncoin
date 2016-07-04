@@ -79,11 +79,13 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 #include <QTextCodec>
 #endif
 
+#if (ENABLE_I2P_SETTINGS_FILE)
 /**
  * Begin initialization process for I2P manager
  *
  */
-bool LoadI2PDataIntoMemory(void);
+static bool LoadI2PDataIntoMemory(void);
+#endif
 
 // Declare meta types used for QMetaObject::invokeMethod
 Q_DECLARE_METATYPE(bool*)
@@ -428,7 +430,9 @@ void AnoncoinApplication::initializeResult(int retval)
     // now, and any parameter interaction will have finished.
     window->UpdateI2PAddressDetails();
 
+#if (ENABLE_I2P_SETTINGS_FILE)
     window->UpdateI2POptionsDetails();
+#endif
 
     // Set exit result: 0 if successful, 1 if failure
     returnValue = retval ? 0 : 1;
@@ -648,7 +652,7 @@ int main(int argc, char *argv[])
     // Re-initialize translations after changing application name (language in network-specific settings can be different)
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
-#if 1
+#if (ENABLE_I2P_SETTINGS_FILE)
     /// 7.5 Determine and setup I2P settings
     // - Either from file
     // - Or initialiezd to hard-coded default values
@@ -660,6 +664,7 @@ int main(int argc, char *argv[])
         return false;
     }
 #endif
+
 #ifdef ENABLE_WALLET
     /// 8. URI IPC sending
     // - Do this early as we don't want to bother initializing if we are just calling IPC
@@ -719,6 +724,7 @@ int main(int argc, char *argv[])
 }
 #endif // ANONCOIN_QT_TEST
 
+#if (ENABLE_I2P_SETTINGS_FILE)
 //******************************************************************************
 //
 //    Name: LoadI2PDataIntoMemory
@@ -732,7 +738,7 @@ int main(int argc, char *argv[])
 //    Return:       N/A
 //
 //******************************************************************************
-bool LoadI2PDataIntoMemory(void)
+static bool LoadI2PDataIntoMemory(void)
 {
     //   Check if it exists.
     // x    load settings from file into memory.
@@ -750,7 +756,7 @@ bool LoadI2PDataIntoMemory(void)
     // Take a snapshot of whether or not configuration settings have already been defined
     pI2PManager->CloneMapArgumentsExistance();
 
-    if (boost::filesystem::exists( pI2PManager->GetI2PSettingsFilePath() ))
+    if (boost::filesystem::exists(pI2PManager->GetI2PSettingsFilePath()))
     {
         if (pI2PManager->ReadI2PSettingsFile())
         {
@@ -770,19 +776,6 @@ bool LoadI2PDataIntoMemory(void)
         }
     }
 
-/*    if (!privateKeyDefined)
-    {
-        // Neither have been set, disable I2P and inform the user
-        HardSetArg(MAP_ARGS_I2P_OPTIONS_ENABLED, "0");
-
-        QMessageBox::critical( 0, QObject::tr("I2P Private Key Failure"),
-                                                    QObject::tr("Private key not found within anoncoin.conf or i2p.dat!\n" \
-                                                                "Private key has not generated via -generatei2pdestination!\n\n" \
-                                                                "I2P has been disabled.\n\n" \
-                                                                "Please define a key within anoncoin.conf first."),
-                                                    QMessageBox::Ok,
-                                                    QMessageBox::Ok);
-    }
-*/
     LogPrintf("\n%s I2P Settings Initialization Complete!\n\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
 }
+#endif

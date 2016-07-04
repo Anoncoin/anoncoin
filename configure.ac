@@ -93,6 +93,13 @@ AC_ARG_ENABLE([i2psam],
   [enable_i2psam=$enableval],
   [enable_i2psam=yes])
 
+# Enable I2P Settings Manager
+AC_ARG_ENABLE([i2psettings],
+  [AS_HELP_STRING([--enable-i2psettings],
+  [enable i2psettings (default is no)])],
+  [enable_i2psettings=$enableval],
+  [enable_i2psettings=no])
+
 # Enable hardfork
 AC_ARG_WITH([hardfork],
   [AS_HELP_STRING([--with-hardfork=block],
@@ -790,6 +797,16 @@ else
   AC_MSG_RESULT(no)
 fi
 
+dnl enable i2psettings
+AC_MSG_CHECKING([if i2psettings should be enabled])
+if test x$enable_i2psettings != xno; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED([ENABLE_I2P_SETTINGS_FILE],[1],[Define to 1 to enable I2P Settings Manager in GUI])
+else
+  AC_MSG_RESULT(no)
+fi
+
+
 dnl enable hardfork
 AC_MSG_CHECKING([if a hardfork of the blockchain is required])
 if test x$hardfork_block != xno; then
@@ -893,6 +910,7 @@ AM_CONDITIONAL([BUILD_DARWIN], [test x$BUILD_OS = xdarwin])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
 AM_CONDITIONAL([ENABLE_I2PSAM],[test x$enable_i2psam = xyes])
+AM_CONDITIONAL([ENABLE_I2P_SETTINGS_FILE],[test x$enable_i2psettings = xyes])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$use_tests = xyes])
 AM_CONDITIONAL([ENABLE_QT],[test x$anoncoin_enable_qt = xyes])
 AM_CONDITIONAL([ENABLE_QT_TESTS],[test x$use_tests$anoncoin_enable_qt_test = xyesyes])

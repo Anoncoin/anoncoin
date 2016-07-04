@@ -106,7 +106,10 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     spinnerFrame(0)
 #ifdef ENABLE_I2PSAM
     ,i2pAddress(0)
+#if (ENABLE_I2P_SETTINGS_FILE)
     ,i2pSettings(0)
+#endif
+
 #endif
 {
     GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
@@ -155,7 +158,9 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     rpcConsole = new RPCConsole(enableWallet ? this : 0);
 #ifdef ENABLE_I2PSAM
     i2pAddress = new ShowI2PAddresses( this );
+    #if (ENABLE_I2P_SETTINGS_FILE)
     i2pSettings = new I2POptionsDialog(this);
+    #endif
 #endif
 
 #ifdef ENABLE_WALLET
@@ -257,9 +262,10 @@ AnoncoinGUI::AnoncoinGUI(bool fIsTestnet, QWidget *parent) :
     // Do the same for the I2P Destination details window
     connect(openI2pAddressAction, SIGNAL(triggered()), i2pAddress, SLOT(show()));
     connect(quitAction, SIGNAL(triggered()), i2pAddress, SLOT(hide()));
-
+#if (ENABLE_I2P_SETTINGS_FILE)
     connect(openI2pSettingsAction, SIGNAL(triggered()), i2pSettings, SLOT(show()));
     connect(quitAction, SIGNAL(triggered()), i2pSettings, SLOT(hide()));
+#endif
 #endif
 
     // Install event filter to be able to catch status tip events (QEvent::StatusTip)
@@ -376,8 +382,11 @@ void AnoncoinGUI::createActions(bool fIsTestnet)
     openI2pAddressAction = new QAction(QIcon(":/icons/options"), tr("&I2P Destination details"), this);
     openI2pAddressAction->setStatusTip(tr("Shows your private I2P Destination details"));
 
+#if (ENABLE_I2P_SETTINGS_FILE)
     openI2pSettingsAction = new QAction(QIcon(":/icons/options"), tr("&I2P Settings..."), this);
     openI2pSettingsAction->setStatusTip(tr("Modify I2P Settings"));
+#endif
+
 #endif
 
     usedSendingAddressesAction = new QAction(QIcon(":/icons/address-book"), tr("&Sending addresses..."), this);
@@ -448,7 +457,10 @@ void AnoncoinGUI::createMenuBar()
     settings->addAction(optionsAction);
 #ifdef ENABLE_I2PSAM
     settings->addAction(openI2pAddressAction);
+#if (ENABLE_I2P_SETTINGS_FILE)
     settings->addAction(openI2pSettingsAction);
+#endif
+
 #endif
     QMenu *help = appMenuBar->addMenu(tr("&Help"));
     if(walletFrame)
@@ -649,7 +661,10 @@ void AnoncoinGUI::createTrayIconMenu()
     trayIconMenu->addAction(openRPCConsoleAction);
 #ifdef ENABLE_I2PSAM
     trayIconMenu->addAction(openI2pAddressAction);
+#if (ENABLE_I2P_SETTINGS_FILE)
     trayIconMenu->addAction(openI2pSettingsAction);
+#endif
+
 #endif
 #ifndef Q_OS_MAC // This is built-in on Mac
     trayIconMenu->addSeparator();
@@ -1134,8 +1149,10 @@ void AnoncoinGUI::detectShutdown()
 #ifdef ENABLE_I2PSAM
         if(i2pAddress)
             i2pAddress->hide();
+#if (ENABLE_I2P_SETTINGS_FILE)
         if(i2pSettings)
             i2pSettings->hide();
+#endif
 #endif
         qApp->quit();
     }

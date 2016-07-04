@@ -59,11 +59,6 @@
 #define MAP_ARGS_I2P_OPTIONS_OUTBOUND_IPRESTRICTION  "-i2p.options.outbound.iprestriction"
 #define MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY       "-i2p.options.outbound.priority"
 
-// FOR TESTING ONLY
-/*
-#define I2P_TEST_PRIVATEKEY "Z8qiazwUHSBZxndZ3z31UzZUJdvvqyFiVkealC4aHxEaqaeRQHMZhlZw0Ppt7PLIWwm2jFnyn981Fc2ZVE5xLn2bVii1tI7kqgdkdeLPkUcJya15DRg8HYEIEFbd9iAdONxC7At1IecwK4YMa8Q970kNaAkxxF9Or8w9AgciaWfe5UujclXZ7rnUhE1nhqgdCGGqUcFicgkJfgNDWjWy15y2jZIazMCbjGQBRH19YeGvz9hOBXUw0UXHwVXVrlr3VZD5VWdqYxOUPgXS0Ajl5STmT9UGCsDT2AROCbEpzcq01RKpSlFxaBOklwtyXfjxA2y9toEkXX1r5PsxFX1escsG3QBr480nCRzJjlQX4DMGsiombEeVpSJjNfnCagcpOIQxZ1djpZBCQWsKko2TbmNGlYJ0vUpNplZLsTpfbrI9roWCz31yAF43Ij648hJ6z9CZsPEwpjq8FW4byQ31a8ujxrrvR2IB3T38h2j8tNKJ8kelg4qFL3KIlrjUrAQYs5k03Fl0URwdCIQDfMcreLFyWJw8gkoiAY4XZIxFs2t7gl8QzjmOT6Ksl0AfBLUnDeMRTHPjbNtW7VUXERNp381D8gs1b97nDl9BoSFZlVUZmnsfM1T3UtBvdL34PFoLf9dNX463OSLwC5LfnCe4QZSaUpkMerijFD2IAhdW60adrxAEARei9yAHDZ2sKY63Wo17wvoOyqJoaT1dsB6x348PMdJljsNJJkyd1KaCHSHBBRNSn2R1OINtmgeGaJuWCoGUqgaxI7johFcfgMMMuA2ibG0x0BmTsvpSRVscfOOokFOv86Zf9gJcoAb7ntlD3JedqyR7xJCO5NVcbrsVIFDhBsugfF2bGrTFiZ3a4fzNruGXt3j4"
-*/
-
 typedef struct I2P_File_Header_t{
     uint32_t      file_header_version;         // [Bytes 00:03] Hardcoded to 0x53554147
     uint16_t      data_offset;                 // [Bytes 06:07] Offset to data in File, skip over the file header.
@@ -78,7 +73,7 @@ typedef struct i2pInboundSettings_t
     int32_t     backupquantity;
     int32_t     iprestriction;
     bool        allowzerohop;
-}I2P_InboundSettings_t;
+} I2P_InboundSettings_t;
 
 typedef struct i2pOutboundSettings_t
 {
@@ -167,10 +162,12 @@ public:
     const int32_t getOutboundAllowZeroHop(void) const;
     const int32_t getOutboundQuantity(void) const;
 
+private:
     I2P_Data_File_t I2PData;
     void initInbound(void);
     void initOutbound(void);
 
+public:
    /**
      * serialized format:
      * * file header
@@ -181,16 +178,8 @@ public:
      *   *
      *   *
      *
-     * 2**30 is xorred with the number of buckets to make addrman deserializer v0 detect it
-     * as incompatible. This is necessary because it did not check the version number on
-     * deserialization.
-     *
-     * Notice that all std::strings must be deconstructed and reconstructed byte-by-byte.
-     * The length must prefix the string itself so that we know how many bytes to read
-     * in until completion.
-     *
-     * We don't use ADD_SERIALIZE_METHODS since the serialization and deserialization code has
-     * very little in common.
+     * Serialize the header then data portions. Data order was chosen arbitrarily
+     * but a few bytes can be saved if packing was optimized. 
      *
      */
     template<typename Stream>
@@ -240,8 +229,6 @@ public:
     {
         LOCK(cs);
 
-        // TODO
-
         char tempChar;
 
         s >> I2PData.fileHeader.file_header_version;
@@ -279,6 +266,7 @@ public:
 
 };
 
+// Helper function to Serialize a C-string into the Stream object.
 template<typename Stream>
 void SerializeCStr(Stream& s, const char* pCStr, const uint32_t len)
 {

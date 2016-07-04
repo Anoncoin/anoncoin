@@ -365,6 +365,24 @@ void I2PManager::LogDataFile(void)
     LogPrintf("\nPrivateKey: %*s",        SPACE, pFile_I2P_Object->getPrivateKey());
 
     LogPrintf("\n[Inbound Settings]");
+    LogPrintf("\nQuantity: %*s",          SPACE, pFile_I2P_Object->getInboundQuantity());
+    LogPrintf("\nBackup Quanity: %*s",    SPACE, pFile_I2P_Object->getInboundBackupQuantity());
+    LogPrintf("\nLength: %*s",            SPACE, pFile_I2P_Object->getInboundLength());
+    LogPrintf("\nLength Variance: %*s",   SPACE, pFile_I2P_Object->getInboundLengthVariance());
+    LogPrintf("\nAllow Zero Hop: %*s",    SPACE, pFile_I2P_Object->getInboundAllowZeroHop());
+    LogPrintf("\nIP Restriction: %*s",    SPACE, pFile_I2P_Object->getInboundIPRestriction());
+
+
+    LogPrintf("\n[Outbound Settings]");
+    LogPrintf("\nQuantity: %*s",          SPACE, pFile_I2P_Object->getOutboundQuantity());
+    LogPrintf("\nBackup Quanity: %*s",    SPACE, pFile_I2P_Object->getOutboundBackupQuantity());
+    LogPrintf("\nLength: %*s",            SPACE, pFile_I2P_Object->getOutboundLength());
+    LogPrintf("\nLength Variance: %*s",   SPACE, pFile_I2P_Object->getOutboundLengthVariance());
+    LogPrintf("\nAllow Zero Hop: %*s",    SPACE, pFile_I2P_Object->getOutboundAllowZeroHop());
+    LogPrintf("\nIP Restriction: %*s",    SPACE, pFile_I2P_Object->getOutboundIPRestriction());
+    LogPrintf("\nPriority: %*s",          SPACE, pFile_I2P_Object->getOutboundPriority());
+/*
+    LogPrintf("\n[Inbound Settings]");
     LogPrintf("\nQuantity: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.inbound.quantity);
     LogPrintf("\nBackup Quanity: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.inbound.backupquantity);
     LogPrintf("\nLength: %*s",            SPACE, pFile_I2P_Object->I2PData.fileData.inbound.length);
@@ -381,7 +399,7 @@ void I2PManager::LogDataFile(void)
     LogPrintf("\nAllow Zero Hop: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.allowzerohop);
     LogPrintf("\nIP Restriction: %*s",    SPACE, pFile_I2P_Object->I2PData.fileData.outbound.iprestriction);
     LogPrintf("\nPriority: %*s",          SPACE, pFile_I2P_Object->I2PData.fileData.outbound.priority);
-
+*/
     LogPrintf("\n========== I 2 P   D A T A   F I L E ==========\n\n");
 #undef SPACE
 }

@@ -15,7 +15,10 @@
 
 #include "amount.h"
 #include "i2pshowaddresses.h"
+
+#if (ENABLE_I2P_SETTINGS_FILE)
 #include "i2poptionsdialog.h"
+#endif
 
 #include <QLabel>
 #include <QMainWindow>
@@ -77,8 +80,11 @@ public:
     void UpdateI2PAddressDetails( void ) { i2pAddress->UpdateParameters(); }
     void ShowI2pDestination( void ) { openI2pAddressAction->activate( QAction::Trigger ); }
 
+#if (ENABLE_I2P_SETTINGS_FILE)
     void UpdateI2POptionsDetails( void ) { i2pSettings->UpdateParameters(); }
     void ShowI2pSettings( void ) {openI2pSettingsAction->activate( QAction::Trigger );}
+#endif
+
 #endif
 protected:
     void changeEvent(QEvent *e);
@@ -128,9 +134,11 @@ private:
     QLabel* labelI2POnly;
     QLabel* labelI2PGenerated;
     QAction *openI2pAddressAction;
-    QAction *openI2pSettingsAction;
     ShowI2PAddresses *i2pAddress;
+#if (ENABLE_I2P_SETTINGS_FILE)
+    QAction *openI2pSettingsAction;
     I2POptionsDialog *i2pSettings;
+#endif
 #endif
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;

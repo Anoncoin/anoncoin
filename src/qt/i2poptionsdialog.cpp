@@ -13,8 +13,6 @@
 #include "i2poptionsdialog.h"
 #include "ui_i2poptionsdialog.h"
 
-//#include "optionsmodel.h"
-//#include "monitoreddatamapper.h"
 #include "i2pshowaddresses.h"
 #include "util.h"
 #include "guiutil.h"
@@ -72,28 +70,6 @@ I2POptionsDialog::~I2POptionsDialog()
     delete ui;
 }
 
-/*void I2POptionsDialog::setMapper(MonitoredDataMapper& mapper)
-{
-    mapper.addMapping(ui->checkBoxI2PEnabled           , OptionsModel::eI2PUseI2POnly);
-    mapper.addMapping((ui->checkBoxStaticPrivateKey    , OptionsModel::eI2PStaticPrivateKey);(ui->checkBoxStaticPrivateKey
-    mapper.addMapping(ui->lineEditSAMHost              , OptionsModel::eI2PSAMHost);
-    mapper.addMapping(ui->spinBoxSAMPort               , OptionsModel::eI2PSAMPort);
-    mapper.addMapping(ui->lineEditTunnelName           , OptionsModel::eI2PSessionName);
-    mapper.addMapping(ui->spinBoxInboundQuantity       , OptionsModel::I2PInboundQuantity);
-    mapper.addMapping(ui->spinBoxInboundLength         , OptionsModel::I2PInboundLength);
-    mapper.addMapping(ui->spinBoxInboundLengthVariance , OptionsModel::I2PInboundLengthVariance);
-    mapper.addMapping(ui->spinBoxInboundBackupQuantity  , OptionsModel::I2PInboundBackupQuantity);
-    mapper.addMapping(ui->checkBoxInboundAllowZeroHop  , OptionsModel::I2PInboundAllowZeroHop);
-    mapper.addMapping(ui->spinBoxInboundIPRestriction  , OptionsModel::I2PInboundIPRestriction);
-    mapper.addMapping(ui->spinBoxOutboundQuantity      , OptionsModel::I2POutboundQuantity);
-    mapper.addMapping(ui->spinBoxOutboundLength        , OptionsModel::I2POutboundLength);
-    mapper.addMapping(ui->spinBoxOutboundLengthVariance, OptionsModel::I2POutboundLengthVariance);
-    mapper.addMapping(ui->spinBoxOutboundBackupQuantity, OptionsModel::I2POutboundBackupQuantity);
-    mapper.addMapping(ui->checkBoxAllowZeroHop         , OptionsModel::I2POutboundAllowZeroHop);
-    mapper.addMapping(ui->spinBoxOutboundIPRestriction , OptionsModel::I2POutboundIPRestriction);
-    mapper.addMapping(ui->spinBoxOutboundPriority      , OptionsModel::I2POutboundPriority);
-}*/
-
 void I2POptionsDialog::settingsModified()
 {
     ui->pushButtonCancel->setEnabled(true);
@@ -147,6 +123,7 @@ void I2POptionsDialog::onI2PStaticPKCheckBoxModified()
     }
 }
 
+// Need to enable/disable the remaining GUI widgets if this changes
 void I2POptionsDialog::onI2PEnabledCheckBoxModified()
 {
 
@@ -201,7 +178,19 @@ void I2POptionsDialog::onI2PEnabledCheckBoxModified()
     settingsModified();
 }
 
-void I2POptionsDialog::UpdateParameters()
+//******************************************************************************
+//
+//    Name: I2POptionsDialog::UpdateParameters
+//
+//    Parameters:   N/A
+//
+//    Description:  Called on Dialog creation to to update GUI settings from
+//                  mapArgs
+//
+//    Return:       N/A
+//
+//******************************************************************************
+void I2POptionsDialog::UpdateParameters(void)
 {
     bool I2PEnabled             = GetBoolArg(MAP_ARGS_I2P_OPTIONS_ENABLED,
                                          pI2PManager->getFileI2PPtr()->getEnableStatus());
@@ -288,13 +277,10 @@ void I2POptionsDialog::UpdateParameters()
     // Outbound Priority
     ui->spinBoxOutboundPriority->setValue( outboundPriority );
 
-    //EnableOrDisableGUIElements();
-
     // Settings have been refreshed
     onCloseDialog();
 }
 
-//void I2POptionsDialog::reject(){
 void I2POptionsDialog::reject()
 {
     if (changesAreDirty)
@@ -309,90 +295,12 @@ void I2POptionsDialog::reject()
             QDialog::accept();
             UpdateParameters();
         }
-        //else
-        //{
-        //    QDialog::reject();
-        //}
     }
     else
     {
         QDialog::accept();
     }
 }
-
-/*
-void I2POptionsDialog::pushButtonCancel()
-{
-    bool I2PEnabled             = pI2PManager->getFileI2PPtr()->getEnableStatus();
-    bool I2PStaticKey           = pI2PManager->getFileI2PPtr()->getStatic();
-    std::string samHost         = pI2PManager->getFileI2PPtr()->getSamHost();
-    int samPort                 = pI2PManager->getFileI2PPtr()->getSamPort();
-    std::string sessionName     = pI2PManager->getFileI2PPtr()->getSessionName();
-    int inboundQuantity         = pI2PManager->getFileI2PPtr()->getInboundQuantity();
-    int inboundLength           = pI2PManager->getFileI2PPtr()->getInboundLength();
-    int inboundLengthVariance   = pI2PManager->getFileI2PPtr()->getInboundLengthVariance();
-    int inboundBackupQuantity   = pI2PManager->getFileI2PPtr()->getInboundBackupQuantity();
-    bool inboundAllowZeroHop    = pI2PManager->getFileI2PPtr()->getInboundAllowZeroHop();
-    int inboundIPRestriction    = pI2PManager->getFileI2PPtr()->getInboundIPRestriction();
-    int outboutQuantity         = pI2PManager->getFileI2PPtr()->getOutboundQuantity();
-    int outboutLength           = pI2PManager->getFileI2PPtr()->getOutboundLength();
-    int outboutLengthVariance   = pI2PManager->getFileI2PPtr()->getOutboundLengthVariance();
-    int outboutBackupQuantity   = pI2PManager->getFileI2PPtr()->getOutboundBackupQuantity();
-    bool outboutAllowZeroHop    = pI2PManager->getFileI2PPtr()->getOutboundAllowZeroHop();
-    int outboutIPRestriction    = pI2PManager->getFileI2PPtr()->getOutboundIPRestriction();
-    int outboundPriority        = pI2PManager->getFileI2PPtr()->getOutboundPriority();
-    std::string publicKey       = pI2PManager->getFileI2PPtr()->getPrivateKey().substr(0, NATIVE_I2P_DESTINATION_SIZE);
-    std::string privateKey      = pI2PManager->getFileI2PPtr()->getPrivateKey();
-    std::string b32destaddr     = I2PSession::GenerateB32AddressFromDestination(publicKey);
-
-    // I2P Enabled
-    ui->checkBoxI2PEnabled->setChecked( I2PEnabled );
-    //Static Key
-    ui->checkBoxStaticPrivateKey->setChecked( I2PStaticKey );
-    // I2P Private Key
-    ui->plainTextEditPrivateKey->document()->setPlainText(QString::fromStdString(privateKey));
-    // I2P Public Key
-    ui->plainTextEditPublicKey->document()->setPlainText(QString::fromStdString(publicKey));
-    // I2P Base32 Destination Address
-    ui->lineEditB32Address->setText(QString::fromStdString(b32destaddr));
-    // SAM Host
-    ui->lineEditSAMHost->setText(QString::fromStdString( samHost ));
-    // SAM Port
-    ui->spinBoxSAMPort->setValue(samPort);
-    // Session Name
-    ui->lineEditTunnelName->setText(QString::fromStdString( sessionName ));
-    // Inbound Quantity
-    ui->spinBoxInboundQuantity->setValue( inboundQuantity );
-    // Inbound Length
-    ui->spinBoxInboundLength->setValue( inboundLength );
-    // Inbound Length Variance
-    ui->spinBoxInboundLengthVariance->setValue( inboundLengthVariance );
-    // Inbound Backup Quantity
-    ui->spinBoxInboundBackupQuantity->setValue( inboundBackupQuantity );
-    // Inbound Allow Zero Hop
-    ui->checkBoxInboundAllowZeroHop->setChecked( inboundAllowZeroHop );
-    // Inbound IP Restriction
-    ui->spinBoxInboundIPRestriction->setValue( inboundIPRestriction );
-    // Outbound Quantity
-    ui->spinBoxOutboundQuantity->setValue( outboutQuantity );
-    // Outbound Length
-    ui->spinBoxOutboundLength->setValue( outboutLength );
-    // Outbound Length Variance
-    ui->spinBoxOutboundLengthVariance->setValue( outboutLengthVariance );
-    // Outbound Backup Quantity
-    ui->spinBoxOutboundBackupQuantity->setValue( outboutBackupQuantity );
-    // Outbound Allow Zero Hop
-    ui->checkBoxAllowZeroHop->setChecked( outboutAllowZeroHop );
-    // Outbound IP Restriction
-    ui->spinBoxOutboundIPRestriction->setValue( outboutIPRestriction );
-    // Outbound Priority
-    ui->spinBoxOutboundPriority->setValue( outboundPriority );
-
-    ui->pushButtonApply->setEnabled(false);
-
-    changesAreDirty = false;
-}
-*/
 
 void I2POptionsDialog::pushButtonApply()
 {
@@ -412,8 +320,19 @@ void I2POptionsDialog::pushButtonApply()
     }
 }
 
-
-bool I2POptionsDialog::WriteToDataFile()
+//******************************************************************************
+//
+//    Name: I2POptionsDialog::WriteToDataFile
+//
+//    Parameters:   N/A
+//
+//    Description:  Writes current GUI state to I2P data file in memory, then
+//                  flushes to data file on disk
+//
+//    Return:       bool - status of file write to disk
+//
+//******************************************************************************
+bool I2POptionsDialog::WriteToDataFile(void)
 {
     // I2P Enabled
     pI2PManager->getFileI2PPtr()->setEnableStatus( ui ->checkBoxI2PEnabled->isChecked() );
@@ -455,7 +374,18 @@ bool I2POptionsDialog::WriteToDataFile()
     return (pI2PManager->WriteToI2PSettingsFile());
 }
 
-void I2POptionsDialog::WriteToMapArgs()
+//******************************************************************************
+//
+//    Name: I2POptionsDialog::WriteToMapArgs
+//
+//    Parameters:   N/A
+//
+//    Description:  Overrides mapArgs with current GUI values for each I2P option.
+//
+//    Return:       N/A
+//
+//******************************************************************************
+void I2POptionsDialog::WriteToMapArgs(void)
 {
     bool I2PEnabled             = ui->checkBoxI2PEnabled->isChecked();
     bool I2PStaticKey           = ui->checkBoxStaticPrivateKey->isChecked();
@@ -506,6 +436,20 @@ void I2POptionsDialog::WriteToMapArgs()
     HardSetArg(MAP_ARGS_I2P_OPTIONS_OUTBOUND_PRIORITY, NumberToString(outboundPriority));
 }
 
+//******************************************************************************
+//
+//    Name: I2POptionsDialog::EnableOrDisableGUIElements
+//
+//    Parameters:   N/A
+//
+//    Description:  Will enable or disable (grey out) settings within the GUI
+//                  depending on whether or not they have been defined externally.
+//                  That is to say, within anoncoin.conf or via argument to
+//                  anoncoin-qtc.
+//
+//    Return:       N/A
+//
+//******************************************************************************
 void I2POptionsDialog::EnableOrDisableGUIElements(void)
 {
     bool bI2PEnabled              = !(pI2PManager->IsMapArgumentDefinedExternally(MAP_ARGS_I2P_OPTIONS_ENABLED));
@@ -566,6 +510,7 @@ void I2POptionsDialog::pushButtonCancel(void)
     UpdateParameters();
     hide();
 }
+
 
 void I2POptionsDialog::onAcceptDialog(void)
 {

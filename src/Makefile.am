@@ -105,10 +105,10 @@ ANONCOIN_CORE_H = \
   crypter.h \
   db.h \
   hash.h \
-  i2pdatafile.h \
-  i2pmanager.h \
   i2psam.h \
   i2pwrapper.h \
+  i2pdatafile.h \
+  i2pmanager.h \
   init.h \
   key.h \
   keystore.h \
@@ -246,8 +246,8 @@ libanoncoin_common_a_SOURCES = \
   core_read.cpp \
   core_write.cpp \
   block.cpp \
-  i2pmanager.cpp \
   i2pdatafile.cpp \
+  i2pmanager.cpp \
   timedata.cpp \
   transaction.cpp \
   hash.cpp \
@@ -260,6 +260,11 @@ libanoncoin_common_a_SOURCES = \
   sigcache.cpp \
   sign.cpp \
   $(ANONCOIN_CORE_H)
+
+#if ENABLE_I2P_SETTINGS_FILE
+#libanoncoin_common_a_SOURCES += i2pdatafile.cpp
+#libanoncoin_common_a_SOURCES += i2pmanager.cpp
+#endif
 
 # util: shared between all executables.
 # This library *must* be included to make sure that the glibc

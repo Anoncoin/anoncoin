@@ -48,24 +48,6 @@ public:
         ThreadsScriptVerif,     // int
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
-/*        eI2PUseI2POnly,
-        eI2PStaticPrivateKey,
-        eI2PSAMHost,
-        eI2PSAMPort,
-        eI2PSessionName,
-        I2PInboundQuantity,
-        I2PInboundLength,
-        I2PInboundLengthVariance,
-        I2PInboundBackupQuantity,
-        I2PInboundAllowZeroHop,
-        I2PInboundIPRestriction,
-        I2POutboundQuantity,
-        I2POutboundLength,
-        I2POutboundLengthVariance,
-        I2POutboundBackupQuantity,
-        I2POutboundAllowZeroHop,
-        I2POutboundIPRestriction,
-        I2POutboundPriority,*/
         OptionIDRowCount,
     };
 
