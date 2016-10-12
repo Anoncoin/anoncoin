@@ -43,7 +43,7 @@ double GetDifficulty(const CBlockIndex* blockindex)
     }
     uint256 uintBlockDiff;
     uintBlockDiff.SetCompact( blockindex->nBits );
-    return 1.0 / GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
+    return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
 }
 
 

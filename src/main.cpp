@@ -54,6 +54,7 @@ const uint8_t REJECT_CHECKPOINT = 0x43;
 //! from client version v0.8.5.5 has not been seen or supported on the network
 static const int32_t MIN_PEER_PROTO_VERSION = 70006;
 static const int32_t MIN_PEER_PROTO_VERSION_AFTER_HF = 70010; //! After the Hardfork Block is reached, this version will be obligatory
+static const int32_t MIN_PEER_PROTO_VERSION_AFTER_HF2 = 70012; //! After the second Hardfork Block changing PID parameters is reached, this version will be obligatory
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 const uint32_t DEFAULT_BLOCK_MAX_SIZE = 750000;
@@ -1375,8 +1376,9 @@ bool IsInitialBlockDownload()
     if (lockIBDState)
         return false;
     // With 3min blocks, we have ~20/hour set now for 8hrs, btc was 24
+    // Else, allow up to a one week old non-synchronized blockchain, in case of mining problem
     bool state = (chainActive.Height() < pindexBestHeader->nHeight - 8 * 20 ||
-            pindexBestHeader->GetBlockTime() < GetTime() - 8 * 60 * 60);
+            pindexBestHeader->GetBlockTime() < GetTime() - 7 * 24 * 60 * 60);
     if (!state)
         lockIBDState = true;
     return state;
@@ -3736,13 +3738,13 @@ string GetWarnings(string strFor)
     if (CLIENT_VERSION_IS_RELEASE) {
 #if defined( HARDFORK_BLOCK )
         ostringstream ss;
-        ss << HARDFORK_BLOCK;
+        ss << HARDFORK_BLOCK2;
         strStatusBar = "This is a HARDFORK build for block " + ss.str();
 #endif
     } else {
 #if defined( HARDFORK_BLOCK )
         ostringstream ss;
-        ss << HARDFORK_BLOCK;
+        ss << HARDFORK_BLOCK2;
         strStatusBar = "This is a HARDFORK pre-release test build, and will fork at block " + ss.str();
 #else
         strStatusBar = _("This is a pre-release test build - use at your own risk");
@@ -4045,6 +4047,19 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             pfrom->fDisconnect = true;
             return true;
         }
+
+       if( pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2 ) //! If the second hardfork block is reached, send an error message and disconnect.
+       {
+            //! relay alerts prior to disconnection
+            RelayAlerts(pfrom);
+            //! disconnect from peers older than this proto version
+            LogPrintf("partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK2);
+            pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
+                              strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK2));
+            pfrom->fDisconnect = true;
+            return true;
+       }
+
 #endif
               
         //! Protocol 70009 uses only IP addresses on initiating connections over clearnet, after that full size addresses
@@ -4615,7 +4630,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 UpdateBlockAvailability(pfrom->GetId(), inv.hash);
                 if (!fAlreadyHave && !fImporting && !fReindex && !IsInitialBlockDownload() && !mapBlocksInFlight.count(inv.hash)) {
                     /* Cslave: !IsInitialBlockDownload() is needed otherwise it start to download the same headers several time per peer and from all peers, wasting a lot of computing time and bandwidth */
-
+                    
                     // First request the headers preceeding the announced block. In the normal fully-synced
                     // case where a new block is announced that succeeds the current tip (no reorganization),
                     // there are no such headers.
@@ -4709,6 +4724,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else if (strCommand == "getheaders")
     {
+        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2) {
+            LogPrintf("getheaders partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK2);
+            pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
+            strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK2));
+            pfrom->fDisconnect = true;
+        }
+
         CBlockLocator locator;
         uintFakeHash hashStop;
         vRecv >> locator >> hashStop;
@@ -4890,9 +4912,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 Misbehaving(pfrom->GetId(), 20);
                 return error("non-continuous headers sequence");
             }
-            if (!AcceptBlockHeader(header, state, &pindexLast)) {
+            if (!AcceptBlockHeader(header, state, &pindexLast)) {         
                 int nDoS;
-                if (state.IsInvalid(nDoS)) {
+                if (state.IsInvalid(nDoS)) {          
+                    if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2)
+                        nDoS = 100;
                     if (nDoS > 0)
                         Misbehaving(pfrom->GetId(), nDoS);
                     return error("invalid header received");
@@ -4909,7 +4933,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             // from there instead.
             // For the HardFork we will not accept to synchronize with old version peers 2400 blocks prior to the hardfork.
 #if defined( HARDFORK_BLOCK )
-            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || pfrom->nStartingHeight < HARDFORK_BLOCK - 2400) {                
+            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || pfrom->nStartingHeight < HARDFORK_BLOCK2 - 2400) {                
 #endif                    
                 LogPrint("net", "more getheaders (%d) to end to %s (startheight:%d)\n", pindexLast->nHeight, GetPeerLogStr(pfrom), pfrom->nStartingHeight);
                 pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256(0));
@@ -4956,6 +4980,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     
     else if (strCommand == "getaddr")
     {
+        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2) {
+            LogPrintf("getaddr partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK2);
+            pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
+            strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK2));
+            pfrom->fDisconnect = true;
+        }
+
         LogPrint("addrman", "addrman: getaddr received from %s (startheight:%d) nVersion %d \n", GetPeerLogStr(pfrom), pfrom->nStartingHeight, pfrom->nVersion);
         pfrom->vAddrToSend.clear();
         bool fIpOnly = (pfrom->addr.nServices & NODE_I2P) != 0;
@@ -5420,7 +5451,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             // Only actively request headers from up to two peers, unless we're close to today. This is to minimize the likelihood of downtime, while keeping bandwidth and computing ressource to a minimum. For the hardfork, we accept IBD from all peers till 2400 blocks before the Hardfork block when the new version will be enforced for synching. This ensure that there is no synching from peers not ready for the hardfork from this time on. Of course, after the hardfork block the new version will still be an obligation.
             if ( fFetch || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
 #if defined( HARDFORK_BLOCK )
-                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF || !IsInitialBlockDownload() || pto->nStartingHeight < HARDFORK_BLOCK - 2400) {
+                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || !IsInitialBlockDownload() || pto->nStartingHeight < HARDFORK_BLOCK2 - 2400) {
 #else
                 if( pto->nVersion >= MIN_PEER_PROTO_VERSION || !IsInitialBlockDownload()) {
 #endif

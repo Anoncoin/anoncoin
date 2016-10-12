@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 #define HARDFORK_BLOCK 555555 //! CSlave: if not hardcoded, the hardfork block can be defined with "configure --with-hardfork=block"
+#define HARDFORK_BLOCK2 585555 // block to change the parameters of the PID
 
 class CBlockHeader;
 class CBlockIndex;
@@ -92,10 +93,10 @@ private:
     //! used as the output value if there is no short term error in the block times.
 
     //! The PID Control loop values as defined by the user
-    const double dProportionalGain; //! The Proportional gain of the control loop
-    const int64_t nIntegrationTime; //! The Integration period in seconds.
-    const double dIntegratorGain;   //! The Integration gain of the control loop
-    const double dDerivativeGain;   //! The Derivative gain of the control loop
+    double dProportionalGain; //! The Proportional gain of the control loop
+    int64_t nIntegrationTime; //! The Integration period in seconds.
+    double dIntegratorGain;   //! The Integration gain of the control loop
+    double dDerivativeGain;   //! The Derivative gain of the control loop
 
     //! Operational constants, intermediate results and logging options
     bool fUsesHeader;

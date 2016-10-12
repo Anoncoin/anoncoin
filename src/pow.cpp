@@ -26,11 +26,18 @@ using namespace std;
 #define USESHEADER_DEFAULT false
 #define NMAXDIFFINCREASE "200"
 #define NMAXDIFFDECREASE "170"
+#define NMAXDIFFINCREASE2 150
+#define NMAXDIFFDECREASE2 130
 #define DMININTEGRATOR 170
+#define DMININTEGRATOR2 176
 #define DMAXINTEGRATOR 190
-#define WEIGHTEDAVGTIPBLOCKS_UP 4
-#define WEIGHTEDAVGTIPBLOCKS_DOWN 6
-
+#define DMAXINTEGRATOR2 195
+#define WEIGHTEDAVGTIPBLOCKS_UP 9
+#define WEIGHTEDAVGTIPBLOCKS_DOWN 20
+#define PID_PROPORTIONALGAIN2 1.6
+#define PID_INTEGRATORTIME2 129600
+#define PID_INTEGRATORGAIN2 8   
+#define PID_DERIVATIVEGAIN2 3
 
 
 // #define LOG_DEBUG_OUTPUT
@@ -688,8 +695,8 @@ static uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast)
     return uintNewDifficulty;
 }
 
-CRetargetPidController::CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegratorTimeIn, const double dIntegratorGainIn, const double dDerivativeGainIn ) :
-    dProportionalGain(dProportionalGainIn), nIntegrationTime(nIntegratorTimeIn), dIntegratorGain(dIntegratorGainIn), dDerivativeGain(dDerivativeGainIn)
+CRetargetPidController::CRetargetPidController( const double dProportionalGainIn, const int64_t nIntegrationTimeIn, const double dIntegratorGainIn, const double dDerivativeGainIn ) :
+    dProportionalGain(dProportionalGainIn), nIntegrationTime(nIntegrationTimeIn), dIntegratorGain(dIntegratorGainIn), dDerivativeGain(dDerivativeGainIn)
 {
     fTipFilterInitialized = false;
     nIntegratorHeight = nIndexFilterHeight = 0;
@@ -799,6 +806,7 @@ uint256 CRetargetPidController::GetTestNetStartingDifficulty( void )
 bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, const uint256& uintCalculated, const uint256& uintPOWlimit, const CBlockIndex* pIndex )
 {
     const int64_t nLastBlockIndexTime = pIndex->GetBlockTime();
+    const int64_t nTimeSinceLastBlock = nLastCalculationTime - nLastBlockIndexTime;
     pIndex = pIndex->pprev; 
     const int64_t nPreviousBlockIndexTime = pIndex->GetBlockTime();
     pIndex = pIndex->pprev;
@@ -807,8 +815,11 @@ bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, c
     const int64_t nLast2BlockSpace = nLastBlockIndexTime - nBeforePreviousBlockIndexTime;
     const uint32_t nIntervalForceDiffDecrease = 3 * nTargetSpacing;
     const uint32_t nInterval2ForceDiffDecrease = 5 * nTargetSpacing;
+    const uint32_t nIntervalForceExtDiffDecrease = 10 * nTargetSpacing;
     bool fLimited = true;                                       //! Assume limit need to be applied to the result.
     
+
+
     if( uintCalculated < uintPrevDiffForLimitsLast ) {          // CSlave: If the new diff < previous diff of last block, assume an increase of diff.
         if( uintCalculated < uintDiffAtMaxIncreaseTip ) {       // Check the DiffAtMaxIncrease that is calculated on the partial tip to cap the increase of Diff. 
             uintResult = uintDiffAtMaxIncreaseTip;              // Set the result equal to the maximum difficulty increase limit. A smaller number is more difficult.
@@ -844,6 +855,10 @@ bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, c
             }
         }
     } 
+
+    if (uintResult < uintDiffAtMaxDecreaseTip && nTimeSinceLastBlock >= nIntervalForceExtDiffDecrease && pIndex->nHeight > HARDFORK_BLOCK2) { 
+        uintResult = uintDiffAtMaxDecreaseTip;
+		fLimited = true; }
 
     //! Lastly a check is made to see that the difficulty is not less than the absolute limit, this is also done it NextWorkRequired, but we need it
     //! done here too for TestNets and diagnostic logging.
@@ -1019,7 +1034,10 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     uintPrevDiffCalculated /= nDividerSum;
     
     nDividerSum = 0;
-    nWeightedAvgTipBlocksUp = WEIGHTEDAVGTIPBLOCKS_UP;
+    nWeightedAvgTipBlocksUp = 4;
+    if( pIndex->nHeight > HARDFORK_BLOCK2 )
+        nWeightedAvgTipBlocksUp = WEIGHTEDAVGTIPBLOCKS_UP;
+
     assert(nWeightedAvgTipBlocksUp <= nTipFilterBlocks);
     uintTipDiffCalculatedUp.SetNull();
     for( int32_t i = nTipFilterBlocks - nWeightedAvgTipBlocksUp + 1; i <= nTipFilterBlocks; i++ ) { //CSlave: Calculate a weighted moving average on the partial tip for diff UP
@@ -1031,7 +1049,10 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     uintTipDiffCalculatedUp /= nDividerSum;
 
     nDividerSum = 0;
-    nWeightedAvgTipBlocksDown = WEIGHTEDAVGTIPBLOCKS_DOWN;
+    nWeightedAvgTipBlocksDown = 6;
+    if( pIndex->nHeight > HARDFORK_BLOCK2 )
+        nWeightedAvgTipBlocksDown = WEIGHTEDAVGTIPBLOCKS_DOWN;
+
     assert(nWeightedAvgTipBlocksDown <= nTipFilterBlocks);
     uintTipDiffCalculatedDown.SetNull();
     for( int32_t i = nTipFilterBlocks - nWeightedAvgTipBlocksDown + 1; i <= nTipFilterBlocks; i++ ) { //CSlave: Calculate a weighted moving average on the partial tip for diff DOWN
@@ -1053,6 +1074,11 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
         uintPrevDiffForLimitsLast.SetCompact( pIndex->nBits );    //Previous difficulty of the last block, useful to know if Diff goes UP or DOWN
         uintPrevDiffForLimitsTipUp = uintTipDiffCalculatedUp;     //Previous difficulty calculated on the partial tip blocks selected for diff UP
         uintPrevDiffForLimitsTipDown = uintTipDiffCalculatedDown; //Previous difficulty calculated on the partial tip blocks selected for diff DOWN
+
+    if( pIndex->nHeight > HARDFORK_BLOCK2 ) { 
+        nMaxDiffIncrease = NMAXDIFFINCREASE2;
+        nMaxDiffDecrease = NMAXDIFFDECREASE2;
+    }
 
     if (nMaxDiffIncrease <= 101 ) {
         LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
@@ -1170,12 +1196,16 @@ bool CRetargetPidController::ChargeIntegrator( const CBlockIndex* pIndex )      
     //! Given that information, the Integrator term (should be) now easy to calculate and ready
     //! for use as part of the new pid retarget output.  Save the results for the next steps...
     dIntegratorBlockTime = (double)nIntegratorChargeTime / (double)(nBlocksSampled - 1);
-    if (dIntegratorBlockTime < DMININTEGRATOR) { 
-        dIntegratorBlockTime = DMININTEGRATOR;    //! Capped to prevent integrator windup 
-    } else if (dIntegratorBlockTime > DMAXINTEGRATOR) {
-        dIntegratorBlockTime = DMAXINTEGRATOR;
-    }
 
+    if (dIntegratorBlockTime < DMININTEGRATOR && nIntegratorHeight <= HARDFORK_BLOCK2) { 
+        dIntegratorBlockTime = DMININTEGRATOR;    //! Capped to prevent integrator windup   
+    } else if (dIntegratorBlockTime < DMININTEGRATOR2 && nIntegratorHeight > HARDFORK_BLOCK2) {
+        dIntegratorBlockTime = DMININTEGRATOR2;
+    } else if (dIntegratorBlockTime > DMAXINTEGRATOR && nIntegratorHeight <= HARDFORK_BLOCK2) {
+        dIntegratorBlockTime = DMAXINTEGRATOR;    
+    } else if (dIntegratorBlockTime > DMAXINTEGRATOR2 && nIntegratorHeight > HARDFORK_BLOCK2) {
+        dIntegratorBlockTime = DMAXINTEGRATOR2;
+    }
     return true;
 }
 
@@ -1196,6 +1226,13 @@ bool CRetargetPidController::UpdateOutput( const CBlockIndex* pIndex, const CBlo
             uintTargetAfterLimits = uintPOWlimit;
             return false;
         }
+
+    if( pIndex->nHeight > HARDFORK_BLOCK2 ) {
+        dProportionalGain=PID_PROPORTIONALGAIN2;
+        nIntegrationTime=PID_INTEGRATORTIME2;
+        dIntegratorGain=PID_INTEGRATORGAIN2;
+        dDerivativeGain=PID_DERIVATIVEGAIN2;
+    }
 
         //! We can now calculate the controllers output time, but not the dimensionless number which is divided by nTargetSpacing and
         //! applied to the new overall Proof-of-Work that will be required as the minimum.

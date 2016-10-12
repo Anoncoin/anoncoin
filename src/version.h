@@ -10,6 +10,6 @@
 //! Network protocol version is all that is left in this file, and so it does not allocate a different constant in one library
 //! verses another accidentally for you, it is now simply a define, and will take on whatever default data type you need it
 //! to be.  Any other values you expected to find here have been moved to where they are used, if at all anymore...GR
-#define PROTOCOL_VERSION 70010
+#define PROTOCOL_VERSION 70012
 
 #endif
