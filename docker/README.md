@@ -12,7 +12,7 @@ $ `docker -t anoncoin .`
 
 If you don't have a anoncoin.conf yet, the entrypoint.sh will make one for you with a random password.
 
-$ `docker run --name anonnode -v confandblockchainOnHostPath:/home/anoncoin/.anoncoin -p 9376:9376 -p 9377:9377 -d anoncoin`
+$ `docker run --name anonnode -v confandblockchainOnHostPath:/home/anoncoin/.anoncoin -p 9376:9376 -p 9377:9377 -d meeh/anoncoin`
 
 **Options**
 
