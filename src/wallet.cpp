@@ -62,7 +62,7 @@ CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 //!
 unsigned int nTxConfirmTarget = 1;
 //!
-bool bSpendZeroConfChange = true;
+bool bSpendZeroConfChange = false;
 //!
 bool fSendFreeTransactions = false;
 //!
