@@ -1,5 +1,5 @@
 // Copyright (c) 2012 Pieter Wuille
-// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Copyright (c) 2013-2017 The Anoncoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef ANONCOIN_ADDRMAN_H

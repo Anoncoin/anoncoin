@@ -1,5 +1,5 @@
 // Copyright 2009 Colin Percival, 2011 ArtForz, 2012-2013 pooler
-// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Copyright (c) 2013-2017 The Anoncoin Core developers
 #ifndef SCRYPT_H
 #define SCRYPT_H
 

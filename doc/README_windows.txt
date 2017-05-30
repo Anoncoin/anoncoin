@@ -1,6 +1,6 @@
 Anoncoin 0.9.4 Pre-release and release builds.
 
-Copyright (c) 2013-2015 Anoncoin Core Developers
+Copyright (c) 2013-2017 Anoncoin Core Developers
 
 Distributed under the MIT software license, see the accompanying
 file COPYING or http://www.opensource.org/licenses/mit-license.php.

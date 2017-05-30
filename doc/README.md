@@ -1,7 +1,7 @@
 Anoncoin 0.9.4
 ==============
 
-Copyright (c) 2013-2015 The Anoncoin Developers
+Copyright (c) 2013-2017 The Anoncoin Developers
 
 Pre-compiled Anoncoin binaries
 ------------------------------

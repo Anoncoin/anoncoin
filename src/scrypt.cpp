@@ -26,7 +26,7 @@
  * This file was originally written by Colin Percival as part of the Tarsnap
  * online backup system.
  */
-// Copyright (c) 2013-2015 The Anoncoin Core developers
+// Copyright (c) 2013-2017 The Anoncoin Core developers
 
 #include "scrypt.h"
 // Anoncoin-config.h has been loaded...
