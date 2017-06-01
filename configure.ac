@@ -3,9 +3,9 @@ AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 0)
 define(_CLIENT_VERSION_MINOR, 9)
 define(_CLIENT_VERSION_REVISION, 6)
-define(_CLIENT_VERSION_BUILD, 12)
+define(_CLIENT_VERSION_BUILD, 13)
 define(_CLIENT_VERSION_IS_RELEASE, true)
-define(_COPYRIGHT_YEAR, 2016)
+define(_COPYRIGHT_YEAR, 2017)
 
 # In configure.ac, lines commented with '#' that occur after AC_INIT will appear in the resulting configure script. dnl comments will not.
 # One purpose of dnl is to discard unwanted newlines in an effort to make the configure script readable.
