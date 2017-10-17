@@ -63,6 +63,7 @@ Value ping(const Array& params, bool fHelp)
     return Value::null;
 }
 
+#ifdef ENABLE_I2PSAM
 Value destination(const Array& params, bool fHelp)
 {
    if (fHelp || params.size() > 2)
@@ -205,6 +206,12 @@ Value destination(const Array& params, bool fHelp)
 
     return ret;
 }
+#else
+Value destination(const Array& params, bool fHelp) {
+  Array ret;
+  return ret;
+}
+#endif
 
 static void CopyNodeStats(std::vector<CNodeStats>& vstats)
 {

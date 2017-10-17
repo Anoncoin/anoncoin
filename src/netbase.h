@@ -120,9 +120,11 @@ class CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
             READWRITE(FLATDATA(ip));
+#ifdef ENABLE_I2PSAM
              if (!(nType & SER_IPADDRONLY)) {
                 READWRITE(FLATDATA(i2pDest));
              }
+#endif
         }
 };
 
@@ -186,9 +188,11 @@ class CService : public CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
             READWRITE(FLATDATA(ip));
+#ifdef ENABLE_I2PSAM
              if (!(nType & SER_IPADDRONLY)) {
                 READWRITE(FLATDATA(i2pDest));
              }
+#endif
             unsigned short portN = htons(port);
             READWRITE(portN);
             if (ser_action.ForRead())
@@ -231,6 +235,8 @@ bool isValidI2pAddress( const std::string& I2pAddr );
 bool isValidI2pB32( const std::string& B32Address );
 bool isStringI2pDestination( const std::string & strName );
 std::string B32AddressFromDestination(const std::string& destination);
+#ifdef ENABLE_I2PSAM
 uint256 GetI2pDestinationHash( const std::string& destination );
+#endif
 
 #endif // ANONCOIN_NETBASE_H

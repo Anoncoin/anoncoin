@@ -299,18 +299,18 @@ void CAddrMan::MakeTried(CAddrInfo& info, int nId)
     int nIdEvict = vvTried[nKBucket][nKBucketPos];
     assert(mapInfo.count(nIdEvict) == 1);
     CAddrInfo& infoOld = mapInfo[nIdEvict];
- 
+
     // Remove the to-be-evicted item from the tried set.
     infoOld.fInTried = false;
     vvTried[nKBucket][nKBucketPos] = -1;
     nTried--;
- 
+
     // find which new bucket it belongs to
     int nUBucket = infoOld.GetNewBucket(nKey);
     int nUBucketPos = infoOld.GetBucketPosition(nKey, true, nUBucket);
     ClearNew(nUBucket, nUBucketPos);
     assert(vvNew[nUBucket][nUBucketPos] == -1);
- 
+
     // Enter it into the new set again.
     infoOld.nRefCount = 1;
     vvNew[nUBucket][nUBucketPos] = nIdEvict;
@@ -403,9 +403,9 @@ void CAddrMan::Good_(const CAddress& addr, int64_t nTime)
 
 bool CAddrMan::Add_(const CAddress& addrIn, const CNetAddr& source, int64_t nTimePenalty)
 {
-#ifdef I2PADDRMAN_EXTENSIONS
     //! We now need to check for an possibly modify the CAddress object for the garliccat field, so we make a local copy
     CAddress addr = addrIn;
+#ifdef I2PADDRMAN_EXTENSIONS
     /**
      * Before we can add an address, even before we can test if its Routable, or use the Find command to match correctly,
      * we need to make sure that any I2P addresses have the GarlicCat field setup correctly in the IP area of the
@@ -687,7 +687,7 @@ void CAddrMan::GetAddr_(std::vector<CAddress>& vAddr)
         //! it into the address manager and are RFC1918 IPs will not be globally shared with peers on the
         //! Anoncoin network, originally done for software testing, now seems like a good idea to leave it.
         //! CSlave: There is a logical error in the following conditional string, (!fIpOnly || !ai.IsI2P())
-        //! always return false and false so the addresses were never shared to I2P peers. Probably the 
+        //! always return false and false so the addresses were never shared to I2P peers. Probably the
         //! fIpOnly check is flawed as it always return true even for I2P only peers. Furthermore I think
         //! there is no harm to share both IP and I2P address to all peers, hence those conditions are removed.
         //if( !ai.IsTerrible() && !ai.IsRFC1918() && (!fIpOnly || !ai.IsI2P()) && (!fI2pOnly || ai.IsI2P()) )

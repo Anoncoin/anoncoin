@@ -1509,7 +1509,7 @@ void ThreadDNSAddressSeed()
         (!GetBoolArg("-forcednsseed", false))) {
         // MilliSleep(11 * 1000);
         MilliSleep(120 * 1000);
-        
+
         LOCK(cs_vNodes);
         if (vNodes.size() >= 2) {
             LogPrintf("P2P peers available. Skipped DNS seeding.\n");
@@ -2147,8 +2147,10 @@ void StartNode(boost::thread_group& threadGroup)
         if (!adb.Read(addrman))
             LogPrintf("Invalid or missing peers.dat; recreating\n");
     }
+#ifdef ENABLE_I2PSAM
     LogPrintf("Loaded %i addresses from peers.dat in %dms and setup a %d entry address book for b32.i2p destinations.\n",
            addrman.size(), GetTimeMillis() - nStart, addrman.b32HashTableSize() );
+#endif
     fAddressesInitialized = true;
 
     if (semOutbound == NULL) {
@@ -2474,7 +2476,11 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     //! It is no longer meaningful, and should be abandoned as an input parameter, it only serves to confusion and cloud the many issues involved
     //! in the node creation process.  Here it is assigned to the addrName field, which maybe useful in debugging problems, if it shows up incorrectly.
     //! Also note, all the subclasses vRecv, ssSend & hdrbuf get defined here  the same stream type during this initialization.
+#ifdef ENABLE_I2PSAM
     nStreamType = SER_NETWORK | (addrIn.IsNativeI2P() ? 0 : SER_IPADDRONLY);
+#else
+    nStreamType = SER_NETWORK;
+#endif
     SetSendStreamType( nStreamType );
     SetRecvStreamType( nStreamType );
     ssSend.SetType( nStreamType );

@@ -357,7 +357,11 @@ public:
 
     void SetStreamTypeBasedOnServices()
     {
+#ifdef ENABLE_I2PSAM
         SetStreamType( SER_NETWORK | (nServices & NODE_I2P) ? 0 : SER_IPADDRONLY );
+#else
+        SetStreamType( SER_NETWORK | 0 );
+#endif
     }
 
     unsigned int GetStreamType() const { return nStreamType; }
@@ -422,8 +426,8 @@ public:
                  vAddrToSend[insecure_rand() % vAddrToSend.size()] = addr;
              } else {
             vAddrToSend.push_back(addr);
-            } 
-        } 
+            }
+        }
     }
 
 

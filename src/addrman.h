@@ -6,7 +6,9 @@
 #define ANONCOIN_ADDRMAN_H
 
 //! This allows the extensions required to be compiled for the Anoncoin AddrManager b32.i2p destination lookup functionality
+#ifdef ENABLE_I2PSAM
 #define I2PADDRMAN_EXTENSIONS
+#endif
 
 // Many builder specific things set in the config file,
 // Included here as we need ENABLE_I2PSAM
@@ -439,7 +441,7 @@ public:
                 info.nServices &= 0xFF;
             }
 #endif
-            
+
             mapAddr[info] = n;
             info.nRandomPos = vRandom.size();
             vRandom.push_back(n);
@@ -513,7 +515,7 @@ public:
             }
         }
         nTried -= nLost;
-        
+
         // Deserialize positions in the new table (if possible).
         for (int bucket = 0; bucket < nUBuckets; bucket++) {
             int nSize = 0;
@@ -531,7 +533,7 @@ public:
                 }
             }
         }
- 
+
         // Prune new entries with refcount 0 (as a result of collisions).
         int nLostUnk = 0;
         for (std::map<int, CAddrInfo>::const_iterator it = mapInfo.begin(); it != mapInfo.end(); ) {
@@ -546,7 +548,7 @@ public:
         if (nLost + nLostUnk > 0) {
             LogPrint("addrman", "addrman lost %i new and %i tried addresses due to collisions\n", nLostUnk, nLost);
         }
- 
+
         Check();
     }
 
@@ -574,7 +576,7 @@ public:
         nTried = 0;
         nNew = 0;
     }
- 
+
     CAddrMan()
     {
     Clear();

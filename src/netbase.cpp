@@ -731,6 +731,7 @@ static const unsigned char pchGarlicCat[] = { 0xFD,0x60, 0xDB,0x4D, 0xDD,0xB5 };
  */
 bool CNetAddr::SetSpecial(const std::string &strName)
 {
+#ifdef ENABLE_I2PSAM
     // Any address that ends in b32.i2p should be valid here, as the router itself is used to lookup the base64 destination, it returns without an address
     // if the string can not be found, if it's a base64 address, we can use it as is, to setup a new correctly formated CNetAddr object
     if( isStringI2pDestination( strName ) )                                      // Perhaps we've been given a I2P address, they come in 2 different ways
@@ -749,11 +750,8 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             if( IsI2PEnabled() && fNameLookup ) {                           // Check for dns set, we should at least log the error, if not.
                 int64_t iNow = GetTime();
                 if( !addr.size() )                                          // If we couldn't find it, much more to do..
-#ifdef ENABLE_I2PSAM
                     addr = I2PSession::Instance().namingLookup(strName);    // Expensive, but lets try, this could take a very long while...
-#else
                     LogPrintf( "This Build does NOT support I2P Communications, network lookup failed for: %s\n", strName );
-#endif
                 else
                     LogPrintf( "The i2p destination %s was found locally.\n", strName );
                 // If the address returned is a non-zero length string, the lookup was successful
@@ -774,6 +772,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         memcpy(i2pDest, addr.c_str(), I2P_DESTINATION_STORE);         // So now copy it to our CNetAddr object variable
         return true;                                                        // Special handling taken care of
     }
+#endif
 
     if (strName.size()>6 && strName.substr(strName.size() - 6, 6) == ".onion") {
         std::vector<unsigned char> vchAddr = DecodeBase32(strName.substr(0, strName.size() - 6).c_str());
@@ -1722,7 +1721,7 @@ bool IsBehindDarknet()
 
 bool IsMyDestinationShared()
 {
-    return GetBoolArg("-i2p.mydestination.shareaddr", true); //CSlave: sharing enabled by default unless specified shareaddr=0  
+    return GetBoolArg("-i2p.mydestination.shareaddr", true); //CSlave: sharing enabled by default unless specified shareaddr=0
 }
 
 // This test should pass for both public and private keys, as the first part of the private key is the public key.
