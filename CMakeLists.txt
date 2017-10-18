@@ -2,12 +2,12 @@ project(Anoncoin)
 cmake_minimum_required(VERSION 3.0)
 
 set(MAJOR_VERSION 0)
-set(MINOR_VERSION 10)
-set(REVISION_VERSION 99)
-set(BUILD_VERSION 0)
+set(MINOR_VERSION 9)
+set(REVISION_VERSION 6)
+set(BUILD_VERSION 13)
 set(VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${REVISION_VERSION}.${BUILD_VERSION})
 
-set(COPYRIGHT_YEAR "2013")
+set(COPYRIGHT_YEAR "2017")
 
 
 # secp256k1 requires c99 for in-for-loop variable declarations.
@@ -66,6 +66,7 @@ endif()
 option(BUILD_VERBOSE       "Verbose build output." ON)
 option(ENABLE_TESTS        "Compile and enable unit tests." FALSE)
 option(ENABLE_WALLET       "Enable wallet feature,)" ON)
+option(ENABLE_I2PSAM       "Enable I2P feature,)" ON)
 option(GLIBC_BACK_COMPAT   "Enable backwards compatibility with glibc and libstdc++" OFF)
 option(BUILD_QT            "Build anoncoin-qt GUI" ${HAVE_BITCOINQT_DEPS})
 option(USE_UPNP            "Whether UPnP support should be available or not." ${MINIUPNP_FOUND})
@@ -239,6 +240,10 @@ endif()
 
 if(USE_DBUS)
     add_definitions(-DUSE_DBUS)
+endif()
+
+if(ENABLE_I2PSAM)
+  add_definitions(-DENABLE_I2PSAM)
 endif()
 
 #-----------------------------------------------------------------------------

@@ -749,17 +749,18 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             addr = addrman.GetI2pBase64Destination( strName );
             if( IsI2PEnabled() && fNameLookup ) {                           // Check for dns set, we should at least log the error, if not.
                 int64_t iNow = GetTime();
-                if( !addr.size() )                                          // If we couldn't find it, much more to do..
+                if( !addr.size() ) {                                         // If we couldn't find it, much more to do..
                     addr = I2PSession::Instance().namingLookup(strName);    // Expensive, but lets try, this could take a very long while...
                     LogPrintf( "This Build does NOT support I2P Communications, network lookup failed for: %s\n", strName );
-                else
+                } else {
                     LogPrintf( "The i2p destination %s was found locally.\n", strName );
-                // If the address returned is a non-zero length string, the lookup was successful
-                if( !isValidI2pAddress( addr ) ) {                          // Not sure why, but that shouldn't happen, could be a 'new' destination type we can't yet handle
-                    LogPrintf( "After %d secs looking, even the i2p router was unable to locate %s\n", GetTime() - iNow, strName );
-                    return false;                                           // Not some thing we can use
-                } // else  // Otherwise the AddrMan or I2P router was able to find an I2P destination for this address, and it's now stored in 'addr' as a base64 string
+                    // If the address returned is a non-zero length string, the lookup was successful
+                    if( !isValidI2pAddress( addr ) ) {                          // Not sure why, but that shouldn't happen, could be a 'new' destination type we can't yet handle
+                        LogPrintf( "After %d secs looking, even the i2p router was unable to locate %s\n", GetTime() - iNow, strName );
+                        return false;                                           // Not some thing we can use
+                    } // else  // Otherwise the AddrMan or I2P router was able to find an I2P destination for this address, and it's now stored in 'addr' as a base64 string
                     // LogPrintf( "AddrMan or I2P Router lookup found [%s] address as destination\n[%s]\n", strName, addr );
+                }
             } else {                                                        // Log should tell the user they have DNS turned off, so this can't work
                 LogPrintf( "Unable to locate %s, no i2p router enabled or dns=0\n", strName );
                 return false;

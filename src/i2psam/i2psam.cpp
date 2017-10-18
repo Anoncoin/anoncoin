@@ -15,6 +15,11 @@
 #include <time.h>
 #include <stdarg.h>
 
+#if defined(unix) || defined(__APPLE__)
+#include <sys/socket.h>
+#define closesocket close
+#endif
+
 // Was 65536, seemed unnecessarily large
 #define SAM_BUFSIZE         4096
 #define I2P_DESTINATION_SIZE 516

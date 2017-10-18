@@ -71,6 +71,8 @@ set(LIB_HEADERS
     version.h
     walletdb.h
     wallet.h
+    i2psam.h
+    i2pwrapper.h
     )
 
 set(LIB_SOURCES
@@ -146,6 +148,8 @@ set(LIB_SOURCES
     util.cpp
     wallet.cpp
     walletdb.cpp
+    i2psam.cpp
+    i2pwrapper.cpp
     )
 
 
@@ -171,6 +175,7 @@ foreach(file ${LIB_HEADERS})
 endforeach()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/i2psam)
 
 add_definitions( "-DHAS_BOOST -DHAVE_WORKING_BOOST_SLEEP" )
 
@@ -192,7 +197,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/config
 #      libbitcoinconsensus
 #      libsecp256k1
 add_library(anoncoin ${DIR_HEADERS} ${DIR_SOURCES})
-target_link_libraries(anoncoin leveldb
+target_link_libraries(anoncoin leveldb i2psam
                       ${CMAKE_THREAD_LIBS_INIT}
                       ${BDB_LIBRARY}
                       ${Boost_LIBRARIES}

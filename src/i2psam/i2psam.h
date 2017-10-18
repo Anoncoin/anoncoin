@@ -8,9 +8,9 @@
 #define I2PSAM_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
+#include "../config/anoncoin-config.h"
 #endif
-#include "compat.h"
+#include "../compat.h"
 
 #include <string>
 #include <list>
