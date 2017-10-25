@@ -119,8 +119,8 @@ public:
         assert(hashGenesisBlock == uint256("0x00000be19c5a519257aa921349037d55548af7cabf112741eb905a26bb73e468"));
         assert(genesis.hashMerkleRoot == uint256("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
-        // vSeeds.push_back(CDNSSeedData("coinpool.in", "anoncoin.dnsseed.coinpool.in"));                           // Normal Seednode, NO DNS-SEED!
-        // vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed01.anoncoin.net"));                                // Normal Seednode, NO DNS-SEED!
+        vSeeds.push_back(CDNSSeedData("frank2.net", "seed.frank2.net"));                                         //Normal DNSSeed
+        vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed03.anoncoin.net"));                                // Normal DNSSeed
         vSeeds.push_back(CDNSSeedData("anoncoin.darkgamex.ch", "anc.dnsseed01.anoncoin.darkgamex.ch"));             // K1773R's DNSSeed
         vSeeds.push_back(CDNSSeedData("cryptoslave.com", "anc.dnsseed02.anoncoin.darkgamex.ch"));                   // Cryptoslave's DNSSeed
         // vSeeds.push_back(CDNSSeedData("www.virtual-currency.com", "anc.dnsseed01.anoncoin.virtual-currency.com"));  // keystroke's DNSSeed
