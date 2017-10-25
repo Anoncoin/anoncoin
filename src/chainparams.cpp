@@ -122,7 +122,7 @@ public:
         vSeeds.push_back(CDNSSeedData("frank2.net", "seed.frank2.net"));                                         //Normal DNSSeed
         vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed03.anoncoin.net"));                                // Normal DNSSeed
         vSeeds.push_back(CDNSSeedData("anoncoin.darkgamex.ch", "anc.dnsseed01.anoncoin.darkgamex.ch"));             // K1773R's DNSSeed
-        vSeeds.push_back(CDNSSeedData("cryptoslave.com", "anc.dnsseed02.anoncoin.darkgamex.ch"));                   // Cryptoslave's DNSSeed
+        // vSeeds.push_back(CDNSSeedData("cryptoslave.com", "anc.dnsseed02.anoncoin.darkgamex.ch"));                   // Cryptoslave's DNSSeed
         // vSeeds.push_back(CDNSSeedData("www.virtual-currency.com", "anc.dnsseed01.anoncoin.virtual-currency.com"));  // keystroke's DNSSeed
 
 #ifdef ENABLE_I2PSAM
