@@ -15,7 +15,8 @@
 #include <time.h>
 #include <stdarg.h>
 
-#if defined(unix) || defined(__APPLE__)
+//#if defined(unix) || defined(__APPLE__)
+#ifndef WIN32
 #include <sys/socket.h>
 #define closesocket close
 #endif

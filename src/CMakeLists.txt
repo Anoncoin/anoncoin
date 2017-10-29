@@ -177,7 +177,7 @@ endforeach()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/i2psam)
 
-add_definitions( "-DHAS_BOOST -DHAVE_WORKING_BOOST_SLEEP" )
+add_definitions( "-DHAS_BOOST -DHAVE_WORKING_BOOST_SLEEP -DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT" )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/config
                     ${BDB_INCLUDE}
@@ -201,9 +201,9 @@ target_link_libraries(anoncoin leveldb i2psam
                       ${CMAKE_THREAD_LIBS_INIT}
                       ${BDB_LIBRARY}
                       ${Boost_LIBRARIES}
-#                      ${OPENSSL_LIBRARIES}
-/usr/local/opt/openssl/lib/libcrypto.dylib
-/usr/local/opt/openssl/lib/libssl.dylib
+                      ${OPENSSL_LIBRARIES}
+#/usr/local/opt/openssl/lib/libcrypto.dylib
+#/usr/local/opt/openssl/lib/libssl.dylib
                      )
 
 if(USE_GMP)
