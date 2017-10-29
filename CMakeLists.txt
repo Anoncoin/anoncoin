@@ -371,11 +371,9 @@ if(UNIX)
     set(HARDENED_CXXFLAGS "-Wstack-protector -fPIE" CACHE STRING "")
     set(HARDENED_CPPFLAGS "-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" CACHE STRING "")
     if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-      set(HARDENED_LDFLAGS "-Wl" CACHE STRING "")
+      # Q: Why aren't any of these enabled?
       #set(HARDENED_LDFLAGS "-Wl,-z,relro" CACHE STRING "")
       #set(HARDENED_LDFLAGS "${HARDENED_LDFLAGS} -Wl,-z,now" CACHE STRING "")
-    else()
-      set(HARDENED_LDFLAGS "-Wl" CACHE STRING "")
     endif()
 
     set(CMAKE_REQUIRED_FLAGS "-Wl,--dynamicbase")
