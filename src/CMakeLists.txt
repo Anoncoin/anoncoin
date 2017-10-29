@@ -4,6 +4,7 @@
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 set(LIB_HEADERS
+    actorsystem.h
     addrman.h
     alert.h
     allocators.h
@@ -76,6 +77,7 @@ set(LIB_HEADERS
     )
 
 set(LIB_SOURCES
+    actorsystem.cpp
     addrman.cpp
     amount.cpp
     alert.cpp
@@ -184,6 +186,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/config
                     ${Boost_INCLUDE_DIRS}
                     ${OPENSSL_INCLUDE_DIRS}
                     ${OPENSSL_INCLUDE_DIR}
+                    ${CAF_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/leveldb/include
                     ${CMAKE_CURRENT_SOURCE_DIR}/leveldb/helpers
@@ -202,6 +205,7 @@ target_link_libraries(anoncoin leveldb i2psam
                       ${BDB_LIBRARY}
                       ${Boost_LIBRARIES}
                       ${OPENSSL_LIBRARIES}
+                      ${CAF_LIBRARIES}
 #/usr/local/opt/openssl/lib/libcrypto.dylib
 #/usr/local/opt/openssl/lib/libssl.dylib
                      )

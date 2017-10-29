@@ -12,6 +12,8 @@
 #include "ui_interface.h"
 #include "util.h"
 
+#include "actorsystem.h"
+
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
@@ -64,6 +66,9 @@ bool AppInit(int argc, char* argv[])
 {
     boost::thread_group threadGroup;
     boost::thread* detectShutdownThread = NULL;
+
+    // Actor System Thread
+    boost::thread* actorSystemThread = threadGroup.create_thread(&actorsystemMain);
 
     bool fRet = false;
 
@@ -185,6 +190,8 @@ bool AppInit(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
     SetupEnvironment();
+
+    
 
     // Connect anoncoind signal handlers
     noui_connect();

@@ -21,20 +21,23 @@ INCLUDE(UsePkgConfig)
 find_package(Threads REQUIRED) # alert.cpp requires pthreads directly?
 find_package(BDB REQUIRED)
 find_package(OpenSSL REQUIRED)
+
+find_package(CAF COMPONENTS core io REQUIRED)
+
 find_package(Boost 1.45.0 COMPONENTS system filesystem thread program_options REQUIRED)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
-# bitcoin-qt dependencies (4.4.3 arbitrarily set via docs):
+# anoncoin-qt dependencies (4.4.3 arbitrarily set via docs):
 find_package(Qt4 4.4.3 COMPONENTS QtCore QtGui QtNetwork QtDbus)
 find_package(Protobuf)
 find_package(QRencode)
 
 if(QT_FOUND AND PROTOBUF_FOUND)
-    set(HAVE_BITCOINQT_DEPS TRUE)
+    set(HAVE_ANONCOINQT_DEPS TRUE)
 else()
-    set(HAVE_BITCOINQT_DEPS FALSE)
+    set(HAVE_ANONCOINQT_DEPS FALSE)
 endif()
 
 # TODO: autotools added -DMINIUPNP_STATICLIB support.
@@ -70,7 +73,7 @@ option(ENABLE_TESTS        "Compile and enable unit tests." FALSE)
 option(ENABLE_WALLET       "Enable wallet feature,)" ON)
 option(ENABLE_I2PSAM       "Enable I2P feature,)" ON)
 option(GLIBC_BACK_COMPAT   "Enable backwards compatibility with glibc and libstdc++" OFF)
-option(BUILD_QT            "Build anoncoin-qt GUI" ${HAVE_BITCOINQT_DEPS})
+option(BUILD_QT            "Build anoncoin-qt GUI" ${HAVE_ANONCOINQT_DEPS})
 option(USE_UPNP            "Whether UPnP support should be available or not." ${MINIUPNP_FOUND})
 option(USE_UPNP_DEFAULT    "UPnP is enabled on startup" ${MINIUPNP_FOUND})
 option(USE_QRCODE          "Enable QR code support" ${QRENCODE_DEPS_FOUND})
@@ -101,7 +104,7 @@ if(BUILD_VERBOSE)
    set(CMAKE_VERBOSE_MAKEFILE true)
 endif()
 
-if(BUILD_QT AND NOT HAVE_BITCOINQT_DEPS)
+if(BUILD_QT AND NOT HAVE_ANONCOINQT_DEPS)
     message(FATAL_ERROR "BUILD_QT was requested but there are unmet dependencies:")
     if(NOT QT_FOUND)
         message(FATAL_ERROR " * Qt libraries unsatisfied (QtCore QtGui QtNetwork).")
