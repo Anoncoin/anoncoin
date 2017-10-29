@@ -6,7 +6,7 @@ Howto build & run
 Assuming you're in the root directory of the anoncoin source code.
 
 $ `cd docker`
-$ `docker -t anoncoin .`
+$ `docker build -t anoncoin .`
 
 **Run**
 
