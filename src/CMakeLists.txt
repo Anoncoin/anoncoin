@@ -201,9 +201,7 @@ target_link_libraries(anoncoin leveldb i2psam
                       ${CMAKE_THREAD_LIBS_INIT}
                       ${BDB_LIBRARY}
                       ${Boost_LIBRARIES}
-#                      ${OPENSSL_LIBRARIES}
-/usr/local/opt/openssl/lib/libcrypto.dylib
-/usr/local/opt/openssl/lib/libssl.dylib
+                      ${OPENSSL_LIBRARIES}
                      )
 
 if(USE_GMP)
