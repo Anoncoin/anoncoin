@@ -12,6 +12,9 @@
 #include "sync.h"
 #include "util.h"
 
+// Needed for _ translation function
+#include "ui_interface.h"
+
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
