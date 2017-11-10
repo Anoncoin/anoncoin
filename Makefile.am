@@ -53,9 +53,9 @@ dist-hook:
 	-$(GIT) archive --format=tar HEAD -- src/clientversion.cpp | $(AMTAR) -C $(top_distdir) -xf -
 
 distcheck-hook:
-	$(MKDIR_P) $(top_distdir)/build/src/leveldb
-	cp -rf $(top_srcdir)/src/leveldb/* $(top_distdir)/build/src/leveldb/
-	-$(MAKE) -C $(top_distdir)/build/src/leveldb clean
+	$(MKDIR_P) $(top_distdir)/_build/src/leveldb
+	cp -rf $(top_srcdir)/src/leveldb/* $(top_distdir)/_build/src/leveldb/
+	-$(MAKE) -C $(top_distdir)/_build/src/leveldb clean
 
 distcleancheck:
 	@:
