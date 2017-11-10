@@ -264,6 +264,9 @@ case $host in
      esac
      AC_SUBST(WINDOWS_BITS)
 
+    # We use C++11 now in 2017 thank you.
+    CXXFLAGS="$CXXFLAGS -std=c++11"
+
      dnl libtool insists upon adding -nostdlib and a list of objects/libs to link against.
      dnl That breaks our ability to build dll's with static libgcc/libstdc++/libssp. Override
      dnl its command here, with the predeps/postdeps removed, and -static inserted. Postdeps are
