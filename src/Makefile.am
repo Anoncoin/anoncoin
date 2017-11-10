@@ -6,7 +6,7 @@ DIST_SUBDIRS=
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
 
 
-if EMBEDDED_LEVELDB
+#if EMBEDDED_LEVELDB
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/include
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/helpers/memenv
 LIBLEVELDB += $(builddir)/leveldb/libleveldb.a
@@ -19,7 +19,7 @@ $(LIBLEVELDB) $(LIBMEMENV):
 	@echo "Building LevelDB ..." && $(MAKE) -C $(@D) $(@F) CXX="$(CXX)" \
 	  CC="$(CC)" PLATFORM=$(TARGET_OS) AR="$(AR)" $(LEVELDB_TARGET_FLAGS) \
           OPT="$(CXXFLAGS) $(CPPFLAGS)"
-endif
+#endif
 
 BOOST_CPPFLAGS += -DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT
 
