@@ -66,9 +66,10 @@ script:
     - ./configure --cache-file=../config.cache $ANONCOIN_CONFIG_ALL $ANONCOIN_CONFIG || ( cat config.log && false)
     - make $MAKEJOBS $GOAL || ( echo "Build failure. Verbose build follows." && make $GOAL V=1 ; false )
     - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/depends/$HOST/lib
-# TODO: Make unittests, ref 
+# TODO: Make unittests, ref https://github.com/Anoncoin/anoncoin/issues/8
 #    - if [ "$RUN_TESTS" = "true" ]; then travis_wait 30 make $MAKEJOBS check VERBOSE=1; fi
     - if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then extended="--extended --exclude pruning,dbcrash"; fi
+# TODO: Make unittests, ref https://github.com/Anoncoin/anoncoin/issues/8
 #    - if [ "$RUN_TESTS" = "true" ]; then test/functional/test_runner.py --coverage --quiet ${extended}; fi
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
