@@ -14,11 +14,51 @@
 #include "timedata.h"
 // #include "util.h"
 
+// Since many complains.
+#define USING_PRE_HISTORIC_COMPILER 1
+
 #include <assert.h>
 
+#ifdef USING_PRE_HISTORIC_COMPILER
 #include <boost/assign/list_of.hpp>
+#endif
 
 using namespace boost::assign;
+
+
+static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
+{
+    CMutableTransaction txNew;
+    txNew.nVersion = 1;
+    txNew.vin.resize(1);
+    txNew.vout.resize(1);
+    txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << std::vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
+    txNew.vout[0].nValue = genesisReward;
+    txNew.vout[0].scriptPubKey = genesisOutputScript;
+
+    CBlock genesis;
+    genesis.nTime    = nTime;
+    genesis.nBits    = nBits;
+    genesis.nNonce   = nNonce;
+    genesis.nVersion = nVersion;
+    genesis.vtx.push_back(txNew);
+    genesis.hashPrevBlock.SetNull();
+    genesis.hashMerkleRoot = genesis.BuildMerkleTree();
+    return genesis;
+}
+
+/**
+ * Build the genesis block. Note that the output of its generation
+ * transaction cannot be spent since it did not originally exist in the
+ * database.
+ */
+static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
+{
+    const char* pszTimestamp = "02/Jun/2013:  The Universe, we're all one. But really, fuck the Central banks. - Anonymous 420";
+    const CScript genesisOutputScript = CScript() << 0x0 << OP_CHECKSIG;
+    return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
+}
+
 
 //
 // Main network clearnet fixed seeds, atm none defined
@@ -115,7 +155,7 @@ public:
 
         hashGenesisBlock = genesis.GetHash(true);                   //! true here is not really needed for main as it will be the 1st one
         assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
-        // printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
+        //printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x00000be19c5a519257aa921349037d55548af7cabf112741eb905a26bb73e468"));
         assert(genesis.hashMerkleRoot == uint256("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
@@ -150,6 +190,7 @@ public:
 //        
 #endif // ENABLE_I2PSAM
 
+#ifndef USING_PRE_HISTORIC_COMPILER
         // Because the prefix bytes are attached to a base256 encoding (ie, binary) of known width,  they affect the leading cinquantoctal digit of the corresponding base58
         // representation of the same number.  The 23 below, is why mainnet pay-to-pubkey txouts always start with the letter A
         base58Prefixes[PUBKEY_ADDRESS] = {23};           // the pay-to-pubkey prefix byte
@@ -162,7 +203,13 @@ public:
         // four bytes to prefix to ensure that the base256 representation always yields a number in that range.
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04,0x88,0xB2,0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04,0x88,0xAD,0xE4};
-
+#else
+        base58Prefixes[PUBKEY_ADDRESS] = list_of(23);           // the pay-to-pubkey prefix byte
+        base58Prefixes[SCRIPT_ADDRESS] = list_of(5);            // the pay-to-script-hash prefix byte
+        base58Prefixes[SECRET_KEY] =     list_of(151);          // Anoncoin secret keys are the Public Key + 128
+        base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E);
+        base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4);
+#endif
         // Convert the pnSeeds array into usable address objects.
         for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
         {
@@ -236,21 +283,27 @@ public:
         nDefaultPort = 19377;
 
         // ToDo: Proof of work limits for testnet.  Adjust as needed...
-        // bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 17;
-        bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 12;
+        bnProofOfWorkLimit[ALGO_SCRYPT] = uint256().SetCompact(0x1e0ffff0);
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 20;
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         // These values have been set to the same as the v0.8.5.6 client had, so testing should be possible with that client, although maynot be required.
-        genesis.nTime = 1373625296;
-        genesis.nNonce = 346280655;
+        genesis = CreateGenesisBlock("02/Jun/2013:  The Universe, we're all one. But really, fuck the Central banks. - Anonymous 420",
+            CScript() << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f") << OP_CHECKSIG,
+            1511131852,
+            1183532614,
+            0x1e0ffff0,
+            1,
+            50 * COIN
+        );
         hashGenesisBlock = genesis.GetHash(true);                   //! true here as recalc is needed, because main has already done it once
         assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
 
+        //printf("Block: %s num tx: %d\n", genesis.ToString().c_str(), genesis.vtx.size());
         // This Genesis block hash matches the v0.8.5.6 client builds
-        // printf("Testnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
-        assert(hashGenesisBlock == uint256("0x0000063bf46c94fdf4158dbd7d7c2e44ca806782a9cc2491e1861ed40736473d"));
-
+        //printf("Testnet Genesis Hash: 0x%s, nBits: 0x%08x, bnLimt: 0x%08x\n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
+        assert(hashGenesisBlock == uint256("0x00000e2c46999d338d3cd202465fff19cf781a956ab8ba6ce56be3ed4540567a"));
+        //assert(genesis.hashMerkleRoot == uint256("0xb97c3af2116247dd77be3a11d2c07828842fa911890398e381ebf0c0a418432f"));
         // During intialization, the DNS and Fixed seed node vectors are filled up as the class is derived from CMainParams, so has a copy of those values.
         // Dump those here, and add any that might really be useful for testnet...
         vFixedSeeds.clear();
@@ -260,11 +313,19 @@ public:
 #endif
         // vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed01.anoncoin.net"));
 
+#ifndef USING_PRE_HISTORIC_COMPILER
         base58Prefixes[PUBKEY_ADDRESS] = {111};      // Anoncoin v8 compatible testnet Public keys use this value
         base58Prefixes[SCRIPT_ADDRESS] = {196};
         base58Prefixes[SECRET_KEY]     = {239};      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04,0x35,0x87,0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04,0x35,0x83,0x94};
+#else
+        base58Prefixes[PUBKEY_ADDRESS] = list_of(111);      // Anoncoin v8 compatible testnet Public keys use this value
+        base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
+        base58Prefixes[SECRET_KEY]     = list_of(239);      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
+        base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF);
+        base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x35)(0x83)(0x94);
+#endif
     }
 };
 // Keep in mind, this is a class derived from CMainParams which is derived from CChainParams.  If your trying to debug startup code
@@ -291,18 +352,15 @@ public:
         bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 12;
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 12;
 
-        // genesis.nTime = 1296688602;
-        // genesis.nBits = 0x207fffff;
         // genesis.nNonce = 2;
         //! If we ever calculated some changes for regtest these would be needed, as they are the same as testnet, commented out for now
-        /*
         hashGenesisBlock = genesis.GetHash(true);                   //! true here recalc is needed, because main and testnet have already done the calc twice
         assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
-        */
+
         nDefaultPort = 19444;
 
-        // printf("RegTest Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
-        assert(hashGenesisBlock == uint256("0x0000063bf46c94fdf4158dbd7d7c2e44ca806782a9cc2491e1861ed40736473d"));
+        printf("RegTest Genesis Hash: 0x%s, nBits: 0x%08x, bnLimt: 0x%08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
+        assert(hashGenesisBlock == uint256("0x00000e2c46999d338d3cd202465fff19cf781a956ab8ba6ce56be3ed4540567a"));
 
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
     }
