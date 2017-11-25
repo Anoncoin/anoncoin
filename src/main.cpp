@@ -802,6 +802,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
     }
 
     unsigned int nDataOut = 0;
+    unsigned int nTxnOut = 0;
     txnouttype whichType;
     BOOST_FOREACH(const CTxOut& txout, tx.vout) {
         if (!::IsStandard(txout.scriptPubKey, whichType)) {
@@ -811,14 +812,21 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
 
         if (whichType == TX_NULL_DATA)
             nDataOut++;
-        else if (txout.IsDust(minRelayTxFee)) {
-            reason = "dust";
-            return false;
+        else {
+            if (txout.IsDust(minRelayTxFee)) {
+                reason = "dust";
+                return false;
+            }
+            nTxnOut++;
         }
     }
-
+#ifdef ENABLE_STEALTH
+    if (nDataOut > nTxnOut) {
+        LogPrintf("Found %d OP_RETURNs versus %d TxOut. Not allowed, rejecting!", nDataOut, nTxnOut);
+#else
     // only one OP_RETURN txout is permitted
     if (nDataOut > 1) {
+#endif
         reason = "multi-op-return";
         return false;
     }
