@@ -25,6 +25,11 @@
 #include <utility>
 #include <vector>
 
+#ifdef ENABLE_STEALTH
+#include <openssl/rand.h>
+#include "random.h"
+#endif
+
 #ifndef WIN32
 #include <sys/resource.h>
 #include <sys/time.h>
