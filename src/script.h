@@ -11,6 +11,10 @@
 #include "script_error.h"
 #include "util.h"
 
+#ifdef ENABLE_STEALTH
+#include "stealth.h"
+#endif
+
 #include <stdexcept>
 #include <stdint.h>
 #include <string>
@@ -149,7 +153,12 @@ public:
  *  * CScriptID: TX_SCRIPTHASH destination
  *  A CTxDestination is the internal data type encoded in a CAnoncoinAddress
  */
+
+#ifdef ENABLE_STEALTH
+typedef boost::variant<CNoDestination, CKeyID, CScriptID, CStealthAddress> CTxDestination;
+#else
 typedef boost::variant<CNoDestination, CKeyID, CScriptID> CTxDestination;
+#endif
 
 const char* GetTxnOutputType(txnouttype t);
 
