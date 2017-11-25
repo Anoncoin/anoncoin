@@ -314,15 +314,15 @@ public:
         // vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed01.anoncoin.net"));
 
 #ifndef USING_PRE_HISTORIC_COMPILER
-        base58Prefixes[PUBKEY_ADDRESS] = {111};      // Anoncoin v8 compatible testnet Public keys use this value
+        base58Prefixes[PUBKEY_ADDRESS] = {83};      // Anoncoin v9 compatible testnet Public keys use this value
         base58Prefixes[SCRIPT_ADDRESS] = {196};
-        base58Prefixes[SECRET_KEY]     = {239};      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
+        base58Prefixes[SECRET_KEY]     = {211};      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04,0x35,0x87,0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04,0x35,0x83,0x94};
 #else
-        base58Prefixes[PUBKEY_ADDRESS] = list_of(111);      // Anoncoin v8 compatible testnet Public keys use this value
+        base58Prefixes[PUBKEY_ADDRESS] = list_of(83);      // Anoncoin v8 compatible testnet Public keys use this value
         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
-        base58Prefixes[SECRET_KEY]     = list_of(239);      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
+        base58Prefixes[SECRET_KEY]     = list_of(211);      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF);
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x35)(0x83)(0x94);
 #endif
