@@ -12,6 +12,12 @@
 #include "key.h"
 #include "keystore.h"
 #include "main.h"
+#include "script.h"
+
+#ifdef ENABLE_STEALTH
+#include "stealth.h"
+#endif
+
 #include "transaction.h"
 #include "ui_interface.h"
 #include "util.h"
@@ -27,6 +33,11 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
+
+#ifdef ENABLE_STEALTH
+typedef std::map<CKeyID, CStealthKeyMetadata> StealthKeyMetaMap;
+#endif
+typedef std::map<std::string, std::string> mapValue_t;
 
 //! Constant definitions found in the wallet source code file.
 
@@ -67,7 +78,6 @@ class CCoinControl;
 class CScript;
 class CWallet;
 
-typedef std::map<std::string, std::string> mapValue_t;
 
 //! Defined in wallet.cpp for use in the CAccountingEntry class serialization routines
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue);
@@ -81,7 +91,8 @@ enum WalletFeature
     FEATURE_WALLETCRYPT = 40000, // wallet encryption
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
 
-    FEATURE_LATEST = 60000
+    FEATURE_LATEST  = 60000,
+//    FEATURE_STEALTH = 70000 // stealth addresses
 };
 
 /**
@@ -639,6 +650,13 @@ public:
     std::set<COutPoint> setLockedCoins;
     std::set<int64_t> setKeyPool;
 
+#ifdef ENABLE_STEALTH
+    std::set<CStealthAddress> stealthAddresses;
+    StealthKeyMetaMap mapStealthKeyMeta;
+    uint32_t nStealth, nFoundStealth; // for reporting, zero before use
+#endif
+
+
     CPubKey vchDefaultKey;
 
     // Whoever keeps moving these dam txfee variables around, putting them in as static class members, such
@@ -683,6 +701,24 @@ public:
         nLastResend = 0;
         nTimeFirstKey = 0;
     }
+
+
+#ifdef ENABLE_STEALTH
+
+    bool Lock();
+    bool CreateTransaction(CScript scriptPubKey, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, CReserveKey& reservekey, std::string& failReason, const CCoinControl* coinControl);
+
+    bool NewStealthAddress(std::string& sError, std::string& sLabel, CStealthAddress& sxAddr);
+    bool AddStealthAddress(CStealthAddress& sxAddr);
+    bool UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn);
+    bool UpdateStealthAddress(std::string &addr, std::string &label, bool addIfNotExist);
+
+    bool CreateStealthTransaction(CScript scriptPubKey, int64_t nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, const CCoinControl* coinControl=NULL);
+    std::string SendStealthMoney(CScript scriptPubKey, int64_t nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, bool fAskFee=false);
+    bool SendStealthMoneyToDestination(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
+    bool FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr);
+
+#endif
 
     //!
     const CWalletTx* GetWalletTx(const uint256& hash) const;
@@ -774,10 +810,12 @@ public:
     CAmount GetImmatureWatchOnlyBalance() const;
     //!
     bool CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
-                           CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL);
+                           CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet,
+                           std::string& strFailReason, const CCoinControl *coinControl = NULL);
     //!
     bool CreateTransaction(CScript scriptPubKey, CAmount nValue,
-                           CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL);
+                           CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet,
+                           std::string& strFailReason, const CCoinControl *coinControl = NULL);
     //!
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     //!
