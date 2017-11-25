@@ -93,6 +93,17 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "estimatepriority", 0 },
     { "prioritisetransaction", 1 },
     { "prioritisetransaction", 2 },
+
+#ifdef ENABLE_STEALTH
+    { "getnewstealthaddress", 0 },
+    { "liststealthaddresses", 0 },
+    { "importstealthaddress", 1 },
+    { "importstealthaddress", 2 },
+    { "sendtostealthaddress", 1 },
+    { "clearwallettransactions", 0 },
+    { "scanforalltxns", 1 },
+    { "scanforstealthtxns", 1 },
+#endif
 // #if CLIENT_VERSION_IS_RELEASE != true
     { "sendalert", 2 },
     { "sendalert", 3 },
@@ -105,6 +116,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "getretargetpid", 0 },
     { "getretargetpid", 1 },
     { "gethashmeter", 0 }
+
 };
 
 class CRPCConvertTable

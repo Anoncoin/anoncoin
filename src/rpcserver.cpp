@@ -407,6 +407,16 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "walletlock",             &walletlock,             true  },
     { "wallet",             "walletpassphrasechange", &walletpassphrasechange, true  },
     { "wallet",             "walletpassphrase",       &walletpassphrase,       true  },
+
+#ifdef ENABLE_STEALTH
+    { "stealth",            "getnewstealthaddress",   &getnewstealthaddress,   true },
+    { "stealth",            "liststealthaddresses",   &liststealthaddresses,   true },
+    { "stealth",            "importstealthaddress",   &importstealthaddress,   true },
+    { "stealth",            "sendtostealthaddress",   &sendtostealthaddress,   false},
+    { "stealth",            "clearwallettransactions",&clearwallettransactions,true },
+    { "stealth",            "scanforalltxns",         &scanforalltxns,         true },
+    { "stealth",            "scanforstealthtxns",     &scanforstealthtxns,     true }
+#endif
 #endif // ENABLE_WALLET
 };
 

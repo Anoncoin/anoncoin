@@ -250,6 +250,16 @@ extern json_spirit::Value getretargetpid(const json_spirit::Array& params, bool 
 extern json_spirit::Value sendalert(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value makekeypair(const json_spirit::Array& params, bool fHelp);
 
+#ifdef ENABLE_STEALTH
+extern json_spirit::Value getnewstealthaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value liststealthaddresses(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value importstealthaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendtostealthaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value clearwallettransactions(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value scanforalltxns(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value scanforstealthtxns(const json_spirit::Array& params, bool fHelp);
+#endif
+
 // in rest.cpp
 extern bool HTTPReq_REST(AcceptedConnection *conn,
                   std::string& strURI,
