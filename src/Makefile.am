@@ -55,10 +55,12 @@ EXTRA_LIBRARIES = \
   libanoncoin_server.a \
   libanoncoin_cli.a \
   libanoncoin_scrypt.a
+
 if ENABLE_WALLET
-ANONCOIN_INCLUDES += $(BDB_CPPFLAGS)
+ANONCOIN_INCLUDES += $(BDB_CPPFLAGS) -DENABLE_STEALTH
 EXTRA_LIBRARIES += libanoncoin_wallet.a
 endif
+
 if ENABLE_I2PSAM
 EXTRA_LIBRARIES += libanoncoin_i2pnet.a
 endif
@@ -125,12 +127,14 @@ ANONCOIN_CORE_H = \
   rpcclient.h \
   rpcprotocol.h \
   rpcserver.h \
+  rpcstealth.h \
   script.h \
   script_error.h \
   scrypt.h \
   serialize.h \
   sigcache.h \
   sign.h \
+  stealth.h \
   streams.h \
   sync.h \
   threadsafety.h \
@@ -166,7 +170,7 @@ obj/build.h: FORCE
 libanoncoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
 # server: shared between anoncoind and anoncoin-qt
-libanoncoin_server_a_CPPFLAGS = $(ANONCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
+libanoncoin_server_a_CPPFLAGS = $(ANONCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) -DENABLE_STEALTH
 libanoncoin_server_a_SOURCES = \
   alert.cpp \
   bloom.cpp \
@@ -194,12 +198,14 @@ libanoncoin_server_a_SOURCES = \
 
 # wallet: shared between anoncoind and anoncoin-qt, but only linked
 # when wallet enabled
-libanoncoin_wallet_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_wallet_a_CPPFLAGS = $(ANONCOIN_INCLUDES) -DENABLE_STEALTH
 libanoncoin_wallet_a_SOURCES = \
   db.cpp \
   crypter.cpp \
   rpcdump.cpp \
+  rpcstealth.cpp \
   rpcwallet.cpp \
+  stealth.cpp \
   wallet.cpp \
   walletdb.cpp \
   $(ANONCOIN_CORE_H)
@@ -232,7 +238,7 @@ univalue_libanoncoin_univalue_a_SOURCES = \
   univalue/univalue.h
 
 # common: shared between anoncoind, and anoncoin-qt and non-server tools
-libanoncoin_common_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_common_a_CPPFLAGS = $(ANONCOIN_INCLUDES) -DENABLE_STEALTH
 libanoncoin_common_a_SOURCES = \
   addrman.cpp \
   allocators.cpp \
@@ -260,7 +266,7 @@ libanoncoin_common_a_SOURCES = \
 # util: shared between all executables.
 # This library *must* be included to make sure that the glibc
 # backward-compatibility objects and their sanity checks are linked.
-libanoncoin_util_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_util_a_CPPFLAGS = $(ANONCOIN_INCLUDES) -DENABLE_STEALTH
 libanoncoin_util_a_SOURCES = \
   compat/glibc_sanity.cpp \
   compat/glibcxx_sanity.cpp \
@@ -294,7 +300,7 @@ libanoncoin_util_a_SOURCES += compat/glibcxx_compat.cpp
 endif
 
 # cli: shared between anoncoin-cli and anoncoin-qt
-libanoncoin_cli_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
+libanoncoin_cli_a_CPPFLAGS = $(ANONCOIN_INCLUDES) -DENABLE_STEALTH
 libanoncoin_cli_a_SOURCES = \
   rpcclient.cpp \
   $(ANONCOIN_CORE_H)
@@ -308,18 +314,22 @@ anoncoind_LDADD = \
   $(LIBANONCOIN_UNIVALUE) \
   $(LIBANONCOIN_UTIL) \
   $(LIBANONCOIN_CRYPTO) \
-  $(LIBANONCOIN_SCRYPT) \
-  $(LIBLEVELDB) \
-  $(LIBMEMENV)
+  $(LIBANONCOIN_SCRYPT)
 
 if ENABLE_WALLET
 anoncoind_LDADD += libanoncoin_wallet.a
 endif
+
 if ENABLE_I2PSAM
 anoncoind_LDADD += libanoncoin_i2pnet.a
 endif
 
+anoncoind_LDADD += \
+  $(LIBLEVELDB) \
+  $(LIBMEMENV)
+
 anoncoind_SOURCES = anoncoind.cpp
+
 if TARGET_WINDOWS
 anoncoind_SOURCES += anoncoind-res.rc
 endif
@@ -341,7 +351,7 @@ if TARGET_WINDOWS
 anoncoin_cli_SOURCES += anoncoin-cli-res.rc
 endif
 
-anoncoin_cli_CPPFLAGS = $(ANONCOIN_INCLUDES)
+anoncoin_cli_CPPFLAGS = $(ANONCOIN_INCLUDES) -DENABLE_STEALTH
 anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 #anoncoin-tx binary #

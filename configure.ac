@@ -86,6 +86,13 @@ AC_ARG_ENABLE([wallet],
   [enable_wallet=$enableval],
   [enable_wallet=yes])
 
+# Enable stealth
+AC_ARG_ENABLE([stealth],
+  [AS_HELP_STRING([--enable-stealth],
+  [enable stealth (default is no)])],
+  [enable_stealth=$enableval],
+  [enable_stealth=no])
+
 # Enable i2psam
 AC_ARG_ENABLE([i2psam],
   [AS_HELP_STRING([--enable-i2psam],
@@ -186,9 +193,12 @@ fi
 ##       compatibility with the legacy buildsystem.
 ##
 if test "x$CXXFLAGS_overridden" = "xno"; then
-  CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter"
+  CXXFLAGS="$CXXFLAGS -DENABLE_STEALTH -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter"
 fi
 CPPFLAGS="$CPPFLAGS -DBOOST_SPIRIT_THREADSAFE -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS"
+
+CXXFLAGS=" -I/usr/local/opt/openssl/include $CXXFLAGS"
+CPPFLAGS=" -I/usr/local/opt/openssl/include $CPPFLAGS"
 
 AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],
@@ -781,6 +791,15 @@ else
   AC_MSG_RESULT(no)
 fi
 
+dnl enable stealth
+AC_MSG_CHECKING([if stealth module should be included])
+if test x$enable_stealth != xno; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED([ENABLE_STEALTH],[1],[Define to 1 to enable stealth address functions])
+else
+  AC_MSG_RESULT(no)
+fi
+
 dnl enable i2psam
 AC_MSG_CHECKING([if i2psam module should be included])
 if test x$enable_i2psam != xno; then
@@ -892,6 +911,7 @@ AM_CONDITIONAL([TARGET_DARWIN], [test x$TARGET_OS = xdarwin])
 AM_CONDITIONAL([BUILD_DARWIN], [test x$BUILD_OS = xdarwin])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
+AM_CONDITIONAL([ENABLE_STEALTH],[test x$enable_stealth = xno])
 AM_CONDITIONAL([ENABLE_I2PSAM],[test x$enable_i2psam = xyes])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$use_tests = xyes])
 AM_CONDITIONAL([ENABLE_QT],[test x$anoncoin_enable_qt = xyes])
@@ -947,7 +967,7 @@ LIBS_TEMP="$LIBS"
 unset LIBS
 LIBS="$LIBS_TEMP"
 
-PKGCONFIG_PATH_TEMP="$PKG_CONFIG_PATH"
+PKGCONFIG_PATH_TEMP="$PKG_CONFIG_PATH:/usr/local/opt/openssl/pkgconfig"
 unset PKG_CONFIG_PATH
 PKG_CONFIG_PATH="$PKGCONFIG_PATH_TEMP"
 
