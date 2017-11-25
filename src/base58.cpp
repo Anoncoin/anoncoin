@@ -202,22 +202,6 @@ int CBase58Data::CompareTo(const CBase58Data& b58) const
     return 0;
 }
 
-namespace
-{
-class CAnoncoinAddressVisitor : public boost::static_visitor<bool>
-{
-private:
-    CAnoncoinAddress* addr;
-public:
-    CAnoncoinAddressVisitor(CAnoncoinAddress* addrIn) : addr(addrIn) {}
-
-    bool operator()(const CKeyID& id) const { return addr->Set(id); }
-    bool operator()(const CScriptID& id) const { return addr->Set(id); }
-    bool operator()(const CNoDestination& no) const { return false; }
-};
-
-} // anon namespace
-
 bool CAnoncoinAddress::Set(const CKeyID& id)
 {
     SetData(Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS), &id, 20);
