@@ -11,6 +11,9 @@
 #include "serialize.h"
 #include "sync.h"
 #include "wallet.h"
+#ifndef ENABLE_STEALTH
+#include "stealth.h"
+#endif
 
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -396,13 +399,26 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
 
             pwallet->AddToWallet(wtx, true, NULL);
             //// debug print
-            //LogPrintf("LoadWallet  %s\n", wtx.GetHash().ToString());
-            //LogPrintf(" %12d  %s  %s  %s\n",
-            //    wtx.vout[0].nValue,
-            //    DateTimeStrFormat("%Y-%m-%d %H:%M:%S", wtx.GetBlockTime()),
-            //    wtx.hashBlock.ToString(),
-            //    wtx.mapValue["message"]);
+            LogPrintf("LoadWallet  %s\n", wtx.GetHash().ToString());
+            if (fDebug) {
+                LogPrintf(" %12d  %s  %s  %s\n",
+                    wtx.vout[0].nValue,
+                    DateTimeStrFormat("%Y-%m-%d %H:%M:%S", wtx.fTimeReceivedIsTxTime),
+                    wtx.GetHash().ToString(),
+                    wtx.mapValue["message"]);
+            }
         }
+#ifdef ENABLE_STEALTH
+        if (strType == "sxAddr") {
+            
+            CStealthAddress sxAddr;
+            ssValue >> sxAddr;
+
+            if (fDebug) LogPrintf("WalletDB ReadKeyValue sxAddr: %s\n", sxAddr.Encoded());
+            
+            pwallet->stealthAddresses.insert(sxAddr);
+        }
+#endif
         else if (strType == "acentry")
         {
             string strAccount;
@@ -542,6 +558,18 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 (keyMeta.nCreateTime < pwallet->nTimeFirstKey))
                 pwallet->nTimeFirstKey = keyMeta.nCreateTime;
         }
+#ifdef ENABLE_STEALTH
+        else if (strType == "sxKeyMeta") {
+            CKeyID keyId;
+            ssKey >> keyId;
+            CStealthKeyMetadata sxKeyMeta;
+            ssValue >> sxKeyMeta;
+
+            if (fDebug) LogPrintf("WalletDB ReadKeyValue sxKeyMeta: %s\n", sxKeyMeta.pkEphem.GetHash().ToString().c_str());
+
+            pwallet->mapStealthKeyMeta[keyId] = sxKeyMeta;
+        }
+#endif
         else if (strType == "defaultkey")
         {
             ssValue >> pwallet->vchDefaultKey;
