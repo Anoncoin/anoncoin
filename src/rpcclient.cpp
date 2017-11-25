@@ -96,13 +96,13 @@ static const CRPCConvertParam vRPCConvertParams[] =
 
 #ifdef ENABLE_STEALTH
     { "getnewstealthaddress", 0 },
-    { "liststealthaddresses", 0 },
+    { "liststealthaddresses", 2 },
     { "importstealthaddress", 1 },
     { "importstealthaddress", 2 },
     { "sendtostealthaddress", 1 },
     { "clearwallettransactions", 0 },
-    { "scanforalltxns", 1 },
-    { "scanforstealthtxns", 1 },
+    { "scanforalltxns", 0 },
+    { "scanforstealthtxns", 0 },
 #endif
 // #if CLIENT_VERSION_IS_RELEASE != true
     { "sendalert", 2 },
