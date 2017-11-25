@@ -60,6 +60,7 @@ using namespace std;
 CWallet* pwalletMain = NULL;
 #endif
 bool fFeeEstimatesInitialized = false;
+bool fEnforceCanonical;
 
 #ifdef WIN32
 // Win32 LevelDB doesn't use filedescriptors, and the ones used for
@@ -343,6 +344,7 @@ std::string HelpMessage(HelpMessageMode hmm)
     strUsage += "  -wallet=<file>         " + _("Specify wallet file (within data directory)") + " " + strprintf(_("(default: %s)"), "wallet.dat") + "\n";
     strUsage += "  -walletnotify=<cmd>    " + _("Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)") + "\n";
     strUsage += "  -zapwallettxes         " + _("Clear list of wallet transactions (diagnostic tool; implies -rescan)") + "\n";
+    strUsage += "  -enforcecanonical      " + _("Enforce transaction scripts to use canonical PUSH operators (default: 1)") + "\n" +
 #endif
 
     strUsage += "\n" + _("Debugging/Testing options:") + "\n";
@@ -667,6 +669,8 @@ bool AppInit2(boost::thread_group& threadGroup)
         if (SoftSetBoolArg("-rescan", true))
             LogPrintf("AppInit2 : parameter interaction: -zapwallettxes=1 -> setting -rescan=1\n");
     }
+
+    fEnforceCanonical = GetBoolArg("-enforcecanonical", true);
 
     // Make sure enough file descriptors are available
     int nBind = std::max((int)mapArgs.count("-bind") + (int)mapArgs.count("-whitebind"), 1);
