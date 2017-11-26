@@ -169,6 +169,13 @@ bool CWallet::NewStealthAddress(std::string& sError, std::string& sLabel, CSteal
     ec_secret scan_secret;
     ec_secret spend_secret;
 
+    // Temp code while not stable
+    bool fTestNet = GetBoolArg("-testnet", false);
+    if (!fTestNet) {
+        LogPrintf("CWallet::NewStealthAddress and other Stealth functions is not marked stable yet. Do not use this in production!\n");
+        return false;
+    }
+
     if (GenerateRandomSecret(scan_secret) != 0 || GenerateRandomSecret(spend_secret) != 0) {
         sError = "GenerateRandomSecret failed.";
         LogPrintf("Error CWallet::NewStealthAddress - %s\n", sError);
