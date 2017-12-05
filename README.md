@@ -1,6 +1,8 @@
 The Anoncoin project
 ====================
 
+[![Build Status](https://travis-ci.org/Anoncoin/anoncoin.svg?branch=master)](https://travis-ci.org/Anoncoin/anoncoin)
+
 Anoncoin (ANC) is a peer-to-peer digital cryptocurrency that focuses on privacy and anonymity for its users. Created in June 2013, it is the first and only currency to have built-in support for both the I2P darknet and Tor network that conceal the IP address of the user. Anoncoin will soon be implementing Zerocoin, which will allow users to make payments anonymously, without revealing their anoncoin public addresses.
 
 About the Coin
