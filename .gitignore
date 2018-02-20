@@ -141,6 +141,9 @@ libanoncoinconsensus.pc
 src/qt/paymentrequest.pb.cc
 src/qt/paymentrequest.pb.h
 
+# When building db4 locally...
+db4
+
 # Add any other specific requirements, you may need, below this line...
 #
 
