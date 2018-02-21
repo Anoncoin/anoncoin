@@ -1032,7 +1032,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             HardSetBoolArg("-i2p.mydestination.static", false);
             LogPrintf( "AppInit2 : parameter interaction: -generatei2pdestination -> hard setting -i2p.mydestination.static=0\n");
         }
-        
+
         // At this point if the user has the correct configuration set, we can continue, just one more detail to check, and error out if its not setup correctly.
         if( !fI2pEnabled )  {
             LogPrintf( "AppInit2 : To use -generatei2pdestination, the i2p router must be warmed up. Include [i2p.options] enabled=1 in your anoncoin.conf,\n" );
@@ -1041,7 +1041,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             LogPrintf( "         : the I2P SAM module will try to create a session with default values, to access the i2p router.\n" );
             return InitError(_("Unable to run -generatei2pdestination, see the debug.log for possible solutions to fix the problem." ) );
         }
-       
+
     }
 
     // Initialize some stuff here a early, so the values are available later on, if i2p is  enabled or not, GenI2pDest is run etc...
@@ -1049,7 +1049,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     bool fI2pStaticDest;
     SAM::FullDestination myI2pKeys;
     string b32doti2p;
-    
+
 
     // We still need the keys and b32.i2p address information setup for anoncoin-qt, if any details exist in the config file
     // use them, if not create the Args and set them to null strings.
@@ -1067,17 +1067,17 @@ bool AppInit2(boost::thread_group& threadGroup)
                     LogPrintf("... I2P privatekey read from file i2pkey.dat\n");
                     myI2pKeys.priv = I2PKeydat;
                     fI2pStaticDest = true;
-                }      
+                }
             } else {
                 LogPrintf("... and there is no file i2pkey.dat present.\n");
                 LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.privatekey= -> setting defined and set to <null>.\n");
                 myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // myI2pKeys.priv will be NULL in this case, preparing for DYN
-            } 
+            }
         } else {
         LogPrintf("I2P mydestination privatekey in anoncoin.conf is defined, we do not need to check for file i2pkey.dat\n");
         myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // Now we can get a local copy of whatever the real value is set to
-    }   
-        
+    }
+
     // Now we can validate the privkey, if it's a non-zero string we can use it to set the public and b32.i2p addresses for this node as well.
     // ToDo: We could do a more exhaustive test on the key, to confirm that it is correct
     // This needs to be done with or without I2pEnabled, because Anoncoin-qt will display whatever is set under settings, if there
@@ -1118,7 +1118,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         // as it will be used as soon as an i2p node is created in an outbound connection, or upon processing a version message from an inbound connection.
         //if( SoftSetBoolArg("-i2p.mydestination.shareaddr", fI2pStaticDest) )
           //  LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=%s\n", fI2pStaticDest ? "1" : "0" );
-        //CSlave changed to allow sharing of every I2P address whether dynamic and static per default        
+        //CSlave changed to allow sharing of every I2P address whether dynamic and static per default
 
         if( SoftSetBoolArg("-i2p.mydestination.shareaddr", true) )
             LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=1\n");
@@ -1316,7 +1316,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // CSlave: Here "boost::lexical_cast<float>" is used instead of "atof"; and "boost::lexical_cast<int>" is used instead of "atoi"
     // for otherwise it did not read the dot spaced decimal value for PID settings correctly in anoncoin.conf, and truncated them
     // at the dot on certain system that use the comma as a separator in regional settings.
-    
+
     std::string dProportionalGainInGetArg = GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN );
     dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg );
     std::string nIntegrationTimeInGetArg = GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME );
@@ -1365,16 +1365,14 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
 
     // cache size calculations
-    size_t nTotalCache = (GetArg("-dbcache", nDefaultDbCache) << 20);
-    if (nTotalCache < (nMinDbCache << 20))
-        nTotalCache = (nMinDbCache << 20); // total cache cannot be less than nMinDbCache
-    else if (nTotalCache > (nMaxDbCache << 20))
-        nTotalCache = (nMaxDbCache << 20); // total cache cannot be greater than nMaxDbCache
-    size_t nBlockTreeDBCache = nTotalCache / 8;
+    int64_t nTotalCache = (GetArg("-dbcache", nDefaultDbCache) << 20);
+    nTotalCache = std::max(nTotalCache, nMinDbCache << 20); // total cache cannot be less than nMinDbCache
+    nTotalCache = std::min(nTotalCache, nMaxDbCache << 20); // total cache cannot be greater than nMaxDbcache
+    int64_t nBlockTreeDBCache = nTotalCache / 8;
     if (nBlockTreeDBCache > (1 << 21) && !GetBoolArg("-txindex", true))
         nBlockTreeDBCache = (1 << 21); // block tree db cache shouldn't be larger than 2 MiB
     nTotalCache -= nBlockTreeDBCache;
-    size_t nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
+    int64_t nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
     nTotalCache -= nCoinDBCache;
     nCoinCacheSize = nTotalCache / 300; // coins in memory require around 300 bytes
 
