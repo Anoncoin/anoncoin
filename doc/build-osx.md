@@ -31,7 +31,7 @@ Get Anoncoin Source Code
 Clone the anoncoin source code and cd into `anoncoin`
 
 ```bash
-git clone https://github.com/Anoncoin/anoncoin
+git clone git@github.com:switzer/anoncoin.git
 cd anoncoin
 ```
 
@@ -56,18 +56,18 @@ Configure and build the headless anoncoin binaries as well as the GUI (if Qt is 
 
 You can disable the GUI build by passing `--without-gui` to configure.
 
-In order for Anoncoin to find the correct OpenSSL lib, some flags must be set before compiling:
+In order for Anoncoin to find the correct OpenSSL and BDB lib, some flags must be set before compiling:
 
 ```bash
 export LDFLAGS=-L/usr/local/opt/openssl/lib
 export CPPFLAGS=-I/usr/local/opt/openssl/include
+export BDB_PREFIX="${HOME}/code/switzer/anoncoin/db4"
 ```
 
 Note the update to configure if you have Berkeley DB installed:
 
 ```bash
 ./autogen.sh
-export BDB_PREFIX="${HOME}/code/switzer/anoncoin/db4"
 ./configure BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" BDB_CFLAGS="-I${BDB_PREFIX}/include"
 make
 ```
