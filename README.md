@@ -1,9 +1,12 @@
-The Anoncoin project
+The Anoncoin Project
 ====================
+
+Overview
+--------
 
 Anoncoin (ANC) is a peer-to-peer digital cryptocurrency that focuses on privacy and anonymity for its users. Created in June 2013, it is the first and only currency to have built-in support for both the I2P darknet and Tor network that conceal the IP address of the user. Anoncoin will soon be implementing Zerocoin, which will allow users to make payments anonymously, without revealing their anoncoin public addresses.
 
-About the Coin
+Facts About Anonoin
 --------------
 
 * Launch date: June 6, 2013
@@ -22,7 +25,7 @@ If all the required dependencies have already been built, compiling Anoncoin fro
     ./autogen.sh
     ./configure
     make
-    
+
 Detailed platform-specific instructions can be found in these files:
 
 - [doc/README.md](doc/README.md)
@@ -34,7 +37,7 @@ Pre-compiled Anoncoin binaries
 ------------------------------
 
 Pre-compiled Anoncoin binaries can be downloaded either from the [anoncoin-binaries project](https://github.com/Anoncoin/anoncoin-binaries) or from the relevant links on the [Anoncoin wiki](https://wiki.anoncoin.net/Download). Please verify the gpg signatures and cehcksums before using these files.
-    
+
 Development process
 -------------------
 
