@@ -21,7 +21,6 @@ Anoncoin was made out of necessity.  Here is a chart of some of the features of 
 | CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | PRIVACY |
 | --- | --- | --- | --- | --- | --- | --- |
 | **Anoncoin** (ANC) | ? | ?| proof of work (Scrypt) |  |
-| **Anoncash** (???) | | - |
 | **Bitcoin** (BTC) | low (7 tx/s) | proof of work |
 | **Monero** (XMR) | low | proof of work (CryptoNight) | high | high |
 | **Zcash** (ZEC) | y tx/s | equihash |
