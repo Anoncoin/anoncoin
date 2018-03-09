@@ -10,6 +10,11 @@ Mining
 
 Overview
 --------
+Cryptocurrencies like Bitcoin use public ledgers to keep balances correct between wallets.  As Bitcoin and others are increasingly used, wallet addresses (and their balances) will increasingly be tied to real world identities.
+
+Just like people prefer not to show others their bank accounts, they will not want this level of exposure on their cryptocurrency wallets.
+
+**A move to cryptocurrency which keeps sender addresses and balances are private is inevitable.**
 
 Anoncoin (ANC) is a peer-to-peer digital cryptocurrency that focuses on privacy and anonymity for its users. Created in June 2013, it is the first and only currency to have built-in support for both the I2P darknet and Tor network that conceal the IP address of the user. Anoncoin will soon be implementing Zerocoin, which will allow users to make payments anonymously, without revealing their anoncoin public addresses.
 
@@ -18,11 +23,11 @@ Comparison With Other Coins
 
 Anoncoin was made out of necessity.  Here is a chart of some of the features of Anoncoin and other comparable cryptocurrencies:
 
-| CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | PRIVATE BALANCE | PRIVATE SENDER ADDRESS |
+| CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | PRIVATE BALANCE | PRIVATE SENDER | PRIVACY METHODOLOGY |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **Anoncoin**<BR />(ANC) | ? | ?| proof of work (Scrypt) |  |
 | **Bitcoin**<BR />(BTC) | low (7 tx/s) | proof of work |
-| **Dash**<BR />(DASH) | low | proof of work | high | high |
+| **Dash**<BR />(DASH) | high (public)<br />low (private) | proof of work | high | high |
 | **Monero**<BR />(XMR) | low | proof of work (CryptoNight) | high | high |
 | **Zcash**<BR />(ZEC) | y tx/s | equihash |
 
