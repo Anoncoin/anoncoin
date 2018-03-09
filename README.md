@@ -18,12 +18,13 @@ Comparison With Other Coins
 
 Anoncoin was made out of necessity.  Here is a chart of some of the features of Anoncoin and other comparable cryptocurrencies:
 
-| CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | PRIVACY |
-| --- | --- | --- | --- | --- | --- | --- |
-| **Anoncoin** (ANC) | ? | ?| proof of work (Scrypt) |  |
-| **Bitcoin** (BTC) | low (7 tx/s) | proof of work |
-| **Monero** (XMR) | low | proof of work (CryptoNight) | high | high |
-| **Zcash** (ZEC) | y tx/s | equihash |
+| CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | PRIVATE BALANCE | PRIVATE SENDER ADDRESS |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **Anoncoin**<BR />(ANC) | ? | ?| proof of work (Scrypt) |  |
+| **Bitcoin**<BR />(BTC) | low (7 tx/s) | proof of work |
+| **Dash**<BR />(DASH) | low | proof of work | high | high |
+| **Monero**<BR />(XMR) | low | proof of work (CryptoNight) | high | high |
+| **Zcash**<BR />(ZEC) | y tx/s | equihash |
 
 
 Facts About Anonoin
