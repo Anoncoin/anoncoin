@@ -23,13 +23,13 @@ Comparison With Other Coins
 
 Anoncoin was made out of necessity.  Here is a chart of some of the features of Anoncoin and other comparable cryptocurrencies:
 
-| CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | PRIVATE BALANCE | PRIVATE SENDER | PRIVACY METHODOLOGY |
+| CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | BALANCE | SENDER | METHODOLOGY |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Anoncoin**<BR />(ANC) | ? | ?| proof of work (Scrypt) |  |
-| **Bitcoin**<BR />(BTC) | low (7 tx/s) | proof of work |
-| **Dash**<BR />(DASH) | high (public)<br />low (private) | proof of work | high | high |
-| **Monero**<BR />(XMR) | low | proof of work (CryptoNight) | high | high |
-| **Zcash**<BR />(ZEC) | y tx/s | equihash |
+| **Anoncoin**<br />(ANC) | ? | ? | proof of work<br />(Scrypt) | none | yes | private | private | ? |
+| **Bitcoin**<br />(BTC) | low<br />(7 tx/s) | low | proof of work<br />sha256 | high | no | public | public | none |
+| **Dash**<br />(DASH) | high (public)<br />low (private) | ? | proof of work | high | ? | private | public | CoinJoin |
+| **Monero**<br />(XMR) | low | low | proof of work<br />(CryptoNight) | ? | yes | private | private | Ring CT |
+| **Zcash**<br />(ZEC) | ? | ? | equihash | ? | no (public)<br />yes (private) | optional | optional | ZK-Snarks |
 
 
 Facts About Anonoin
