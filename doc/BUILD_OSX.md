@@ -1,3 +1,165 @@
+# ![logo](./anoncoin_logo_doxygen.png) Building Anoncoin for OSX
+
+[Home](../README.md) |
+**Installation** |
+[Developers](./doc/DEVELOPER.md) |
+[Project](https://github.com/Anoncoin/anoncoin/projects/1) |
+Roadmap |
+Wallet |
+Mining
+
+**OSX** |
+[Windows](./BUILD_WINDOWS.md) |
+[Unix](.BUILD_UNIX.md)
+
+## Preparation
+
+#### Terminal
+Open the Terminal application from the Utilities folder of the Applications directory:
+
+![terminal](./img/terminal.png)
+
+#### XCode
+Ensure the OSX command line tools are installed:
+
+    xcode-select --install
+
+When the popup appears, click `Install`.
+
+#### Homebrew
+
+Install [Homebrew](https://brew.sh) by running the following command:
+
+```bash
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+## Dependencies
+
+Use Homebrew to install the dependencies on your machine:
+
+```bash
+brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python3 qt libevent librsvg
+```
+
+*NOTE: Building with Qt5 is recommended*
+
+Due to the default C++ compiler changing in new versions of OSX, you will likely need to reinstall Boost from source:
+
+```bash
+brew uninstall boost
+brew install --build-from-source --HEAD boost
+```
+
+
+## Obtain Source Code
+
+Clone the Anoncoin source code and cd into `anoncoin`
+
+```bash
+git clone git@github.com:Anoncoin/anoncoin.git
+cd anoncoin
+```
+
+## Install Berkeley DB
+
+It is recommended to use Berkeley DB 4.8. To build it yourself:
+
+```bash
+./contrib/install_db4.sh .
+```
+
+*NOTE: You only need Berkeley DB if the wallet is enabled (see the section `--disable-wallet-mode` below)*
+
+
+## Build Anoncoin Core
+
+Configure and build the headless Anoncoin binaries as well as the GUI:
+
+#### Set Flags
+
+In order for Anoncoin to find the correct OpenSSL and BDB lib, some flags must be set before compiling:
+
+```bash
+export LDFLAGS=-L/usr/local/opt/openssl/lib
+export CPPFLAGS=-I/usr/local/opt/openssl/include
+export BDB_PREFIX="$(pwd)/db4"
+```
+
+Note the update to configure if you have Berkeley DB installed:
+
+```bash
+./autogen.sh
+./configure --with-qt-incdir=/usr/local/opt/qt/include --with-qt-libdir=/usr/local/opt/qt/lib BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" BDB_CFLAGS="-I${BDB_PREFIX}/include"
+make
+```
+
+*NOTE: You can disable the GUI build by passing `--without-gui` to configure.*
+
+
+It is recommended to build and run the unit tests:
+
+```bash
+make check
+```
+
+## App bundle
+
+You can also create a .dmg that contains the .app bundle (optional):
+
+```bash
+make deploy
+```
+
+## Running Anoncoin Core
+
+#### RPC Config
+
+Before running, it's recommended you create an RPC configuration file
+
+```bash
+echo -e "rpcuser=anoncoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Anoncoin/anoncoin.conf"
+chmod 600 "/Users/${USER}/Library/Application Support/Anoncoin/anoncoin.conf"
+```
+
+#### Bootstrap
+
+The first time you run anoncoind, it will start downloading the blockchain. This process could take several hours.  To speed up the process, you can download a bootstrap file.
+
+From your browser, download the `bootstrap.dat` file from [mega.nz](https://mega.nz/#!IqACmRhL!2Ti8rUlsnWoD4d5q3boMHQwaEbbqmxZqYq6FmWevVxI) or use [Bittorrent](./BOOTSTRAP.md).
+
+Move the Bootstrap file to Data Directory:
+
+```
+mv ~/Downloads/bootstrap.dat "${HOME}/Library/Application Support/Anoncoin"
+```
+
+*Note: this is safe - the `bootstrap.dat` file will be verified on the blockchain*
+
+
+Anoncoin Core is now available at `./src/anoncoind`
+
+
+You can monitor the download process by looking at the debug.log file:
+
+    tail -f $HOME/Library/Application\ Support/Anoncoin/debug.log
+
+Other commands:
+-------
+
+    ./src/anoncoind -daemon # Starts the anoncoin daemon.
+    ./src/anoncoin-cli --help # Outputs a list of command-line options.
+    ./src/anoncoin-cli help # Outputs a list of RPC commands when the daemon is running.
+
+Notes
+-----
+
+* Tested on OS X 10.8 through 10.13 on 64-bit Intel processors only.
+
+* Building with downloaded Qt binaries is not officially supported. See the notes in [#7714](https://github.com/bitcoin/bitcoin/issues/7714)
+
+
+
 Making a deterministic OSX dmg disk image.
 ==========================================
 

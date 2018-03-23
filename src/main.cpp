@@ -2730,7 +2730,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
         if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
             return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
-    }        
+    }
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
@@ -4023,7 +4023,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime;
 
         //! If it's to old, its easy, just disconnect and your out of here.
-        
+
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             //! relay alerts prior to disconnection
@@ -4061,7 +4061,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
        }
 
 #endif
-              
+
         //! Protocol 70009 uses only IP addresses on initiating connections over clearnet, after that full size addresses
         //! are always used for any network type, the i2p destination maybe zero, or if not the ip field must be set to the
         //! new GarlicCat field (an IP6/48) specifier.  This is checked and fixed, if found to be incorrect.
@@ -4147,7 +4147,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             //! Allowing the user to decide, is done in the config file otherwise.
             //! This new feature, does not require rebuilding software just to change the setting.
             addrFrom.SetPort( 0 );            //! Make sure the CService port is set to ZERO, so AddrMan's commands can work with matching
-            bool fFromChanged = addrFrom.CheckAndSetGarlicCat();
+            //bool fFromChanged = addrFrom.CheckAndSetGarlicCat();
             if( (CService)pfrom->addr != (CService)addrFrom ) {
                 LogPrint( "version", "I2P Peer @ %s, protocol %d is reporting a different destination addrFrom=%s\n", pfrom->addr.ToString(), pfrom->nVersion, addrFrom.ToString() );
             }
@@ -4441,11 +4441,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vector<CAddress> vAddr;
         vRecv >> vAddr;
 
-        //! Don't want addr from older versions... 
+        //! Don't want addr from older versions...
         //! Old 8.5.6 nodes are spamming the network with HUGE peers.dat, overwhelming the addrman!
         //if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && addrman.size() > 1000)
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF) {
-            LogPrint("addrman", "Don't want addr from older peer with older protocol versions such as %d \n", pfrom->nVersion);           
+            LogPrint("addrman", "Don't want addr from older peer with older protocol versions such as %d \n", pfrom->nVersion);
             return true;}
         if (vAddr.size() > 1000) {
             Misbehaving(pfrom->GetId(), 20);
@@ -4473,7 +4473,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         //! if it is an NODE_I2P source, but claims its an ip address, we make sure the i2p field is zero.  If it is an i2p addr we make sure
         //! the garliccat ip addr has been setup correctly.
         BOOST_FOREACH(CAddress& addr, vAddr) {
-            LogPrint("addrman", "addrman: address received from %s \n", GetPeerLogStr(pfrom)); 
+            LogPrint("addrman", "addrman: address received from %s \n", GetPeerLogStr(pfrom));
             addr.print ();
             if( fPossibleI2pAddrs ) {                       //! So there MAYBE valid I2P addresses from this peer, as they are running NODE_I2P as well
                 addr.CheckAndSetGarlicCat();                //! Fix the address by adding the GarlicCat field, if it came in not set correctly
@@ -4630,7 +4630,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 UpdateBlockAvailability(pfrom->GetId(), inv.hash);
                 if (!fAlreadyHave && !fImporting && !fReindex && !IsInitialBlockDownload() && !mapBlocksInFlight.count(inv.hash)) {
                     /* Cslave: !IsInitialBlockDownload() is needed otherwise it start to download the same headers several time per peer and from all peers, wasting a lot of computing time and bandwidth */
-                    
+
                     // First request the headers preceeding the announced block. In the normal fully-synced
                     // case where a new block is announced that succeeds the current tip (no reorganization),
                     // there are no such headers.
@@ -4912,9 +4912,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 Misbehaving(pfrom->GetId(), 20);
                 return error("non-continuous headers sequence");
             }
-            if (!AcceptBlockHeader(header, state, &pindexLast)) {         
+            if (!AcceptBlockHeader(header, state, &pindexLast)) {
                 int nDoS;
-                if (state.IsInvalid(nDoS)) {          
+                if (state.IsInvalid(nDoS)) {
                     if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2)
                         nDoS = 100;
                     if (nDoS > 0)
@@ -4933,11 +4933,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             // from there instead.
             // For the HardFork we will not accept to synchronize with old version peers 2400 blocks prior to the hardfork.
 #if defined( HARDFORK_BLOCK )
-            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || pfrom->nStartingHeight < HARDFORK_BLOCK2 - 2400) {                
-#endif                    
+            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || pfrom->nStartingHeight < HARDFORK_BLOCK2 - 2400) {
+#endif
                 LogPrint("net", "more getheaders (%d) to end to %s (startheight:%d)\n", pindexLast->nHeight, GetPeerLogStr(pfrom), pfrom->nStartingHeight);
                 pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256(0));
-#if defined( HARDFORK_BLOCK )      
+#if defined( HARDFORK_BLOCK )
             }
 #endif
         }
@@ -4977,7 +4977,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     // Making users (which are behind NAT and can only make outgoing connections) ignore
     // getaddr message mitigates the attack.
    // else if ((strCommand == "getaddr") && (pfrom->fInbound))
-    
+
     else if (strCommand == "getaddr")
     {
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2) {
@@ -4993,7 +4993,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         bool fI2pOnly = pfrom->addr.IsI2P();
         vector<CAddress> vAddr = addrman.GetAddr( fIpOnly, fI2pOnly );
         BOOST_FOREACH(const CAddress &addr, vAddr){
-        LogPrint("addrman", "addrman: getaddr received, address sent to %s \n", GetPeerLogStr(pfrom)); 
+        LogPrint("addrman", "addrman: getaddr received, address sent to %s \n", GetPeerLogStr(pfrom));
         addr.print ();
         pfrom->PushAddress(addr);}
     }
@@ -5457,15 +5457,15 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 #endif
                     if ((nSyncStarted <= 1) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                     state.fSyncStarted = true;
-                    nSyncStarted++;                
+                    nSyncStarted++;
                     CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
                     LogPrint("net", "initial getheaders (%d) to %s (startheight:%d)\n", pindexStart->nHeight, GetPeerLogStr(pto), pto->nStartingHeight);
                     pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
                     }
                 }
-            }  
-        }     
-       
+            }
+        }
+
 
         // Resend wallet transactions that haven't gotten in a block yet
         // Except during reindex, importing and IBD, when old wallet
@@ -5722,4 +5722,3 @@ int64_t GetMinFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree, 
         nMinFee = MAX_MONEY;
     return nMinFee;
 }
-
