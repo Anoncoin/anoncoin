@@ -598,6 +598,8 @@ public:
 
 
 /** Information about a peer */
+const size_t I2P_CNODE_BUFFER_SIZE = 0x10000; // 64k
+typedef std::array<uint8_t, I2P_CNODE_BUFFER_SIZE> I2PCNodeBuffer;
 class CNode
 {
     friend class CConnman;
@@ -612,6 +614,10 @@ public:
     CCriticalSection cs_vSend;
     CCriticalSection cs_hSocket;
     CCriticalSection cs_vRecv;
+#ifdef I2PD
+    // I2P Stream
+    std::shared_ptr<i2p::stream::Stream> i2pStream; // non null means I2P
+#endif
 
     CCriticalSection cs_vProcessMsg;
     std::list<CNetMessage> vProcessMsg;
@@ -746,6 +752,14 @@ public:
         return id;
     }
 
+#ifdef I2PD
+    void SetI2PStream (std::shared_ptr<i2p::stream::Stream> s) {
+        i2pStream = s;
+        if (i2pStream && !fInbound)
+            PushVersion();
+    }
+#endif
+
     uint64_t GetLocalNonce() const {
         return nLocalHostNonce;
     }
@@ -839,6 +853,11 @@ public:
     void AskFor(const CInv& inv);
 
     void CloseSocketDisconnect();
+
+#ifdef I2PD
+    void I2PStreamReceive ();
+    void HandleI2PStreamReceive (const boost::system::error_code& ecode, size_t bytes_transferred, std::shared_ptr<I2PCNodeBuffer> buf);
+#endif
 
     void copyStats(CNodeStats &stats);
 

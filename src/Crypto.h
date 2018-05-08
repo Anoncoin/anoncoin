@@ -33,4 +33,3 @@ inline int EVP_CIPHER_CTX_reset(EVP_CIPHER_CTX *ctx)
 #endif
 
 #endif
-
