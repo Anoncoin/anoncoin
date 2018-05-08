@@ -139,7 +139,7 @@ public:
         vSeeds.emplace_back("dnsseed.litecoinpool.org");
         vSeeds.emplace_back("dnsseed.koin-project.com");*/
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,23);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,23); // Anoncoins starts with A.
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
         base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,50);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,176);
@@ -212,7 +212,7 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = "test";
-        consensus.nSubsidyHalvingInterval = 840000;
+        consensus.nSubsidyHalvingInterval = 420000;
         consensus.BIP16Height = 0; // always enforce P2SH BIP16 on regtest
         consensus.BIP34Height = 76;
         consensus.BIP34Hash = uint256S("8075c771ed8b495ffd943980a95f702ab34fce3c8c54e379548bda33cc8c0573");
@@ -248,7 +248,7 @@ public:
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xc4;
         pchMessageStart[2] = 0xa7;
-        pchMessageStart[3] = 0x4b;
+        pchMessageStart[3] = 0x47;
         nDefaultPort = 24735;
         nPruneAfterHeight = 1000;
 
@@ -271,7 +271,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x34, 0x47, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x34, 0x47, 0x83, 0x94};
 
-        bech32_hrp = "tltc";
+        bech32_hrp = "tanc";
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
