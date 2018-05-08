@@ -53,9 +53,6 @@ namespace crypto
 
 	std::unique_ptr<GOSTR3410Curve>& GetGOSTR3410Curve (GOSTR3410ParamSet paramSet);
 
-// Big Endian
-	void GOSTR3411_2012_256 (const uint8_t * buf, size_t len, uint8_t * digest);
-	void GOSTR3411_2012_512 (const uint8_t * buf, size_t len, uint8_t * digest);
 }
 }
 

@@ -138,6 +138,10 @@ public:
         vSeeds.emplace_back("dnsseed.anoncointools.com");
         vSeeds.emplace_back("dnsseed.anoncoinpool.org");
         vSeeds.emplace_back("dnsseed.koin-project.com");*/
+        vSeeds.push_back(CDNSSeedData("frank2.net", "seed.frank2.net"));                                  //Normal DNSSeed
+        vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed03.anoncoin.net"));                         // Normal DNSSeed
+        vSeeds.push_back(CDNSSeedData("anoncoin.darkgamex.ch", "anc.dnsseed01.anoncoin.darkgamex.ch"));   // K1773R's DNSSeed
+        
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,23); // Anoncoins starts with A.
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -240,7 +244,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1517356801; // January 31st, 2018
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000007d006a402163e");
+        consensus.nMinimumChainWork = uint256S("0x00");
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0xa0afbded94d4be233e191525dc2d467af5c7eab3143c852c3cd549831022aad6"); //343833
