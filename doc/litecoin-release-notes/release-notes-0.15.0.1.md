@@ -432,7 +432,7 @@ Low-level RPC changes
 - #10136 `81da4c7` build: Disable Wshadow warning (laanwj)
 - #10166 `64962ae` Ignore Doxyfile generated from Doxyfile.in template (paveljanik)
 - #10239 `0416ea9` Make Boost use std::atomic internally (sipa)
-- #10228 `27faa6c` build: regenerate bitcoin-config.h as necessary (theuni)
+- #10228 `27faa6c` build: regenerate anoncoin-config.h as necessary (theuni)
 - #10273 `8979f45` [scripts] Minor improvements to `macdeployqtplus` script (chrisgavin)
 - #10325 `a26280b` 0.15.0 Depends Updates (fanquake)
 - #10328 `79aeff6` Update contrib/debian to latest Ubuntu PPA upload (TheBlueMatt)
