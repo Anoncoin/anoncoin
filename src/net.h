@@ -23,6 +23,7 @@
 #include "sync.h"
 #include "uint256.h"
 #include "util.h"
+#include "api.h" // i2pd
 
 #include <deque>
 #include <stdint.h>
@@ -31,6 +32,7 @@
 #include <arpa/inet.h>
 #endif
 
+#include <array>
 #include <boost/filesystem/path.hpp>
 #include <boost/foreach.hpp>
 #include <boost/signals2/signal.hpp>
@@ -79,6 +81,10 @@ bool BindListenPort(const CService &bindAddr, std::string& strError, bool fWhite
 bool BindListenNativeI2P();
 bool BindListenNativeI2P(SOCKET& hSocket);
 #endif
+#ifdef ENABLE_I2PD
+void AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream);
+#endif
+
 void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
@@ -225,12 +231,16 @@ public:
 
 
 /** Information about a peer */
+const size_t I2P_CNODE_BUFFER_SIZE = 0x10000; // 64k
+typedef std::array<uint8_t, I2P_CNODE_BUFFER_SIZE> I2PCNodeBuffer;
 class CNode
 {
 public:
     // socket
     uint64_t nServices;
     SOCKET hSocket;
+    std::shared_ptr<i2p::stream::Stream> i2pStream; // non null means I2P
+
     CDataStream ssSend;
     size_t nSendSize; // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
@@ -335,6 +345,15 @@ private:
     void operator=(const CNode&);
 
 public:
+
+
+    void SetI2PStream (std::shared_ptr<i2p::stream::Stream> s)
+    {
+        i2pStream = s;
+        if (i2pStream && !fInbound)
+            PushVersion();
+    }
+
     void SetSendStreamType(int nType) {
         nSendStreamType = nType;
         ssSend.SetType(nSendStreamType);
@@ -620,6 +639,9 @@ public:
     void Subscribe(unsigned int nChannel, unsigned int nHops=0);
     void CancelSubscribe(unsigned int nChannel);
     void CloseSocketDisconnect();
+
+    void I2PStreamReceive ();
+    void HandleI2PStreamReceive (const boost::system::error_code& ecode, size_t bytes_transferred, std::shared_ptr<I2PCNodeBuffer> buf);
 
     // Denial-of-service detection/prevention
     // The idea is to detect peers that are behaving

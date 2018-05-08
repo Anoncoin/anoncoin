@@ -4482,7 +4482,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 else                                        //! This should not be necessary, but comparisons and everything else assumes the i2p adddress area is zero for ip addrs
                     addr.SetI2pDestination( "" );           //! Clears the I2P destination field, but leaves the ip field as it was found
             } else
-                assert( addr.GetI2pDestination() == "" );   //! Only ip addresses came in, programming error if the i2p destination field is not zero
+                assert( addr.GetI2PDestination() == "" );   //! Only ip addresses came in, programming error if the i2p destination field is not zero
             //! Regardless of the node service type source of this address, if its an ip address, check and fix the port
             if( !addr.IsNativeI2P() && addr.GetPort() == 0 ) { //! Clearnet CAddress objects often get their ports zero'd out, due to our efforts to get i2p addrs to work?
                 // LogPrintf( "Set address %s port to default\n", addr.ToString() );

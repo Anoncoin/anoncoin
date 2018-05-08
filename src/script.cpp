@@ -252,6 +252,7 @@ const char* GetOpName(opcodetype opcode)
     case OP_SHA256                 : return "OP_SHA256";
     case OP_HASH160                : return "OP_HASH160";
     case OP_HASH256                : return "OP_HASH256";
+    case OP_GOST3411               : return "OP_GOST3411";
     case OP_CODESEPARATOR          : return "OP_CODESEPARATOR";
     case OP_CHECKSIG               : return "OP_CHECKSIG";
     case OP_CHECKSIGVERIFY         : return "OP_CHECKSIGVERIFY";
@@ -1009,6 +1010,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 case OP_SHA256:
                 case OP_HASH160:
                 case OP_HASH256:
+                case OP_GOST3411:
                 {
                     // (in -- hash)
                     if (stack.size() < 1)
@@ -1025,6 +1027,8 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                         CHash160().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
                     else if (opcode == OP_HASH256)
                         CHash256().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
+                    else if (opcode == OP_GOST3411)
+                        i2p::crypto::GOSTR3411_2012_256 (&vch[0], vch.size(), &vchHash[0]);
                     popstack(stack);
                     stack.push_back(vchHash);
                 }

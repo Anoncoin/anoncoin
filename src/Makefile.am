@@ -3,7 +3,7 @@
 #
 # DIST_SUBDIRS = secp256k1
 DIST_SUBDIRS=
-AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
+AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS) -lz -lcrypto -lssl $(srcdir)/../i2pd/libi2pd.a
 
 
 if EMBEDDED_LEVELDB
@@ -59,8 +59,8 @@ if ENABLE_WALLET
 ANONCOIN_INCLUDES += $(BDB_CPPFLAGS)
 EXTRA_LIBRARIES += libanoncoin_wallet.a
 endif
-if ENABLE_I2PSAM
-EXTRA_LIBRARIES += libanoncoin_i2pnet.a
+if ENABLE_I2PD
+EXTRA_LIBRARIES += libanoncoin_i2pnet.a 
 endif
 
 #if BUILD_ANONCOIN_LIBS
@@ -103,11 +103,13 @@ ANONCOIN_CORE_H = \
   compressor.h \
   core_io.h \
   crypter.h \
+  Crypto.h \
   db.h \
   hash.h \
-  i2psam.h \
+  i2p.h \
   i2pwrapper.h \
   init.h \
+  Gost.h \
   key.h \
   keystore.h \
   leveldbwrapper.h \
@@ -205,7 +207,7 @@ libanoncoin_wallet_a_SOURCES = \
   $(ANONCOIN_CORE_H)
 
 # crypto primitives library
-crypto_libanoncoin_crypto_a_CPPFLAGS = $(ANONCOIN_CONFIG_INCLUDES)
+crypto_libanoncoin_crypto_a_CPPFLAGS = $(ANONCOIN_CONFIG_INCLUDES) -DENABLE_I2PD -I/usr/local/Cellar/openssl/1.0.2o_1/include
 crypto_libanoncoin_crypto_a_SOURCES = \
   crypto/sha1.cpp \
   crypto/sha256.cpp \
@@ -221,7 +223,10 @@ crypto_libanoncoin_crypto_a_SOURCES = \
   crypto/rfc6979_hmac_sha256.h \
   crypto/hmac_sha512.h \
   crypto/sha1.h \
-  crypto/ripemd160.h
+  crypto/ripemd160.h \
+  Crypto.h \
+  Gost.cpp \
+  Gost.h
 
 # univalue JSON library
 univalue_libanoncoin_univalue_a_SOURCES = \
@@ -276,16 +281,16 @@ libanoncoin_util_a_SOURCES = \
 # i2pnet: shared between anoncoind and anoncoin-qt, but only linked
 # when the network type is enabled
 libanoncoin_i2pnet_a_CPPFLAGS = $(ANONCOIN_INCLUDES)
-libanoncoin_i2pnet_a_SOURCES = \
-  i2pwrapper.cpp \
-  i2psam.cpp \
-  $(ANONCOIN_CORE_H)
+libanoncoin_i2pnet_a_SOURCES = i2p.cpp \
+                               $(ANONCOIN_CORE_H)
 
 # scrypt: shared between anoncoind and anoncoin-qt, requires special compiler flags
 libanoncoin_scrypt_a_CPPFLAGS = $(ANONCOIN_INCLUDES) -msse2 -mstackrealign
 libanoncoin_scrypt_a_SOURCES = \
   scrypt.cpp \
   scrypt-sse2.cpp \
+  Gost.h \
+  Crypto.h \
   $(ANONCOIN_CORE_H)
 
 if GLIBC_BACK_COMPAT
@@ -310,12 +315,13 @@ anoncoind_LDADD = \
   $(LIBANONCOIN_CRYPTO) \
   $(LIBANONCOIN_SCRYPT) \
   $(LIBLEVELDB) \
-  $(LIBMEMENV)
+  $(LIBMEMENV) 
 
 if ENABLE_WALLET
 anoncoind_LDADD += libanoncoin_wallet.a
 endif
-if ENABLE_I2PSAM
+
+if ENABLE_I2PD
 anoncoind_LDADD += libanoncoin_i2pnet.a
 endif
 
@@ -354,7 +360,7 @@ anoncoin_tx_LDADD = \
   $(BOOST_LIBS) \
   $(CRYPTO_LIBS)
 
-if ENABLE_I2PSAM
+if ENABLE_I2PD
 anoncoin_tx_LDADD += libanoncoin_i2pnet.a
 endif
 

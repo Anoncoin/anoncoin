@@ -449,7 +449,7 @@ public:
                 LogPrint( "addrman", "While reading new peers, did not expect to need the garliccat fixed for destination %s\n", info.ToString() );
             if( info.IsI2P() ) {
                 info.SetPort( 0 );              // Make sure the CService port is set to ZERO
-                uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                uint256 b32hash = GetI2PDestinationHash( info.GetI2PDestination() );
                 if( mapI2pHashes.count( b32hash ) == 0 )
                     mapI2pHashes[b32hash] = n;
                 else
@@ -497,7 +497,7 @@ public:
                     LogPrint( "addrman", "While reading tried peers, did not expect to need the garliccat fixed for destination %s\n", info.ToString() );
                 if( info.IsI2P() ) {
                     info.SetPort( 0 );              // Make sure the CService port is set to ZERO
-                    uint256 b32hash = GetI2pDestinationHash( info.GetI2pDestination() );
+                    uint256 b32hash = GetI2PDestinationHash( info.GetI2PDestination() );
                     if( mapI2pHashes.count( b32hash ) == 0 )
                         mapI2pHashes[b32hash] = nIdCount;
                     else
