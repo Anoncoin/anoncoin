@@ -1,13 +1,13 @@
 *.tar.gz
 
 *.exe
-src/litecoin
-src/litecoind
-src/litecoin-cli
-src/litecoin-tx
-src/test/test_litecoin
-src/test/test_litecoin_fuzzy
-src/qt/test/test_litecoin-qt
+src/anoncoin
+src/anoncoind
+src/anoncoin-cli
+src/anoncoin-tx
+src/test/test_anoncoin
+src/test/test_anoncoin_fuzzy
+src/qt/test/test_anoncoin-qt
 
 # autoreconf
 Makefile.in
@@ -80,25 +80,26 @@ src/qt/bitcoin-qt.includes
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-litecoin-qt
-litecoin-Qt.app
+anoncoin-qt
+anoncoin-Qt.app
 background.tiff*
 
 # Unit-tests
 Makefile.test
-litecoin-qt_test
+anoncoin-qt_test
 
 # Resources cpp
 qrc_*.cpp
 # Mac specific
 .DS_Store
 build
+.vscode
 
 #lcov
 *.gcno
 *.gcda
 /*.info
-test_litecoin.coverage/
+test_anoncoin.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -108,6 +109,7 @@ linux-build
 win32-build
 test/config.ini
 test/cache/*
+
 
 !src/leveldb*/Makefile
 

@@ -5,8 +5,8 @@
 *
 */
 
-#ifndef GOST_H__
-#define GOST_H__
+#ifndef GOST3410_H__
+#define GOST3410_H__
 
 #include <memory>
 #include <inttypes.h>

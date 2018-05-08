@@ -133,10 +133,10 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        /*vSeeds.emplace_back("seed-a.litecoin.loshan.co.uk");
+        /*vSeeds.emplace_back("seed-a.anoncoin.loshan.co.uk");
         vSeeds.emplace_back("dnsseed.thrasher.io");
-        vSeeds.emplace_back("dnsseed.litecointools.com");
-        vSeeds.emplace_back("dnsseed.litecoinpool.org");
+        vSeeds.emplace_back("dnsseed.anoncointools.com");
+        vSeeds.emplace_back("dnsseed.anoncoinpool.org");
         vSeeds.emplace_back("dnsseed.koin-project.com");*/
         vSeeds.push_back(CDNSSeedData("frank2.net", "seed.frank2.net"));                                  //Normal DNSSeed
         vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed03.anoncoin.net"));                         // Normal DNSSeed
@@ -264,8 +264,8 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        /*vSeeds.emplace_back("testnet-seed.litecointools.com");
-        vSeeds.emplace_back("seed-b.litecoin.loshan.co.uk");
+        /*vSeeds.emplace_back("testnet-seed.anoncointools.com");
+        vSeeds.emplace_back("seed-b.anoncoin.loshan.co.uk");
         vSeeds.emplace_back("dnsseed-testnet.thrasher.io");*/
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,48);
