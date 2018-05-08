@@ -50,6 +50,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <memory>
+#ifdef ENABLE_I2PSAM
+#include "i2pwrapper.h"
+#endif
 
 #ifndef WIN32
 #include <signal.h>
@@ -226,6 +229,9 @@ void Shutdown()
             LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
         fFeeEstimatesInitialized = false;
     }
+    #ifdef ENABLE_I2PSAM
+        if( IsI2PEnabled() ) I2PSession::Instance().stopForwardingAll();
+    #endif
 
     // FlushStateToDisk generates a SetBestChain callback, which we should avoid missing
     if (pcoinsTip != nullptr) {
@@ -1102,6 +1108,11 @@ bool AppInitParameterInteraction()
     fAcceptDatacarrier = gArgs.GetBoolArg("-datacarrier", DEFAULT_ACCEPT_DATACARRIER);
     nMaxDatacarrierBytes = gArgs.GetArg("-datacarriersize", nMaxDatacarrierBytes);
 
+#ifdef ENABLE_I2PSAM
+    if( !GetBoolArg("-stfu", false) && !IsBehindDarknet() )
+        InitWarning( _("Anoncoin is running on clearnet!") );
+#endif
+
     // Option to startup with mocktime set (used for regression testing):
     SetMockTime(gArgs.GetArg("-mocktime", 0)); // SetMockTime(0) is a no-op
 
@@ -1353,6 +1364,21 @@ bool AppInitMain()
         SetLimited(NET_TOR, false); // by default, -proxy sets onion as reachable, unless -noonion later
     }
 
+#ifdef ENABLE_I2PSAM
+    // No config setup, means the i2p enable parameter gets set false, for the 1st time.
+    // We need it to have been created and set for sure, in order to process -onlynet options for this node.
+    if( SoftSetBoolArg("-i2p.options.enabled", false) )         // Returns true if the param was undefined, in that case it will be created and value you requested assigned.
+        LogPrintf("AppInit2 : required parameter: -i2p.options.enabled=0 -> unless specifically set to 1, it is assumed no I2P router is available.\n");
+    // At this point we can now know the parameter has been defined and has a value, now we need to fetch its 'real' value
+    bool fI2pEnabled = GetBoolArg("-i2p.options.enabled", false);
+#else
+    if( !SoftSetBoolArg("-i2p.options.enabled", false) )
+        LogPrintf("AppInit2 : invalid parameter: -i2p.options.enabled=0 -> hard set.  This build does not support an I2P router.\n");
+    HardSetBoolArg( "-i2p.options.enabled", false );
+    bool fI2pEnabled = false;
+#endif // ENABLE_I2PSAM
+
+
     // -onion can be used to set only a proxy for .onion, or override normal proxy for .onion addresses
     // -noonion (or -onion=0) disables connecting to .onion entirely
     // An empty string is used to not override the onion proxy (in which case it defaults to -proxy set above, or none)
@@ -1373,10 +1399,213 @@ bool AppInitMain()
         }
     }
 
+    #ifdef ENABLE_I2PSAM
+    // All we need to do for -generatei2pdestination, is have 2 other parameters set correctly and we will automatically create a new dynamic destination,
+    // while executing the normal code, near the end of the initialization cycle, after a session opened (if possible), printout the key results values,
+    // and gracefully exit the program.
+    // To make it easier on the user, we hard set static off, if it has been left on in the configuration file.
+    bool fGenI2pDest = GetBoolArg("-generatei2pdestination", false);
+    if( fGenI2pDest ) {                                             // Hard set these 2 values
+        if( SoftSetBoolArg("-i2p.mydestination.static", false) )    // Returns true if the param was undefined and setting its value was possible
+            LogPrintf( "AppInit2 : parameter interaction: -generatei2pdestination -> setting -i2p.mydestination.static=0\n");
+        else {
+            HardSetBoolArg("-i2p.mydestination.static", false);
+            LogPrintf( "AppInit2 : parameter interaction: -generatei2pdestination -> hard setting -i2p.mydestination.static=0\n");
+        }
+
+        // At this point if the user has the correct configuration set, we can continue, just one more detail to check, and error out if its not setup correctly.
+        if( !fI2pEnabled )  {
+            LogPrintf( "AppInit2 : To use -generatei2pdestination, the i2p router must be warmed up. Include [i2p.options] enabled=1 in your anoncoin.conf,\n" );
+            LogPrintf( "           any [i2p.mydestination] static= value will be hard set internally to static=0, while running this command.\n" );
+            LogPrintf( "AppInit2 : Another option, without any configuration file at all, you can add -i2p.options.enabled=1 on the command line,\n" );
+            LogPrintf( "         : the I2P SAM module will try to create a session with default values, to access the i2p router.\n" );
+            return InitError(_("Unable to run -generatei2pdestination, see the debug.log for possible solutions to fix the problem." ) );
+        }
+
+    }
+
+    // Initialize some stuff here a early, so the values are available later on, if i2p is  enabled or not, GenI2pDest is run etc...
+    bool fI2pSessionValid = false;
+    bool fI2pStaticDest;
+    SAM::FullDestination myI2pKeys;
+    string b32doti2p;
+
+
+    // We still need the keys and b32.i2p address information setup for anoncoin-qt, if any details exist in the config file
+    // use them, if not create the Args and set them to null strings.
+    if( SoftSetBoolArg("-i2p.mydestination.static", true) )    // Returns true if the param was undefined and setting its value was possible
+        LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.static=1 -> setting defined.\n");
+    fI2pStaticDest = GetBoolArg("-i2p.mydestination.static", true);   // Now we can get a local copy of whatever the real value is set to
+
+    if( SoftSetArg("-i2p.mydestination.privatekey", "") ){           // Returns true if the param was undefined and setting its value was possible
+        LogPrintf("I2P mydestination privatekey in anoncoin.conf is undefined");
+        boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
+            if (boost::filesystem::exists(pathI2PKeydat)) {
+                FILE *file = fopen(pathI2PKeydat.string().c_str(), "r");
+                if (fscanf(file, "%s",I2PKeydat) == 1)  //read the I2PKeydat from the file i2pkey.dat
+                {   fclose(file);
+                    LogPrintf("... I2P privatekey read from file i2pkey.dat\n");
+                    myI2pKeys.priv = I2PKeydat;
+                    fI2pStaticDest = true;
+                }
+            } else {
+                LogPrintf("... and there is no file i2pkey.dat present.\n");
+                LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.privatekey= -> setting defined and set to <null>.\n");
+                myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // myI2pKeys.priv will be NULL in this case, preparing for DYN
+            }
+        } else {
+        LogPrintf("I2P mydestination privatekey in anoncoin.conf is defined, we do not need to check for file i2pkey.dat\n");
+        myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // Now we can get a local copy of whatever the real value is set to
+    }
+
+    // Now we can validate the privkey, if it's a non-zero string we can use it to set the public and b32.i2p addresses for this node as well.
+    // ToDo: We could do a more exhaustive test on the key, to confirm that it is correct
+    // This needs to be done with or without I2pEnabled, because Anoncoin-qt will display whatever is set under settings, if there
+    // is something, we want the information available to the user.
+    if( myI2pKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE && isValidI2pAddress(myI2pKeys.priv) ) {
+        myI2pKeys.pub = myI2pKeys.priv.substr(0, NATIVE_I2P_DESTINATION_SIZE);
+        b32doti2p = B32AddressFromDestination(myI2pKeys.pub);
+         // Its not an error to have static false, even though the private key is valid
+    } else if( fI2pStaticDest ) {                // Dam, static is wrong, this will never work, we must hard set it to false and continue dynamic
+        if( myI2pKeys.priv.size() ) {            // Only do this if the private key was set to junk
+            LogPrintf( "AppInit2 : parameter error: -i2p.mydestination.privatekey= -> key is not valid, hard setting the value to <null>.\n");
+            HardSetArg( "-i2p.mydestination.privatekey", "" );
+            myI2pKeys.priv = "";
+        }
+        // note: the public and b32doti2p values defaulted to null strings when initialized above, which is what we want, only the static is wrong
+        LogPrintf( "AppInit2 : parameter error: -i2p.mydestination.privatekey invalid -> hard setting -i2p.mydestination.static=0\n");
+        HardSetBoolArg("-i2p.mydestination.static", false);
+        fI2pStaticDest = false;
+    }
+
+    // Previous v9 builds may have public/b32.i2p addresses left in their configuration file, now we need to hard set those values and make sure
+    // they match the 'real' private key value we would use if starting a new router session.
+    if( !SoftSetArg("-i2p.mydestination.publickey", myI2pKeys.pub) ) {
+        LogPrintf( "AppInit2 : PLEASE REMOVE -i2p.mydestination.publickey= FROM YOUR CONFIGURATION FILE - It is no longer set by the user.\n" );
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.privatekey -> hard setting -i2p.mydestination.publickey=%s\n", myI2pKeys.pub);
+        HardSetArg("-i2p.mydestination.publickey", myI2pKeys.pub);
+    }
+    // Now do the same for the base32key parameter
+    if( !SoftSetArg("-i2p.mydestination.base32key", b32doti2p) ) {
+        LogPrintf( "AppInit2 : PLEASE REMOVE -i2p.mydestination.base32key= FROM YOUR CONFIGURATION FILE - It is no longer set by the user.\n" );
+        LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.privatekey -> hard setting -i2p.mydestination.base32key=%s\n", b32doti2p);
+        HardSetArg("-i2p.mydestination.base32key", b32doti2p);
+    }
+
+    if( fI2pEnabled ) {                                                 // If I2P is enabled, we have allot of work to do...
+        // Does the user want to have a shared destination?
+        // If we're not running i2p enabled, having it undefined is ok too, defaults to same as static setting here though,
+        // as it will be used as soon as an i2p node is created in an outbound connection, or upon processing a version message from an inbound connection.
+        //if( SoftSetBoolArg("-i2p.mydestination.shareaddr", fI2pStaticDest) )
+          //  LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=%s\n", fI2pStaticDest ? "1" : "0" );
+        //CSlave changed to allow sharing of every I2P address whether dynamic and static per default
+
+        if( SoftSetBoolArg("-i2p.mydestination.shareaddr", true) )
+            LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=1\n");
+
+        // bool fI2pSharedAddr = GetBoolArg("-i2p.mydestination.shareaddr", false);
+
+        // Many more settings to do, moved them into i2pwrapper.cpp, we make sure all our parameters are loaded into
+        // configuration space, set to default and logged if any parameter interaction was required.
+        // Here now we pass the critical value for our destination field to the be used for opening the session,
+        // its special if we are not using a static i2p destination
+        myI2pKeys.isGenerated = !fI2pStaticDest;
+        InitializeI2pSettings( myI2pKeys.isGenerated );
+
+        // Finally ready to inform the user we're about to start the connection
+        uiInterface.InitMessage(_("Connecting to the I2P Router..."));
+
+        LogPrintf( "AppInit2 : Attempting to create an I2P SAM session..." );
+        // This creates the session for the 1st time, and tries to open the i2psam socket and say hello, if that fails, we're done.
+        if( !I2PSession::Instance().isSick() ) {
+            // Now we can either use a static destination address, taken from anoncoin.conf values to create a Stream Session, or
+            // generate a dynamic new one and initiate an I2P session stream that way...
+            if( fI2pStaticDest ) {          // If everything was setup correctly we can try running static mode
+                LogPrintf( "With a static destination.\n" );
+                SAM::FullDestination retI2pKeys;                                   // Something we can us to compare our results with
+                retI2pKeys = I2PSession::Instance().getMyDestination();
+            LogPrintf("Running with an I2P mydestination publickey: %s\n", myI2pKeys.pub);
+
+                if( retI2pKeys.priv == myI2pKeys.priv && retI2pKeys.pub == myI2pKeys.pub && retI2pKeys.isGenerated == false ) {
+                    myI2pKeys = retI2pKeys;             // Store them outside this one step, so they can be used later
+                    fI2pSessionValid = true;
+                } else
+                    LogPrintf( "AppInit2 : Error - Router Destination does not match the static Destination set here.  Result: ShutDown.\n" );
+            } else {                                                // Generate new destination keys/address
+                LogPrintf( "With a dynamic destination.\n" );
+                myI2pKeys = I2PSession::Instance().getMyDestination();
+                if( isValidI2pAddress(myI2pKeys.priv) && isValidI2pAddress(myI2pKeys.pub) && myI2pKeys.isGenerated == true )
+                    fI2pSessionValid = true;
+                else
+                    LogPrintf( "AppInit2 : Error - Unable to generate a valid I2P destination.  Result: ShutDown.\n" );
+            }
+        } else
+            LogPrintf( "Failed.  Router does not appear to be available\n" );
+
+        if( fI2pSessionValid ) {
+            b32doti2p = B32AddressFromDestination(myI2pKeys.pub);
+            // At this point, we could try to figure out if this hardset on the parameters is really needed or not,
+            // instead we just always do it, and make sure all the values are always what we are using for this
+            // session.  After this point, they are all just primarily used for informational purposes, still they
+            // should not be wrong and we can set them.
+            HardSetArg( "-i2p.mydestination.privatekey", myI2pKeys.priv );
+            HardSetArg( "-i2p.mydestination.publickey", myI2pKeys.pub );
+            HardSetArg( "-i2p.mydestination.base32key", b32doti2p );
+
+            SetReachable(NET_I2P);                           // It's now been proven the router is available.
+            LogPrintf( "AppInit2 : Your I2P Keys have been set. Using SAM module version %s\n", FormatI2PNativeFullVersion());
+            LogPrintf( "AppInit2 : Created a new SAM Session ID:%s, connected to Router.\n", I2PSession::Instance().getSessionID() );
+            // This is not needed, unless debuggging...as the b32.i2p address will be printed in the log shortly while binding
+            // if( !fGenI2pDest )                   // Unless we're just about to give all the details away anyway, lets tell the user what we've done in the debug.log file
+                // LogPrintf( "AppInit2 : Your I2P Destination for this session will be:\ni2p.mydestination.publickey=[%s]\ni2p.mydestination.base32key=%s\n", myI2pKeys.pub, b32doti2p );
+        } else {
+            SetLimited( NET_I2P );                           // Don't use any i2p information
+            // Do NOT hard set the i2p options enabled flag false, without first looking at the shutdown process, make sure it will still work.
+            // HardSetBoolArg("-i2p.options.enabled", false);
+            // We're wiped out, bail and exit initialization in failure
+            return InitError( _("Unable to create I2P SAM session") );
+        }
+    } // else ...I2P was not enabled, atm we have nothing more that need be done, except deal with GenI2pDest
+
+    if( fGenI2pDest ) {
+        if( fI2pSessionValid ) {
+            boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
+            FILE* file = fopen(pathI2PKeydat.string().c_str(), "a");           //create the i2pkey.dat as the write below will not create it anew
+            if (file) fclose(file);
+            if (boost::filesystem::exists(pathI2PKeydat)) {
+                FILE *file = fopen(pathI2PKeydat.string().c_str(), "w+");
+                fprintf(file, "%s\n",myI2pKeys.priv.c_str());                 //write the I2PKeydat to the file i2pkey.dat
+                fclose(file);
+            }
+            string msg = GenerateI2pDestinationMessage( myI2pKeys.pub, myI2pKeys.priv, b32doti2p, GetConfigFile().string() );
+            unsigned int style = CClientUIInterface::ICON_INFORMATION |
+                                 CClientUIInterface::NOSHOWGUI |
+                                 CClientUIInterface::BTN_APPLY |
+                                 CClientUIInterface::BTN_ABORT |
+                                 CClientUIInterface::MODAL;
+            bool fResult = uiInterface.ThreadSafeMessageBox(msg, _("Generated I2P Destination"), style );
+            // LogPrintf( "MessageBox returned %s\n", fResult ? "true" : "false" );
+            if( !fResult )
+                return false;
+            // This way anoncoind always shuts down, as noui_ThreadSafeMessageBox returns false,
+            // for the anoncoin-qt user, they can continue if they want to, by selecting the BTN_APPLY button.
+        } else
+            return InitError(_("Unable to obtain I2P SAM Session for the -generatei2pdestination command") );
+    }   // fGenI2pDest
+#endif  // ENABLE_I2PSAM
+
     // see Step 2: parameter interactions for more information about these
     fListen = gArgs.GetBoolArg("-listen", DEFAULT_LISTEN);
     fDiscover = gArgs.GetBoolArg("-discover", true);
     fRelayTxes = !gArgs.GetBoolArg("-blocksonly", DEFAULT_BLOCKSONLY);
+
+#ifdef ENABLE_I2PSAM
+    // Regardless of users choice on binding, listening, discover or dns,
+    // if the I2P session is valid, we always try to bind our node & accept
+    // inbound peer connections to it over i2p
+    if( fI2pSessionValid )
+        fBound = BindListenNativeI2P();
+#endif
 
     for (const std::string& strAddr : gArgs.GetArgs("-externalip")) {
         CService addrLocal;
