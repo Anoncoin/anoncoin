@@ -20,6 +20,8 @@
 extern int nConnectTimeout;
 extern bool fNameLookup;
 
+
+
 /** -timeout default */
 extern const int32_t DEFAULT_CONNECT_TIMEOUT;
 
@@ -28,11 +30,12 @@ extern const int32_t DEFAULT_CONNECT_TIMEOUT;
 #undef SetPort
 #endif
 
-#ifdef ENABLE_I2PSAM
-#include "i2pwrapper.h"
+#ifdef ENABLE_I2PD
+class uint256;
+#include "api.h"
 #endif
 
-#define I2P_DESTINATION_STORE 516
+#define I2P_DESTINATION_STORE 516 // alway DSA, can't be change for now
 #define NATIVE_I2P_B32ADDR_SIZE 60
 
 enum Network
@@ -107,7 +110,7 @@ class CNetAddr
         bool IsI2P() const;
         bool IsNativeI2P() const;
         bool CheckAndSetGarlicCat( void );
-        std::string GetI2pDestination() const;
+        std::string GetI2PDestination() const;
         bool SetI2pDestination( const std::string& sBase64Dest );
         std::string ToB32String() const;
 
@@ -231,6 +234,6 @@ bool isValidI2pAddress( const std::string& I2pAddr );
 bool isValidI2pB32( const std::string& B32Address );
 bool isStringI2pDestination( const std::string & strName );
 std::string B32AddressFromDestination(const std::string& destination);
-uint256 GetI2pDestinationHash( const std::string& destination );
+uint256 GetI2PDestinationHash( const std::string& destination );
 
 #endif // ANONCOIN_NETBASE_H

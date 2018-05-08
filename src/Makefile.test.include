@@ -95,7 +95,7 @@ test_test_anoncoin_LDADD = \
 if ENABLE_WALLET
 test_test_anoncoin_LDADD += $(LIBANONCOIN_WALLET)
 endif
-if ENABLE_I2PSAM
+if ENABLE_I2PD
 test_test_anoncoin_LDADD += $(LIBANONCOIN_I2PNET)
 endif
 

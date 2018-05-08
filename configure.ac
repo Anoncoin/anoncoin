@@ -2,10 +2,10 @@ dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 0)
 define(_CLIENT_VERSION_MINOR, 9)
-define(_CLIENT_VERSION_REVISION, 6)
-define(_CLIENT_VERSION_BUILD, 13)
+define(_CLIENT_VERSION_REVISION, 7)
+define(_CLIENT_VERSION_BUILD, 1)
 define(_CLIENT_VERSION_IS_RELEASE, true)
-define(_COPYRIGHT_YEAR, 2017)
+define(_COPYRIGHT_YEAR, 2018)
 
 # In configure.ac, lines commented with '#' that occur after AC_INIT will appear in the resulting configure script. dnl comments will not.
 # One purpose of dnl is to discard unwanted newlines in an effort to make the configure script readable.
@@ -101,6 +101,13 @@ AC_ARG_ENABLE([i2psam],
   [enable_i2psam=$enableval],
   [enable_i2psam=yes])
 
+# Enable i2pd
+AC_ARG_ENABLE([i2pd],
+  [AS_HELP_STRING([--enable-i2pd],
+  [enable i2pd (default is yes)])],
+  [enable_i2pd=$enableval],
+  [enable_i2pd=yes])
+
 # Enable hardfork
 AC_ARG_WITH([hardfork],
   [AS_HELP_STRING([--with-hardfork=block],
@@ -194,9 +201,9 @@ fi
 ##       compatibility with the legacy buildsystem.
 ##
 if test "x$CXXFLAGS_overridden" = "xno"; then
-  CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter"
+  CXXFLAGS="$CXXFLAGS -std=c++11 -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter"
 fi
-CPPFLAGS="$CPPFLAGS -DBOOST_SPIRIT_THREADSAFE -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS"
+CPPFLAGS="$CPPFLAGS -DBOOST_SPIRIT_THREADSAFE -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS -DBOOST_NO_CXX11_SCOPED_ENUMS"
 
 AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],
@@ -289,8 +296,8 @@ case $host in
        AC_CHECK_PROG([PORT],port, port)
        if test x$PORT = xport; then
          dnl add default macports paths
-         CPPFLAGS="$CPPFLAGS -isystem /opt/local/include"
-         LIBS="$LIBS -L/opt/local/lib"
+         CPPFLAGS="$CPPFLAGS -isystem /opt/local/include -I/usr/local/Cellar/openssl/1.0.2o_1/include"
+         LIBS="$LIBS -L/opt/local/lib -L/usr/local/Cellar/openssl/1.0.2o_1/lib"
          if test -d /opt/local/include/db48; then
            CPPFLAGS="$CPPFLAGS -I/opt/local/include/db48"
            LIBS="$LIBS -L/opt/local/lib/db48"
@@ -563,7 +570,7 @@ dnl Anoncoin & i2pd needs libraries=chrono,date_time,filesystem,iostreams,progra
 dnl GR Note: The unit_test_framework is figured out, dependent on user selection of use_tests
 AX_BOOST_BASE
 AX_BOOST_CHRONO
-AX_BOOST_DATE_TIME
+AX_BOOST_DATE_TIME  
 AX_BOOST_FILESYSTEM
 AX_BOOST_IOSTREAMS
 AX_BOOST_PROGRAM_OPTIONS
@@ -736,9 +743,9 @@ CFLAGS_TEMP="$CFLAGS"
 LIBS_TEMP="$LIBS"
 CFLAGS="$CFLAGS $SSL_CFLAGS $CRYPTO_CFLAGS"
 LIBS="$LIBS $SSL_LIBS $CRYPTO_LIBS"
-AC_CHECK_HEADER([openssl/ec.h],, AC_MSG_ERROR(OpenSSL ec header missing),)
 CFLAGS="$CFLAGS_TEMP"
 LIBS="$LIBS_TEMP"
+CXXFLAGS="$CXXFLAGS -I../i2pd/libi2pd"
 
 ANONCOIN_QT_PATH_PROGS([PROTOC], [protoc],$protoc_bin_path)
 
@@ -794,6 +801,15 @@ AC_MSG_CHECKING([if i2psam module should be included])
 if test x$enable_i2psam != xno; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED([ENABLE_I2PSAM],[1],[Define to 1 to enable I2Psam interface functions])
+else
+  AC_MSG_RESULT(no)
+fi
+
+dnl enable i2pd
+AC_MSG_CHECKING([if i2pd module should be included])
+if test x$enable_i2pd != xno; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED([ENABLE_I2PD],[1],[Define to 1 to enable I2PD interface functions])
 else
   AC_MSG_RESULT(no)
 fi
@@ -901,6 +917,7 @@ AM_CONDITIONAL([BUILD_DARWIN], [test x$BUILD_OS = xdarwin])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
 AM_CONDITIONAL([ENABLE_I2PSAM],[test x$enable_i2psam = xyes])
+AM_CONDITIONAL([ENABLE_I2PD],[test x$enable_i2pd = xyes])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$use_tests = xyes])
 AM_CONDITIONAL([ENABLE_QT],[test x$anoncoin_enable_qt = xyes])
 AM_CONDITIONAL([ENABLE_QT_TESTS],[test x$use_tests$anoncoin_enable_qt_test = xyesyes])

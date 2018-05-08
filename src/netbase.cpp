@@ -12,6 +12,8 @@
 #include "ui_interface.h"
 #include "uint256.h"
 #include "util.h"
+#include "api.h"
+#include "i2p.h"
 
 #ifdef HAVE_GETADDRINFO_A
 #include <netdb.h>
@@ -608,10 +610,10 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout, b
     proxyType proxy;                                                    //! Not needed by i2p, but might be for clearnet or tor
 
     if (outProxyConnectionFailed) *outProxyConnectionFailed = false;    //! Assume success
-#ifdef ENABLE_I2PSAM
+#ifdef ENABLE_I2PSAM2
     if( addrDest.IsI2P() ) {
         assert( addrDest.IsNativeI2P() );
-        SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2pDestination(), false/*, streamSocket*/);
+        SOCKET streamSocket = I2PSession::Instance().connect(addrDest.GetI2PDestination(), false/*, streamSocket*/);
         if (SetSocketNonBlocking(streamSocket, true)) {                 //! Set to non-blocking
             hSocketRet = streamSocket;
             return true;
@@ -649,6 +651,16 @@ bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest
 {
     string strDest;
     int port = portDefault;
+
+
+    std::shared_ptr<i2p::stream::Stream> stream;
+    if (addr.IsNativeI2P ()) {
+        i2p::data::IdentityEx ident;
+        ident.FromBase64 (addr.GetI2PDestination());
+        stream = I2PSession::Instance ().Connect (ident.GetIdentHash ());
+        if (!stream) return NULL;
+    }
+
 
     if (outProxyConnectionFailed)
         *outProxyConnectionFailed = false;                  //! Assume success
@@ -748,13 +760,14 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             addr = addrman.GetI2pBase64Destination( strName );
             if( IsI2PEnabled() && fNameLookup ) {                           // Check for dns set, we should at least log the error, if not.
                 int64_t iNow = GetTime();
-                if( !addr.size() )                                          // If we couldn't find it, much more to do..
-#ifdef ENABLE_I2PSAM
-                    addr = I2PSession::Instance().namingLookup(strName);    // Expensive, but lets try, this could take a very long while...
-#else
-                    LogPrintf( "This Build does NOT support I2P Communications, network lookup failed for: %s\n", strName );
+                if( !addr.size() ) {                                         // If we couldn't find it, much more to do..
+
+#ifdef ENABLE_I2PD
+                    const bool isBase32Addr = (strName.size() == NATIVE_I2P_B32ADDR_SIZE) && (strName.substr(strName.size() - 8, 8) == ".b32.i2p");
+                    addr = isBase32Addr ? I2PSession::Instance().NamingLookup(strName.substr(0, strName.size() - 8)) : strName;
 #endif
-                else
+
+                } else
                     LogPrintf( "The i2p destination %s was found locally.\n", strName );
                 // If the address returned is a non-zero length string, the lookup was successful
                 if( !isValidI2pAddress( addr ) ) {                          // Not sure why, but that shouldn't happen, could be a 'new' destination type we can't yet handle
@@ -771,7 +784,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         // If we make it here 'addr' has i2p destination address as a base 64 string...
         // Now we can build the output array of bytes as we need for protocol 70009+ by using the concept of a IP6 string we call pchGarlicCat
         memcpy(ip, pchGarlicCat, sizeof(pchGarlicCat));
-        memcpy(i2pDest, addr.c_str(), I2P_DESTINATION_STORE);         // So now copy it to our CNetAddr object variable
+        //memcpy(i2pDest, addr.c_str(), NATIVE_I2P_DESTINATION_SIZE);         // So now copy it to our CNetAddr object variable
         return true;                                                        // Special handling taken care of
     }
 
@@ -927,7 +940,7 @@ bool CNetAddr::IsNativeI2P() const
     return (i2pDest[0] != 0) && (memcmp(i2pDest + I2P_DESTINATION_STORE - sizeof(pchAAAA), pchAAAA, sizeof(pchAAAA)) == 0);
 }
 
-std::string CNetAddr::GetI2pDestination() const
+std::string CNetAddr::GetI2PDestination() const
 {
     return IsNativeI2P() ? std::string(i2pDest, i2pDest + I2P_DESTINATION_STORE) : std::string();
 }
@@ -973,7 +986,7 @@ bool CNetAddr::SetI2pDestination( const std::string& sBase64Dest )
 // Convert this netaddress objects native i2p address into a b32.i2p address
 std::string CNetAddr::ToB32String() const
 {
-    return B32AddressFromDestination( GetI2pDestination() );
+    return B32AddressFromDestination( GetI2PDestination() );
 }
 
 bool CNetAddr::IsLocal() const
@@ -989,7 +1002,7 @@ bool CNetAddr::IsLocal() const
     // the address stream, and should NOT include a valid i2p destination.
     // if( IsI2P() ) {
     //    string sMyDest = GetArg("-i2p.mydestination.publickey", "");
-    //    return sMyDest == GetI2pDestination();
+    //    return sMyDest == GetI2PDestination();
     // }
 
     // IPv4 loopback
@@ -1742,7 +1755,7 @@ bool isStringI2pDestination( const std::string & strName )
     return isValidI2pB32( strName ) || isValidI2pAddress( strName );
 }
 
-uint256 GetI2pDestinationHash( const std::string& destination )
+uint256 GetI2PDestinationHash( const std::string& destination )
 {
     std::string canonicalDest = destination;                    // Copy the string locally, so we can modify it & its not a const
 
@@ -1758,7 +1771,7 @@ uint256 GetI2pDestinationHash( const std::string& destination )
 
 std::string B32AddressFromDestination(const std::string& destination)
 {
-    uint256 b32hash = GetI2pDestinationHash( destination );
+    uint256 b32hash = GetI2PDestinationHash( destination );
     std::string result = EncodeBase32(b32hash.begin(), b32hash.end() - b32hash.begin()) + ".b32.i2p";
     for (size_t pos = result.find_first_of('='); pos != std::string::npos; pos = result.find_first_of('=', pos-1))
         result.erase(pos, 1);

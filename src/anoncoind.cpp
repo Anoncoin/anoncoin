@@ -65,6 +65,8 @@ bool AppInit(int argc, char* argv[])
     boost::thread_group threadGroup;
     boost::thread* detectShutdownThread = NULL;
 
+    i2p::api::InitI2P (argc, argv, "anci2pd");
+
     bool fRet = false;
 
     //

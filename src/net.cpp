@@ -12,8 +12,9 @@
 #include "transaction.h"
 #include "ui_interface.h"
 
-#ifdef ENABLE_I2PSAM
-#include "i2pwrapper.h"
+#ifdef ENABLE_I2PD
+#include "api.h"
+#include "i2p.h"
 #endif
 
 #ifdef WIN32
@@ -138,7 +139,7 @@ uint64_t nLocalHostNonce = 0;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
-#ifdef ENABLE_I2PSAM
+#ifdef ENABLE_I2PSAM2
 /**
  * For i2p we do use real OS sockets, created for us after accept has been issued to the I2P SAM module.
  * Initially we have only one, and know exactly what our destination address is.
@@ -629,7 +630,16 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
 
         // Add node
         CNode* pnode = new CNode(hSocket, addrConnect, pszDest ? pszDest : "", false);
+#if ENABLE_I2PD
         pnode->AddRef();
+#else
+        if (stream)
+        {
+            pnode->SetI2PStream (stream);
+            pnode->I2PStreamReceive ();
+        }
+        pnode->AddRef();
+#endif
 
         {
             LOCK(cs_vNodes);
@@ -661,8 +671,14 @@ void CNode::CloseSocketDisconnect()
     fDisconnect = true;
     if (hSocket != INVALID_SOCKET)
     {
-        LogPrint("net", "disconnecting peer %s\n", GetPeerLogStr(this));
-        CloseSocket(hSocket);
+        if (i2pStream) {
+            printf ("disconnecting node %s\n", i2pStream->GetRemoteIdentity ()->GetIdentHash ().ToBase32 ().c_str ());
+            i2pStream->Close ();
+            i2pStream = nullptr;
+        } else {
+            LogPrint("net", "disconnecting peer %s\n", GetPeerLogStr(this));
+            CloseSocket(hSocket);
+        }
     }
 
     // in case this fails, we'll empty the recv buffer when the CNode is deleted
@@ -681,7 +697,7 @@ void CNode::PushVersion()
     CAddress addrMe = GetLocalAddress(&addr);
     GetRandBytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
 
-    LogPrint( "net", "send version message: version %d, blocks=%d, ", PROTOCOL_VERSION, nBestHeight );
+    LogPrint( "net", "send version message: version %d, blocks=%d, us=%s, them=%s, ", PROTOCOL_VERSION, nBestHeight, addrMe.ToString().c_str(), addrYou.ToString().c_str(), addr.ToString().c_str() );
     if (fLogIPs)
         LogPrint("net", "us=%s, them=%s, peer=%s\n", addrMe.ToString(), addrYou.ToString(), addr.ToString());
     else
@@ -821,6 +837,62 @@ bool CNode::ReceiveMsgBytes(const char *pch, unsigned int nBytes)
     return true;
 }
 
+
+void CNode::I2PStreamReceive ()
+{
+       if (i2pStream)
+       {
+               auto buf = std::make_shared<I2PCNodeBuffer>();
+               i2pStream->AsyncReceive (boost::asio::buffer (*buf),
+                       std::bind (&CNode::HandleI2PStreamReceive, this,
+                       std::placeholders::_1, std::placeholders::_2, buf), 600); // idle time is 10 minutes
+       }
+}
+
+void CNode::HandleI2PStreamReceive (const boost::system::error_code& ecode, size_t bytes_transferred, std::shared_ptr<I2PCNodeBuffer> buf)
+{
+       LOCK(cs_vRecvMsg);
+       if (ecode)
+       {
+               LogPrintf("I2P stream receive error: ", ecode.message ());
+               CloseSocketDisconnect();
+       }
+       else
+       {
+            if (!ReceiveMsgBytes((const char *)buf->data (), bytes_transferred))
+               CloseSocketDisconnect();
+        nLastRecv = GetTime();
+        nRecvBytes += bytes_transferred;
+       }
+       if (!fDisconnect)
+               I2PStreamReceive ();
+}
+
+void AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream)
+{
+       if (!stream) return;
+       CAddress addr;
+    addr.SetSpecial (stream->GetRemoteIdentity ()->ToBase64 ());
+       int nInbound = 0;
+    {
+        LOCK(cs_vNodes);
+        BOOST_FOREACH(CNode* pnode, vNodes)
+            if (pnode->fInbound)
+                nInbound++;
+    }
+       printf("accepted connection %s\n", addr.ToString().c_str());
+    CNode* pnode = new CNode(INVALID_SOCKET, addr, "", true);
+       pnode->SetI2PStream (stream);
+       pnode->I2PStreamReceive ();
+    pnode->AddRef();
+    {
+        LOCK(cs_vNodes);
+        vNodes.push_back(pnode);
+    }
+}
+
+
+
 int CNetMessage::readHeader(const char *pch, unsigned int nBytes)
 {
     // copy data to temporary parsing buffer
@@ -884,7 +956,9 @@ void SocketSendData(CNode *pnode)
     while (it != pnode->vSendMsg.end()) {
         const CSerializeData &data = *it;
         assert(data.size() > pnode->nSendOffset);
-        int nBytes = send(pnode->hSocket, &data[pnode->nSendOffset], data.size() - pnode->nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
+        //int nBytes = send(pnode->hSocket, &data[pnode->nSendOffset], data.size() - pnode->nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
+        int nBytes = pnode->i2pStream ? pnode->i2pStream->Send ((const uint8_t *)&data[pnode->nSendOffset], data.size() - pnode->nSendOffset):
+            send(pnode->hSocket, &data[pnode->nSendOffset], data.size() - pnode->nSendOffset, MSG_NOSIGNAL | MSG_DONTWAIT);
         if (nBytes > 0) {
             pnode->nLastSend = GetTime();
             pnode->nSendBytes += nBytes;
@@ -922,7 +996,7 @@ void SocketSendData(CNode *pnode)
 
 static list<CNode*> vNodesDisconnected;
 
-#ifdef ENABLE_I2PSAM
+#ifdef ENABLE_I2PSAM2
 /**
  * Helper function, used below when adding a new I2P node, ported directly from 0.8.5.6 code
  */
@@ -1063,15 +1137,6 @@ void ThreadSocketHandler()
         SOCKET hSocketMax = 0;
         bool have_fds = false;
 
-#ifdef ENABLE_I2PSAM
-        BOOST_FOREACH(SOCKET hI2PListenSocket, vhI2PListenSocket) {
-            if (hI2PListenSocket != INVALID_SOCKET) {
-                FD_SET(hI2PListenSocket, &fdsetRecv);
-                hSocketMax = max(hSocketMax, hI2PListenSocket);
-                have_fds = true;
-            }
-        }
-#endif // ENABLE_I2PSAM
 
         BOOST_FOREACH(const ListenSocket& hListenSocket, vhListenSocket) {
             FD_SET(hListenSocket.socket, &fdsetRecv);
@@ -1194,7 +1259,7 @@ void ThreadSocketHandler()
             }
         }
         }
-#ifdef ENABLE_I2PSAM
+#ifdef ENABLE_I2PSAM2
         //
         // Accept new incoming I2P connections
         //
@@ -1392,6 +1457,7 @@ void ThreadSocketHandler()
 void ThreadMapPort()
 {
     std::string port = strprintf("%u", GetListenPort());
+    std::string i2pPort = std::to_string (i2p::context.GetRouterInfo ().GetSSUAddress ()->port);
     const char * multicastif = 0;
     const char * minissdpdpath = 0;
     struct UPNPDev * devlist = 0;
@@ -1434,7 +1500,7 @@ void ThreadMapPort()
             }
         }
 
-        string strDesc = "Anoncoin " + FormatFullVersion();
+        string strDesc = "AnoncoinI2P " + FormatFullVersion();
 
         try {
             while (true) {
@@ -1452,7 +1518,24 @@ void ThreadMapPort()
                     LogPrintf("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
                         port, port, lanaddr, r, strupnperror(r));
                 else
-                    LogPrintf("UPnP Port Mapping successful.\n");;
+                    {
+                        printf("UPnP Port Mapping successful.\n");
+
+                        // open I2P ports if possible
+
+                        r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype,
+                            i2pPort.c_str(), i2pPort.c_str(), lanaddr, strDesc.c_str(), "TCP", 0, "0");
+                        if (r == UPNPCOMMAND_SUCCESS)
+                        {
+                                r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype,
+                        i2pPort.c_str(), i2pPort.c_str(), lanaddr, strDesc.c_str(), "UDP", 0, "0");
+                                if (r == UPNPCOMMAND_SUCCESS)
+                                {
+                                        printf("I2P UPnP Port Mapping successful.\n");
+                                        i2p::api::RunPeerTest ();
+                                }
+                        }
+                    }
 
                 MilliSleep(20*60*1000); // Refresh every 20 minutes
             }
@@ -1461,6 +1544,10 @@ void ThreadMapPort()
         {
             r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
             LogPrintf("UPNP_DeletePortMapping() returned : %d\n", r);
+
+            UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, i2pPort.c_str(), "TCP", 0);
+            UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, i2pPort.c_str(), "UDP", 0);
+
             freeUPNPDevlist(devlist); devlist = 0;
             FreeUPNPUrls(&urls);
             throw;
@@ -1524,12 +1611,17 @@ void ThreadDNSAddressSeed()
     const int nOneDay = 24*3600;
     int found = 0;
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
+
 //    LogPrintf("DNS seeds temporary disabled\n");
 //    return;
 
-#ifdef ENABLE_I2PSAM
+#ifdef ENABLE_I2D
     // If I2P is enabled, we need to process those too...
-    if( IsI2PEnabled() ) {
+    if (IsI2PEnabled()){
+        // wait for readiness
+        while (!I2PSession::Instance ().IsReady ())
+                MilliSleep(500);
+
         LogPrintf("Loading b32.i2p destination seednodes...\n");
         const vector<CDNSSeedData> &i2pvSeeds = Params().i2pDNSSeeds();
         vector<CAddress> vAdd;
@@ -1667,16 +1759,7 @@ void ThreadOpenConnections()
         // Add seed nodes right away, b32.i2p address lookup takes a long time, and we have full
         // destination base64 addresses in the code, put them in addrman, so it can start looking.
         // As we have no clearnet fixed seeds, this is pointless unless the i2p network is available
-#ifdef ENABLE_I2PSAM
-        if( addrman.size() < 10 && IsI2PEnabled() ) {
-            static bool donei2pseeds = false;
-            if (!donei2pseeds) {
-                LogPrintf("Adding fixed i2p destination seednodes...\n");
-                addrman.Add(Params().FixedI2PSeeds(), CNetAddr("127.0.0.1"));
-                donei2pseeds = true;
-            }
-        }
-#endif
+
 
         if( (GetTime() - nStart > 60) && !IsDarknetOnly() ) {
         // Add seed nodes if DNS seeds are all down (an infrastructure attack?).
@@ -1756,6 +1839,8 @@ void ThreadOpenConnections()
             addrConnect = addr;
             break;
         }
+        if (addrConnect.IsNativeI2P () && !I2PSession::Instance ().IsReady ()) continue;
+        
         if (addrConnect.IsValid())
             OpenNetworkConnection(addrConnect, &grant);
     }
@@ -2054,36 +2139,6 @@ bool BindListenPort(const CService &addrBind, string& strError, bool fWhiteliste
 }
 
 
-#ifdef ENABLE_I2PSAM
-/**
- * I2P Specific socket listen binding functions
- */
-bool BindListenNativeI2P()
-{
-    SOCKET hNewI2PListenSocket = INVALID_SOCKET;
-    if (!BindListenNativeI2P(hNewI2PListenSocket))
-        return false;
-    vhI2PListenSocket.push_back(hNewI2PListenSocket);
-    return true;
-}
-
-bool BindListenNativeI2P(SOCKET& hSocket)
-{
-    if( !IsLimited( NET_I2P ) ) {
-        hSocket = I2PSession::Instance().accept(false);
-        if (SetSocketNonBlocking(hSocket, true)) { // Set to non-blocking
-            string sDest = GetArg( "-i2p.mydestination.publickey", "" );
-            CService addrBind( sDest, 0 );
-            return AddLocal( addrBind, LOCAL_BIND );
-        } else
-            LogPrintf( "ERROR - Unable to set I2P Socket options to non-blocking, after I2P accept was issued.\n" );
-    }
-    else
-        LogPrintf( "ERROR - Unexpected I2P BIND request. Ignored, network access is limited.\n" );
-
-    return false;
-}
-#endif // ENABLE_I2PSAM
 
 void static Discover(boost::thread_group& threadGroup)
 {
@@ -2221,17 +2276,25 @@ public:
     {
         // Close sockets
         BOOST_FOREACH(CNode* pnode, vNodes)
-            if (pnode->hSocket != INVALID_SOCKET)
+            if (pnode->i2pStream)
+            {
+                    // TODO: socket must be closed properly. temporary disabled
+                    // pnode->i2pStream->Close ();
+                    pnode->i2pStream = nullptr;
+            }
+            else if (pnode->hSocket != INVALID_SOCKET)
                 CloseSocket(pnode->hSocket);
         BOOST_FOREACH(ListenSocket& hListenSocket, vhListenSocket)
             if (hListenSocket.socket != INVALID_SOCKET)
                 if (!CloseSocket(hListenSocket.socket))
                     LogPrintf("CloseSocket(hListenSocket) failed with error %s\n", NetworkErrorString(WSAGetLastError()));
-#ifdef ENABLE_I2PSAM
+#ifdef ENABLE_I2PSAM2
+#ifndef ENABLE_I2PD
         BOOST_FOREACH(SOCKET& hI2PListenSocket, vhI2PListenSocket)
             if (hI2PListenSocket != INVALID_SOCKET)
                 if( !CloseSocket(hI2PListenSocket) )
                     LogPrintf("I2P closesocket(hI2PListenSocket) failed with error %d\n", WSAGetLastError());
+#endif
 #endif // ENABLE_I2PSAM
 
         // clean up some globals (to help leak detection)

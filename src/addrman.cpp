@@ -143,7 +143,7 @@ CAddrInfo* CAddrMan::LookupB32addr(const std::string& sB32addr)
 std::string CAddrMan::GetI2pBase64Destination(const std::string& sB32addr)
 {
     CAddrInfo* paddr = LookupB32addr(sB32addr);
-    return  paddr && paddr->IsI2P() ? paddr->GetI2pDestination() : std::string();
+    return  paddr && paddr->IsI2P() ? paddr->GetI2PDestination() : std::string();
 }
 
 // Returns the number of entries processed
@@ -165,7 +165,7 @@ int CAddrMan::CopyDestinationStats( std::vector<CDestinationStats>& vStats )
             stats.nLastTry = paddr->nLastTry;
             stats.nSuccessTime = paddr->nLastSuccess;
             stats.sSource = paddr->source.ToString();
-            stats.sBase64 = paddr->GetI2pDestination();
+            stats.sBase64 = paddr->GetI2PDestination();
             nSize++;
             vStats.push_back( stats );
         }
@@ -188,7 +188,7 @@ CAddrInfo* CAddrMan::Create(const CAddress& addr, const CNetAddr& addrSource, in
 #ifdef I2PADDRMAN_EXTENSIONS
     if( addr.IsI2P() ) {
         assert( addr.IsNativeI2P() );
-        uint256 b32hash = GetI2pDestinationHash( addr.GetI2pDestination() );
+        uint256 b32hash = GetI2PDestinationHash( addr.GetI2PDestination() );
         if( mapI2pHashes.count( b32hash ) == 0 )
             mapI2pHashes[b32hash] = nId;
         else
@@ -236,7 +236,7 @@ void CAddrMan::Delete(int nId)
 void CAddrMan::CheckAndDeleteB32Hash( const int nID, const CAddrInfo& aTerrible )
 {
     if( aTerrible.IsI2P() ) {
-        uint256 b32hash = GetI2pDestinationHash( aTerrible.GetI2pDestination() );
+        uint256 b32hash = GetI2PDestinationHash( aTerrible.GetI2PDestination() );
         if( mapI2pHashes.count( b32hash ) == 1 ) {
             int nID2 = mapI2pHashes[ b32hash ];
             if( nID == nID2 )            // Yap this is the one they want to delete, and it exists

@@ -13,6 +13,7 @@
 #include <stdint.h>
 #define HARDFORK_BLOCK 555555 //! CSlave: if not hardcoded, the hardfork block can be defined with "configure --with-hardfork=block"
 #define HARDFORK_BLOCK2 585555 // block to change the parameters of the PID
+#define HARDFORK_BLOCK3 857777 // Anoncash pharse #1
 
 class CBlockHeader;
 class CBlockIndex;
