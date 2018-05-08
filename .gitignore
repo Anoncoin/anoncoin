@@ -30,8 +30,8 @@ config.log
 config.status
 configure
 libtool
-src/config/bitcoin-config.h
-src/config/bitcoin-config.h.in
+src/config/anoncoin-config.h
+src/config/anoncoin-config.h.in
 src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
@@ -44,11 +44,11 @@ src/qt/forms/ui_*.h
 
 src/qt/test/moc*.cpp
 
-src/qt/bitcoin-qt.config
-src/qt/bitcoin-qt.creator
-src/qt/bitcoin-qt.creator.user
-src/qt/bitcoin-qt.files
-src/qt/bitcoin-qt.includes
+src/qt/anoncoin-qt.config
+src/qt/anoncoin-qt.creator
+src/qt/anoncoin-qt.creator.user
+src/qt/anoncoin-qt.files
+src/qt/anoncoin-qt.includes
 
 .deps
 .dirstamp
@@ -115,5 +115,5 @@ test/cache/*
 
 /doc/doxygen/
 
-libbitcoinconsensus.pc
+libanoncoinconsensus.pc
 contrib/devtools/split-debug.sh
