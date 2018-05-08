@@ -133,14 +133,10 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        /*vSeeds.emplace_back("seed-a.anoncoin.loshan.co.uk");
-        vSeeds.emplace_back("dnsseed.thrasher.io");
-        vSeeds.emplace_back("dnsseed.anoncointools.com");
-        vSeeds.emplace_back("dnsseed.anoncoinpool.org");
-        vSeeds.emplace_back("dnsseed.koin-project.com");*/
-        vSeeds.push_back(CDNSSeedData("frank2.net", "seed.frank2.net"));                                  //Normal DNSSeed
-        vSeeds.push_back(CDNSSeedData("anoncoin.net", "dnsseed03.anoncoin.net"));                         // Normal DNSSeed
-        vSeeds.push_back(CDNSSeedData("anoncoin.darkgamex.ch", "anc.dnsseed01.anoncoin.darkgamex.ch"));   // K1773R's DNSSeed
+        // TODO: MEEH: Check if this works?
+        vSeeds.emplace_back("seed.frank2.net");                       // Normal DNSSeed
+        vSeeds.emplace_back("dnsseed03.anoncoin.net");                // Normal DNSSeed
+        vSeeds.emplace_back("anc.dnsseed01.anoncoin.darkgamex.ch");   // K1773R's DNSSeed
         
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,23); // Anoncoins starts with A.
@@ -162,8 +158,8 @@ public:
             {
                 {  1000, uint256S("0x00000b0e2c2b0ce41331b24dbeab9a2b13323c80008a3e6a28330c4fa04562e2")},
                 {  4200, uint256S("0x0000015d22f8a48b8685657b92d7cf2886c926f4c59f800bfd9ef314ef61d577")},
-                { 42000, uint256("0x00000007c544cbf45e3975c0168a8233384bc92a075f1c6cc8126de592a898f8")},
-                {420000, uint256("0x00000000002f8e58b723820c2d5ce7f6c4699d39d216fea12b2962985cab1ab8")}
+                { 42000, uint256S("0x00000007c544cbf45e3975c0168a8233384bc92a075f1c6cc8126de592a898f8")},
+                {420000, uint256S("0x00000000002f8e58b723820c2d5ce7f6c4699d39d216fea12b2962985cab1ab8")}
             }
         };
 
@@ -172,13 +168,13 @@ public:
          *  See net.cpp->ThreadDNSAddressSeed() for how these are used.
          */
 
-        i2pvSeeds.push_back(CDNSSeedData("5oo3enrz7fp77ojrfk7hjsniohsxqmhuxdhdx6ur7iwumsrjzkwq.b32.i2p", "5oo3enrz7fp77ojrfk7hjsniohsxqmhuxdhdx6ur7iwumsrjzkwq.b32.i2p")); // Cryptoslave's seednode
-        i2pvSeeds.push_back(CDNSSeedData("xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p", "xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p")); // Cryptoslave's seednode        
-        i2pvSeeds.push_back(CDNSSeedData("if3pj2dv3cv3ljmjy3gism45r54lvjck5moavdjiroukrxlfjfia.b32.i2p", "if3pj2dv3cv3ljmjy3gism45r54lvjck5moavdjiroukrxlfjfia.b32.i2p")); // Cryptoslave's seednode
-        i2pvSeeds.push_back(CDNSSeedData("xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p", "xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p")); // Cryptoslave's seednode
-        i2pvSeeds.push_back(CDNSSeedData("a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p", "a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p")); // K1773R's seednode
-        i2pvSeeds.push_back(CDNSSeedData("b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p", "b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p")); // K1773R's seednode (dnsseed01)
-        i2pvSeeds.push_back(CDNSSeedData("7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p", "7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p")); // lunokhod's seednode
+        i2pvSeeds.emplace_back("5oo3enrz7fp77ojrfk7hjsniohsxqmhuxdhdx6ur7iwumsrjzkwq.b32.i2p"); // Cryptoslave's seednode
+        i2pvSeeds.emplace_back("xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p"); // Cryptoslave's seednode        
+        i2pvSeeds.emplace_back("if3pj2dv3cv3ljmjy3gism45r54lvjck5moavdjiroukrxlfjfia.b32.i2p"); // Cryptoslave's seednode
+        i2pvSeeds.emplace_back("xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p"); // Cryptoslave's seednode
+        i2pvSeeds.emplace_back("a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p"); // K1773R's seednode
+        i2pvSeeds.emplace_back("b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p"); // K1773R's seednode (dnsseed01)
+        i2pvSeeds.emplace_back("7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p"); // lunokhod's seednode
 
         // As of 12/26/2014, there are NO entries for the above clearnet pnSeed array,
         // only using I2P for fixed seeding now, the strings are base64 encoded I2P
