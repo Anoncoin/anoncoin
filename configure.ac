@@ -1377,8 +1377,8 @@ if test x$bitcoin_enable_qt != xno; then
     echo "    qt version  = $bitcoin_qt_got_major_vers"
     echo "    with qr     = $use_qr"
 fi
-echo "  i2psam        = $use_i2psam"
-echo "  i2pd built-in = $use_i2pd"
+echo "  i2psam        = $enable_i2psam"
+echo "  i2pd built-in = $enable_i2pd"
 echo "  with zmq      = $use_zmq"
 echo "  with test     = $use_tests"
 echo "  with bench    = $use_bench"

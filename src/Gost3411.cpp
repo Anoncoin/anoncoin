@@ -37,6 +37,7 @@
 #include <memory.h>
 #include <math.h>
 
+#include "Gost3411.h"
 
 #ifdef __cplusplus
 extern "C"{

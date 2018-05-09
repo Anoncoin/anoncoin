@@ -53,6 +53,9 @@
 #ifdef ENABLE_I2PSAM
 #include "i2pwrapper.h"
 #endif
+#ifdef ENABLE_I2PD
+#include "i2p.h"
+#endif
 
 #ifndef WIN32
 #include <signal.h>
@@ -1367,14 +1370,14 @@ bool AppInitMain()
 #ifdef ENABLE_I2PSAM
     // No config setup, means the i2p enable parameter gets set false, for the 1st time.
     // We need it to have been created and set for sure, in order to process -onlynet options for this node.
-    if( SoftSetBoolArg("-i2p.options.enabled", false) )         // Returns true if the param was undefined, in that case it will be created and value you requested assigned.
+    if( gArgs.SoftSetBoolArg("-i2p.options.enabled", false) )         // Returns true if the param was undefined, in that case it will be created and value you requested assigned.
         LogPrintf("AppInit2 : required parameter: -i2p.options.enabled=0 -> unless specifically set to 1, it is assumed no I2P router is available.\n");
     // At this point we can now know the parameter has been defined and has a value, now we need to fetch its 'real' value
-    bool fI2pEnabled = GetBoolArg("-i2p.options.enabled", false);
+    bool fI2pEnabled = gArgs.GetBoolArg("-i2p.options.enabled", false);
 #else
-    if( !SoftSetBoolArg("-i2p.options.enabled", false) )
+    if( !gArgs.SoftSetBoolArg("-i2p.options.enabled", false) )
         LogPrintf("AppInit2 : invalid parameter: -i2p.options.enabled=0 -> hard set.  This build does not support an I2P router.\n");
-    HardSetBoolArg( "-i2p.options.enabled", false );
+    gArgs.SoftSetBoolArg( "-i2p.options.enabled", false );
     bool fI2pEnabled = false;
 #endif // ENABLE_I2PSAM
 
@@ -1399,17 +1402,17 @@ bool AppInitMain()
         }
     }
 
-    #ifdef ENABLE_I2PSAM
+#ifdef ENABLE_I2PSAM
     // All we need to do for -generatei2pdestination, is have 2 other parameters set correctly and we will automatically create a new dynamic destination,
     // while executing the normal code, near the end of the initialization cycle, after a session opened (if possible), printout the key results values,
     // and gracefully exit the program.
     // To make it easier on the user, we hard set static off, if it has been left on in the configuration file.
-    bool fGenI2pDest = GetBoolArg("-generatei2pdestination", false);
+    bool fGenI2pDest = gArgs.GetBoolArg("-generatei2pdestination", false);
     if( fGenI2pDest ) {                                             // Hard set these 2 values
-        if( SoftSetBoolArg("-i2p.mydestination.static", false) )    // Returns true if the param was undefined and setting its value was possible
+        if( gArgs.SoftSetBoolArg("-i2p.mydestination.static", false) )    // Returns true if the param was undefined and setting its value was possible
             LogPrintf( "AppInit2 : parameter interaction: -generatei2pdestination -> setting -i2p.mydestination.static=0\n");
         else {
-            HardSetBoolArg("-i2p.mydestination.static", false);
+            gArgs.HardSetBoolArg("-i2p.mydestination.static", false);
             LogPrintf( "AppInit2 : parameter interaction: -generatei2pdestination -> hard setting -i2p.mydestination.static=0\n");
         }
 
@@ -1433,11 +1436,11 @@ bool AppInitMain()
 
     // We still need the keys and b32.i2p address information setup for anoncoin-qt, if any details exist in the config file
     // use them, if not create the Args and set them to null strings.
-    if( SoftSetBoolArg("-i2p.mydestination.static", true) )    // Returns true if the param was undefined and setting its value was possible
+    if( gArgs.SoftSetBoolArg("-i2p.mydestination.static", true) )    // Returns true if the param was undefined and setting its value was possible
         LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.static=1 -> setting defined.\n");
-    fI2pStaticDest = GetBoolArg("-i2p.mydestination.static", true);   // Now we can get a local copy of whatever the real value is set to
+    fI2pStaticDest = gArgs.GetBoolArg("-i2p.mydestination.static", true);   // Now we can get a local copy of whatever the real value is set to
 
-    if( SoftSetArg("-i2p.mydestination.privatekey", "") ){           // Returns true if the param was undefined and setting its value was possible
+    if( gArgs.SoftSetArg("-i2p.mydestination.privatekey", "") ){           // Returns true if the param was undefined and setting its value was possible
         LogPrintf("I2P mydestination privatekey in anoncoin.conf is undefined");
         boost::filesystem::path pathI2PKeydat = GetDataDir() / "i2pkey.dat";
             if (boost::filesystem::exists(pathI2PKeydat)) {
@@ -1451,45 +1454,11 @@ bool AppInitMain()
             } else {
                 LogPrintf("... and there is no file i2pkey.dat present.\n");
                 LogPrintf( "AppInit2 : required parameter: -i2p.mydestination.privatekey= -> setting defined and set to <null>.\n");
-                myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // myI2pKeys.priv will be NULL in this case, preparing for DYN
+                myI2pKeys.priv = gArgs.GetArg("-i2p.mydestination.privatekey", ""); // myI2pKeys.priv will be NULL in this case, preparing for DYN
             }
         } else {
         LogPrintf("I2P mydestination privatekey in anoncoin.conf is defined, we do not need to check for file i2pkey.dat\n");
-        myI2pKeys.priv = GetArg("-i2p.mydestination.privatekey", ""); // Now we can get a local copy of whatever the real value is set to
-    }
-
-    // Now we can validate the privkey, if it's a non-zero string we can use it to set the public and b32.i2p addresses for this node as well.
-    // ToDo: We could do a more exhaustive test on the key, to confirm that it is correct
-    // This needs to be done with or without I2pEnabled, because Anoncoin-qt will display whatever is set under settings, if there
-    // is something, we want the information available to the user.
-    if( myI2pKeys.priv.size() > NATIVE_I2P_DESTINATION_SIZE && isValidI2pAddress(myI2pKeys.priv) ) {
-        myI2pKeys.pub = myI2pKeys.priv.substr(0, NATIVE_I2P_DESTINATION_SIZE);
-        b32doti2p = B32AddressFromDestination(myI2pKeys.pub);
-         // Its not an error to have static false, even though the private key is valid
-    } else if( fI2pStaticDest ) {                // Dam, static is wrong, this will never work, we must hard set it to false and continue dynamic
-        if( myI2pKeys.priv.size() ) {            // Only do this if the private key was set to junk
-            LogPrintf( "AppInit2 : parameter error: -i2p.mydestination.privatekey= -> key is not valid, hard setting the value to <null>.\n");
-            HardSetArg( "-i2p.mydestination.privatekey", "" );
-            myI2pKeys.priv = "";
-        }
-        // note: the public and b32doti2p values defaulted to null strings when initialized above, which is what we want, only the static is wrong
-        LogPrintf( "AppInit2 : parameter error: -i2p.mydestination.privatekey invalid -> hard setting -i2p.mydestination.static=0\n");
-        HardSetBoolArg("-i2p.mydestination.static", false);
-        fI2pStaticDest = false;
-    }
-
-    // Previous v9 builds may have public/b32.i2p addresses left in their configuration file, now we need to hard set those values and make sure
-    // they match the 'real' private key value we would use if starting a new router session.
-    if( !SoftSetArg("-i2p.mydestination.publickey", myI2pKeys.pub) ) {
-        LogPrintf( "AppInit2 : PLEASE REMOVE -i2p.mydestination.publickey= FROM YOUR CONFIGURATION FILE - It is no longer set by the user.\n" );
-        LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.privatekey -> hard setting -i2p.mydestination.publickey=%s\n", myI2pKeys.pub);
-        HardSetArg("-i2p.mydestination.publickey", myI2pKeys.pub);
-    }
-    // Now do the same for the base32key parameter
-    if( !SoftSetArg("-i2p.mydestination.base32key", b32doti2p) ) {
-        LogPrintf( "AppInit2 : PLEASE REMOVE -i2p.mydestination.base32key= FROM YOUR CONFIGURATION FILE - It is no longer set by the user.\n" );
-        LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.privatekey -> hard setting -i2p.mydestination.base32key=%s\n", b32doti2p);
-        HardSetArg("-i2p.mydestination.base32key", b32doti2p);
+        myI2pKeys.priv = gArgs.GetArg("-i2p.mydestination.privatekey", ""); // Now we can get a local copy of whatever the real value is set to
     }
 
     if( fI2pEnabled ) {                                                 // If I2P is enabled, we have allot of work to do...
@@ -1500,7 +1469,7 @@ bool AppInitMain()
           //  LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=%s\n", fI2pStaticDest ? "1" : "0" );
         //CSlave changed to allow sharing of every I2P address whether dynamic and static per default
 
-        if( SoftSetBoolArg("-i2p.mydestination.shareaddr", true) )
+        if( gArgs.SoftSetBoolArg("-i2p.mydestination.shareaddr", true) )
             LogPrintf( "AppInit2 : parameter interaction: -i2p.mydestination.static -> setting -i2p.mydestination.shareaddr=1\n");
 
         // bool fI2pSharedAddr = GetBoolArg("-i2p.mydestination.shareaddr", false);
@@ -1524,7 +1493,7 @@ bool AppInitMain()
                 LogPrintf( "With a static destination.\n" );
                 SAM::FullDestination retI2pKeys;                                   // Something we can us to compare our results with
                 retI2pKeys = I2PSession::Instance().getMyDestination();
-            LogPrintf("Running with an I2P mydestination publickey: %s\n", myI2pKeys.pub);
+                LogPrintf("Running with an I2P mydestination publickey: %s\n", myI2pKeys.pub);
 
                 if( retI2pKeys.priv == myI2pKeys.priv && retI2pKeys.pub == myI2pKeys.pub && retI2pKeys.isGenerated == false ) {
                     myI2pKeys = retI2pKeys;             // Store them outside this one step, so they can be used later
@@ -1543,16 +1512,16 @@ bool AppInitMain()
             LogPrintf( "Failed.  Router does not appear to be available\n" );
 
         if( fI2pSessionValid ) {
-            b32doti2p = B32AddressFromDestination(myI2pKeys.pub);
+            b32doti2p = GenerateB32AddressFromDestination(myI2pKeys.pub);
             // At this point, we could try to figure out if this hardset on the parameters is really needed or not,
             // instead we just always do it, and make sure all the values are always what we are using for this
             // session.  After this point, they are all just primarily used for informational purposes, still they
             // should not be wrong and we can set them.
-            HardSetArg( "-i2p.mydestination.privatekey", myI2pKeys.priv );
-            HardSetArg( "-i2p.mydestination.publickey", myI2pKeys.pub );
-            HardSetArg( "-i2p.mydestination.base32key", b32doti2p );
+            gArgs.ForceSetArg( "-i2p.mydestination.privatekey", myI2pKeys.priv );
+            gArgs.ForceSetArg( "-i2p.mydestination.publickey", myI2pKeys.pub );
+            gArgs.ForceSetArg( "-i2p.mydestination.base32key", b32doti2p );
 
-            SetReachable(NET_I2P);                           // It's now been proven the router is available.
+            //SetReachable(NET_I2P);                           // It's now been proven the router is available.
             LogPrintf( "AppInit2 : Your I2P Keys have been set. Using SAM module version %s\n", FormatI2PNativeFullVersion());
             LogPrintf( "AppInit2 : Created a new SAM Session ID:%s, connected to Router.\n", I2PSession::Instance().getSessionID() );
             // This is not needed, unless debuggging...as the b32.i2p address will be printed in the log shortly while binding
@@ -1577,7 +1546,7 @@ bool AppInitMain()
                 fprintf(file, "%s\n",myI2pKeys.priv.c_str());                 //write the I2PKeydat to the file i2pkey.dat
                 fclose(file);
             }
-            string msg = GenerateI2pDestinationMessage( myI2pKeys.pub, myI2pKeys.priv, b32doti2p, GetConfigFile().string() );
+            std::string msg = GenerateI2pDestinationMessage( myI2pKeys.pub, myI2pKeys.priv, b32doti2p, GetConfigFile().string() );
             unsigned int style = CClientUIInterface::ICON_INFORMATION |
                                  CClientUIInterface::NOSHOWGUI |
                                  CClientUIInterface::BTN_APPLY |

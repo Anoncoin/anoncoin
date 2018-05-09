@@ -20,15 +20,13 @@ endif
 
 BITCOIN_INCLUDES=-I$(builddir) $(BDB_CPPFLAGS) $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 
-BITCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
+BITCOIN_INCLUDES += -I$(srcdir)/secp256k1/include -I$(srcdir)/../i2pd/libi2pd  -I$(srcdir)/../i2pd/libi2pd_client
 BITCOIN_INCLUDES += $(UNIVALUE_CFLAGS)
 
 LIBBITCOIN_SERVER=libanoncoin_server.a
 LIBBITCOIN_COMMON=libanoncoin_common.a
 LIBBITCOIN_CONSENSUS=libanoncoin_consensus.a
 LIBBITCOIN_CLI=libanoncoin_cli.a
-LIBBITCOIN_I2PSAM=libanoncoin_i2psam.a
-LIBBITCOIN_I2PD=libanoncoin_i2pnet.a
 LIBBITCOIN_UTIL=libanoncoin_util.a
 LIBBITCOIN_CRYPTO=crypto/libanoncoin_crypto.a
 LIBBITCOINQT=qt/libanoncoinqt.a
@@ -63,7 +61,9 @@ EXTRA_LIBRARIES += \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_CLI) \
   $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_ZMQ)
+  $(LIBBITCOIN_ZMQ) \
+  $(LIBBITCOIN_I2PD) \
+  $(LIBBITCOIN_I2PSAM)
 
 lib_LTLIBRARIES = $(LIBBITCOINCONSENSUS)
 
@@ -206,6 +206,7 @@ libanoncoin_server_a_SOURCES = \
   consensus/tx_verify.cpp \
   httprpc.cpp \
   httpserver.cpp \
+  i2p.cpp \
   init.cpp \
   dbwrapper.cpp \
   merkleblock.cpp \
@@ -298,16 +299,18 @@ if USE_ASM
 crypto_libanoncoin_crypto_a_SOURCES += crypto/sha256_sse4.cpp
 endif
 
-if USE_I2PSAM
+if ENABLE_I2PSAM
 libanoncoin_i2psam_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libanoncoin_i2psam_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libanoncoin_i2psam_a_SOURCES += i2p.cpp i2p.h i2psam/i2psam.h i2psam/i2psam.cpp
+libanoncoin_i2psam_a_SOURCES  = i2p.cpp i2p.h i2psam/i2psam.h i2psam/i2psam.cpp i2pwrapper.cpp i2pwrapper.h
 endif
 
-if USE_I2PD
+if ENABLE_I2PD
 libanoncoin_i2pd_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libanoncoin_i2pd_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libanoncoin_i2pd_a_SOURCES += i2p.cpp i2p.h
+libanoncoin_i2pd_a_SOURCES  = i2p.cpp i2p.h
+libanoncoin_i2pd_a_LIBADD = -L../i2pd -li2pd
+libanoncoin_i2pd_a_LDFLAGS = -L../i2pd -li2pd
 endif
 
 # consensus: shared between all executables that validate any consensus rules.
@@ -434,13 +437,13 @@ anoncoind_LDADD = \
 anoncoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
 # bitcoin-cli binary #
-litecoin_cli_SOURCES = anoncoin-cli.cpp
-litecoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-litecoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-litecoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+anoncoin_cli_SOURCES = anoncoin-cli.cpp
+anoncoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+anoncoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+anoncoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-litecoin_cli_SOURCES += anoncoin-cli-res.rc
+anoncoin_cli_SOURCES += anoncoin-cli-res.rc
 endif
 
 anoncoin_cli_LDADD = \
@@ -453,13 +456,13 @@ anoncoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
 # bitcoin-tx binary #
-litecoin_tx_SOURCES = anoncoin-tx.cpp
-litecoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-litecoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-litecoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+anoncoin_tx_SOURCES = anoncoin-tx.cpp
+anoncoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+anoncoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-litecoin_tx_SOURCES += anoncoin-tx-res.rc
+anoncoin_tx_SOURCES += anoncoin-tx-res.rc
 endif
 
 anoncoin_tx_LDADD = \

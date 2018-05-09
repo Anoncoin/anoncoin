@@ -488,6 +488,12 @@ void CNode::CloseSocketDisconnect()
     {
         LogPrint(BCLog::NET, "disconnecting peer=%d\n", id);
         CloseSocket(hSocket);
+    }  
+    if (i2pStream)
+    {
+        LogPrint(BCLog::NET, "disconnecting peer=%d\n", id);
+        i2p::api::DestroyStream (i2pStream);
+        i2pStream = nullptr;
     }
 }
 
@@ -1067,6 +1073,63 @@ bool CConnman::AttemptToEvictConnection()
     }
     return false;
 }
+
+#ifdef ENABLE_I2PD
+
+void CConnman::AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream) {
+	if (!stream) return;
+	CAddress addr;
+    addr.SetSpecial (stream->GetRemoteIdentity ()->ToBase64 ());
+	int nInbound = 0;
+    {
+        LOCK(cs_vNodes);
+        for (const CNode* pnode : vNodes) {
+            if (pnode->fInbound)
+                nInbound++;
+        }
+    }
+	printf("accepted connection %s\n", addr.ToString().c_str());
+    CNode* pnode = new CNode(INVALID_SOCKET, addr, "", true);
+	pnode->SetI2PStream (stream);
+	pnode->I2PStreamReceive ();	
+    pnode->AddRef();
+    {
+        LOCK(cs_vNodes);
+        vNodes.push_back(pnode);
+    }
+}
+
+void CNode::I2PStreamReceive ()
+{
+	if (i2pStream)
+	{
+		auto buf = std::make_shared<I2PCNodeBuffer>();
+		i2pStream->AsyncReceive (boost::asio::buffer (*buf),
+			std::bind (&CNode::HandleI2PStreamReceive, this,
+			std::placeholders::_1, std::placeholders::_2, buf), 600); // idle time is 10 minutes
+	}
+}
+
+void CNode::HandleI2PStreamReceive (const boost::system::error_code& ecode, size_t bytes_transferred, std::shared_ptr<I2PCNodeBuffer> buf)
+{
+	LOCK(cs_vRecv);
+	if (ecode)
+	{
+		LogPrintf ("I2P stream receive error: %s", ecode.message ());
+		CloseSocketDisconnect();
+	}
+	else
+	{
+		if (!ReceiveMsgBytes((const char *)buf->data (), bytes_transferred))
+        	CloseSocketDisconnect();
+        nLastRecv = GetTime();
+        nRecvBytes += bytes_transferred;
+	}	
+	if (!fDisconnect)
+		I2PStreamReceive ();
+}
+
+#endif
 
 void CConnman::AcceptConnection(const ListenSocket& hListenSocket) {
     struct sockaddr_storage sockaddr;
@@ -2695,6 +2758,9 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     nLocalServices(nLocalServicesIn),
     nMyStartingHeight(nMyStartingHeightIn),
     nSendVersion(0)
+    , nSendStreamType(((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY)
+    , nRecvStreamType(((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY)
+    
 {
     nServices = NODE_NONE;
     hSocket = hSocketIn;

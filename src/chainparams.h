@@ -9,6 +9,8 @@
 #include <chainparamsbase.h>
 #include <consensus/params.h>
 #include <primitives/block.h>
+#include <netaddress.h>
+#include <netbase.h>
 #include <protocol.h>
 
 #include <memory>
@@ -69,7 +71,7 @@ public:
     /** Return the list of hostnames to look up for DNS seeds */
     const std::vector<std::string>& DNSSeeds() const { return vSeeds; }
 #ifdef ENABLE_I2PSAM
-    const std::vector<CDNSSeedData>& i2pDNSSeeds() const { return i2pvSeeds; }
+    const std::vector<std::string>& i2pDNSSeeds() const { return i2pvSeeds; }
 #endif
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     const std::string& Bech32HRP() const { return bech32_hrp; }
@@ -86,13 +88,14 @@ protected:
     uint64_t nPruneAfterHeight;
     std::vector<std::string> vSeeds;
 #ifdef ENABLE_I2PSAM
-    std::vector<CDNSSeedData> i2pvSeeds;
+    std::vector<std::string> i2pvSeeds;
 #endif
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     std::string bech32_hrp;
     std::string strNetworkID;
     CBlock genesis;
     std::vector<SeedSpec6> vFixedSeeds;
+    std::vector<std::string> vFixedI2PSeeds;
     bool fDefaultConsistencyChecks;
     bool fRequireStandard;
     bool fMineBlocksOnDemand;

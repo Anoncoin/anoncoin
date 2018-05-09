@@ -1,14 +1,13 @@
 #include <map>
 #include <mutex>
 #include <condition_variable>
-#include "util.h"
-#include "Log.h"
-#include "net.h"
-#include "i2p.h"
+#include <util.h>
+#include <net.h>
+#include <i2p.h>
 
 I2PSession::I2PSession()
 {
-	auto dest = GetArg(I2P_SAM_MY_DESTINATION_PARAM, "");
+	auto dest = gArgs.GetArg(I2P_SAM_MY_DESTINATION_PARAM, "");
 	if (dest.length () > 0)
 	{
 		m_Keys.FromBase64 (dest);
@@ -46,10 +45,10 @@ std::string I2PSession::GetB32Address () const
 void I2PSession::Start ()
 {
 	std::map<std::string, std::string> params;	
-	params[i2p::client::I2CP_PARAM_INBOUND_TUNNELS_QUANTITY] = std::to_string (GetArg(i2p::client::I2CP_PARAM_INBOUND_TUNNELS_QUANTITY, i2p::client::DEFAULT_INBOUND_TUNNELS_QUANTITY));	
-	params[i2p::client::I2CP_PARAM_INBOUND_TUNNEL_LENGTH] = std::to_string (GetArg(i2p::client::I2CP_PARAM_INBOUND_TUNNEL_LENGTH, i2p::client::DEFAULT_INBOUND_TUNNEL_LENGTH));
-	params[i2p::client::I2CP_PARAM_OUTBOUND_TUNNELS_QUANTITY] = std::to_string (GetArg(i2p::client::I2CP_PARAM_OUTBOUND_TUNNELS_QUANTITY, i2p::client::DEFAULT_OUTBOUND_TUNNELS_QUANTITY));	
-	params[i2p::client::I2CP_PARAM_OUTBOUND_TUNNEL_LENGTH] = std::to_string (GetArg(i2p::client::I2CP_PARAM_OUTBOUND_TUNNEL_LENGTH, i2p::client::DEFAULT_OUTBOUND_TUNNEL_LENGTH));		
+	params[i2p::client::I2CP_PARAM_INBOUND_TUNNELS_QUANTITY] = std::to_string (gArgs.GetArg(i2p::client::I2CP_PARAM_INBOUND_TUNNELS_QUANTITY, i2p::client::DEFAULT_INBOUND_TUNNELS_QUANTITY));	
+	params[i2p::client::I2CP_PARAM_INBOUND_TUNNEL_LENGTH] = std::to_string (gArgs.GetArg(i2p::client::I2CP_PARAM_INBOUND_TUNNEL_LENGTH, i2p::client::DEFAULT_INBOUND_TUNNEL_LENGTH));
+	params[i2p::client::I2CP_PARAM_OUTBOUND_TUNNELS_QUANTITY] = std::to_string (gArgs.GetArg(i2p::client::I2CP_PARAM_OUTBOUND_TUNNELS_QUANTITY, i2p::client::DEFAULT_OUTBOUND_TUNNELS_QUANTITY));	
+	params[i2p::client::I2CP_PARAM_OUTBOUND_TUNNEL_LENGTH] = std::to_string (gArgs.GetArg(i2p::client::I2CP_PARAM_OUTBOUND_TUNNEL_LENGTH, i2p::client::DEFAULT_OUTBOUND_TUNNEL_LENGTH));		
 	m_LocalDestination = i2p::api::CreateLocalDestination (m_Keys, true, &params);
 
 	m_LocalDestination->AcceptStreams (std::bind (&I2PSession::HandleAccept, this, std::placeholders::_1));
@@ -67,7 +66,7 @@ void I2PSession::Stop ()
 void I2PSession::HandleAccept (std::shared_ptr<i2p::stream::Stream> stream)
 {
 	if (stream)
-		AddIncomingI2PStream (stream);
+		g_connman->AddIncomingI2PStream (stream);
 }
 
 std::shared_ptr<const i2p::data::LeaseSet> I2PSession::RequestLeaseSet (const i2p::data::IdentHash& ident)
@@ -93,7 +92,7 @@ std::shared_ptr<const i2p::data::LeaseSet> I2PSession::RequestLeaseSet (const i2
 		if (ret == std::cv_status::timeout)
 		{
 			// most likely it shouldn't happen
-			LogPrint (eLogError, "I2PSession LeaseSet request timeout expired");
+			LogPrintf ("Error: I2PSession LeaseSet request timeout expired");
 			return nullptr;
 		}
 	}
@@ -102,21 +101,21 @@ std::shared_ptr<const i2p::data::LeaseSet> I2PSession::RequestLeaseSet (const i2
 
 std::shared_ptr<i2p::stream::Stream> I2PSession::Connect (const i2p::data::IdentHash& ident)
 {
-	LogPrint (eLogInfo, "Connecting to peer address ", ident.ToBase32 ());	
+	LogPrintf("Connecting to peer address %s", ident.ToBase32 ());	
 	auto leaseSet = RequestLeaseSet (ident);
 	if (leaseSet)
 	{
-		LogPrint (eLogInfo, "Connected to peer address ", ident.ToBase32 ());	
+		LogPrintf("Connected to peer address %s", ident.ToBase32 ());	
 		return m_LocalDestination->CreateStream (leaseSet);
 	}
 	else
-		LogPrint (eLogInfo, "Peer address ", ident.ToBase32 (), " not found");	
+		LogPrintf("Peer address %s not found", ident.ToBase32 ());	
 	return nullptr;
 }
 
 std::string I2PSession::NamingLookup (const std::string& b32)
 {
-	LogPrint (eLogInfo, "Naming lookup of ", b32);
+	LogPrintf("Naming lookup of %s", b32);
 	i2p::data::IdentHash ident;
 	ident.FromBase32 (b32);
 	auto leaseSet = RequestLeaseSet (ident);	

@@ -9,6 +9,8 @@
 #include <config/anoncoin-config.h>
 #endif
 
+#include "i2pwrapper.h"
+
 #include <compat.h>
 #include <serialize.h>
 
@@ -16,12 +18,15 @@
 #include <string>
 #include <vector>
 
+
 enum Network
 {
     NET_UNROUTABLE = 0,
     NET_IPV4,
     NET_IPV6,
     NET_TOR,
+    NET_I2P,
+    NET_I2PONLY,
     NET_INTERNAL,
 
     NET_MAX,
@@ -32,11 +37,14 @@ class CNetAddr
 {
     protected:
         unsigned char ip[16]; // in network byte order
+        unsigned char i2pDest[NATIVE_I2P_DESTINATION_SIZE]; // I2P Destination (should be array for serialization)
         uint32_t scopeId; // for scoped/link-local ipv6 addresses
 
     public:
         CNetAddr();
-        explicit CNetAddr(const struct in_addr& ipv4Addr);
+        CNetAddr(const struct in_addr& ipv4Addr);
+        explicit CNetAddr(const char *pszIp, bool fAllowLookup = false);
+        explicit CNetAddr(const std::string &strIp, bool fAllowLookup = false);
         void Init();
         void SetIP(const CNetAddr& ip);
 
@@ -52,7 +60,7 @@ class CNetAddr
          */
         bool SetInternal(const std::string& name);
 
-        bool SetSpecial(const std::string &strName); // for Tor addresses
+        bool SetSpecial(const std::string &strName); // for I2P or Tor addresses
         bool IsIPv4() const;    // IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
         bool IsIPv6() const;    // IPv6 address (not mapped IPv4, not Tor)
         bool IsRFC1918() const; // IPv4 private networks (10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12)
@@ -70,6 +78,10 @@ class CNetAddr
         bool IsRFC6145() const; // IPv6 IPv4-translated address (::FFFF:0:0:0/96)
         bool IsTor() const;
         bool IsI2P() const;
+
+        bool IsDarknetOnly() const;
+        bool IsBehindDarknet() const;
+
         bool IsLocal() const;
         bool IsRoutable() const;
         bool IsInternal() const;
@@ -86,6 +98,9 @@ class CNetAddr
         explicit CNetAddr(const struct in6_addr& pipv6Addr, const uint32_t scope = 0);
         bool GetIn6Addr(struct in6_addr* pipv6Addr) const;
 
+        bool IsNativeI2P() const;
+        std::string GetI2PDestination() const;
+
         friend bool operator==(const CNetAddr& a, const CNetAddr& b);
         friend bool operator!=(const CNetAddr& a, const CNetAddr& b);
         friend bool operator<(const CNetAddr& a, const CNetAddr& b);
@@ -95,6 +110,7 @@ class CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action) {
             READWRITE(FLATDATA(ip));
+            READWRITE(FLATDATA(i2pDest));
         }
 
         friend class CSubNet;
@@ -148,6 +164,10 @@ class CService : public CNetAddr
         CService(const CNetAddr& ip, unsigned short port);
         CService(const struct in_addr& ipv4Addr, unsigned short port);
         explicit CService(const struct sockaddr_in& addr);
+
+        explicit CService(const char *i2pDest, int portDefault, bool fAllowLookup = false);
+        explicit CService(const char *i2pDest, bool fAllowLookup = false);
+
         void Init();
         unsigned short GetPort() const;
         bool GetSockAddr(struct sockaddr* paddr, socklen_t *addrlen) const;
@@ -168,6 +188,7 @@ class CService : public CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action) {
             READWRITE(FLATDATA(ip));
+            READWRITE(FLATDATA(i2pDest));
             unsigned short portN = htons(port);
             READWRITE(FLATDATA(portN));
             if (ser_action.ForRead())

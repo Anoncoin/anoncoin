@@ -21,6 +21,7 @@
 #include <sync.h>
 #include <uint256.h>
 #include <threadinterrupt.h>
+#include <i2p.h>
 
 #include <atomic>
 #include <deque>
@@ -180,6 +181,8 @@ public:
     void OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound = nullptr, const char *strDest = nullptr, bool fOneShot = false, bool fFeeler = false, bool manual_connection = false);
     bool CheckIncomingNonce(uint64_t nonce);
 
+    void AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream);
+
     bool ForNode(NodeId id, std::function<bool(CNode* pnode)> func);
 
     void PushMessage(CNode* pnode, CSerializedNetMsg&& msg);
@@ -331,6 +334,7 @@ private:
     void ThreadOpenConnections(std::vector<std::string> connect);
     void ThreadMessageHandler();
     void AcceptConnection(const ListenSocket& hListenSocket);
+    
     void ThreadSocketHandler();
     void ThreadDNSAddressSeed();
 
@@ -598,8 +602,10 @@ public:
 
 
 /** Information about a peer */
+#ifdef ENABLE_I2PD
 const size_t I2P_CNODE_BUFFER_SIZE = 0x10000; // 64k
 typedef std::array<uint8_t, I2P_CNODE_BUFFER_SIZE> I2PCNodeBuffer;
+#endif
 class CNode
 {
     friend class CConnman;
@@ -614,7 +620,7 @@ public:
     CCriticalSection cs_vSend;
     CCriticalSection cs_hSocket;
     CCriticalSection cs_vRecv;
-#ifdef I2PD
+#ifdef ENABLE_I2PD
     // I2P Stream
     std::shared_ptr<i2p::stream::Stream> i2pStream; // non null means I2P
 #endif
@@ -726,7 +732,8 @@ public:
     CAmount lastSentFeeFilter;
     int64_t nextSendTimeFeeFilter;
 
-    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn = "", bool fInboundIn = false);
+    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn = "", bool fInboundIn = false)
+;
     ~CNode();
     CNode(const CNode&) = delete;
     CNode& operator=(const CNode&) = delete;
@@ -746,19 +753,89 @@ private:
     // Our address, as reported by the peer
     CService addrLocal;
     mutable CCriticalSection cs_addrLocal;
+
+    int nSendStreamType;
+    int nRecvStreamType;
 public:
 
     NodeId GetId() const {
         return id;
     }
 
-#ifdef I2PD
+#ifdef ENABLE_I2PD
     void SetI2PStream (std::shared_ptr<i2p::stream::Stream> s) {
         i2pStream = s;
-        if (i2pStream && !fInbound)
-            PushVersion();
     }
 #endif
+#ifdef ENABLE_I2PSAM
+    bool BindListenNativeI2P(SOCKET& hSocket)
+    {
+        hSocket = I2PSession::Instance().accept(false);
+        if (!SetSocketOptions(hSocket) || hSocket == INVALID_SOCKET)
+            return false;
+        CService addrBind(I2PSession::Instance().getMyDestination().pub, 0);
+        if (addrBind.IsRoutable() && fDiscover)
+            AddLocal(addrBind, LOCAL_BIND);
+        return true;
+    }
+#endif
+    void SetSendStreamType(int nType)
+    {
+        nSendStreamType = nType;
+        send.SetType(nSendStreamType);
+    }
+
+    void SetRecvStreamType(int nType)
+    {
+        nRecvStreamType = nType;
+        for (std::deque<CNetMessage>::iterator it = vRecvMsg.begin(), end = vRecvMsg.end(); it != end; ++it)
+        {
+            it->hdrbuf.SetType(nRecvStreamType);
+            it->vRecv.SetType(nRecvStreamType);
+        }
+    }
+
+    int GetSendStreamType() const
+    {
+        return nSendStreamType;
+    }
+
+    int GetRecvStreamType() const
+    {
+        return nRecvStreamType;
+    }
+
+    bool BindListenNativeI2P()
+    {
+/*        SOCKET hNewI2PListenSocket = INVALID_SOCKET;
+        if (!BindListenNativeI2P(hNewI2PListenSocket))
+            return false;
+        vhI2PListenSocket.push_back(hNewI2PListenSocket);*/
+        return true;
+    }
+
+    bool IsI2POnly()
+    {
+        bool i2pOnly = false;
+        /*if (gArgs.count("-onlynet"))
+        {
+            const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+            i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
+        }*/
+        return i2pOnly;
+    }
+
+    bool IsI2PEnabled()
+    {
+        if (IsI2POnly())
+            return true;
+
+        if (gArgs.GetBoolArg("-i2p", false))
+        {
+            return true;
+        }
+        return false;
+    }
 
     uint64_t GetLocalNonce() const {
         return nLocalHostNonce;
@@ -854,7 +931,7 @@ public:
 
     void CloseSocketDisconnect();
 
-#ifdef I2PD
+#ifdef ENABLE_I2PD
     void I2PStreamReceive ();
     void HandleI2PStreamReceive (const boost::system::error_code& ecode, size_t bytes_transferred, std::shared_ptr<I2PCNodeBuffer> buf);
 #endif

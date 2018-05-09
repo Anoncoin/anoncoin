@@ -12,27 +12,8 @@
 #include <primitives/block.h>
 #include <uint256.h>
 
-static uint256 bnProofOfWorkLimit(~uint256(0) >> 20);
+static arith_uint256 bnProofOfWorkLimit(~arith_uint256(0) >> 20);
 
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
-{
-    static const int64_t        BlocksTargetSpacing  = 2.5 * 60; // 2.5 minutes
-    unsigned int                TimeDaySeconds       = 60 * 60 * 24;
-    int64_t                     PastSecondsMin       = TimeDaySeconds * 0.25;
-    int64_t                     PastSecondsMax       = TimeDaySeconds * 7;
-    uint64_t                    PastBlocksMin        = PastSecondsMin / BlocksTargetSpacing;
-    uint64_t                    PastBlocksMax        = PastSecondsMax / BlocksTargetSpacing;
-
-
-	int nHeight = pindexLast->nHeight + 1;
-	if (nHeight < 26754) {
-	    return GetNextWorkRequired_Bitcoin(pindexLast, pblock, params);
-	}
-	else if (nHeight == 208301) {
-   	    return 0x1e0ffff0;
-	}
-    return KimotoGravityWell(pindexLast, pblock, BlocksTargetSpacing, PastBlocksMin, PastBlocksMax);
-}
 
 unsigned int GetNextWorkRequired_Bitcoin(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
@@ -86,8 +67,8 @@ unsigned int static KimotoGravityWell(const CBlockIndex* pindexLast, const CBloc
     uint64_t PastRateActualSeconds = 0;
     uint64_t PastRateTargetSeconds = 0;
     double PastRateAdjustmentRatio = double(1);
-    uint256 PastDifficultyAverage;
-    uint256 PastDifficultyAveragePrev;
+    arith_uint256 PastDifficultyAverage;
+    arith_uint256 PastDifficultyAveragePrev;
     double EventHorizonDeviation;
     double EventHorizonDeviationFast;
     double EventHorizonDeviationSlow;
@@ -120,7 +101,7 @@ unsigned int static KimotoGravityWell(const CBlockIndex* pindexLast, const CBloc
         BlockReading = BlockReading->pprev;
     }
 
-    uint256 bnNew(PastDifficultyAverage);
+    arith_uint256 bnNew(PastDifficultyAverage);
     if (PastRateActualSeconds != 0 && PastRateTargetSeconds != 0) {
         bnNew *= PastRateActualSeconds;
         bnNew /= PastRateTargetSeconds;
@@ -188,4 +169,25 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
         return false;
 
     return true;
+}
+
+
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
+{
+    static const int64_t        BlocksTargetSpacing  = 2.5 * 60; // 2.5 minutes
+    unsigned int                TimeDaySeconds       = 60 * 60 * 24;
+    int64_t                     PastSecondsMin       = TimeDaySeconds * 0.25;
+    int64_t                     PastSecondsMax       = TimeDaySeconds * 7;
+    uint64_t                    PastBlocksMin        = PastSecondsMin / BlocksTargetSpacing;
+    uint64_t                    PastBlocksMax        = PastSecondsMax / BlocksTargetSpacing;
+
+
+	int nHeight = pindexLast->nHeight + 1;
+	if (nHeight < 26754) {
+	    return GetNextWorkRequired_Bitcoin(pindexLast, pblock, params);
+	}
+	else if (nHeight == 208301) {
+   	    return 0x1e0ffff0;
+	}
+    return KimotoGravityWell(pindexLast, pblock, BlocksTargetSpacing, PastBlocksMin, PastBlocksMax);
 }

@@ -5,6 +5,9 @@
 
 #include <script/interpreter.h>
 
+#include <Crypto.h>
+#include <Gost3411.h>
+
 #include <crypto/ripemd160.h>
 #include <crypto/sha1.h>
 #include <crypto/sha256.h>

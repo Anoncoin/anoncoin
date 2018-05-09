@@ -11,7 +11,7 @@
 #include <openssl/sha.h>
 #include <openssl/evp.h>
 #include "Crypto.h"
-#include "Gost.h"
+#include "Gost3410.h"
 
 namespace i2p
 {

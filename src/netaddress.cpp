@@ -443,6 +443,13 @@ int CNetAddr::GetReachabilityFrom(const CNetAddr *paddrPartner) const
         case NET_IPV4:   return REACH_IPV4;
         case NET_IPV6:   return fTunnel ? REACH_IPV6_WEAK : REACH_IPV6_STRONG; // only prefer giving our IPv6 address if it's not tunnelled
         }
+    case NET_I2P:
+        switch(ourNet) {
+        default:         return REACH_DEFAULT;
+        case NET_IPV4:   return REACH_IPV4; // Tor users can connect to IPv4 as well
+        case NET_TOR:    return REACH_PRIVATE;
+        case NET_I2P:    return REACH_PRIVATE;
+        }
     case NET_TOR:
         switch(ourNet) {
         default:         return REACH_DEFAULT;
@@ -499,6 +506,14 @@ CService::CService(const struct sockaddr_in& addr) : CNetAddr(addr.sin_addr), po
 CService::CService(const struct sockaddr_in6 &addr) : CNetAddr(addr.sin6_addr, addr.sin6_scope_id), port(ntohs(addr.sin6_port))
 {
    assert(addr.sin6_family == AF_INET6);
+}
+
+CService::CService(const char *i2pDest, bool fAllowLookup) : CNetAddr(i2pDest), port(0)
+{
+}
+
+CService::CService(const char *i2pDest, int portDefault, bool fAllowLookup) : CNetAddr(i2pDest), port(portDefault)
+{
 }
 
 bool CService::SetSockAddr(const struct sockaddr *paddr)
