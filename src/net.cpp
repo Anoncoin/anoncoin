@@ -488,13 +488,15 @@ void CNode::CloseSocketDisconnect()
     {
         LogPrint(BCLog::NET, "disconnecting peer=%d\n", id);
         CloseSocket(hSocket);
-    }  
+    }
+#ifdef ENABLE_I2PD
     if (i2pStream)
     {
         LogPrint(BCLog::NET, "disconnecting peer=%d\n", id);
         i2p::api::DestroyStream (i2pStream);
         i2pStream = nullptr;
     }
+#endif
 }
 
 void CConnman::ClearBanned()
@@ -1078,6 +1080,7 @@ bool CConnman::AttemptToEvictConnection()
 
 void CConnman::AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream) {
 	if (!stream) return;
+    NodeId id = GetNewNodeId();
 	CAddress addr;
     addr.SetSpecial (stream->GetRemoteIdentity ()->ToBase64 ());
 	int nInbound = 0;
@@ -1089,7 +1092,7 @@ void CConnman::AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream
         }
     }
 	printf("accepted connection %s\n", addr.ToString().c_str());
-    CNode* pnode = new CNode(INVALID_SOCKET, addr, "", true);
+    CNode* pnode = new CNode(id, addr.nServices , INVALID_SOCKET, addr, "", true);
 	pnode->SetI2PStream (stream);
 	pnode->I2PStreamReceive ();	
     pnode->AddRef();
@@ -2758,9 +2761,10 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     nLocalServices(nLocalServicesIn),
     nMyStartingHeight(nMyStartingHeightIn),
     nSendVersion(0)
+#ifdef ENABLE_I2PSAM
     , nSendStreamType(((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY)
     , nRecvStreamType(((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY)
-    
+#endif  
 {
     nServices = NODE_NONE;
     hSocket = hSocketIn;

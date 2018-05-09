@@ -732,8 +732,7 @@ public:
     CAmount lastSentFeeFilter;
     int64_t nextSendTimeFeeFilter;
 
-    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn = "", bool fInboundIn = false)
-;
+    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn = "", bool fInboundIn = false);
     ~CNode();
     CNode(const CNode&) = delete;
     CNode& operator=(const CNode&) = delete;
@@ -778,7 +777,6 @@ public:
             AddLocal(addrBind, LOCAL_BIND);
         return true;
     }
-#endif
     void SetSendStreamType(int nType)
     {
         nSendStreamType = nType;
@@ -804,6 +802,7 @@ public:
     {
         return nRecvStreamType;
     }
+#endif
 
     bool BindListenNativeI2P()
     {
