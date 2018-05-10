@@ -32,6 +32,8 @@ configure
 libtool
 src/config/anoncoin-config.h
 src/config/anoncoin-config.h.in
+src/config/bitcoin-config.h
+src/config/bitcoin-config.h.in
 src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
@@ -116,4 +118,5 @@ test/cache/*
 /doc/doxygen/
 
 libanoncoinconsensus.pc
+libbitcoinconsensus.pc
 contrib/devtools/split-debug.sh
