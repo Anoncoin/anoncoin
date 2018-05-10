@@ -29,7 +29,7 @@ LIBBITCOIN_CONSENSUS=libanoncoin_consensus.a
 LIBBITCOIN_CLI=libanoncoin_cli.a
 LIBBITCOIN_UTIL=libanoncoin_util.a
 LIBBITCOIN_CRYPTO=crypto/libanoncoin_crypto.a
-LIBBITCOINQT=qt/libanoncoinqt.a
+LIBBITCOINQT=qt/libbitcoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 
 if ENABLE_ZMQ
