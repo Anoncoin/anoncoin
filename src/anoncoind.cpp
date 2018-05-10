@@ -18,6 +18,10 @@
 #include <httpserver.h>
 #include <httprpc.h>
 #include <utilstrencodings.h>
+#ifdef ENABLE_I2PD
+#include <i2p.h>
+#endif
+
 
 #include <boost/thread.hpp>
 
@@ -107,6 +111,10 @@ bool AppInit(int argc, char* argv[])
             fprintf(stderr, "Error: %s\n", e.what());
             return false;
         }
+
+#ifdef ENABLE_I2PD
+        i2p::api::InitI2P (argc, argv, "anci2pd");
+#endif
 
         // Error out when loose non-argument tokens are encountered on command line
         for (int i = 1; i < argc; i++) {

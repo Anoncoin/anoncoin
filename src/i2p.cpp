@@ -1,3 +1,4 @@
+#ifdef ENABLE_I2PD
 #include <map>
 #include <mutex>
 #include <condition_variable>
@@ -121,3 +122,4 @@ std::string I2PSession::NamingLookup (const std::string& b32)
 	auto leaseSet = RequestLeaseSet (ident);	
 	return leaseSet ? leaseSet->GetIdentity ()->ToBase64 () : ""; 
 }
+#endif

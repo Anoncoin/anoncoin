@@ -1,6 +1,6 @@
 #ifndef I2P_H
 #define I2P_H
-
+#ifdef ENABLE_I2PD
 #include <string>
 #include <memory>
 #include <thread>
@@ -67,5 +67,5 @@ private:
 	i2p::data::PrivateKeys m_Keys;
 	std::shared_ptr<i2p::client::ClientDestination> m_LocalDestination;
 };
-
+#endif
 #endif // I2P_H

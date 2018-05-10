@@ -21,7 +21,9 @@
 #include <sync.h>
 #include <uint256.h>
 #include <threadinterrupt.h>
+#ifdef ENABLE_I2PD
 #include <i2p.h>
+#endif
 
 #include <atomic>
 #include <deque>
@@ -181,7 +183,9 @@ public:
     void OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound = nullptr, const char *strDest = nullptr, bool fOneShot = false, bool fFeeler = false, bool manual_connection = false);
     bool CheckIncomingNonce(uint64_t nonce);
 
+#ifdef ENABLE_I2PD
     void AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream);
+#endif
 
     bool ForNode(NodeId id, std::function<bool(CNode* pnode)> func);
 
