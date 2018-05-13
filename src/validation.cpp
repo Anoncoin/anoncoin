@@ -3336,7 +3336,11 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     // process an unrequested block if it's new and has enough work to
     // advance our tip, and isn't too many blocks ahead.
     bool fAlreadyHave = pindex->nStatus & BLOCK_HAVE_DATA;
-    bool fHasMoreOrSameWork = (chainActive.Tip() ? pindex->nChainWork >= chainActive.Tip()->nChainWork : true);
+    
+    // Anoncoin had a few bugs in the beginning, so we do not check work before some blocks ahead.
+    bool fMoreOrSame = pindex->nChainWork >= chainActive.Tip()->nChainWork;
+    bool fHasMoreOrSameWork = (chainActive.Tip() ? fMoreOrSame : true);
+    bool fShouldNotCheckWork = (pindex->nHeight <= chainparams.GetConsensus().AIP08Height);
     // Blocks that are too out-of-order needlessly limit the effectiveness of
     // pruning, because pruning will not delete block files that contain any
     // blocks which are too close in height to the tip.  Apply this test
@@ -3354,14 +3358,22 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     if (fAlreadyHave) return true;
     if (!fRequested) {  // If we didn't ask for it:
         if (pindex->nTx != 0) return true;    // This is a previously-processed block that was pruned
-        if (!fHasMoreOrSameWork) return true; // Don't process less-work chains
+        if (!fShouldNotCheckWork) {
+            if (!fHasMoreOrSameWork) return true; // Don't process less-work chains
+        } else {
+            return true;
+        }
         if (fTooFarAhead) return true;        // Block height is too high
 
         // Protect against DoS attacks from low-work chains.
         // If our tip is behind, a peer could try to send us
         // low-work blocks on a fake chain that we would never
         // request; don't process these.
-        if (pindex->nChainWork < nMinimumChainWork) return true;
+        if (!fShouldNotCheckWork) {
+            if (pindex->nChainWork < nMinimumChainWork) return true;
+        } else {
+            return true;
+        }
     }
     if (fNewBlock) *fNewBlock = true;
 
@@ -4251,9 +4263,10 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskB
 
                 // detect out of order blocks, and store them for later
                 uint256 hash = block.GetHash();
+                uint256 gostHash = block.GetGOSTHash();
                 if (hash != chainparams.GetConsensus().hashGenesisBlock && mapBlockIndex.find(block.hashPrevBlock) == mapBlockIndex.end()) {
-                    LogPrint(BCLog::REINDEX, "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
-                            block.hashPrevBlock.ToString());
+                    LogPrint(BCLog::REINDEX, "%s: Out of order block %s, parent %s not known. (gost: %s, time %i)\n", __func__, hash.ToString(),
+                            block.hashPrevBlock.ToString(),gostHash.ToString(), block.nTime);
                     if (dbp)
                         mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
                     continue;

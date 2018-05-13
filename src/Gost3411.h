@@ -11,6 +11,7 @@
 #include <memory>
 #include <inttypes.h>
 #include <openssl/ec.h>
+#include <vector>
 
 namespace i2p
 {
@@ -20,6 +21,8 @@ namespace crypto
 // Big Endian
 	void GOSTR3411_2012_256 (const uint8_t * buf, size_t len, uint8_t * digest);
 	void GOSTR3411_2012_512 (const uint8_t * buf, size_t len, uint8_t * digest);
+
+
 }
 }
 

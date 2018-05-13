@@ -10,6 +10,7 @@
 #include <utilstrencodings.h>
 #include <crypto/common.h>
 #include <crypto/scrypt.h>
+#include <Gost3411.h>
 
 using namespace i2p::crypto;
 
@@ -27,7 +28,7 @@ uint256 CBlockHeader::GetPoWHash() const
 
 uint256 CBlockHeader::GetGOSTHash() const
 {
-    return SerializeGOSTHash(*this);
+    return this->GetHash().GOSTHash();
 }
 
 std::string CBlock::ToString() const
