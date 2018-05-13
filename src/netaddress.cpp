@@ -11,6 +11,14 @@
 static const unsigned char pchIPv4[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff };
 static const unsigned char pchOnionCat[] = {0xFD,0x87,0xD8,0x7E,0xEB,0x43};
 
+ /** \brief
+     Implementing support for i2p addresses by using a similar idea as tor(aka onion addrs) so based on the ideas found here:
+     https://www.cypherpunk.at/onioncat_trac/wiki/GarliCat
+     we're going to use the beginning bytes of the ip address to indicate i2p destination is the payload here.
+  *
+  */
+static const unsigned char pchGarlicCat[] = { 0xFD,0x60, 0xDB,0x4D, 0xDD,0xB5 };        // A /48 ip6 prefix for I2P destinations...
+
 // 0xFD + sha256("anoncoin")[0:5]
 static const unsigned char g_internal_prefix[] = { 0xFD, 0x6C, 0xE9, 0xFE, 0x45, 0x49 };
 

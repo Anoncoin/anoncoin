@@ -348,4 +348,21 @@ std::unique_ptr<T> MakeUnique(Args&&... args)
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+inline uint32_t ByteReverse(uint32_t value)
+{
+#if defined(__x86_64__) || defined(__i386__)
+	__asm__
+	(
+		"bswap %0"
+		: "=r"(value) 
+		: "0"(value)
+		:
+	);
+	return value;
+#else
+    value = ((value & 0xFF00FF00) >> 8) | ((value & 0x00FF00FF) << 8);
+    return (value<<16) | (value>>16);
+#endif
+}
+
 #endif // BITCOIN_UTIL_H

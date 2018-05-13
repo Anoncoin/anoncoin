@@ -299,6 +299,11 @@ public:
         return GetBlockHeader().GetPoWHash();
     }
 
+    uint256 GetBlockGOSTHash() const
+    {
+        return GetBlockHeader().GetGOSTHash();
+    }
+
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
@@ -327,10 +332,11 @@ public:
 
     std::string ToString() const
     {
-        return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s)",
+        return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s gostHashBlock=%s)",
             pprev, nHeight,
             hashMerkleRoot.ToString(),
-            GetBlockHash().ToString());
+            GetBlockHash().ToString(),
+            GetBlockGOSTHash().ToString());
     }
 
     //! Check whether this block index entry is valid up to the passed validity level.

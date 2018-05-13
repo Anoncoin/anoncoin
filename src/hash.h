@@ -8,10 +8,12 @@
 
 #include <crypto/ripemd160.h>
 #include <crypto/sha256.h>
+#include <Gost3411.h>
 #include <prevector.h>
 #include <serialize.h>
 #include <uint256.h>
 #include <version.h>
+#include <util.h>
 
 #include <vector>
 
@@ -76,6 +78,21 @@ inline uint256 Hash(const T1 pbegin, const T1 pend)
     return result;
 }
 
+template<typename T1>
+inline uint256 GOSTHash(const T1 pbegin, const T1 pend)
+{
+    static unsigned char pblank[1];
+    uint8_t hash1[64];
+    i2p::crypto::GOSTR3411_2012_512 ((pbegin == pend ? pblank : (unsigned char*)&pbegin[0]), (pend - pbegin) * sizeof(pbegin[0]), hash1);
+    uint32_t digest[8];
+    i2p::crypto::GOSTR3411_2012_256 (hash1, 64, (uint8_t *)digest);
+    // to little endian
+    uint256 hash2;
+    for (int i = 0; i < 8; i++)
+        hash2.begin()[i] = ByteReverse (digest[7-i]);
+    return hash2;
+}
+
 /** Compute the 256-bit hash of the concatenation of two objects. */
 template<typename T1, typename T2>
 inline uint256 Hash(const T1 p1begin, const T1 p1end,
@@ -117,6 +134,7 @@ class CHashWriter
 {
 private:
     CHash256 ctx;
+    CHash256 gostCtx;
 
     const int nType;
     const int nVersion;
@@ -129,12 +147,20 @@ public:
 
     void write(const char *pch, size_t size) {
         ctx.Write((const unsigned char*)pch, size);
+        gostCtx.Write((const unsigned char*)pch, size);
     }
 
     // invalidates the object
     uint256 GetHash() {
         uint256 result;
         ctx.Finalize((unsigned char*)&result);
+        return result;
+    }
+    
+    // invalidates the object
+    uint256 GetGOSTHash() {
+        uint256 result;
+        gostCtx.Finalize((unsigned char*)&result);
         return result;
     }
 
@@ -189,6 +215,16 @@ uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL
     ss << obj;
     return ss.GetHash();
 }
+
+/* GOST */
+template<typename T>
+uint256 SerializeGOSTHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL_VERSION)
+{
+    CHashWriter ss(nType, nVersion);
+    ss << obj;
+    return ss.GetGOSTHash();
+}
+
 
 unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char>& vDataToHash);
 

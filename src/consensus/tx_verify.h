@@ -6,6 +6,7 @@
 #define BITCOIN_CONSENSUS_TX_VERIFY_H
 
 #include <amount.h>
+#include <primitives/block.h>
 
 #include <stdint.h>
 #include <vector>
@@ -19,6 +20,7 @@ class CValidationState;
 
 /** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, CValidationState& state, bool fCheckDuplicateInputs=true);
+bool CheckTransaction(const CTransaction& tx, const CBlock& block, CValidationState& state, bool fCheckDuplicateInputs=true);
 
 namespace Consensus {
 /**

@@ -267,9 +267,6 @@ enum ServiceFlags : uint64_t {
     // I2P
     NODE_I2P = (1 << 7),
 
-    // I2P - inet bridge
-    NODE_I2PGW = (1 << 8),
-
     // NODE_NETWORK_LIMITED means the same as NODE_NETWORK with the limitation of only
     // serving the last 288 (2 day) blocks
     // See BIP159 for details on how this is implemented.

@@ -61,16 +61,6 @@ static const string I2pDestinationSeeds[] = {
 "apuLsXH2KdmTVUgY-PIJcRyVEOExQCmX4-1olVrOg1g5adVW~DQX9wfwXEMVZTPQn9FqyaU2vrvgXsJuQEECRWGewf4DIylJG9dn-ac6N9LniTbWmbSNyWDOv54qc4yO3LeHyp3Gm2UvaSpdmjXQ0PnLirWXo-HxmvTpD~UunIraX4SRZcijNzBG6jYAdjp8-sTq17kjb9S3Ar33UmJR0G9ir4UrY93zKvUojiylLpNrJKeBkp4YB2RurXkwy6zHt2mavhae7~sKa0YfXcn-ZnUIVbIp~KC~dxhEO~L6VBsbtfki-4M1xRn39~ygI0Y-Ca2nSDgRsEZ9bi8uUbBQgYzSZfsDzAgUNWcQHYZHHX39cP-S8Du~yU4Ioy3cC~pa31Inv3RcfR9ZX1qxrBsPiDEdgtfvbO1ahNxgeTVnhYg-6n--jxqLDEI1rOpzFJD0yHfNKcjeJ5nKq5cwFBRjeAlBKGNmHioILIOcz48Woq1OQdnfthA6zDGEfnwmN~eYAAAA", // 5oo3enrz7fp77ojrfk7hjsniohsxqmhuxdhdx6ur7iwumsrjzkwq.b32.i2p, CS3
 "S-cet3-RrmyWZAHunl5sK43PI8RK4YphgR7agwi2z2Cyj5hQ8k2ZSE9GW3zNtazZiSeee1alFjW7LaxjfZ936aK3T5bLwRMrgjUNeuC96I8Csl-ze63gRcVWsLsQLo66kXoZS9dEAbi4tPJdMggYvvJQDi~wLPC1ZVqai0CoVs67DmGJlBKHMabdeGGhEMKHwEMxEdEvzTnwjoWDr5zjKoyW9DCeJvIE5QrMywjsnBPo8bY5YuQCymVdx5Ib1sFuWsgnUOsh2wiGjonKZKNR-Wb7PpzXlQNJM5DYT1d6np1t0vf9TI3EHSv7D9XkmdWZDjEQkWEk5NNh-l05zvwUc2~7r-YOchKkchRPBEhvOvayxNmwAfIEg1TtPNLNoKpQk4HrGpbkG6rF6ZAM1eME8LVjDCJqXeVoyv3YoAz7WAUuvuKI7fmnXxUiePQKnAxxMAMEeeRkCw0-4CY6BUKvt~BULkc5DFLoEechkzfL0W99KiruQchWlOk0ebci5sBcAAAA" // xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p, CS4
 
-
-//CSlave 14/03/2016 Those will be deleted:
-//"HNaqLnETmOcfEzbmzyh5XTQJCqxHVBk0mdvAbc2CZbIi5OxelNMREYLo1U2wGIOgNFSgfdvefOroouRpC8vsoXJ2ARYFTGH~wKd4KVv6sEdD3bVhtVYW03nuwz6KP9~otTO6QvX2uRSQNJlNGqGN7L4uNgzHuznU0jpCmpARDC4y95144iI7hWawxFnqthnzEgPNSGp5lqM7GQzDplWTDDAoF1GcJqPzVY0uoMWvLCfCNUpHw2wO0egKuAlv6Uz9IK0dQl7S0XmE9Jnt7I2ZKs4-RlX9lRf-hEHgMY9Y6k-Brl-TVwTkzmsvNPYTpbOxvkXIBru5Yi~IaGsImjhmvGT4FAj02b-0HNqGWfaiKOHl1k~O8geUeIDO2fA5oyJQmcwstMjmU24DMFeCBCB0MFL0xK8bJkUZkrzhwIY-Z2U9GqxEjt53m80-PHvUsDOGAKOpeT0fnx3vLVEJFeHS6K~G2XG24EzcmSCLwcPEFptQpxWrR4nSxya6KTPp6ZUCAAAA",
-//"3bfyLFHqvqCZuAtVLIR8R4buAW3e1VQ6-S6jKrXNX5Hgq-b1fYbLqniP5MjErFzhTlu-Umk9n-E9jnLsTXJQNkZB5RkNnSMSkxPsQpFWJ8pbN-qXQf1KtJ0UYEA0zi7Eq33caToH5CtGkMvik5zOFtPKQEIbgzzu6N7tvb2huGvpBTJQdTdQSI1hjfQbpnTkZ-bsJrCWs54nu13OAi~AuSvKJtGl7sLrA1z~7YyJfA84pOLO5oMxzMJnjhARMJFTyG6RxHOeTHOlNqoLVCY7sLI2IZpJrQAJLRHTTFbUKptuj4v3W8lcZDFXa4PmK-xA6NuicFC~b6YaOMEiAL1E7w72pHTwcIxmKP1FF3U57bwDGU7126n3P8PECouG0o6QXlTsYHt~Qc4pZGy4CQtINMFcx2ik0KKxOACTu8XzJ2~7FHINgMzPnd87vNK6mfBDYZ3Np~XwEZLF1GkbYYqLVKvh8NdWiqNBt5zzR0wq3XKTxCljpIs9JIP2FNLaAh0KAAAA",
-//    "y2arPA7vC36rA-SrPb2spKxvhNeCvx7ZMhdO-F9csEvWYxvx1a5NK0K2Qfo0cfwh3KrNphYudAGqYfwhi~a4xUnFtZ1-ruCtQ33i298HnnDeRJv0T1~Y9dlvlN9xQnBggH2EjVv8~I1p2W2GyGliPZ0NUzjgdmX0N1jNCP5tJ1lMUqsJrdvGi~bEmbMDOA7y6-pnyrfRC6lk7qlIuT~kJh8l-HerJ0gEzu0ByZ~YDTK4EpWaCQgW68gKIgK3pKnscfILkiZwiRHkG5kWugBeJixIO3MPOAW17HdVG43EzLAlnC1BW8vkUXKI37Ry4cfylCz-90HPfRmwom-E3ZHiEoHQFAc43l9f2~KZzmtj-7u21~e47daGnoMGjta8ADwekmd-MieVFQeJ27fsRiCQkLDTq63ONbcTqIulXGhffXZtkyoq0qo-eVl3ErS6YyVpnhvvkuP46Gh81Db4zWbu~NEQq~qb1X0JhaaiufVTY2pNgHbNVinJjyjzq2ip3dGMAAAA",
-   // "UmCjD3EY6cEeCv5N9b9cRWBkU8~EwacG7nY6Tx9vPCne5fP-LIMxR~42hyrPGN4-ZXpGbns5Pu4JEvckj~mkXnJxM2-b6An2QsVYJCCqBmnqjK43HZC32s0Z2qFW5Y3agNs3eAtSK~GXy~IvQYewhSlmIOs8W~eAkLzF~C2~VzSmaWs55uBzLUINeJr7E7woPFnnrP8EjfMJHNUbmTkw1bepf3K7~BWy-LBlBaWvylTtRiAPDlqI2Q9ZZUn3wYQbHLZSGHkjdouRJ3zndcFTjwTEHzh4XQcHQK9hud7USUGnasl1IXsxizJo5lzsP5SvytkzdI07FjhpxSAYDKHn6SW4UXM5rQmAq44zHu4AzY76p3Wk9iUtwz1rFQNLqTwouZYe5hviiB1GAaWZBOhz9KsG0DzxeFRV5ou8Ps8-xlhU36mjrw3L6CYEpT6WejbNnXlIC~aUI057MAjr2sLfvVBhmycwJdSMOIT5fVkm8aTmiIM-YgpYUpInNHxH5fKEAAAA",
-   // "rR~bh73tiGezgHUs82cKHX83z~Jmp7pfyTWbwjrQgzM3at-DUh7TVQnsB5FnfJrbH89P1zXTdTqUR~OjQnjlt1WZZISrBVoUNe0O8xruhUsGR77WmRbSrb1K1o6LG0eX9dZk7ZTrLa-Bj0xG3jk8IYOLOdkCjld7VzBdkTcGN7G8QWx33cJn2778i9gSGNza0egyiEd4QnCjgZlI0wYTyLz-35F~to9unN6uq8AMK9uJa8a67l~HyDl1dGC5Ye~KKRBWgD5ZCoJAJBOipjsdAZqHUTa64xX4cX6EPEVBdikAZrRQS2l-FyLcuHvXFQ~rRuOEfO0VGmhJOIzNMdvK4UfsT118kt~pPe1nI4GEQ1xWP5thcFv-WN4mtDzU4fqFivhb7hijygUhQ7zrZFCbDypzYZTPBSXjABknbcz8j0iPy9GgEHsF8Zltt~i77Vc2e8cTcNMSpxm1uvMFJiB373Lri2vGj5oB0apixV-HUj1Bdpb1HTm96PDpf963jhj~AAAA",
- //    "kvGu5BRTohvsGsNqkQW5glv-Q1Zxzwm40mFWK9g8Jte7561SmQxkKrklKX1bfuoCQ9hn1Ty3406-7xQb7bhoD9YC1mPm9hoBDNBzb4f8jn~Zry4SUY~AfCSvD1EBW4cvme9VZ1mIu3Jtj9qyv7j0gKgGyXAkX55gXT5EhRUoWspsWxao18PsB-HUTIyMP-At8GOcAeoI4GXbFSCa170o6pggoJrsXfg28Iww1VJB7MQl5IE2Q~i-WGuynKjmVUFshH9tC-vIW0nvaY-vnxNL7GNVBHVmcyi0I3nYxym~74BfdEioV-c5Q20aztYzxgvTelJu-56AMTP9GJKnn9BjVhKs2jppZLd6WFs30wGZMoK3a7Q8~kRcHKXX82pGisnBUxAbFQyOhAUOMw2wvKUeHh6-WBE8WU6zCALyLJ2532tvf8Bb~k0S7ZD96vgaMGGiR2daHcFf1e~zmVILPf27ya8bg874HZoq7WcrUsF5tLha2cMHFx1RXwMAAPlL3mYVAAAA", //ntmn7mwa6tpm7beaz35cljhggdl75537ixt4nno2i47kllcrkhpa.b32.i2p, down
-//    "8w-NRnXaxoGZdyupTXX78~CmF8csc~RhJr8XR2vMbNpazKhGjWNfRjhCmwqXkkW9vwkNjovW2AAbof7PfVnMCff0sHSxMTiBNsH8cuHJS2ckBSJI3h4G4ffJLc5gflangrG1raHKrMXCw8Cn56pisx4RKokEKUYdeEPiMdyJUO5yjZW2oyk4NpaUaQCqFmcglIvNOCYzVe~LK124wjJQAJc5iME1Sg9sOHaGMPL5N2qkAm5osOg2S7cZNRdIkoNOq-ztxghrv5bDL0ybeC0sfIQzvxDiKugCrSHEHCvwkA~xOu9nhNlUvoPDyCRRi~ImeomdNoqke28di~h2JF7wBGE~3ACxxOMaa0I~c9LV3O7pRU2Xj9HDn76eMGL7YCcCU4dRByu97oqfB3E~qqmmFp8W1tgvnEAMtXFTFZPYc33ZaCaIJQD7UXcQRSRV7vjw39jhx49XFsmYV3K6~D8bN8U4sRJnKQpzOJGpOSEJWh88bII0XuA55bJsfrR4VEQ5AAAA",
-//    "hL51K8bxVvqX2Z4epXReUYlWTNUAK-1XdlbBd7e796s2A3icCQRhJvGlaa6PX~tgPvos-2IJp9hFQrVa0lyKyYmpQN9X7GOErtsL-JbMQpglQsEd94jDRAsiBuvgyPZij~NNdBxKRMDvNm9s7eovzhEFTAimTSB-sgeZ4Afxx2IrNXDFM6KS8AUm8YsaMldzX9zKQDeuV0slp4ZfIAVQhZZy9zTZSmUNPnXQR7XPh5w7FkXzmKMTKSyG~layJ3AorQWqzZXmykzf4z3CE4zkzQcwc0~ZIcAg9tYvM2AdQIdgeN6ISMim6L8q6ku6abuONkyw-NJTi3NopeGHZva21Tc3uHetsKoW434N24HBVUtIjJVjGsbZ7xBfz2xM5kyhPl6SlD-RJarCw47Rovmfc9Piq6q3S~Zw-rvRl-xDMJzwraIYNjAROouDwjI9Bqnguq9DH5uFBxf4uN69X7T~yWTAjdvelZKp6BGe~HGo7bNQjBmymhlH4erCKZEXOaxDAAAA"
 };
 #endif // ENABLE_I2PSAM
 
@@ -111,11 +101,11 @@ public:
         // vMerkleTree: 7ce7004d76
 
         consensus.nSubsidyHalvingInterval = 840000;
-        consensus.BIP16Height = 218579; // 87afb798a3ad9378fcd56123c81fb31cfd9a8df4719b9774d71730c16315a092 - October 1, 2012
-        consensus.BIP34Height = 710000;
+        consensus.BIP16Height = 918684;
+        consensus.BIP34Height = 918684;
         consensus.BIP34Hash = uint256S("fa09d204a83a768ed5a7c8d441fa62f2043abf420cff1226c7b4329aeb9d51cf");
         consensus.BIP65Height = 918684; // bab3041e8977e0dc3eeff63fe707b92bde1dd449d8efafb248c27c8264cc311a
-        consensus.BIP66Height = 811879; // 7aceee012833fa8952f8835d8b1b3ae233cd6ab08fdb27a771d2bd7bdc491894
+        consensus.BIP66Height = 918684; // 7aceee012833fa8952f8835d8b1b3ae233cd6ab08fdb27a771d2bd7bdc491894
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
@@ -157,8 +147,9 @@ public:
 
         genesis = CreateGenesisBlock(1370190760, 347089008, 0x1e0ffff0, 1, 0 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
-        assert(genesis.hashMerkleRoot == uint256S("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
+        LogPrintf("Genesis: %s", consensus.hashGenesisBlock.ToString());
+        assert(consensus.hashGenesisBlock == uint256S("2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
+        assert(genesis.hashMerkleRoot == uint256S("7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
         // TODO: MEEH: Check if this works?
@@ -282,8 +273,8 @@ public:
 
         genesis = CreateGenesisBlock(1486949366, 293345, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0"));
-        assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+        //assert(consensus.hashGenesisBlock == uint256S("0x4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0"));
+        //assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
