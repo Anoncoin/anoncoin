@@ -58,6 +58,8 @@ public:
     const CMessageHeader::MessageStartChars& MessageStart() const { return pchMessageStart; }
     int GetDefaultPort() const { return nDefaultPort; }
 
+    bool isMainNetwork() const { return fIsMainNetwork; }
+
     const CBlock& GenesisBlock() const { return genesis; }
     /** Default value for -checkmempool and -checkblockindex argument */
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
@@ -99,6 +101,7 @@ protected:
     bool fDefaultConsistencyChecks;
     bool fRequireStandard;
     bool fMineBlocksOnDemand;
+    bool fIsMainNetwork = false;
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
 };

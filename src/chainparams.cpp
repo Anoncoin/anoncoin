@@ -119,6 +119,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1526321714; // Monday, 14 May 2018 18:15:14
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1526321714; // Monday, 14 May 2018 18:15:14
 
+        fIsMainNetwork = true;
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1526321714; // Monday, 14 May 2018 18:15:14
