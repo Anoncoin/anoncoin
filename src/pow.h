@@ -246,6 +246,7 @@ extern CRetargetPidController *pRetargetPid;    //! One retarget object is used 
 
 
 
+unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, const Consensus::Params& params);
 
 unsigned int GetNextWorkRequired_Bitcoin(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params&);
 unsigned int KimotoGravityWell(const CBlockIndex* pindexLast, const CBlockHeader *pblock, uint64_t TargetBlocksSpacingSeconds, uint64_t PastBlocksMin, uint64_t PastBlocksMax, const Consensus::Params& params);

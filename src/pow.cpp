@@ -168,13 +168,11 @@ unsigned int static KimotoGravityWell(const CBlockIndex* pindexLast, const CBloc
     }
     if (bnNew > bnProofOfWorkLimit) { bnNew = bnProofOfWorkLimit; }
 
-#ifdef _ANONDEBUG
     /// debug print
     printf("Difficulty Retarget - Kimoto Gravity Well\n");
     printf("PastRateAdjustmentRatio = %g\n", PastRateAdjustmentRatio);
-    printf("Before: %08x %s\n", BlockLastSolved->nBits, uint256().SetCompact(BlockLastSolved->nBits).getuint256().ToString().c_str());
-    printf("After: %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
-#endif
+    printf("Before: %08x %s\n", BlockLastSolved->nBits, arith_uint256().SetCompact(BlockLastSolved->nBits).ToString().c_str());
+    printf("After: %08x %s\n", bnNew.GetCompact(), bnNew.ToString().c_str());
 
     return bnNew.GetCompact();
 }
@@ -247,6 +245,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	    return GetNextWorkRequired_Bitcoin(pindexLast, pblock, params);
 	}
 	else */
+    if (nHeight < params.AIP09Height) {
+        return GetNextWorkRequired2(pindexLast, pblock, params);
+    }
     if (nHeight == params.AIP09Height) {
    	    return 0x1e0ffff0;
 	}
@@ -1617,9 +1618,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
             const int64_t nLastBlockIndexTime = pIndex->GetBlockTime();
             const int64_t nNextBestBlockTime = nLastBlockIndexTime + nTargetSpacing;
             const int64_t nMaxTime = nLastBlockIndexTime + nTargetSpacing * 8;  // 7 intervals past the best time
-            double dDiffErrorAt;
             double dProportionalCalc, dDerivativeCalc;
-            double dPiLog2;
             arith_uint256 uintDiffPi, uintDiffPid;
             arith_uint256 uintDiffCalc;
             // string sFlags;
@@ -1796,5 +1795,154 @@ bool CRetargetPidController::GetRetargetStats( RetargetStats& RetargetState, uin
         UpdateIndexTipFilter(pPrevCharge);
     }
     return true;
+}
+
+
+//! Only the following global functions are seen from the outside world and used throughout
+//! the rest of the source code for Anoncoin, everything above should be static or defined
+//! within the CRetargetPID class.
+
+//! The workhorse routine, which oversees BlockChain Proof-Of-Work difficulty retarget algorithms
+unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, const Consensus::Params& params)
+{
+    //! Any call to this routine needs to have at least 1 block and the header of a new block.
+    //! ...NULL pointers are not allowed...GR
+    assert(pindexLast);
+    assert( pBlockHeader );
+
+    //! All networks now always calculate the RetargetPID output, it needs to have been setup
+    //! during initialization, if unit tests are being run, perhaps where the genesis block
+    //! has been added to the index, but no pRetargetPID setup yet then we detect it here and
+    //! return minimum difficulty for the next block, in any other case the programmer should
+    //! have already at least created a RetargetPID class object and set the master pointer up.
+    arith_uint256 uintResult;
+    if( pRetargetPid ) {
+        //! Under normal conditions, update the PID output and return the next new difficulty required.
+        //! We do this while locked, once the Output Result is captured, it is immediately unlocked.
+        //! Based on height, perhaps during a blockchain initial load, other older algos will need to
+        //! be run, and their result returned.  That is detected below and processed accordingly.
+        {
+            LOCK( cs_retargetpid );
+            if( !pRetargetPid->UpdateOutput( pindexLast, pBlockHeader, params) )
+                LogPrintf("Insufficient BlockIndex, unable to set RetargetPID output values.\n");
+            uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
+        }
+        //! Testnets always use the P-I-D Retarget Controller, only the MAIN network might not...
+        if( Params().isMainNetwork() ) {
+            if( pindexLast->nHeight > nDifficultySwitchHeight3 ) {      //! Start of KGW era
+                //! The new P-I-D retarget algo will start at this hardfork block + 1
+                if( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
+                    uintResult = NextWorkRequiredKgwV2(pindexLast, params);     //! Use fast v2 KGW calculator
+            } else
+                uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
+        }
+    } else
+        uintResult = UintToArith256(params.powLimit);
+
+    //! Finish by converting the resulting uint256 value into a compact 32 bit 'nBits' value
+    return uintResult.GetCompact();
+}
+
+void RetargetPidReset( string strParams, const CBlockIndex* pIndex, const Consensus::Params& params )
+{
+    LOCK( cs_retargetpid );
+
+    bool fCreateNew = true;
+    double dPropGain, dPropGainNow;
+    int64_t nIntTime, nIntTimeNow;
+    double dIntGain, dIntGainNow;
+    double dDevGain, dDevGainNow;
+    istringstream issParams(strParams);
+    try {
+        issParams >> dPropGain >> nIntTime >> dIntGain >> dDevGain;
+        if( pRetargetPid ) {
+            pRetargetPid->GetPidTerms( &dPropGainNow, &nIntTimeNow, &dIntGainNow, &dDevGainNow );
+            //! Check to see if we have already reset the PID controller to the new values, if so do not keep executing a reset
+            if( (dPropGainNow == dPropGain) && (nIntTimeNow == nIntTime) && (dIntGainNow == dIntGain) && (dDevGainNow == dDevGain) )
+                fCreateNew = false;
+            else
+                delete pRetargetPid;
+        }
+    } catch( const std::exception& ) {
+        fCreateNew = false;
+    }
+
+    if( fCreateNew ) {
+        pRetargetPid = new CRetargetPidController( dPropGain, nIntTime, dIntGain, dDevGain, params );
+        pRetargetPid->ChargeIntegrator(pIndex);
+        pRetargetPid->UpdateIndexTipFilter(pIndex);
+        //! At this point mining can resume and reporting will begin as if it was a new start.
+    } else
+        LogPrintf( "While Resetting RetargetPID Parameters, the values matched current settings or an error was thrown while reading them.\n" );
+}
+
+//! This routine handles lock and diagnostics as well as charging the Integrator after
+//! a new block has been processed and verified, or any other time the Tip() changes.
+//!
+//! We also run reports and update the TipFilter values, so future calls to calculate a new output retarget result can be done fast.
+bool SetRetargetToBlock( const CBlockIndex* pIndex, const Consensus::Params& params )
+{
+    //! A null pointer shows up here when running test_anoncoin while loading the genesis block, do nothing.
+    if( !pRetargetPid )
+        return false;
+
+    LOCK( cs_retargetpid );
+
+    //! When this is called we have just updated the tip block or have finished loading the blockchain index during initialization.
+    //! We want to now report all the results from the previous block height, as if this current new index entry was a new header.
+    //! This means being one block behind in reporting, but in every other regard works well for when fUsesHeader is true or false.
+    if( pIndex && pIndex->pprev ) {
+        CBlockHeader aHeader = pIndex->GetBlockHeader();
+        pRetargetPid->RunReports( pIndex->pprev, &aHeader, params );
+    } else
+        return false;
+
+    //! Making it this far means we can now finally charge the Integror and setup the TipFilter to height as requested by the caller
+    bool fResult1 = pRetargetPid->ChargeIntegrator(pIndex);
+    bool fResult2 = pRetargetPid->UpdateIndexTipFilter(pIndex);
+
+    //! Now we build a string with the correct text for use in Log reporting output,
+    //! that will primarily be based on the build condition and network selected.
+    //! Although if UsesHeader() is true the next blocks difficuly is always changing
+    //! and so a computation is made by calling GetNextWorkRequired() using a header
+    //! time of the present moment, which works of coarse for any network and regardless
+    //! of wither or not a header time is important for the retarget output value.  This
+    //! then is used to log the health and result of the retargetpid, for a next new
+    //! block.
+    bool fBasedOnKGW = false;
+    string sNextWorkRequired;
+
+    if( Params().isMainNetwork() ) {
+        //! The new algo will happen at the hardfork block + 1, otherwise its an old KGW block.
+        int32_t nDistance = nDifficultySwitchHeight4 - pIndex->nHeight;
+        fBasedOnKGW = nDistance >= 0;
+        if( nDistance > 0 ) {         // likekly KGW is being used
+            sNextWorkRequired = ( pIndex->nHeight > nDifficultySwitchHeight3 ) ?
+                                  strprintf( "For this and next %s blocks, ProofOfWork based on KGW. Required=", nDistance ) :
+                                  "Next ProofOfWork based on old algo. Required=";
+        }
+        else if( nDistance == 0 )   // Last KGW block
+            sNextWorkRequired = "Last Block based on KGW. ProofOfWork Required=";
+        else {                      // RetargetPID is used
+            sNextWorkRequired = strprintf( "For %d blocks ProofOfWork based on RetargetPID, Next Required=", -nDistance );
+            //! A special case exists for when the 1st next new block is about to be mined, This triggers an event
+            //! within the HARDFORK build, so all non-whitelisted nodes get disconnected and private forks of
+            //! the main chain can be run for evaluation purposes.
+            // if( nDistance == 1 )
+        }
+    } else
+        sNextWorkRequired = "Next ProofOfWork Required=";
+
+    if( !fBasedOnKGW && fResult1 && fResult2 && pRetargetPid->UsesHeader() ) sNextWorkRequired += "dynamic RightNow=";
+
+    //! Create a dummy header, with the present moment as the block time. calculate the Next Work Required and report that.
+    CBlockHeader aHeader;
+    aHeader.nTime = GetAdjustedTime();
+    uint32_t nNextBits = GetNextWorkRequired(pIndex, &aHeader, params);
+    sNextWorkRequired += strprintf( "0x%08x", nNextBits );
+
+    LogPrintf("RetargetPID %s to height=%d, tipfilter %s, %s\n", fResult1 ? "charged" : "Integrator failed charge", pIndex->nHeight, fResult2 ? "updated" : "update failed", sNextWorkRequired );
+
+    return fResult1 && fResult2;
 }
 
