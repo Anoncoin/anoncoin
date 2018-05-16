@@ -160,9 +160,9 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
 
     rpcConsole = new RPCConsole(_platformStyle, 0);
     helpMessageDialog = new HelpMessageDialog(this, false);
-#ifdef ENABLE_I2PSAM
+//#ifdef ENABLE_I2PSAM
     i2pAddress = new ShowI2PAddresses( this );
-#endif
+//#endif
 
 #ifdef ENABLE_WALLET
     if(enableWallet)

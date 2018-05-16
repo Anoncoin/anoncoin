@@ -125,6 +125,8 @@ QT_TS = \
 
 QT_FORMS_UI = \
   qt/forms/addressbookpage.ui \
+  qt/forms/i2poptionswidget.ui \
+  qt/forms/i2pshowaddresses.ui \
   qt/forms/askpassphrasedialog.ui \
   qt/forms/coincontroldialog.ui \
   qt/forms/editaddressdialog.ui \
@@ -144,6 +146,9 @@ QT_FORMS_UI = \
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
+  qt/moc_i2pshowaddresses.cpp \
+  qt/moc_i2poptionswidget.cpp \
+  qt/moc_monitoreddatamapper.cpp \
   qt/moc_addresstablemodel.cpp \
   qt/moc_askpassphrasedialog.cpp \
   qt/moc_bantablemodel.cpp \
@@ -213,6 +218,9 @@ PROTOBUF_PROTO = qt/paymentrequest.proto
 
 BITCOIN_QT_H = \
   qt/addressbookpage.h \
+  qt/i2poptionswidget.h \
+  qt/i2pshowaddresses.h \
+  qt/monitoreddatamapper.h \
   qt/addresstablemodel.h \
   qt/askpassphrasedialog.h \
   qt/bantablemodel.h \
@@ -326,6 +334,9 @@ RES_ICONS = \
 
 BITCOIN_QT_BASE_CPP = \
   qt/bantablemodel.cpp \
+  qt/i2poptionswidget.cpp \
+  qt/i2pshowaddresses.cpp \
+  qt/monitoreddatamapper.cpp \
   qt/bitcoinaddressvalidator.cpp \
   qt/bitcoinamountfield.cpp \
   qt/bitcoingui.cpp \
