@@ -30,11 +30,11 @@ private:
     Ui::I2POptionsWidget *ui;
     ClientModel* clientModel;
 
-private slots:
+private Q_SLOTS:
     void ShowCurrentI2PAddress();
     void GenerateNewI2PAddress();
 
-signals:
+Q_SIGNALS:
     void settingsChanged();
 };
 

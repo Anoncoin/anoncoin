@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "i2pshowaddresses.h"
-#include "ui_i2pshowaddresses.h"
+#include "qt/forms/ui_i2pshowaddresses.h"
 
 #include "guiutil.h"
 #include "util.h"
@@ -13,6 +13,7 @@ ShowI2PAddresses::ShowI2PAddresses(QWidget *parent) :
     ui(new Ui::ShowI2PAddresses)
 {
     ui->setupUi(this);
+    /*
     GUIUtil::restoreWindowGeometry("nI2pDestinationDetails", this->size(), this);
 
     // this->setWindowTitle( tr("Private I2P Destination Details") );  // now set correctly in i2pshowaddresses.ui
@@ -31,17 +32,19 @@ ShowI2PAddresses::ShowI2PAddresses(QWidget *parent) :
     // Stop the user from being able to change the checkboxes...
     QObject::connect(ui->enableI2pBox, SIGNAL(clicked()), this, SLOT(setEnabled()));
     QObject::connect(ui->staticI2pBox, SIGNAL(clicked()), this, SLOT(setStatic()));
+    */
 }
 
 
 ShowI2PAddresses::~ShowI2PAddresses()
 {
-    GUIUtil::saveWindowGeometry("nI2pDestinationDetails", this);
+    //GUIUtil::saveWindowGeometry("nI2pDestinationDetails", this);
     delete ui;
 }
 
 void ShowI2PAddresses::UpdateParameters( void )
 {
+    /*
     ui->configText->setText( ui->configText->text() + QString::fromStdString( "<b>" + GetConfigFile().string() + "</b>" ) );
 
     setEnabled();
@@ -55,14 +58,15 @@ void ShowI2PAddresses::UpdateParameters( void )
 
     QString b32 = QString::fromStdString( GetArg("-i2p.mydestination.base32key", "???.b32.i2p") );
     ui->b32Line->setText(b32);
+    */
 }
 
 void ShowI2PAddresses::setEnabled( void )
 {
-    ui->enableI2pBox->setChecked( GetBoolArg("-i2p.options.enabled", false) );
+    //ui->enableI2pBox->setChecked( GetBoolArg("-i2p.options.enabled", false) );
 }
 
 void ShowI2PAddresses::setStatic( void )
 {
-    ui->staticI2pBox->setChecked( GetBoolArg("-i2p.mydestination.static", false) );
+    //ui->staticI2pBox->setChecked( GetBoolArg("-i2p.mydestination.static", false) );
 }
