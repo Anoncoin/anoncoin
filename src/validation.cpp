@@ -4281,9 +4281,7 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskB
 
                 // detect out of order blocks, and store them for later
                 uint256 hash = block.GetHash();
-                uint256 gostHash = block.GetGOSTHash();
-
-                LogPrintf("Block: %s mapBlockIndex size: %d\n", block.ToString(), mapBlockIndex.size());
+                //LogPrintf("Block: %s mapBlockIndex size: %d\n", block.ToString(), mapBlockIndex.size());
                 if (hash != chainparams.GetConsensus().hashGenesisBlock) {
                     /**
                      * The patch done here is simply to avoid having to program bugs back into the code.
@@ -4307,9 +4305,7 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskB
                     CValidationState state;
                     if (g_chainstate.AcceptBlock(pblock, state, chainparams, nullptr, true, dbp, nullptr)) {
                         nLoaded++;
-                        LogPrintf("Accepted new block (%s)\n", hash.ToString());
-                    } else {
-                        LogPrintf("Rejected new block (%s)\n", hash.ToString());
+                        //LogPrintf("Accepted new block (%s)\n", hash.ToString());
                     }
                     if (state.IsError()) {
                         LogPrintf("State is ERROR\n");

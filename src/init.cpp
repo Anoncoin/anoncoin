@@ -43,6 +43,7 @@
 #include <util.h>
 #include <utilmoneystr.h>
 #include <validationinterface.h>
+#include <pow.h>
 #ifdef ENABLE_WALLET
 #include <wallet/init.h>
 #endif
@@ -67,6 +68,7 @@
 #include <boost/bind.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
 #include <openssl/crypto.h>
 
 #if ENABLE_ZMQ
@@ -264,6 +266,9 @@ void Shutdown()
 #ifdef ENABLE_WALLET
     StopWallets();
 #endif
+
+    delete pRetargetPid;
+    pRetargetPid = NULL;
 
 #if ENABLE_ZMQ
     if (pzmqNotificationInterface) {
@@ -1785,6 +1790,67 @@ bool AppInitMain()
             }
         }
     }
+
+
+    //! Final value selection for Anoncoin retarget controller P-I and D terms are set here
+#define PID_PROPORTIONALGAIN "1.7"
+#define PID_INTEGRATORTIME "172800"
+#define PID_INTEGRATORGAIN "5"
+#define PID_DERIVATIVEGAIN "0"
+
+
+    double dProportionalGainIn; //! The Proportional gain of the control loop
+    int64_t nIntegrationTimeIn; //! The Integration period in seconds.
+    double dIntegratorGainIn;   //! The Integration gain of the control loop
+    double dDerivativeGainIn;   //! The Derivative gain of the control loop
+#if defined( HARDFORK_BLOCK )
+    //! Before we do any block details, create a retargetpid so we can calculate next-work-required
+    //! Testnet requires the user to be able to change some settings. so here we handle that too.
+    if( Params().isMainNetwork() ) {
+        dProportionalGainIn = boost::lexical_cast<float>( PID_PROPORTIONALGAIN );
+        nIntegrationTimeIn = boost::lexical_cast<int>( PID_INTEGRATORTIME );
+        dIntegratorGainIn = boost::lexical_cast<float>( PID_INTEGRATORGAIN );
+        dDerivativeGainIn = boost::lexical_cast<float>( PID_DERIVATIVEGAIN );
+    } else {
+        std::string dProportionalGainInGetArg = gArgs.GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN );
+        dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg );
+        std::string nIntegrationTimeInGetArg = gArgs.GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME );
+        nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg );
+        std::string dIntegratorGainInGetArg = gArgs.GetArg("-retargetpid.integratorgain", PID_INTEGRATORGAIN );
+        dIntegratorGainIn = boost::lexical_cast<float>( dIntegratorGainInGetArg );
+        std::string dDerivativeGainInGetArg = gArgs.GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN );
+        dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg );
+
+        LogPrintf("dProportionalGainInGetArg=%s and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
+        LogPrintf("nIntegrationTimeInGetArg=%s and nIntegrationTimeIn=%d and PID_INTEGRATORTIME=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
+        LogPrintf("dIntegratorGainInGetArg=%s and dIntegratorGainIn=%f and PID_INTEGRATORGAIN=%f\n",dIntegratorGainInGetArg.c_str(), dIntegratorGainIn, PID_INTEGRATORGAIN);
+        LogPrintf("dDerivativeGainInGetArg=%s and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
+    }
+#else
+    // Before the hardfork build, we allow programmable settings on both mainnet and testnets
+    // CSlave: Here "boost::lexical_cast<float>" is used instead of "atof"; and "boost::lexical_cast<int>" is used instead of "atoi"
+    // for otherwise it did not read the dot spaced decimal value for PID settings correctly in anoncoin.conf, and truncated them
+    // at the dot on certain system that use the comma as a separator in regional settings.
+
+    std::string dProportionalGainInGetArg = gArgs.GetArg("-retargetpid.proportionalgain", PID_PROPORTIONALGAIN );
+    dProportionalGainIn = boost::lexical_cast<float>( dProportionalGainInGetArg );
+    std::string nIntegrationTimeInGetArg = gArgs.GetArg("-retargetpid.integrationtime", PID_INTEGRATORTIME );
+    nIntegrationTimeIn = boost::lexical_cast<int>( nIntegrationTimeInGetArg );
+    std::string dIntegratorGainInGetArg = gArgs.GetArg("-retargetpid.integratorgain", PID_INTEGRATORGAIN );
+    dIntegratorGainIn = boost::lexical_cast<float>( dIntegratorGainInGetArg );
+    std::string dDerivativeGainInGetArg = gArgs.GetArg("-retargetpid.derivativegain", PID_DERIVATIVEGAIN );
+    dDerivativeGainIn = boost::lexical_cast<float>( dDerivativeGainInGetArg );
+
+    LogPrintf("dProportionalGainInGetArg=%s and dProportionalGainIn=%f and PID_PROPORTIONALGAIN=%f\n",dProportionalGainInGetArg.c_str(), dProportionalGainIn, PID_PROPORTIONALGAIN);
+    LogPrintf("nIntegrationTimeInGetArg=%s and nIntegrationTimeIn=%d and PID_INTEGRATORTIME=%f\n",nIntegrationTimeInGetArg.c_str(), nIntegrationTimeIn, PID_INTEGRATORTIME);
+    LogPrintf("dIntegratorGainInGetArg=%s and dIntegratorGainIn=%f and PID_INTEGRATORGAIN=%f\n",dIntegratorGainInGetArg.c_str(), dIntegratorGainIn, PID_INTEGRATORGAIN);
+    LogPrintf("dDerivativeGainInGetArg=%s and dDerivativeGainIn=%f and PID_DERIVATIVEGAIN=%f\n",dDerivativeGainInGetArg.c_str(), dDerivativeGainIn, PID_DERIVATIVEGAIN);
+
+#endif
+
+    // Set ANC diff adjustor between KGW.
+    pRetargetPid = new CRetargetPidController( dProportionalGainIn, nIntegrationTimeIn, dIntegratorGainIn, dDerivativeGainIn, Params().GetConsensus() );
+
 
     // As LoadBlockIndex can take several minutes, it's possible the user
     // requested to kill the GUI during the last operation. If so, exit.
