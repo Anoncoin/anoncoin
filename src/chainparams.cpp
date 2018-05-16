@@ -107,6 +107,7 @@ public:
         consensus.BIP65Height = 918684; // bab3041e8977e0dc3eeff63fe707b92bde1dd449d8efafb248c27c8264cc311a
         consensus.BIP66Height = 918684; // 7aceee012833fa8952f8835d8b1b3ae233cd6ab08fdb27a771d2bd7bdc491894
         consensus.AIP08Height = 500000;
+        consensus.AIP09Height = 15000000; // TODO: Find a block in the future
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
@@ -149,8 +150,8 @@ public:
         genesis = CreateGenesisBlock(1370190760, 347089008, 0x1e0ffff0, 1, 0 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
         LogPrintf("Genesis: %s", consensus.hashGenesisBlock.ToString());
-        assert(consensus.hashGenesisBlock == uint256S("2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
-        assert(genesis.hashMerkleRoot == uint256S("7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
+        assert(consensus.hashGenesisBlock == uint256S("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
+        assert(genesis.hashMerkleRoot == uint256S("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
         // TODO: MEEH: Check if this works?
@@ -176,10 +177,22 @@ public:
 
         checkpointData = {
             {
-                {  1000, uint256S("0x00000b0e2c2b0ce41331b24dbeab9a2b13323c80008a3e6a28330c4fa04562e2")},
-                {  4200, uint256S("0x0000015d22f8a48b8685657b92d7cf2886c926f4c59f800bfd9ef314ef61d577")},
-                { 42000, uint256S("0x00000007c544cbf45e3975c0168a8233384bc92a075f1c6cc8126de592a898f8")},
-                {420000, uint256S("0x00000000002f8e58b723820c2d5ce7f6c4699d39d216fea12b2962985cab1ab8")}
+                {    674, uint256S("0x98045dcaca7c0e00ec9a2c18ad4f25e1222741dea993203dab80abcf0f28c28f")},
+                {    703, uint256S("0x2e42a5f6d485a87c1f065adb432ac30776be91998333576232e2bc887b9be6d2")},
+                {    704, uint256S("0xc9e11d1f6bde829edc92e4edc7975eadc6df4918a770533a46fee6f49ea5c86d")},
+                {    705, uint256S("0x58ef03279842afa46cb47ffd2028a108126c531944e9867a7f7c757c7d6369a3")},
+                {    706, uint256S("0x4f48ed9749b7ec40afe7d74037eb10862b71289694db49ad762082bf7775daa8")},
+                {    739, uint256S("0x2a038a0b2c1d80caa1979c1e880daf7af39cef2aeadbf447dc6738fb411e3a05")},
+                {    740, uint256S("0x85d526aeb89caffb1b9464076cb03f936cc71072a74d169f1cffc1810e72b9b8")},
+                {    741, uint256S("0xbbb61c5a3a8ec054634e61e470c05e08de4774315db93ce1fa265ab4945a6cff")},
+                {    742, uint256S("0xf83b1beeb9d03e2bf784504ebfc039516602d2d1593f11bb5dfc232010ebbce4")},
+                {    743, uint256S("0x15cb15f7ca28d3058a6615249e8087072e9cdcb494a9bbcd81042e60fd4ac77b")},
+                {    744, uint256S("0x6634539203c68085c75f6901a6406c4e0ecc8d4c0b9a1617d0baf0fb16ce4ffc")},
+                {   1000, uint256S("0x00000b0e2c2b0ce41331b24dbeab9a2b13323c80008a3e6a28330c4fa04562e2")},
+                {   4200, uint256S("0x0000015d22f8a48b8685657b92d7cf2886c926f4c59f800bfd9ef314ef61d577")},
+                {  42000, uint256S("0x00000007c544cbf45e3975c0168a8233384bc92a075f1c6cc8126de592a898f8")},
+                {  63003, uint256S("0x7b71e6664532d50e43fee1e4e10834137e2249a3ecb22a0d52a27145a5a4efa6")},
+                { 420000, uint256S("0x00000000002f8e58b723820c2d5ce7f6c4699d39d216fea12b2962985cab1ab8")}
             }
         };
 

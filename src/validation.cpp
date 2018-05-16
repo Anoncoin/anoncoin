@@ -1092,6 +1092,7 @@ static bool WriteBlockToDisk(const CBlock& block, CDiskBlockPos& pos, const CMes
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus::Params& consensusParams)
 {
     block.SetNull();
+    LogPrintf("ReadBlockFromDisk triggered\n");
 
     // Open history file to read
     CAutoFile filein(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION);
@@ -1115,6 +1116,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
 
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus::Params& consensusParams)
 {
+    LogPrintf("ReadBlockFromDisk triggered\n");
     CDiskBlockPos blockPos;
     {
         LOCK(cs_main);
@@ -3094,11 +3096,6 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
     assert(pindexPrev != nullptr);
     const int nHeight = pindexPrev->nHeight + 1;
 
-    // Check proof of work
-    const Consensus::Params& consensusParams = params.GetConsensus();
-    if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
-        return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
-
     // Check against checkpoints
     if (fCheckpointsEnabled) {
         // Don't accept any forks from the main chain prior to last checkpoint.
@@ -3109,6 +3106,12 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
             return state.DoS(100, error("%s: forked chain older than last checkpoint (height %d)", __func__, nHeight), REJECT_CHECKPOINT, "bad-fork-prior-to-checkpoint");
     }
 
+    const Consensus::Params& consensusParams = params.GetConsensus();
+    if (nHeight < consensusParams.AIP08Height) {
+        // Check proof of work
+        if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
+            return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
+    }
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
         return state.Invalid(false, REJECT_INVALID, "time-too-old", "block's timestamp is too early");
@@ -3142,6 +3145,9 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
 {
     const int nHeight = pindexPrev == nullptr ? 0 : pindexPrev->nHeight + 1;
 
+    if (nHeight < consensusParams.AIP08Height) {
+        return true;
+    }
     // Start enforcing BIP113 (Median Time Past) using versionbits logic.
     int nLockTimeFlags = 0;
     if (VersionBitsState(pindexPrev, consensusParams, Consensus::DEPLOYMENT_CSV, versionbitscache) == THRESHOLD_ACTIVE) {
@@ -3228,41 +3234,48 @@ bool CChainState::AcceptBlockHeader(const CBlockHeader& block, CValidationState&
     CBlockIndex *pindex = nullptr;
     if (hash != chainparams.GetConsensus().hashGenesisBlock) {
 
-        if (miSelf != mapBlockIndex.end()) {
-            // Block header is already known.
-            pindex = miSelf->second;
-            if (ppindex)
-                *ppindex = pindex;
-            if (pindex->nStatus & BLOCK_FAILED_MASK)
-                return state.Invalid(error("%s: block %s is marked invalid", __func__, hash.ToString()), 0, "duplicate");
-            return true;
-        }
+        /**
+         * 
+         * To avoid having to implement bugs. 
+         * 
+         */
+        if (mapBlockIndex.size() > chainparams.GetConsensus().AIP08Height) {
+            if (miSelf != mapBlockIndex.end()) {
+                // Block header is already known.
+                pindex = miSelf->second;
+                if (ppindex)
+                    *ppindex = pindex;
+                if (pindex->nStatus & BLOCK_FAILED_MASK)
+                    return state.Invalid(error("%s: block %s is marked invalid", __func__, hash.ToString()), 0, "duplicate");
+                return true;
+            }
 
-        if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
-            return error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
+            if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
+                return error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
 
-        // Get prev block index
-        CBlockIndex* pindexPrev = nullptr;
-        BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-        if (mi == mapBlockIndex.end())
-            return state.DoS(10, error("%s: prev block not found", __func__), 0, "prev-blk-not-found");
-        pindexPrev = (*mi).second;
-        if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
-            return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
-        if (!ContextualCheckBlockHeader(block, state, chainparams, pindexPrev, GetAdjustedTime()))
-            return error("%s: Consensus::ContextualCheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
+            // Get prev block index
+            CBlockIndex* pindexPrev = nullptr;
+            BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+            if (mi == mapBlockIndex.end())
+                return state.DoS(10, error("%s: prev block not found", __func__), 0, "prev-blk-not-found");
+            pindexPrev = (*mi).second;
+            if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
+                return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
+            if (!ContextualCheckBlockHeader(block, state, chainparams, pindexPrev, GetAdjustedTime()))
+                return error("%s: Consensus::ContextualCheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
 
-        if (!pindexPrev->IsValid(BLOCK_VALID_SCRIPTS)) {
-            for (const CBlockIndex* failedit : g_failed_blocks) {
-                if (pindexPrev->GetAncestor(failedit->nHeight) == failedit) {
-                    assert(failedit->nStatus & BLOCK_FAILED_VALID);
-                    CBlockIndex* invalid_walk = pindexPrev;
-                    while (invalid_walk != failedit) {
-                        invalid_walk->nStatus |= BLOCK_FAILED_CHILD;
-                        setDirtyBlockIndex.insert(invalid_walk);
-                        invalid_walk = invalid_walk->pprev;
+            if (!pindexPrev->IsValid(BLOCK_VALID_SCRIPTS)) {
+                for (const CBlockIndex* failedit : g_failed_blocks) {
+                    if (pindexPrev->GetAncestor(failedit->nHeight) == failedit) {
+                        assert(failedit->nStatus & BLOCK_FAILED_VALID);
+                        CBlockIndex* invalid_walk = pindexPrev;
+                        while (invalid_walk != failedit) {
+                            invalid_walk->nStatus |= BLOCK_FAILED_CHILD;
+                            setDirtyBlockIndex.insert(invalid_walk);
+                            invalid_walk = invalid_walk->pprev;
+                        }
+                        return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
                     }
-                    return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
                 }
             }
         }
@@ -3332,6 +3345,8 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     if (!AcceptBlockHeader(block, state, chainparams, &pindex))
         return false;
 
+    if (pindex->nHeight < chainparams.GetConsensus().AIP08Height)
+        return true;
     // Try to process all requested blocks that we don't have, but only
     // process an unrequested block if it's new and has enough work to
     // advance our tip, and isn't too many blocks ahead.
@@ -3346,7 +3361,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     // blocks which are too close in height to the tip.  Apply this test
     // regardless of whether pruning is enabled; it should generally be safe to
     // not process unrequested blocks.
-    bool fTooFarAhead = (pindex->nHeight > int(chainActive.Height() + MIN_BLOCKS_TO_KEEP));
+    bool fTooFarAhead = (pindex->nHeight + 1000 > int(chainActive.Height() + MIN_BLOCKS_TO_KEEP));
 
     // TODO: Decouple this function from the block download logic by removing fRequested
     // This requires some new chain data structure to efficiently look up if a
@@ -4239,14 +4254,17 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskB
                 blkdat.FindByte(chainparams.MessageStart()[0]);
                 nRewind = blkdat.GetPos()+1;
                 blkdat >> FLATDATA(buf);
-                if (memcmp(buf, chainparams.MessageStart(), CMessageHeader::MESSAGE_START_SIZE))
+                if (memcmp(buf, chainparams.MessageStart(), CMessageHeader::MESSAGE_START_SIZE)) {
                     continue;
+                }
                 // read size
                 blkdat >> nSize;
-                if (nSize < 80 || nSize > MAX_BLOCK_SERIALIZED_SIZE)
+                if (nSize < 80 || nSize > MAX_BLOCK_SERIALIZED_SIZE) {
                     continue;
-            } catch (const std::exception&) {
+                }
+            } catch (const std::exception& e) {
                 // no valid block header found; don't complain
+                LogPrintf("No valid blockheader found; %s\n",e.what());
                 break;
             }
             try {
@@ -4264,22 +4282,39 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskB
                 // detect out of order blocks, and store them for later
                 uint256 hash = block.GetHash();
                 uint256 gostHash = block.GetGOSTHash();
-                if (hash != chainparams.GetConsensus().hashGenesisBlock && mapBlockIndex.find(block.hashPrevBlock) == mapBlockIndex.end()) {
-                    LogPrint(BCLog::REINDEX, "%s: Out of order block %s, parent %s not known. (gost: %s, time %i)\n", __func__, hash.ToString(),
-                            block.hashPrevBlock.ToString(),gostHash.ToString(), block.nTime);
-                    if (dbp)
-                        mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
-                    continue;
+
+                LogPrintf("Block: %s mapBlockIndex size: %d\n", block.ToString(), mapBlockIndex.size());
+                if (hash != chainparams.GetConsensus().hashGenesisBlock) {
+                    /**
+                     * The patch done here is simply to avoid having to program bugs back into the code.
+                     * Checkpoints should ensure enough safety here.
+                     * */
+                    //if (mapBlockIndex.find(block.hashPrevBlock) == mapBlockIndex.end()) {
+                    if (mapBlockIndex.count(block.hashPrevBlock) < 0) {
+                        LogPrint(BCLog::REINDEX, "%s: Out of order block %s (pos %i, ver %i), parent %s not known. (time %i)\n", 
+                            __func__, hash.ToString(), nBlockPos, block.nVersion, block.hashPrevBlock.ToString(), block.nTime);
+                        if (dbp) {
+                            LogPrintf("marked dbp\n");
+                            mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
+                        }
+                        if (mapBlockIndex.size() > chainparams.GetConsensus().AIP08Height) continue;
+                    }
                 }
 
                 // process in case the block isn't known yet
                 if (mapBlockIndex.count(hash) == 0 || (mapBlockIndex[hash]->nStatus & BLOCK_HAVE_DATA) == 0) {
                     LOCK(cs_main);
                     CValidationState state;
-                    if (g_chainstate.AcceptBlock(pblock, state, chainparams, nullptr, true, dbp, nullptr))
+                    if (g_chainstate.AcceptBlock(pblock, state, chainparams, nullptr, true, dbp, nullptr)) {
                         nLoaded++;
-                    if (state.IsError())
+                        LogPrintf("Accepted new block (%s)\n", hash.ToString());
+                    } else {
+                        LogPrintf("Rejected new block (%s)\n", hash.ToString());
+                    }
+                    if (state.IsError()) {
+                        LogPrintf("State is ERROR\n");
                         break;
+                    }
                 } else if (hash != chainparams.GetConsensus().hashGenesisBlock && mapBlockIndex[hash]->nHeight % 1000 == 0) {
                     LogPrint(BCLog::REINDEX, "Block Import: already had block %s at height %d\n", hash.ToString(), mapBlockIndex[hash]->nHeight);
                 }

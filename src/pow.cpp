@@ -183,10 +183,11 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 
 	int nHeight = pindexLast->nHeight + 1;
-	if (nHeight < 26754) {
+	/*if (nHeight < 26754) {
 	    return GetNextWorkRequired_Bitcoin(pindexLast, pblock, params);
 	}
-	else if (nHeight == 208301) {
+	else */
+    if (nHeight == params.AIP09Height) {
    	    return 0x1e0ffff0;
 	}
     return KimotoGravityWell(pindexLast, pblock, BlocksTargetSpacing, PastBlocksMin, PastBlocksMax);

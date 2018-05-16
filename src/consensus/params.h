@@ -60,6 +60,7 @@ struct Params {
     int BIP66Height;
     /* Skip Anoncoin work check until block */
     int AIP08Height;
+    int AIP09Height;
     /**
      * Minimum blocks including miner confirmation of the total of 2016 blocks in a retargeting period,
      * (nPowTargetTimespan / nPowTargetSpacing) which is also used for BIP9 deployments.
