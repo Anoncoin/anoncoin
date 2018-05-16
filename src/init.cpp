@@ -1349,7 +1349,7 @@ bool AppInitMain()
     // -proxy sets a proxy for all outgoing network traffic
     // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
     std::string proxyArg = gArgs.GetArg("-proxy", "");
-    //SetLimited(NET_TOR);
+    SetLimited(NET_TOR);
     if (proxyArg != "" && proxyArg != "0") {
         CService proxyAddr;
         if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, fNameLookup)) {
