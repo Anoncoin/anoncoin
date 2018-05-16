@@ -533,8 +533,12 @@ std::string LicenseInfo()
     const std::string URL_SOURCE_CODE = "<https://github.com/Anoncoin/anoncoin>";
     const std::string URL_WEBSITE = "<https://anoncoin.net>";
 
-    return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2013, COPYRIGHT_YEAR) + " ") + "\n" +
+    return strprintf(_("Copyright (C) 2013-2018 The Anoncoin Core developers")) +
            "\n" +
+           strprintf(_("Copyright (C) 2011-2018 The Litecoin Core developers")) +
+           "\n" +
+           strprintf(_("Copyright (C) 2009-2018 The Bitcoin Core developers")) +
+           "\n" + "\n" +
            strprintf(_("Please contribute if you find %s useful. "
                        "Visit %s for further information about the software."),
                PACKAGE_NAME, URL_WEBSITE) +
