@@ -101,13 +101,13 @@ public:
         // vMerkleTree: 7ce7004d76
 
         consensus.nSubsidyHalvingInterval = 840000;
-        consensus.BIP16Height = 918684;
-        consensus.BIP34Height = 918684;
+        consensus.BIP16Height = 850000;
+        consensus.BIP34Height = 850000;
         consensus.BIP34Hash = uint256S("fa09d204a83a768ed5a7c8d441fa62f2043abf420cff1226c7b4329aeb9d51cf");
-        consensus.BIP65Height = 918684; // bab3041e8977e0dc3eeff63fe707b92bde1dd449d8efafb248c27c8264cc311a
-        consensus.BIP66Height = 918684; // 7aceee012833fa8952f8835d8b1b3ae233cd6ab08fdb27a771d2bd7bdc491894
-        consensus.AIP08Height = 500000;
-        consensus.AIP09Height = 15000000; // TODO: Find a block in the future
+        consensus.BIP65Height = 850000; // bab3041e8977e0dc3eeff63fe707b92bde1dd449d8efafb248c27c8264cc311a
+        consensus.BIP66Height = 850000; // 7aceee012833fa8952f8835d8b1b3ae233cd6ab08fdb27a771d2bd7bdc491894
+        consensus.AIP08Height = 585555;
+        consensus.AIP09Height = 850000; // TODO: Find a block in the future
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
