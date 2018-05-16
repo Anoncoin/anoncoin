@@ -308,9 +308,9 @@ endif
 if ENABLE_I2PD
 libanoncoin_i2pd_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libanoncoin_i2pd_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libanoncoin_i2pd_a_SOURCES  = i2p.cpp i2p.h
-libanoncoin_i2pd_a_LIBADD = -L../i2pd -li2pd
-libanoncoin_i2pd_a_LDFLAGS = -L../i2pd -li2pd
+#libanoncoin_i2pd_a_SOURCES  = i2p.cpp i2p.h
+#libanoncoin_i2pd_a_LIBADD = -L../i2pd -li2pd
+#libanoncoin_i2pd_a_LDFLAGS = -L../i2pd -li2pd
 endif
 
 # consensus: shared between all executables that validate any consensus rules.
