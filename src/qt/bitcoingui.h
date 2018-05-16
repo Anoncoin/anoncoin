@@ -174,10 +174,11 @@ public Q_SLOTS:
     /** Set number of blocks and last block date shown in the UI */
     void setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool headers);
     
+    //#ifdef ENABLE_I2PSAM
+    void setNumI2PConnections(int count);
+    //#endif
     
-    #ifdef ENABLE_I2PSAM
-        //void setNumI2PConnections(int count);
-    #endif
+
     
     
 

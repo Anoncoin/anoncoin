@@ -134,13 +134,13 @@ Your I2P Public Key:  *This makes the I2P router to router connections possible.
        </property>
        <property name="text">
         <string>Copy &quot;privatekey&quot; parameter
-to the clipboard</string>
+        to the clipboard.</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
        </property>
        <property name="default">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -154,7 +154,7 @@ to the clipboard</string>
        </property>
        <property name="text">
         <string>Copy &quot;publickey&quot; destination
-to the clipboard</string>
+        to the clipboard.</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -170,8 +170,8 @@ to the clipboard</string>
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Copy your b32.i2p destination
-to the clipboard</string>
+        <string>Copy b32.i2p destination
+        to the clipboard.</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>

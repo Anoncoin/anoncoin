@@ -8,7 +8,7 @@
 #endif
 
 #include "i2poptionswidget.h"
-#include "ui_i2poptionswidget.h"
+#include "qt/forms/ui_i2poptionswidget.h"
 
 #include "optionsmodel.h"
 #include "monitoreddatamapper.h"
@@ -52,7 +52,7 @@ I2POptionsWidget::~I2POptionsWidget()
 }
 
 void I2POptionsWidget::setMapper(MonitoredDataMapper& mapper)
-{
+{/*
     mapper.addMapping(ui->checkBoxUseI2POnly           , OptionsModel::eI2PUseI2POnly);
     mapper.addMapping(ui->lineEditSAMHost              , OptionsModel::eI2PSAMHost);
     mapper.addMapping(ui->spinBoxSAMPort               , OptionsModel::eI2PSAMPort);
@@ -70,6 +70,7 @@ void I2POptionsWidget::setMapper(MonitoredDataMapper& mapper)
     mapper.addMapping(ui->checkBoxAllowZeroHop         , OptionsModel::I2POutboundAllowZeroHop);
     mapper.addMapping(ui->spinBoxOutboundIPRestriction , OptionsModel::I2POutboundIPRestriction);
     mapper.addMapping(ui->spinBoxOutboundPriority      , OptionsModel::I2POutboundPriority);
+*/
 }
 
 void I2POptionsWidget::setModel(ClientModel* model)
@@ -81,6 +82,7 @@ void I2POptionsWidget::ShowCurrentI2PAddress()
 {
     if (clientModel)
     {
+        /*
         const QString pub = clientModel->getPublicI2PKey();
         const QString priv = clientModel->getPrivateI2PKey();
         const QString b32 = clientModel->getB32Address(pub);
@@ -88,6 +90,7 @@ void I2POptionsWidget::ShowCurrentI2PAddress()
 
         ShowI2PAddresses i2pCurrDialog("Your current I2P-address", pub, priv, b32, configFile, this);
         i2pCurrDialog.exec();
+        */
     }
 }
 
@@ -95,13 +98,15 @@ void I2POptionsWidget::GenerateNewI2PAddress()
 {
     if (clientModel)
     {
+        /*
         QString pub, priv;
         clientModel->generateI2PDestination(pub, priv);
         const QString b32 = clientModel->getB32Address(pub);
         const QString configFile = QString::fromStdString(GetConfigFile().string());
 
         ShowI2PAddresses i2pCurrDialog("Generated I2P address", pub, priv, b32, configFile, this);
-        i2pCurrDialog.exec();
+        i2pCurrDialog.exec()
+        */
     }
 }
 

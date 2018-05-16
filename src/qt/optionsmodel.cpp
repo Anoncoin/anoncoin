@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/anoncoin-config.h>
+#include <config/bitcoin-config.h>
 #endif
 
 #include <qt/optionsmodel.h>
@@ -21,6 +21,9 @@
 #ifdef ENABLE_WALLET
 #include <wallet/wallet.h>
 #include <wallet/walletdb.h>
+#endif
+#ifdef ENABLE_I2PSAM
+//#include "i2pwrapper.h"
 #endif
 
 #include <QNetworkProxy>

@@ -123,6 +123,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     spinnerFrame(0),
     //#ifdef ENABLE_I2PSAM
     i2pAddress(0),
+    labelI2PConnections(0),
     //#endif
     platformStyle(_platformStyle)
     
@@ -160,9 +161,9 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
 
     rpcConsole = new RPCConsole(_platformStyle, 0);
     helpMessageDialog = new HelpMessageDialog(this, false);
-#ifdef ENABLE_I2PSAM
+//#ifdef ENABLE_I2PSAM
     i2pAddress = new ShowI2PAddresses( this );
-#endif
+//#endif
 
 #ifdef ENABLE_WALLET
     if(enableWallet)
@@ -214,7 +215,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     connectionsControl = new GUIUtil::ClickableLabel();
     labelBlocksIcon = new GUIUtil::ClickableLabel();
 //#ifdef ENABLE_I2PSAM
-    labelI2PConnections = new QLabel();
+    labelI2PConnections = new GUIUtil::ClickableLabel();
     labelI2POnly = new QLabel();
     labelI2PGenerated = new QLabel();
 
@@ -274,6 +275,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     // Subscribe to notifications from core
     subscribeToCoreSignals();
 
+    // TODO: Fix add some I2P here
     connect(connectionsControl, SIGNAL(clicked(QPoint)), this, SLOT(toggleNetworkActive()));
 
     modalOverlay = new ModalOverlay(this->centralWidget());
@@ -514,6 +516,7 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel)
 
         // Keep up to date with client
         updateNetworkState();
+        setNumI2PConnections(1); // TODO: Fix connections to I2P
         connect(_clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
         connect(_clientModel, SIGNAL(networkActiveChanged(bool)), this, SLOT(setNetworkActive(bool)));
 
@@ -811,7 +814,7 @@ void BitcoinGUI::updateNetworkState()
     QString tooltip;
 
     if (clientModel->getNetworkActive()) {
-        tooltip = tr("%n active connection(s) to Litecoin network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
+        tooltip = tr("%n active connection(s) to clearnet Anoncoin network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
     } else {
         tooltip = tr("Network activity disabled.") + QString("<br>") + tr("Click to enable network activity again.");
         icon = ":/icons/network_disabled";
@@ -824,14 +827,42 @@ void BitcoinGUI::updateNetworkState()
     connectionsControl->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
 }
 
+//#ifdef ENABLE_I2PSAM
+void BitcoinGUI::setNumI2PConnections(int count)
+{
+    QString i2pIcon;
+
+    // We never run this until we have the clientModel, so the check shouldn't be necessary.
+    // Otherwise we can't determine the i2p connection count
+    // so we just show the total count here as well...
+    //int realcount = clientModel ? clientModel->getNumConnections(CONNECTIONS_I2P_ALL) : count;
+
+    count = clientModel->getNumConnections();
+    int realcount = count;
+
+    // See the anoncoin.qrc file for icon files below & their associated alias name
+    switch(realcount) {
+    case 0: i2pIcon = ":/icons/i2pconnect0"; break;
+    case 1: case 2: case 3: i2pIcon = ":/icons/i2pconnect1"; break;
+    case 4: case 5: case 6: i2pIcon = ":/icons/i2pconnect2"; break;
+    case 7: case 8: case 9: i2pIcon = ":/icons/i2pconnect3"; break;
+    default: i2pIcon = ":/icons/i2pconnect4"; break;
+    }
+    labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(4*STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", realcount));
+}
+//#endif // ENABLE_I2PSAM
+
 void BitcoinGUI::setNumConnections(int count)
 {
     updateNetworkState();
+    setNumI2PConnections(1); // TODO: Fix connections to I2P
 }
 
 void BitcoinGUI::setNetworkActive(bool networkActive)
 {
     updateNetworkState();
+    setNumI2PConnections(1); // TODO: Fix connections to I2P
 }
 
 void BitcoinGUI::updateHeadersSyncProgressLabel()
