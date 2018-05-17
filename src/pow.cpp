@@ -246,6 +246,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	}
 	else */
     if (nHeight < params.AIP09Height) {
+        // Old Anoncoin logic hell. GLHF with this part.
         return GetNextWorkRequired2(pindexLast, pblock, params);
     }
     if (nHeight == params.AIP09Height) {

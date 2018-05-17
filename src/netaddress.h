@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+#define I2P_DESTINATION_STORE 516
+#define NATIVE_I2P_B32ADDR_SIZE 60
 
 enum Network
 {
@@ -110,7 +112,9 @@ class CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action) {
             READWRITE(FLATDATA(ip));
-            READWRITE(FLATDATA(i2pDest));
+            if (!(s.GetType() & SER_IPADDRONLY)) {
+                READWRITE(FLATDATA(i2pDest));
+            }
         }
 
         friend class CSubNet;
@@ -188,7 +192,9 @@ class CService : public CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action) {
             READWRITE(FLATDATA(ip));
-            READWRITE(FLATDATA(i2pDest));
+            if (!(s.GetType() & SER_IPADDRONLY)) {
+                READWRITE(FLATDATA(i2pDest));
+            }
             unsigned short portN = htons(port);
             READWRITE(FLATDATA(portN));
             if (ser_action.ForRead())

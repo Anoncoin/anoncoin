@@ -2273,6 +2273,8 @@ CConnman::CConnman(uint64_t nSeed0In, uint64_t nSeed1In) : nSeed0(nSeed0In), nSe
 
     Options connOptions;
     Init(connOptions);
+    // Set no i2p for now
+    nStreamType = SER_NETWORK | SER_IPADDRONLY;
 }
 
 NodeId CConnman::GetNewNodeId()
@@ -2766,6 +2768,21 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     , nRecvStreamType(((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY)
 #endif  
 {
+    //! Protocol 70009 changes the node creation process so it is deterministic.
+     //! Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
+     //! During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
+     //! and may incorrectly report services depending on how they were built.  Some send full version address messages, and must have the
+     //! stream type changed on the fly, before processing.  70008 has a bug, where the stream type is full size, but only contains an ip address
+     //! over clearnet.  Protocol 70006 builds for clearnet lie about their support of the NODE_I2P service, while in fact the address object size
+     //! is only large enough for an ip address.
+     //! If the address given to us is a non-null string, the caller needs to have evaluated and setup that string correctly before calling this.
+     //! It is no longer meaningful, and should be abandoned as an input parameter, it only serves to confusion and cloud the many issues involved
+     //! in the node creation process.  Here it is assigned to the addrName field, which maybe useful in debugging problems, if it shows up incorrectly.
+     //! Also note, all the subclasses vRecv, ssSend & hdrbuf get defined here  the same stream type during this initialization.
+    nStreamType = SER_NETWORK | (addrIn.IsNativeI2P() ? 0 : SER_IPADDRONLY);
+    SetSendStreamType( nStreamType );
+    SetRecvStreamType( nStreamType );
+    //ssSend.SetType( nStreamType );
     nServices = NODE_NONE;
     hSocket = hSocketIn;
     nRecvVersion = INIT_PROTO_VERSION;
@@ -2880,7 +2897,7 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
     CMessageHeader hdr(Params().MessageStart(), msg.command.c_str(), nMessageSize);
     memcpy(hdr.pchChecksum, hash.begin(), CMessageHeader::CHECKSUM_SIZE);
 
-    CVectorWriter{SER_NETWORK, INIT_PROTO_VERSION, serializedHeader, 0, hdr};
+    CVectorWriter{nStreamType, INIT_PROTO_VERSION, serializedHeader, 0, hdr};
 
     size_t nBytesSent = 0;
     {

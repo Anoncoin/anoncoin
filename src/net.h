@@ -103,6 +103,38 @@ struct AddedNodeInfo
 class CNodeStats;
 class CClientUIInterface;
 
+/**
+ * Default nLocalServices Definition:
+ *
+ * Starting with protocol 70008 the nLocalServices NODE_I2P bit is always set as the standard we support for our address space
+ * model.
+ * Anoncoin Core will send/receive to all peers with a greatly enlarged address/object.
+ * NODE_I2P indicates that this node is available for exchanging those i2p addresses, by enlarging the CNetAddr data structure.
+ * Over 546 bytes/address verses ~30 for clearnet only IP's.   It's critical to understand how this effects the message exchange
+ * we conduct with peers, either on clearnet or over the i2p network.  Over i2p its easy, we always exchange them and NODE_I2P
+ * must be set, or we can not handshake destinations.
+ * Clearnet is more complicated.  Something we do not know until after the version message has been exchanged, so we start out
+ * by exchanging only IP addresses.  If the peer in question also supports NODE_I2P, we switch stream types to our fully supported
+ * address space model.  The purpose of that service bit in for cases where they do not support i2p destinations, and we do not
+ * wish to make it mandatory for Anoncoin.  So, the one case where we do not switch our streamtype is for over clearnet and for
+ * a peer that does not have NODE_I2P set.  Our software then reverts to exchanging in the classical sense, only the [ip] portion
+ * of our address space model.  In this manner, we can still connect, exchange blocks, transactions and even IP addresses with
+ * those peers.
+ * Allowing for innovation and development work of many different types of products and services is good for Anoncoin, even
+ * though a peice of software may not initially be able to support the i2p network, that could change that with success and
+ * determination.
+ * Starting with the release of protocol 70009 we make many past issues and problem go away, our software now is deterministic
+ * in how it behaves with addresses over clearnet.  Peers that can not support NODE_I2P are welcome, but have limited access to
+ * our full and more secure ongoing network operations.
+ *
+ * NODE_NETWORK and NODE_BLOOM service bits.  Consensus seems to be forming that NODE_BLOOM can be assumed if NODE_NETWORK is
+ * defined as true, so we have turned it off as well.  Newer services like NODE_PREFIX appear to be planned for.  We support
+ * NODE_BLOOM, but no longer have the* bit turned on.  NODE_NETWORK is on because we have a full copy of the blockchain and can
+ * support requests for blocks as has always been the case. Apparently some see bloom filters as a possible source for attacks,
+ * we need to add this ToDo: as a decision the team makes together as to if we want to keep the code in place or remove it.
+ */
+
+
 struct CSerializedNetMsg
 {
     CSerializedNetMsg() = default;
@@ -428,6 +460,9 @@ private:
 
     /** flag for waking the message processor. */
     bool fMsgProcWake;
+
+    /* For i2p */
+    int nStreamType;
 
     std::condition_variable condMsgProc;
     std::mutex mutexMsgProc;
@@ -757,6 +792,7 @@ private:
     CService addrLocal;
     mutable CCriticalSection cs_addrLocal;
 
+    int nStreamType;
     int nSendStreamType;
     int nRecvStreamType;
 public:
@@ -781,20 +817,33 @@ public:
             AddLocal(addrBind, LOCAL_BIND);
         return true;
     }
+#endif
     void SetSendStreamType(int nType)
     {
         nSendStreamType = nType;
-        send.SetType(nSendStreamType);
+        //vProcessMsg.SetType(nSendStreamType);
     }
 
     void SetRecvStreamType(int nType)
     {
         nRecvStreamType = nType;
-        for (std::deque<CNetMessage>::iterator it = vRecvMsg.begin(), end = vRecvMsg.end(); it != end; ++it)
+        for (std::list<CNetMessage>::iterator it = vRecvMsg.begin(), end = vRecvMsg.end(); it != end; ++it)
         {
             it->hdrbuf.SetType(nRecvStreamType);
             it->vRecv.SetType(nRecvStreamType);
         }
+    }
+
+    void SetStreamType( const int nType )
+    {
+        nStreamType = nType;
+        SetSendStreamType( nStreamType );
+        SetRecvStreamType( nStreamType );
+    }
+
+    void SetStreamTypeBasedOnServices()
+    {
+        SetStreamType( SER_NETWORK | (nLocalServices & NODE_I2P) ? 0 : SER_IPADDRONLY );
     }
 
     int GetSendStreamType() const
@@ -806,8 +855,8 @@ public:
     {
         return nRecvStreamType;
     }
-#endif
-
+    unsigned int GetStreamType() const { return nStreamType; }
+    
     bool BindListenNativeI2P()
     {
 /*        SOCKET hNewI2PListenSocket = INVALID_SOCKET;

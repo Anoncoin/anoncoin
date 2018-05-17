@@ -25,12 +25,14 @@ static const unsigned char g_internal_prefix[] = { 0xFD, 0x6C, 0xE9, 0xFE, 0x45,
 void CNetAddr::Init()
 {
     memset(ip, 0, sizeof(ip));
+    memset(i2pDest, 0, I2P_DESTINATION_STORE);
     scopeId = 0;
 }
 
 void CNetAddr::SetIP(const CNetAddr& ipIn)
 {
     memcpy(ip, ipIn.ip, sizeof(ip));
+    memcpy(i2pDest, ipIn.i2pDest, I2P_DESTINATION_STORE);
 }
 
 void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
@@ -47,6 +49,7 @@ void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
         default:
             assert(!"invalid network");
     }
+    memset(i2pDest, 0, I2P_DESTINATION_STORE);
 }
 
 bool CNetAddr::SetInternal(const std::string &name)
@@ -71,6 +74,8 @@ bool CNetAddr::SetSpecial(const std::string &strName)
         for (unsigned int i=0; i<16-sizeof(pchOnionCat); i++)
             ip[i + sizeof(pchOnionCat)] = vchAddr[i];
         return true;
+    } else if (strName.size()>4 && strName.substr(strName.size() - 4, 4) == ".i2p") {
+        //
     }
     return false;
 }
@@ -182,6 +187,11 @@ bool CNetAddr::IsRFC4843() const
 bool CNetAddr::IsTor() const
 {
     return (memcmp(ip, pchOnionCat, sizeof(pchOnionCat)) == 0);
+}
+
+bool CNetAddr::IsI2P() const
+{
+    return (memcmp(ip, pchGarlicCat, sizeof(pchGarlicCat)) == 0);
 }
 
 bool CNetAddr::IsLocal() const

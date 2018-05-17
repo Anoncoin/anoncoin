@@ -358,6 +358,7 @@ public:
 public:
     ServiceFlags nServices;
 
+    bool IsNativeI2P() const { return false; }
     // disk and network only
     unsigned int nTime;
 };
