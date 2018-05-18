@@ -2636,6 +2636,14 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
+
+#if defined( HARDFORK_BLOCK )
+    CBlockIndex *tip = chainActive.Tip();
+
+    // AIP09 : Fast accept early blockchain
+    if (tip)
+        if (tip->nHeight < HARDFORK_BLOCK) return true;
+#endif
     // Check proof of work matches claimed amount
     if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits))
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
@@ -2645,8 +2653,8 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     // no mined block time need have a future time so large.  In fact the header can
     // not be used unless this value is reduced to mere seconds.
     int64_t nTimeLimit = GetAdjustedTime();
+
 #if defined( HARDFORK_BLOCK )
-    CBlockIndex *tip = chainActive.Tip();
     if(tip) nTimeLimit += ( tip->nHeight < HARDFORK_BLOCK ) ? 2 * 60 * 60 : 15 * 60;
 #else
     nTimeLimit += 2 * 60 * 60;
@@ -2727,6 +2735,24 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
     int nHeight = pindexPrev->nHeight+1;
 
+    /**
+     * 
+     * Anoncoin new fast fetch
+     * 
+     * */
+
+    // Don't accept any forks from the main chain prior to last checkpoint
+    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
+    if (pcheckpoint && nHeight < pcheckpoint->nHeight)
+        return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
+
+    // Check that the block chain matches the known block chain up to a checkpoint
+    if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
+        return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight), REJECT_CHECKPOINT, "checkpoint mismatch");
+
+    if (nHeight < HARDFORK_BLOCK)
+        return true;
+
     // Check proof of work
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
         if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
@@ -2737,30 +2763,12 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
         return state.Invalid(error("%s : block's timestamp is too early", __func__),
                              REJECT_INVALID, "time-too-old");
-
-    // Check that the block chain matches the known block chain up to a checkpoint
-    if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
-        return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight),
-                         REJECT_CHECKPOINT, "checkpoint mismatch");
-
-    // Don't accept any forks from the main chain prior to last checkpoint
-    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
-    if (pcheckpoint && nHeight < pcheckpoint->nHeight)
-        return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 #if defined( HARDFORK_BLOCK )
     // Reject block.nVersion=1 blocks
     // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority test was
     // set to always return false.  As of 3/15/2015 in the last 10000 blocks over 700 where version 1 blocks
     if( block.nVersion < 2 && nHeight > HARDFORK_BLOCK )                // We'll start enforcing the new rule
         return state.Invalid(error("%s : rejected nVersion=1 block", __func__), REJECT_OBSOLETE, "bad-version");
-#endif
-#if defined( DONT_COMPILE )
-    // Reject block.nVersion=2 blocks when 95% (75% on testnet) of the network has upgraded:
-    if (block.nVersion < 3 && CBlockIndex::IsSuperMajority(3, pindexPrev, Params().RejectBlockOutdatedMajority()))
-    {
-        return state.Invalid(error("%s : rejected nVersion=2 block", __func__),
-                             REJECT_OBSOLETE, "bad-version");
-    }
 #endif
 
     return true;
@@ -2769,6 +2777,8 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CBlockIndex* pindexPrev)
 {
     const int32_t nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
+
+    if (nHeight < HARDFORK_BLOCK) return true;
 
     // Check that all transactions are finalized
     BOOST_FOREACH(const CTransaction& tx, block.vtx)
@@ -2847,16 +2857,19 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         // return state.DoS(20, error("AcceptBlock() : already have block %d %s", pindex->nHeight, pindex->GetBlockHash().ToString()), REJECT_DUPLICATE, "duplicate");
         return true;
     }
+    int nHeight = pindex->nHeight;
 
-    if ((!CheckBlock(block, state)) || !ContextualCheckBlock(block, state, pindex->pprev)) {
-        if (state.IsInvalid() && !state.CorruptionPossible()) {
-            pindex->nStatus |= BLOCK_FAILED_VALID;
-            setDirtyBlockIndex.insert(pindex);
+    if (nHeight >= HARDFORK_BLOCK) {
+        if ((!CheckBlock(block, state)) || !ContextualCheckBlock(block, state, pindex->pprev)) {
+            if (state.IsInvalid() && !state.CorruptionPossible()) {
+                pindex->nStatus |= BLOCK_FAILED_VALID;
+                setDirtyBlockIndex.insert(pindex);
+            }
+            return false;
         }
-        return false;
     }
 
-    int nHeight = pindex->nHeight;
+    nHeight = pindex->nHeight;
 
     // Write block to history file
     try {
@@ -2879,20 +2892,6 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     return true;
 }
-
-#if defined( DONT_COMPILE )
-bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired, unsigned int nToCheck)
-{
-    unsigned int nFound = 0;
-    for (unsigned int i = 0; i < nToCheck && nFound < nRequired && pstart != NULL; i++)
-    {
-        if (pstart->nVersion >= minVersion)
-            ++nFound;
-        pstart = pstart->pprev;
-    }
-    return (nFound >= nRequired);
-}
-#endif // defined
 
 /** Turn the lowest '1' bit in the binary representation of a number into a '0'. */
 int static inline InvertLowestOne(int n) { return n & (n - 1); }
