@@ -267,7 +267,7 @@ public:
         return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s, sha256dHash=%s)",
             pprev, nHeight,
             hashMerkleRoot.ToString(),
-            GetBlockHash().ToString(),
+            GetBlockHash().GetHex(),
             fakeBIhash.ToString());
     }
 

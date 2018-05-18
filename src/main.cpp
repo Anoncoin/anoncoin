@@ -3141,6 +3141,8 @@ bool static LoadBlockIndexDB()
             StartShutdown();
         }
 
+        uint256 gost3411Hash = aHeader.GetGost3411Hash();
+
         //! Could do a quick check of the nBits to confirm pow here...its fast.
         if( !CheckProofOfWork( aRealHash, aHeader.nBits ) )
             return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());

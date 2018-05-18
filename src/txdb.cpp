@@ -243,6 +243,8 @@ bool CBlockTreeDB::LoadBlockIndexGuts( vector<BlockTreeEntry>& vSortedByHeight )
                 //! as a temporary holding location, until later when we do the calculations.  See LoadBlockIndexDB() in main.cpp where all
                 //! the time complex work is done.
                 pindexNew->fakeBIhash     = diskindex.hashPrev;
+                pindexNew->gost3411Hash   = diskindex.gost3411Hash;
+
                 //!pindexNew->pprev        We can not set this up yet, without allot of time complexity
                 pindexNew->nHeight        = diskindex.nHeight;
                 pindexNew->nFile          = diskindex.nFile;
