@@ -14,6 +14,8 @@
 #include <compat.h>
 #include <serialize.h>
 
+#include <uint256.h>
+
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -28,8 +30,8 @@ enum Network
     NET_IPV6,
     NET_TOR,
     NET_I2P,
-    NET_I2PONLY,
     NET_INTERNAL,
+    NET_I2PONLY,
 
     NET_MAX,
 };
@@ -101,7 +103,10 @@ class CNetAddr
         bool GetIn6Addr(struct in6_addr* pipv6Addr) const;
 
         bool IsNativeI2P() const;
-        std::string GetI2PDestination() const;
+        std::string GetI2pDestination() const;
+        bool CheckAndSetGarlicCat( void );
+        bool SetI2pDestination( const std::string& sBase64Dest );
+        std::string ToB32String() const;
 
         friend bool operator==(const CNetAddr& a, const CNetAddr& b);
         friend bool operator!=(const CNetAddr& a, const CNetAddr& b);
@@ -201,5 +206,12 @@ class CService : public CNetAddr
                  port = ntohs(portN);
         }
 };
+
+
+bool isValidI2pAddress( const std::string& I2pAddr );
+bool isValidI2pB32( const std::string& B32Address );
+bool isStringI2pDestination( const std::string & strName );
+std::string B32AddressFromDestination(const std::string& destination);
+uint256 GetI2pDestinationHash( const std::string& destination );
 
 #endif // BITCOIN_NETADDRESS_H
