@@ -2475,6 +2475,7 @@ static CBlockIndex* AddToBlockIndex(const CBlockHeader& aHeader)
     CBlockIndex* pindexNew = new CBlockIndex(aHeader);
     assert(pindexNew);
     //! Time complexity is much higher now, it really shows up in reindexing...ToDo:
+    pindexNew->gost3411Hash = aHeader.GetGost3411Hash();
     pindexNew->fakeBIhash = aHeader.CalcSha256dHash();      //! Now store it in the new index object
     pindexNew->fakeBIhash.SetRealHash( uintRealHash );      //! Make sure we keep our cross reference lookup map full and fast
 

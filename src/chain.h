@@ -99,6 +99,9 @@ public:
     //! This is part of how we map sha256d hash values into real pow hashes that the rest of the software can use
     uintFakeHash fakeBIhash;
 
+    // The new hashing algo
+    uint256 gost3411Hash;
+
     //! pointer to the hash of the block, This is in the mapBlockIndex and based on the real POW. memory is owned by this CBlockIndex
     const uint256* phashBlock;
 
@@ -223,6 +226,11 @@ public:
     uint256 GetBlockHash() const
     {
         return *phashBlock;
+    }
+
+    uint256 GetBlockGost3411Hash() const
+    {
+        return GetBlockHeader().GetGost3411Hash();
     }
 
     int64_t GetBlockTime() const

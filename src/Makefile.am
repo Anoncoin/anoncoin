@@ -221,7 +221,9 @@ crypto_libanoncoin_crypto_a_SOURCES = \
   crypto/rfc6979_hmac_sha256.h \
   crypto/hmac_sha512.h \
   crypto/sha1.h \
-  crypto/ripemd160.h
+  crypto/ripemd160.h \
+  Gost3411.cpp \
+  Gost3411.h
 
 # univalue JSON library
 univalue_libanoncoin_univalue_a_SOURCES = \

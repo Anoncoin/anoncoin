@@ -7,6 +7,12 @@
 #ifndef ANONCOIN_BLOCK_H
 #define ANONCOIN_BLOCK_H
 
+#ifndef HARDFORK_BLOCK3
+#define HARDFORK_BLOCK3 850000
+#endif
+
+#include "Gost3411.h"
+#include "pow.h"
 #include "transaction.h"
 #include "serialize.h"
 #include "uint256.h"
@@ -53,6 +59,7 @@ private:
     mutable bool fCalcScrypt;
     mutable bool fCalcSha256d;
     mutable uint256 therealHash;
+    mutable uint256 gost3411Hash;
     mutable uintFakeHash sha256dHash;
 
 public:
@@ -107,6 +114,7 @@ public:
 
     uintFakeHash CalcSha256dHash( const bool fForceUpdate = false ) const;
     uint256 GetHash( const bool fForceUpdate = false ) const;
+    uint256 GetGost3411Hash() const;
 
     int64_t GetBlockTime() const
     {

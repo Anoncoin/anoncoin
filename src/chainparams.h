@@ -6,6 +6,10 @@
 #ifndef ANONCOIN_CHAIN_PARAMS_H
 #define ANONCOIN_CHAIN_PARAMS_H
 
+#ifndef HARDFORK_BLOCK3
+#define HARDFORK_BLOCK3 850000
+#endif
+
 // Many builder specific things set in the config file, ENABLE_WALLET is a good example.
 // Don't forget to include it this way in your source or header files.  GR Note: This
 // method is now preferred, with a note in the source file about how the builder config
@@ -59,6 +63,7 @@ public:
     enum MinedWithAlgo {
         ALGO_SCRYPT,             // Anoncoin native is this, always needs to be the default, and compatible with blocks on the chain from genesis onward...
         ALGO_SHA256D,
+        ALGO_GOST3411,
 
         MAX_ALGO_TYPES
     };
