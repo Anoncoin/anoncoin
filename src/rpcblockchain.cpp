@@ -259,6 +259,7 @@ Value getblockhash(const Array& params, bool fHelp)
     Object result;
     result.push_back(Pair("hash", pblockindex->GetBlockHash().GetHex()));
     result.push_back(Pair("shad", pblockindex->GetBlockSha256dHash().GetHex()));
+    result.push_back(Pair("gost", pblockindex->GetBlockGost3411Hash().GetHex()));
     return result;
 }
 
@@ -598,6 +599,7 @@ Value getchaintips(const Array& params, bool fHelp)
         obj.push_back(Pair("height", block->nHeight));
         obj.push_back(Pair("hash", block->phashBlock->GetHex()));
         obj.push_back(Pair("shad", block->GetBlockSha256dHash().GetHex()));
+        obj.push_back(Pair("gost", block->GetBlockGost3411Hash().GetHex()));
 
         const int branchLen = block->nHeight - chainActive.FindFork(block)->nHeight;
         obj.push_back(Pair("branchlen", branchLen));

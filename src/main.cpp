@@ -3127,11 +3127,11 @@ bool static LoadBlockIndexDB()
         uintFakeHash aFakeHash  = aHeader.CalcSha256dHash(true);    //! Calculate the sha256d hash, even for the genesis block
         uint256 aRealHash;
         if( fDoubleCheckingHash ) {
-            aRealHash = aHeader.GetHash(true);              //! Calc the real scrypt hash of this block.
+            aRealHash = aHeader.GetPoWHash(nHeight, true);              //! Calc the real scrypt hash of this block.
             if( nHeight > 100 )                             //! Stop checking if things have been ok after the 1st 100 blocks
                 fDoubleCheckingHash = false;
         } else if( nHeight > nBIsize - 1000 ) {             //! Turn it back on for the last 1000 blocks
-            aRealHash = aHeader.GetHash(true);              //! Calc the real scrypt hash of this block.
+            aRealHash = aHeader.GetPoWHash(nHeight, true);              //! Calc the real scrypt hash of this block.
         } else
             aRealHash = entry.uintRealHash;
 
@@ -3143,9 +3143,9 @@ bool static LoadBlockIndexDB()
         uint256 gost3411Hash = aHeader.GetGost3411Hash();
 
         //! Could do a quick check of the nBits to confirm pow here...its fast.
-        if( !CheckProofOfWork( aRealHash, aHeader.nBits ) )
+        if( !CheckProofOfWork( (nHeight < HARDFORK_BLOCK3) ? aRealHash : gost3411Hash , aHeader.nBits ) )
             return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());
-        // LogPrintf( "fakeBIhash: %s aRealHash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), nHeight );
+        LogPrintf( "fakeBIhash: %s aRealHash: %s Gost3411Hash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), gost3411Hash.ToString(), nHeight );
         vFakeHashes[nHeight++] = aFakeHash; //! Save it for later on the 2nd pass
         aFakeHash.SetRealHash( aRealHash ); //! Update our cross reference unordered fast hash lookup map
 //      if( GetTime() - nStartTime  > 15 ) {
@@ -3186,9 +3186,9 @@ bool static LoadBlockIndexDB()
         //! Now find the real hash of this blocks previous block, and set the pointer up correctly.
         //! It should already be in the mapBlockIndex
         if( pindex->fakeBIhash != 0 ) {      //! Can't do that for the genesis though
-            uint256 aRealHash = pindex->fakeBIhash.GetRealHash();
+            uint256 aRealHash = pindex->fakeBIhash.GetPoWHash(pindex->nHeight);
             BlockMap::iterator mi2 = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
-            // LogPrintf( "fakeBIhash: %s aRealHash: %s  mi2 at end? %s Height=%d\n", pindex->fakeBIhash.ToString(), aRealHash.ToString(), (mi2 == mapBlockIndex.end()) ? "yes" : "no", pindex->nHeight );
+            LogPrintf( "fakeBIhash: %s aRealHash: %s  mi2 at end? %s Height=%d\n", pindex->fakeBIhash.ToString(), aRealHash.ToString(), (mi2 == mapBlockIndex.end()) ? "yes" : "no", pindex->nHeight );
             assert(mi2 != mapBlockIndex.end());
             pindex->pprev = (*mi2).second;
         }

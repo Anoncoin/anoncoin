@@ -116,6 +116,18 @@ public:
     uint256 GetHash( const bool fForceUpdate = false ) const;
     uint256 GetGost3411Hash() const;
 
+    inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate = false) const
+    {
+        return GetPoWHash();
+    }
+
+    inline uint256 GetPoWHash(uint32_t nHeight) const
+    {
+        if (nHeight < HARDFORK_BLOCK3)
+            return GetHash();
+        return GetGost3411Hash();
+    }
+
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;

@@ -945,8 +945,8 @@ Value getwork(const Array& params, bool fHelp)
         //! Save the block pointer with a key on the MerkleRoot hash, this is how we will know that is the one being
         //! returned later from an external miner if it finds a result.
         mapNewBlock[pblock->hashMerkleRoot] = pblock;
-        // LogPrintf( "GetWork MerkleRoot hash saved as 0x%s\n", pblock->hashMerkleRoot.ToString() );
-        // LogPrintf( "GetWork Previous hash saved as 0x%s\n", pblock->hashPrevBlock.ToString() );
+        LogPrintf( "GetWork MerkleRoot hash saved as 0x%s\n", pblock->hashMerkleRoot.ToString() );
+        LogPrintf( "GetWork Previous hash saved as 0x%s\n", pblock->hashPrevBlock.ToString() );
 
         /**
          * Pre-build hash buffers
