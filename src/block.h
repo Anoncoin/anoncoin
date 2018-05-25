@@ -118,7 +118,7 @@ public:
 
     inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate = false) const
     {
-        return GetPoWHash();
+        return GetPoWHash(nHeight);
     }
 
     inline uint256 GetPoWHash(uint32_t nHeight) const
