@@ -3186,7 +3186,7 @@ bool static LoadBlockIndexDB()
         //! Now find the real hash of this blocks previous block, and set the pointer up correctly.
         //! It should already be in the mapBlockIndex
         if( pindex->fakeBIhash != 0 ) {      //! Can't do that for the genesis though
-            uint256 aRealHash = pindex->fakeBIhash.GetPoWHash(pindex->nHeight);
+            uint256 aRealHash = pindex->fakeBIhash.GetRealHash();
             BlockMap::iterator mi2 = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
             LogPrintf( "fakeBIhash: %s aRealHash: %s  mi2 at end? %s Height=%d\n", pindex->fakeBIhash.ToString(), aRealHash.ToString(), (mi2 == mapBlockIndex.end()) ? "yes" : "no", pindex->nHeight );
             assert(mi2 != mapBlockIndex.end());
