@@ -22,7 +22,7 @@ uint256 CBlockHeader::GetHash() const
 
 uint256 CBlockHeader::GetPoWHash(int64_t nHeight) const
 {
-    if ( Params().GetConsensus().AIP09Height < nHeight )
+    if ( Params().GetConsensus().AIP09Height <= nHeight )
         return GetGOSTHash();
     return GetPoWHash();
 }
