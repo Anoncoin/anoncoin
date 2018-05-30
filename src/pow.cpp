@@ -169,10 +169,10 @@ unsigned int static KimotoGravityWell(const CBlockIndex* pindexLast, const CBloc
     if (bnNew > bnProofOfWorkLimit) { bnNew = bnProofOfWorkLimit; }
 
     /// debug print
-    printf("Difficulty Retarget - Kimoto Gravity Well\n");
-    printf("PastRateAdjustmentRatio = %g\n", PastRateAdjustmentRatio);
-    printf("Before: %08x %s\n", BlockLastSolved->nBits, arith_uint256().SetCompact(BlockLastSolved->nBits).ToString().c_str());
-    printf("After: %08x %s\n", bnNew.GetCompact(), bnNew.ToString().c_str());
+    LogPrint(BCLog::RETARGET, "Difficulty Retarget - Kimoto Gravity Well\n");
+    LogPrint(BCLog::RETARGET, "PastRateAdjustmentRatio = %g\n", PastRateAdjustmentRatio);
+    LogPrint(BCLog::RETARGET, "Before: %08x %s\n", BlockLastSolved->nBits, arith_uint256().SetCompact(BlockLastSolved->nBits).ToString().c_str());
+    LogPrint(BCLog::RETARGET, "After: %08x %s\n", bnNew.GetCompact(), bnNew.ToString().c_str());
 
     return bnNew.GetCompact();
 }
@@ -340,6 +340,7 @@ bool CheckProofOfWork(const arith_uint256& hash, unsigned int nBits)
     if( fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(Params().GetConsensus().powLimit) )
         return error("CheckProofOfWork() : nBits below minimum work");
 
+    LogPrint(BCLog::RETARGET,"CheckProofOfWork() : nBits passed minimum work requirements");
     //! Check the proof of work matches claimed amount
     if (hash > bnTarget) {
         //! There is one possibility where this is allowed, if this is TestNet and this hash is better than the minimum
@@ -349,9 +350,9 @@ bool CheckProofOfWork(const arith_uint256& hash, unsigned int nBits)
         arith_uint256 uintStartingDiff;
         if( fTestNet ) uintStartingDiff = pRetargetPid->GetTestNetStartingDifficulty();
         if( !fTestNet || hash > UintToArith256(Params().GetConsensus().powLimit) || uintStartingDiff.GetCompact() != nBits ) {
-            LogPrintf( "%s : Failed. ", __func__ );
-            if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
-            LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
+            LogPrint(BCLog::RETARGET, "%s : Failed. ", __func__ );
+            if( fTestNet ) LogPrint(BCLog::RETARGET, "StartingDiff=0x%s ", uintStartingDiff.ToString() );
+            LogPrint(BCLog::RETARGET, "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
             return error("CheckProofOfWork() : hash doesn't match nBits");
         }
     }
@@ -468,15 +469,14 @@ static arith_uint256 OriginalGetNextWorkRequired(const CBlockIndex* pindexLast)
     bnNew *= nNewSetpoint;
     bnNew /= fNewDifficultyProtocol2 ? nTargetTimespanCurrent : nLegacyTargetTimespan;
     // debug print
-#if defined( LOG_DEBUG_OUTPUT )
-    LogPrintf("Difficulty Retarget - pre-Kimoto Gravity Well era\n");
-    LogPrintf("  TargetTimespan = %lld    ActualTimespan = %lld\n", nLegacyTargetTimespan, nNewSetpoint);
-    LogPrintf("  Before: %08x  %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).ToString());
-    LogPrintf("  After : %08x  %s\n", bnNew.GetCompact(), bnNew.ToString());
-#endif
+    LogPrint(BCLog::RETARGET, "Difficulty Retarget - pre-Kimoto Gravity Well era\n");
+    LogPrint(BCLog::RETARGET, "  TargetTimespan = %lld    ActualTimespan = %lld\n", nLegacyTargetTimespan, nNewSetpoint);
+    LogPrint(BCLog::RETARGET, "  Before: %08x  %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).ToString());
+    LogPrint(BCLog::RETARGET, "  After : %08x  %s\n", bnNew.GetCompact(), bnNew.ToString());
+
     const arith_uint256 &uintPOWlimit = UintToArith256(Params().GetConsensus().powLimit);
     if( bnNew > uintPOWlimit ) {
-        LogPrintf("Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", nHeight, bnNew.GetCompact(), uintPOWlimit.GetCompact());
+        LogPrint(BCLog::RETARGET, "Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", nHeight, bnNew.GetCompact(), uintPOWlimit.GetCompact());
         bnNew = uintPOWlimit;
     }
     return bnNew;
@@ -889,14 +889,13 @@ static arith_uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast, const 
         uintNewDifficulty /= nTargetRateSecs;                                               //! This ties the new difficulty to how far off the time target we are.
     }
     // debug print
-#if defined( LOG_DEBUG_OUTPUT )
-    LogPrintf("Difficulty Retarget - Kimoto Gravity Well v2.0\n");
-    LogPrintf("  Before: %08x %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).ToString());
-    LogPrintf("  After : %08x %s\n", uintNewDifficulty.GetCompact(), uintNewDifficulty.ToString());
-#endif
+    LogPrint(BCLog::RETARGET, "Difficulty Retarget - Kimoto Gravity Well v2.0\n");
+    LogPrint(BCLog::RETARGET, "  Before: %08x %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).ToString());
+    LogPrint(BCLog::RETARGET, "  After : %08x %s\n", uintNewDifficulty.GetCompact(), uintNewDifficulty.ToString());
+
     const arith_uint256 &uintPOWlimit = UintToArith256(params.powLimit);
     if( uintNewDifficulty > uintPOWlimit ) {
-        LogPrintf("Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", pindexLast->nHeight, uintNewDifficulty.GetCompact(), uintPOWlimit.GetCompact());
+        LogPrint(BCLog::RETARGET, "Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", pindexLast->nHeight, uintNewDifficulty.GetCompact(), uintPOWlimit.GetCompact());
         uintNewDifficulty = uintPOWlimit;
     }
     return uintNewDifficulty;
@@ -1288,7 +1287,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     }
 
     if (nMaxDiffIncrease <= 101 ) {
-        LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
+        LogPrint(BCLog::RETARGET, "Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
         nMaxDiffIncrease = 101;
     }
     uintPrevDiffForLimitsIncreaseLast = uintPrevDiffForLimitsLast * 100; //For a quick increase of difficulty, let's take the previous block diff
@@ -1300,7 +1299,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     // The minimum value for the difficulty retarget limits is thus set to 101% which is equivalent to a 1.01 multiplier or divider.
 
     if (nMaxDiffDecrease <= 101 ) {
-        LogPrintf("Error: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 1.01 \n");
+        LogPrint(BCLog::RETARGET, "Error: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 1.01 \n");
         nMaxDiffDecrease = 101;
     }
     
@@ -1506,12 +1505,12 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
     }
 
     if( fRetargetNewLog ) {
-        LogPrintf( "RetargetPID-v3.0 NextWorkRequired for TargetSpacing=%d using constants PropGain=%f, IntTime=%d, IntGain=%f and DevGain=%f\n",
+        LogPrint(BCLog::RETARGET,  "RetargetPID-v3.0 NextWorkRequired for TargetSpacing=%d using constants PropGain=%f, IntTime=%d, IntGain=%f and DevGain=%f\n",
                   nTargetSpacing, dProportionalGain, nIntegrationTime, dIntegratorGain, dDerivativeGain );
-        LogPrintf( "Integrator Charged for=%d days %02d:%02d:%02d with %d samples",
+        LogPrint(BCLog::RETARGET,  "Integrator Charged for=%d days %02d:%02d:%02d with %d samples",
                    nIntegratorChargeTime / SECONDSPERDAY, (nIntegratorChargeTime % SECONDSPERDAY) / 3600,
                    (nIntegratorChargeTime % 3600) / 60, nIntegratorChargeTime % 60, nBlocksSampled );
-        LogPrintf( ". Actual BlockTime=%fsecs\n", dIntegratorBlockTime );
+        LogPrint(BCLog::RETARGET,  ". Actual BlockTime=%fsecs\n", dIntegratorBlockTime );
         if( csvfile.is_open() ) {
             csvfile << "OS_Time" << "," << "Offset" << "," << "Height" << ",";
             csvfile << "MinTime" << "," << "IndexTime" << "," << "BlockTime" << "," << "Space" << ",";
@@ -1538,14 +1537,14 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
     }
 
     //! Always produce a minimum of debug.log information
-    LogPrintf("RetargetPID charged to height=%d output terms P=%f I=%f D=%f, ProofOfWork Required=0x%08x Header=0x%08x\n",
+    LogPrint(BCLog::RETARGET, "RetargetPID charged to height=%d output terms P=%f I=%f D=%f, ProofOfWork Required=0x%08x Header=0x%08x\n",
               nIntegratorHeight, dProportionalTerm, dIntegratorTerm, dDerivativeTerm, uintTargetAfterLimits.GetCompact(), pBlockHeader->nBits );
 
     if( fPidOutputLimited )
-        LogPrintf("RetargetPID NOTE: OutputTime %f was < 1 second, out-of-range value set to %d.\n", dPidOutputTime, nPidOutputTime );
+        LogPrint(BCLog::RETARGET, "RetargetPID NOTE: OutputTime %f was < 1 second, out-of-range value set to %d.\n", dPidOutputTime, nPidOutputTime );
 
     if( fDifficultyLimited )
-        LogPrintf("RetargetPID NOTE: Difficulty %0x was out of range and set to limit %0x\n", uintTargetBeforeLimits.GetCompact(), uintTargetAfterLimits.GetCompact());
+        LogPrint(BCLog::RETARGET, "RetargetPID NOTE: Difficulty %0x was out of range and set to limit %0x\n", uintTargetBeforeLimits.GetCompact(), uintTargetAfterLimits.GetCompact());
 
 // #if defined( HARDFORK_BLOCK )
     //if( isMainNetwork() && pIndex->nHeight < HARDFORK_BLOCK )

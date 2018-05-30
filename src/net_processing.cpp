@@ -1795,7 +1795,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     else if (strCommand == NetMsgType::ADDR)
     {
         std::vector<CAddress> vAddr;
-        vRecv.SetType( ((pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
+        vRecv.SetType( pfrom->GetSendVersion() & ((pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
         vRecv >> vAddr;
 
         // Don't want addr from older versions unless seeding
@@ -1804,7 +1804,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         if (vAddr.size() > 1000)
         {
             LOCK(cs_main);
-            Misbehaving(pfrom->GetId(), 20);
+            Misbehaving(pfrom->GetId(), 10);
             return error("message addr size() = %u", vAddr.size());
         }
 
