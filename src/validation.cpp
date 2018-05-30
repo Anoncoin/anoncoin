@@ -3239,43 +3239,42 @@ bool CChainState::AcceptBlockHeader(const CBlockHeader& block, CValidationState&
          * To avoid having to implement bugs. 
          * 
          */
-        if (mapBlockIndex.size() > chainparams.GetConsensus().AIP08Height) {
-            if (miSelf != mapBlockIndex.end()) {
-                // Block header is already known.
-                pindex = miSelf->second;
-                if (ppindex)
-                    *ppindex = pindex;
-                if (pindex->nStatus & BLOCK_FAILED_MASK)
-                    return state.Invalid(error("%s: block %s is marked invalid", __func__, hash.ToString()), 0, "duplicate");
-                return true;
-            }
+        
+        if (miSelf != mapBlockIndex.end()) {
+            // Block header is already known.
+            pindex = miSelf->second;
+            if (ppindex)
+                *ppindex = pindex;
+            if (pindex->nStatus & BLOCK_FAILED_MASK)
+                return state.Invalid(error("%s: block %s is marked invalid", __func__, hash.ToString()), 0, "duplicate");
+            return true;
+        }
 
-            if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
-                return error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
+        if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
+            return error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
 
-            // Get prev block index
-            CBlockIndex* pindexPrev = nullptr;
-            BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-            if (mi == mapBlockIndex.end())
-                return state.DoS(10, error("%s: prev block not found", __func__), 0, "prev-blk-not-found");
-            pindexPrev = (*mi).second;
-            if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
-                return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
-            if (!ContextualCheckBlockHeader(block, state, chainparams, pindexPrev, GetAdjustedTime()))
-                return error("%s: Consensus::ContextualCheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
+        // Get prev block index
+        CBlockIndex* pindexPrev = nullptr;
+        BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+        if (mi == mapBlockIndex.end())
+            return state.DoS(10, error("%s: prev block not found", __func__), 0, "prev-blk-not-found");
+        pindexPrev = (*mi).second;
+        if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
+            return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
+        if (!ContextualCheckBlockHeader(block, state, chainparams, pindexPrev, GetAdjustedTime()))
+            return error("%s: Consensus::ContextualCheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
 
-            if (!pindexPrev->IsValid(BLOCK_VALID_SCRIPTS)) {
-                for (const CBlockIndex* failedit : g_failed_blocks) {
-                    if (pindexPrev->GetAncestor(failedit->nHeight) == failedit) {
-                        assert(failedit->nStatus & BLOCK_FAILED_VALID);
-                        CBlockIndex* invalid_walk = pindexPrev;
-                        while (invalid_walk != failedit) {
-                            invalid_walk->nStatus |= BLOCK_FAILED_CHILD;
-                            setDirtyBlockIndex.insert(invalid_walk);
-                            invalid_walk = invalid_walk->pprev;
-                        }
-                        return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
+        if (!pindexPrev->IsValid(BLOCK_VALID_SCRIPTS)) {
+            for (const CBlockIndex* failedit : g_failed_blocks) {
+                if (pindexPrev->GetAncestor(failedit->nHeight) == failedit) {
+                    assert(failedit->nStatus & BLOCK_FAILED_VALID);
+                    CBlockIndex* invalid_walk = pindexPrev;
+                    while (invalid_walk != failedit) {
+                        invalid_walk->nStatus |= BLOCK_FAILED_CHILD;
+                        setDirtyBlockIndex.insert(invalid_walk);
+                        invalid_walk = invalid_walk->pprev;
                     }
+                    return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
                 }
             }
         }
@@ -3345,52 +3344,52 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     if (!AcceptBlockHeader(block, state, chainparams, &pindex))
         return false;
 
-    if (pindex->nHeight < chainparams.GetConsensus().AIP08Height)
-        return true;
-    // Try to process all requested blocks that we don't have, but only
-    // process an unrequested block if it's new and has enough work to
-    // advance our tip, and isn't too many blocks ahead.
-    bool fAlreadyHave = pindex->nStatus & BLOCK_HAVE_DATA;
-    
-    // Anoncoin had a few bugs in the beginning, so we do not check work before some blocks ahead.
-    bool fMoreOrSame = pindex->nChainWork >= chainActive.Tip()->nChainWork;
-    bool fHasMoreOrSameWork = (chainActive.Tip() ? fMoreOrSame : true);
-    bool fShouldNotCheckWork = (pindex->nHeight <= chainparams.GetConsensus().AIP08Height);
-    // Blocks that are too out-of-order needlessly limit the effectiveness of
-    // pruning, because pruning will not delete block files that contain any
-    // blocks which are too close in height to the tip.  Apply this test
-    // regardless of whether pruning is enabled; it should generally be safe to
-    // not process unrequested blocks.
-    bool fTooFarAhead = (pindex->nHeight > int(chainActive.Height() + MIN_BLOCKS_TO_KEEP));
+    if (pindex->nHeight >= chainparams.GetConsensus().AIP08Height) {
+        // Try to process all requested blocks that we don't have, but only
+        // process an unrequested block if it's new and has enough work to
+        // advance our tip, and isn't too many blocks ahead.
+        bool fAlreadyHave = pindex->nStatus & BLOCK_HAVE_DATA;
+        
+        // Anoncoin had a few bugs in the beginning, so we do not check work before some blocks ahead.
+        bool fMoreOrSame = pindex->nChainWork >= chainActive.Tip()->nChainWork;
+        bool fHasMoreOrSameWork = (chainActive.Tip() ? fMoreOrSame : true);
+        bool fShouldNotCheckWork = (pindex->nHeight <= chainparams.GetConsensus().AIP08Height);
+        // Blocks that are too out-of-order needlessly limit the effectiveness of
+        // pruning, because pruning will not delete block files that contain any
+        // blocks which are too close in height to the tip.  Apply this test
+        // regardless of whether pruning is enabled; it should generally be safe to
+        // not process unrequested blocks.
+        bool fTooFarAhead = (pindex->nHeight > int(chainActive.Height() + MIN_BLOCKS_TO_KEEP));
 
-    // TODO: Decouple this function from the block download logic by removing fRequested
-    // This requires some new chain data structure to efficiently look up if a
-    // block is in a chain leading to a candidate for best tip, despite not
-    // being such a candidate itself.
+        // TODO: Decouple this function from the block download logic by removing fRequested
+        // This requires some new chain data structure to efficiently look up if a
+        // block is in a chain leading to a candidate for best tip, despite not
+        // being such a candidate itself.
 
-    // TODO: deal better with return value and error conditions for duplicate
-    // and unrequested blocks.
-    if (fAlreadyHave) return true;
-    if (!fRequested) {  // If we didn't ask for it:
-        if (pindex->nTx != 0) return true;    // This is a previously-processed block that was pruned
-        if (!fShouldNotCheckWork) {
-            if (!fHasMoreOrSameWork) return true; // Don't process less-work chains
-        } else {
-            return true;
+        // TODO: deal better with return value and error conditions for duplicate
+        // and unrequested blocks.
+        if (fAlreadyHave) return true;
+        if (!fRequested) {  // If we didn't ask for it:
+            if (pindex->nTx != 0) return true;    // This is a previously-processed block that was pruned
+            if (!fShouldNotCheckWork) {
+                if (!fHasMoreOrSameWork) return true; // Don't process less-work chains
+            } else {
+                return true;
+            }
+            if (fTooFarAhead) return true;        // Block height is too high
+
+            // Protect against DoS attacks from low-work chains.
+            // If our tip is behind, a peer could try to send us
+            // low-work blocks on a fake chain that we would never
+            // request; don't process these.
+            if (!fShouldNotCheckWork) {
+                if (pindex->nChainWork < nMinimumChainWork) return true;
+            } else {
+                return true;
+            }
         }
-        if (fTooFarAhead) return true;        // Block height is too high
-
-        // Protect against DoS attacks from low-work chains.
-        // If our tip is behind, a peer could try to send us
-        // low-work blocks on a fake chain that we would never
-        // request; don't process these.
-        if (!fShouldNotCheckWork) {
-            if (pindex->nChainWork < nMinimumChainWork) return true;
-        } else {
-            return true;
-        }
+        if (fNewBlock) *fNewBlock = true;
     }
-    if (fNewBlock) *fNewBlock = true;
 
     if (!CheckBlock(block, state, chainparams.GetConsensus()) ||
         !ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindex->pprev)) {

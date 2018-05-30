@@ -1795,6 +1795,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     else if (strCommand == NetMsgType::ADDR)
     {
         std::vector<CAddress> vAddr;
+        vRecv.SetType( ((pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
         vRecv >> vAddr;
 
         // Don't want addr from older versions unless seeding
