@@ -10,10 +10,21 @@
 #include <utilstrencodings.h>
 #include <crypto/common.h>
 #include <crypto/scrypt.h>
+#include <Gost3411.h>
+#include <chainparams.h>
+
+using namespace i2p::crypto;
 
 uint256 CBlockHeader::GetHash() const
 {
     return SerializeHash(*this);
+}
+
+uint256 CBlockHeader::GetPoWHash(int64_t nHeight) const
+{
+    if ( Params().GetConsensus().AIP09Height <= nHeight )
+        return GetGOSTHash();
+    return GetPoWHash();
 }
 
 uint256 CBlockHeader::GetPoWHash() const
@@ -23,11 +34,17 @@ uint256 CBlockHeader::GetPoWHash() const
     return thash;
 }
 
+uint256 CBlockHeader::GetGOSTHash() const
+{
+    return SerializeGost3411Hash(*this);
+}
+
 std::string CBlock::ToString() const
 {
     std::stringstream s;
-    s << strprintf("CBlock(hash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
+    s << strprintf("CBlock(hash=%s, GOSThash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
         GetHash().ToString(),
+        GetGOSTHash().ToString(),
         nVersion,
         hashPrevBlock.ToString(),
         hashMerkleRoot.ToString(),

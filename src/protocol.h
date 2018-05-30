@@ -263,11 +263,15 @@ enum ServiceFlags : uint64_t {
     // NODE_XTHIN means the node supports Xtreme Thinblocks
     // If this is turned off then the node will not service nor make xthin requests
     NODE_XTHIN = (1 << 4),
+    
+    // I2P
+    NODE_I2P = (1 << 7),
+
     // NODE_NETWORK_LIMITED means the same as NODE_NETWORK with the limitation of only
     // serving the last 288 (2 day) blocks
     // See BIP159 for details on how this is implemented.
     NODE_NETWORK_LIMITED = (1 << 10),
-
+    
     // Bits 24-31 are reserved for temporary experiments. Just pick a bit that
     // isn't getting used, or one not being used much, and notify the
     // bitcoin-development mailing list. Remember that service bits are just
@@ -354,6 +358,7 @@ public:
 public:
     ServiceFlags nServices;
 
+    bool IsNativeI2P() const { return false; }
     // disk and network only
     unsigned int nTime;
 };

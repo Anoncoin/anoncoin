@@ -5,6 +5,9 @@
 
 #include <script/interpreter.h>
 
+#include <Crypto.h>
+#include <Gost3411.h>
+
 #include <crypto/ripemd160.h>
 #include <crypto/sha1.h>
 #include <crypto/sha256.h>
@@ -846,6 +849,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 case OP_SHA256:
                 case OP_HASH160:
                 case OP_HASH256:
+                case OP_GOST3411:
                 {
                     // (in -- hash)
                     if (stack.size() < 1)
@@ -862,6 +866,8 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                         CHash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_HASH256)
                         CHash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_GOST3411)
+                        i2p::crypto::GOSTR3411_2012_256 (&vch[0], vch.size(), &vchHash[0]);
                     popstack(stack);
                     stack.push_back(vchHash);
                 }

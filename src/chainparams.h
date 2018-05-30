@@ -9,6 +9,8 @@
 #include <chainparamsbase.h>
 #include <consensus/params.h>
 #include <primitives/block.h>
+#include <netaddress.h>
+#include <netbase.h>
 #include <protocol.h>
 
 #include <memory>
@@ -56,6 +58,8 @@ public:
     const CMessageHeader::MessageStartChars& MessageStart() const { return pchMessageStart; }
     int GetDefaultPort() const { return nDefaultPort; }
 
+    bool isMainNetwork() const { return fIsMainNetwork; }
+
     const CBlock& GenesisBlock() const { return genesis; }
     /** Default value for -checkmempool and -checkblockindex argument */
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
@@ -68,12 +72,16 @@ public:
     std::string NetworkIDString() const { return strNetworkID; }
     /** Return the list of hostnames to look up for DNS seeds */
     const std::vector<std::string>& DNSSeeds() const { return vSeeds; }
+#ifdef ENABLE_I2PSAM
+    const std::vector<std::string>& i2pDNSSeeds() const { return i2pvSeeds; }
+#endif
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     const std::string& Bech32HRP() const { return bech32_hrp; }
     const std::vector<SeedSpec6>& FixedSeeds() const { return vFixedSeeds; }
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
     void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout);
+    bool fDoPoWValidationOnEarlyChain = false;
 protected:
     CChainParams() {}
 
@@ -82,14 +90,19 @@ protected:
     int nDefaultPort;
     uint64_t nPruneAfterHeight;
     std::vector<std::string> vSeeds;
+#ifdef ENABLE_I2PSAM
+    std::vector<std::string> i2pvSeeds;
+#endif
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     std::string bech32_hrp;
     std::string strNetworkID;
     CBlock genesis;
     std::vector<SeedSpec6> vFixedSeeds;
+    std::vector<std::string> vFixedI2PSeeds;
     bool fDefaultConsistencyChecks;
     bool fRequireStandard;
     bool fMineBlocksOnDemand;
+    bool fIsMainNetwork = false;
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
 };

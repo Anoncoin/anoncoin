@@ -58,6 +58,10 @@ struct Params {
     int BIP65Height;
     /** Block height at which BIP66 becomes active */
     int BIP66Height;
+    /* Skip Anoncoin work check until block */
+    int AIP07Height;
+    int AIP08Height;
+    int AIP09Height;
     /**
      * Minimum blocks including miner confirmation of the total of 2016 blocks in a retargeting period,
      * (nPowTargetTimespan / nPowTargetSpacing) which is also used for BIP9 deployments.
@@ -68,6 +72,13 @@ struct Params {
     BIP9Deployment vDeployments[MAX_VERSION_BITS_DEPLOYMENTS];
     /** Proof of work parameters */
     uint256 powLimit;
+
+    uint256 getPoWLimit(int64_t nHeight) {
+        // TODO Add logic for PoW limit changes
+        uint256 test;
+        return test;
+    }
+
     bool fPowAllowMinDifficultyBlocks;
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;

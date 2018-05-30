@@ -21,6 +21,9 @@
 #include <sync.h>
 #include <uint256.h>
 #include <threadinterrupt.h>
+#ifdef ENABLE_I2PD
+#include <i2p.h>
+#endif
 
 #include <atomic>
 #include <deque>
@@ -56,9 +59,9 @@ static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 4 * 1000 * 1000;
 /** Maximum length of strSubVer in `version` message */
 static const unsigned int MAX_SUBVERSION_LENGTH = 256;
 /** Maximum number of automatic outgoing nodes */
-static const int MAX_OUTBOUND_CONNECTIONS = 8;
+static const int MAX_OUTBOUND_CONNECTIONS = 128;
 /** Maximum number of addnode outgoing nodes */
-static const int MAX_ADDNODE_CONNECTIONS = 8;
+static const int MAX_ADDNODE_CONNECTIONS = 128;
 /** -listen default */
 static const bool DEFAULT_LISTEN = true;
 /** -upnp default */
@@ -99,6 +102,38 @@ struct AddedNodeInfo
 
 class CNodeStats;
 class CClientUIInterface;
+
+/**
+ * Default nLocalServices Definition:
+ *
+ * Starting with protocol 70008 the nLocalServices NODE_I2P bit is always set as the standard we support for our address space
+ * model.
+ * Anoncoin Core will send/receive to all peers with a greatly enlarged address/object.
+ * NODE_I2P indicates that this node is available for exchanging those i2p addresses, by enlarging the CNetAddr data structure.
+ * Over 546 bytes/address verses ~30 for clearnet only IP's.   It's critical to understand how this effects the message exchange
+ * we conduct with peers, either on clearnet or over the i2p network.  Over i2p its easy, we always exchange them and NODE_I2P
+ * must be set, or we can not handshake destinations.
+ * Clearnet is more complicated.  Something we do not know until after the version message has been exchanged, so we start out
+ * by exchanging only IP addresses.  If the peer in question also supports NODE_I2P, we switch stream types to our fully supported
+ * address space model.  The purpose of that service bit in for cases where they do not support i2p destinations, and we do not
+ * wish to make it mandatory for Anoncoin.  So, the one case where we do not switch our streamtype is for over clearnet and for
+ * a peer that does not have NODE_I2P set.  Our software then reverts to exchanging in the classical sense, only the [ip] portion
+ * of our address space model.  In this manner, we can still connect, exchange blocks, transactions and even IP addresses with
+ * those peers.
+ * Allowing for innovation and development work of many different types of products and services is good for Anoncoin, even
+ * though a peice of software may not initially be able to support the i2p network, that could change that with success and
+ * determination.
+ * Starting with the release of protocol 70009 we make many past issues and problem go away, our software now is deterministic
+ * in how it behaves with addresses over clearnet.  Peers that can not support NODE_I2P are welcome, but have limited access to
+ * our full and more secure ongoing network operations.
+ *
+ * NODE_NETWORK and NODE_BLOOM service bits.  Consensus seems to be forming that NODE_BLOOM can be assumed if NODE_NETWORK is
+ * defined as true, so we have turned it off as well.  Newer services like NODE_PREFIX appear to be planned for.  We support
+ * NODE_BLOOM, but no longer have the* bit turned on.  NODE_NETWORK is on because we have a full copy of the blockchain and can
+ * support requests for blocks as has always been the case. Apparently some see bloom filters as a possible source for attacks,
+ * we need to add this ToDo: as a decision the team makes together as to if we want to keep the code in place or remove it.
+ */
+
 
 struct CSerializedNetMsg
 {
@@ -179,6 +214,10 @@ public:
     void SetNetworkActive(bool active);
     void OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound = nullptr, const char *strDest = nullptr, bool fOneShot = false, bool fFeeler = false, bool manual_connection = false);
     bool CheckIncomingNonce(uint64_t nonce);
+
+#ifdef ENABLE_I2PD
+    void AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream);
+#endif
 
     bool ForNode(NodeId id, std::function<bool(CNode* pnode)> func);
 
@@ -331,6 +370,7 @@ private:
     void ThreadOpenConnections(std::vector<std::string> connect);
     void ThreadMessageHandler();
     void AcceptConnection(const ListenSocket& hListenSocket);
+    
     void ThreadSocketHandler();
     void ThreadDNSAddressSeed();
 
@@ -420,6 +460,9 @@ private:
 
     /** flag for waking the message processor. */
     bool fMsgProcWake;
+
+    /* For i2p */
+    int nStreamType;
 
     std::condition_variable condMsgProc;
     std::mutex mutexMsgProc;
@@ -598,6 +641,10 @@ public:
 
 
 /** Information about a peer */
+#ifdef ENABLE_I2PD
+const size_t I2P_CNODE_BUFFER_SIZE = 0x10000; // 64k
+typedef std::array<uint8_t, I2P_CNODE_BUFFER_SIZE> I2PCNodeBuffer;
+#endif
 class CNode
 {
     friend class CConnman;
@@ -612,6 +659,10 @@ public:
     CCriticalSection cs_vSend;
     CCriticalSection cs_hSocket;
     CCriticalSection cs_vRecv;
+#ifdef ENABLE_I2PD
+    // I2P Stream
+    std::shared_ptr<i2p::stream::Stream> i2pStream; // non null means I2P
+#endif
 
     CCriticalSection cs_vProcessMsg;
     std::list<CNetMessage> vProcessMsg;
@@ -740,10 +791,106 @@ private:
     // Our address, as reported by the peer
     CService addrLocal;
     mutable CCriticalSection cs_addrLocal;
+
+    int nStreamType;
+    int nSendStreamType;
+    int nRecvStreamType;
 public:
 
     NodeId GetId() const {
         return id;
+    }
+
+#ifdef ENABLE_I2PD
+    void SetI2PStream (std::shared_ptr<i2p::stream::Stream> s) {
+        i2pStream = s;
+    }
+#endif
+#ifdef ENABLE_I2PSAM
+    bool BindListenNativeI2P(SOCKET& hSocket)
+    {
+        hSocket = I2PSession::Instance().accept(false);
+        if (!SetSocketOptions(hSocket) || hSocket == INVALID_SOCKET)
+            return false;
+        CService addrBind(I2PSession::Instance().getMyDestination().pub, 0);
+        if (addrBind.IsRoutable() && fDiscover)
+            AddLocal(addrBind, LOCAL_BIND);
+        return true;
+    }
+#endif
+    void SetSendStreamType(int nType)
+    {
+        nSendStreamType = nType;
+        for (std::list<CNetMessage>::iterator it = vProcessMsg.begin(), end = vProcessMsg.end(); it != end; ++it)
+        {
+            it->hdrbuf.SetType(nRecvStreamType);
+            it->vRecv.SetType(nRecvStreamType);
+        }
+    }
+
+    void SetRecvStreamType(int nType)
+    {
+        nRecvStreamType = nType;
+        for (std::list<CNetMessage>::iterator it = vRecvMsg.begin(), end = vRecvMsg.end(); it != end; ++it)
+        {
+            it->hdrbuf.SetType(nRecvStreamType);
+            it->vRecv.SetType(nRecvStreamType);
+        }
+    }
+
+    void SetStreamType( const int nType )
+    {
+        nStreamType = nType;
+        SetSendStreamType( nStreamType );
+        SetRecvStreamType( nStreamType );
+    }
+
+    void SetStreamTypeBasedOnServices()
+    {
+        SetStreamType( SER_NETWORK | (nLocalServices & NODE_I2P) ? 0 : SER_IPADDRONLY );
+    }
+
+    int GetSendStreamType() const
+    {
+        return nSendStreamType;
+    }
+
+    int GetRecvStreamType() const
+    {
+        return nRecvStreamType;
+    }
+    unsigned int GetStreamType() const { return nStreamType; }
+    
+    bool BindListenNativeI2P()
+    {
+/*        SOCKET hNewI2PListenSocket = INVALID_SOCKET;
+        if (!BindListenNativeI2P(hNewI2PListenSocket))
+            return false;
+        vhI2PListenSocket.push_back(hNewI2PListenSocket);*/
+        return true;
+    }
+
+    bool IsI2POnly()
+    {
+        bool i2pOnly = false;
+        /*if (gArgs.count("-onlynet"))
+        {
+            const std::vector<std::string>& onlyNets = mapMultiArgs["-onlynet"];
+            i2pOnly = (onlyNets.size() == 1 && onlyNets[0] == NATIVE_I2P_NET_STRING);
+        }*/
+        return i2pOnly;
+    }
+
+    bool IsI2PEnabled()
+    {
+        if (IsI2POnly())
+            return true;
+
+        if (gArgs.GetBoolArg("-i2p", false))
+        {
+            return true;
+        }
+        return false;
     }
 
     uint64_t GetLocalNonce() const {
@@ -839,6 +986,11 @@ public:
     void AskFor(const CInv& inv);
 
     void CloseSocketDisconnect();
+
+#ifdef ENABLE_I2PD
+    void I2PStreamReceive ();
+    void HandleI2PStreamReceive (const boost::system::error_code& ecode, size_t bytes_transferred, std::shared_ptr<I2PCNodeBuffer> buf);
+#endif
 
     void copyStats(CNodeStats &stats);
 

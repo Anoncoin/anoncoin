@@ -7,7 +7,7 @@
 #define BITCOIN_VALIDATION_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/anoncoin-config.h>
 #endif
 
 #include <amount.h>
@@ -142,7 +142,7 @@ static const bool DEFAULT_FEEFILTER = true;
 static const unsigned int MAX_BLOCKS_TO_ANNOUNCE = 8;
 
 /** Maximum number of unconnecting headers announcements before DoS score */
-static const int MAX_UNCONNECTING_HEADERS = 10;
+static const int MAX_UNCONNECTING_HEADERS = 1000;
 
 static const bool DEFAULT_PEERBLOOMFILTERS = true;
 
@@ -206,7 +206,9 @@ static const unsigned int MIN_BLOCKS_TO_KEEP = 288;
 /** Minimum blocks required to signal NODE_NETWORK_LIMITED */
 static const unsigned int NODE_NETWORK_LIMITED_MIN_BLOCKS = 288;
 
-static const signed int DEFAULT_CHECKBLOCKS = 6 * 4;
+// originally 6 * 4
+static const signed int DEFAULT_CHECKBLOCKS = 240;
+// originally 3
 static const unsigned int DEFAULT_CHECKLEVEL = 3;
 
 // Require that user allocate at least 550MB for block & undo files (blk???.dat and rev???.dat)

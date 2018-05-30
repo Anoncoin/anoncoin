@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/anoncoin-config.h>
 #endif
 
 #include <chainparams.h>
@@ -18,6 +18,10 @@
 #include <httpserver.h>
 #include <httprpc.h>
 #include <utilstrencodings.h>
+#ifdef ENABLE_I2PD
+#include <i2p.h>
+#endif
+
 
 #include <boost/thread.hpp>
 
@@ -77,7 +81,7 @@ bool AppInit(int argc, char* argv[])
         else
         {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  litecoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+                  "  anoncoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }
@@ -108,10 +112,14 @@ bool AppInit(int argc, char* argv[])
             return false;
         }
 
+#ifdef ENABLE_I2PD
+        i2p::api::InitI2P (argc, argv, "anci2pd");
+#endif
+
         // Error out when loose non-argument tokens are encountered on command line
         for (int i = 1; i < argc; i++) {
             if (!IsSwitchChar(argv[i][0])) {
-                fprintf(stderr, "Error: Command line contains unexpected token '%s', see litecoind -h for a list of options.\n", argv[i]);
+                fprintf(stderr, "Error: Command line contains unexpected token '%s', see anoncoind -h for a list of options.\n", argv[i]);
                 return false;
             }
         }
@@ -139,7 +147,7 @@ bool AppInit(int argc, char* argv[])
         if (gArgs.GetBoolArg("-daemon", false))
         {
 #if HAVE_DECL_DAEMON
-            fprintf(stdout, "Litecoin server starting\n");
+            fprintf(stdout, "Anoncoin server starting\n");
 
             // Daemonize
             if (daemon(1, 0)) { // don't chdir (1), do close FDs (0)

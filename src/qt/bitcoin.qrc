@@ -1,7 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/icons">
         <file alias="bitcoin">res/icons/bitcoin.png</file>
-        <file alias="litecoin_splash">res/icons/litecoin_splash.png</file>
+        <file alias="anoncoin_splash">res/icons/anoncoin_splash.png</file>
         <file alias="address-book">res/icons/address-book.png</file>
         <file alias="quit">res/icons/quit.png</file>
         <file alias="send">res/icons/send.png</file>
@@ -10,6 +10,11 @@
         <file alias="connect_2">res/icons/connect2.png</file>
         <file alias="connect_3">res/icons/connect3.png</file>
         <file alias="connect_4">res/icons/connect4.png</file>
+        <file alias="i2pconnect0">res/icons/i2pconnect0.png</file>
+        <file alias="i2pconnect1">res/icons/i2pconnect1.png</file>
+        <file alias="i2pconnect2">res/icons/i2pconnect2.png</file>
+        <file alias="i2pconnect3">res/icons/i2pconnect3.png</file>
+        <file alias="i2pconnect4">res/icons/i2pconnect4.png</file>
         <file alias="transaction_0">res/icons/transaction0.png</file>
         <file alias="transaction_confirmed">res/icons/transaction2.png</file>
         <file alias="transaction_conflicted">res/icons/transaction_conflicted.png</file>

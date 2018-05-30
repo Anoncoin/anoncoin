@@ -26,8 +26,8 @@ class base_uint
 {
 protected:
     static constexpr int WIDTH = BITS / 32;
-    uint32_t pn[WIDTH];
 public:
+    uint32_t pn[WIDTH];
 
     base_uint()
     {

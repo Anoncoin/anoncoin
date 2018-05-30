@@ -1,4 +1,5 @@
-// Copyright (c) 2011-2017 The Bitcoin Core developers
+// Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2013-2017 The Anoncoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +10,8 @@
 #include <config/bitcoin-config.h>
 #endif
 
-#include <amount.h>
+#include "amount.h"
+#include "i2pshowaddresses.h"
 
 #include <QLabel>
 #include <QMainWindow>
@@ -67,6 +69,10 @@ public:
     void removeAllWallets();
 #endif // ENABLE_WALLET
     bool enableWallet;
+//#ifdef ENABLE_I2PSAM
+    void UpdateI2PAddressDetails( void ) { i2pAddress->UpdateParameters(); }
+    void ShowI2pDestination( void ) { openI2pAddressAction->activate( QAction::Trigger ); }
+//#endif
 
 protected:
     void changeEvent(QEvent *e);
@@ -119,6 +125,13 @@ private:
     HelpMessageDialog *helpMessageDialog;
     ModalOverlay *modalOverlay;
 
+//#ifdef ENABLE_I2PSAM
+    QLabel* labelI2PConnections;
+    QLabel* labelI2POnly;
+    QLabel* labelI2PGenerated;
+    QAction *openI2pAddressAction;
+    ShowI2PAddresses *i2pAddress;
+//#endif
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
     int spinnerFrame;
@@ -160,6 +173,14 @@ public Q_SLOTS:
     void setNetworkActive(bool networkActive);
     /** Set number of blocks and last block date shown in the UI */
     void setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool headers);
+    
+    //#ifdef ENABLE_I2PSAM
+    void setNumI2PConnections(int count);
+    //#endif
+    
+
+    
+    
 
     /** Notify the user of an event from the core network or transaction handling code.
        @param[in] title     the message box / notification title

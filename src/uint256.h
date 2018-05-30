@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 #include <crypto/common.h>
+#include <Gost3411.h>
+#include <util.h>
 
 /** Template base class for fixed-sized opaque blobs. */
 template<unsigned int BITS>
@@ -114,6 +116,7 @@ public:
     explicit uint160(const std::vector<unsigned char>& vch) : base_blob<160>(vch) {}
 };
 
+using namespace ::i2p::crypto;
 /** 256-bit opaque blob.
  * @note This type is called uint256 for historical reasons only. It is an
  * opaque blob of 256 bits and has no integer operations. Use arith_uint256 if
@@ -132,6 +135,20 @@ public:
     uint64_t GetCheapHash() const
     {
         return ReadLE64(data);
+    }
+
+    inline uint256 GOSTHash()
+    {
+        static unsigned char pblank[1];
+        uint8_t hash1[64];
+        GOSTR3411_2012_512 ((this->begin() == this->end() ? pblank : (unsigned char*)&this->begin()[0]), (this->end() - this->begin()) * sizeof(this->begin()[0]), hash1);
+        uint32_t digest[8];
+        GOSTR3411_2012_256 (hash1, 64, (uint8_t *)digest);
+        // to little endian
+        uint256 hash2;
+        for (int i = 0; i < 8; i++)
+            hash2.begin()[i] = ByteReverse (digest[7-i]);
+        return hash2;
     }
 };
 

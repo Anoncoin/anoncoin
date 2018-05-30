@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/anoncoin-config.h>
 #endif
 
 #include <net.h>
@@ -72,6 +72,7 @@ enum BindFlags {
 
 const static std::string NET_MESSAGE_COMMAND_OTHER = "*other*";
 
+// TODO: MEEH: WTF?
 static const uint64_t RANDOMIZER_ID_NETGROUP = 0x6c0edd8036ef4036ULL; // SHA256("netgroup")[0:8]
 static const uint64_t RANDOMIZER_ID_LOCALHOSTNONCE = 0xd93e69e2bbfa5735ULL; // SHA256("localhostnonce")[0:8]
 //
@@ -488,6 +489,14 @@ void CNode::CloseSocketDisconnect()
         LogPrint(BCLog::NET, "disconnecting peer=%d\n", id);
         CloseSocket(hSocket);
     }
+#ifdef ENABLE_I2PD
+    if (i2pStream)
+    {
+        LogPrint(BCLog::NET, "disconnecting peer=%d\n", id);
+        i2p::api::DestroyStream (i2pStream);
+        i2pStream = nullptr;
+    }
+#endif
 }
 
 void CConnman::ClearBanned()
@@ -1067,6 +1076,64 @@ bool CConnman::AttemptToEvictConnection()
     return false;
 }
 
+#ifdef ENABLE_I2PD
+
+void CConnman::AddIncomingI2PStream (std::shared_ptr<i2p::stream::Stream> stream) {
+	if (!stream) return;
+    NodeId id = GetNewNodeId();
+	CAddress addr;
+    addr.SetSpecial (stream->GetRemoteIdentity ()->ToBase64 ());
+	int nInbound = 0;
+    {
+        LOCK(cs_vNodes);
+        for (const CNode* pnode : vNodes) {
+            if (pnode->fInbound)
+                nInbound++;
+        }
+    }
+	printf("accepted connection %s\n", addr.ToString().c_str());
+    CNode* pnode = new CNode(id, addr.nServices , INVALID_SOCKET, addr, "", true);
+	pnode->SetI2PStream (stream);
+	pnode->I2PStreamReceive ();	
+    pnode->AddRef();
+    {
+        LOCK(cs_vNodes);
+        vNodes.push_back(pnode);
+    }
+}
+
+void CNode::I2PStreamReceive ()
+{
+	if (i2pStream)
+	{
+		auto buf = std::make_shared<I2PCNodeBuffer>();
+		i2pStream->AsyncReceive (boost::asio::buffer (*buf),
+			std::bind (&CNode::HandleI2PStreamReceive, this,
+			std::placeholders::_1, std::placeholders::_2, buf), 600); // idle time is 10 minutes
+	}
+}
+
+void CNode::HandleI2PStreamReceive (const boost::system::error_code& ecode, size_t bytes_transferred, std::shared_ptr<I2PCNodeBuffer> buf)
+{
+	LOCK(cs_vRecv);
+	if (ecode)
+	{
+		LogPrintf ("I2P stream receive error: %s", ecode.message ());
+		CloseSocketDisconnect();
+	}
+	else
+	{
+		if (!ReceiveMsgBytes((const char *)buf->data (), bytes_transferred))
+        	CloseSocketDisconnect();
+        nLastRecv = GetTime();
+        nRecvBytes += bytes_transferred;
+	}	
+	if (!fDisconnect)
+		I2PStreamReceive ();
+}
+
+#endif
+
 void CConnman::AcceptConnection(const ListenSocket& hListenSocket) {
     struct sockaddr_storage sockaddr;
     socklen_t len = sizeof(sockaddr);
@@ -1507,7 +1574,7 @@ void ThreadMapPort()
             }
         }
 
-        std::string strDesc = "Litecoin " + FormatFullVersion();
+        std::string strDesc = "Anoncoin " + FormatFullVersion();
 
         try {
             while (true) {
@@ -2206,6 +2273,8 @@ CConnman::CConnman(uint64_t nSeed0In, uint64_t nSeed1In) : nSeed0(nSeed0In), nSe
 
     Options connOptions;
     Init(connOptions);
+    // Set no i2p for now
+    nStreamType = SER_NETWORK | SER_IPADDRONLY;
 }
 
 NodeId CConnman::GetNewNodeId()
@@ -2694,7 +2763,26 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     nLocalServices(nLocalServicesIn),
     nMyStartingHeight(nMyStartingHeightIn),
     nSendVersion(0)
+#ifdef ENABLE_I2PSAM
+    , nSendStreamType(((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY)
+    , nRecvStreamType(((addrIn.nServices & NODE_I2P) || addrIn.IsNativeI2P()) ? 0 : SER_IPADDRONLY)
+#endif  
 {
+    //! Protocol 70009 changes the node creation process so it is deterministic.
+     //! Every node starts out with an IP only stream type, except for I2P addresses, they are set immediately to a full size address space.
+     //! During the version/verack processing cycle the stream type is evaluated based on information obtained from the peer.  Older protocols lie
+     //! and may incorrectly report services depending on how they were built.  Some send full version address messages, and must have the
+     //! stream type changed on the fly, before processing.  70008 has a bug, where the stream type is full size, but only contains an ip address
+     //! over clearnet.  Protocol 70006 builds for clearnet lie about their support of the NODE_I2P service, while in fact the address object size
+     //! is only large enough for an ip address.
+     //! If the address given to us is a non-null string, the caller needs to have evaluated and setup that string correctly before calling this.
+     //! It is no longer meaningful, and should be abandoned as an input parameter, it only serves to confusion and cloud the many issues involved
+     //! in the node creation process.  Here it is assigned to the addrName field, which maybe useful in debugging problems, if it shows up incorrectly.
+     //! Also note, all the subclasses vRecv, ssSend & hdrbuf get defined here  the same stream type during this initialization.
+    nStreamType = SER_NETWORK | (addrIn.IsNativeI2P() ? 0 : SER_IPADDRONLY);
+    SetSendStreamType( nStreamType );
+    SetRecvStreamType( nStreamType );
+    //ssSend.SetType( nStreamType );
     nServices = NODE_NONE;
     hSocket = hSocketIn;
     nRecvVersion = INIT_PROTO_VERSION;
@@ -2809,7 +2897,7 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
     CMessageHeader hdr(Params().MessageStart(), msg.command.c_str(), nMessageSize);
     memcpy(hdr.pchChecksum, hash.begin(), CMessageHeader::CHECKSUM_SIZE);
 
-    CVectorWriter{SER_NETWORK, INIT_PROTO_VERSION, serializedHeader, 0, hdr};
+    CVectorWriter{nStreamType, INIT_PROTO_VERSION, serializedHeader, 0, hdr};
 
     size_t nBytesSent = 0;
     {

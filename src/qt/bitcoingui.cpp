@@ -53,6 +53,10 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
+//#ifdef ENABLE_I2PSAM
+#include "i2pshowaddresses.h"
+//#endif
+
 #if QT_VERSION < 0x050000
 #include <QTextDocument>
 #include <QUrl>
@@ -117,7 +121,12 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     modalOverlay(0),
     prevBlocks(0),
     spinnerFrame(0),
+    //#ifdef ENABLE_I2PSAM
+    i2pAddress(0),
+    labelI2PConnections(0),
+    //#endif
     platformStyle(_platformStyle)
+    
 {
     QSettings settings;
     if (!restoreGeometry(settings.value("MainWindowGeometry").toByteArray())) {
@@ -152,6 +161,10 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
 
     rpcConsole = new RPCConsole(_platformStyle, 0);
     helpMessageDialog = new HelpMessageDialog(this, false);
+//#ifdef ENABLE_I2PSAM
+    i2pAddress = new ShowI2PAddresses( this );
+//#endif
+
 #ifdef ENABLE_WALLET
     if(enableWallet)
     {
@@ -201,6 +214,18 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     labelWalletHDStatusIcon = new QLabel();
     connectionsControl = new GUIUtil::ClickableLabel();
     labelBlocksIcon = new GUIUtil::ClickableLabel();
+//#ifdef ENABLE_I2PSAM
+    labelI2PConnections = new GUIUtil::ClickableLabel();
+    labelI2POnly = new QLabel();
+    labelI2PGenerated = new QLabel();
+
+    frameBlocksLayout->addStretch();
+    frameBlocksLayout->addWidget(labelI2PGenerated);
+    frameBlocksLayout->addStretch();
+    frameBlocksLayout->addWidget(labelI2POnly);
+    frameBlocksLayout->addStretch();
+    frameBlocksLayout->addWidget(labelI2PConnections);
+//#endif
     if(enableWallet)
     {
         frameBlocksLayout->addStretch();
@@ -235,6 +260,12 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     statusBar()->addWidget(progressBar);
     statusBar()->addPermanentWidget(frameBlocks);
 
+//#ifdef ENABLE_I2PSAM
+    // Do the same for the I2P Destination details window
+    connect(openI2pAddressAction, SIGNAL(triggered()), i2pAddress, SLOT(show()));
+    connect(quitAction, SIGNAL(triggered()), i2pAddress, SLOT(hide()));
+//#endif
+
     // Install event filter to be able to catch status tip events (QEvent::StatusTip)
     this->installEventFilter(this);
 
@@ -244,6 +275,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     // Subscribe to notifications from core
     subscribeToCoreSignals();
 
+    // TODO: Fix add some I2P here
     connect(connectionsControl, SIGNAL(clicked(QPoint)), this, SLOT(toggleNetworkActive()));
 
     modalOverlay = new ModalOverlay(this->centralWidget());
@@ -365,6 +397,11 @@ void BitcoinGUI::createActions()
     // initially disable the debug window menu item
     openRPCConsoleAction->setEnabled(false);
 
+//#ifdef ENABLE_I2PSAM
+    openI2pAddressAction = new QAction(QIcon(":/icons/options"), tr("&I2P Destination details"), this);
+    openI2pAddressAction->setStatusTip(tr("Shows your private I2P Destination details"));
+//#endif
+
     usedSendingAddressesAction = new QAction(platformStyle->TextColorIcon(":/icons/address-book"), tr("&Sending addresses..."), this);
     usedSendingAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
     usedReceivingAddressesAction = new QAction(platformStyle->TextColorIcon(":/icons/address-book"), tr("&Receiving addresses..."), this);
@@ -438,7 +475,9 @@ void BitcoinGUI::createMenuBar()
         settings->addSeparator();
     }
     settings->addAction(optionsAction);
-
+//#ifdef ENABLE_I2PSAM
+    settings->addAction(openI2pAddressAction);
+//#endif
     QMenu *help = appMenuBar->addMenu(tr("&Help"));
     if(walletFrame)
     {
@@ -477,8 +516,44 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel)
 
         // Keep up to date with client
         updateNetworkState();
+        setNumI2PConnections(1); // TODO: Fix connections to I2P
         connect(_clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
         connect(_clientModel, SIGNAL(networkActiveChanged(bool)), this, SLOT(setNetworkActive(bool)));
+
+#ifdef ENABLE_I2PSAM
+        setNumI2PConnections(clientModel->getNumConnections());
+        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumI2PConnections(int)));
+
+        if (clientModel->isI2POnly()) {
+            labelI2POnly->setText("I2P");
+            labelI2POnly->setToolTip(tr("Wallet is using I2P-network only!"));
+        }
+        else if (clientModel->isTorOnly()) {
+            labelI2POnly->setText("TOR");
+            labelI2POnly->setToolTip(tr("Wallet is using Tor-network only"));
+        }
+        else if (clientModel->isDarknetOnly()) {
+            labelI2POnly->setText("I&T");
+            labelI2POnly->setToolTip(tr("Wallet is using I2P and Tor networks (Darknet mode)"));
+        }
+        else if (clientModel->isBehindDarknet()) {
+            labelI2POnly->setText("ICT");
+            labelI2POnly->setToolTip(tr("Wallet is using I2P and Tor networks, also Tor as a proxy"));
+        }
+        else {
+            labelI2POnly->setText("CLR");
+            labelI2POnly->setToolTip(tr("Wallet is using mixed or non-I2P (clear) network"));
+        }
+
+        if (clientModel->isI2PAddressGenerated()) {
+            labelI2PGenerated->setText("DYN");
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a dynamic (random) I2P destination"));
+        }
+        else {
+            labelI2PGenerated->setText("STA");
+            labelI2PGenerated->setToolTip(tr("Wallet is running with a static I2P destination"));
+        }
+#endif // ENABLE_I2PSAM
 
         modalOverlay->setKnownBestHeight(_clientModel->getHeaderTipHeight(), QDateTime::fromTime_t(_clientModel->getHeaderTipTime()));
         setNumBlocks(_clientModel->getNumBlocks(), _clientModel->getLastBlockDate(), _clientModel->getVerificationProgress(nullptr), false);
@@ -614,6 +689,9 @@ void BitcoinGUI::createTrayIconMenu()
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(optionsAction);
     trayIconMenu->addAction(openRPCConsoleAction);
+//#ifdef ENABLE_I2PSAM
+    trayIconMenu->addAction(openI2pAddressAction);
+//#endif
 #ifndef Q_OS_MAC // This is built-in on Mac
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
@@ -718,6 +796,12 @@ void BitcoinGUI::updateNetworkState()
 {
     int count = clientModel->getNumConnections();
     QString icon;
+#ifdef ENABLE_I2PSAM
+    // Until we have the clientModel we can't determine the i2p connection count
+    int realcount = clientModel ? count - clientModel->getNumConnections(CONNECTIONS_I2P_ALL) : count;
+#else
+    int realcount = count;
+#endif
     switch(count)
     {
     case 0: icon = ":/icons/connect_0"; break;
@@ -730,7 +814,7 @@ void BitcoinGUI::updateNetworkState()
     QString tooltip;
 
     if (clientModel->getNetworkActive()) {
-        tooltip = tr("%n active connection(s) to Litecoin network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
+        tooltip = tr("%n active connection(s) to clearnet Anoncoin network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
     } else {
         tooltip = tr("Network activity disabled.") + QString("<br>") + tr("Click to enable network activity again.");
         icon = ":/icons/network_disabled";
@@ -743,14 +827,42 @@ void BitcoinGUI::updateNetworkState()
     connectionsControl->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
 }
 
+//#ifdef ENABLE_I2PSAM
+void BitcoinGUI::setNumI2PConnections(int count)
+{
+    QString i2pIcon;
+
+    // We never run this until we have the clientModel, so the check shouldn't be necessary.
+    // Otherwise we can't determine the i2p connection count
+    // so we just show the total count here as well...
+    //int realcount = clientModel ? clientModel->getNumConnections(CONNECTIONS_I2P_ALL) : count;
+
+    count = clientModel->getNumConnections();
+    int realcount = count;
+
+    // See the anoncoin.qrc file for icon files below & their associated alias name
+    switch(realcount) {
+    case 0: i2pIcon = ":/icons/i2pconnect0"; break;
+    case 1: case 2: case 3: i2pIcon = ":/icons/i2pconnect1"; break;
+    case 4: case 5: case 6: i2pIcon = ":/icons/i2pconnect2"; break;
+    case 7: case 8: case 9: i2pIcon = ":/icons/i2pconnect3"; break;
+    default: i2pIcon = ":/icons/i2pconnect4"; break;
+    }
+    labelI2PConnections->setPixmap(QIcon(i2pIcon).pixmap(4*STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    labelI2PConnections->setToolTip(tr("%n active connection(s) to I2P-Anoncoin network", "", realcount));
+}
+//#endif // ENABLE_I2PSAM
+
 void BitcoinGUI::setNumConnections(int count)
 {
     updateNetworkState();
+    setNumI2PConnections(1); // TODO: Fix connections to I2P
 }
 
 void BitcoinGUI::setNetworkActive(bool networkActive)
 {
     updateNetworkState();
+    setNumI2PConnections(1); // TODO: Fix connections to I2P
 }
 
 void BitcoinGUI::updateHeadersSyncProgressLabel()
@@ -1116,6 +1228,10 @@ void BitcoinGUI::detectShutdown()
     {
         if(rpcConsole)
             rpcConsole->hide();
+//#ifdef ENABLE_I2PSAM
+        if(i2pAddress)
+            i2pAddress->hide();
+//#endif
         qApp->quit();
     }
 }

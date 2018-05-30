@@ -6,15 +6,22 @@
 #define BITCOIN_NETADDRESS_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/anoncoin-config.h>
 #endif
+
+#include "i2pwrapper.h"
 
 #include <compat.h>
 #include <serialize.h>
 
+#include <uint256.h>
+
 #include <stdint.h>
 #include <string>
 #include <vector>
+
+#define I2P_DESTINATION_STORE 516
+#define NATIVE_I2P_B32ADDR_SIZE 60
 
 enum Network
 {
@@ -22,7 +29,9 @@ enum Network
     NET_IPV4,
     NET_IPV6,
     NET_TOR,
+    NET_I2P,
     NET_INTERNAL,
+    NET_I2PONLY,
 
     NET_MAX,
 };
@@ -32,11 +41,14 @@ class CNetAddr
 {
     protected:
         unsigned char ip[16]; // in network byte order
+        unsigned char i2pDest[NATIVE_I2P_DESTINATION_SIZE]; // I2P Destination (should be array for serialization)
         uint32_t scopeId; // for scoped/link-local ipv6 addresses
 
     public:
         CNetAddr();
-        explicit CNetAddr(const struct in_addr& ipv4Addr);
+        CNetAddr(const struct in_addr& ipv4Addr);
+        explicit CNetAddr(const char *pszIp, bool fAllowLookup = false);
+        explicit CNetAddr(const std::string &strIp, bool fAllowLookup = false);
         void Init();
         void SetIP(const CNetAddr& ip);
 
@@ -52,7 +64,7 @@ class CNetAddr
          */
         bool SetInternal(const std::string& name);
 
-        bool SetSpecial(const std::string &strName); // for Tor addresses
+        bool SetSpecial(const std::string &strName); // for I2P or Tor addresses
         bool IsIPv4() const;    // IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
         bool IsIPv6() const;    // IPv6 address (not mapped IPv4, not Tor)
         bool IsRFC1918() const; // IPv4 private networks (10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12)
@@ -69,6 +81,11 @@ class CNetAddr
         bool IsRFC6052() const; // IPv6 well-known prefix (64:FF9B::/96)
         bool IsRFC6145() const; // IPv6 IPv4-translated address (::FFFF:0:0:0/96)
         bool IsTor() const;
+        bool IsI2P() const;
+
+        bool IsDarknetOnly() const;
+        bool IsBehindDarknet() const;
+
         bool IsLocal() const;
         bool IsRoutable() const;
         bool IsInternal() const;
@@ -85,6 +102,12 @@ class CNetAddr
         explicit CNetAddr(const struct in6_addr& pipv6Addr, const uint32_t scope = 0);
         bool GetIn6Addr(struct in6_addr* pipv6Addr) const;
 
+        bool IsNativeI2P() const;
+        std::string GetI2pDestination() const;
+        bool CheckAndSetGarlicCat( void );
+        bool SetI2pDestination( const std::string& sBase64Dest );
+        std::string ToB32String() const;
+
         friend bool operator==(const CNetAddr& a, const CNetAddr& b);
         friend bool operator!=(const CNetAddr& a, const CNetAddr& b);
         friend bool operator<(const CNetAddr& a, const CNetAddr& b);
@@ -94,6 +117,9 @@ class CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action) {
             READWRITE(FLATDATA(ip));
+            if (!(s.GetType() & SER_IPADDRONLY)) {
+                READWRITE(FLATDATA(i2pDest));
+            }
         }
 
         friend class CSubNet;
@@ -147,6 +173,10 @@ class CService : public CNetAddr
         CService(const CNetAddr& ip, unsigned short port);
         CService(const struct in_addr& ipv4Addr, unsigned short port);
         explicit CService(const struct sockaddr_in& addr);
+
+        explicit CService(const char *i2pDest, int portDefault, bool fAllowLookup = false);
+        explicit CService(const char *i2pDest, bool fAllowLookup = false);
+
         void Init();
         unsigned short GetPort() const;
         bool GetSockAddr(struct sockaddr* paddr, socklen_t *addrlen) const;
@@ -167,11 +197,21 @@ class CService : public CNetAddr
         template <typename Stream, typename Operation>
         inline void SerializationOp(Stream& s, Operation ser_action) {
             READWRITE(FLATDATA(ip));
+            if (!(s.GetType() & SER_IPADDRONLY)) {
+                READWRITE(FLATDATA(i2pDest));
+            }
             unsigned short portN = htons(port);
             READWRITE(FLATDATA(portN));
             if (ser_action.ForRead())
                  port = ntohs(portN);
         }
 };
+
+
+bool isValidI2pAddress( const std::string& I2pAddr );
+bool isValidI2pB32( const std::string& B32Address );
+bool isStringI2pDestination( const std::string & strName );
+std::string B32AddressFromDestination(const std::string& destination);
+uint256 GetI2pDestinationHash( const std::string& destination );
 
 #endif // BITCOIN_NETADDRESS_H

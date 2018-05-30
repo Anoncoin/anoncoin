@@ -8,6 +8,17 @@
 
 #include <string>
 
+/***
+ * 
+ * Common definition for where SAM and I2Pd overlaps.
+ * 
+ * */
+#if (defined ENABLE_I2PD && defined ENABLE_I2PSAM) || (!defined ENABLE_I2PD || defined ENABLE_I2PSAM)
+#ifndef ENABLE_I2PSUPPORT
+#define ENABLE_I2PSUPPORT
+#endif
+#endif
+
 class CScheduler;
 class CWallet;
 

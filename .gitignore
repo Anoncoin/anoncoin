@@ -1,13 +1,13 @@
 *.tar.gz
 
 *.exe
-src/litecoin
-src/litecoind
-src/litecoin-cli
-src/litecoin-tx
-src/test/test_litecoin
-src/test/test_litecoin_fuzzy
-src/qt/test/test_litecoin-qt
+src/anoncoin
+src/anoncoind
+src/anoncoin-cli
+src/anoncoin-tx
+src/test/test_anoncoin
+src/test/test_anoncoin_fuzzy
+src/qt/test/test_anoncoin-qt
 
 # autoreconf
 Makefile.in
@@ -30,6 +30,8 @@ config.log
 config.status
 configure
 libtool
+src/config/anoncoin-config.h
+src/config/anoncoin-config.h.in
 src/config/bitcoin-config.h
 src/config/bitcoin-config.h.in
 src/config/stamp-h1
@@ -44,11 +46,11 @@ src/qt/forms/ui_*.h
 
 src/qt/test/moc*.cpp
 
-src/qt/bitcoin-qt.config
-src/qt/bitcoin-qt.creator
-src/qt/bitcoin-qt.creator.user
-src/qt/bitcoin-qt.files
-src/qt/bitcoin-qt.includes
+src/qt/anoncoin-qt.config
+src/qt/anoncoin-qt.creator
+src/qt/anoncoin-qt.creator.user
+src/qt/anoncoin-qt.files
+src/qt/anoncoin-qt.includes
 
 .deps
 .dirstamp
@@ -80,25 +82,26 @@ src/qt/bitcoin-qt.includes
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-litecoin-qt
-litecoin-Qt.app
+anoncoin-qt
+anoncoin-Qt.app
 background.tiff*
 
 # Unit-tests
 Makefile.test
-litecoin-qt_test
+anoncoin-qt_test
 
 # Resources cpp
 qrc_*.cpp
 # Mac specific
 .DS_Store
 build
+.vscode
 
 #lcov
 *.gcno
 *.gcda
 /*.info
-test_litecoin.coverage/
+test_anoncoin.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -109,9 +112,11 @@ win32-build
 test/config.ini
 test/cache/*
 
+
 !src/leveldb*/Makefile
 
 /doc/doxygen/
 
+libanoncoinconsensus.pc
 libbitcoinconsensus.pc
 contrib/devtools/split-debug.sh

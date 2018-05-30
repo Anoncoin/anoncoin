@@ -121,6 +121,7 @@ const char* GetOpName(opcodetype opcode)
     case OP_SHA256                 : return "OP_SHA256";
     case OP_HASH160                : return "OP_HASH160";
     case OP_HASH256                : return "OP_HASH256";
+    case OP_GOST3411               : return "OP_GOST3411";
     case OP_CODESEPARATOR          : return "OP_CODESEPARATOR";
     case OP_CHECKSIG               : return "OP_CHECKSIG";
     case OP_CHECKSIGVERIFY         : return "OP_CHECKSIGVERIFY";
