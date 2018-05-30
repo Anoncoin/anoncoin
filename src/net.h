@@ -821,7 +821,11 @@ public:
     void SetSendStreamType(int nType)
     {
         nSendStreamType = nType;
-        //vProcessMsg.SetType(nSendStreamType);
+        for (std::list<CNetMessage>::iterator it = vProcessMsg.begin(), end = vProcessMsg.end(); it != end; ++it)
+        {
+            it->hdrbuf.SetType(nRecvStreamType);
+            it->vRecv.SetType(nRecvStreamType);
+        }
     }
 
     void SetRecvStreamType(int nType)

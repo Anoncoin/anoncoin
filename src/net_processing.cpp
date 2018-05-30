@@ -1550,6 +1550,8 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return false;
         }
 
+        vRecv.SetType( ((pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
+
         int64_t nTime;
         CAddress addrMe;
         CAddress addrFrom;
@@ -1566,18 +1568,26 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         vRecv >> nVersion >> nServiceInt >> nTime >> addrMe;
         nSendVersion = std::min(nVersion, PROTOCOL_VERSION);
         nServices = ServiceFlags(nServiceInt);
+
+        /*if (nServices & NODE_I2P)
+        {
+          pfrom->SetSendStreamType(pfrom->GetSendStreamType() & ~SER_IPADDRONLY);
+        } else {
+          pfrom->SetSendStreamType(pfrom->GetSendStreamType() & SER_IPADDRONLY);
+        }*/
+
         if (!pfrom->fInbound)
         {
             connman->SetServices(pfrom->addr, nServices);
         }
-        if (!pfrom->fInbound && !pfrom->fFeeler && !pfrom->m_manual_connection && !HasAllDesirableServiceFlags(nServices))
+        /*if (!pfrom->fInbound && !pfrom->fFeeler && !pfrom->m_manual_connection && !HasAllDesirableServiceFlags(nServices))
         {
             LogPrint(BCLog::NET, "peer=%d does not offer the expected services (%08x offered, %08x expected); disconnecting\n", pfrom->GetId(), nServices, GetDesirableServiceFlags(nServices));
             connman->PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_NONSTANDARD,
                                strprintf("Expected to offer services %08x", GetDesirableServiceFlags(nServices))));
             pfrom->fDisconnect = true;
             return false;
-        }
+        }*/
 /*
         if (nServices & ((1 << 7) | (1 << 5))) {
             if (GetTime() < 1533096000) {
@@ -1727,11 +1737,20 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     }
 
     // At this point, the outgoing message serialization version can't change.
-    const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
+    //const CNetMsgMaker msgMaker(pfrom->GetSendVersion() & SER_IPADDRONLY);
+    const CNetMsgMaker msgMaker(pfrom->GetSendVersion() & ((pfrom->nServices & NODE_I2P) ? ~SER_IPADDRONLY : SER_IPADDRONLY) );
 
     if (strCommand == NetMsgType::VERACK)
     {
         pfrom->SetRecvVersion(std::min(pfrom->nVersion.load(), PROTOCOL_VERSION));
+
+        // MEEH ANC PATCH
+        /*if (pfrom->nServices & NODE_I2P)
+        {
+          pfrom->SetRecvStreamType(pfrom->GetRecvStreamType() & ~SER_IPADDRONLY);
+        } else {
+          pfrom->SetRecvStreamType(pfrom->GetRecvStreamType() & SER_IPADDRONLY);
+        }*/
 
         if (!pfrom->fInbound) {
             // Mark this node as currently connected, so we update its timestamp later.
