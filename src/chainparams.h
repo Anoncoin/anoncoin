@@ -102,6 +102,7 @@ protected:
     bool fRequireStandard;
     bool fMineBlocksOnDemand;
     bool fIsMainNetwork = false;
+    bool fDoPoWValidationOnEarlyChain = false;
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
 };

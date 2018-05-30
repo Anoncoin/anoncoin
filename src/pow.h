@@ -255,5 +255,8 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&);
+unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, const Consensus::Params& params);
+bool SetRetargetToBlock( const CBlockIndex* pIndex, const Consensus::Params& params );
+void RetargetPidReset( std::string strParams, const CBlockIndex* pIndex, const Consensus::Params& params );
 
 #endif // BITCOIN_POW_H

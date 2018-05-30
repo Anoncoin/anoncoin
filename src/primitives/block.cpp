@@ -28,7 +28,7 @@ uint256 CBlockHeader::GetPoWHash() const
 
 uint256 CBlockHeader::GetGOSTHash() const
 {
-    return this->GetHash().GOSTHash();
+    return SerializeGost3411Hash(*this);
 }
 
 std::string CBlock::ToString() const

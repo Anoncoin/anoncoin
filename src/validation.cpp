@@ -1092,7 +1092,6 @@ static bool WriteBlockToDisk(const CBlock& block, CDiskBlockPos& pos, const CMes
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus::Params& consensusParams)
 {
     block.SetNull();
-    LogPrintf("ReadBlockFromDisk triggered\n");
 
     // Open history file to read
     CAutoFile filein(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION);
@@ -1116,7 +1115,6 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
 
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus::Params& consensusParams)
 {
-    LogPrintf("ReadBlockFromDisk triggered\n");
     CDiskBlockPos blockPos;
     {
         LOCK(cs_main);
@@ -2144,6 +2142,9 @@ void static UpdateTip(const CBlockIndex *pindexNew, const CChainParams& chainPar
 
     cvBlockChange.notify_all();
 
+    // ANC Diff adjust
+    SetRetargetToBlock(pindexNew, chainParams.GetConsensus());
+
     std::vector<std::string> warningMessages;
     if (!IsInitialBlockDownload())
     {
@@ -3107,7 +3108,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
     }
 
     const Consensus::Params& consensusParams = params.GetConsensus();
-    if (nHeight < consensusParams.AIP08Height) {
+    if (nHeight < consensusParams.AIP08Height && params.isMainNetwork()) {
         // Check proof of work
         if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
             return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
@@ -3145,7 +3146,7 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
 {
     const int nHeight = pindexPrev == nullptr ? 0 : pindexPrev->nHeight + 1;
 
-    if (nHeight < consensusParams.AIP08Height) {
+    if (nHeight < consensusParams.AIP08Height && Params().isMainNetwork()) {
         return true;
     }
     // Start enforcing BIP113 (Median Time Past) using versionbits logic.
@@ -3344,7 +3345,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     if (!AcceptBlockHeader(block, state, chainparams, &pindex))
         return false;
 
-    if (pindex->nHeight >= chainparams.GetConsensus().AIP08Height) {
+    if (pindex->nHeight >= chainparams.GetConsensus().AIP08Height && chainparams.isMainNetwork()) {
         // Try to process all requested blocks that we don't have, but only
         // process an unrequested block if it's new and has enough work to
         // advance our tip, and isn't too many blocks ahead.
@@ -3353,7 +3354,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
         // Anoncoin had a few bugs in the beginning, so we do not check work before some blocks ahead.
         bool fMoreOrSame = pindex->nChainWork >= chainActive.Tip()->nChainWork;
         bool fHasMoreOrSameWork = (chainActive.Tip() ? fMoreOrSame : true);
-        bool fShouldNotCheckWork = (pindex->nHeight <= chainparams.GetConsensus().AIP08Height);
+        bool fShouldNotCheckWork = (pindex->nHeight <= chainparams.GetConsensus().AIP08Height && chainparams.isMainNetwork());
         // Blocks that are too out-of-order needlessly limit the effectiveness of
         // pruning, because pruning will not delete block files that contain any
         // blocks which are too close in height to the tip.  Apply this test
@@ -3829,6 +3830,8 @@ bool LoadChainTip(const CChainParams& chainparams)
     if (it == mapBlockIndex.end())
         return false;
     chainActive.SetTip(it->second);
+    // Set ANC diff adjust
+    SetRetargetToBlock(it->second, chainparams.GetConsensus());
 
     g_chainstate.PruneBlockIndexCandidates();
 
@@ -4294,7 +4297,7 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskB
                             LogPrintf("marked dbp\n");
                             mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
                         }
-                        if (mapBlockIndex.size() > chainparams.GetConsensus().AIP08Height) continue;
+                        if (mapBlockIndex.size() > chainparams.GetConsensus().AIP08Height && chainparams.isMainNetwork()) continue;
                     }
                 }
 

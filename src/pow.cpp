@@ -1825,7 +1825,7 @@ unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHea
         {
             LOCK( cs_retargetpid );
             if( !pRetargetPid->UpdateOutput( pindexLast, pBlockHeader, params) )
-                LogPrintf("Insufficient BlockIndex, unable to set RetargetPID output values.\n");
+                LogPrint(BCLog::RETARGET,"Insufficient BlockIndex, unable to set RetargetPID output values.\n");
             uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
         }
         //! Testnets always use the P-I-D Retarget Controller, only the MAIN network might not...
@@ -1874,7 +1874,7 @@ void RetargetPidReset( string strParams, const CBlockIndex* pIndex, const Consen
         pRetargetPid->UpdateIndexTipFilter(pIndex);
         //! At this point mining can resume and reporting will begin as if it was a new start.
     } else
-        LogPrintf( "While Resetting RetargetPID Parameters, the values matched current settings or an error was thrown while reading them.\n" );
+        LogPrint(BCLog::RETARGET, "While Resetting RetargetPID Parameters, the values matched current settings or an error was thrown while reading them.\n" );
 }
 
 //! This routine handles lock and diagnostics as well as charging the Integrator after
@@ -1942,7 +1942,7 @@ bool SetRetargetToBlock( const CBlockIndex* pIndex, const Consensus::Params& par
     uint32_t nNextBits = GetNextWorkRequired(pIndex, &aHeader, params);
     sNextWorkRequired += strprintf( "0x%08x", nNextBits );
 
-    LogPrintf("RetargetPID %s to height=%d, tipfilter %s, %s\n", fResult1 ? "charged" : "Integrator failed charge", pIndex->nHeight, fResult2 ? "updated" : "update failed", sNextWorkRequired );
+    LogPrint(BCLog::RETARGET, "RetargetPID %s to height=%d, tipfilter %s, %s\n", fResult1 ? "charged" : "Integrator failed charge", pIndex->nHeight, fResult2 ? "updated" : "update failed", sNextWorkRequired );
 
     return fResult1 && fResult2;
 }

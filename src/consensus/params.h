@@ -71,6 +71,13 @@ struct Params {
     BIP9Deployment vDeployments[MAX_VERSION_BITS_DEPLOYMENTS];
     /** Proof of work parameters */
     uint256 powLimit;
+
+    uint256 getPoWLimit(int64_t nHeight) {
+        // TODO Add logic for PoW limit changes
+        uint256 test;
+        return test;
+    }
+
     bool fPowAllowMinDifficultyBlocks;
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
