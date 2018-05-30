@@ -212,21 +212,7 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params& params)
 {
-    bool fNegative;
-    bool fOverflow;
-    arith_uint256 bnTarget;
-
-    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
-
-    // Check range
-    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(params.powLimit))
-        return false;
-
-    // Check proof of work matches claimed amount
-    if (UintToArith256(hash) > bnTarget)
-        return false;
-
-    return true;
+    return CheckProofOfWork(UintToArith256(hash), nBits);
 }
 
 
@@ -249,10 +235,11 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         // Old Anoncoin logic hell. GLHF with this part.
         return GetNextWorkRequired2(pindexLast, pblock, params);
     }
-    if (nHeight == params.AIP09Height) {
+    // Use difficulty for some blocks ahead on switch
+    if (nHeight >= params.AIP09Height && params.AIP09Height+10 >= nHeight) {
    	    return 0x1e0ffff0;
 	}
-    return KimotoGravityWell(pindexLast, pblock, BlocksTargetSpacing, PastBlocksMin, PastBlocksMax);
+    return NextWorkRequiredKgwV2(pindexLast, params).GetCompact();
 }
 
 #ifndef SECONDSPERDAY
@@ -340,7 +327,6 @@ bool CheckProofOfWork(const arith_uint256& hash, unsigned int nBits)
     if( fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(Params().GetConsensus().powLimit) )
         return error("CheckProofOfWork() : nBits below minimum work");
 
-    LogPrint(BCLog::RETARGET,"CheckProofOfWork() : nBits passed minimum work requirements");
     //! Check the proof of work matches claimed amount
     if (hash > bnTarget) {
         //! There is one possibility where this is allowed, if this is TestNet and this hash is better than the minimum
@@ -349,7 +335,7 @@ bool CheckProofOfWork(const arith_uint256& hash, unsigned int nBits)
         bool fTestNet = !Params().isMainNetwork();
         arith_uint256 uintStartingDiff;
         if( fTestNet ) uintStartingDiff = pRetargetPid->GetTestNetStartingDifficulty();
-        if( !fTestNet || hash > UintToArith256(Params().GetConsensus().powLimit) || uintStartingDiff.GetCompact() != nBits ) {
+        if( hash > UintToArith256(Params().GetConsensus().powLimit) || uintStartingDiff.GetCompact() != nBits ) {
             LogPrint(BCLog::RETARGET, "%s : Failed. ", __func__ );
             if( fTestNet ) LogPrint(BCLog::RETARGET, "StartingDiff=0x%s ", uintStartingDiff.ToString() );
             LogPrint(BCLog::RETARGET, "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
@@ -1816,7 +1802,7 @@ unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHea
     //! return minimum difficulty for the next block, in any other case the programmer should
     //! have already at least created a RetargetPID class object and set the master pointer up.
     arith_uint256 uintResult;
-    if( pRetargetPid ) {
+    if ( pRetargetPid ) {
         //! Under normal conditions, update the PID output and return the next new difficulty required.
         //! We do this while locked, once the Output Result is captured, it is immediately unlocked.
         //! Based on height, perhaps during a blockchain initial load, other older algos will need to
@@ -1827,17 +1813,27 @@ unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHea
                 LogPrint(BCLog::RETARGET,"Insufficient BlockIndex, unable to set RetargetPID output values.\n");
             uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
         }
-        //! Testnets always use the P-I-D Retarget Controller, only the MAIN network might not...
-        if( Params().isMainNetwork() ) {
-            if( pindexLast->nHeight > nDifficultySwitchHeight3 ) {      //! Start of KGW era
-                //! The new P-I-D retarget algo will start at this hardfork block + 1
-                if( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
-                    uintResult = NextWorkRequiredKgwV2(pindexLast, params);     //! Use fast v2 KGW calculator
-            } else
-                uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
+
+    }
+    //! Horrible..
+    if( Params().isMainNetwork() ) {
+        if( pindexLast->nHeight > nDifficultySwitchHeight3 ) {      //! Start of KGW era
+            //! The new P-I-D retarget algo will start at this hardfork block + 1
+            if( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
+                uintResult = NextWorkRequiredKgwV2(pindexLast, params);     //! Use fast v2 KGW calculator
         }
-    } else
-        uintResult = UintToArith256(params.powLimit);
+        if ( pindexLast->nHeight < params.AIP09Height ) {
+            uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
+        } else {
+            uintResult = NextWorkRequiredKgwV2(pindexLast, params);     //! Use fast v2 KGW calculator
+        }
+    } else { // IF TESTNETWORK
+        if ( pindexLast->nHeight < params.AIP09Height ) {
+            uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
+        } else {
+            uintResult = NextWorkRequiredKgwV2(pindexLast, params);     //! Use fast v2 KGW calculator
+        }
+    }
 
     //! Finish by converting the resulting uint256 value into a compact 32 bit 'nBits' value
     return uintResult.GetCompact();

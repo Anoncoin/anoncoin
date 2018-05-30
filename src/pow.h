@@ -250,11 +250,13 @@ unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHea
 
 unsigned int GetNextWorkRequired_Bitcoin(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params&);
 unsigned int KimotoGravityWell(const CBlockIndex* pindexLast, const CBlockHeader *pblock, uint64_t TargetBlocksSpacingSeconds, uint64_t PastBlocksMin, uint64_t PastBlocksMax, const Consensus::Params& params);
+static arith_uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast, const Consensus::Params& params);
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params&);
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params&);
 
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&);
+bool CheckProofOfWork(const arith_uint256& hash, unsigned int nBits);
 unsigned int GetNextWorkRequired2(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, const Consensus::Params& params);
 bool SetRetargetToBlock( const CBlockIndex* pIndex, const Consensus::Params& params );
 void RetargetPidReset( std::string strParams, const CBlockIndex* pIndex, const Consensus::Params& params );

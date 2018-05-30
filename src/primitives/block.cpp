@@ -11,12 +11,20 @@
 #include <crypto/common.h>
 #include <crypto/scrypt.h>
 #include <Gost3411.h>
+#include <chainparams.h>
 
 using namespace i2p::crypto;
 
 uint256 CBlockHeader::GetHash() const
 {
     return SerializeHash(*this);
+}
+
+uint256 CBlockHeader::GetPoWHash(int64_t nHeight) const
+{
+    if ( Params().GetConsensus().AIP09Height < nHeight )
+        return GetGOSTHash();
+    return GetPoWHash();
 }
 
 uint256 CBlockHeader::GetPoWHash() const

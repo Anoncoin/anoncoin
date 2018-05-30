@@ -11,6 +11,7 @@
 #include <random.h>
 #include <utilstrencodings.h>
 #include <netaddress.h>
+#include <arith_uint256.h>
 
 #include <assert.h>
 
@@ -112,8 +113,8 @@ public:
         consensus.BIP65Height = consensus.AIP09Height;
         consensus.BIP66Height = consensus.AIP09Height;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
-        consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
-        consensus.nPowTargetSpacing = 2.5 * 60;
+        consensus.nPowTargetTimespan = 86184;
+        consensus.nPowTargetSpacing = 205;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 6048; // 75% of 8064
@@ -134,7 +135,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1526321714; // Monday, 14 May 2018 18:15:14
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00");
+        consensus.nMinimumChainWork = uint256S("0x00");//ArithToUint256(arith_uint256().SetCompact(0x1e0ffff0));//uint256S("0x0000000000000000000000000000000000000000000000000007d006a402163e");
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x000000000085d0ad7b56d614e503d6d6ead9d114d2ad541fabc8d416c651b455"); //500000
@@ -154,8 +155,8 @@ public:
         genesis = CreateGenesisBlock(1370190760, 347089008, 0x1e0ffff0, 1, 0 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
         LogPrintf("Genesis: %s", consensus.hashGenesisBlock.ToString());
-        assert(consensus.hashGenesisBlock == uint256S("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
-        assert(genesis.hashMerkleRoot == uint256S("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
+       // assert(consensus.hashGenesisBlock == uint256S("0x2c85519db50a40c033ccb3d4cb729414016afa537c66537f7d3d52dcd1d484a3"));
+        //assert(genesis.hashMerkleRoot == uint256S("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
         // TODO: MEEH: Check if this works?
@@ -251,13 +252,17 @@ public:
         strNetworkID = "test";
         consensus.nSubsidyHalvingInterval = 420000;
         consensus.BIP16Height = 0; // always enforce P2SH BIP16 on regtest
-        consensus.BIP34Height = 76;
+        consensus.BIP34Height = 100;
         consensus.BIP34Hash = uint256S("8075c771ed8b495ffd943980a95f702ab34fce3c8c54e379548bda33cc8c0573");
-        consensus.BIP65Height = 76; // 8075c771ed8b495ffd943980a95f702ab34fce3c8c54e379548bda33cc8c0573
-        consensus.BIP66Height = 76; // 8075c771ed8b495ffd943980a95f702ab34fce3c8c54e379548bda33cc8c0573
+        consensus.BIP65Height = 100;
+        consensus.BIP66Height = 100;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
-        consensus.nPowTargetSpacing = 2.5 * 60;
+
+        consensus.AIP07Height = 500;
+        consensus.AIP09Height = 1500;
+
+        consensus.nPowTargetTimespan = 86184;
+        consensus.nPowTargetSpacing = 205;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
@@ -277,10 +282,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1517356801; // January 31st, 2018
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00");
+        consensus.nMinimumChainWork = uint256S("0x00");//ArithToUint256(arith_uint256().SetCompact(0x1e0ffff0));
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xa0afbded94d4be233e191525dc2d467af5c7eab3143c852c3cd549831022aad6"); //343833
+        consensus.defaultAssumeValid = uint256S("0x00");
 
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xc4;
@@ -289,9 +294,10 @@ public:
         nDefaultPort = 24735;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1486949366, 293345, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1486949366, 293345, 0x207fffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0"));
+        LogPrintf("\n\nGenesis: %s %s\n\n\n", consensus.hashGenesisBlock.ToString(), genesis.ToString());
+        //assert(consensus.hashGenesisBlock == uint256S("0xb40f9655f049f259fecb6da7518a5e1ba4d30f845176901880c010d6ddcc1927"));
         //assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
 
         vFixedSeeds.clear();

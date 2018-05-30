@@ -299,6 +299,11 @@ public:
         return GetBlockHeader().GetPoWHash();
     }
 
+    uint256 GetBlockPoWHash(int64_t nHeight) const
+    {
+        return GetBlockHeader().GetPoWHash(nHeight);
+    }
+
     uint256 GetBlockGOSTHash() const
     {
         return GetBlockHeader().GetGOSTHash();

@@ -1106,8 +1106,10 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
         return error("%s: Deserialize or I/O error - %s at %s", __func__, e.what(), pos.ToString());
     }
 
+    CBlockIndex *pindex = chainActive.Tip();
+
     // Check the header
-    if (!CheckProofOfWork(block.GetPoWHash(), block.nBits, consensusParams))
+    if (!CheckProofOfWork( (pindex && pindex->nHeight < consensusParams.AIP09Height) ? block.GetPoWHash(pindex->nHeight) : block.GetPoWHash() , block.nBits, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
 
     return true;
@@ -1136,9 +1138,17 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     if (halvings >= 64)
         return 0;
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-    nSubsidy >>= halvings;
+    CAmount nSubsidy = 5 * COIN;
+    // Some adjustments to the start of the lifetime to Anoncoin
+    if (nHeight < 42000) {
+        nSubsidy = 4.2 * COIN;
+    } else if (nHeight < 77777) { // All luck is seven ;)
+        nSubsidy = 7 * COIN;
+    } else if (nHeight == 77778) {
+        nSubsidy = 10 * COIN;
+    } else {
+        nSubsidy >>= (nHeight / 306600); // Anoncoin: 306600 blocks in ~2 years
+    }
     return nSubsidy;
 }
 
@@ -1817,8 +1827,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         BlockMap::const_iterator  it = mapBlockIndex.find(hashAssumeValid);
         if (it != mapBlockIndex.end()) {
             if (it->second->GetAncestor(pindex->nHeight) == pindex &&
-                pindexBestHeader->GetAncestor(pindex->nHeight) == pindex &&
-                pindexBestHeader->nChainWork >= nMinimumChainWork) {
+                pindexBestHeader->GetAncestor(pindex->nHeight) == pindex) {
                 // This block is a member of the assumed verified chain and an ancestor of the best header.
                 // The equivalent time check discourages hash power from extorting the network via DOS attack
                 //  into accepting an invalid block through telling users they must manually set assumevalid.
@@ -2952,7 +2961,8 @@ static bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, 
 static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetPoWHash(), block.nBits, consensusParams))
+    CBlockIndex *pindex = chainActive.Tip();
+    if (fCheckPOW && !CheckProofOfWork( (pindex && pindex->nHeight < consensusParams.AIP09Height) ? block.GetPoWHash(pindex->nHeight) : block.GetPoWHash() , block.nBits, consensusParams))
         return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
 
     return true;
@@ -3108,9 +3118,9 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
     }
 
     const Consensus::Params& consensusParams = params.GetConsensus();
-    if (nHeight < consensusParams.AIP08Height && params.isMainNetwork()) {
+    if (nHeight > consensusParams.AIP08Height && params.isMainNetwork() && !params.fDoPoWValidationOnEarlyChain) {
         // Check proof of work
-        if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
+        if (block.nBits != GetNextWorkRequired2(pindexPrev, &block, consensusParams))
             return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
     }
     // Check timestamp against prev
@@ -3145,10 +3155,11 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
 static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev)
 {
     const int nHeight = pindexPrev == nullptr ? 0 : pindexPrev->nHeight + 1;
-
+/*
     if (nHeight < consensusParams.AIP08Height && Params().isMainNetwork()) {
         return true;
     }
+*/
     // Start enforcing BIP113 (Median Time Past) using versionbits logic.
     int nLockTimeFlags = 0;
     if (VersionBitsState(pindexPrev, consensusParams, Consensus::DEPLOYMENT_CSV, versionbitscache) == THRESHOLD_ACTIVE) {
@@ -3234,12 +3245,6 @@ bool CChainState::AcceptBlockHeader(const CBlockHeader& block, CValidationState&
     BlockMap::iterator miSelf = mapBlockIndex.find(hash);
     CBlockIndex *pindex = nullptr;
     if (hash != chainparams.GetConsensus().hashGenesisBlock) {
-
-        /**
-         * 
-         * To avoid having to implement bugs. 
-         * 
-         */
         
         if (miSelf != mapBlockIndex.end()) {
             // Block header is already known.

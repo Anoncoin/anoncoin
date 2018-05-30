@@ -59,6 +59,7 @@ struct Params {
     /** Block height at which BIP66 becomes active */
     int BIP66Height;
     /* Skip Anoncoin work check until block */
+    int AIP07Height;
     int AIP08Height;
     int AIP09Height;
     /**

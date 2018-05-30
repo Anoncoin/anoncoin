@@ -81,6 +81,7 @@ public:
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
     void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout);
+    bool fDoPoWValidationOnEarlyChain = false;
 protected:
     CChainParams() {}
 
@@ -102,7 +103,6 @@ protected:
     bool fRequireStandard;
     bool fMineBlocksOnDemand;
     bool fIsMainNetwork = false;
-    bool fDoPoWValidationOnEarlyChain = false;
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
 };
