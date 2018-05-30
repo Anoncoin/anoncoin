@@ -99,8 +99,8 @@ public:
     //! This is part of how we map sha256d hash values into real pow hashes that the rest of the software can use
     uintFakeHash fakeBIhash;
 
-    // The new hashing algo
-    uint256 gost3411Hash;
+    // The new GOST3411 Hash
+    uintGost3411Hash gost3411Hash;
 
     //! pointer to the hash of the block, This is in the mapBlockIndex and based on the real POW. memory is owned by this CBlockIndex
     const uint256* phashBlock;
@@ -169,6 +169,7 @@ public:
         nBits          = 0;
         nNonce         = 0;
         fakeBIhash     = 0;
+        gost3411Hash   = 0;
     }
 
     CBlockIndex()
@@ -210,12 +211,29 @@ public:
         CBlockHeader block;
         block.nVersion       = nVersion;
         if (pprev)
+        {
             block.hashPrevBlock = pprev->fakeBIhash;
+            //block.gost3411Hash  = 
+        }
         block.hashMerkleRoot = hashMerkleRoot;
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
         return block;
+    }
+
+    uint256 GetBlockPowHash() const
+    {
+        CBlockHeader block;
+        block.nVersion        = nVersion;
+        if (pprev) {
+            block.hashPrevBlock   = pprev->fakeBIhash;
+        }
+        block.hashMerkleRoot  = hashMerkleRoot;
+        block.nTime           = nTime;
+        block.nBits           = nBits;
+        block.nNonce          = nNonce;
+        return block.GetPoWHash(nHeight);
     }
 
     uint256 GetBlockSha256dHash() const
@@ -306,6 +324,7 @@ public:
 class CDiskBlockIndex : public CBlockIndex
 {
 public:
+//TODO MEEH CHANGE
     uintFakeHash hashPrev;
 
     CDiskBlockIndex() {

@@ -89,6 +89,9 @@ uint256 GetBlockProof(const CBlockIndex& block)
     bool fOverflow;
 
     bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
+    if (block.nHeight >= HARDFORK_BLOCK3) {
+        
+    }
     return (!fNegative && !fOverflow) ? GetWorkProof( bnTarget ) : uint256(0);
 }
 

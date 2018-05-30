@@ -7,9 +7,7 @@
 #ifndef ANONCOIN_BLOCK_H
 #define ANONCOIN_BLOCK_H
 
-#ifndef HARDFORK_BLOCK3
-#define HARDFORK_BLOCK3 850000
-#endif
+
 
 #include "Gost3411.h"
 #include "pow.h"
@@ -38,6 +36,17 @@ public:
     void SetRealHash( const uint256& realHash );
 };
 
+class uintGost3411Hash : public uint256
+{
+public:
+    uintGost3411Hash() {}
+    uintGost3411Hash(uint64_t b) : uint256(b) {}
+    uintGost3411Hash( const uint256& hashin ) : uint256( hashin) {}
+    // uintGost3411Hash( uint256& hashin ) : uint256( hashin) {}
+    uint256 GetGost3411Hash() const;
+    void SetGost3411Hash( const uint256& gostHash );
+};
+
 struct BlockHashCorrector
 {
     size_t operator()(const uint256& fakehash) const { return fakehash.GetLow64(); }
@@ -58,8 +67,9 @@ class CBlockHeader
 private:
     mutable bool fCalcScrypt;
     mutable bool fCalcSha256d;
+//    mutable bool fCalcGost3411;
     mutable uint256 therealHash;
-    mutable uint256 gost3411Hash;
+    mutable uintGost3411Hash gost3411Hash;
     mutable uintFakeHash sha256dHash;
 
 public:
@@ -67,6 +77,7 @@ public:
     static const int32_t CURRENT_VERSION=2;
     int32_t nVersion;
     uintFakeHash hashPrevBlock;
+//    uintGost3411Hash hashGostPrevBlock;
     uint256 hashMerkleRoot;
     uint32_t nTime;
     uint32_t nBits;
@@ -83,8 +94,9 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         //! If (when) we read this header make sure we re-calculate the hashes when they are asked for.
         if (ser_action.ForRead()) {
-            fCalcScrypt = false;
-            fCalcSha256d = false;
+            fCalcScrypt   = false;
+            fCalcSha256d  = false;
+//            fCalcGost3411 = false;
         }
         READWRITE(this->nVersion);
         nVersion = this->nVersion;
@@ -103,8 +115,9 @@ public:
         nTime = 0;
         nBits = 0;
         nNonce = 0;
-        fCalcScrypt = false;
-        fCalcSha256d = false;
+        fCalcScrypt   = false;
+        fCalcSha256d  = false;
+//        fCalcGost3411 = false;
     }
 
     bool IsNull() const
@@ -116,7 +129,7 @@ public:
     uint256 GetHash( const bool fForceUpdate = false ) const;
     uint256 GetGost3411Hash() const;
 
-    inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate = false) const
+    inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate) const
     {
         return GetPoWHash(nHeight);
     }

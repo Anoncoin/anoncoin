@@ -380,6 +380,8 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
     pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 }
 
+//#define ENABLE_WALLET
+
 #ifdef ENABLE_WALLET
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -702,7 +704,7 @@ double GetSlowMiningKHPS()
 
 void static AnoncoinMiner(CWallet *pwallet)
 {
-    LogPrintf("%s : v2.0 for Scrypt started with (DDA) Dynamic Difficulty Awareness and (MTHM) Multi-Threaded HashMeter technologies.\n", __func__ );
+    LogPrintf("%s : v3.0 for GOST3411 started with (DDA) Dynamic Difficulty Awareness and (MTHM) Multi-Threaded HashMeter technologies.\n", __func__ );
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("anoncoin-miner");
 

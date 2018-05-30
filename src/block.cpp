@@ -24,6 +24,23 @@ uint256 uintFakeHash::GetRealHash() const
     return (mi != mapBlockHashCrossReference.end()) ? mi->second : uint256(0);
 }
 
+using namespace ::i2p::crypto;
+
+/*uint256 uintGost3411Hash::GetGost3411Hash() const
+{
+    // GOST 34.11-256 (GOST 34.11-512 (...))
+    static unsigned char pblank[1];
+    uint8_t hash1[64];
+    GOSTR3411_2012_512 ((this->begin() == this->end() ? pblank : (unsigned char*)&this->begin()[0]), (this->end() - this->begin()) * sizeof(this->begin()[0]), hash1);
+    //GOSTR3411_2012_512 ((BEGIN(nVersion) == END(nNonce) ? pblank : (unsigned char*)&BEGIN(nVersion)[0]), (END(nNonce) - BEGIN(nVersion)) * sizeof(BEGIN(nVersion)[0]), hash1);
+    uint32_t digest[8];
+    GOSTR3411_2012_256 (hash1, 64, (uint8_t *)digest);
+    // to little endian
+    for (int i = 0; i < 8; i++)
+        gost3411Hash.pn[i] = ByteReverse (digest[7-i]);
+    return gost3411Hash;
+}*/
+
 void uintFakeHash::SetRealHash( const uint256& realHash )
 {
     BlockHashCorrectionMap::iterator mi = mapBlockHashCrossReference.insert(std::make_pair(*this, realHash)).first;
@@ -58,21 +75,12 @@ uint256 CBlockHeader::GetHash(const bool fForceUpdate) const
     return therealHash;
 }
 
-using namespace ::i2p::crypto;
-
 uint256 CBlockHeader::GetGost3411Hash() const
 {
     // GOST 34.11-256 (GOST 34.11-512 (...))
-    static unsigned char pblank[1];
-    uint8_t hash1[64];
-    //GOSTR3411_2012_512 ((this->begin() == this->end() ? pblank : (unsigned char*)&this->begin()[0]), (this->end() - this->begin()) * sizeof(this->begin()[0]), hash1);
-    GOSTR3411_2012_512 ((BEGIN(nVersion) == END(nNonce) ? pblank : (unsigned char*)&BEGIN(nVersion)[0]), (END(nNonce) - BEGIN(nVersion)) * sizeof(BEGIN(nVersion)[0]), hash1);
-    uint32_t digest[8];
-    GOSTR3411_2012_256 (hash1, 64, (uint8_t *)digest);
-    // to little endian
-    for (int i = 0; i < 8; i++)
-        gost3411Hash.pn[i] = ByteReverse (digest[7-i]);
-    return gost3411Hash;
+    uint256 tHash;
+    tHash = SerializeGost3411Hash(*this);
+    return tHash;
 }
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const

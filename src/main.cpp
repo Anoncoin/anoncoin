@@ -2645,7 +2645,20 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
         if (tip->nHeight < HARDFORK_BLOCK) return true;
 #endif
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits))
+    uint256 hash;
+    // Because tip isn't always available in the startup, we'll have to check it first of all.
+    if (tip)
+    {
+        if (tip->nHeight < HARDFORK_BLOCK3)
+        {
+            hash=block.GetHash();
+        } else {
+            hash=block.GetGost3411Hash();
+        }
+    } else {
+        hash=block.GetHash();
+    }
+    if (fCheckPOW && !CheckProofOfWork(hash, block.nBits))
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
                          REJECT_INVALID, "high-hash");
 
@@ -2750,7 +2763,8 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
         return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight), REJECT_CHECKPOINT, "checkpoint mismatch");
 
-    if (nHeight < HARDFORK_BLOCK)
+    // Don't fast skip in testnet
+    if (nHeight < HARDFORK_BLOCK && !TestNet())
         return true;
 
     // Check proof of work
@@ -2778,7 +2792,8 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CB
 {
     const int32_t nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
 
-    if (nHeight < HARDFORK_BLOCK) return true;
+    // Don't skip checks in testnet which don't have same bugs in early chain.
+    if (nHeight < HARDFORK_BLOCK && !TestNet()) return true;
 
     // Check that all transactions are finalized
     BOOST_FOREACH(const CTransaction& tx, block.vtx)
@@ -3178,15 +3193,15 @@ bool static LoadBlockIndexDB()
     //! Structures variables and pointers.
     nHeight = 0;
     assert( mapBlockIndex.size() == 0 );
-    mapBlockIndex.reserve( nBIsize );                               //! Pre-allocate the number of entries
+    mapBlockIndex.reserve( nBIsize ); //! Pre-allocate the number of entries
     BOOST_FOREACH(const BlockTreeEntry& entry, vSortedByHeight) {
         CBlockIndex* pindex = entry.pBlockIndex;
         BlockMap::iterator mi = mapBlockIndex.insert(make_pair(entry.uintRealHash, pindex)).first;
-        pindex->phashBlock = &((*mi).first);                        //! Keeps a pointer to the hash in the BI
+        pindex->phashBlock = &((*mi).first); //! Keeps a pointer to the hash in the BI
         //! Now find the real hash of this blocks previous block, and set the pointer up correctly.
         //! It should already be in the mapBlockIndex
         if( pindex->fakeBIhash != 0 ) {      //! Can't do that for the genesis though
-            uint256 aRealHash = pindex->fakeBIhash.GetPoWHash(pindex->nHeight);
+            uint256 aRealHash = pindex->fakeBIhash.GetHash(pindex->nHeight);
             BlockMap::iterator mi2 = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
             LogPrintf( "fakeBIhash: %s aRealHash: %s  mi2 at end? %s Height=%d\n", pindex->fakeBIhash.ToString(), aRealHash.ToString(), (mi2 == mapBlockIndex.end()) ? "yes" : "no", pindex->nHeight );
             assert(mi2 != mapBlockIndex.end());
