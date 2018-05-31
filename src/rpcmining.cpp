@@ -153,7 +153,7 @@ Value generate(const Array& params, bool fHelp)
         uint256 uintTargetHash;
         if( TestNet() && nHeight < (pRetargetPid->GetTipFilterBlocks() + 1) ) {
             pblock->nBits = uintStartingHash.GetCompact();
-            uintTargetHash = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+            uintTargetHash = Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 );
         } else
             uintTargetHash.SetCompact(pblock->nBits);
 

@@ -151,7 +151,7 @@ public:
 
     CHashWriter& write(const char *pch, size_t size) {
         ctx.Write((const unsigned char*)pch, size);
-        gostCtx.write (pch, size)
+        gostCtx.write (pch, size);
         return (*this);
     }
 

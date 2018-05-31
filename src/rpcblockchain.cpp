@@ -12,6 +12,8 @@
 #include "sync.h"
 #include "util.h"
 
+#include "chainparams.h"
+
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
@@ -43,7 +45,11 @@ double GetDifficulty(const CBlockIndex* blockindex)
     }
     uint256 uintBlockDiff;
     uintBlockDiff.SetCompact( blockindex->nBits );
-    return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
+    if (blockindex->nHeight < 850000) {
+        return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
+    } else {
+        return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) );
+    }
 }
 
 
