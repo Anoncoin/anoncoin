@@ -136,13 +136,13 @@ public:
         return GetGost3411Hash();
     }
 
-    /*
+    
     inline uint256 GetPoWHash(uint32_t nHeight) const
     {
         if (nHeight < HARDFORK_BLOCK3)
             return GetHash();
         return GetGost3411Hash();
-    }*/
+    }
 
     int64_t GetBlockTime() const
     {
