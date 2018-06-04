@@ -3138,21 +3138,29 @@ bool static LoadBlockIndexDB()
         aHeader.nTime           = pindex->nTime;
         aHeader.nBits           = pindex->nBits;
         aHeader.nNonce          = pindex->nNonce;
+
+
+        
         //! Calling GetHash & CalcSha256dHash with true, invalidates any previously calculated hashes for this block, as they have changed
         uintFakeHash aFakeHash  = aHeader.CalcSha256dHash(true);    //! Calculate the sha256d hash, even for the genesis block
+
         uint256 aRealHash;
+        //aRealHash = aHeader.GetPoWHash(nHeight, true); 
+
         if( fDoubleCheckingHash ) {
             aRealHash = aHeader.GetPoWHash(nHeight, true);              //! Calc the real scrypt hash of this block.
             if( nHeight > 100 )                             //! Stop checking if things have been ok after the 1st 100 blocks
                 fDoubleCheckingHash = false;
-        } else if( nHeight > nBIsize - 1000 ) {             //! Turn it back on for the last 1000 blocks
+        } else if( nHeight > nBIsize - 1000 ) {   
+                                                                  //! Turn it back on for the last 1000 blocks
             aRealHash = aHeader.GetPoWHash(nHeight, true);              //! Calc the real scrypt hash of this block.
-        } else
-            aRealHash = entry.uintRealHash;
-
+        } else {
+            aRealHash = entry.uintRealHash;  
+        }
+            
         if( aRealHash != entry.uintRealHash ) {
             LogPrintf( "%s : ERROR - at Block %d, the Real Hash is not the same as being reported by the BlockTreeDB key, recommend a reindex.\n", __func__, nHeight );
-            StartShutdown();
+                StartShutdown();
         }
 
         uint256 gost3411Hash = aHeader.GetGost3411Hash();
@@ -3160,7 +3168,7 @@ bool static LoadBlockIndexDB()
         //! Could do a quick check of the nBits to confirm pow here...its fast.
         if( !CheckProofOfWork( (nHeight < HARDFORK_BLOCK3) ? aRealHash : gost3411Hash , aHeader.nBits ) )
             return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());
-        LogPrintf( "fakeBIhash: %s aRealHash: %s Gost3411Hash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), gost3411Hash.ToString(), nHeight );
+        //LogPrintf( "fakeBIhash: %s aRealHash: %s Gost3411Hash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), gost3411Hash.ToString(), nHeight );
         vFakeHashes[nHeight++] = aFakeHash; //! Save it for later on the 2nd pass
         aFakeHash.SetRealHash( aRealHash ); //! Update our cross reference unordered fast hash lookup map
 //      if( GetTime() - nStartTime  > 15 ) {
@@ -3194,6 +3202,9 @@ bool static LoadBlockIndexDB()
     nHeight = 0;
     assert( mapBlockIndex.size() == 0 );
     mapBlockIndex.reserve( nBIsize ); //! Pre-allocate the number of entries
+
+    LogPrintf( "Going over blocks again, we have: %s \n", nBIsize);
+
     BOOST_FOREACH(const BlockTreeEntry& entry, vSortedByHeight) {
         CBlockIndex* pindex = entry.pBlockIndex;
         BlockMap::iterator mi = mapBlockIndex.insert(make_pair(entry.uintRealHash, pindex)).first;
@@ -3201,9 +3212,9 @@ bool static LoadBlockIndexDB()
         //! Now find the real hash of this blocks previous block, and set the pointer up correctly.
         //! It should already be in the mapBlockIndex
         if( pindex->fakeBIhash != 0 ) {      //! Can't do that for the genesis though
-            uint256 aRealHash = pindex->fakeBIhash.GetHash(pindex->nHeight);
+            uint256 aRealHash = pindex->fakeBIhash.GetRealHash();
             BlockMap::iterator mi2 = ( aRealHash != 0 ) ? mapBlockIndex.find( aRealHash ) : mapBlockIndex.end();
-            LogPrintf( "fakeBIhash: %s aRealHash: %s  mi2 at end? %s Height=%d\n", pindex->fakeBIhash.ToString(), aRealHash.ToString(), (mi2 == mapBlockIndex.end()) ? "yes" : "no", pindex->nHeight );
+            //LogPrintf( "fakeBIhash: %s aRealHash: %s  mi2 at end? %s Height=%d\n", pindex->fakeBIhash.ToString(), aRealHash.ToString(), (mi2 == mapBlockIndex.end()) ? "yes" : "no", pindex->nHeight );
             assert(mi2 != mapBlockIndex.end());
             pindex->pprev = (*mi2).second;
         }
