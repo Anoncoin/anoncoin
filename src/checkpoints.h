@@ -22,6 +22,9 @@ namespace Checkpoints
     // Return conservative estimate of total number of blocks, 0 if unknown
     int GetTotalBlocksEstimate();
 
+    // Anc fix
+    bool IsBlockInCheckpoints(int nHeight);
+
     // Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
     CBlockIndex* GetLastCheckpoint();
 
