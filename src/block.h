@@ -129,10 +129,10 @@ public:
     uint256 GetHash( const bool fForceUpdate = false ) const;
     uint256 GetGost3411Hash() const;
 
-    inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate = false) const
+    inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate) const
     {
         if (nHeight < HARDFORK_BLOCK3)
-            return GetHash();
+            return GetHash(fForceUpdate);
         return GetGost3411Hash();
     }
 
