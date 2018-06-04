@@ -2767,10 +2767,17 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (nHeight < HARDFORK_BLOCK && !TestNet())
         return true;
 
-    // Check proof of work
-    if (block.nBits != GetNextWorkRequired(pindexPrev, &block) ) {
-        if (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() )
-            return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+    if (!Checkpoints::IsBlockInCheckpoints(nHeight) && (nHeight > pcheckpoint->nHeight+100) )
+    {
+        // Check proof of work
+        auto checkPowVal = GetNextWorkRequired(pindexPrev, &block);
+        if (block.nBits != checkPowVal ) {
+            if ( (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() ) && (nHeight < HARDFORK_BLOCK || nHeight > HARDFORK_BLOCK2) ) {
+                LogPrintf("Block's nBits are %s versus %s which is required for block height %d.", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),nHeight);
+                LogPrintf("\n(%d, uint256(\"0x%s\"))\n", nHeight, block.GetPoWHash(nHeight,true).ToString());
+                return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+            }
+        }
     }
 
     // Check timestamp against prev
