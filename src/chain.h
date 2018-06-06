@@ -421,6 +421,10 @@ public:
         return vChain.size() - 1;
     }
 
+    inline bool UseGost3411Hash() {
+        return Tip()->nHeight >= HARDFORK_BLOCK3;
+    }
+
     /** Set/initialize a chain with a given tip. */
     void SetTip(CBlockIndex *pindex);
 
