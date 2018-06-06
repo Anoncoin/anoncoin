@@ -353,6 +353,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         //! Force both hash calculations to be updated before validity testing the block
         assert( pblock->GetHash(true) != uint256(0) );
         assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+        assert( pblock->GetGost3411Hash() != uint256(0) );
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false))
             throw std::runtime_error("CreateNewBlock() : TestBlockValidity failed");
@@ -380,7 +381,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
     pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 }
 
-//#define ENABLE_WALLET
+#define ENABLE_WALLET
 
 #ifdef ENABLE_WALLET
 //////////////////////////////////////////////////////////////////////////////
@@ -773,7 +774,12 @@ void static AnoncoinMiner(CWallet *pwallet)
                 while(true) {
                     // scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), pScratchPadBuffer);
                     //char *pPad = spScratchPad.get();
-                    scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), spScratchPad.get());
+                    if (pindexPrev->nHeight >= HARDFORK_BLOCK3)
+                    {
+                        thash = SerializeGost3411Hash(*pblock, SER_NETWORK, PROTOCOL_VERSION);
+                    } else {
+                        scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), spScratchPad.get());
+                    }
                     nHashesDone++;
                     if( thash <= hashTarget ) {
                         fFound = true;
