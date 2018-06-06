@@ -7,7 +7,7 @@
 #define ANONCOIN_CHAIN_PARAMS_H
 
 #ifndef HARDFORK_BLOCK3
-#define HARDFORK_BLOCK3 850000
+#define HARDFORK_BLOCK3 900000
 #endif
 
 // Many builder specific things set in the config file, ENABLE_WALLET is a good example.

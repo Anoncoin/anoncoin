@@ -15,7 +15,7 @@
 #define HARDFORK_BLOCK2 585555 // block to change the parameters of the PID
 
 #ifndef HARDFORK_BLOCK3
-#define HARDFORK_BLOCK3 850000
+#define HARDFORK_BLOCK3 900000
 #endif
 
 class CBlockHeader;
