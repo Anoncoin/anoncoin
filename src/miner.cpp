@@ -381,7 +381,6 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
     pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 }
 
-#define ENABLE_WALLET
 
 #ifdef ENABLE_WALLET
 //////////////////////////////////////////////////////////////////////////////
