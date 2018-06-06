@@ -525,6 +525,9 @@ Value getblockchaininfo(const Array& params, bool fHelp)
     obj.push_back(Pair("bestblockhash", chainActive.Tip()->GetBlockHash().GetHex()));
     obj.push_back(Pair("bestblockGOST3411hash", chainActive.Tip()->GetBlockGost3411Hash().GetHex()));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
+    uint256 hexVal;
+    hexVal.SetCompact(chainActive.Tip()->nBits);
+    obj.push_back(Pair("difficulty_hex",    strprintf( "0x%08x",hexVal.GetCompact()) ));
     obj.push_back(Pair("verificationprogress", Checkpoints::GuessVerificationProgress(chainActive.Tip())));
     obj.push_back(Pair("chainwork",     chainActive.Tip()->nChainWork.GetHex()));
     return obj;

@@ -243,6 +243,7 @@ extern double GetLog2Work( const uint256& uintDifficulty );
 extern double GetLinearWork( const uint256& uintDifficulty, const uint256& uintPowLimit );
 //! Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 extern bool CheckProofOfWork(const uint256& hash, unsigned int nBits);
+extern bool CheckProofOfWorkGost3411(const uint256& hash, unsigned int nBits);
 //! Return average network hashes per second based on the last 'lookup' blocks, a minimum of 2 are required.
 extern int64_t CalcNetworkHashPS( const CBlockIndex* pBI, int32_t nLookup );
 
