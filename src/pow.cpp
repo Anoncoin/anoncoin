@@ -50,12 +50,12 @@ const int64_t nTargetSpacing = 180;
 
 //! Difficulty Protocols have changed over the years, at specific points in Anoncoin's history the following SwitchHeight values are those blocks
 //! where an event occurred which required changing the way things are calculated. aka HARDFORK
-static const int nDifficultySwitchHeight = 15420;   // Protocol 1 happened here
-static const int nDifficultySwitchHeight2 = 77777;  // Protocol 2 starts at this block
-static const int nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
-#if defined( HARDFORK_BLOCK )
+static const int32_t nDifficultySwitchHeight = 15420;   // Protocol 1 happened here
+static const int32_t nDifficultySwitchHeight2 = 77777;  // Protocol 2 starts at this block
+static const int32_t nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
 static const int32_t nDifficultySwitchHeight4 = HARDFORK_BLOCK;
-#endif
+static const int32_t nDifficultySwitchHeight5 = HARDFORK_BLOCK2;
+static const int32_t nDifficultySwitchHeight6 = HARDFORK_BLOCK3;
 
 //! The master Retarget PID pointer and all its operations are protected by a CritialSection LOCK,
 //! the pointer itself is initialized to NULL upon program load, and until initialized should allow
@@ -160,6 +160,37 @@ bool CheckProofOfWork(const uint256& hash, unsigned int nBits)
             if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
             LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
             return error("CheckProofOfWork() : hash doesn't match nBits");
+        }
+    }
+
+    return true;
+}
+
+bool CheckProofOfWorkGost3411(const uint256& hash, unsigned int nBits)
+{
+    bool fNegative;
+    bool fOverflow;
+    uint256 bnTarget;
+
+    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+    //! Check range of the Target Difficulty value stored in a block
+    if( fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) )
+        return error("CheckProofOfWorkGost3411() : nBits below minimum work");
+
+    //! Check the proof of work matches claimed amount
+    if (hash > bnTarget) {
+        //! There is one possibility where this is allowed, if this is TestNet and this hash is better than the minimum
+        //! and the Target hash (as found in the block) is equal to the starting difficulty.  Then we assume this check
+        //! is being called for one of the first mocktime blocks used to initialize the chain.
+        bool fTestNet = TestNet();
+        uint256 uintStartingDiff;
+        if( fTestNet ) uintStartingDiff = pRetargetPid->GetTestNetStartingDifficulty();
+        if( !fTestNet || hash > Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) || uintStartingDiff.GetCompact() != nBits ) {
+            LogPrintf( "%s : Failed. ", __func__ );
+            if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
+            LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
+            return error("CheckProofOfWorkGost3411() : hash doesn't match nBits");
         }
     }
 
@@ -1624,20 +1655,26 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
             if( !pRetargetPid->UpdateOutput( pindexLast, pBlockHeader) )
                 LogPrint( "retarget", "Insufficient BlockIndex, unable to set RetargetPID output values.\n");
             uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
+            //LogPrintf("pRetargetPid->GetRetargetOutput() selected\n");
         }
         //! Testnets always use the P-I-D Retarget Controller, only the MAIN network might not...
         if( isMainNetwork() ) {
             if( pindexLast->nHeight > nDifficultySwitchHeight3 ) {      //! Start of KGW era
-#if defined( HARDFORK_BLOCK )
                 //! The new P-I-D retarget algo will start at this hardfork block + 1
                 if( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
-#endif
+                {
+                    //LogPrintf("NextWorkRequiredKgwV2 selected\n");
                     uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
-            } else
+                }
+            } else {
+                //LogPrintf("OriginalGetNextWorkRequired selected\n");
                 uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
+            }
         }
-    } else
+    } else {
         uintResult = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+        //LogPrintf("Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) selected\n");
+    }
 
     //! Finish by converting the resulting uint256 value into a compact 32 bit 'nBits' value
     return uintResult.GetCompact();
