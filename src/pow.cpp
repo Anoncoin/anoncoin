@@ -21,7 +21,7 @@
 #include <boost/filesystem/fstream.hpp>
 
 using namespace std;
-using namespace CashIsKing;
+//using namespace CashIsKing;
 
 #define TIPFILTERBLOCKS_DEFAULT "21"
 #define USESHEADER_DEFAULT false
