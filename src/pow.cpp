@@ -21,6 +21,7 @@
 #include <boost/filesystem/fstream.hpp>
 
 using namespace std;
+using namespace CashIsKing;
 
 #define TIPFILTERBLOCKS_DEFAULT "21"
 #define USESHEADER_DEFAULT false
@@ -737,7 +738,6 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
     nLastCalculationTime = 0;
     nBlocksSampled = 0;
     uintTestNetStartingDifficulty = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
-#if defined( HARDFORK_BLOCK )
     if( isMainNetwork() ) {
         nTipFilterBlocks = atoi( TIPFILTERBLOCKS_DEFAULT );
         fUsesHeader = USESHEADER_DEFAULT;
@@ -746,12 +746,6 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
         if( nTipFilterBlocks < 5 ) nTipFilterBlocks = 5;
         fUsesHeader = GetBoolArg( "-retargetpid.useheader", USESHEADER_DEFAULT );
     }
-#else
-    // Before the hardfork build, we allow programmable settings on both mainnet and testnets
-    nTipFilterBlocks = atoi( GetArg("-retargetpid.tipfilterblocks", TIPFILTERBLOCKS_DEFAULT ).c_str() );
-    if( nTipFilterBlocks < 5 ) nTipFilterBlocks = 5;
-    fUsesHeader = GetBoolArg( "-retargetpid.useheader", USESHEADER_DEFAULT );
-#endif
     //! This is only an issue for TestNets...
     //! The starting difficulty value provided is the number of times greater than the minimum difficulty, so in order
     //! to calculate the block difficulty, we take the user selected value and simply divide the minimum difficulty by
@@ -1352,11 +1346,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
             csvfile << "PrevDiff" << "," << "NewDiff" << ",";
             csvfile << "NetKHPS" << "," << "MineKHPS" << ",";
             csvfile << "PrevLog2" << "," << "NewLog2" << "," << "ChainLog2" << ",";
-#if defined( HARDFORK_BLOCK )
             if( isMainNetwork() && pIndex->nHeight < HARDFORK_BLOCK ) {
-#else
-            if( isMainNetwork() ) {
-#endif
                 csvfile << "KgwDiff" << "," << "KgwLog2" << ",";
             }
             csvfile << "PID_Difficulty_as_256_bits" << "\n";
@@ -1408,11 +1398,8 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
         csvfile << dNetKHPS << "," << dMinerKHPS << ",";
         //! Calculate and add the Log2 work calculations
         csvfile << GetLog2Work(uintPrevDiffCalculated) << "," << GetLog2Work(uintTargetAfterLimits) << "," << GetLog2Work(pIndex->nChainWork) << ",";
-#if defined( HARDFORK_BLOCK )
+
         if( isMainNetwork() && pIndex->nHeight <= HARDFORK_BLOCK ) {
-#else
-        if( isMainNetwork() ) {
-#endif
             //! Add the KGW value for work, it is simply the nBits as found in the current blockheader
             uint256 KgwDiff;
             KgwDiff.SetCompact(pBlockHeader->nBits);
@@ -1446,23 +1433,12 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
             const int64_t nLastBlockIndexTime = pIndex->GetBlockTime();
             const int64_t nNextBestBlockTime = nLastBlockIndexTime + nTargetSpacing;
             const int64_t nMaxTime = nLastBlockIndexTime + nTargetSpacing * 8;  // 7 intervals past the best time
-            double dTimeErrorAt, dDiffErrorAt;
             double dProportionalCalc, dDerivativeCalc;
-            double dPiLog2, dPidLog2;
             uint256 uintDiffPi, uintDiffPid;
             uint256 uintDiffCalc;
             // string sFlags;
 
             for( int64_t nTipTime = nMinTime; nTipTime <= nMaxTime; nTipTime += nSecsPerSample ) {
-#if defined( DONT_COMPILE )
-            for( int64_t nTipTime = nLastBlockIndexTime - 3 * nSecsPerSample; nTipTime <= nMaxTime; nTipTime += nSecsPerSample ) {
-                if( !fUsesHeader ) {    // No point in running curves, we're done
-                    if( !fBestTime )
-                        fBestTime = true;
-                    else
-                        break;
-                }
-#endif
                 if( !fBestTime ) {
                     nTimeOfCalc = nNextBestBlockTime;
                     fBestTime = fFullLine = true;
@@ -1750,7 +1726,6 @@ bool SetRetargetToBlock( const CBlockIndex* pIndex )
     string sNextWorkRequired;
 
     if( isMainNetwork() ) {
-#if defined( HARDFORK_BLOCK )
         //! The new algo will happen at the hardfork block + 1, otherwise its an old KGW block.
         int32_t nDistance = nDifficultySwitchHeight4 - pIndex->nHeight;
         fBasedOnKGW = nDistance >= 0;
@@ -1768,9 +1743,6 @@ bool SetRetargetToBlock( const CBlockIndex* pIndex )
             //! the main chain can be run for evaluation purposes.
             // if( nDistance == 1 )
         }
-#else
-        sNextWorkRequired = "Next ProofOfWork based on old algo. Required=";
-#endif
     } else
         sNextWorkRequired = "Next ProofOfWork Required=";
 
