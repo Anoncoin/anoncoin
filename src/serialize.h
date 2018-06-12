@@ -89,9 +89,7 @@ enum
     SER_NETWORK         = (1 << 0),
     SER_DISK            = (1 << 1),
     SER_GETHASH         = (1 << 2),
-#ifdef ENABLE_I2PSAM
     SER_IPADDRONLY      = (1 << 18),
-#endif
 };
 
 #define READWRITE(obj)      (::SerReadWrite(s, (obj), nType, nVersion, ser_action))
