@@ -7,13 +7,20 @@
 #ifndef ANONCOIN_POW_H
 #define ANONCOIN_POW_H
 
+#define HARDFORK_BLOCK 555555 //! CSlave: if not hardcoded, the hardfork block can be defined with "configure --with-hardfork=block"
+#define HARDFORK_BLOCK2 585555 // block to change the parameters of the PID
+
+#ifndef HARDFORK_BLOCK3
+#define HARDFORK_BLOCK3 900000
+#endif
+
 #include "timedata.h"
 #include "uint256.h"
-#include "consensus.h"
+//#include "consensus.h"
 
 #include <stdint.h>
 
-using namespace CashIsKing;
+//using namespace CashIsKing;
 
 class CBlockHeader;
 class CBlockIndex;
@@ -226,7 +233,8 @@ public:
 extern const int64_t nTargetSpacing;            //! Defines modern Anoncoin target block time spacing
 extern CRetargetPidController *pRetargetPid;    //! One retarget object is used as primary, for all the next-work-required calculations
 
-extern ANCConsensus ancConsensus;
+//extern ANCConsensus ancConsensus;
+
 //!
 //! Global in scope, these routines are implemented in pow.cpp:
 //!
