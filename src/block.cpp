@@ -26,7 +26,7 @@ uint256 uintFakeHash::GetRealHash() const
 
 void uintFakeHash::SetRealHash( const uint256& realHash )
 {
-    BlockHashCorrectionMap::iterator mi = mapBlockHashCrossReference.insert(std::make_pair(*this, realHash)).first;
+    mapBlockHashCrossReference.insert(std::make_pair(*this, realHash));
 }
 
 uintFakeHash CBlockHeader::CalcSha256dHash(const bool fForceUpdate) const

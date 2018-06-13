@@ -1096,7 +1096,6 @@ void InitializeTestNetBlocks()
 {
     assert( pRetargetPid != NULL );
     const int32_t nMockBlocks = pRetargetPid->GetTipFilterBlocks();
-    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
     int64_t nTimeNow = GetTime();
     uint256 uintStartingDifficulty = pRetargetPid->GetTestNetStartingDifficulty();

@@ -736,6 +736,7 @@ bool CRetargetPidController::UpdateFilterTimingResults( std::vector<FilterPoint>
             dRateOfChange /= (double)nRateChangeWeight;
         }
     }
+    return true;
 }
 
 //! Anoncoin retarget system can consider the case of the next new block which has not yet
@@ -786,7 +787,7 @@ bool CRetargetPidController::CalcBlockTimeErrors( const int64_t nTipTime )
             if( !fHeaderAdded )
                 vTipFilterWithHeader.push_back( aHeaderPoint );
 
-            assert( vTipFilterWithHeader.size() == nTipFilterBlocks + 1 );
+            assert( vTipFilterWithHeader.size() == static_cast<unsigned long>(nTipFilterBlocks + 1) );
             UpdateFilterTimingResults( vTipFilterWithHeader );
         }
         //! else we already have the calculations done, when the index tip filter was initialized, no further processing is needed.
@@ -847,7 +848,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
 
     //! Sort the TipFilter block data by time.  The result is then setup as an output vector of structures
     //! containing all the filter information which can be accessed and referenced as needed.
-    assert( vIndexTipFilter.size() == nTipFilterBlocks );            //! The array of strutures is constant in size and assumed.
+    assert( vIndexTipFilter.size() == static_cast<unsigned long>(nTipFilterBlocks) );            //! The array of strutures is constant in size and assumed.
     sort(vIndexTipFilter.begin(), vIndexTipFilter.end());                 //! Thank you sort routine, now it matters not the time order in which the blocks were mined
     uint32_t nDividerSum = 0;
     uint256 uintBlockPOW;
@@ -891,7 +892,6 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
         nDividerSum += i + nWeightedAvgTipBlocksDown - nTipFilterBlocks;   //! Bump the weighted sum, the newer it is the more it counts
     }
     uintTipDiffCalculatedDown /= nDividerSum;
-
 
     //! Once we know the tipfilter has been setup, an output calculation is likely to soon follow,
     //! plus we now have 2 ways to define the previous difficulty.  Whichever method is chosen,
@@ -1355,7 +1355,7 @@ bool CRetargetPidController::GetRetargetStats( RetargetStats& RetargetState, uin
     uint32_t nPrevChargeHeight = nIntegratorHeight;     //! Remember where the pid Integrator and filter calculations was set to before this command.
 
     //! Make sure we can even run the calculations, otherwise the above state values is all that we can copy and provide as valid
-    if( pIndexAtTip == NULL || pIndexAtTip->nHeight < nTipFilterBlocks || (nHeight != 0 && nHeight <= nTipFilterBlocks ) )
+    if( pIndexAtTip == NULL || pIndexAtTip->nHeight < nTipFilterBlocks || (nHeight != 0 && nHeight <= static_cast<uint32_t>(nTipFilterBlocks) ) )
         return false;
 
     //! If height=0 is passed, use the height at the tip, also if the height given - 1 is equal to the current charge height, we do not need to setup a different one
@@ -1363,13 +1363,13 @@ bool CRetargetPidController::GetRetargetStats( RetargetStats& RetargetState, uin
     //! otherwise, pull the validated header information from the block index data itself, and run the calculations with that block time
     const CBlockIndex* pIndexCharge = NULL;
     CBlockHeader aHeader;
-    if( nHeight == 0 || nHeight > pIndexAtTip->nHeight ) {
+    if( nHeight == 0 || nHeight > static_cast<unsigned int>(pIndexAtTip->nHeight) ) {
         nHeight = pIndexAtTip->nHeight + 1;
         aHeader.nTime = GetAdjustedTime();
         pIndexCharge = pIndexAtTip;
     } else {
         const CBlockIndex* pIndexAtHeight = pIndexAtTip;
-        while( pIndexAtHeight->nHeight > nHeight )
+        while( pIndexAtHeight->nHeight > static_cast<const int>(nHeight) )
             pIndexAtHeight = pIndexAtHeight->pprev;
         aHeader = pIndexAtHeight->GetBlockHeader();
         //! In the case where the Header is used, the nBits needs to be zero, so the getretargetpid query can identify the block, if fUsesHeader is false

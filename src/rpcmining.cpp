@@ -308,7 +308,6 @@ Value gethashmeter(const Array& params, bool fHelp)
 
     RPCTypeCheck(params, boost::assign::list_of(bool_type));
 
-    bool fClearSlowMRU = false;
     if( params.size() > 0 && params[0].get_bool() == true )
         if( !ClearHashMeterSlowMRU() )
             return (int64_t)0;

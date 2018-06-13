@@ -2735,7 +2735,11 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (!Checkpoints::IsBlockInCheckpoints(nHeight) && (nHeight > pcheckpoint->nHeight+100) )
     {
         // Check proof of work
+#ifdef CPP11
         auto checkPowVal = GetNextWorkRequired(pindexPrev, &block);
+#else
+        uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
+#endif
         if (block.nBits != checkPowVal ) {
             if ( (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() ) && (nHeight < ancConsensus.nDifficultySwitchHeight4 || nHeight > ancConsensus.nDifficultySwitchHeight5) ) {
                 LogPrintf("Block's nBits are %s versus %s which is required for block height %d.", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),nHeight);
@@ -3134,8 +3138,6 @@ bool static LoadBlockIndexDB()
                 StartShutdown();
         }
 
-        uint256 gost3411Hash = aHeader.GetGost3411Hash();
-
         //! Could do a quick check of the nBits to confirm pow here...its fast.
         if( !ancConsensus.CheckProofOfWork( aRealHash, aHeader.nBits ) )
             return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());
@@ -3364,15 +3366,17 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= 2*nCoinCacheSize + 32000) {
             
+#ifdef CPP11
             auto checkPowVal = GetNextWorkRequired(pindex->pprev, &block);
             auto difference = block.nBits - checkPowVal;
-                if (block.nBits < checkPowVal) {
-                    difference = checkPowVal - block.nBits;    
-                }
-                //LogPrintf("BEFORE  BNB nbits: %s - checkPowVal: %s for HEIGHT:    %d. \n", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),pindex->nHeight);
-                if (block.nBits != checkPowVal ) {
-                    LogPrintf("## ERROR BLOCK - BNB nbits: %s - checkPowVal: %s with diff: %s for HEIGHT:    %d. \n", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),difference,pindex->nHeight);
-                }
+            if (block.nBits < checkPowVal) {
+                difference = checkPowVal - block.nBits;
+            }
+            //LogPrintf("BEFORE  BNB nbits: %s - checkPowVal: %s for HEIGHT:    %d. \n", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),pindex->nHeight);
+            if (block.nBits != checkPowVal ) {
+                LogPrintf("## ERROR BLOCK - BNB nbits: %s - checkPowVal: %s with diff: %s for HEIGHT:    %d. \n", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),difference,pindex->nHeight);
+            }
+#endif
             
             bool fClean = true;
             if (!DisconnectBlock(block, state, pindex, coins, &fClean))
@@ -4674,7 +4678,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vector<CInv> vInv;
         vRecv >> vInv;
         int32_t nInvSize = vInv.size();
-        if( nInvSize > MAX_INV_SZ ) {
+        if( static_cast<const unsigned int>(nInvSize) > MAX_INV_SZ ) {
             Misbehaving(pfrom->GetId(), 20);
             return error("message getdata size() = %u", nInvSize);
         }

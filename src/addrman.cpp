@@ -170,7 +170,7 @@ int CAddrMan::CopyDestinationStats( std::vector<CDestinationStats>& vStats )
             vStats.push_back( stats );
         }
     }
-    assert( mapI2pHashes.size() == nSize );
+    assert( mapI2pHashes.size() == static_cast<unsigned long>(nSize) );
     return nSize;
 }
 
