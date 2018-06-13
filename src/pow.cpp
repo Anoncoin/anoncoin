@@ -840,6 +840,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     const CBlockIndex* pIndexSearch = pIndex;
     for( int32_t i = nTipFilterBlocks - 1; i >= 0  && pIndexSearch; i--, pIndexSearch = pIndexSearch->pprev ) {
         aFilterPoint.nBlockTime = pIndexSearch->GetBlockTime();
+        aFilterPoint.nHeight = pIndexSearch->nHeight;
         // aFilterPoint.nDiffBits = fDiffPrevFromHash ? pIndexSearch->GetBlockHash() : pIndexSearch->nBits;
         aFilterPoint.nDiffBits = pIndexSearch->nBits;
         aFilterPoint.nSpacing = aFilterPoint.nSpacingError = aFilterPoint.nRateOfChange = 0;
