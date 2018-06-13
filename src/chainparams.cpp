@@ -18,9 +18,9 @@
 
 #ifndef NO_PREHISTORIC_COMPILER
 #include <boost/assign/list_of.hpp>
+using namespace boost::assign;
 #endif
 
-using namespace boost::assign;
 
 
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
