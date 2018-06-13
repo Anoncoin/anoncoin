@@ -18,6 +18,7 @@
 #define HARDFORK_BLOCK3 900000
 #endif
 
+
 class uint256;
 class CBlockIndex;
 class CBlockHeader;
@@ -29,8 +30,12 @@ namespace CashIsKing
 class ANCConsensus
 {
 private:
+  void getMainnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult);
+  void getTestnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult);
 
 public:
+  ANCConsensus();
+
   uint256 GetPoWRequiredForNextBlock();
   uint256 GetPoWHashForThisBlock(const CBlockHeader& block);
   //! Block proofs are based on the nBits field found within the block, not the actual hash
@@ -49,12 +54,21 @@ public:
 
   int64_t GetBlockValue(int nHeight, int64_t nFees);
 
+  bool IsUsingGost3411Hash();
+
   static const int32_t nDifficultySwitchHeight1;  // Protocol 1 happened here
   static const int32_t nDifficultySwitchHeight2;  // Protocol 2 starts at this block
   static const int32_t nDifficultySwitchHeight3;  // Protocol 3 began the KGW era
   static const int32_t nDifficultySwitchHeight4;
   static const int32_t nDifficultySwitchHeight5;
   static const int32_t nDifficultySwitchHeight6;
+  static const int32_t nDifficultySwitchHeight7;
+
+#ifdef CPP11
+  bool bShouldDebugLogPoW = false;
+#else
+  bool bShouldDebugLogPoW;
+#endif
 };
 
 }

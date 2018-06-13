@@ -190,7 +190,7 @@ if test "x$enable_debug" = xyes; then
     fi
 fi
 
-AX_CHECK_COMPILE_FLAG([-std=c++11], [CXXFLAGS="$CXXFLAGS -std=c++11 -DNO_PREHISTORIC_COMPILER"])
+AX_CHECK_COMPILE_FLAG([-std=c++11], [CXXFLAGS="$CXXFLAGS -std=c++11 -DNO_PREHISTORIC_COMPILER -DCPP11"])
 
 ## TODO: Remove these hard-coded paths and flags. They are here for the sake of
 ##       compatibility with the legacy buildsystem.
@@ -806,7 +806,7 @@ dnl enable hardfork
 AC_MSG_CHECKING([if a hardfork of the blockchain is required])
 if test x$hardfork_block != xno; then
   AC_MSG_RESULT(yes)
-  AC_DEFINE_UNQUOTED([HARDFORK_BLOCK],[$hardfork_block],[Define to the block number when the hardfork will occur])
+  AC_DEFINE_UNQUOTED([NEXT_HARDFORK_BLOCK],[$hardfork_block],[Define to the block number when the hardfork will occur])
 else
   AC_MSG_RESULT(no)
 fi

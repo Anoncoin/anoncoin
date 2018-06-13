@@ -516,11 +516,13 @@ uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast)
         uintNewDifficulty /= nTargetRateSecs;                                               //! This ties the new difficulty to how far off the time target we are.
     }
     // debug print
-#if defined( LOG_DEBUG_OUTPUT )
-    LogPrintf("Difficulty Retarget - Kimoto Gravity Well v2.0\n");
-    LogPrintf("  Before: %08x %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).ToString());
-    LogPrintf("  After : %08x %s\n", uintNewDifficulty.GetCompact(), uintNewDifficulty.ToString());
-#endif
+    if (ancConsensus.bShouldDebugLogPoW)
+    {
+        LogPrintf("Difficulty Retarget - Kimoto Gravity Well v2.0\n");
+        LogPrintf("  Before: %08x %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).ToString());
+        LogPrintf("  After : %08x %s\n", uintNewDifficulty.GetCompact(), uintNewDifficulty.ToString());
+    }
+
     const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
     if( uintNewDifficulty > uintPOWlimit ) {
         LogPrint( "retarget", "Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", pindexLast->nHeight, uintNewDifficulty.GetCompact(), uintPOWlimit.GetCompact());
@@ -1169,10 +1171,12 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
 // #else
     //if( isMainNetwork() )
 // #endif
-        //LogPrint("retarget", "Prev KGW: %08x %s\n", pIndex->nBits, uint256().SetCompact(pIndex->nBits).ToString());
-    //else
-        //LogPrint("retarget", "  Before: %08x %s\n", pIndex->nBits, uint256().SetCompact(pIndex->nBits).ToString());
-    //LogPrint("retarget", "  After : %08x %s\n", uintTargetBeforeLimits.GetCompact(), uintTargetBeforeLimits.ToString());
+    if (ancConsensus.bShouldDebugLogPoW)
+    {
+        LogPrint( "retarget", "RetargetPID era");
+        LogPrint("retarget", "  Before: %08x %s\n", pIndex->nBits, uint256().SetCompact(pIndex->nBits).ToString());
+        LogPrint("retarget", "  After : %08x %s\n", uintTargetBeforeLimits.GetCompact(), uintTargetBeforeLimits.ToString());
+    }
 
     if( csvfile.is_open() && ( nIntegratorHeight > Checkpoints::GetTotalBlocksEstimate() || GetBoolArg("-retargetpid.logallblocks", false) ) ) {
         csvfile << GetTime() << "," << GetTimeOffset() << "," << nIntegratorHeight << ",";

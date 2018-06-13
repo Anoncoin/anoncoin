@@ -6,11 +6,17 @@
 #include "uint256.h"
 #include "amount.h"
 #include "pow.h"
+#include "util.h"
 
 #include <stdint.h>
 
 namespace CashIsKing
 {
+
+ANCConsensus::ANCConsensus()
+{
+  bShouldDebugLogPoW = GetBoolArg("-extrapowdebug", false);
+}
 
 /**
  * The primary routine which verifies a blocks claim of Proof Of Work
@@ -62,52 +68,84 @@ bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
   return true;
 }
 
+/***
+ * 
+ * Mainnet hardforks are tracked here
+ * 
+ * 
+ ***/
+void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult)
+{
+  if ( pindexLast->nHeight > nDifficultySwitchHeight3 )
+  { //! Start of KGW era
+    //! The new P-I-D retarget algo will start at this hardfork block + 1
+    if ( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
+    {
+      //LogPrintf("NextWorkRequiredKgwV2 selected\n");
+      uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+    }
+    else if ( pindexLast->nHeight >= nDifficultySwitchHeight6 )
+    {
+      uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+    }
+  } else {
+    //LogPrintf("OriginalGetNextWorkRequired selected\n");
+    uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
+  }
+}
+
+/***
+ * 
+ * Testnet hardforks are tracked here
+ * 
+ * 
+ ***/
+void ANCConsensus::getTestnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult)
+{
+  if ( pindexLast->nHeight >= nDifficultySwitchHeight6 )
+  {
+    uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+  }
+}
+
 unsigned int ANCConsensus::GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader)
 {
-    //! Any call to this routine needs to have at least 1 block and the header of a new block.
-    //! ...NULL pointers are not allowed...GR
-    assert(pindexLast);
-    assert( pBlockHeader );
+  //! Any call to this routine needs to have at least 1 block and the header of a new block.
+  //! ...NULL pointers are not allowed...GR
+  assert( pindexLast );
+  assert( pBlockHeader );
 
-    //! All networks now always calculate the RetargetPID output, it needs to have been setup
-    //! during initialization, if unit tests are being run, perhaps where the genesis block
-    //! has been added to the index, but no pRetargetPID setup yet then we detect it here and
-    //! return minimum difficulty for the next block, in any other case the programmer should
-    //! have already at least created a RetargetPID class object and set the master pointer up.
-    uint256 uintResult;
-    if( pRetargetPid ) {
-        //! Under normal conditions, update the PID output and return the next new difficulty required.
-        //! We do this while locked, once the Output Result is captured, it is immediately unlocked.
-        //! Based on height, perhaps during a blockchain initial load, other older algos will need to
-        //! be run, and their result returned.  That is detected below and processed accordingly.
-        {
-            LOCK( cs_retargetpid );
-            if( !pRetargetPid->UpdateOutput( pindexLast, pBlockHeader) )
-                LogPrint( "retarget", "Insufficient BlockIndex, unable to set RetargetPID output values.\n");
-            uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
-            //LogPrintf("pRetargetPid->GetRetargetOutput() selected\n");
-        }
-        //! Testnets always use the P-I-D Retarget Controller, only the MAIN network might not...
-        if( isMainNetwork() ) {
-            if( pindexLast->nHeight > nDifficultySwitchHeight3 ) {      //! Start of KGW era
-                //! The new P-I-D retarget algo will start at this hardfork block + 1
-                if( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
-                {
-                    //LogPrintf("NextWorkRequiredKgwV2 selected\n");
-                    uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
-                }
-            } else {
-                //LogPrintf("OriginalGetNextWorkRequired selected\n");
-                uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
-            }
-        }
-    } else {
-        uintResult = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
-        //LogPrintf("Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) selected\n");
+  //! All networks now always calculate the RetargetPID output, it needs to have been setup
+  //! during initialization, if unit tests are being run, perhaps where the genesis block
+  //! has been added to the index, but no pRetargetPID setup yet then we detect it here and
+  //! return minimum difficulty for the next block, in any other case the programmer should
+  //! have already at least created a RetargetPID class object and set the master pointer up.
+  uint256 uintResult;
+  if ( pRetargetPid ) {
+    //! Under normal conditions, update the PID output and return the next new difficulty required.
+    //! We do this while locked, once the Output Result is captured, it is immediately unlocked.
+    //! Based on height, perhaps during a blockchain initial load, other older algos will need to
+    //! be run, and their result returned.  That is detected below and processed accordingly.
+    {
+      LOCK( cs_retargetpid );
+      if( !pRetargetPid->UpdateOutput( pindexLast, pBlockHeader) )
+        LogPrint( "retarget", "Insufficient BlockIndex, unable to set RetargetPID output values.\n");
+      uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
+      //LogPrintf("pRetargetPid->GetRetargetOutput() selected\n");
     }
-
-    //! Finish by converting the resulting uint256 value into a compact 32 bit 'nBits' value
-    return uintResult.GetCompact();
+  } else {
+    uintResult = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+    //LogPrintf("Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) selected\n");
+  }
+  
+  // Desperate attempt to clean up some code.
+  if ( isMainNetwork() ) {
+    getMainnetStrategy(pindexLast, pBlockHeader, uintResult);
+  } else {
+    getTestnetStrategy(pindexLast, pBlockHeader, uintResult);
+  }
+  //! Finish by converting the resulting uint256 value into a compact 32 bit 'nBits' value
+  return uintResult.GetCompact();
 }
 
 /**
@@ -129,8 +167,8 @@ uint256 ANCConsensus::OriginalGetNextWorkRequired(const CBlockIndex* pindexLast)
     int64_t nLegacyInterval;
 
     if( nHeight >= nDifficultySwitchHeight2 ) {         //! Jump back to sqrt(2) as the factor of adjustment.
-        fNewDifficultyProtocol2 = true;
-        fNewDifficultyProtocol = false;
+      fNewDifficultyProtocol2 = true;
+      fNewDifficultyProtocol = false;
     }
 
     if( fNewDifficultyProtocol ) nTargetTimespanCurrent *= 4;
@@ -139,19 +177,19 @@ uint256 ANCConsensus::OriginalGetNextWorkRequired(const CBlockIndex* pindexLast)
 
     //! Only change once per interval, or at protocol switch height
     if( nHeight % nLegacyInterval != 0 && !fNewDifficultyProtocol2 && nHeight != nDifficultySwitchHeight1 )
-        return uint256().SetCompact( pindexLast->nBits );
+      return uint256().SetCompact( pindexLast->nBits );
 
     //! Anoncoin: This fixes an issue where a 51% attack can change difficulty at will.
     //! Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
     int blockstogoback = nLegacyInterval-1;
     if ((pindexLast->nHeight+1) != nLegacyInterval)
-        blockstogoback = nLegacyInterval;
+      blockstogoback = nLegacyInterval;
 
     //! Go back by what we want to be 14 days worth of blocks
     const CBlockIndex* pindexFirst = pindexLast;
     blockstogoback = fNewDifficultyProtocol2 ? (newTargetTimespan/205) : blockstogoback;
     for (int i = 0; pindexFirst && i < blockstogoback; i++)
-        pindexFirst = pindexFirst->pprev;
+      pindexFirst = pindexFirst->pprev;
     assert(pindexFirst);
 
     //! Limit adjustment step
@@ -159,20 +197,20 @@ uint256 ANCConsensus::OriginalGetNextWorkRequired(const CBlockIndex* pindexLast)
     int64_t nAveragedTimespanMax = fNewDifficultyProtocol ? (nTargetTimespanCurrent*4) : ((nTargetTimespanCurrent*99)/70);
     int64_t nAveragedTimespanMin = fNewDifficultyProtocol ? (nTargetTimespanCurrent/4) : ((nTargetTimespanCurrent*70)/99);
     if (pindexLast->nHeight+1 >= nDifficultySwitchHeight2) {
-        if (nNewSetpoint < nAveragedTimespanMin)
-            nNewSetpoint = nAveragedTimespanMin;
-        if (nNewSetpoint > nAveragedTimespanMax)
-            nNewSetpoint = nAveragedTimespanMax;
+      if (nNewSetpoint < nAveragedTimespanMin)
+        nNewSetpoint = nAveragedTimespanMin;
+      if (nNewSetpoint > nAveragedTimespanMax)
+        nNewSetpoint = nAveragedTimespanMax;
     } else if (pindexLast->nHeight+1 > nDifficultySwitchHeight1) {
-        if (nNewSetpoint < nAveragedTimespanMin/4)
-            nNewSetpoint = nAveragedTimespanMin/4;
-        if (nNewSetpoint > nAveragedTimespanMax)
-            nNewSetpoint = nAveragedTimespanMax;
+      if (nNewSetpoint < nAveragedTimespanMin/4)
+        nNewSetpoint = nAveragedTimespanMin/4;
+      if (nNewSetpoint > nAveragedTimespanMax)
+        nNewSetpoint = nAveragedTimespanMax;
     } else {
-        if (nNewSetpoint < nAveragedTimespanMin)
-            nNewSetpoint = nAveragedTimespanMin;
-        if (nNewSetpoint > nAveragedTimespanMax)
-            nNewSetpoint = nAveragedTimespanMax;
+      if (nNewSetpoint < nAveragedTimespanMin)
+        nNewSetpoint = nAveragedTimespanMin;
+      if (nNewSetpoint > nAveragedTimespanMax)
+        nNewSetpoint = nAveragedTimespanMax;
     }
 
     //! Retarget
@@ -181,26 +219,28 @@ uint256 ANCConsensus::OriginalGetNextWorkRequired(const CBlockIndex* pindexLast)
     bnNew *= nNewSetpoint;
     bnNew /= fNewDifficultyProtocol2 ? nTargetTimespanCurrent : nLegacyTargetTimespan;
     // debug print
-#if defined( LOG_DEBUG_OUTPUT )
-    LogPrintf("Difficulty Retarget - pre-Kimoto Gravity Well era\n");
-    LogPrintf("  TargetTimespan = %lld    ActualTimespan = %lld\n", nLegacyTargetTimespan, nNewSetpoint);
-    LogPrintf("  Before: %08x  %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).ToString());
-    LogPrintf("  After : %08x  %s\n", bnNew.GetCompact(), bnNew.ToString());
-#endif
+    if (bShouldDebugLogPoW)
+    {
+      LogPrintf("Difficulty Retarget - pre-Kimoto Gravity Well era\n");
+      LogPrintf("  TargetTimespan = %lld    ActualTimespan = %lld\n", nLegacyTargetTimespan, nNewSetpoint);
+      LogPrintf("  Before: %08x  %s\n", pindexLast->nBits, uint256().SetCompact(pindexLast->nBits).ToString());
+      LogPrintf("  After : %08x  %s\n", bnNew.GetCompact(), bnNew.ToString());
+    }
+
     const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
     if( bnNew > uintPOWlimit ) {
-        LogPrint( "retarget", "Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", nHeight, bnNew.GetCompact(), uintPOWlimit.GetCompact());
-        bnNew = uintPOWlimit;
+      LogPrint( "retarget", "Block at Height %d, Computed Next Work Required %0x limited and set to Minimum %0x\n", nHeight, bnNew.GetCompact(), uintPOWlimit.GetCompact());
+      bnNew = uintPOWlimit;
     }
     return bnNew;
 }
 
 uint256 ANCConsensus::GetPoWRequiredForNextBlock()
 {
-  CBlockIndex *tip = chainActive.Tip();
-  if (tip)
+  if (IsUsingGost3411Hash())
   {
-    int32_t nHeight = tip->nHeight;
+    //TODO: FIX
+    return uint256(0);
   } else {
     //TODO: FIX
     return uint256(0);
@@ -223,6 +263,23 @@ int64_t ANCConsensus::GetBlockValue(int nHeight, int64_t nFees)
   return nSubsidy + nFees;
 }
 
+bool ANCConsensus::IsUsingGost3411Hash()
+{
+  CBlockIndex *tip = chainActive.Tip();
+  if (tip)
+  {
+    int32_t nHeight = tip->nHeight;
+    if (nHeight >= nDifficultySwitchHeight6)
+    {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
 /**
  * 
  * This function always return scrypt pow, until nDifficultySwitchHeight6
@@ -231,16 +288,9 @@ int64_t ANCConsensus::GetBlockValue(int nHeight, int64_t nFees)
  * */
 uint256 ANCConsensus::GetPoWHashForThisBlock(const CBlockHeader& block)
 {
-  CBlockIndex *tip = chainActive.Tip();
-  if (tip)
+  if (IsUsingGost3411Hash())
   {
-    int32_t nHeight = tip->nHeight;
-    if (nHeight >= nDifficultySwitchHeight6)
-    {
-      return block.GetGost3411Hash();
-    } else {
-      return block.GetHash();
-    }
+    return block.GetGost3411Hash();
   } else {
     return block.GetHash();
   }
@@ -265,14 +315,14 @@ uint256 ANCConsensus::GetWorkProof(const uint256& uintTarget)
 //! floating point value which is meaningful.
 double ANCConsensus::GetLog2Work( const uint256& uintDifficulty )
 {
-    double dResult = 0.0;   //! Return zero, if there are any errors
+  double dResult = 0.0;   //! Return zero, if there are any errors
 
-    uint256 uintWorkProof = GetWorkProof( uintDifficulty );
-    if( !uintWorkProof.IsNull() ) {
-        double dWorkProof = uintWorkProof.getdouble();
-        dResult = (dWorkProof != 0.0) ? log(dWorkProof) / log(2.0) : 0.0;
-    }
-    return dResult;
+  uint256 uintWorkProof = GetWorkProof( uintDifficulty );
+  if( !uintWorkProof.IsNull() ) {
+    double dWorkProof = uintWorkProof.getdouble();
+    dResult = (dWorkProof != 0.0) ? log(dWorkProof) / log(2.0) : 0.0;
+  }
+  return dResult;
 }
 
 uint256 ANCConsensus::GetBlockProof(const ::CBlockIndex& block)
@@ -282,8 +332,8 @@ uint256 ANCConsensus::GetBlockProof(const ::CBlockIndex& block)
   bool fOverflow;
 
   bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
-  if (block.nHeight >= HARDFORK_BLOCK3) {
-      
+  if (IsUsingGost3411Hash()) {
+    //
   }
   return (!fNegative && !fOverflow) ? GetWorkProof( bnTarget ) : ::uint256(0);
 }
@@ -295,7 +345,11 @@ const int32_t ANCConsensus::nDifficultySwitchHeight2 = 77777;  // Protocol 2 sta
 const int32_t ANCConsensus::nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
 const int32_t ANCConsensus::nDifficultySwitchHeight4 = 555555;
 const int32_t ANCConsensus::nDifficultySwitchHeight5 = 585555;
+#ifdef NEXT_HARDFORK_BLOCK
+const int32_t ANCConsensus::nDifficultySwitchHeight6 = NEX T_HARDFORK_BLOCK;
+#else
 const int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
+#endif
+const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
 
-
-}
+} // End namespace CashIsKing
