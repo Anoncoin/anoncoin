@@ -54,15 +54,15 @@ script:
     - OUTDIR=$BASE_OUTDIR/$TRAVIS_PULL_REQUEST/$TRAVIS_JOB_NUMBER-$HOST
     - ANONCOIN_CONFIG_ALL=" --prefix=$TRAVIS_BUILD_DIR/depends/$HOST --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
     - if [ -z "$NO_DEPENDS" ]; then depends/$HOST/native/bin/ccache --max-size=$CCACHE_SIZE; fi
+    - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/depends/$HOST/lib
     - if [ ! -z "$OSX_SDK" ]; then make $MAKEJOBS -C depends HOST=$HOST $DEP_OPTS; fi
     - ./autogen.sh
     - ./configure --cache-file=config.cache $ANONCOIN_CONFIG_ALL $ANONCOIN_CONFIG || ( cat config.log && false)
     - make $MAKEJOBS $GOAL || ( echo "Build failure. Verbose build follows." && make $GOAL V=1 ; false )
-    - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/depends/$HOST/lib
 # TODO: Make unittests, ref https://github.com/Anoncoin/anoncoin/issues/8
 #    - if [ "$RUN_TESTS" = "true" ]; then travis_wait 30 make $MAKEJOBS check VERBOSE=1; fi
 #    - if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then extended="--extended --exclude pruning,dbcrash"; fi
 # TODO: Make unittests, ref https://github.com/Anoncoin/anoncoin/issues/8
 #    - if [ "$RUN_TESTS" = "true" ]; then test/functional/test_runner.py --coverage --quiet ${extended}; fi
-after_script:
-    - echo "Completed<3" && exit 0
+#after_script:
+#    - echo "Completed<3" && exit 0
