@@ -12,12 +12,6 @@
 namespace CashIsKing
 {
 
-//! Some logic in GetNextWorkRequired and all its operations are protected by a CritialSection LOCK,
-//! the pointer itself is initialized to NULL upon program load, and until initialized should allow
-//! any unit testing software to run without producing segment faults or other types of software
-//! failure.
-static CCriticalSection cs_consensus;
-
 /**
  * The primary routine which verifies a blocks claim of Proof Of Work
  */
@@ -87,7 +81,7 @@ unsigned int ANCConsensus::GetNextWorkRequired(const CBlockIndex* pindexLast, co
         //! Based on height, perhaps during a blockchain initial load, other older algos will need to
         //! be run, and their result returned.  That is detected below and processed accordingly.
         {
-            LOCK( cs_consensus );
+            LOCK( cs_retargetpid );
             if( !pRetargetPid->UpdateOutput( pindexLast, pBlockHeader) )
                 LogPrint( "retarget", "Insufficient BlockIndex, unable to set RetargetPID output values.\n");
             uintResult = pRetargetPid->GetRetargetOutput(); //! Always returns a limit checked valid result
@@ -252,6 +246,11 @@ uint256 ANCConsensus::GetPoWHashForThisBlock(const CBlockHeader& block)
   }
 }
 
+//! Primary routine and methodology used to convert an unsigned 256bit value to something
+//! small enough which can be converted to a double floating point number and represent
+//! Difficulty in a meaningful way.  The only value not allowed is 0.  This process inverts
+//! Difficulty value, which is normally thought of as getting harder as the value gets
+//! smaller.  Larger proof values, indicate harder difficulty, and visa-versa...
 uint256 ANCConsensus::GetWorkProof(const uint256& uintTarget)
 {
   // We need to compute 2**256 / (Target+1), but we can't represent 2**256
@@ -259,6 +258,21 @@ uint256 ANCConsensus::GetWorkProof(const uint256& uintTarget)
   // as Target+1, it is equal to ((2**256 - Target - 1) / (Target+1)) + 1,
   // or ~Target / (Target+1) + 1.
   return !uintTarget.IsNull() ? (~uintTarget / (uintTarget + 1)) + 1 : ::uint256(0);
+}
+
+//! The primary method of providing difficulty to the user requires the use of a logarithm scale, that can not be done
+//! for 256bit numbers unless they are first converted to a work proof, then its value can be returned as a double
+//! floating point value which is meaningful.
+double ANCConsensus::GetLog2Work( const uint256& uintDifficulty )
+{
+    double dResult = 0.0;   //! Return zero, if there are any errors
+
+    uint256 uintWorkProof = GetWorkProof( uintDifficulty );
+    if( !uintWorkProof.IsNull() ) {
+        double dWorkProof = uintWorkProof.getdouble();
+        dResult = (dWorkProof != 0.0) ? log(dWorkProof) / log(2.0) : 0.0;
+    }
+    return dResult;
 }
 
 uint256 ANCConsensus::GetBlockProof(const ::CBlockIndex& block)
@@ -271,7 +285,7 @@ uint256 ANCConsensus::GetBlockProof(const ::CBlockIndex& block)
   if (block.nHeight >= HARDFORK_BLOCK3) {
       
   }
-  return (!fNegative && !fOverflow) ? ANCConsensus::GetWorkProof( bnTarget ) : ::uint256(0);
+  return (!fNegative && !fOverflow) ? GetWorkProof( bnTarget ) : ::uint256(0);
 }
 
 //! Difficulty Protocols have changed over the years, at specific points in Anoncoin's history the following SwitchHeight values are those blocks

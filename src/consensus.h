@@ -33,7 +33,13 @@ private:
 public:
   uint256 GetPoWRequiredForNextBlock();
   uint256 GetPoWHashForThisBlock(const CBlockHeader& block);
+  //! Block proofs are based on the nBits field found within the block, not the actual hash
   uint256 GetBlockProof(const ::CBlockIndex& block);
+  //! The primary method of providing difficulty to the user requires the use of a logarithm scale, that can not be done
+  //! for 256bit numbers unless they are first converted to a work proof, then its value can be returned as a double
+  //! floating point value which is meaningful.
+  double GetLog2Work( const uint256& uintDifficulty );
+
   uint256 GetWorkProof(const uint256& uintTarget);
   //! Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
   bool CheckProofOfWork(const uint256& hash, unsigned int nBits);

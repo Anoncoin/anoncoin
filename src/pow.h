@@ -17,6 +17,7 @@
 #include "timedata.h"
 #include "uint256.h"
 #include "consensus.h"
+#include "sync.h"
 
 #include <stdint.h>
 
@@ -233,14 +234,8 @@ extern CRetargetPidController *pRetargetPid;    //! One retarget object is used 
 
 //extern ANCConsensus ancConsensus;
 
-//!
-//! Global in scope, these routines are implemented in pow.cpp:
-//!
+extern CCriticalSection cs_retargetpid;
 
-//! Work proofs, checking proof of, Log/Log2 calculations
-extern uint256 GetWorkProof(const uint256& uintTarget);
-//! Given a BlockIndex entry, the blocks proof of work calculation is returned as a 256bit number
-extern uint256 GetBlockProof(const CBlockIndex& block);
 //! Given a 256bit difficulty number(hash), this function uses its WorkProof to then calculate log(x)/log(2) and return the floating point result
 extern double GetLog2Work( const uint256& uintDifficulty );
 //! Alternative method of providing difficulty to the user, it is linear and based on the minimum work required.

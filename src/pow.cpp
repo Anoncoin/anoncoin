@@ -56,51 +56,9 @@ const int64_t nTargetSpacing = 180;
 //! network difficulty, but that would be true for any retarget system having no blockchain or at
 //! most the genesis block.  Once initialized it runs when needed, as fast as possible, and from
 //! whatever thread is calling it for a GetNextWorkRequired() result...GR
-static CCriticalSection cs_retargetpid;
+CCriticalSection cs_retargetpid;
 CRetargetPidController *pRetargetPid = NULL;
 
-//! Primary routine and methodology used to convert an unsigned 256bit value to something
-//! small enough which can be converted to a double floating point number and represent
-//! Difficulty in a meaningful way.  The only value not allowed is 0.  This process inverts
-//! Difficulty value, which is normally thought of as getting harder as the value gets
-//! smaller.  Larger proof values, indicate harder difficulty, and visa-versa...
-uint256 GetWorkProof(const uint256& uintTarget)
-{
-    // We need to compute 2**256 / (Target+1), but we can't represent 2**256
-    // as it's too large for a uint256. However, as 2**256 is at least as large
-    // as Target+1, it is equal to ((2**256 - Target - 1) / (Target+1)) + 1,
-    // or ~Target / (Target+1) + 1.
-    return !uintTarget.IsNull() ? (~uintTarget / (uintTarget + 1)) + 1 : uint256(0);
-}
-
-//! Block proofs are based on the nBits field found within the block, not the actual hash
-uint256 GetBlockProof(const CBlockIndex& block)
-{
-    uint256 bnTarget;
-    bool fNegative;
-    bool fOverflow;
-
-    bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
-    if (block.nHeight >= HARDFORK_BLOCK3) {
-        
-    }
-    return (!fNegative && !fOverflow) ? GetWorkProof( bnTarget ) : uint256(0);
-}
-
-//! The primary method of providing difficulty to the user requires the use of a logarithm scale, that can not be done
-//! for 256bit numbers unless they are first converted to a work proof, then its value can be returned as a double
-//! floating point value which is meaningful.
-double GetLog2Work( const uint256& uintDifficulty )
-{
-    double dResult = 0.0;   //! Return zero, if there are any errors
-
-    uint256 uintWorkProof = GetWorkProof( uintDifficulty );
-    if( !uintWorkProof.IsNull() ) {
-        double dWorkProof = uintWorkProof.getdouble();
-        dResult = (dWorkProof != 0.0) ? log(dWorkProof) / log(2.0) : 0.0;
-    }
-    return dResult;
-}
 
 //! The secondary method of providing difficulty to the user is linear and based on the minimum work required.
 //! It is done in such a way that 3 digits of precision to the right of the decimal point is produced in the
@@ -725,7 +683,7 @@ bool CRetargetPidController::LimitOutputDifficultyChange( uint256& uintResult, c
         }
     } 
 
-    if (uintResult < uintDiffAtMaxDecreaseTip && nTimeSinceLastBlock >= nIntervalForceExtDiffDecrease && pIndex->nHeight > HARDFORK_BLOCK2) { 
+    if (uintResult < uintDiffAtMaxDecreaseTip && nTimeSinceLastBlock >= nIntervalForceExtDiffDecrease && pIndex->nHeight > ancConsensus.nDifficultySwitchHeight5) {
         uintResult = uintDiffAtMaxDecreaseTip;
 		fLimited = true; }
 
@@ -904,7 +862,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     
     nDividerSum = 0;
     nWeightedAvgTipBlocksUp = 4;
-    if( pIndex->nHeight > HARDFORK_BLOCK2 )
+    if( pIndex->nHeight > ancConsensus.nDifficultySwitchHeight5 )
         nWeightedAvgTipBlocksUp = WEIGHTEDAVGTIPBLOCKS_UP;
 
     assert(nWeightedAvgTipBlocksUp <= nTipFilterBlocks);
@@ -919,7 +877,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
 
     nDividerSum = 0;
     nWeightedAvgTipBlocksDown = 6;
-    if( pIndex->nHeight > HARDFORK_BLOCK2 )
+    if( pIndex->nHeight > ancConsensus.nDifficultySwitchHeight5 )
         nWeightedAvgTipBlocksDown = WEIGHTEDAVGTIPBLOCKS_DOWN;
 
     assert(nWeightedAvgTipBlocksDown <= nTipFilterBlocks);
@@ -944,7 +902,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
         uintPrevDiffForLimitsTipUp = uintTipDiffCalculatedUp;     //Previous difficulty calculated on the partial tip blocks selected for diff UP
         uintPrevDiffForLimitsTipDown = uintTipDiffCalculatedDown; //Previous difficulty calculated on the partial tip blocks selected for diff DOWN
 
-    if( pIndex->nHeight > HARDFORK_BLOCK2 ) { 
+    if( pIndex->nHeight > ancConsensus.nDifficultySwitchHeight5 ) {
         nMaxDiffIncrease = NMAXDIFFINCREASE2;
         nMaxDiffDecrease = NMAXDIFFDECREASE2;
     }
@@ -1066,13 +1024,13 @@ bool CRetargetPidController::ChargeIntegrator( const CBlockIndex* pIndex )      
     //! for use as part of the new pid retarget output.  Save the results for the next steps...
     dIntegratorBlockTime = (double)nIntegratorChargeTime / (double)(nBlocksSampled - 1);
 
-    if (dIntegratorBlockTime < DMININTEGRATOR && nIntegratorHeight <= HARDFORK_BLOCK2) { 
+    if (dIntegratorBlockTime < DMININTEGRATOR && nIntegratorHeight <= ancConsensus.nDifficultySwitchHeight5) {
         dIntegratorBlockTime = DMININTEGRATOR;    //! Capped to prevent integrator windup   
-    } else if (dIntegratorBlockTime < DMININTEGRATOR2 && nIntegratorHeight > HARDFORK_BLOCK2) {
+    } else if (dIntegratorBlockTime < DMININTEGRATOR2 && nIntegratorHeight > ancConsensus.nDifficultySwitchHeight5) {
         dIntegratorBlockTime = DMININTEGRATOR2;
-    } else if (dIntegratorBlockTime > DMAXINTEGRATOR && nIntegratorHeight <= HARDFORK_BLOCK2) {
+    } else if (dIntegratorBlockTime > DMAXINTEGRATOR && nIntegratorHeight <= ancConsensus.nDifficultySwitchHeight5) {
         dIntegratorBlockTime = DMAXINTEGRATOR;    
-    } else if (dIntegratorBlockTime > DMAXINTEGRATOR2 && nIntegratorHeight > HARDFORK_BLOCK2) {
+    } else if (dIntegratorBlockTime > DMAXINTEGRATOR2 && nIntegratorHeight > ancConsensus.nDifficultySwitchHeight5) {
         dIntegratorBlockTime = DMAXINTEGRATOR2;
     }
     return true;
@@ -1188,7 +1146,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
             csvfile << "PrevDiff" << "," << "NewDiff" << ",";
             csvfile << "NetKHPS" << "," << "MineKHPS" << ",";
             csvfile << "PrevLog2" << "," << "NewLog2" << "," << "ChainLog2" << ",";
-            if( isMainNetwork() && pIndex->nHeight < HARDFORK_BLOCK ) {
+            if( isMainNetwork() && pIndex->nHeight < ancConsensus.nDifficultySwitchHeight4 ) {
                 csvfile << "KgwDiff" << "," << "KgwLog2" << ",";
             }
             csvfile << "PID_Difficulty_as_256_bits" << "\n";
@@ -1239,13 +1197,13 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
         double dMinerKHPS = GetFastMiningKHPS();
         csvfile << dNetKHPS << "," << dMinerKHPS << ",";
         //! Calculate and add the Log2 work calculations
-        csvfile << GetLog2Work(uintPrevDiffCalculated) << "," << GetLog2Work(uintTargetAfterLimits) << "," << GetLog2Work(pIndex->nChainWork) << ",";
+        csvfile << ancConsensus.GetLog2Work(uintPrevDiffCalculated) << "," << ancConsensus.GetLog2Work(uintTargetAfterLimits) << "," << ancConsensus.GetLog2Work(pIndex->nChainWork) << ",";
 
-        if( isMainNetwork() && pIndex->nHeight <= HARDFORK_BLOCK ) {
+        if( isMainNetwork() && pIndex->nHeight <= ancConsensus.nDifficultySwitchHeight4 ) {
             //! Add the KGW value for work, it is simply the nBits as found in the current blockheader
             uint256 KgwDiff;
             KgwDiff.SetCompact(pBlockHeader->nBits);
-            csvfile << GetLinearWork(KgwDiff, uintPOWlimit) <<  "," << GetLog2Work(KgwDiff) <<  ",";
+            csvfile << GetLinearWork(KgwDiff, uintPOWlimit) <<  "," << ancConsensus.GetLog2Work(KgwDiff) <<  ",";
         }
         csvfile << "\"0x" << uintTargetAfterLimits.ToString() << "\"" << "\n";
         csvfile.close();
@@ -1301,7 +1259,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
                 uintDiffCalc *= (uint32_t)nOutputTimePi;
                 uintDiffCalc /= (uint32_t)nTargetSpacing;
                 LimitOutputDifficultyChange( uintDiffPi, uintDiffCalc, uintPOWlimit, pIndex);
-                double dNewLog2Pi = GetLog2Work( uintDiffPi );
+                double dNewLog2Pi = ancConsensus.GetLog2Work( uintDiffPi );
                 double dNewDiffPi = GetLinearWork(uintDiffPi, uintPOWlimit);
 
                 //! Run the PID controller calculations
@@ -1311,7 +1269,7 @@ void CRetargetPidController::RunReports( const CBlockIndex* pIndex, const CBlock
                 uintDiffCalc *= (uint32_t)nOutputTimePid;
                 uintDiffCalc /= (uint32_t)nTargetSpacing;
                 LimitOutputDifficultyChange( uintDiffPid, uintDiffCalc, uintPOWlimit, pIndex);
-                double dNewLog2Pid = GetLog2Work( uintDiffPid );
+                double dNewLog2Pid = ancConsensus.GetLog2Work( uintDiffPid );
                 double dNewDiffPid = GetLinearWork(uintDiffPid, uintPOWlimit);
 
                 //! Log the result calculations

@@ -1255,7 +1255,7 @@ Value getretargetpid(const Array& params, bool fHelp)
 
         sFormat = strprintf( "%08x", RetargetState.uintTargetDiff.GetCompact() );
         result.push_back(Pair("nextdiffbits", sFormat));
-        result.push_back(Pair("nextdifflog2", (double)GetLog2Work(RetargetState.uintTargetDiff)));
+        result.push_back(Pair("nextdifflog2", (double)ancConsensus.GetLog2Work(RetargetState.uintTargetDiff)));
         result.push_back(Pair("nextdiffx256", RetargetState.uintTargetDiff.ToString()));
 
         result.push_back(Pair("tipspacing", (double)RetargetState.dAverageTipSpacing));

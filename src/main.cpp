@@ -1382,7 +1382,7 @@ void CheckForkWarningConditions()
     if (pindexBestForkTip && chainActive.Height() - pindexBestForkTip->nHeight >= 240)
         pindexBestForkTip = NULL;
 
-    if (pindexBestForkTip || (pindexBestInvalid && pindexBestInvalid->nChainWork > chainActive.Tip()->nChainWork + (GetBlockProof(*chainActive.Tip()) * 6)))
+    if (pindexBestForkTip || (pindexBestInvalid && pindexBestInvalid->nChainWork > chainActive.Tip()->nChainWork + (ancConsensus.GetBlockProof(*chainActive.Tip()) * 6)))
     {
         if (!fLargeWorkForkFound && pindexBestForkBase)
         {
@@ -1434,7 +1434,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
     // the 20-block condition and from this always have the most-likely-to-cause-warning fork
     // ToDo: Note to team--> GR Adjusted values based on Anoncoin 3min target time, although setting 20 blocks was arbitrary
     if (pfork && (!pindexBestForkTip || (pindexBestForkTip && pindexNewForkTip->nHeight > pindexBestForkTip->nHeight)) &&
-            pindexNewForkTip->nChainWork - pfork->nChainWork > (GetBlockProof(*pfork) * 20) &&
+            pindexNewForkTip->nChainWork - pfork->nChainWork > (ancConsensus.GetBlockProof(*pfork) * 20) &&
             chainActive.Height() - pindexNewForkTip->nHeight < 240)
     {
         pindexBestForkTip = pindexNewForkTip;
@@ -1471,10 +1471,10 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
 
     LogPrintf("InvalidChainFound: invalid block=%s  height=%d  log2_work=%.8g  date=%s\n",
       pindexNew->GetBlockHash().ToString(), pindexNew->nHeight,
-      GetLog2Work(pindexNew->nChainWork), DateTimeStrFormat("%Y-%m-%d %H:%M:%S",
+      ancConsensus.GetLog2Work(pindexNew->nChainWork), DateTimeStrFormat("%Y-%m-%d %H:%M:%S",
       pindexNew->GetBlockTime()));
     LogPrintf("InvalidChainFound:  current best=%s  height=%d  log2_work=%.8g  date=%s\n",
-      chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), GetLog2Work(chainActive.Tip()->nChainWork),
+      chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), ancConsensus.GetLog2Work(chainActive.Tip()->nChainWork),
       DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()));
     CheckForkWarningConditions();
 }
@@ -2052,7 +2052,7 @@ void static UpdateTip(CBlockIndex *pindexNew) {
     // Limit the log output allot with this if your initializing the blockchain
     if( !nReportInterval || chainActive.Height() % nReportInterval == 0 )
         LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s progress=%f  cache=%u\n",
-          chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), GetLog2Work(chainActive.Tip()->nChainWork), (unsigned long)chainActive.Tip()->nChainTx,
+          chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), ancConsensus.GetLog2Work(chainActive.Tip()->nChainWork), (unsigned long)chainActive.Tip()->nChainTx,
           DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
           Checkpoints::GuessVerificationProgress(chainActive.Tip()), (unsigned int)pcoinsTip->GetCacheSize());
 
@@ -2481,7 +2481,7 @@ static CBlockIndex* AddToBlockIndex(const CBlockHeader& aHeader)
         assert( uintRealHash == Params().HashGenesisBlock() );
     // ToDo: Above, instead of crashing due to assertion failure, if the previous block hash is zero..or the realhash isn't found,
     // log them or something better, perhaps log a reindex blockchain request & start shutdown?
-    pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
+    pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + ancConsensus.GetBlockProof(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (pindexBestHeader == NULL || pindexBestHeader->nChainWork < pindexNew->nChainWork)
         pindexBestHeader = pindexNew;
@@ -3204,7 +3204,7 @@ bool static LoadBlockIndexDB()
     BOOST_FOREACH(const BlockTreeEntry& entry, vSortedByHeight)
     {
         CBlockIndex* pindex = entry.pBlockIndex;
-        pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
+        pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + ancConsensus.GetBlockProof(*pindex);
         if( (nHeight < 25000 && nHeight % 5000 == 0 ) || nHeight % 25000 == 0 )
             LogPrintf( "%s : Block @ Height=%6d, ChainWork=%s\n", __func__, entry.nHeight, pindex->nChainWork.ToString() );
         nHeight++;
