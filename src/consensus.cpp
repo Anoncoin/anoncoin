@@ -12,10 +12,61 @@
 namespace CashIsKing
 {
 
+//! Some logic in GetNextWorkRequired and all its operations are protected by a CritialSection LOCK,
+//! the pointer itself is initialized to NULL upon program load, and until initialized should allow
+//! any unit testing software to run without producing segment faults or other types of software
+//! failure.
 static CCriticalSection cs_consensus;
 
+/**
+ * The primary routine which verifies a blocks claim of Proof Of Work
+ */
 bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
-{}
+{
+  bool fNegative;
+  bool fOverflow;
+  uint256 bnTarget;
+
+  bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+  CBlockIndex *tip = chainActive.Tip();
+  bool fStartedUsingGost3411 = false;
+  if (tip)
+  {
+    int32_t nHeight = tip->nHeight;
+    if (nHeight >= nDifficultySwitchHeight6)
+    {
+      fStartedUsingGost3411 = true;
+    }
+  }
+
+  const uint256 proofOfWorkLimit = 
+      (fStartedUsingGost3411) ? 
+        Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) 
+        : Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+
+  //! Check range of the Target Difficulty value stored in a block
+  if( fNegative || bnTarget == 0 || fOverflow || bnTarget > proofOfWorkLimit )
+    return error("CheckProofOfWorkGost3411() : nBits below minimum work");
+
+  //! Check the proof of work matches claimed amount
+  if (hash > bnTarget) {
+    //! There is one possibility where this is allowed, if this is TestNet and this hash is better than the minimum
+    //! and the Target hash (as found in the block) is equal to the starting difficulty.  Then we assume this check
+    //! is being called for one of the first mocktime blocks used to initialize the chain.
+    bool fTestNet = TestNet();
+    uint256 uintStartingDiff;
+    if( fTestNet ) uintStartingDiff = pRetargetPid->GetTestNetStartingDifficulty();
+    if( !fTestNet || hash > proofOfWorkLimit || uintStartingDiff.GetCompact() != nBits ) {
+      LogPrintf( "%s : Failed. ", __func__ );
+      if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
+      LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
+      return error("CheckProofOfWorkGost3411() : hash doesn't match nBits");
+    }
+  }
+
+  return true;
+}
 
 unsigned int ANCConsensus::GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader)
 {

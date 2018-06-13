@@ -10,6 +10,7 @@
 #include "chain.h"
 #include "chainparams.h"
 #include "checkpoints.h"
+#include "consensus.h"
 #include "miner.h"
 #include "sync.h"
 #include "timedata.h"
@@ -123,69 +124,14 @@ double GetLinearWork( const uint256& uintDifficulty, const uint256& uintPowLimit
     return uint256(uintPowLimitX1K / uintDifficulty).getdouble() / 1000.0;
 }
 
-/**
- * The primary routine which verifies a blocks claim of Proof Of Work
- */
 bool CheckProofOfWork(const uint256& hash, unsigned int nBits)
 {
-    bool fNegative;
-    bool fOverflow;
-    uint256 bnTarget;
-
-    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
-
-    //! Check range of the Target Difficulty value stored in a block
-    if( fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) )
-        return error("CheckProofOfWork() : nBits below minimum work");
-
-    //! Check the proof of work matches claimed amount
-    if (hash > bnTarget) {
-        //! There is one possibility where this is allowed, if this is TestNet and this hash is better than the minimum
-        //! and the Target hash (as found in the block) is equal to the starting difficulty.  Then we assume this check
-        //! is being called for one of the first mocktime blocks used to initialize the chain.
-        bool fTestNet = TestNet();
-        uint256 uintStartingDiff;
-        if( fTestNet ) uintStartingDiff = pRetargetPid->GetTestNetStartingDifficulty();
-        if( !fTestNet || hash > Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) || uintStartingDiff.GetCompact() != nBits ) {
-            LogPrintf( "%s : Failed. ", __func__ );
-            if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
-            LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
-            return error("CheckProofOfWork() : hash doesn't match nBits");
-        }
-    }
-
-    return true;
+    return ancConsensus.CheckProofOfWork(hash,nBits);
 }
 
 bool CheckProofOfWorkGost3411(const uint256& hash, unsigned int nBits)
 {
-    bool fNegative;
-    bool fOverflow;
-    uint256 bnTarget;
-
-    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
-
-    //! Check range of the Target Difficulty value stored in a block
-    if( fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) )
-        return error("CheckProofOfWorkGost3411() : nBits below minimum work");
-
-    //! Check the proof of work matches claimed amount
-    if (hash > bnTarget) {
-        //! There is one possibility where this is allowed, if this is TestNet and this hash is better than the minimum
-        //! and the Target hash (as found in the block) is equal to the starting difficulty.  Then we assume this check
-        //! is being called for one of the first mocktime blocks used to initialize the chain.
-        bool fTestNet = TestNet();
-        uint256 uintStartingDiff;
-        if( fTestNet ) uintStartingDiff = pRetargetPid->GetTestNetStartingDifficulty();
-        if( !fTestNet || hash > Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) || uintStartingDiff.GetCompact() != nBits ) {
-            LogPrintf( "%s : Failed. ", __func__ );
-            if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
-            LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
-            return error("CheckProofOfWorkGost3411() : hash doesn't match nBits");
-        }
-    }
-
-    return true;
+   return ancConsensus.CheckProofOfWork(hash,nBits);
 }
 
 //! Return average network hashes per second based on the last 'lookup' blocks, a minimum of 2 are required.
@@ -1590,10 +1536,10 @@ bool SetRetargetToBlock( const CBlockIndex* pIndex )
 
     if( isMainNetwork() ) {
         //! The new algo will happen at the hardfork block + 1, otherwise its an old KGW block.
-        int32_t nDistance = nDifficultySwitchHeight4 - pIndex->nHeight;
+        int32_t nDistance = CashIsKing::ANCConsensus::nDifficultySwitchHeight4 - pIndex->nHeight;
         fBasedOnKGW = nDistance >= 0;
         if( nDistance > 0 ) {         // likekly KGW is being used
-            sNextWorkRequired = ( pIndex->nHeight > nDifficultySwitchHeight3 ) ?
+            sNextWorkRequired = ( pIndex->nHeight > CashIsKing::ANCConsensus::nDifficultySwitchHeight3 ) ?
                                   strprintf( "For this and next %s blocks, ProofOfWork based on KGW. Required=", nDistance ) :
                                   "Next ProofOfWork based on old algo. Required=";
         }
