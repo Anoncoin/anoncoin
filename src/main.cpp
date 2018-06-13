@@ -2639,19 +2639,17 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
 
-#if defined( HARDFORK_BLOCK )
     CBlockIndex *tip = chainActive.Tip();
-
     // AIP09 : Fast accept early blockchain
     if (tip)
-        if (tip->nHeight < HARDFORK_BLOCK) return true;
-#endif
+        if (tip->nHeight < ancConsensus.nDifficultySwitchHeight4) return true;
+
     // Check proof of work matches claimed amount
     uint256 hash;
     // Because tip isn't always available in the startup, we'll have to check it first of all.
     if (tip)
     {
-        if (tip->nHeight < HARDFORK_BLOCK3)
+        if (tip->nHeight < ancConsensus.nDifficultySwitchHeight6)
         {
             hash=block.GetHash();
         } else {
@@ -2669,11 +2667,8 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     // not be used unless this value is reduced to mere seconds.
     int64_t nTimeLimit = GetAdjustedTime();
 
-#if defined( HARDFORK_BLOCK )
     if(tip) nTimeLimit += ( tip->nHeight < HARDFORK_BLOCK ) ? 2 * 60 * 60 : 15 * 60;
-#else
-    nTimeLimit += 2 * 60 * 60;
-#endif
+
     if( block.GetBlockTime() > nTimeLimit )
         return state.Invalid(error("CheckBlockHeader(): block timestamp too far in the future"),
                              REJECT_INVALID, "time-too-new");
