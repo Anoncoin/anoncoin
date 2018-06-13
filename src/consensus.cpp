@@ -1,7 +1,8 @@
 #include "consensus.h"
 
-#include "uint256.h"
+#include "block.h"
 #include "chain.h"
+#include "uint256.h"
 
 namespace CashIsKing
 {
@@ -9,9 +10,40 @@ namespace CashIsKing
 bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
 {}
 
-uint256 ANCConsensus::GetPoWHashForBlock(const ::CBlockIndex* pIndex)
-{}
+uint256 ANCConsensus::GetPoWHashForNextBlock()
+{
+  CBlockIndex *tip = chainActive.Tip();
+  if (tip)
+  {
+    int32_t nHeight = tip->nHeight;
+  } else {
+    //TODO: FIX
+    return uint256(0);
+  }
+}
 
+/**
+ * 
+ * This function always return scrypt pow, until nDifficultySwitchHeight6
+ * where GOST3411 take over.
+ * 
+ * */
+uint256 ANCConsensus::GetPoWHashForThisBlock(const CBlockHeader& block)
+{
+  CBlockIndex *tip = chainActive.Tip();
+  if (tip)
+  {
+    int32_t nHeight = tip->nHeight;
+    if (nHeight >= nDifficultySwitchHeight6)
+    {
+      return block.GetGost3411Hash();
+    } else {
+      return block.GetHash();
+    }
+  } else {
+    return block.GetHash();
+  }
+}
 
 uint256 ANCConsensus::GetWorkProof(const uint256& uintTarget)
 {

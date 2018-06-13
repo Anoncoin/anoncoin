@@ -15,6 +15,7 @@
 
 class uint256;
 class CBlockIndex;
+class CBlockHeader;
 
 namespace CashIsKing
 {
@@ -24,7 +25,8 @@ class ANCConsensus
 private:
 
 public:
-  uint256 GetPoWHashForBlock(const ::CBlockIndex* pIndex);
+  uint256 GetPoWHashForNextBlock();
+  uint256 GetPoWHashForThisBlock(const CBlockHeader& block);
   uint256 GetBlockProof(const ::CBlockIndex& block);
   uint256 GetWorkProof(const uint256& uintTarget);
   bool CheckProofOfWork(const uint256& hash, unsigned int nBits);
