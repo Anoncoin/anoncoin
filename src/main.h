@@ -15,6 +15,7 @@
 #include "block.h"
 #include "chain.h"
 #include "chainparams.h"
+#include "consensus.h"
 #include "coins.h"
 #include "net.h"
 #include "script.h"
@@ -33,6 +34,8 @@
 #include <vector>
 
 #include <boost/unordered_map.hpp>
+
+using namespace CashIsKing;
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -548,6 +551,9 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex *pindex);
 
 /** The currently-connected chain of blocks. */
 extern CChain chainActive;
+
+/** The Anoncoin hardfork manager */
+extern CashIsKing::ANCConsensus ancConsensus;
 
 /** Global variable that points to the active CCoinsView (protected by cs_main) */
 extern CCoinsViewCache *pcoinsTip;

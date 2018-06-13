@@ -101,6 +101,7 @@ ANONCOIN_CORE_H = \
   coins.h \
   compat.h \
   compressor.h \
+  consensus.h \
   core_io.h \
   crypter.h \
   db.h \
@@ -171,6 +172,7 @@ libanoncoin_server_a_SOURCES = \
   alert.cpp \
   bloom.cpp \
   chain.cpp \
+  consensus.cpp \
   checkpoints.cpp \
   init.cpp \
   leveldbwrapper.cpp \
