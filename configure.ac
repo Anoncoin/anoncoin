@@ -7,6 +7,8 @@ define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2018)
 
+m4_include([build-aux/m4/ax_cxx_compile_stdcxx_11.m4])
+
 # In configure.ac, lines commented with '#' that occur after AC_INIT will appear in the resulting configure script. dnl comments will not.
 # One purpose of dnl is to discard unwanted newlines in an effort to make the configure script readable.
 # Convention here is to discard lines which begin with ## preceded only by whitespace. (Although ### comments carry through to the Makefile.in)
@@ -190,7 +192,9 @@ if test "x$enable_debug" = xyes; then
     fi
 fi
 
-AX_CHECK_COMPILE_FLAG([-std=c++11], [CXXFLAGS="$CXXFLAGS -std=c++11 -DNO_PREHISTORIC_COMPILER -DCPP11"])
+
+#AX_CXX_COMPILE_STDCXX_11([], [CXXFLAGS="$CXXFLAGS -std=c++11 -DNO_PREHISTORIC_COMPILER -DCPP11"])
+AX_CXX_COMPILE_STDCXX_11([ext],[optional])
 
 ## TODO: Remove these hard-coded paths and flags. They are here for the sake of
 ##       compatibility with the legacy buildsystem.
@@ -349,6 +353,7 @@ case $host in
      ;;
    *linux*)
      TARGET_OS=linux
+     CPPFLAGS="$CPPFLAGS -DLINUX"
      ;;
    *)
      ;;
@@ -552,7 +557,7 @@ fi
 ANONCOIN_QT_INIT
 
 dnl sets $anoncoin_enable_qt, $anoncoin_enable_qt_test, $anoncoin_enable_qt_dbus
-ANONCOIN_QT_CONFIGURE([$use_pkgconfig], [qt4])
+ANONCOIN_QT_CONFIGURE([$use_pkgconfig], [qt5])
 
 if test x$build_anoncoin_utils$build_anoncoind$anoncoin_enable_qt$use_tests = xnononono; then
     use_boost=no
