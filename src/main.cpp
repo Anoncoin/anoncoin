@@ -1127,7 +1127,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
         if (isMainNetwork() && !AreInputsStandard(tx, view))
             return error("AcceptToMemoryPool: : nonstandard transaction input");
 
-#ifdef HARDFORK_BLOCK
         // ToDo: Ask the dev team about including this...
         // Check that the transaction doesn't have an excessive number of
         // sigops, making it impossible to mine. Since the coinbase transaction
@@ -1141,7 +1140,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
                              error("AcceptToMemoryPool : too many sigops %s, %d > %d",
                                    hash.ToString(), nSigOps, MAX_TX_SIGOPS),
                              REJECT_NONSTANDARD, "bad-txns-too-many-sigops");
-#endif
+
         int64_t nValueOut = tx.GetValueOut();
         int64_t nFees = nValueIn - nValueOut;
         double dPriority = view.GetPriority(tx, chainActive.Height());
@@ -2667,7 +2666,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     // not be used unless this value is reduced to mere seconds.
     int64_t nTimeLimit = GetAdjustedTime();
 
-    if(tip) nTimeLimit += ( tip->nHeight < HARDFORK_BLOCK ) ? 2 * 60 * 60 : 15 * 60;
+    if(tip) nTimeLimit += ( tip->nHeight < ancConsensus.nDifficultySwitchHeight4 ) ? 2 * 60 * 60 : 15 * 60;
 
     if( block.GetBlockTime() > nTimeLimit )
         return state.Invalid(error("CheckBlockHeader(): block timestamp too far in the future"),
@@ -2761,7 +2760,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight), REJECT_CHECKPOINT, "checkpoint mismatch");
 
     // Don't fast skip in testnet
-    if (nHeight < HARDFORK_BLOCK && !TestNet())
+    if (nHeight < ancConsensus.nDifficultySwitchHeight4 && !TestNet())
         return true;
 
     if (!Checkpoints::IsBlockInCheckpoints(nHeight) && (nHeight > pcheckpoint->nHeight+100) )
@@ -2769,7 +2768,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         // Check proof of work
         auto checkPowVal = GetNextWorkRequired(pindexPrev, &block);
         if (block.nBits != checkPowVal ) {
-            if ( (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() ) && (nHeight < HARDFORK_BLOCK || nHeight > HARDFORK_BLOCK2) ) {
+            if ( (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() ) && (nHeight < ancConsensus.nDifficultySwitchHeight4 || nHeight > ancConsensus.nDifficultySwitchHeight5) ) {
                 LogPrintf("Block's nBits are %s versus %s which is required for block height %d.", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),nHeight);
                 LogPrintf("\n(%d, uint256(\"0x%s\"))\n", nHeight, block.GetPoWHash(nHeight,true).ToString());
                 return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
@@ -2781,13 +2780,12 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
         return state.Invalid(error("%s : block's timestamp is too early", __func__),
                              REJECT_INVALID, "time-too-old");
-#if defined( HARDFORK_BLOCK )
+
     // Reject block.nVersion=1 blocks
     // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority test was
     // set to always return false.  As of 3/15/2015 in the last 10000 blocks over 700 where version 1 blocks
-    if( block.nVersion < 2 && nHeight > HARDFORK_BLOCK )                // We'll start enforcing the new rule
+    if( block.nVersion < 2 && nHeight > ancConsensus.nDifficultySwitchHeight4 )                // We'll start enforcing the new rule
         return state.Invalid(error("%s : rejected nVersion=1 block", __func__), REJECT_OBSOLETE, "bad-version");
-#endif
 
     return true;
 }
@@ -2797,7 +2795,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CB
     const int32_t nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
 
     // Don't skip checks in testnet which don't have same bugs in early chain.
-    if (nHeight < HARDFORK_BLOCK && !TestNet()) return true;
+    if (nHeight < ancConsensus.nDifficultySwitchHeight4 && !TestNet()) return true;
 
     // Check that all transactions are finalized
     BOOST_FOREACH(const CTransaction& tx, block.vtx)
@@ -2878,7 +2876,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     }
     int nHeight = pindex->nHeight;
 
-    if (nHeight >= HARDFORK_BLOCK) {
+    if (nHeight >= ancConsensus.nDifficultySwitchHeight4) {
         if ((!CheckBlock(block, state)) || !ContextualCheckBlock(block, state, pindex->pprev)) {
             if (state.IsInvalid() && !state.CorruptionPossible()) {
                 pindex->nStatus |= BLOCK_FAILED_VALID;
@@ -3170,7 +3168,7 @@ bool static LoadBlockIndexDB()
         uint256 gost3411Hash = aHeader.GetGost3411Hash();
 
         //! Could do a quick check of the nBits to confirm pow here...its fast.
-        if( !CheckProofOfWork( (nHeight < HARDFORK_BLOCK3) ? aRealHash : gost3411Hash , aHeader.nBits ) )
+        if( !CheckProofOfWork( (nHeight < ancConsensus.nDifficultySwitchHeight6) ? aRealHash : gost3411Hash , aHeader.nBits ) )
             return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());
         //LogPrintf( "fakeBIhash: %s aRealHash: %s Gost3411Hash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), gost3411Hash.ToString(), nHeight );
         vFakeHashes[nHeight++] = aFakeHash; //! Save it for later on the 2nd pass
@@ -3779,19 +3777,13 @@ string GetWarnings(string strFor)
         strRPC = "test";
 
     if (CLIENT_VERSION_IS_RELEASE) {
-#if defined( HARDFORK_BLOCK )
         ostringstream ss;
-        ss << HARDFORK_BLOCK2;
+        ss << ancConsensus.nDifficultySwitchHeight5;
         strStatusBar = "This is a HARDFORK build for block " + ss.str();
-#endif
     } else {
-#if defined( HARDFORK_BLOCK )
         ostringstream ss;
-        ss << HARDFORK_BLOCK2;
+        ss << ancConsensus.nDifficultySwitchHeight5;
         strStatusBar = "This is a HARDFORK pre-release test build, and will fork at block " + ss.str();
-#else
-        strStatusBar = _("This is a pre-release test build - use at your own risk");
-#endif
         // The priority of this message remains @ 0, yet if nothing else is found, it will be displayed by default for pre-release or hardfork builds.
     }
 
@@ -4078,32 +4070,31 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             pfrom->fDisconnect = true;
             return true;
         }
-#if defined( HARDFORK_BLOCK )
-        if( pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF && chainActive.Height() > HARDFORK_BLOCK ) //! If the hardfork block is reached, send an error message and disconnect.
+
+        if( pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF && chainActive.Height() > ancConsensus.nDifficultySwitchHeight4 ) //! If the hardfork block is reached, send an error message and disconnect.
         {
             //! relay alerts prior to disconnection
             RelayAlerts(pfrom);
             //! disconnect from peers older than this proto version
-            LogPrintf("partner %s using version %i obsolete since the HARDFORK_BLOCK %d was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK);
+            LogPrintf("partner %s using version %i obsolete since the HARDFORK_BLOCK %d was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, ancConsensus.nDifficultySwitchHeight4);
             pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
-                               strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK));
+                               strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, ancConsensus.nDifficultySwitchHeight4));
             pfrom->fDisconnect = true;
             return true;
         }
 
-       if( pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2 ) //! If the second hardfork block is reached, send an error message and disconnect.
+       if( pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > ancConsensus.nDifficultySwitchHeight5 ) //! If the second hardfork block is reached, send an error message and disconnect.
        {
             //! relay alerts prior to disconnection
             RelayAlerts(pfrom);
             //! disconnect from peers older than this proto version
-            LogPrintf("partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK2);
+            LogPrintf("partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, ancConsensus.nDifficultySwitchHeight5);
             pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
-                              strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK2));
+                              strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, ancConsensus.nDifficultySwitchHeight5));
             pfrom->fDisconnect = true;
             return true;
        }
 
-#endif
 
         //! Protocol 70009 uses only IP addresses on initiating connections over clearnet, after that full size addresses
         //! are always used for any network type, the i2p destination maybe zero, or if not the ip field must be set to the
@@ -4767,10 +4758,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else if (strCommand == "getheaders")
     {
-        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2) {
-            LogPrintf("getheaders partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK2);
+        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > ancConsensus.nDifficultySwitchHeight5) {
+            LogPrintf("getheaders partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, ancConsensus.nDifficultySwitchHeight5);
             pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
-            strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK2));
+            strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, ancConsensus.nDifficultySwitchHeight5));
             pfrom->fDisconnect = true;
         }
 
@@ -4958,7 +4949,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             if (!AcceptBlockHeader(header, state, &pindexLast)) {
                 int nDoS;
                 if (state.IsInvalid(nDoS)) {
-                    if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2)
+                    if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > ancConsensus.nDifficultySwitchHeight5)
                         nDoS = 100;
                     if (nDoS > 0)
                         Misbehaving(pfrom->GetId(), nDoS);
@@ -4975,14 +4966,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             // TODO: optimize: if pindexLast is an ancestor of chainActive.Tip or pindexBestHeader, continue
             // from there instead.
             // For the HardFork we will not accept to synchronize with old version peers 2400 blocks prior to the hardfork.
-#if defined( HARDFORK_BLOCK )
-            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || pfrom->nStartingHeight < HARDFORK_BLOCK2 - 2400) {
-#endif
+            if( pfrom->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || pfrom->nStartingHeight < ancConsensus.nDifficultySwitchHeight5 - 2400) {
                 LogPrint("net", "more getheaders (%d) to end to %s (startheight:%d)\n", pindexLast->nHeight, GetPeerLogStr(pfrom), pfrom->nStartingHeight);
                 pfrom->PushMessage("getheaders", chainActive.GetLocator(pindexLast), uint256(0));
-#if defined( HARDFORK_BLOCK )
             }
-#endif
         }
 
     }
@@ -5023,10 +5010,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else if (strCommand == "getaddr")
     {
-        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > HARDFORK_BLOCK2) {
-            LogPrintf("getaddr partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, HARDFORK_BLOCK2);
+        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION_AFTER_HF2 && chainActive.Height() > ancConsensus.nDifficultySwitchHeight5) {
+            LogPrintf("getaddr partner %s using version %i obsolete since the HARDFORK_BLOCK %d changing PID parameters was reached; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion, ancConsensus.nDifficultySwitchHeight5);
             pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
-            strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, HARDFORK_BLOCK2));
+            strprintf("ERROR: Version must be %d or greater after the HARDFORK_BLOCK %d changing PID parameters, please update!", MIN_PEER_PROTO_VERSION_AFTER_HF, ancConsensus.nDifficultySwitchHeight5));
             pfrom->fDisconnect = true;
         }
 
@@ -5493,11 +5480,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         if (!state.fSyncStarted && !pto->fClient && !fImporting && !fReindex) {
             // Only actively request headers from up to two peers, unless we're close to today. This is to minimize the likelihood of downtime, while keeping bandwidth and computing ressource to a minimum. For the hardfork, we accept IBD from all peers till 2400 blocks before the Hardfork block when the new version will be enforced for synching. This ensure that there is no synching from peers not ready for the hardfork from this time on. Of course, after the hardfork block the new version will still be an obligation.
             if ( fFetch || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
-#if defined( HARDFORK_BLOCK )
-                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || !IsInitialBlockDownload() || pto->nStartingHeight < HARDFORK_BLOCK2 - 2400) {
-#else
-                if( pto->nVersion >= MIN_PEER_PROTO_VERSION || !IsInitialBlockDownload()) {
-#endif
+                if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || !IsInitialBlockDownload() || pto->nStartingHeight < ancConsensus.nDifficultySwitchHeight5 - 2400) {
                     if ((nSyncStarted <= 1) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                     state.fSyncStarted = true;
                     nSyncStarted++;
