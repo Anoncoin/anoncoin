@@ -16,6 +16,7 @@
 class uint256;
 class CBlockIndex;
 class CBlockHeader;
+class CChain;
 
 namespace CashIsKing
 {
@@ -40,6 +41,9 @@ public:
 };
 
 }
+
+/** The currently-connected chain of blocks. */
+extern CChain chainActive;
 
 using namespace CashIsKing;
 ANCConsensus ancConsensus;
