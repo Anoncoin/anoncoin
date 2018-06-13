@@ -31,11 +31,14 @@ class ANCConsensus
 private:
 
 public:
-  uint256 GetPoWHashForNextBlock();
+  uint256 GetPoWRequiredForNextBlock();
   uint256 GetPoWHashForThisBlock(const CBlockHeader& block);
   uint256 GetBlockProof(const ::CBlockIndex& block);
   uint256 GetWorkProof(const uint256& uintTarget);
   bool CheckProofOfWork(const uint256& hash, unsigned int nBits);
+
+  unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader);
+  uint256 OriginalGetNextWorkRequired(const CBlockIndex* pindexLast);
 
   int64_t GetBlockValue(int nHeight, int64_t nFees);
 

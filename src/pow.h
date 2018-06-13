@@ -16,11 +16,9 @@
 
 #include "timedata.h"
 #include "uint256.h"
-//#include "consensus.h"
+#include "consensus.h"
 
 #include <stdint.h>
-
-//using namespace CashIsKing;
 
 class CBlockHeader;
 class CBlockIndex;
@@ -252,6 +250,11 @@ extern bool CheckProofOfWork(const uint256& hash, unsigned int nBits);
 extern bool CheckProofOfWorkGost3411(const uint256& hash, unsigned int nBits);
 //! Return average network hashes per second based on the last 'lookup' blocks, a minimum of 2 are required.
 extern int64_t CalcNetworkHashPS( const CBlockIndex* pBI, int32_t nLookup );
+
+extern uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast);
+
+/** The Anoncoin hardfork manager */
+extern CashIsKing::ANCConsensus ancConsensus;
 
 //! PID Retarget specific and global in scope...
 
