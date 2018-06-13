@@ -3,6 +3,8 @@
 #include "block.h"
 #include "chain.h"
 #include "chainparams.h"
+#include "checkpoints.h"
+#include "main.h"
 #include "uint256.h"
 #include "amount.h"
 #include "pow.h"
@@ -66,6 +68,97 @@ bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
   }
 
   return true;
+}
+
+bool ANCConsensus::SkipPoWCheck()
+{
+  CBlockIndex *tip = chainActive.Tip();
+  // AIP09 : Fast accept early blockchain
+  if (tip)
+    if (tip->nHeight < nDifficultySwitchHeight5) return true;
+  return false;
+}
+
+bool ANCConsensus::CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
+{
+  if (fCheckPOW)
+    fCheckPOW = SkipPoWCheck();
+  if (!fCheckPOW)
+  {
+    return true;
+  }
+  // Check proof of work matches claimed amount
+  uint256 hash = GetPoWHashForThisBlock(block);
+  if (fCheckPOW && !CheckProofOfWork(hash, block.nBits))
+    return state.DoS(50, error("CheckBlockHeader() : proof of work failed"), REJECT_INVALID, "high-hash");
+
+  // Check timestamp, for Anoncoin we make that less than 2hrs after the hardfork,
+  // no mined block time need have a future time so large.  In fact the header can
+  // not be used unless this value is reduced to mere seconds.
+  int64_t nTimeLimit = GetAdjustedTime();
+  CBlockIndex *tip = chainActive.Tip();
+
+  if(tip) nTimeLimit += ( tip->nHeight < nDifficultySwitchHeight4 ) ? 2 * 60 * 60 : 15 * 60;
+
+  if( block.GetBlockTime() > nTimeLimit )
+    return state.Invalid(error("CheckBlockHeader(): block timestamp too far in the future"), REJECT_INVALID, "time-too-new");
+  return true;
+}
+
+bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* pindexPrev)
+{
+    uint256 hash = block.GetHash();
+    if (hash == Params().HashGenesisBlock())
+        return true;
+
+    assert(pindexPrev);
+
+    int nHeight = pindexPrev->nHeight+1;
+
+    /**
+     * 
+     * Anoncoin new fast fetch
+     * 
+     * */
+
+    // Don't accept any forks from the main chain prior to last checkpoint
+    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
+    if (pcheckpoint && nHeight < pcheckpoint->nHeight)
+        return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
+
+    // Check that the block chain matches the known block chain up to a checkpoint
+    if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
+        return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight), REJECT_CHECKPOINT, "checkpoint mismatch");
+
+    // Don't fast skip in testnet
+    if (nHeight < ancConsensus.nDifficultySwitchHeight4 && !TestNet())
+        return true;
+
+    if (!Checkpoints::IsBlockInCheckpoints(nHeight) && (nHeight > pcheckpoint->nHeight+100) )
+    {
+        // Check proof of work
+        uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
+        if (block.nBits != checkPowVal ) {
+            if ( (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() ) && (nHeight < ancConsensus.nDifficultySwitchHeight4 || nHeight > ancConsensus.nDifficultySwitchHeight5) ) {
+                LogPrintf("Block's nBits are %s versus %s which is required for block height %d.", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),nHeight);
+                LogPrintf("\n(%d, uint256(\"0x%s\"))\n", nHeight, block.GetPoWHash(nHeight,true).ToString());
+                return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+            }
+        }
+    }
+
+    // Check timestamp against prev
+    if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
+        return state.Invalid(error("%s : block's timestamp is too early", __func__),
+                             REJECT_INVALID, "time-too-old");
+
+    // Reject block.nVersion=1 blocks
+    // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority test was
+    // set to always return false.  As of 3/15/2015 in the last 10000 blocks over 700 where version 1 blocks
+    if( block.nVersion < 2 && nHeight > ancConsensus.nDifficultySwitchHeight4 )                // We'll start enforcing the new rule
+        return state.Invalid(error("%s : rejected nVersion=1 block", __func__), REJECT_OBSOLETE, "bad-version");
+
+    return true;
 }
 
 /***
@@ -346,7 +439,7 @@ const int32_t ANCConsensus::nDifficultySwitchHeight3 = 87777;  // Protocol 3 beg
 const int32_t ANCConsensus::nDifficultySwitchHeight4 = 555555;
 const int32_t ANCConsensus::nDifficultySwitchHeight5 = 585555;
 #ifdef NEXT_HARDFORK_BLOCK
-const int32_t ANCConsensus::nDifficultySwitchHeight6 = NEX T_HARDFORK_BLOCK;
+const int32_t ANCConsensus::nDifficultySwitchHeight6 = NEXT_HARDFORK_BLOCK;
 #else
 const int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
 #endif

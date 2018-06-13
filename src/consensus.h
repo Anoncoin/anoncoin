@@ -23,6 +23,7 @@ class uint256;
 class CBlockIndex;
 class CBlockHeader;
 class CChain;
+class CValidationState;
 
 namespace CashIsKing
 {
@@ -32,6 +33,8 @@ class ANCConsensus
 private:
   void getMainnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult);
   void getTestnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult);
+
+  bool SkipPoWCheck();
 
 public:
   ANCConsensus();
@@ -44,6 +47,11 @@ public:
   //! for 256bit numbers unless they are first converted to a work proof, then its value can be returned as a double
   //! floating point value which is meaningful.
   double GetLog2Work( const uint256& uintDifficulty );
+
+  /** Context-dependent validity checks */
+  bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* pindexPrev);
+  
+  bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW = true);
 
   uint256 GetWorkProof(const uint256& uintTarget);
   //! Check whether a block hash satisfies the proof-of-work requirement specified by nBits */

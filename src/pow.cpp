@@ -850,7 +850,18 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     //! Sort the TipFilter block data by time.  The result is then setup as an output vector of structures
     //! containing all the filter information which can be accessed and referenced as needed.
     assert( vIndexTipFilter.size() == static_cast<unsigned long>(nTipFilterBlocks) );            //! The array of strutures is constant in size and assumed.
-    sort(vIndexTipFilter.begin(), vIndexTipFilter.end());                 //! Thank you sort routine, now it matters not the time order in which the blocks were mined
+    
+    std::reverse(vIndexTipFilter.begin(), vIndexTipFilter.end());
+    sort(vIndexTipFilter.begin(), vIndexTipFilter.end(), [](const FilterPoint&a,const FilterPoint&b){
+        // Magic
+        if (a.nBlockTime == b.nBlockTime)
+        {
+            return a.nHeight < b.nHeight;
+        }
+        return a.nBlockTime < b.nBlockTime;
+    });
+    //stable_sort(vIndexTipFilter.begin(), vIndexTipFilter.end());
+    //! Thank you sort routine, now it matters not the time order in which the blocks were mined
     uint32_t nDividerSum = 0;
     uint256 uintBlockPOW;
     uintPrevDiffCalculated.SetNull();

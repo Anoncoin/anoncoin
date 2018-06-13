@@ -2616,40 +2616,13 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
     return true;
 }
 
-bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
-{
-
-    CBlockIndex *tip = chainActive.Tip();
-    // AIP09 : Fast accept early blockchain
-    if (tip)
-        if (tip->nHeight < ancConsensus.nDifficultySwitchHeight4) return true;
-
-    // Check proof of work matches claimed amount
-    uint256 hash = ancConsensus.GetPoWHashForThisBlock(block);
-    if (fCheckPOW && !ancConsensus.CheckProofOfWork(hash, block.nBits))
-        return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
-                         REJECT_INVALID, "high-hash");
-
-    // Check timestamp, for Anoncoin we make that less than 2hrs after the hardfork,
-    // no mined block time need have a future time so large.  In fact the header can
-    // not be used unless this value is reduced to mere seconds.
-    int64_t nTimeLimit = GetAdjustedTime();
-
-    if(tip) nTimeLimit += ( tip->nHeight < ancConsensus.nDifficultySwitchHeight4 ) ? 2 * 60 * 60 : 15 * 60;
-
-    if( block.GetBlockTime() > nTimeLimit )
-        return state.Invalid(error("CheckBlockHeader(): block timestamp too far in the future"),
-                             REJECT_INVALID, "time-too-new");
-    return true;
-}
-
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     // These are checks that are independent of context.
 
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.
-    if (!CheckBlockHeader(block, state, fCheckPOW))
+    if (!ancConsensus.CheckBlockHeader(block, state, fCheckPOW))
         return false;
 
     // Check the merkle root.
@@ -2703,66 +2676,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     return true;
 }
 
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* pindexPrev)
-{
-    uint256 hash = block.GetHash();
-    if (hash == Params().HashGenesisBlock())
-        return true;
-
-    assert(pindexPrev);
-
-    int nHeight = pindexPrev->nHeight+1;
-
-    /**
-     * 
-     * Anoncoin new fast fetch
-     * 
-     * */
-
-    // Don't accept any forks from the main chain prior to last checkpoint
-    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
-    if (pcheckpoint && nHeight < pcheckpoint->nHeight)
-        return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
-
-    // Check that the block chain matches the known block chain up to a checkpoint
-    if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
-        return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight), REJECT_CHECKPOINT, "checkpoint mismatch");
-
-    // Don't fast skip in testnet
-    if (nHeight < ancConsensus.nDifficultySwitchHeight4 && !TestNet())
-        return true;
-
-    if (!Checkpoints::IsBlockInCheckpoints(nHeight) && (nHeight > pcheckpoint->nHeight+100) )
-    {
-        // Check proof of work
-#ifdef CPP11
-        auto checkPowVal = GetNextWorkRequired(pindexPrev, &block);
-#else
-        uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
-#endif
-        if (block.nBits != checkPowVal ) {
-            if ( (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() ) && (nHeight < ancConsensus.nDifficultySwitchHeight4 || nHeight > ancConsensus.nDifficultySwitchHeight5) ) {
-                LogPrintf("Block's nBits are %s versus %s which is required for block height %d.", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),nHeight);
-                LogPrintf("\n(%d, uint256(\"0x%s\"))\n", nHeight, block.GetPoWHash(nHeight,true).ToString());
-                return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
-            }
-        }
-    }
-
-    // Check timestamp against prev
-    if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
-        return state.Invalid(error("%s : block's timestamp is too early", __func__),
-                             REJECT_INVALID, "time-too-old");
-
-    // Reject block.nVersion=1 blocks
-    // This code has been taken from the v0.8.5.5 source, and does not work, because the IsSuperMajority test was
-    // set to always return false.  As of 3/15/2015 in the last 10000 blocks over 700 where version 1 blocks
-    if( block.nVersion < 2 && nHeight > ancConsensus.nDifficultySwitchHeight4 )                // We'll start enforcing the new rule
-        return state.Invalid(error("%s : rejected nVersion=1 block", __func__), REJECT_OBSOLETE, "bad-version");
-
-    return true;
-}
-
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CBlockIndex* pindexPrev)
 {
     const int32_t nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
@@ -2806,7 +2719,7 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
         return true;
     }
 
-    if (!CheckBlockHeader(block, state))
+    if (!ancConsensus.CheckBlockHeader(block, state))
         return false;
 
     // Get prev block index
@@ -2821,7 +2734,7 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
             return state.DoS(100, error("%s : prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
     }
 
-    if (!ContextualCheckBlockHeader(block, state, pindexPrev))
+    if (!ancConsensus.ContextualCheckBlockHeader(block, state, pindexPrev))
         return false;
 
     if (pindex == NULL)
@@ -2972,7 +2885,7 @@ bool TestBlockValidity(CValidationState &state, const CBlock& block, const CBloc
     indexDummy.nHeight = pindexPrev->nHeight + 1;
 
     // NOTE: CheckBlockHeader is called by CheckBlock
-    if (!ContextualCheckBlockHeader(block, state, pindexPrev))
+    if (!ancConsensus.ContextualCheckBlockHeader(block, state, pindexPrev))
         return false;
     if (!CheckBlock(block, state, fCheckPOW, fCheckMerkleRoot))
         return false;
