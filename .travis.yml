@@ -64,4 +64,4 @@ script:
 # TODO: Make unittests, ref https://github.com/Anoncoin/anoncoin/issues/8
 #    - if [ "$RUN_TESTS" = "true" ]; then test/functional/test_runner.py --coverage --quiet ${extended}; fi
 after_script:
-    - echo "Completed<3"
+    - echo "Completed<3" && exit 0
