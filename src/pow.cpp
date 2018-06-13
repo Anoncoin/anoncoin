@@ -124,16 +124,6 @@ double GetLinearWork( const uint256& uintDifficulty, const uint256& uintPowLimit
     return uint256(uintPowLimitX1K / uintDifficulty).getdouble() / 1000.0;
 }
 
-bool CheckProofOfWork(const uint256& hash, unsigned int nBits)
-{
-    return ancConsensus.CheckProofOfWork(hash,nBits);
-}
-
-bool CheckProofOfWorkGost3411(const uint256& hash, unsigned int nBits)
-{
-   return ancConsensus.CheckProofOfWork(hash,nBits);
-}
-
 //! Return average network hashes per second based on the last 'lookup' blocks, a minimum of 2 are required.
 int64_t CalcNetworkHashPS( const CBlockIndex* pBI, int32_t nLookup )
 {
