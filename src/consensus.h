@@ -37,6 +37,8 @@ public:
   uint256 GetWorkProof(const uint256& uintTarget);
   bool CheckProofOfWork(const uint256& hash, unsigned int nBits);
 
+  int64_t GetBlockValue(int nHeight, int64_t nFees);
+
   static const int32_t nDifficultySwitchHeight1;  // Protocol 1 happened here
   static const int32_t nDifficultySwitchHeight2;  // Protocol 2 starts at this block
   static const int32_t nDifficultySwitchHeight3;  // Protocol 3 began the KGW era

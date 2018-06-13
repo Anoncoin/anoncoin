@@ -3,6 +3,7 @@
 #include "block.h"
 #include "chain.h"
 #include "uint256.h"
+#include "amount.h"
 
 namespace CashIsKing
 {
@@ -20,6 +21,22 @@ uint256 ANCConsensus::GetPoWHashForNextBlock()
     //TODO: FIX
     return uint256(0);
   }
+}
+
+int64_t ANCConsensus::GetBlockValue(int nHeight, int64_t nFees)
+{
+  int64_t nSubsidy = 5 * COIN;
+  // Some adjustments to the start of the lifetime to Anoncoin
+  if (nHeight < 42000) {
+    nSubsidy = 4.2 * COIN;
+  } else if (nHeight < 77777) { // All luck is seven ;)
+    nSubsidy = 7 * COIN;
+  } else if (nHeight == 77778) {
+    nSubsidy = 10 * COIN;
+  } else {
+    nSubsidy >>= (nHeight / 306600); // Anoncoin: 306600 blocks in ~2 years
+  }
+  return nSubsidy + nFees;
 }
 
 /**

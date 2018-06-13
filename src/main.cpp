@@ -1346,25 +1346,6 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
     return true;
 }
 
-/**
- * The primary routine, which determines Anoncoins mined value over time...
- */
-int64_t GetBlockValue(int nHeight, int64_t nFees)
-{
-    int64_t nSubsidy = 5 * COIN;
-    // Some adjustments to the start of the lifetime to Anoncoin
-    if (nHeight < 42000) {
-        nSubsidy = 4.2 * COIN;
-    } else if (nHeight < 77777) { // All luck is seven ;)
-        nSubsidy = 7 * COIN;
-    } else if (nHeight == 77778) {
-        nSubsidy = 10 * COIN;
-    } else {
-        nSubsidy >>= (nHeight / 306600); // Anoncoin: 306600 blocks in ~2 years
-    }
-    return nSubsidy + nFees;
-}
-
 bool IsInitialBlockDownload()
 {
     LOCK(cs_main);
@@ -1922,10 +1903,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime1 = GetTimeMicros(); nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs-1), nTimeConnect * 0.000001);
 
-    if (block.vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
+    if (block.vtx[0].GetValueOut() > ancConsensus.GetBlockValue(pindex->nHeight, nFees))
         return state.DoS(100,
                          error("ConnectBlock() : coinbase pays too much (actual=%d vs limit=%d)",
-                               block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
+                               block.vtx[0].GetValueOut(), ancConsensus.GetBlockValue(pindex->nHeight, nFees)),
                                REJECT_INVALID, "bad-cb-amount");
 
     if (!control.Wait())
@@ -2644,19 +2625,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
         if (tip->nHeight < ancConsensus.nDifficultySwitchHeight4) return true;
 
     // Check proof of work matches claimed amount
-    uint256 hash;
-    // Because tip isn't always available in the startup, we'll have to check it first of all.
-    if (tip)
-    {
-        if (tip->nHeight < ancConsensus.nDifficultySwitchHeight6)
-        {
-            hash=block.GetHash();
-        } else {
-            hash=block.GetGost3411Hash();
-        }
-    } else {
-        hash=block.GetHash();
-    }
+    uint256 hash = ancConsensus.GetPoWHashForThisBlock(block);
     if (fCheckPOW && !CheckProofOfWork(hash, block.nBits))
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
                          REJECT_INVALID, "high-hash");
