@@ -6,8 +6,13 @@
 
 // TODO: Remove definitions once we're sure we don't need them.
 
+#ifndef HARDFORK_BLOCK
 #define HARDFORK_BLOCK 555555 //! CSlave: if not hardcoded, the hardfork block can be defined with "configure --with-hardfork=block"
+#endif
+
+#ifndef HARDFORK_BLOCK2
 #define HARDFORK_BLOCK2 585555 // block to change the parameters of the PID
+#endif
 
 #ifndef HARDFORK_BLOCK3
 #define HARDFORK_BLOCK3 900000
@@ -44,9 +49,6 @@ public:
 
 /** The currently-connected chain of blocks. */
 extern CChain chainActive;
-
-using namespace CashIsKing;
-ANCConsensus ancConsensus;
 
 
 #endif

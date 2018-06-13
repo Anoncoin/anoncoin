@@ -1466,7 +1466,7 @@ std::string CService::ToStringPort() const
 std::string CService::ToStringIPPort() const
 {
     if( IsI2P() ) return ToStringIP();                // Drop the port for i2p addresses
-    std:string PortStr = ToStringPort();
+    std::string PortStr = ToStringPort();
     return ( IsIPv4() || IsTor() ) ? ToStringIP() + ":" + PortStr : "[" + ToStringIP() + "]:" + PortStr;
 }
 

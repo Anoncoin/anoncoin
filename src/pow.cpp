@@ -21,7 +21,6 @@
 #include <boost/filesystem/fstream.hpp>
 
 using namespace std;
-//using namespace CashIsKing;
 
 #define TIPFILTERBLOCKS_DEFAULT "21"
 #define USESHEADER_DEFAULT false
@@ -248,7 +247,7 @@ static uint256 OriginalGetNextWorkRequired(const CBlockIndex* pindexLast)
 
     //! Anoncoin difficulty adjustment protocol switch (Thanks to FeatherCoin for this idea)
     static const int newTargetTimespan = 2050;              //! For when another adjustment in the timespan was made
-    int nHeight = pindexLast->nHeight + 1;
+    int32_t nHeight = pindexLast->nHeight + 1;
     bool fNewDifficultyProtocol = nHeight >= nDifficultySwitchHeight;
     bool fNewDifficultyProtocol2 = false;
     int64_t nTargetTimespanCurrent = nLegacyTargetTimespan;

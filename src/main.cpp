@@ -11,6 +11,7 @@
 #include "chainparams.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
+#include "consensus.h"
 #include "init.h"
 #include "merkleblock.h"
 #include "net.h"
@@ -129,6 +130,7 @@ CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
 CChain chainActive;
+CashIsKing::ANCConsensus ancConsensus;
 CBlockIndex *pindexBestHeader = NULL;
 int64_t nTimeBestReceived = 0;
 CWaitableCriticalSection csBestBlock;
