@@ -818,6 +818,9 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     if( pIndex->nHeight < nTipFilterBlocks )
         return false;
 
+
+
+
     //! This matters if fUsesHeader has been turned on.
     //! Make sure to force a new block spacing error calculation next time GetNextWorkRequired is run.
     //! Otherwise what could happen is the most recent results may only 'appear' to have been set correctly.
@@ -838,12 +841,15 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     // bool fDiffPrevFromHash = GetBoolArg( "-retargetpid.diffprevfromhash", false );
     FilterPoint aFilterPoint;
     const CBlockIndex* pIndexSearch = pIndex;
+
+    LogPrintf("Block %d \n", pIndex->nHeight);
     for( int32_t i = nTipFilterBlocks - 1; i >= 0  && pIndexSearch; i--, pIndexSearch = pIndexSearch->pprev ) {
         aFilterPoint.nBlockTime = pIndexSearch->GetBlockTime();
         aFilterPoint.nHeight = pIndexSearch->nHeight;
         // aFilterPoint.nDiffBits = fDiffPrevFromHash ? pIndexSearch->GetBlockHash() : pIndexSearch->nBits;
         aFilterPoint.nDiffBits = pIndexSearch->nBits;
         aFilterPoint.nSpacing = aFilterPoint.nSpacingError = aFilterPoint.nRateOfChange = 0;
+        LogPrintf("Block heigh at: %d time %d \n", aFilterPoint.nHeight, aFilterPoint.nBlockTime);
         vIndexTipFilter.push_back( aFilterPoint );
     }
 
@@ -851,12 +857,11 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     //! containing all the filter information which can be accessed and referenced as needed.
     assert( vIndexTipFilter.size() == static_cast<unsigned long>(nTipFilterBlocks) );            //! The array of strutures is constant in size and assumed.
     
-    std::reverse(vIndexTipFilter.begin(), vIndexTipFilter.end());
     sort(vIndexTipFilter.begin(), vIndexTipFilter.end(), [](const FilterPoint&a,const FilterPoint&b){
         // Magic
         if (a.nBlockTime == b.nBlockTime)
         {
-            return a.nHeight < b.nHeight;
+            LogPrintf("Block a and b: heigh at: %d height b: %d \n", a.nHeight, b.nHeight);
         }
         return a.nBlockTime < b.nBlockTime;
     });
@@ -867,6 +872,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     uintPrevDiffCalculated.SetNull();
     //! Process the difficulty values
     for( int32_t i = 1; i <= nTipFilterBlocks; i++ ) {
+        LogPrintf("Block heigh at: %d time %d \n", vIndexTipFilter[i - 1].nHeight, vIndexTipFilter[i - 1].nBlockTime);
         uintBlockPOW.SetCompact( vIndexTipFilter[i - 1].nDiffBits );
         uintBlockPOW *= (uint32_t)i;
         uintPrevDiffCalculated += uintBlockPOW;
