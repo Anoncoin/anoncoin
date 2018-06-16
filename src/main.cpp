@@ -3282,12 +3282,12 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
             uint256 blockHash = block.CalcSha256dHash();
             int blockHeight = pindex->nHeight;
             uint32_t checkPowVal = GetNextWorkRequired(pindex->pprev, &block);
-
+            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
+     
             if (!Checkpoints::IsBlockInCheckpoints(blockHeight)) {
                 if (block.nBits != checkPowVal && !TestNet()) {
 
                     #ifdef __APPLE__
-                        uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
                         if (!((blockHeight > ancConsensus.nDifficultySwitchHeight4 && blockHeight < ancConsensus.nDifficultySwitchHeight5) || difference < 32768)) {
                             LogPrintf("Block %d is wrong %d with diff %d \n",blockHeight,blockHash.ToString(), difference);
                         }
