@@ -131,7 +131,7 @@ public:
 
     inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate = true) const
     {
-        if (nHeight < HARDFORK_BLOCK3)
+        if (!ancConsensus.IsUsingGost3411Hash())
             return GetHash(fForceUpdate);
         return GetGost3411Hash();
     }

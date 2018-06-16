@@ -13,6 +13,7 @@
 #include "util.h"
 
 #include "chainparams.h"
+#include "consensus.h"
 
 #ifdef ENABLE_WALLET
 #include "wallet.h"
@@ -45,10 +46,10 @@ double GetDifficulty(const CBlockIndex* blockindex)
     }
     uint256 uintBlockDiff;
     uintBlockDiff.SetCompact( blockindex->nBits );
-    if (blockindex->nHeight < ANCConsensus::nDifficultySwitchHeight6) {
-        return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
-    } else {
+    if (ancConsensus.IsUsingGost3411Hash()) {
         return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) );
+    } else {
+        return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
     }
 }
 

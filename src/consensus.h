@@ -69,7 +69,8 @@ public:
   static const int32_t nDifficultySwitchHeight3;  // Protocol 3 began the KGW era
   static const int32_t nDifficultySwitchHeight4;
   static const int32_t nDifficultySwitchHeight5;
-  static const int32_t nDifficultySwitchHeight6;
+  // const is temporary removed to let testnet trigger a hardfork before mainnet.
+  static int32_t nDifficultySwitchHeight6;
   static const int32_t nDifficultySwitchHeight7;
 
 #ifdef CPP11

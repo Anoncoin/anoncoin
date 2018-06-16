@@ -41,11 +41,6 @@ uintFakeHash CBlockHeader::CalcSha256dHash(const bool fForceUpdate) const
 
 uint256 CBlockHeader::GetHash(const bool fForceUpdate) const
 {
-    /*if (this->nHeight > HARDFORK_BLOCK3)
-    {
-        return GetGost3411Hash();
-    }*/
-    
     if( !fCalcScrypt || fForceUpdate ) {
         uint256 tHash;
         scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));

@@ -15,9 +15,31 @@
 namespace CashIsKing
 {
 
+
+//! Difficulty Protocols have changed over the years, at specific points in Anoncoin's history the following SwitchHeight values are those blocks
+//! where an event occurred which required changing the way things are calculated. aka HARDFORK
+const int32_t ANCConsensus::nDifficultySwitchHeight1 = 15420;   // Protocol 1 happened here
+const int32_t ANCConsensus::nDifficultySwitchHeight2 = 77777;  // Protocol 2 starts at this block
+const int32_t ANCConsensus::nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
+const int32_t ANCConsensus::nDifficultySwitchHeight4 = 555555;
+const int32_t ANCConsensus::nDifficultySwitchHeight5 = 585555;
+#ifdef NEXT_HARDFORK_BLOCK
+int32_t ANCConsensus::nDifficultySwitchHeight6 = NEXT_HARDFORK_BLOCK;
+#else
+// MAINNET
+int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
+#endif
+const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
+
+
 ANCConsensus::ANCConsensus()
 {
   bShouldDebugLogPoW = GetBoolArg("-extrapowdebug", false);
+  if (TestNet())
+  {
+    // TESTNET
+    ANCConsensus::nDifficultySwitchHeight6 = 150;
+  }
 }
 
 /**
@@ -437,19 +459,5 @@ uint256 ANCConsensus::GetBlockProof(const ::CBlockIndex& block)
   }
   return (!fNegative && !fOverflow) ? GetWorkProof( bnTarget ) : ::uint256(0);
 }
-
-//! Difficulty Protocols have changed over the years, at specific points in Anoncoin's history the following SwitchHeight values are those blocks
-//! where an event occurred which required changing the way things are calculated. aka HARDFORK
-const int32_t ANCConsensus::nDifficultySwitchHeight1 = 15420;   // Protocol 1 happened here
-const int32_t ANCConsensus::nDifficultySwitchHeight2 = 77777;  // Protocol 2 starts at this block
-const int32_t ANCConsensus::nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
-const int32_t ANCConsensus::nDifficultySwitchHeight4 = 555555;
-const int32_t ANCConsensus::nDifficultySwitchHeight5 = 585555;
-#ifdef NEXT_HARDFORK_BLOCK
-const int32_t ANCConsensus::nDifficultySwitchHeight6 = NEXT_HARDFORK_BLOCK;
-#else
-const int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
-#endif
-const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
 
 } // End namespace CashIsKing
