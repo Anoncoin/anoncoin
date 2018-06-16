@@ -1331,7 +1331,8 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
     }
 
     // Check the header POW
-    if( !ancConsensus.CheckProofOfWork( block.GetHash(), block.nBits) )
+    uint256 hash = (ancConsensus.IsUsingGost3411Hash()) ? block.GetGost3411Hash() : block.GetHash();
+    if( !ancConsensus.CheckProofOfWork( hash, block.nBits) )
             return error("ReadBlockFromDisk : Errors in block header");
 
     return true;
@@ -1339,9 +1340,10 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
 
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
 {
+    uint256 hash = (ancConsensus.IsUsingGost3411Hash()) ? block.GetGost3411Hash() : block.GetHash();
     if (!ReadBlockFromDisk(block, pindex->GetBlockPos()))
         return false;
-    if (block.GetHash() != pindex->GetBlockHash())
+    if (hash != pindex->GetBlockHash())
         return error("ReadBlockFromDisk(CBlock&, CBlockIndex*) : GetHash() doesn't match index");
     return true;
 }
