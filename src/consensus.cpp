@@ -36,7 +36,7 @@ ANCConsensus::ANCConsensus()
 {
   bool fTestNet = GetBoolArg("-testnet", false);
   bShouldDebugLogPoW = GetBoolArg("-extrapowdebug", false);
-  if (fTestNet)
+  if (TestNet())
   {
     // TESTNET
     ANCConsensus::nDifficultySwitchHeight6 = 150;
