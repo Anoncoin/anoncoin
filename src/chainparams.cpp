@@ -254,7 +254,7 @@ public:
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         // These values have been set to the same as the v0.8.5.6 client had, so testing should be possible with that client, although maynot be required.
-        genesis = CreateGenesisBlock("02/Jun/2013:  The Universe, we're all one. But really, fuck the Central banks. - Anonymous 420 || Yea by the way, FUCK political correct people.",
+        genesis = CreateGenesisBlock("02/Jun/2013:  The Universe, we're all one. But really, fuck the Central banks. - Anonymous 420",
             CScript() << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f") << OP_CHECKSIG,
             1511131852,
             1183532614,
@@ -262,15 +262,16 @@ public:
             1,
             50 * COIN
         );
+
         hashGenesisBlock = genesis.GetHash(true);                   //! true here as recalc is needed, because main has already done it once
         assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
 
         printf("Block: %s Gost: %s num tx: %lu\n", genesis.ToString().c_str(), genesis.GetGost3411Hash().ToString().c_str(), genesis.vtx.size());
         // This Genesis block hash matches the v0.8.5.6 client builds
         printf("Testnet Genesis Hash: 0x%s GostHash: 0x%s, nBits: 0x%08x, bnLimt: 0x%08x\n", hashGenesisBlock.ToString().c_str(), genesis.GetGost3411Hash().ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_GOST3411].GetCompact());
-        assert(hashGenesisBlock == uint256("0x586df6eb1f1e35768f256eff35fcbcacf2faecfda9eca0932a5493d4d38d3d42"));
-        assert(genesis.hashMerkleRoot == uint256("0xa6a10f70d992f4d6ba5a37ac496a591a0e5e624e29d85bca3a24fa84878f7f4c"));
-        assert(genesis.GetGost3411Hash() == uint256("0x3a7b3bbc0d29ba6199452f8f03fc363e8f33bfbdd7129b571691c651c7e41872"));
+        assert(hashGenesisBlock == uint256("0x00000e2c46999d338d3cd202465fff19cf781a956ab8ba6ce56be3ed4540567a"));
+        //assert(genesis.hashMerkleRoot == uint256("0xa6a10f70d992f4d6ba5a37ac496a591a0e5e624e29d85bca3a24fa84878f7f4c"));
+        assert(genesis.GetGost3411Hash() == uint256("0x9c175ff377504dddd6e0c594a4d2306a9ad061aed0f9d6fd57deb0ecf4c26313"));
         // During intialization, the DNS and Fixed seed node vectors are filled up as the class is derived from CMainParams, so has a copy of those values.
         // Dump those here, and add any that might really be useful for testnet...
         vFixedSeeds.clear();
@@ -329,8 +330,8 @@ public:
         nDefaultPort = 19444;
 
         printf("RegTest Genesis Hash: 0x%s, nBits: 0x%08x, bnLimt: 0x%08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
-        assert(hashGenesisBlock == uint256("0x586df6eb1f1e35768f256eff35fcbcacf2faecfda9eca0932a5493d4d38d3d42"));
-
+        assert(hashGenesisBlock == uint256("0x00000e2c46999d338d3cd202465fff19cf781a956ab8ba6ce56be3ed4540567a"));
+       
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
     }
 
