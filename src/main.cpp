@@ -3279,17 +3279,19 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= 2*nCoinCacheSize + 32000) {
             
-//#ifdef CPP11
             auto checkPowVal = GetNextWorkRequired(pindex->pprev, &block);
             auto difference = block.nBits - checkPowVal;
             if (block.nBits < checkPowVal) {
                 difference = checkPowVal - block.nBits;
             }
-            //LogPrintf("BEFORE  BNB nbits: %s - checkPowVal: %s for HEIGHT:    %d. \n", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),pindex->nHeight);
             if (block.nBits != checkPowVal ) {
-                LogPrintf("## ERROR BLOCK - BNB nbits: %s - checkPowVal: %s with diff: %s for HEIGHT:    %d. \n", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),difference,pindex->nHeight);
+                if ( TestNet() || (pindex->nHeight > ancConsensus.nDifficultySwitchHeight4 && pindex->nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < 10000) {
+                    LogPrintf("Error: Diff %s for block %d.\n", difference,pindex->nHeight);
+                }
+                else {
+                    LogPrintf("Error: Large diff %s for block %d.\n", difference,pindex->nHeight);
+                }
             }
-//#endif
             
             bool fClean = true;
             if (!DisconnectBlock(block, state, pindex, coins, &fClean))

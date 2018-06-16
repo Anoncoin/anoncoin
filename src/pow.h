@@ -28,12 +28,11 @@ class CBlockIndex;
 struct FilterPoint
 {
     int64_t nBlockTime;
-    int32_t nHeight;
     uint32_t nDiffBits;
     int32_t nSpacing;
     int32_t nSpacingError;
     int32_t nRateOfChange;
-    bool operator < (const FilterPoint& rhs) const { return nHeight < rhs.nHeight; }
+    bool operator < (const FilterPoint& rhs) const { return nBlockTime < rhs.nBlockTime; }
 };
 
 struct RetargetStats

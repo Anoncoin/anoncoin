@@ -842,37 +842,23 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     FilterPoint aFilterPoint;
     const CBlockIndex* pIndexSearch = pIndex;
 
-    LogPrintf("Block %d \n", pIndex->nHeight);
     for( int32_t i = nTipFilterBlocks - 1; i >= 0  && pIndexSearch; i--, pIndexSearch = pIndexSearch->pprev ) {
         aFilterPoint.nBlockTime = pIndexSearch->GetBlockTime();
-        aFilterPoint.nHeight = pIndexSearch->nHeight;
         // aFilterPoint.nDiffBits = fDiffPrevFromHash ? pIndexSearch->GetBlockHash() : pIndexSearch->nBits;
         aFilterPoint.nDiffBits = pIndexSearch->nBits;
         aFilterPoint.nSpacing = aFilterPoint.nSpacingError = aFilterPoint.nRateOfChange = 0;
-        LogPrintf("Block heigh at: %d time %d \n", aFilterPoint.nHeight, aFilterPoint.nBlockTime);
         vIndexTipFilter.push_back( aFilterPoint );
     }
 
     //! Sort the TipFilter block data by time.  The result is then setup as an output vector of structures
     //! containing all the filter information which can be accessed and referenced as needed.
-    assert( vIndexTipFilter.size() == static_cast<unsigned long>(nTipFilterBlocks) );            //! The array of strutures is constant in size and assumed.
-    
-    sort(vIndexTipFilter.begin(), vIndexTipFilter.end(), [](const FilterPoint&a,const FilterPoint&b){
-        // Magic
-        if (a.nBlockTime == b.nBlockTime)
-        {
-            LogPrintf("Block a and b: heigh at: %d height b: %d \n", a.nHeight, b.nHeight);
-        }
-        return a.nBlockTime < b.nBlockTime;
-    });
-    //stable_sort(vIndexTipFilter.begin(), vIndexTipFilter.end());
-    //! Thank you sort routine, now it matters not the time order in which the blocks were mined
+    assert( vIndexTipFilter.size() == static_cast<unsigned long>(nTipFilterBlocks) );            //! The array of strutures is constant in size and assumed. 
+    sort(vIndexTipFilter.begin(), vIndexTipFilter.end());
     uint32_t nDividerSum = 0;
     uint256 uintBlockPOW;
     uintPrevDiffCalculated.SetNull();
     //! Process the difficulty values
     for( int32_t i = 1; i <= nTipFilterBlocks; i++ ) {
-        LogPrintf("Block heigh at: %d time %d \n", vIndexTipFilter[i - 1].nHeight, vIndexTipFilter[i - 1].nBlockTime);
         uintBlockPOW.SetCompact( vIndexTipFilter[i - 1].nDiffBits );
         uintBlockPOW *= (uint32_t)i;
         uintPrevDiffCalculated += uintBlockPOW;
