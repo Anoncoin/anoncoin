@@ -45,7 +45,7 @@ double GetDifficulty(const CBlockIndex* blockindex)
     }
     uint256 uintBlockDiff;
     uintBlockDiff.SetCompact( blockindex->nBits );
-    if (blockindex->nHeight < 900000) {
+    if (blockindex->nHeight < ANCConsensus::nDifficultySwitchHeight6) {
         return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
     } else {
         return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) );
