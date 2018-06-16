@@ -382,7 +382,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 }
 
 
-#ifdef ENABLE_WALLET
+//#ifdef ENABLE_WALLET
 //////////////////////////////////////////////////////////////////////////////
 //
 // Internal miner
@@ -733,12 +733,12 @@ void static AnoncoinMiner(CWallet *pwallet)
 
     try {
         while (true) {
-            if (!RegTest()) {
+            /*if (!RegTest()) {
                 //! Busy-wait for the network to come online so we don't waste time mining
                 //! on an obsolete chain. In regtest mode we expect to fly solo.
                 while (vNodes.empty())
                     MilliSleep(10000);
-            }
+            }*/
 
             /**
              * Create new block
@@ -933,7 +933,7 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
         minerThreads->create_thread(boost::bind(&AnoncoinMiner, pwallet));
 }
 
-#endif // ENABLE_WALLET
+//#endif // ENABLE_WALLET
 
 /**
  * Scrypt mining related code for block creation
