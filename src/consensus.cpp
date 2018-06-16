@@ -134,18 +134,25 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
     if (nHeight < ancConsensus.nDifficultySwitchHeight4 && !TestNet())
         return true;
 
-    if (!Checkpoints::IsBlockInCheckpoints(nHeight) && (nHeight > pcheckpoint->nHeight+100) )
-    {
-        // Check proof of work
+    // Checking PoW for blocks not in checkpoints
+    if (!Checkpoints::IsBlockInCheckpoints(nHeight)) {
         uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
-        if (block.nBits != checkPowVal ) {
-            if ( (!TestNet() || pindexPrev->nHeight > pRetargetPid->GetTipFilterBlocks() ) && (nHeight < ancConsensus.nDifficultySwitchHeight4 || nHeight > ancConsensus.nDifficultySwitchHeight5) ) {
-                LogPrintf("Block's nBits are %s versus %s which is required for block height %d.", strprintf( "0x%08x",block.nBits), strprintf( "0x%08x",checkPowVal),nHeight);
-                LogPrintf("\n(%d, uint256(\"0x%s\"))\n", nHeight, block.GetPoWHash(nHeight,true).ToString());
+        if (block.nBits != checkPowVal && !TestNet()) {
+            #ifdef __APPLE__
+            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
+            if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < 32768)) {
                 return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
             }
-        }
+            #else
+            return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits"); 
+            #endif  
+        }         
     }
+    else {
+        LogPrintf("Block %d in checkpoints, skipping PoW check... \n",nHeight);   
+    }
+
+
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
