@@ -352,8 +352,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
         //! Force both hash calculations to be updated before validity testing the block
-        assert( pblock->GetHash(true) != uint256(0) );
-        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+        assert( pblock->GetHash() != uint256(0) );
+        assert( pblock->CalcSha256dHash() != uintFakeHash(0) );
         assert( pblock->GetGost3411Hash() != uint256(0) );
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false))
@@ -797,12 +797,12 @@ void static AnoncoinMiner(CWallet *pwallet)
                         {
                             doubleCheck = pblock->GetGost3411Hash();
                         } else {
-                            doubleCheck = pblock->GetHash(true);
+                            doubleCheck = pblock->GetHash();
                         }
                         assert( thash == doubleCheck );
                         //! Basically this next line does the Scrypt calculation again once, then all the normal
                         //! validation code kicks in from the call to ProcessBlockFound(), insuring that is the case...
-                        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+                        assert( pblock->CalcSha256dHash() != uintFakeHash(0) );
                         LogPrintf("%s %2d:\n", __func__, nMyID );
                         LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", thash.GetHex(), hashTarget.GetHex());
                         fAccepted = ProcessBlockFound(pblock, *pwallet, reservekey);

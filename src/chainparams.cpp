@@ -126,8 +126,8 @@ public:
         // vMerkleTree: 7ce7004d76
         genesis = CreateGenesisBlock(1370190760,347089008,0x1e0ffff0,1,0);
 
-        hashGenesisBlock = genesis.GetHash(true);                   //! true here is not really needed for main as it will be the 1st one
-        assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+        hashGenesisBlock = genesis.GetHash();                   //! true here is not really needed for main as it will be the 1st one
+        assert( genesis.CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
         printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x00000be19c5a519257aa921349037d55548af7cabf112741eb905a26bb73e468"));
         assert(genesis.hashMerkleRoot == uint256("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
@@ -263,8 +263,8 @@ public:
             50 * COIN
         );
 
-        hashGenesisBlock = genesis.GetHash(true);                   //! true here as recalc is needed, because main has already done it once
-        assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+        hashGenesisBlock = genesis.GetHash();                   //! true here as recalc is needed, because main has already done it once
+        assert( genesis.CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
 
         printf("Block: %s Gost: %s num tx: %lu\n", genesis.ToString().c_str(), genesis.GetGost3411Hash().ToString().c_str(), genesis.vtx.size());
         // This Genesis block hash matches the v0.8.5.6 client builds
@@ -325,8 +325,8 @@ public:
 
         // genesis.nNonce = 2;
         //! If we ever calculated some changes for regtest these would be needed, as they are the same as testnet, commented out for now
-        hashGenesisBlock = genesis.GetHash(true);                   //! true here recalc is needed, because main and testnet have already done the calc twice
-        assert( genesis.CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+        hashGenesisBlock = genesis.GetHash();                   //! true here recalc is needed, because main and testnet have already done the calc twice
+        assert( genesis.CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
 
         nDefaultPort = 19444;
 

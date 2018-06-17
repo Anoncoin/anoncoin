@@ -29,26 +29,19 @@ void uintFakeHash::SetRealHash( const uint256& realHash )
     mapBlockHashCrossReference.insert(std::make_pair(*this, realHash));
 }
 
-uintFakeHash CBlockHeader::CalcSha256dHash(const bool fForceUpdate) const
+uintFakeHash CBlockHeader::CalcSha256dHash() const
 {
     uint256 tHash;
     tHash = Hash(BEGIN(nVersion), END(nNonce));
-    //! We can do this in a constant class method because we declared them as mutable
     sha256dHash = tHash;
-    fCalcSha256d = true;
     return sha256dHash;
 }
 
-uint256 CBlockHeader::GetHash(const bool fForceUpdate) const
+uint256 CBlockHeader::GetHash() const
 {
-    //if( !fCalcScrypt || fForceUpdate ) {
-    uint256 tHash;
-    scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));
-    //! We can do this in a constant class method because we declared them as mutable
-    therealHash = tHash;
-    fCalcScrypt = true;
-    //}
-    return therealHash;
+    if (nHeight < 900000)
+        return GetScryptHash();
+    return GetGost3411Hash();
 }
 
 uint256 CBlockHeader::GetGost3411Hash() const
@@ -57,6 +50,14 @@ uint256 CBlockHeader::GetGost3411Hash() const
     uint256 tHash;
     tHash = HashGOST(BEGIN(nVersion), END(nNonce));//SerializeGost3411Hash(*this);
     return tHash;
+}
+
+uint256 CBlockHeader::GetScryptHash() const
+{
+    uint256 tHash;
+    scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));
+    therealHash = tHash;
+    return therealHash;
 }
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const

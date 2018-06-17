@@ -118,26 +118,21 @@ public:
         return (nBits == 0);
     }
 
-    uintFakeHash CalcSha256dHash( const bool fForceUpdate = true ) const;
-    uint256 GetHash( const bool fForceUpdate = false ) const;
-    uint256 GetGost3411Hash() const;
+    uintFakeHash CalcSha256dHash() const; // Gives SHA256 Hash
+    uint256 GetHash() const; // Gives correct PoW hash
+    uint256 GetGost3411Hash() const; // Gives Gost hash
+    uint256 GetScryptHash() const; // Gives Scrypt hash
 
     inline uintFakeHash GetFakeHash() const
     {
         return sha256dHash;
     }
 
-    inline uint256 GetPoWHash(const bool fForceUpdate = true) const
-    {
-        if (!ancConsensus.IsUsingGost3411Hash())
-            return GetHash(fForceUpdate);
-        return GetGost3411Hash();
-    }
-
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
     }
+
 };
 
 

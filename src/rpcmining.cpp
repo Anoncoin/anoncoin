@@ -158,13 +158,13 @@ Value generate(const Array& params, bool fHelp)
             uintTargetHash.SetCompact(pblock->nBits);
 
         //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
-        //! while (!CheckProofOfWork(pblock->GetHash(true), pblock->nBits)) {
-        while (pblock->GetPoWHash() > uintTargetHash) {
+        //! while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
+        while (pblock->GetHash() > uintTargetHash) {
             //! Yes, there is a chance every nonce could fail to satisfy the -regtest
             //! target -- 1 in 2^(2^32). That ain't gonna happen.
             ++pblock->nNonce;
         }
-        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+        assert( pblock->CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
         CValidationState state;
         if (!ProcessNewBlock(state, NULL, pblock))
             throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
@@ -245,13 +245,13 @@ Value setgenerate(const Array& params, bool fHelp)
             uint256 uintTargetHash;
             uintTargetHash.SetCompact(pblock->nBits);
             //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
-            // while (!CheckProofOfWork(pblock->GetHash(true), pblock->nBits)) {
-            while (pblock->GetPoWHash() > uintTargetHash) {
+            // while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
+            while (pblock->GetHash() > uintTargetHash) {
                 //! Yes, there is a chance every nonce could fail to satisfy the -regtest
                 //! target -- 1 in 2^(2^32). That ain't gonna happen.
                 ++pblock->nNonce;
             }
-            assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+            assert( pblock->CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
             CValidationState state;
             if (!ProcessNewBlock(state, NULL, pblock))
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
@@ -1041,10 +1041,10 @@ Value getwork(const Array& params, bool fHelp)
         //mapNewBlock.erase(aBlockHeader.hashMerkleRoot);
 
         //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
-        uint256 aRealHash = pblock->GetPoWHash();
+        uint256 aRealHash = pblock->GetHash();
         LogPrintf("getwork() got hash %s with merkle %s\n", aRealHash.ToString(), pblock->hashMerkleRoot.ToString());
         //! Force both hash calculations to be updated
-        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+        assert( pblock->CalcSha256dHash() != uintFakeHash(0) );
 
         bool fBlockPresent = false;
         {

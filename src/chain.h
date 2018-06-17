@@ -235,7 +235,7 @@ public:
         block.nBits           = nBits;
         block.nNonce          = nNonce;
         // We don't need nHeight here since it's not a part of the hash
-        return block.GetPoWHash();
+        return block.GetHash();
     }
 
     uintFakeHash GetBlockSha256dHash() const
