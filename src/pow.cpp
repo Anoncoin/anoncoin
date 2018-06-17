@@ -914,7 +914,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     }
 
     if (nMaxDiffIncrease <= 101 ) {
-        LogPrintf("Error: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
+        LogPrintf("Warning: nMaxDiffIncrease <= 101, DiffAtMaxIncrease is set to * 1.01 \n");
         nMaxDiffIncrease = 101;
     }
     uintPrevDiffForLimitsIncreaseLast = uintPrevDiffForLimitsLast * 100; //For a quick increase of difficulty, let's take the previous block diff
@@ -926,7 +926,7 @@ bool CRetargetPidController::UpdateIndexTipFilter( const CBlockIndex* pIndex )
     // The minimum value for the difficulty retarget limits is thus set to 101% which is equivalent to a 1.01 multiplier or divider.
 
     if (nMaxDiffDecrease <= 101 ) {
-        LogPrintf("Error: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 1.01 \n");
+        LogPrintf("Warning: nMaxDiffDecrease <= 101, DiffAtMaxDecrease is set to / 1.01 \n");
         nMaxDiffDecrease = 101;
     }
     
