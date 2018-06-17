@@ -683,8 +683,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (fTestNet)
     {
         // TESTNET
-        CashIsKing::ANCConsensus::nDifficultySwitchHeight6 = 170;
-        LogPrintf("-- Consensus TESTNET - Switch at 170\n");
+        CashIsKing::ANCConsensus::nDifficultySwitchHeight6 = 110;
+        LogPrintf("-- Consensus TESTNET - Switch at 110\n");
     }
 
     fDebug = !mapMultiArgs["-debug"].empty();
