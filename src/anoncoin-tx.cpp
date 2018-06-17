@@ -16,6 +16,7 @@
 #include "ui_interface.h" // for _(...)
 #include "univalue/univalue.h"
 #include "util.h"
+#include "consensus.h"
 
 #include <stdio.h>
 
