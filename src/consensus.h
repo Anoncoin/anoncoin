@@ -37,7 +37,6 @@ private:
   bool SkipPoWCheck();
 
 public:
-  ANCConsensus();
 
   uint256 GetPoWRequiredForNextBlock();
   uint256 GetPoWHashForThisBlock(const CBlockHeader& block);

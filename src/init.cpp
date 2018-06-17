@@ -13,7 +13,7 @@
 
 #include "addrman.h"
 #include "amount.h"
-//#include "chain.h"
+#include "consensus.h"
 #include "checkpoints.h"
 #include "compat/sanity.h"
 //#include "coins.h"
@@ -679,6 +679,13 @@ bool AppInit2(boost::thread_group& threadGroup)
         nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
 
     // ********************************************************* Step 3: parameter-to-internal-flags
+    bool fTestNet = GetBoolArg("-testnet", false);
+    if (fTestNet)
+    {
+        // TESTNET
+        CashIsKing::ANCConsensus::nDifficultySwitchHeight6 = 170;
+        LogPrintf("-- Consensus TESTNET - Switch at 170\n");
+    }
 
     fDebug = !mapMultiArgs["-debug"].empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages

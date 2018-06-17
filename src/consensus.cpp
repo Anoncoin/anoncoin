@@ -32,17 +32,6 @@ int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
 const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
 
 
-ANCConsensus::ANCConsensus()
-{
-  bool fTestNet = GetBoolArg("-testnet", false);
-  bShouldDebugLogPoW = GetBoolArg("-extrapowdebug", false);
-  if (fTestNet)
-  {
-    // TESTNET
-    ANCConsensus::nDifficultySwitchHeight6 = 150;
-  }
-}
-
 /**
  * The primary routine which verifies a blocks claim of Proof Of Work
  */
