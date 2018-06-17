@@ -11,6 +11,7 @@
 #include "scrypt.h"
 #include "tinyformat.h"
 #include "util.h"
+#include "consensus.h"
 
 //! Constants found in this source codes header(.h)
 //! The maximum allowed size for a serialized block, in bytes (network rule)
@@ -39,7 +40,7 @@ uintFakeHash CBlockHeader::CalcSha256dHash() const
 
 uint256 CBlockHeader::GetHash() const
 {
-    if (nHeight < ANCConsensus::nDifficultySwitchHeight6)
+    if (nHeight < CashIsKing::ANCConsensus::nDifficultySwitchHeight6)
         return GetScryptHash();
     return GetGost3411Hash();
 }
