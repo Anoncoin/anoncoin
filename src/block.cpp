@@ -41,13 +41,13 @@ uintFakeHash CBlockHeader::CalcSha256dHash(const bool fForceUpdate) const
 
 uint256 CBlockHeader::GetHash(const bool fForceUpdate) const
 {
-    if( !fCalcScrypt || fForceUpdate ) {
-        uint256 tHash;
-        scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));
-        //! We can do this in a constant class method because we declared them as mutable
-        therealHash = tHash;
-        fCalcScrypt = true;
-    }
+    //if( !fCalcScrypt || fForceUpdate ) {
+    uint256 tHash;
+    scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));
+    //! We can do this in a constant class method because we declared them as mutable
+    therealHash = tHash;
+    fCalcScrypt = true;
+    //}
     return therealHash;
 }
 
@@ -55,7 +55,7 @@ uint256 CBlockHeader::GetGost3411Hash() const
 {
     // GOST 34.11-256 (GOST 34.11-512 (...))
     uint256 tHash;
-    tHash = SerializeGost3411Hash(*this);
+    tHash = HashGOST(BEGIN(nVersion), END(nNonce));//SerializeGost3411Hash(*this);
     return tHash;
 }
 

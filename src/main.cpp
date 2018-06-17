@@ -1330,21 +1330,26 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
         return error("%s : Deserialize or I/O error - %s", __func__, e.what());
     }
 
-    // Check the header POW
-    uint256 hash = (ancConsensus.IsUsingGost3411Hash()) ? block.GetGost3411Hash() : block.GetHash();
-    if( !ancConsensus.CheckProofOfWork( hash, block.nBits) )
-            return error("ReadBlockFromDisk : Errors in block header");
-
     return true;
 }
 
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
 {
-    uint256 hash = (ancConsensus.IsUsingGost3411Hash()) ? block.GetGost3411Hash() : block.GetHash();
+
     if (!ReadBlockFromDisk(block, pindex->GetBlockPos()))
         return false;
-    if (hash != pindex->GetBlockHash())
-        return error("ReadBlockFromDisk(CBlock&, CBlockIndex*) : GetHash() doesn't match index");
+
+    uint256 hash = block.GetPoWHash(pindex->nHeight);
+
+    // Check the header POW
+    if( !ancConsensus.CheckProofOfWork( hash, block.nBits) )
+            return error("ReadBlockFromDisk : Errors in block header");
+
+    if (hash != pindex->GetBlockPowHash())
+    {
+        return error("ReadBlockFromDisk(CBlock&, CBlockIndex*) : GetHash() doesn't match index, (%s vs %s)",
+                        hash.ToString(), pindex->GetBlockPowHash().ToString());
+    }
     return true;
 }
 

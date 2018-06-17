@@ -236,7 +236,7 @@ public:
         return block.GetPoWHash(nHeight);
     }
 
-    uint256 GetBlockSha256dHash() const
+    uintFakeHash GetBlockSha256dHash() const
     {
         return fakeBIhash;
     }
@@ -422,7 +422,7 @@ public:
     }
 
     inline bool UseGost3411Hash() {
-        return Tip()->nHeight >= HARDFORK_BLOCK3;
+        return ancConsensus.IsUsingGost3411Hash();
     }
 
     /** Set/initialize a chain with a given tip. */

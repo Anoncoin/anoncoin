@@ -129,6 +129,11 @@ public:
     uint256 GetHash( const bool fForceUpdate = false ) const;
     uint256 GetGost3411Hash() const;
 
+    inline uintFakeHash GetFakeHash() const
+    {
+        return sha256dHash;
+    }
+
     inline uint256 GetPoWHash(uint32_t nHeight, const bool fForceUpdate = true) const
     {
         if (!ancConsensus.IsUsingGost3411Hash())
