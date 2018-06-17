@@ -11,6 +11,8 @@
 
 #include "miner.h"
 
+#include <string>
+
 #include "amount.h"
 #include "block.h"
 #include "chainparams.h"
@@ -770,6 +772,7 @@ void static AnoncoinMiner(CWallet *pwallet)
                 hashTarget.SetCompact(0x1d01076f);
                 LogPrintf("Set GOST3411 target to: %s", hashTarget.ToString());
             }
+            std::string powHashType = "scrypt";
             while( true ) {
                 bool fFound = false;
                 bool fAccepted = false;
@@ -784,8 +787,10 @@ void static AnoncoinMiner(CWallet *pwallet)
                         thash = HashGOST(BEGIN(pblock->nVersion), END(pblock->nNonce));
                         pblock->nVersion = 3;
                         pblock->nHeight  = pindexPrev->nHeight+1;
+                        powHashType = "gost3411";
                     } else {
                         scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), spScratchPad.get());
+                        pblock->nVersion = 2;
                     }
                     nHashesDone++;
                     if( thash <= hashTarget ) {
@@ -794,19 +799,12 @@ void static AnoncoinMiner(CWallet *pwallet)
                         //! Found a solution
                         //! Force new proof-of-work block scrypt hash and the sha256d hash values to be calculated.
                         //! Calling GetHash() & CalcSha256dHash() with true invalidates any previous (and obsolete) ones.
-                        uint256 doubleCheck;
-                        if (chainActive.UseGost3411Hash())
-                        {
-                            doubleCheck = pblock->GetGost3411Hash();
-                        } else {
-                            doubleCheck = pblock->GetHash();
-                        }
-                        assert( thash == doubleCheck );
+                        assert( thash == pblock->GetHash() );
                         //! Basically this next line does the Scrypt calculation again once, then all the normal
                         //! validation code kicks in from the call to ProcessBlockFound(), insuring that is the case...
                         assert( pblock->CalcSha256dHash() != uintFakeHash(0) );
                         LogPrintf("%s %2d:\n", __func__, nMyID );
-                        LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", thash.GetHex(), hashTarget.GetHex());
+                        LogPrintf("proof-of-work found (%s)  \n  hash: %s  \ntarget: %s\n", powHashType.c_str(), thash.GetHex(), hashTarget.GetHex());
                         fAccepted = ProcessBlockFound(pblock, *pwallet, reservekey);
                         SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
