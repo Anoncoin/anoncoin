@@ -100,7 +100,7 @@ public:
     uintFakeHash fakeBIhash;
 
     // The new GOST3411 Hash
-    uintGost3411Hash gost3411Hash;
+    uint256 gost3411Hash;
 
     //! pointer to the hash of the block, This is in the mapBlockIndex and based on the real POW. memory is owned by this CBlockIndex
     const uint256* phashBlock;
@@ -219,6 +219,7 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+        block.nHeight        = nHeight;
         return block;
     }
 
@@ -233,7 +234,8 @@ public:
         block.nTime           = nTime;
         block.nBits           = nBits;
         block.nNonce          = nNonce;
-        return block.GetPoWHash(nHeight);
+        // We don't need nHeight here since it's not a part of the hash
+        return block.GetPoWHash();
     }
 
     uintFakeHash GetBlockSha256dHash() const

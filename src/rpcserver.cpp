@@ -912,8 +912,8 @@ static Object JSONRPCExecOne(const Value& req)
             } else
                 fCommandException = true;
         }
-        if( !fCommandException )
-            LogPrint( "rpc", "%s : executing method=%s with %d parameters.\n", __func__, SanitizeString(jreq.strMethod), jreq.params.size() );
+        //if( !fCommandException )
+        LogPrint( "rpc", "%s : executing method=%s with %d parameters.\n", __func__, SanitizeString(jreq.strMethod), jreq.params.size() );
 
         Value result = tableRPC.execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, Value::null, jreq.id);

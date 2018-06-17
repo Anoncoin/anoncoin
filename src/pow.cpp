@@ -538,7 +538,7 @@ CRetargetPidController::CRetargetPidController( const double dProportionalGainIn
     nIntegratorHeight = nIndexFilterHeight = 0;
     nLastCalculationTime = 0;
     nBlocksSampled = 0;
-    uintTestNetStartingDifficulty = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+    uintTestNetStartingDifficulty = Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 );
     if( isMainNetwork() ) {
         nTipFilterBlocks = atoi( TIPFILTERBLOCKS_DEFAULT );
         fUsesHeader = USESHEADER_DEFAULT;

@@ -1339,7 +1339,7 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
     if (!ReadBlockFromDisk(block, pindex->GetBlockPos()))
         return false;
 
-    uint256 hash = block.GetPoWHash(pindex->nHeight);
+    uint256 hash = block.GetPoWHash();
 
     // Check the header POW
     if( !ancConsensus.CheckProofOfWork( hash, block.nBits) )
@@ -3033,6 +3033,7 @@ bool static LoadBlockIndexDB()
         aHeader.nTime           = pindex->nTime;
         aHeader.nBits           = pindex->nBits;
         aHeader.nNonce          = pindex->nNonce;
+        aHeader.nHeight         = pindex->nHeight;
 
 
         
@@ -3043,12 +3044,12 @@ bool static LoadBlockIndexDB()
         //aRealHash = aHeader.GetPoWHash(nHeight, true); 
 
         if( fDoubleCheckingHash ) {
-            aRealHash = aHeader.GetPoWHash(nHeight, true);              //! Calc the real scrypt hash of this block.
+            aRealHash = aHeader.GetPoWHash(true);              //! Calc the real scrypt hash of this block.
             if( nHeight > 100 )                             //! Stop checking if things have been ok after the 1st 100 blocks
                 fDoubleCheckingHash = false;
         } else if( nHeight > nBIsize - 1000 ) {   
                                                                   //! Turn it back on for the last 1000 blocks
-            aRealHash = aHeader.GetPoWHash(nHeight, true);              //! Calc the real scrypt hash of this block.
+            aRealHash = aHeader.GetPoWHash(true);              //! Calc the real scrypt hash of this block.
         } else {
             aRealHash = entry.uintRealHash;  
         }

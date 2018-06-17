@@ -54,25 +54,14 @@ bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
 
   bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 
-  CBlockIndex *tip = chainActive.Tip();
-  bool fStartedUsingGost3411 = false;
-  if (tip)
-  {
-    int32_t nHeight = tip->nHeight;
-    if (nHeight >= nDifficultySwitchHeight6)
-    {
-      fStartedUsingGost3411 = true;
-    }
-  }
-
   const uint256 proofOfWorkLimit = 
-      (fStartedUsingGost3411) ? 
+      (IsUsingGost3411Hash()) ?
         Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) 
         : Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
   //! Check range of the Target Difficulty value stored in a block
   if( fNegative || bnTarget == 0 || fOverflow || bnTarget > proofOfWorkLimit )
-    return error("CheckProofOfWorkGost3411() : nBits below minimum work");
+    return error("CheckProofOfWork() : nBits below minimum work");
 
   //! Check the proof of work matches claimed amount
   if (hash > bnTarget) {
@@ -86,7 +75,7 @@ bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
       LogPrintf( "%s : Failed. ", __func__ );
       if( fTestNet ) LogPrintf( "StartingDiff=0x%s ", uintStartingDiff.ToString() );
       LogPrintf( "Target=0x%s hash=0x%s\n", bnTarget.ToString(), hash.ToString() );
-      return error("CheckProofOfWorkGost3411() : hash doesn't match nBits");
+      return error("CheckProofOfWork() : hash doesn't match nBits (0x%s)", uint256().SetCompact(nBits).ToString() );
     }
   }
 
@@ -104,7 +93,7 @@ bool ANCConsensus::SkipPoWCheck()
 
 bool ANCConsensus::CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
-  if (fCheckPOW)
+  if (fCheckPOW && !TestNet())
     fCheckPOW = SkipPoWCheck();
   if (!fCheckPOW)
   {
@@ -113,7 +102,7 @@ bool ANCConsensus::CheckBlockHeader(const CBlockHeader& block, CValidationState&
   // Check proof of work matches claimed amount
   uint256 hash = GetPoWHashForThisBlock(block);
   if (fCheckPOW && !CheckProofOfWork(hash, block.nBits))
-    return state.DoS(50, error("CheckBlockHeader() : proof of work failed"), REJECT_INVALID, "high-hash");
+    return state.DoS(50, error("CheckBlockHeader() : proof of work failed (%s)", hash.ToString()), REJECT_INVALID, "high-hash");
 
   // Check timestamp, for Anoncoin we make that less than 2hrs after the hardfork,
   // no mined block time need have a future time so large.  In fact the header can
@@ -162,8 +151,9 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
         uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
         if (block.nBits != checkPowVal && !TestNet()) {
             #ifdef __APPLE__
+            uint32_t maxDiff = 32768;
             uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
-            if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < 32768)) {
+            if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < maxDiff)) {
                 return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
             }
             #else
@@ -206,9 +196,7 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
     {
       //LogPrintf("NextWorkRequiredKgwV2 selected\n");
       uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
-    }
-    else if ( pindexLast->nHeight >= nDifficultySwitchHeight6 )
-    {
+    } else if ( pindexLast->nHeight >= nDifficultySwitchHeight6 ) {
       uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
     }
   } else {
@@ -455,9 +443,6 @@ uint256 ANCConsensus::GetBlockProof(const ::CBlockIndex& block)
   bool fOverflow;
 
   bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
-  if (IsUsingGost3411Hash()) {
-    //
-  }
   return (!fNegative && !fOverflow) ? GetWorkProof( bnTarget ) : ::uint256(0);
 }
 

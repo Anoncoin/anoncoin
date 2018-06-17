@@ -159,7 +159,7 @@ Value generate(const Array& params, bool fHelp)
 
         //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
         //! while (!CheckProofOfWork(pblock->GetHash(true), pblock->nBits)) {
-        while (pblock->GetHash(true) > uintTargetHash) {
+        while (pblock->GetPoWHash() > uintTargetHash) {
             //! Yes, there is a chance every nonce could fail to satisfy the -regtest
             //! target -- 1 in 2^(2^32). That ain't gonna happen.
             ++pblock->nNonce;
@@ -246,7 +246,7 @@ Value setgenerate(const Array& params, bool fHelp)
             uintTargetHash.SetCompact(pblock->nBits);
             //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
             // while (!CheckProofOfWork(pblock->GetHash(true), pblock->nBits)) {
-            while (pblock->GetHash(true) > uintTargetHash) {
+            while (pblock->GetPoWHash() > uintTargetHash) {
                 //! Yes, there is a chance every nonce could fail to satisfy the -regtest
                 //! target -- 1 in 2^(2^32). That ain't gonna happen.
                 ++pblock->nNonce;
@@ -528,7 +528,13 @@ Value getblocktemplate(const Array& params, bool fHelp)
             if (!DecodeHexBlk(block, dataval.get_str()))
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block decode failed");
 
-            uint256 aRealHash = block.GetHash();
+            uint256 aRealHash;
+            if (ancConsensus.IsUsingGost3411Hash())
+            {
+                aRealHash = block.GetGost3411Hash();
+            } else {
+                aRealHash = block.GetHash();
+            }
             BlockMap::iterator mi = mapBlockIndex.find(aRealHash);
             if (mi != mapBlockIndex.end()) {
                 CBlockIndex *pindex = mi->second;
@@ -541,8 +547,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
 
             CBlockIndex* const pindexPrev = chainActive.Tip();
             // TestBlockValidity only supports blocks built on the current Tip
-            uint256 prevRealHash = block.hashPrevBlock.GetRealHash();
-            if( prevRealHash == 0 || prevRealHash != pindexPrev->GetBlockHash())
+            if( block.hashPrevBlock.GetRealHash() == 0 || block.hashPrevBlock.GetRealHash() != pindexPrev->GetBlockHash() )
                 return "inconclusive-not-best-prevblk";
             CValidationState state;
             TestBlockValidity(state, block, pindexPrev, false, true);
@@ -579,7 +584,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
         else
         {
             // NOTE: Spec does not specify behaviour for non-string longpollid, but this makes testing easier
-            hashWatchedChain = chainActive.Tip()->GetBlockSha256dHash();
+            hashWatchedChain = (ancConsensus.IsUsingGost3411Hash()) ? chainActive.Tip()->GetBlockGost3411Hash() : chainActive.Tip()->GetBlockSha256dHash();
             nTransactionsUpdatedLastLP = nTransactionsUpdatedLast;
         }
 
@@ -589,7 +594,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
             checktxtime = boost::get_system_time() + boost::posix_time::seconds(30);    // Anoncoin waits 30 seconds
 
             boost::unique_lock<boost::mutex> lock(csBestBlock);
-            while (chainActive.Tip()->GetBlockSha256dHash() == hashWatchedChain && IsRPCRunning())
+            while ( chainActive.Tip()->GetBlockSha256dHash() == hashWatchedChain && IsRPCRunning())
             {
                 if (!cvBlockChange.timed_wait(lock, checktxtime))
                 {
@@ -736,8 +741,12 @@ public:
 
 protected:
     void BlockChecked(const CBlock& block, const CValidationState& stateIn) {
-        if (block.GetHash() != aRealHash)
-            return;
+        if (ancConsensus.IsUsingGost3411Hash())
+        {
+            if (block.GetGost3411Hash() != aRealHash) return;
+        } else {
+            if (block.GetHash() != aRealHash) return;
+        }
         found = true;
         state = stateIn;
     };
@@ -767,7 +776,7 @@ Value submitblock(const Array& params, bool fHelp)
     if (!DecodeHexBlk(block, params[0].get_str()))
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block decode failed");
 
-    uint256 aRealHash = block.GetHash();
+    uint256 aRealHash = (ancConsensus.IsUsingGost3411Hash()) ? block.GetGost3411Hash() : block.GetHash();
     bool fBlockPresent = false;
     {
         LOCK(cs_main);
@@ -900,6 +909,7 @@ Value getwork(const Array& params, bool fHelp)
     if (!lockGetwork)
         throw JSONRPCError(RPC_MISC_ERROR, "Lock failed, getwork busy...");
 
+    int32_t targetHeight = 0;
     if (params.size() == 0)
     {
         // Update block
@@ -940,12 +950,13 @@ Value getwork(const Array& params, bool fHelp)
         //! Now we can set, and know its current the previous blockindex pointer value.
         //! This need to be updated only after we know CreateNewBlock succeeded
         pindexPrev = pindexPrevNew;
+        targetHeight = pindexPrev->nHeight+1;
 
         //! Save the block pointer with a key on the MerkleRoot hash, this is how we will know that is the one being
         //! returned later from an external miner if it finds a result.
         mapNewBlock[pblock->hashMerkleRoot] = pblock;
-        LogPrintf( "GetWork MerkleRoot hash saved as 0x%s\n", pblock->hashMerkleRoot.ToString() );
-        LogPrintf( "GetWork Previous hash saved as 0x%s\n", pblock->hashPrevBlock.ToString() );
+        LogPrintf( "<-- GetWork MerkleRoot hash saved as 0x%s\n", pblock->hashMerkleRoot.ToString() );
+        LogPrintf( "<-- GetWork Previous hash saved as 0x%s\n", pblock->hashPrevBlock.ToString() );
 
         /**
          * Pre-build hash buffers
@@ -957,11 +968,16 @@ Value getwork(const Array& params, bool fHelp)
 
         uint256 hashTarget;
         hashTarget.SetCompact(pblock->nBits);
+        if (pindexPrevNew->nHeight+1 == ancConsensus.nDifficultySwitchHeight6)
+        {
+            hashTarget.SetCompact(0x1d01076f);
+            LogPrintf("Set GOST3411 target to: %s", hashTarget.ToString());
+        }
 
         Object result;
-        result.push_back(Pair("midstate", HexStr(BEGIN(pmidstate), END(pmidstate)))); // deprecated
+        //result.push_back(Pair("midstate", HexStr(BEGIN(pmidstate), END(pmidstate)))); // deprecated
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
-        result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
+        //result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
         return result;
     }
@@ -995,8 +1011,8 @@ Value getwork(const Array& params, bool fHelp)
         }
 
         // If that MerkleRoot is still found in our NewBlock map, we have a chance to save a new mined block...
-        // LogPrintf( "GetWork MerkleRoot hash retrieved from miner 0x%s\n", aBlockHeader.hashMerkleRoot.ToString() );
-        // LogPrintf( "GetWork Previous hash retrieved as 0x%s\n", aBlockHeader.hashPrevBlock.ToString() );
+        LogPrintf( "--> GetWork MerkleRoot hash retrieved from miner 0x%s\n", aBlockHeader.hashMerkleRoot.ToString() );
+        LogPrintf( "--> GetWork Previous hash retrieved as 0x%s\n", aBlockHeader.hashPrevBlock.ToString() );
         if( !mapNewBlock.count(aBlockHeader.hashMerkleRoot) )
             throw JSONRPCError(RPC_INVALID_PARAMETER, "MerkleRoot hash was not found");
 
@@ -1022,10 +1038,11 @@ Value getwork(const Array& params, bool fHelp)
         //pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
         // Remove the hash so another miner can not submit the same duplicate work
-        // mapNewBlock.erase(aBlockHeader.hashMerkleRoot);
+        //mapNewBlock.erase(aBlockHeader.hashMerkleRoot);
 
         //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
-        uint256 aRealHash = pblock->GetHash(true);
+        uint256 aRealHash = pblock->GetPoWHash();
+        LogPrintf("getwork() got hash %s with merkle %s\n", aRealHash.ToString(), pblock->hashMerkleRoot.ToString());
         //! Force both hash calculations to be updated
         assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
 
