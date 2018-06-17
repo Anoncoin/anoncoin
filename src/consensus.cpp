@@ -168,7 +168,7 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
         return state.Invalid(error("%s : rejected nVersion=1 block", __func__), REJECT_OBSOLETE, "bad-version");
 
     if( block.nVersion < 3 && nHeight > ancConsensus.nDifficultySwitchHeight6 )                // We'll start enforcing the new rule
-        return state.Invalid(error("%s : rejected nVersion=1 block", __func__), REJECT_OBSOLETE, "bad-version");
+        return state.Invalid(error("%s : rejected nVersion=2 block", __func__), REJECT_OBSOLETE, "bad-version");
 
     return true;
 }
