@@ -1141,6 +1141,23 @@ Value getwork(const Array& params, bool fHelp)
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
         //result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
+
+
+        CTransaction coinbaseTx = pblock->vtx[0];
+        std::vector<uint256> merkle = pblock->GetMerkleBranch(0);
+
+        CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
+        ssTx << coinbaseTx;
+        result.push_back(Pair("coinbase", HexStr(ssTx.begin(), ssTx.end())));
+
+        Array merkle_arr;
+
+        BOOST_FOREACH(uint256 merkleh, merkle) {
+            printf("%s\n", merkleh.ToString().c_str());
+            merkle_arr.push_back(HexStr(BEGIN(merkleh), END(merkleh)));
+        }
+
+        result.push_back(Pair("merkle", merkle_arr));
         return result;
     }
     else
