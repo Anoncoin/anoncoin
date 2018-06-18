@@ -244,6 +244,7 @@ libanoncoin_common_a_SOURCES = \
   base58.cpp \
   chainparams.cpp \
   coins.cpp \
+  chain.cpp \
   compressor.cpp \
   consensus.cpp \
   core_read.cpp \

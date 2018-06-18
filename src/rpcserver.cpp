@@ -335,6 +335,7 @@ static const CRPCCommand vRPCCommands[] =
     { "mining",             "getretargetpid",         &getretargetpid,         true  },
 #ifdef ENABLE_WALLET
     { "mining",             "getwork",                &getwork,                true  },
+    { "mining",             "getworkex",              &getworkex,              true  },
     { "mining",             "getgenerate",            &getgenerate,            true  },
     { "mining",             "gethashmeter",           &gethashmeter,           true  },
     { "mining",             "setgenerate",            &setgenerate,            true  },
