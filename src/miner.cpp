@@ -353,6 +353,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         pblock->nNonce         = 0;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
+        if (nHeight >= ancConsensus.nDifficultySwitchHeight6)
+        {
+            pblock->nVersion = 3;
+            pblock->nHeight = nHeight;
+        } else {
+            pblock->nVersion = 2;
+        }
+
         //! Force both hash calculations to be updated before validity testing the block
         assert( pblock->GetHash() != uint256(0) );
         assert( pblock->CalcSha256dHash() != uintFakeHash(0) );

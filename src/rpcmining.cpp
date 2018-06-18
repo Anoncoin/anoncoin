@@ -157,6 +157,8 @@ Value generate(const Array& params, bool fHelp)
         } else
             uintTargetHash.SetCompact(pblock->nBits);
 
+        pblock->nHeight = nHeight;
+        pblock->nVersion = 3;
         //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
         //! while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
         while (pblock->GetHash() > uintTargetHash) {
@@ -244,6 +246,9 @@ Value setgenerate(const Array& params, bool fHelp)
             }
             uint256 uintTargetHash;
             uintTargetHash.SetCompact(pblock->nBits);
+
+            pblock->nVersion = 3;
+            pblock->nHeight = nHeight;
             //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
             // while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
             while (pblock->GetHash() > uintTargetHash) {
@@ -532,6 +537,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
             if (ancConsensus.IsUsingGost3411Hash())
             {
                 aRealHash = block.GetGost3411Hash();
+                block.nVersion = 3;
             } else {
                 aRealHash = block.GetHash();
             }
@@ -647,6 +653,11 @@ Value getblocktemplate(const Array& params, bool fHelp)
     // DO NOT Update nTime, as it was set and locked to the retarget pid next work required when CreateNewBlock was called.
     // UpdateTime(pblock, pindexPrev);
     pblock->nNonce = 0;
+    if (pindexPrev->nHeight+1 >= ancConsensus.nDifficultySwitchHeight6)
+    {
+        pblock->nHeight = pindexPrev->nHeight+1;
+        pblock->nVersion = 3;
+    }
 
     static const Array aCaps = boost::assign::list_of("proposal");
 
