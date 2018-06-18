@@ -112,18 +112,6 @@ extern const uint8_t REJECT_DUST;
 extern const uint8_t REJECT_INSUFFICIENTFEE;
 extern const uint8_t REJECT_CHECKPOINT;
 
-// New BlockIndex map concept, using boost unordered_map technology offers us a
-// faster block locator than std::map which uses a binary tree search, this does
-// it by hash, and we define it to use a very fast 'Cheap' hash, the lower 64bits
-// of the longer block hash we have anyway as the key.  Now throughout the code
-// you can simply reference the same old mapBLockIndex we keep in memory, create
-// BlockMap iterators as you need them, this really fast find function is another
-// great idea that came from bitcoin v10 development.  Thank goes to them from
-// this developer.....GR
-struct BlockHasher
-{
-    size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
-};
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;

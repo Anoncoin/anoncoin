@@ -213,7 +213,6 @@ public:
         if (pprev)
         {
             block.hashPrevBlock = pprev->fakeBIhash;
-            //block.gost3411Hash  = 
         }
         block.hashMerkleRoot = hashMerkleRoot;
         block.nTime          = nTime;
@@ -234,7 +233,7 @@ public:
         block.nTime           = nTime;
         block.nBits           = nBits;
         block.nNonce          = nNonce;
-        block.nHeight        = nHeight;
+        block.nHeight         = nHeight;
         return block.GetHash();
     }
 
