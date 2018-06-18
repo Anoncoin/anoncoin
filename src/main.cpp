@@ -1342,7 +1342,7 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
     uint256 hash = block.GetHash();
 
     // Check the header POW
-    if( !ancConsensus.CheckProofOfWork( hash, block.nBits) )
+    if( !ancConsensus.CheckProofOfWork( block, block.nBits) )
             return error("ReadBlockFromDisk : Errors in block header");
 
     if (hash != pindex->GetBlockPowHash())
@@ -3059,7 +3059,7 @@ bool static LoadBlockIndexDB()
         }
 
         //! Could do a quick check of the nBits to confirm pow here...its fast.
-        if( !ancConsensus.CheckProofOfWork( aRealHash, aHeader.nBits ) )
+        if( !ancConsensus.CheckProofOfWork( aHeader, aHeader.nBits ) )
             return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());
         //LogPrintf( "fakeBIhash: %s aRealHash: %s Gost3411Hash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), gost3411Hash.ToString(), nHeight );
         vFakeHashes[nHeight++] = aFakeHash; //! Save it for later on the 2nd pass

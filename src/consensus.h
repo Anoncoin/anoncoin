@@ -54,7 +54,7 @@ public:
 
   uint256 GetWorkProof(const uint256& uintTarget);
   //! Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
-  bool CheckProofOfWork(const uint256& hash, unsigned int nBits);
+  bool CheckProofOfWork(const CBlockHeader& pBlockHeader, unsigned int nBits);
 
   unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader);
   uint256 OriginalGetNextWorkRequired(const CBlockIndex* pindexLast);

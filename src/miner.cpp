@@ -782,7 +782,7 @@ void static AnoncoinMiner(CWallet *pwallet)
                 while(true) {
                     // scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), pScratchPadBuffer);
                     //char *pPad = spScratchPad.get();
-                    if (chainActive.UseGost3411Hash())
+                    if (pindexPrev->nHeight+1 >= ancConsensus.nDifficultySwitchHeight6)
                     {
                         thash = HashGOST(BEGIN(pblock->nVersion), END(pblock->nNonce));
                         pblock->nVersion = 3;

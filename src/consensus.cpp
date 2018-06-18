@@ -35,7 +35,7 @@ const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
 /**
  * The primary routine which verifies a blocks claim of Proof Of Work
  */
-bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
+bool ANCConsensus::CheckProofOfWork(const CBlockHeader& pBlockHeader, unsigned int nBits)
 {
   bool fNegative;
   bool fOverflow;
@@ -43,11 +43,18 @@ bool ANCConsensus::CheckProofOfWork(const uint256& hash, unsigned int nBits)
 
   bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 
+  if (pBlockHeader.nHeight == unsigned(nDifficultySwitchHeight6))
+  {
+      bnTarget.SetCompact(0x1d01076f);
+      LogPrintf("Set GOST3411 target to: %s\n", bnTarget.ToString());
+  }
+
   const uint256 proofOfWorkLimit = 
-      (IsUsingGost3411Hash()) ?
+      (pBlockHeader.nHeight >= unsigned(nDifficultySwitchHeight6) ) ?
         Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) 
         : Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
+  uint256 hash = pBlockHeader.GetHash();
   //! Check range of the Target Difficulty value stored in a block
   if( fNegative || bnTarget == 0 || fOverflow || bnTarget > proofOfWorkLimit )
     return error("CheckProofOfWork() : nBits below minimum work");
@@ -90,7 +97,7 @@ bool ANCConsensus::CheckBlockHeader(const CBlockHeader& block, CValidationState&
   }
   // Check proof of work matches claimed amount
   uint256 hash = GetPoWHashForThisBlock(block);
-  if (fCheckPOW && !CheckProofOfWork(hash, block.nBits))
+  if (fCheckPOW && !CheckProofOfWork(block, block.nBits))
     return state.DoS(50, error("CheckBlockHeader() : proof of work failed (%s)", hash.ToString()), REJECT_INVALID, "high-hash");
 
   // Check timestamp, for Anoncoin we make that less than 2hrs after the hardfork,
