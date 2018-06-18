@@ -43,12 +43,6 @@ bool ANCConsensus::CheckProofOfWork(const CBlockHeader& pBlockHeader, unsigned i
 
   bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 
-  if (pBlockHeader.nHeight == unsigned(nDifficultySwitchHeight6))
-  {
-      bnTarget.SetCompact(0x1d01076f);
-      LogPrintf("Set GOST3411 target to: %s\n", bnTarget.ToString());
-  }
-
   const uint256 proofOfWorkLimit = 
       (pBlockHeader.nHeight >= unsigned(nDifficultySwitchHeight6) ) ?
         Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) 
@@ -57,7 +51,7 @@ bool ANCConsensus::CheckProofOfWork(const CBlockHeader& pBlockHeader, unsigned i
   uint256 hash = pBlockHeader.GetHash();
   //! Check range of the Target Difficulty value stored in a block
   if( fNegative || bnTarget == 0 || fOverflow || bnTarget > proofOfWorkLimit )
-    return error("CheckProofOfWork() : nBits below minimum work");
+    return error("CheckProofOfWork() : nBits below minimum work (0x%s / %s)", proofOfWorkLimit.ToString(), strprintf( "0x%08x",proofOfWorkLimit.GetCompact()));
 
   //! Check the proof of work matches claimed amount
   if (hash > bnTarget) {

@@ -321,7 +321,7 @@ public:
         // ToDo: Proof of work limits, for regression testing are very small, more than likely these should work
         bnProofOfWorkLimit[ALGO_SCRYPT] = ~uint256(0) >> 12;
         bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 12;
-        bnProofOfWorkLimit[ALGO_GOST3411] = uint256().SetCompact(0x1e0eb9b8);
+        bnProofOfWorkLimit[ALGO_GOST3411] = uint256().SetCompact(0x1d01076f);
 
         // genesis.nNonce = 2;
         //! If we ever calculated some changes for regtest these would be needed, as they are the same as testnet, commented out for now

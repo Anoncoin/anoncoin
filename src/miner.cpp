@@ -769,8 +769,9 @@ void static AnoncoinMiner(CWallet *pwallet)
             hashTarget.SetCompact(pblock->nBits);
             if (pindexPrev->nHeight+1 == ancConsensus.nDifficultySwitchHeight6)
             {
-                hashTarget.SetCompact(0x1d01076f);
-                LogPrintf("Set GOST3411 target to: %s", hashTarget.ToString());
+                hashTarget.SetCompact(0x1e0eb9a7);
+                pblock->nBits = hashTarget.GetCompact();
+                LogPrintf("Set GOST3411 target to: %s\n", hashTarget.ToString());
             }
             std::string powHashType = "scrypt";
             while( true ) {
@@ -780,8 +781,6 @@ void static AnoncoinMiner(CWallet *pwallet)
                 uint256 thash;
                 //! Scan nonces looking for a solution
                 while(true) {
-                    // scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), pScratchPadBuffer);
-                    //char *pPad = spScratchPad.get();
                     if (pindexPrev->nHeight+1 >= ancConsensus.nDifficultySwitchHeight6)
                     {
                         thash = HashGOST(BEGIN(pblock->nVersion), END(pblock->nNonce));

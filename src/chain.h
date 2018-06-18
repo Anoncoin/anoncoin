@@ -234,7 +234,7 @@ public:
         block.nTime           = nTime;
         block.nBits           = nBits;
         block.nNonce          = nNonce;
-        // We don't need nHeight here since it's not a part of the hash
+        block.nHeight        = nHeight;
         return block.GetHash();
     }
 
