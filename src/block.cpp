@@ -40,7 +40,7 @@ uintFakeHash CBlockHeader::CalcSha256dHash() const
 
 uint256 CBlockHeader::GetHash() const
 {
-    if (nHeight < CashIsKing::ANCConsensus::nDifficultySwitchHeight6)
+    if (signed(nHeight) < CashIsKing::ANCConsensus::nDifficultySwitchHeight6)
         return GetScryptHash();
     return GetGost3411Hash();
 }

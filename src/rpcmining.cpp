@@ -1227,7 +1227,6 @@ Value getwork(const Array& params, bool fHelp)
         // Remove the hash so another miner can not submit the same duplicate work
         mapNewBlock.erase(aBlockHeader.hashMerkleRoot);
 
-        //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
         uint256 aRealHash = pblock->GetHash();
         LogPrintf("getwork() got hash %s with merkle %s\n", aRealHash.ToString(), pblock->hashMerkleRoot.ToString());
         //! Force both hash calculations to be updated

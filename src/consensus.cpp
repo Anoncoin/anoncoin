@@ -90,7 +90,7 @@ bool ANCConsensus::CheckBlockHeader(const CBlockHeader& block, CValidationState&
     return true;
   }
   // Check proof of work matches claimed amount
-  uint256 hash = GetPoWHashForThisBlock(block);
+  uint256 hash = block.GetHash();
   if (fCheckPOW && !CheckProofOfWork(block, block.nBits))
     return state.DoS(50, error("CheckBlockHeader() : proof of work failed (%s)", hash.ToString()), REJECT_INVALID, "high-hash");
 
