@@ -875,7 +875,7 @@ Value estimatepriority(const Array& params, bool fHelp)
     return mempool.estimatePriority(nBlocks);
 }
 
-typedef map<uint256, pair<CBlock*, CTransaction> > mapNewBlock_t;
+typedef map<uint256, pair<CBlock*, CMutableTransaction> > mapNewBlock_t;
 static mapNewBlock_t mapNewBlock;
 static CCriticalSection cs_getwork;
 static CReserveKey* pMiningKey = NULL;
@@ -959,7 +959,7 @@ Value getworkex(const Array& params, bool fHelp)
             LogPrintf("Set GOST3411 target to: %s\n", hashTarget.ToString());
         }
 
-        CTransaction coinbaseTx = pblock->vtx[0];
+        CMutableTransaction coinbaseTx = pblock->vtx[0];
         std::vector<uint256> merkle = pblock->GetMerkleBranch(0);
 
         Object result;
@@ -1143,7 +1143,7 @@ Value getwork(const Array& params, bool fHelp)
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
 
 
-        CTransaction coinbaseTx = pblock->vtx[0];
+        CMutableTransaction coinbaseTx = pblock->vtx[0];
         std::vector<uint256> merkle = pblock->GetMerkleBranch(0);
 
         CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
@@ -1153,7 +1153,7 @@ Value getwork(const Array& params, bool fHelp)
         Array merkle_arr;
 
         BOOST_FOREACH(uint256 merkleh, merkle) {
-            printf("%s\n", merkleh.ToString().c_str());
+            LogPrintf("Merkle leaf: %s\n", merkleh.ToString().c_str());
             merkle_arr.push_back(HexStr(BEGIN(merkleh), END(merkleh)));
         }
 
@@ -1212,6 +1212,12 @@ Value getwork(const Array& params, bool fHelp)
             pblock->nTime = aBlockHeader.nTime;
         }
         pblock->nNonce = aBlockHeader.nNonce;
+        pblock->hashMerkleRoot = pblock->BuildMerkleTree();
+        pblock->vtx[0] = mapNewBlock[aBlockHeader.hashMerkleRoot].second;
+        if (pblock->nVersion >= 3)
+        {
+            pblock->nHeight = targetHeight;
+        }
         // This code is not needed, as the block state is already correct in memory
         //CMutableTransaction TxNew( pblock->vtx[0] );
         //TxNew.vin[0].scriptSig = mapNewBlock[aBlockHeader.hashMerkleRoot].second;
