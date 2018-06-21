@@ -1255,6 +1255,9 @@ Value getwork(const Array& params, bool fHelp)
             // Remove key from key pool
             pMiningKey->KeepKey();
             sc.found = true;
+            state = sc.state;
+        } else {
+            return BIP22ValidationResult(state);
         }
 
         if (fBlockPresent)
@@ -1263,19 +1266,15 @@ Value getwork(const Array& params, bool fHelp)
                 return "duplicate-inconclusive";
             return "duplicate";
         }
-        if (fAccepted)
-        {
-            if (!sc.found)
-                return "inconclusive";
-            state = sc.state;
-        }
 
         // Track how many getdata requests this block gets
         {
             LOCK(pwalletMain->cs_wallet);
             pwalletMain->mapRequestCount[pblock->CalcSha256dHash()] = 0;
         }
-        return BIP22ValidationResult(state);
+        Object result;
+        result.push_back(Pair("result", true));
+        return result;
     }
 }
 
