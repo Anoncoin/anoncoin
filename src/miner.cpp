@@ -356,11 +356,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         if (nHeight >= ancConsensus.nDifficultySwitchHeight6)
         {
             pblock->nVersion = 3;
-            pblock->nHeight = nHeight;
         } else {
             pblock->nVersion = 2;
-            pblock->nHeight = nHeight;
         }
+        // Always set height locally
+        pblock->nHeight = nHeight;
 
         //! Force both hash calculations to be updated before validity testing the block
         assert( pblock->GetHash() != uint256(0) );
