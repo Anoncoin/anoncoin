@@ -93,7 +93,7 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
-        if (nVersion >= 3 && nType & ~SER_MINING)
+        if (nVersion >= 3 && (nType & ~SER_MINING))
         {
             READWRITE(nHeight);
         }

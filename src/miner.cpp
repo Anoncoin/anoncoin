@@ -359,6 +359,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             pblock->nHeight = nHeight;
         } else {
             pblock->nVersion = 2;
+            pblock->nHeight = nHeight;
         }
 
         //! Force both hash calculations to be updated before validity testing the block
@@ -850,26 +851,6 @@ void static AnoncoinMiner(CWallet *pwallet)
                             //! Store the whole hash meter as another data point in the long term sample buffer, and report that to the log.
                             mruSlowReadings.insert( *spMyMeter );
                             LogPrintf("%s %2d: reporting new 10 min sample update of %6.3f KHashes/Sec.\n", __func__, nMyID, dKiloHashesPerSec );
-#if defined( DONT_COMPILE )
-                            //! If our ID matches the number of threads running, we are the last one, and report some more...
-                            //! ToDo: Note this only works if the last thread always keep running, for an unknown reason it or other threads may have shut down.
-                            //! The HashMeter stats reporting function looks at the data in the 10sec mru, and knows if all threads are reporting results, can
-                            //! even tell which ones are not if we need that information.  Here though, it could fail if the last thread shutdown unexpectedly.
-                            if( nMyID == nMinerThreadsRunning ) {
-                                int nReadings = mruFastReadings.size();
-                                double dCumulativeKHPS = 0.0;
-                                for( mruset<CHashMeter>::const_iterator it = mruFastReadings.begin(); it != mruFastReadings.end(); ++it )
-                                    dCumulativeKHPS += (*it).GetFastKHPS();
-                                dCumulativeKHPS /= (double)nReadings;
-                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10sec) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
-                                nReadings = mruSlowReadings.size();
-                                dCumulativeKHPS = 0.0;
-                                for( mruset<CHashMeter>::const_iterator it = mruSlowReadings.begin(); it != mruSlowReadings.end(); ++it )
-                                    dCumulativeKHPS += (*it).GetSlowKHPS();
-                                dCumulativeKHPS /= (double)nReadings;
-                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10min) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
-                            }
-#endif
                         }
                     }
                 }
@@ -958,8 +939,6 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
 /**
  * Scrypt mining related code for block creation
  */
-static const uint32_t pSHA256InitState[8] =
-{0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
 {
@@ -974,25 +953,6 @@ int static FormatHashBlocks(void* pbuffer, unsigned int len)
     pend[-3] = (bits >> 16) & 0xff;
     pend[-4] = (bits >> 24) & 0xff;
     return blocks;
-}
-
-/** Base sha256 mining transform */
-void static SHA256Transform(void* pstate, void* pinput, const void* pinit)
-{
-    SHA256_CTX ctx;
-    unsigned char data[64];
-
-    SHA256_Init(&ctx);
-
-    for (int i = 0; i < 16; i++)
-        ((uint32_t*)data)[i] = ByteReverse(((uint32_t*)pinput)[i]);
-
-    for (int i = 0; i < 8; i++)
-        ctx.h[i] = ((uint32_t*)pinit)[i];
-
-    SHA256_Update(&ctx, data, sizeof(data));
-    for (int i = 0; i < 8; i++)
-        ((uint32_t*)pstate)[i] = ctx.h[i];
 }
 
 /** Do mining precalculation, also used in rpcmining.cpp for the old getwork() */
@@ -1031,9 +991,6 @@ void FormatHashBuffers(const CBlockHeader* pblock, char* pmidstate, char* pdata,
     //! Byte swap all the input buffer
     for (unsigned int i = 0; i < sizeof(tmp)/4; i++)
         ((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
-
-    //! Precalc the first half of the first hash, which stays constant
-    //SHA256Transform(pmidstate, &tmp.block, pSHA256InitState);
 
     memcpy(pdata, &tmp.block, 128);
     memcpy(phash1, &tmp.hash1, 64);

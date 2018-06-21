@@ -89,7 +89,7 @@ enum
     SER_NETWORK         = (1 << 0),
     SER_DISK            = (1 << 1),
     SER_GETHASH         = (1 << 2),
-    SER_MINING          = (1 << 3),
+    SER_MINING          = (1 << 17),
     SER_IPADDRONLY      = (1 << 18),
 };
 

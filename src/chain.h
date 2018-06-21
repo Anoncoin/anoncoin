@@ -186,6 +186,7 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
+        nHeight        = block.nHeight;
     }
 
     CDiskBlockPos GetBlockPos() const {

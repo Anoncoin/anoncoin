@@ -2854,6 +2854,7 @@ void CBlockIndex::BuildSkip()
 
 bool ProcessNewBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBlockPos *dbp)
 {
+    LogPrintf("Block in ProcessNewBlock: %s\n", pblock->ToString());
     // Preliminary checks
     bool checked = CheckBlock(*pblock, state);
 
