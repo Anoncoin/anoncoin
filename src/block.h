@@ -88,7 +88,7 @@ public:
         }
         READWRITE(this->nVersion);
         nVersion = this->nVersion;
-        if (nVersion >= 3)
+        if (nVersion >= 3 && nType & ~SER_NETWORK)
         {
             READWRITE(nHeight);
         }
