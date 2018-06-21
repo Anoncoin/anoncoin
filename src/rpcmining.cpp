@@ -1146,7 +1146,7 @@ Value getwork(const Array& params, bool fHelp)
         CMutableTransaction coinbaseTx = pblock->vtx[0];
         std::vector<uint256> merkle = pblock->GetMerkleBranch(0);
 
-        CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
+        CDataStream ssTx(SER_MINING, PROTOCOL_VERSION);
         ssTx << coinbaseTx;
         result.push_back(Pair("coinbase", HexStr(ssTx.begin(), ssTx.end())));
 
@@ -1181,7 +1181,7 @@ Value getwork(const Array& params, bool fHelp)
         //! CBlock class structure than, assumption was no longer valid and the following replaces it with 'no' such assumption made.
         //! And with much better exception handling, if there was a problem with the string that as yet gone undetected.
         CBlockHeader aBlockHeader;
-        CDataStream ssBlock(vchData, SER_NETWORK, PROTOCOL_VERSION);
+        CDataStream ssBlock(vchData, SER_MINING, PROTOCOL_VERSION);
         try {
             ssBlock >> aBlockHeader;
         }

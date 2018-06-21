@@ -2065,7 +2065,7 @@ void static UpdateTip(CBlockIndex *pindexNew) {
 
     cvBlockChange.notify_all();
 
-    SetRetargetToBlock(pindexNew);
+    if (chainActive.Height() < ancConsensus.nDifficultySwitchHeight6) SetRetargetToBlock(pindexNew);
 
     // Check the version of the last 100 blocks to see if we need to upgrade:
     static bool fWarned = false;
@@ -3214,7 +3214,7 @@ bool static LoadBlockIndexDB()
         return true;
     }
     chainActive.SetTip(itBM->second);
-    SetRetargetToBlock(itBM->second);
+    if (chainActive.Height() < ancConsensus.nDifficultySwitchHeight6) SetRetargetToBlock(itBM->second);
 
     PruneBlockIndexCandidates();
 
@@ -5385,11 +5385,11 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             if ( fFetch || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                 if( pto->nVersion >= MIN_PEER_PROTO_VERSION_AFTER_HF2 || !IsInitialBlockDownload() || pto->nStartingHeight < ancConsensus.nDifficultySwitchHeight5 - 2400) {
                     if ((nSyncStarted <= 1) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
-                    state.fSyncStarted = true;
-                    nSyncStarted++;
-                    CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-                    LogPrint("net", "initial getheaders (%d) to %s (startheight:%d)\n", pindexStart->nHeight, GetPeerLogStr(pto), pto->nStartingHeight);
-                    pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
+                        state.fSyncStarted = true;
+                        nSyncStarted++;
+                        CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
+                        LogPrint("net", "initial getheaders (%d) to %s (startheight:%d)\n", pindexStart->nHeight, GetPeerLogStr(pto), pto->nStartingHeight);
+                        pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256(0));
                     }
                 }
             }

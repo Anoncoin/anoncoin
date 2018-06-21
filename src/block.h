@@ -88,15 +88,15 @@ public:
         }
         READWRITE(this->nVersion);
         nVersion = this->nVersion;
-        if (nVersion >= 3 && nType & ~SER_NETWORK)
-        {
-            READWRITE(nHeight);
-        }
         READWRITE(hashPrevBlock);
         READWRITE(hashMerkleRoot);
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+        if (nVersion >= 3 && nType & ~SER_MINING)
+        {
+            READWRITE(nHeight);
+        }
     }
 
     void SetNull()
