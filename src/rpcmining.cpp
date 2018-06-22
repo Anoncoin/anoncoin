@@ -421,7 +421,7 @@ Value prioritisetransaction(const Array& params, bool fHelp)
 static Value BIP22ValidationResult(const CValidationState& state)
 {
     if (state.IsValid())
-        return Value::null;
+        return Value(true);
 
     string strRejectReason = state.GetRejectReason();
     if (state.IsError())
@@ -1272,9 +1272,7 @@ Value getwork(const Array& params, bool fHelp)
             LOCK(pwalletMain->cs_wallet);
             pwalletMain->mapRequestCount[pblock->CalcSha256dHash()] = 0;
         }
-        Object result;
-        result.push_back(Pair("result", true));
-        return result;
+        return BIP22ValidationResult(state);
     }
 }
 
