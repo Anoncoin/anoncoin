@@ -3059,10 +3059,6 @@ bool static LoadBlockIndexDB()
                 StartShutdown();
         }
 
-        //! Could do a quick check of the nBits to confirm pow here...its fast.
-        if( !ancConsensus.CheckProofOfWork( aHeader, aHeader.nBits ) )
-            return error("%s : CheckProofOfWork failed: %s", __func__, pindex->ToString());
-        //LogPrintf( "fakeBIhash: %s aRealHash: %s Gost3411Hash: %s Height=%d\n", aFakeHash.ToString(), aRealHash.ToString(), gost3411Hash.ToString(), nHeight );
         vFakeHashes[nHeight++] = aFakeHash; //! Save it for later on the 2nd pass
         aFakeHash.SetRealHash( aRealHash ); //! Update our cross reference unordered fast hash lookup map
 //      if( GetTime() - nStartTime  > 15 ) {
