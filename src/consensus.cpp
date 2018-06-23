@@ -189,7 +189,7 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
     {
       //LogPrintf("NextWorkRequiredKgwV2 selected\n");
       uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
-    } else if ( pindexLast->nHeight >= nDifficultySwitchHeight6 ) {
+    } else if ( pindexLast->nHeight + 1 >= nDifficultySwitchHeight6 ) {
       uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
     }
   } else {
