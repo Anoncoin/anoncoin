@@ -17,9 +17,7 @@
 #define HARDFORK_BLOCK2 585555 // block to change the parameters of the PID
 #endif
 
-#ifndef HARDFORK_BLOCK3
-#define HARDFORK_BLOCK3 900000
-#endif
+
 
 
 class uint256;

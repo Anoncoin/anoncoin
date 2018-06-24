@@ -23,12 +23,7 @@ const int32_t ANCConsensus::nDifficultySwitchHeight2 = 77777;  // Protocol 2 sta
 const int32_t ANCConsensus::nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
 const int32_t ANCConsensus::nDifficultySwitchHeight4 = 555555;
 const int32_t ANCConsensus::nDifficultySwitchHeight5 = 585555;
-#ifdef NEXT_HARDFORK_BLOCK
-int32_t ANCConsensus::nDifficultySwitchHeight6 = NEXT_HARDFORK_BLOCK;
-#else
-// MAINNET
 int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
-#endif
 const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
 
 
