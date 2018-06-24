@@ -776,12 +776,6 @@ void static AnoncoinMiner(CWallet *pwallet)
             int64_t nStart = GetTime();
             uint256 hashTarget;
             hashTarget.SetCompact(pblock->nBits);
-            if (pindexPrev->nHeight+1 == ancConsensus.nDifficultySwitchHeight6)
-            {
-                hashTarget.SetCompact(0x1e0eb9a7);
-                pblock->nBits = hashTarget.GetCompact();
-                LogPrintf("Set GOST3411 target to: %s\n", hashTarget.ToString());
-            }
             std::string powHashType = "scrypt";
             while( true ) {
                 bool fFound = false;

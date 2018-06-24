@@ -169,6 +169,7 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
     return true;
 }
 
+
 /***
  * 
  * Mainnet hardforks are tracked here
@@ -180,15 +181,23 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
   if ( pindexLast->nHeight > nDifficultySwitchHeight3 )
   { //! Start of KGW era
     //! The new P-I-D retarget algo will start at this hardfork block + 1
-    if ( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
+    if ( pindexLast->nHeight <= nDifficultySwitchHeight4 ) //! End of KGW era
     {
-      //LogPrintf("NextWorkRequiredKgwV2 selected\n");
-      uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
-    } else if ( pindexLast->nHeight + 1 >= nDifficultySwitchHeight6 ) {
-      uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+      uintResult = NextWorkRequiredKgwV2(pindexLast); //! Use fast v2 KGW calculator
+    } 
+    else if ( pindexLast->nHeight + 1 >= nDifficultySwitchHeight6 ) {
+      if (pindexLast->nHeight + 1 < nDifficultySwitchHeight6 + 50) {
+        // Set to fixed value for the first 50 blocks after hardfork
+        uint256 hashTarget;
+        hashTarget.SetCompact(0x1e0eb9a7);
+        uintResult = hashTarget;
+        LogPrintf("Set fixed GOST3411 target to %s for block %d. \n", hashTarget.ToString(), pindexLast->nHeight + 1);
+      }
+      else {
+        uintResult = NextWorkRequiredKgwV2(pindexLast);
+      }
     }
   } else {
-    //LogPrintf("OriginalGetNextWorkRequired selected\n");
     uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
   }
 }
@@ -201,9 +210,18 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
  ***/
 void ANCConsensus::getTestnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult)
 {
-  if ( pindexLast->nHeight >= nDifficultySwitchHeight6 )
+  if ( pindexLast->nHeight + 1 >= nDifficultySwitchHeight6 )
   {
-    uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+    if (pindexLast->nHeight + 1 < nDifficultySwitchHeight6 + 50) {
+        // Set to fixed value for the first 50 blocks after hardfork
+        uint256 hashTarget;
+        hashTarget.SetCompact(0x1e0eb9a7);
+        uintResult = hashTarget;
+        LogPrintf("Set fixed GOST3411 target to %s for block %d. \n", hashTarget.ToString(), pindexLast->nHeight + 1);
+      }
+      else {
+        uintResult = NextWorkRequiredKgwV2(pindexLast);
+      }
   }
 }
 
