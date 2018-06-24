@@ -189,7 +189,7 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
       if (pindexLast->nHeight + 1 < nDifficultySwitchHeight6 + 50) {
         // Set to fixed value for the first 50 blocks after hardfork
         uint256 hashTarget;
-        hashTarget.SetCompact(0x1e0eb9a7);
+        hashTarget.SetCompact(0x1e0ffff0);
         uintResult = hashTarget;
         LogPrintf("Set fixed GOST3411 target to %s for block %d. \n", hashTarget.ToString(), pindexLast->nHeight + 1);
       }
@@ -215,7 +215,7 @@ void ANCConsensus::getTestnetStrategy(const CBlockIndex* pindexLast, const CBloc
     if (pindexLast->nHeight + 1 < nDifficultySwitchHeight6 + 50) {
         // Set to fixed value for the first 50 blocks after hardfork
         uint256 hashTarget;
-        hashTarget.SetCompact(0x1e0eb9a7);
+        hashTarget.SetCompact(0x1e0ffff0);
         uintResult = hashTarget;
         LogPrintf("Set fixed GOST3411 target to %s for block %d. \n", hashTarget.ToString(), pindexLast->nHeight + 1);
       }
