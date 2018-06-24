@@ -185,17 +185,13 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
     {
       uintResult = NextWorkRequiredKgwV2(pindexLast); //! Use fast v2 KGW calculator
     } 
-    else if ( pindexLast->nHeight + 1 >= nDifficultySwitchHeight6 ) {
-      if (pindexLast->nHeight + 1 < nDifficultySwitchHeight6 + 50) {
-        // Set to fixed value for the first 50 blocks after hardfork
-        uint256 hashTarget;
-        hashTarget.SetCompact(0x1e0ffff0);
-        uintResult = hashTarget;
-        LogPrintf("Set fixed GOST3411 target to %s for block %d. \n", hashTarget.ToString(), pindexLast->nHeight + 1);
-      }
-      else {
-        uintResult = NextWorkRequiredKgwV2(pindexLast);
-      }
+    else if ( pindexLast->nHeight + 1 == nDifficultySwitchHeight6 ) {
+      uint256 hashTarget;
+      hashTarget.SetCompact(0x1d0ffff0);
+      uintResult = hashTarget;
+    } 
+    else if (pindexLast->nHeight + 1 > nDifficultySwitchHeight6) {
+      uintResult = NextWorkRequiredKgwV2(pindexLast);
     }
   } else {
     uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
@@ -210,18 +206,13 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
  ***/
 void ANCConsensus::getTestnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult)
 {
-  if ( pindexLast->nHeight + 1 >= nDifficultySwitchHeight6 )
-  {
-    if (pindexLast->nHeight + 1 < nDifficultySwitchHeight6 + 50) {
-        // Set to fixed value for the first 50 blocks after hardfork
-        uint256 hashTarget;
-        hashTarget.SetCompact(0x1e0ffff0);
-        uintResult = hashTarget;
-        LogPrintf("Set fixed GOST3411 target to %s for block %d. \n", hashTarget.ToString(), pindexLast->nHeight + 1);
-      }
-      else {
-        uintResult = NextWorkRequiredKgwV2(pindexLast);
-      }
+  if ( pindexLast->nHeight + 1 == nDifficultySwitchHeight6 ) {
+    uint256 hashTarget;
+    hashTarget.SetCompact(0x1d0ffff0);
+    uintResult = hashTarget;
+  } 
+  else if (pindexLast->nHeight + 1 > nDifficultySwitchHeight6) {
+    uintResult = NextWorkRequiredKgwV2(pindexLast);
   }
 }
 
