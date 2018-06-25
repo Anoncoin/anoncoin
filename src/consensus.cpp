@@ -187,7 +187,7 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
     } 
     else if ( pindexLast->nHeight + 1 == nDifficultySwitchHeight6 ) {
       uint256 hashTarget;
-      hashTarget.SetCompact(0x1d0ffff0);
+      hashTarget.SetCompact(0x1e0ffff0);
       uintResult = hashTarget;
     } 
     else if (pindexLast->nHeight + 1 > nDifficultySwitchHeight6) {
@@ -208,7 +208,7 @@ void ANCConsensus::getTestnetStrategy(const CBlockIndex* pindexLast, const CBloc
 {
   if ( pindexLast->nHeight + 1 == nDifficultySwitchHeight6 ) {
     uint256 hashTarget;
-    hashTarget.SetCompact(0x1d0ffff0);
+    hashTarget.SetCompact(0x1e0ffff0);
     uintResult = hashTarget;
   } 
   else if (pindexLast->nHeight + 1 > nDifficultySwitchHeight6) {
