@@ -3295,14 +3295,14 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
                 if (nHeight < ancConsensus.nDifficultySwitchHeight6) {
                     #ifdef __APPLE__
                     if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < maxDiff)) {
-                        return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits");
+                        LogPrintf("%s : incorrect Scrypt proof of work block %d", __func__,nHeight);
                     }
                     #else
-                    return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
+                    LogPrintf("%s : incorrect Scrypt proof of work block %d", __func__,nHeight); 
                     #endif  
                 }
                 else {
-                    return state.Invalid(error("%s : incorrect Gost proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
+                    LogPrintf("%s : incorrect Gost proof of work block %d", __func__,nHeight); 
                 }
             } 
 
