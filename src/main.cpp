@@ -3282,31 +3282,6 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         }
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= 2*nCoinCacheSize + 32000) {
-            
-            uint256 blockHash = block.CalcSha256dHash();
-            int nHeight = pindex->nHeight;
-
-            // Checking PoW for blocks not in checkpoints
-            uint32_t checkPowVal = GetNextWorkRequired(pindex->pprev, &block);
-            uint32_t maxDiff = 32768;
-            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal; 
-
-            if (block.nBits != checkPowVal && !Checkpoints::IsBlockInCheckpoints(nHeight) && !TestNet()) {
-                if (nHeight < ancConsensus.nDifficultySwitchHeight6) {
-                    #ifdef __APPLE__
-                    if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < maxDiff)) {
-                        LogPrintf("%s : incorrect Scrypt proof of work block %d", __func__,nHeight);
-                    }
-                    #else
-                    LogPrintf("%s : incorrect Scrypt proof of work block %d", __func__,nHeight); 
-                    #endif  
-                }
-                else {
-                    LogPrintf("%s : incorrect Gost proof of work block %d", __func__,nHeight); 
-                }
-            } 
-
-            
             bool fClean = true;
             if (!DisconnectBlock(block, state, pindex, coins, &fClean))
                 return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
