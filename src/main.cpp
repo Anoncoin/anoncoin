@@ -3284,25 +3284,30 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= 2*nCoinCacheSize + 32000) {
             
             uint256 blockHash = block.CalcSha256dHash();
-            int blockHeight = pindex->nHeight;
-            uint32_t checkPowVal = GetNextWorkRequired(pindex->pprev, &block);
-            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
-     
-            if (!Checkpoints::IsBlockInCheckpoints(blockHeight)) {
-                if (block.nBits != checkPowVal && !TestNet()) {
+            int nHeight = pindex->nHeight;
 
+            // Checking PoW for blocks not in checkpoints
+            uint32_t checkPowVal = GetNextWorkRequired(pindex->pprev, &block);
+            uint32_t maxDiff = 32768;
+            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal; 
+
+            if (difference > 0)
+                LogPrintf("Checking block %d with difference %d \n", nHeight, difference);
+
+            if (block.nBits != checkPowVal && !Checkpoints::IsBlockInCheckpoints(nHeight) && !TestNet()) {
+                if (nHeight < ancConsensus.nDifficultySwitchHeight6) {
                     #ifdef __APPLE__
-                        if (!((blockHeight > ancConsensus.nDifficultySwitchHeight4 && blockHeight < ancConsensus.nDifficultySwitchHeight5) || difference < 32768)) {
-                            LogPrintf("Block %d is wrong %d with diff %d \n",blockHeight,blockHash.ToString(), difference);
-                        }
+                    if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < maxDiff)) {
+                        return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits");
+                    }
                     #else
-                        LogPrintf("Block %d is wrong %d with diff %d \n",blockHeight,blockHash.ToString(), difference);
-                    #endif    
+                    return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
+                    #endif  
                 }
-            }
-            else {
-                LogPrintf("Block %d in checkpoints, skipping... \n",blockHeight);   
-            }
+                else {
+                    return state.Invalid(error("%s : incorrect Gost proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
+                }
+            } 
 
             
             bool fClean = true;

@@ -131,24 +131,27 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
     if (nHeight < ancConsensus.nDifficultySwitchHeight4 && !TestNet())
         return true;
 
+
     // Checking PoW for blocks not in checkpoints
-    if (!Checkpoints::IsBlockInCheckpoints(nHeight)) {
-        uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
-        if (block.nBits != checkPowVal && !TestNet()) {
+    uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
+    uint32_t maxDiff = 32768;
+    uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal; 
+    if (block.nBits != checkPowVal && !Checkpoints::IsBlockInCheckpoints(nHeight) && !TestNet()) {
+        if (nHeight < ancConsensus.nDifficultySwitchHeight6) {
             #ifdef __APPLE__
-            uint32_t maxDiff = 32768;
-            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
             if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < maxDiff)) {
-                return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+                return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits");
             }
             #else
-            return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits"); 
+            return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
             #endif  
-        }         
-    }
-    else {
-        LogPrintf("Block %d in checkpoints, skipping PoW check... \n",nHeight);   
-    }
+        }
+        else {
+            return state.Invalid(error("%s : incorrect Gost proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
+        }
+    }       
+
+
 
 
 
