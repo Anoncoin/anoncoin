@@ -3291,9 +3291,6 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
             uint32_t maxDiff = 32768;
             uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal; 
 
-            if (difference > 0)
-                LogPrintf("Checking block %d with difference %d \n", nHeight, difference);
-
             if (block.nBits != checkPowVal && !Checkpoints::IsBlockInCheckpoints(nHeight) && !TestNet()) {
                 if (nHeight < ancConsensus.nDifficultySwitchHeight6) {
                     #ifdef __APPLE__
