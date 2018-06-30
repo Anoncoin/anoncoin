@@ -3282,29 +3282,6 @@ bool VerifyDB(int nCheckLevel, int nCheckDepth)
         }
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= 2*nCoinCacheSize + 32000) {
-            
-            uint256 blockHash = block.CalcSha256dHash();
-            int blockHeight = pindex->nHeight;
-            uint32_t checkPowVal = GetNextWorkRequired(pindex->pprev, &block);
-            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
-     
-            if (!Checkpoints::IsBlockInCheckpoints(blockHeight)) {
-                if (block.nBits != checkPowVal && !TestNet()) {
-
-                    #ifdef __APPLE__
-                        if (!((blockHeight > ancConsensus.nDifficultySwitchHeight4 && blockHeight < ancConsensus.nDifficultySwitchHeight5) || difference < 32768)) {
-                            LogPrintf("Block %d is wrong %d with diff %d \n",blockHeight,blockHash.ToString(), difference);
-                        }
-                    #else
-                        LogPrintf("Block %d is wrong %d with diff %d \n",blockHeight,blockHash.ToString(), difference);
-                    #endif    
-                }
-            }
-            else {
-                LogPrintf("Block %d in checkpoints, skipping... \n",blockHeight);   
-            }
-
-            
             bool fClean = true;
             if (!DisconnectBlock(block, state, pindex, coins, &fClean))
                 return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());

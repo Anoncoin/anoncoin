@@ -23,12 +23,7 @@ const int32_t ANCConsensus::nDifficultySwitchHeight2 = 77777;  // Protocol 2 sta
 const int32_t ANCConsensus::nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
 const int32_t ANCConsensus::nDifficultySwitchHeight4 = 555555;
 const int32_t ANCConsensus::nDifficultySwitchHeight5 = 585555;
-#ifdef NEXT_HARDFORK_BLOCK
-int32_t ANCConsensus::nDifficultySwitchHeight6 = NEXT_HARDFORK_BLOCK;
-#else
-// MAINNET
 int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
-#endif
 const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
 
 
@@ -136,24 +131,27 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
     if (nHeight < ancConsensus.nDifficultySwitchHeight4 && !TestNet())
         return true;
 
+
     // Checking PoW for blocks not in checkpoints
-    if (!Checkpoints::IsBlockInCheckpoints(nHeight)) {
-        uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
-        if (block.nBits != checkPowVal && !TestNet()) {
+    uint32_t checkPowVal = GetNextWorkRequired(pindexPrev, &block);
+    uint32_t maxDiff = 32768;
+    uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal; 
+    if (block.nBits != checkPowVal && !Checkpoints::IsBlockInCheckpoints(nHeight) && !TestNet()) {
+        if (nHeight < ancConsensus.nDifficultySwitchHeight6) {
             #ifdef __APPLE__
-            uint32_t maxDiff = 32768;
-            uint32_t difference = (checkPowVal > block.nBits) ? checkPowVal - block.nBits : block.nBits - checkPowVal;
             if (!((nHeight > ancConsensus.nDifficultySwitchHeight4 && nHeight < ancConsensus.nDifficultySwitchHeight5) || difference < maxDiff)) {
-                return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits");
+                return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits");
             }
             #else
-            return state.Invalid(error("%s : incorrect proof of work", __func__), REJECT_INVALID, "bad-diffbits"); 
+            return state.Invalid(error("%s : incorrect Scrypt proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
             #endif  
-        }         
-    }
-    else {
-        LogPrintf("Block %d in checkpoints, skipping PoW check... \n",nHeight);   
-    }
+        }
+        else {
+            return state.Invalid(error("%s : incorrect Gost proof of work block %d", __func__,nHeight), REJECT_INVALID, "bad-diffbits"); 
+        }
+    }       
+
+
 
 
 
@@ -174,6 +172,7 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
     return true;
 }
 
+
 /***
  * 
  * Mainnet hardforks are tracked here
@@ -185,15 +184,19 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
   if ( pindexLast->nHeight > nDifficultySwitchHeight3 )
   { //! Start of KGW era
     //! The new P-I-D retarget algo will start at this hardfork block + 1
-    if ( pindexLast->nHeight <= nDifficultySwitchHeight4 )   //! End of KGW era
+    if ( pindexLast->nHeight <= nDifficultySwitchHeight4 ) //! End of KGW era
     {
-      //LogPrintf("NextWorkRequiredKgwV2 selected\n");
-      uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
-    } else if ( pindexLast->nHeight + 1 >= nDifficultySwitchHeight6 ) {
-      uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+      uintResult = NextWorkRequiredKgwV2(pindexLast); //! Use fast v2 KGW calculator
+    } 
+    else if ( pindexLast->nHeight + 1 == nDifficultySwitchHeight6 ) {
+      uint256 hashTarget;
+      hashTarget.SetCompact(0x1e0ffff0);
+      uintResult = hashTarget;
+    } 
+    else if (pindexLast->nHeight + 1 > nDifficultySwitchHeight6) {
+      uintResult = NextWorkRequiredKgwV2(pindexLast);
     }
   } else {
-    //LogPrintf("OriginalGetNextWorkRequired selected\n");
     uintResult = OriginalGetNextWorkRequired(pindexLast);   //! Algos Prior to the KGW era
   }
 }
@@ -206,9 +209,13 @@ void ANCConsensus::getMainnetStrategy(const CBlockIndex* pindexLast, const CBloc
  ***/
 void ANCConsensus::getTestnetStrategy(const CBlockIndex* pindexLast, const CBlockHeader* pBlockHeader, uint256& uintResult)
 {
-  if ( pindexLast->nHeight >= nDifficultySwitchHeight6 )
-  {
-    uintResult = NextWorkRequiredKgwV2(pindexLast);     //! Use fast v2 KGW calculator
+  if ( pindexLast->nHeight + 1 == nDifficultySwitchHeight6 ) {
+    uint256 hashTarget;
+    hashTarget.SetCompact(0x1e0ffff0);
+    uintResult = hashTarget;
+  } 
+  else if (pindexLast->nHeight + 1 > nDifficultySwitchHeight6) {
+    uintResult = NextWorkRequiredKgwV2(pindexLast);
   }
 }
 

@@ -109,8 +109,8 @@ public:
 
         // 2015 SCRYPT is currently used.  Future mining maybe offered as a SHA256D algo.  Set those limits here.
         bnProofOfWorkLimit[ALGO_SCRYPT] = uint256().SetCompact(0x1e0ffff0);  // As defined in Anoncoin 8.6....
-        bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 32;       // ToDo: set SHA256D min work
-        bnProofOfWorkLimit[ALGO_GOST3411] = uint256().SetCompact(0x1d01076f);
+        bnProofOfWorkLimit[ALGO_SHA256D] = ~uint256(0) >> 32;       // SHA256D PoW is not used
+        bnProofOfWorkLimit[ALGO_GOST3411] = uint256().SetCompact(0x1e0ffff0);
 
         // Anoncoin Genesis block details:
         //2ca51355580bb293fe369c5f34954069c263e9a9e8d70945ebb4c38f05778558
@@ -128,7 +128,7 @@ public:
 
         hashGenesisBlock = genesis.GetHash();                   //! true here is not really needed for main as it will be the 1st one
         assert( genesis.CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
-        printf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
+        LogPrintf("Mainnet Genesis Hash: %s, nBits: %08x, bnLimt: %08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x00000be19c5a519257aa921349037d55548af7cabf112741eb905a26bb73e468"));
         assert(genesis.hashMerkleRoot == uint256("0x7ce7004d764515f9b43cb9f07547c8e2e00d94c9348b3da33c8681d350f2c736"));
 
@@ -266,9 +266,7 @@ public:
         hashGenesisBlock = genesis.GetHash();                   //! true here as recalc is needed, because main has already done it once
         assert( genesis.CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
 
-        printf("Block: %s Gost: %s num tx: %lu\n", genesis.ToString().c_str(), genesis.GetGost3411Hash().ToString().c_str(), genesis.vtx.size());
         // This Genesis block hash matches the v0.8.5.6 client builds
-        printf("Testnet Genesis Hash: 0x%s GostHash: 0x%s, nBits: 0x%08x, bnLimt: 0x%08x\n", hashGenesisBlock.ToString().c_str(), genesis.GetGost3411Hash().ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_GOST3411].GetCompact());
         assert(hashGenesisBlock == uint256("0x00000e2c46999d338d3cd202465fff19cf781a956ab8ba6ce56be3ed4540567a"));
         //assert(genesis.hashMerkleRoot == uint256("0xa6a10f70d992f4d6ba5a37ac496a591a0e5e624e29d85bca3a24fa84878f7f4c"));
         assert(genesis.GetGost3411Hash() == uint256("0x9c175ff377504dddd6e0c594a4d2306a9ad061aed0f9d6fd57deb0ecf4c26313"));
@@ -330,7 +328,6 @@ public:
 
         nDefaultPort = 19444;
 
-        printf("RegTest Genesis Hash: 0x%s, nBits: 0x%08x, bnLimt: 0x%08x \n", hashGenesisBlock.ToString().c_str(), genesis.nBits, bnProofOfWorkLimit[ALGO_SCRYPT].GetCompact());
         assert(hashGenesisBlock == uint256("0x00000e2c46999d338d3cd202465fff19cf781a956ab8ba6ce56be3ed4540567a"));
        
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.

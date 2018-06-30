@@ -337,7 +337,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
-        LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+        //LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
         // Compute final coinbase transaction.
         txNew.vout[0].nValue = ancConsensus.GetBlockValue(nHeight, nFees);
@@ -767,8 +767,8 @@ void static AnoncoinMiner(CWallet *pwallet)
             CBlock *pblock = &pblocktemplate->block;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-            LogPrintf("%s %2d: Running with %u transactions in block (%u bytes)\n", __func__, nMyID, pblock->vtx.size(),
-                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+            //LogPrintf("%s %2d: Running with %u transactions in block (%u bytes)\n", __func__, nMyID, pblock->vtx.size(),
+            //    ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
             /**
              * Search
@@ -776,12 +776,6 @@ void static AnoncoinMiner(CWallet *pwallet)
             int64_t nStart = GetTime();
             uint256 hashTarget;
             hashTarget.SetCompact(pblock->nBits);
-            if (pindexPrev->nHeight+1 == ancConsensus.nDifficultySwitchHeight6)
-            {
-                hashTarget.SetCompact(0x1e0eb9a7);
-                pblock->nBits = hashTarget.GetCompact();
-                LogPrintf("Set GOST3411 target to: %s\n", hashTarget.ToString());
-            }
             std::string powHashType = "scrypt";
             while( true ) {
                 bool fFound = false;
