@@ -356,6 +356,7 @@ Value getmininginfo(const Array& params, bool fHelp)
             "  \"networkhashps\": n       (numeric) The estimated network hashes per second. Based on a smoothed result over the default time period.\n"
             "  \"pooledtx\": n            (numeric) The size of the memory pool\n"
             "  \"chain\": \"xxxx\",         (string)  Current network name.  Anoncoin defines this as either 'main', 'testnet' or 'regtest'.\n"
+            "  \"powhashtype\": \"xxxx\",   (string) Which hashing algo is used for POW.\n"
             "  \"generate\": true|false   (boolean) If the generation is on or off (see getgenerate or setgenerate calls)\n"
             "}\n"
             "\nExamples:\n"
@@ -378,6 +379,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("networkhashps",    CalcNetworkHashPS( chainActive.Tip(), pRetargetPid->GetTipFilterSize() )));
     obj.push_back(Pair("pooledtx",         (uint64_t)mempool.size()));
     obj.push_back(Pair("chain",            Params().NetworkIDString()));
+    obj.push_back(Pair("powhashtype",         (ancConsensus.IsUsingGost3411Hash()) ? "gost3411" : "scrypt"));
 #ifdef ENABLE_WALLET
     obj.push_back(Pair("generate",         getgenerate(params, false)));
 #endif
@@ -495,6 +497,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
             "  \"curtime\" : ttt,                (numeric) current timestamp in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"bits\" : \"xxx\",                 (string) compressed target of next block\n"
             "  \"height\" : n                    (numeric) The height of the next block\n"
+            "  \"powhashtype\" : \"xxxx\",          (string) Which hashing algo is used for POW.\n"
             "}\n"
 
             "\nExamples:\n"
@@ -737,6 +740,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
     result.push_back(Pair("bits", HexBits(pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
+    result.push_back(Pair("powhashtype",         (ancConsensus.IsUsingGost3411Hash()) ? "gost3411" : "scrypt"));
 
     return result;
 }
@@ -890,10 +894,10 @@ Value getworkex(const Array& params, bool fHelp)
         );
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Gostcoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Anoncoin is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Gostcoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Anoncoin is downloading blocks...");
 
     unsigned int nTransactionsUpdated = 0;
     if (params.size() == 0)
@@ -1046,10 +1050,9 @@ Value getwork(const Array& params, bool fHelp)
             "1. \"data\"              (string, optional) The hex encoded data to solve\n"
             "\nResult (when 'data' is not specified):\n"
             "{\n"
-            "  \"midstate\" : \"xxxx\", (hex string) The precomputed hash state after hashing the first half of the data.\n" // deprecated
-            "  \"data\" : \"xxxxx\",    (hex string) The block data.\n"
-            "  \"hash1\" : \"xxxxx\",   (hex string) The formatted hash buffer for second hash.\n" // deprecated
-            "  \"target\" : \"xxxx\"    (hex string) The little endian hash target.\n"
+            "  \"data\" : \"xxxxx\",         (hex string) The block data.\n"
+            "  \"target\" : \"xxxx\"         (hex string) The little endian hash target.\n"
+            "  \"powhashtype\" : \"xxxx\"    (string) Which hashing algo is used for POW.\n"
             "}\n"
             "\nResult (when 'data' is specified):\n"
             "true|false             (boolean) If solving the block specified in the 'data' was successful.\n"
@@ -1137,10 +1140,9 @@ Value getwork(const Array& params, bool fHelp)
         }
 
         Object result;
-        //result.push_back(Pair("midstate", HexStr(BEGIN(pmidstate), END(pmidstate)))); // deprecated
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
-        //result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
+        result.push_back(Pair("powhashtype", (ancConsensus.IsUsingGost3411Hash()) ? "gost3411" : "scrypt"));
 
 
         CMutableTransaction coinbaseTx = pblock->vtx[0];
