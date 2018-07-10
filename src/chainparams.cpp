@@ -147,13 +147,19 @@ public:
          */
 
         i2pvSeeds.push_back(CDNSSeedData("5oo3enrz7fp77ojrfk7hjsniohsxqmhuxdhdx6ur7iwumsrjzkwq.b32.i2p", "5oo3enrz7fp77ojrfk7hjsniohsxqmhuxdhdx6ur7iwumsrjzkwq.b32.i2p")); // Cryptoslave's seednode
-        i2pvSeeds.push_back(CDNSSeedData("xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p", "xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p")); // Cryptoslave's seednode        
+        i2pvSeeds.push_back(CDNSSeedData("xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p", "xowpui5nxkarsg2uwjllc6wdteheytknicbbqsnbkjjwde5iq6ma.b32.i2p")); // Cryptoslave's seednode
         i2pvSeeds.push_back(CDNSSeedData("if3pj2dv3cv3ljmjy3gism45r54lvjck5moavdjiroukrxlfjfia.b32.i2p", "if3pj2dv3cv3ljmjy3gism45r54lvjck5moavdjiroukrxlfjfia.b32.i2p")); // Cryptoslave's seednode
         i2pvSeeds.push_back(CDNSSeedData("xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p", "xynjl64xlviqhkjl2fbvupj7y3wct46jtayoxm2ksba6tqzo6tsa.b32.i2p")); // Cryptoslave's seednode
         i2pvSeeds.push_back(CDNSSeedData("a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p", "a4gii55rnvv22qm2ojre2n67bzms5utr4k3ckafwjdoym2cqmv2q.b32.i2p")); // K1773R's seednode
         i2pvSeeds.push_back(CDNSSeedData("b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p", "b7ziruwpk7g2e44xyomnc2nu5tx7bc2f2ai4dzi66uxm3bc3qttq.b32.i2p")); // K1773R's seednode (dnsseed01)
-        i2pvSeeds.push_back(CDNSSeedData("7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p", "7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p")); // lunokhod's seednode  
-     
+        i2pvSeeds.push_back(CDNSSeedData("7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p", "7zbwzykhyjcmmessswamkxfyya7hioiy2oq7voaw27625qwruqia.b32.i2p")); // lunokhod's seednode
+
+        // Irignal
+        i2pvSeeds.push_back(CDNSSeedData("5vjnm2tb7zlyjwmfeeqvxz65wdqhgdgbyo5gjs6f3tlruivtnewa.b32.i2p", "5vjnm2tb7zlyjwmfeeqvxz65wdqhgdgbyo5gjs6f3tlruivtnewa.b32.i2p"));
+
+        // Meeh
+        i2pvSeeds.push_back(CDNSSeedData("5supo2anuqnjvacglwmbvpucapfkgrnzof63rkmk4um3elx5h46a.b32.i2p", "5supo2anuqnjvacglwmbvpucapfkgrnzof63rkmk4um3elx5h46a.b32.i2p"));
+
 #endif // ENABLE_I2PSAM
 
 #ifdef NO_PREHISTORIC_COMPILER
@@ -176,7 +182,7 @@ public:
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,151);
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
-        
+
 #endif
         // Convert the pnSeeds array into usable address objects.
         for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
@@ -332,7 +338,7 @@ public:
         nDefaultPort = 19444;
 
         assert(hashGenesisBlock == uint256("0x00000e2c46999d338d3cd202465fff19cf781a956ab8ba6ce56be3ed4540567a"));
-       
+
         vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
     }
 
