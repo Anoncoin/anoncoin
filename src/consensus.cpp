@@ -23,7 +23,7 @@ const int32_t ANCConsensus::nDifficultySwitchHeight2 = 77777;  // Protocol 2 sta
 const int32_t ANCConsensus::nDifficultySwitchHeight3 = 87777;  // Protocol 3 began the KGW era
 const int32_t ANCConsensus::nDifficultySwitchHeight4 = 555555;
 const int32_t ANCConsensus::nDifficultySwitchHeight5 = 585555;
-int32_t ANCConsensus::nDifficultySwitchHeight6 = 900000;
+int32_t ANCConsensus::nDifficultySwitchHeight6 = 871111;
 const int32_t ANCConsensus::nDifficultySwitchHeight7 = -1; // The next era
 
 
