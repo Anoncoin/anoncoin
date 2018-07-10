@@ -843,7 +843,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     std::ostringstream strErrors;
 #ifdef ENABLE_I2PSAM
     if( !GetBoolArg("-stfu", false) && !IsBehindDarknet() )
-        InitWarning( _("Anoncoin is running on clearnet!") );
+        //InitWarning( _("Anoncoin is running on clearnet!") );
 #endif
 #if defined(USE_SSE2)
     scrypt_detect_sse2();
