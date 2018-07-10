@@ -160,6 +160,10 @@ public:
         // Meeh
         i2pvSeeds.push_back(CDNSSeedData("5supo2anuqnjvacglwmbvpucapfkgrnzof63rkmk4um3elx5h46a.b32.i2p", "5supo2anuqnjvacglwmbvpucapfkgrnzof63rkmk4um3elx5h46a.b32.i2p"));
 
+        // Meeh
+        i2pvSeeds.push_back(CDNSSeedData("nj7frmxpbjwjmstxmjzmc5utwfgy4xwk43dvdqoz6g5fn4jlrxaa.b32.i2p", "nj7frmxpbjwjmstxmjzmc5utwfgy4xwk43dvdqoz6g5fn4jlrxaa.b32.i2p"));
+        i2pvSeeds.push_back(CDNSSeedData("lirb566zosbigijlitjckw7uqdufsu422jc6y35eewyjzyoxjrvq.b32.i2p", "lirb566zosbigijlitjckw7uqdufsu422jc6y35eewyjzyoxjrvq.b32.i2p"));
+
 #endif // ENABLE_I2PSAM
 
 #ifdef NO_PREHISTORIC_COMPILER
