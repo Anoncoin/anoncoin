@@ -153,18 +153,20 @@ Value generate(const Array& params, bool fHelp)
         uint256 uintTargetHash;
         if( TestNet() && nHeight < (pRetargetPid->GetTipFilterBlocks() + 1) ) {
             pblock->nBits = uintStartingHash.GetCompact();
-            uintTargetHash = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
+            uintTargetHash = Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 );
         } else
             uintTargetHash.SetCompact(pblock->nBits);
 
+        pblock->nHeight = nHeight;
+        pblock->nVersion = 3;
         //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
-        //! while (!CheckProofOfWork(pblock->GetHash(true), pblock->nBits)) {
-        while (pblock->GetHash(true) > uintTargetHash) {
+        //! while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
+        while (pblock->GetHash() > uintTargetHash) {
             //! Yes, there is a chance every nonce could fail to satisfy the -regtest
             //! target -- 1 in 2^(2^32). That ain't gonna happen.
             ++pblock->nNonce;
         }
-        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+        assert( pblock->CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
         CValidationState state;
         if (!ProcessNewBlock(state, NULL, pblock))
             throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
@@ -244,14 +246,17 @@ Value setgenerate(const Array& params, bool fHelp)
             }
             uint256 uintTargetHash;
             uintTargetHash.SetCompact(pblock->nBits);
+
+            pblock->nVersion = 3;
+            pblock->nHeight = nHeight;
             //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
-            // while (!CheckProofOfWork(pblock->GetHash(true), pblock->nBits)) {
-            while (pblock->GetHash(true) > uintTargetHash) {
+            // while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
+            while (pblock->GetHash() > uintTargetHash) {
                 //! Yes, there is a chance every nonce could fail to satisfy the -regtest
                 //! target -- 1 in 2^(2^32). That ain't gonna happen.
                 ++pblock->nNonce;
             }
-            assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) ); //! Force both hash calculations to be updated
+            assert( pblock->CalcSha256dHash() != uintFakeHash(0) ); //! Force both hash calculations to be updated
             CValidationState state;
             if (!ProcessNewBlock(state, NULL, pblock))
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
@@ -308,7 +313,6 @@ Value gethashmeter(const Array& params, bool fHelp)
 
     RPCTypeCheck(params, boost::assign::list_of(bool_type));
 
-    bool fClearSlowMRU = false;
     if( params.size() > 0 && params[0].get_bool() == true )
         if( !ClearHashMeterSlowMRU() )
             return (int64_t)0;
@@ -352,6 +356,7 @@ Value getmininginfo(const Array& params, bool fHelp)
             "  \"networkhashps\": n       (numeric) The estimated network hashes per second. Based on a smoothed result over the default time period.\n"
             "  \"pooledtx\": n            (numeric) The size of the memory pool\n"
             "  \"chain\": \"xxxx\",         (string)  Current network name.  Anoncoin defines this as either 'main', 'testnet' or 'regtest'.\n"
+            "  \"powhashtype\": \"xxxx\",   (string) Which hashing algo is used for POW.\n"
             "  \"generate\": true|false   (boolean) If the generation is on or off (see getgenerate or setgenerate calls)\n"
             "}\n"
             "\nExamples:\n"
@@ -374,6 +379,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("networkhashps",    CalcNetworkHashPS( chainActive.Tip(), pRetargetPid->GetTipFilterSize() )));
     obj.push_back(Pair("pooledtx",         (uint64_t)mempool.size()));
     obj.push_back(Pair("chain",            Params().NetworkIDString()));
+    obj.push_back(Pair("powhashtype",         (ancConsensus.IsUsingGost3411Hash()) ? "gost3411" : "scrypt"));
 #ifdef ENABLE_WALLET
     obj.push_back(Pair("generate",         getgenerate(params, false)));
 #endif
@@ -417,7 +423,7 @@ Value prioritisetransaction(const Array& params, bool fHelp)
 static Value BIP22ValidationResult(const CValidationState& state)
 {
     if (state.IsValid())
-        return Value::null;
+        return Value(true);
 
     string strRejectReason = state.GetRejectReason();
     if (state.IsError())
@@ -491,6 +497,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
             "  \"curtime\" : ttt,                (numeric) current timestamp in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"bits\" : \"xxx\",                 (string) compressed target of next block\n"
             "  \"height\" : n                    (numeric) The height of the next block\n"
+            "  \"powhashtype\" : \"xxxx\",          (string) Which hashing algo is used for POW.\n"
             "}\n"
 
             "\nExamples:\n"
@@ -529,7 +536,14 @@ Value getblocktemplate(const Array& params, bool fHelp)
             if (!DecodeHexBlk(block, dataval.get_str()))
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block decode failed");
 
-            uint256 aRealHash = block.GetHash();
+            uint256 aRealHash;
+            if (ancConsensus.IsUsingGost3411Hash())
+            {
+                aRealHash = block.GetGost3411Hash();
+                block.nVersion = 3;
+            } else {
+                aRealHash = block.GetHash();
+            }
             BlockMap::iterator mi = mapBlockIndex.find(aRealHash);
             if (mi != mapBlockIndex.end()) {
                 CBlockIndex *pindex = mi->second;
@@ -542,8 +556,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
 
             CBlockIndex* const pindexPrev = chainActive.Tip();
             // TestBlockValidity only supports blocks built on the current Tip
-            uint256 prevRealHash = block.hashPrevBlock.GetRealHash();
-            if( prevRealHash == 0 || prevRealHash != pindexPrev->GetBlockHash())
+            if( block.hashPrevBlock.GetRealHash() == 0 || block.hashPrevBlock.GetRealHash() != pindexPrev->GetBlockHash() )
                 return "inconclusive-not-best-prevblk";
             CValidationState state;
             TestBlockValidity(state, block, pindexPrev, false, true);
@@ -580,7 +593,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
         else
         {
             // NOTE: Spec does not specify behaviour for non-string longpollid, but this makes testing easier
-            hashWatchedChain = chainActive.Tip()->GetBlockSha256dHash();
+            hashWatchedChain = (ancConsensus.IsUsingGost3411Hash()) ? chainActive.Tip()->GetBlockGost3411Hash() : chainActive.Tip()->GetBlockSha256dHash();
             nTransactionsUpdatedLastLP = nTransactionsUpdatedLast;
         }
 
@@ -590,7 +603,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
             checktxtime = boost::get_system_time() + boost::posix_time::seconds(30);    // Anoncoin waits 30 seconds
 
             boost::unique_lock<boost::mutex> lock(csBestBlock);
-            while (chainActive.Tip()->GetBlockSha256dHash() == hashWatchedChain && IsRPCRunning())
+            while ( chainActive.Tip()->GetBlockSha256dHash() == hashWatchedChain && IsRPCRunning())
             {
                 if (!cvBlockChange.timed_wait(lock, checktxtime))
                 {
@@ -643,6 +656,11 @@ Value getblocktemplate(const Array& params, bool fHelp)
     // DO NOT Update nTime, as it was set and locked to the retarget pid next work required when CreateNewBlock was called.
     // UpdateTime(pblock, pindexPrev);
     pblock->nNonce = 0;
+    if (pindexPrev->nHeight+1 >= ancConsensus.nDifficultySwitchHeight6)
+    {
+        pblock->nHeight = pindexPrev->nHeight+1;
+        pblock->nVersion = 3;
+    }
 
     static const Array aCaps = boost::assign::list_of("proposal");
 
@@ -722,6 +740,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
     result.push_back(Pair("bits", HexBits(pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
+    result.push_back(Pair("powhashtype",         (ancConsensus.IsUsingGost3411Hash()) ? "gost3411" : "scrypt"));
 
     return result;
 }
@@ -737,8 +756,12 @@ public:
 
 protected:
     void BlockChecked(const CBlock& block, const CValidationState& stateIn) {
-        if (block.GetHash() != aRealHash)
-            return;
+        if (ancConsensus.IsUsingGost3411Hash())
+        {
+            if (block.GetGost3411Hash() != aRealHash) return;
+        } else {
+            if (block.GetHash() != aRealHash) return;
+        }
         found = true;
         state = stateIn;
     };
@@ -768,7 +791,7 @@ Value submitblock(const Array& params, bool fHelp)
     if (!DecodeHexBlk(block, params[0].get_str()))
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block decode failed");
 
-    uint256 aRealHash = block.GetHash();
+    uint256 aRealHash = (ancConsensus.IsUsingGost3411Hash()) ? block.GetGost3411Hash() : block.GetHash();
     bool fBlockPresent = false;
     {
         LOCK(cs_main);
@@ -856,11 +879,162 @@ Value estimatepriority(const Array& params, bool fHelp)
     return mempool.estimatePriority(nBlocks);
 }
 
-typedef map<uint256, CBlock*> mapNewBlock_t;
+typedef map<uint256, pair<CBlock*, CMutableTransaction> > mapNewBlock_t;
 static mapNewBlock_t mapNewBlock;
 static CCriticalSection cs_getwork;
 static CReserveKey* pMiningKey = NULL;
 static vector<CBlockTemplate*> vNewBlockTemplate;
+
+Value getworkex(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 2)
+        throw runtime_error(
+            "getworkex [data, coinbase]\n"
+            "If [data, coinbase] is not specified, returns extended work data.\n"
+        );
+
+    if (vNodes.empty())
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Anoncoin is not connected!");
+
+    if (IsInitialBlockDownload())
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Anoncoin is downloading blocks...");
+
+    unsigned int nTransactionsUpdated = 0;
+    if (params.size() == 0)
+    {
+        // Update block
+        static unsigned int nTransactionsUpdatedLast;
+        static CBlockIndex* pindexPrev;
+        static int64_t nStart;
+        static CBlockTemplate* pblocktemplate;
+        CBlockIndex* pindexPrevNew = chainActive.Tip();
+
+        if (pindexPrev != pindexPrevNew ||
+            (nTransactionsUpdated != nTransactionsUpdatedLast && GetTime() - nStart > 60))
+        {
+            if (pindexPrev != pindexPrevNew)
+            {
+                // Deallocate old blocks since they're obsolete now
+                mapNewBlock.clear();
+                BOOST_FOREACH(CBlockTemplate* pblocktemplate, vNewBlockTemplate)
+                    delete pblocktemplate;
+                vNewBlockTemplate.clear();
+            }
+
+            // Clear pindexPrev so future getworks make a new block, despite any failures from here on
+            pindexPrev = NULL;
+
+            // Store the pindexBest used before CreateNewBlock, to avoid races
+            nTransactionsUpdatedLast = nTransactionsUpdated;
+            nStart = GetTime();
+
+            // Create new block
+            pblocktemplate = CreateNewBlockWithKey(*pMiningKey);
+            if (!pblocktemplate)
+                throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
+            vNewBlockTemplate.push_back(pblocktemplate);
+
+            // Need to update only after we know CreateNewBlock succeeded
+            pindexPrev = pindexPrevNew;
+        }
+        CBlock* pblock = &pblocktemplate->block; // pointer for convenience
+
+        // Update nTime
+        UpdateTime(pblock, pindexPrev);
+        pblock->nNonce = 0;
+
+        // Update nExtraNonce
+        static unsigned int nExtraNonce = 0;
+        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+
+        // Save
+        mapNewBlock[pblock->hashMerkleRoot] = make_pair(pblock, pblock->vtx[0]);
+
+        // Pre-build hash buffers
+        char pdata[128];
+        char phash1[64];
+        FormatHashBuffers(pblock, pdata, phash1);
+
+        uint256 hashTarget;
+        hashTarget.SetCompact(pblock->nBits);
+        if (pindexPrevNew->nHeight+1 == ancConsensus.nDifficultySwitchHeight6)
+        {
+            hashTarget.SetCompact(0x1d01076f);
+            LogPrintf("Set GOST3411 target to: %s\n", hashTarget.ToString());
+        }
+
+        CMutableTransaction coinbaseTx = pblock->vtx[0];
+        std::vector<uint256> merkle = pblock->GetMerkleBranch(0);
+
+        Object result;
+        result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
+        result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
+
+        CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
+        ssTx << coinbaseTx;
+        result.push_back(Pair("coinbase", HexStr(ssTx.begin(), ssTx.end())));
+
+        Array merkle_arr;
+
+        BOOST_FOREACH(uint256 merkleh, merkle) {
+            LogPrintf("Merkle: %s\n", merkleh.ToString().c_str());
+            merkle_arr.push_back(HexStr(BEGIN(merkleh), END(merkleh)));
+        }
+
+        result.push_back(Pair("merkle", merkle_arr));
+
+        return result;
+    }
+    else
+    {
+        // Parse parameters
+        vector<unsigned char> vchData = ParseHex(params[0].get_str());
+        vector<unsigned char> coinbase;
+
+        if(params.size() == 2)
+            coinbase = ParseHex(params[1].get_str());
+
+        if (vchData.size() != 128)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
+
+        CBlock* pdata = (CBlock*)&vchData[0];
+
+        // Byte reverse
+        for (int i = 0; i < 128/4; i++)
+            ((unsigned int*)pdata)[i] = ByteReverse(((unsigned int*)pdata)[i]);
+
+        // Get saved block
+        if (!mapNewBlock.count(pdata->hashMerkleRoot))
+            return false;
+        CBlock* pblock = mapNewBlock[pdata->hashMerkleRoot].first;
+
+        pblock->nTime = pdata->nTime;
+        pblock->nNonce = pdata->nNonce;
+
+        if(coinbase.size() == 0)
+            pblock->vtx[0] = mapNewBlock[pdata->hashMerkleRoot].second;
+        else
+            CDataStream(coinbase, SER_NETWORK, PROTOCOL_VERSION) >> pblock->vtx[0];
+
+        pblock->hashMerkleRoot = pblock->BuildMerkleTree();
+
+        CValidationState state;
+        //return CheckWork(pblock, *pwalletMain, reservekey);
+        bool fAccepted = ProcessNewBlock(state, NULL, pblock);
+//        UnregisterValidationInterface(&sc);
+        if( fAccepted ) {
+            // Remove key from key pool
+            pMiningKey->KeepKey();
+        }
+
+        {
+            LOCK(pwalletMain->cs_wallet);
+            pwalletMain->mapRequestCount[pblock->CalcSha256dHash()] = 0;
+        }
+        return BIP22ValidationResult(state);
+    }
+}
+
 
 Value getwork(const Array& params, bool fHelp)
 {
@@ -876,10 +1050,9 @@ Value getwork(const Array& params, bool fHelp)
             "1. \"data\"              (string, optional) The hex encoded data to solve\n"
             "\nResult (when 'data' is not specified):\n"
             "{\n"
-            "  \"midstate\" : \"xxxx\", (hex string) The precomputed hash state after hashing the first half of the data.\n" // deprecated
-            "  \"data\" : \"xxxxx\",    (hex string) The block data.\n"
-            "  \"hash1\" : \"xxxxx\",   (hex string) The formatted hash buffer for second hash.\n" // deprecated
-            "  \"target\" : \"xxxx\"    (hex string) The little endian hash target.\n"
+            "  \"data\" : \"xxxxx\",         (hex string) The block data.\n"
+            "  \"target\" : \"xxxx\"         (hex string) The little endian hash target.\n"
+            "  \"powhashtype\" : \"xxxx\"    (string) Which hashing algo is used for POW.\n"
             "}\n"
             "\nResult (when 'data' is specified):\n"
             "true|false             (boolean) If solving the block specified in the 'data' was successful.\n"
@@ -901,6 +1074,7 @@ Value getwork(const Array& params, bool fHelp)
     if (!lockGetwork)
         throw JSONRPCError(RPC_MISC_ERROR, "Lock failed, getwork busy...");
 
+    int32_t targetHeight = 0;
     if (params.size() == 0)
     {
         // Update block
@@ -941,12 +1115,13 @@ Value getwork(const Array& params, bool fHelp)
         //! Now we can set, and know its current the previous blockindex pointer value.
         //! This need to be updated only after we know CreateNewBlock succeeded
         pindexPrev = pindexPrevNew;
+        targetHeight = pindexPrev->nHeight+1;
 
         //! Save the block pointer with a key on the MerkleRoot hash, this is how we will know that is the one being
         //! returned later from an external miner if it finds a result.
-        mapNewBlock[pblock->hashMerkleRoot] = pblock;
-        // LogPrintf( "GetWork MerkleRoot hash saved as 0x%s\n", pblock->hashMerkleRoot.ToString() );
-        // LogPrintf( "GetWork Previous hash saved as 0x%s\n", pblock->hashPrevBlock.ToString() );
+        mapNewBlock[pblock->hashMerkleRoot] = make_pair(pblock, pblock->vtx[0]);
+        LogPrintf( "<-- GetWork MerkleRoot hash saved as 0x%s\n", pblock->hashMerkleRoot.ToString() );
+        LogPrintf( "<-- GetWork Previous hash saved as 0x%s\n", pblock->hashPrevBlock.ToString() );
 
         /**
          * Pre-build hash buffers
@@ -958,12 +1133,33 @@ Value getwork(const Array& params, bool fHelp)
 
         uint256 hashTarget;
         hashTarget.SetCompact(pblock->nBits);
+        if (pindexPrevNew->nHeight+1 == ancConsensus.nDifficultySwitchHeight6)
+        {
+            hashTarget.SetCompact(0x1d01076f);
+            LogPrintf("Set GOST3411 target to: %s\n", hashTarget.ToString());
+        }
 
         Object result;
-        result.push_back(Pair("midstate", HexStr(BEGIN(pmidstate), END(pmidstate)))); // deprecated
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
-        result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
+        result.push_back(Pair("powhashtype", (ancConsensus.IsUsingGost3411Hash()) ? "gost3411" : "scrypt"));
+
+
+        CMutableTransaction coinbaseTx = pblock->vtx[0];
+        std::vector<uint256> merkle = pblock->GetMerkleBranch(0);
+
+        CDataStream ssTx(SER_MINING, PROTOCOL_VERSION);
+        ssTx << coinbaseTx;
+        result.push_back(Pair("coinbase", HexStr(ssTx.begin(), ssTx.end())));
+
+        Array merkle_arr;
+
+        BOOST_FOREACH(uint256 merkleh, merkle) {
+            LogPrintf("Merkle leaf: %s\n", merkleh.ToString().c_str());
+            merkle_arr.push_back(HexStr(BEGIN(merkleh), END(merkleh)));
+        }
+
+        result.push_back(Pair("merkle", merkle_arr));
         return result;
     }
     else
@@ -987,7 +1183,7 @@ Value getwork(const Array& params, bool fHelp)
         //! CBlock class structure than, assumption was no longer valid and the following replaces it with 'no' such assumption made.
         //! And with much better exception handling, if there was a problem with the string that as yet gone undetected.
         CBlockHeader aBlockHeader;
-        CDataStream ssBlock(vchData, SER_NETWORK, PROTOCOL_VERSION);
+        CDataStream ssBlock(vchData, SER_MINING, PROTOCOL_VERSION);
         try {
             ssBlock >> aBlockHeader;
         }
@@ -996,12 +1192,12 @@ Value getwork(const Array& params, bool fHelp)
         }
 
         // If that MerkleRoot is still found in our NewBlock map, we have a chance to save a new mined block...
-        // LogPrintf( "GetWork MerkleRoot hash retrieved from miner 0x%s\n", aBlockHeader.hashMerkleRoot.ToString() );
-        // LogPrintf( "GetWork Previous hash retrieved as 0x%s\n", aBlockHeader.hashPrevBlock.ToString() );
+        LogPrintf( "--> GetWork MerkleRoot hash retrieved from miner 0x%s\n", aBlockHeader.hashMerkleRoot.ToString() );
+        LogPrintf( "--> GetWork Previous hash retrieved as 0x%s\n", aBlockHeader.hashPrevBlock.ToString() );
         if( !mapNewBlock.count(aBlockHeader.hashMerkleRoot) )
             throw JSONRPCError(RPC_INVALID_PARAMETER, "MerkleRoot hash was not found");
 
-        CBlock* pblock = mapNewBlock[aBlockHeader.hashMerkleRoot];
+        CBlock* pblock = mapNewBlock[aBlockHeader.hashMerkleRoot].first;
 
         //! Make sure this block can still be added as the next new one for the active chain.
         {
@@ -1009,13 +1205,21 @@ Value getwork(const Array& params, bool fHelp)
             if( pblock->hashPrevBlock != chainActive.Tip()->GetBlockSha256dHash() )
                 throw JSONRPCError(RPC_VERIFY_REJECTED, "generated block is stale");
         }
-        if( pRetargetPid->UsesHeader() ) {
+        if( pRetargetPid->UsesHeader() && pblock->nHeight < unsigned(ancConsensus.nDifficultySwitchHeight6)) {
             if( pblock->nTime != aBlockHeader.nTime ) {
                 pblock->nTime = aBlockHeader.nTime;
                 LogPrintf( "WARNING - getwork results may not match NextWorkRequired, your miner changed the block time. nBits must be re-calculated when that is done.\n");
             }
+        } else {
+            pblock->nTime = aBlockHeader.nTime;
         }
         pblock->nNonce = aBlockHeader.nNonce;
+        pblock->hashMerkleRoot = pblock->BuildMerkleTree();
+        pblock->vtx[0] = mapNewBlock[aBlockHeader.hashMerkleRoot].second;
+        if (pblock->nVersion >= 3)
+        {
+            pblock->nHeight = targetHeight;
+        }
         // This code is not needed, as the block state is already correct in memory
         //CMutableTransaction TxNew( pblock->vtx[0] );
         //TxNew.vin[0].scriptSig = mapNewBlock[aBlockHeader.hashMerkleRoot].second;
@@ -1023,12 +1227,12 @@ Value getwork(const Array& params, bool fHelp)
         //pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
         // Remove the hash so another miner can not submit the same duplicate work
-        // mapNewBlock.erase(aBlockHeader.hashMerkleRoot);
+        mapNewBlock.erase(aBlockHeader.hashMerkleRoot);
 
-        //! Calling GetHash with true, invalidates any previously calculated hashes for this block, as they have changed
-        uint256 aRealHash = pblock->GetHash(true);
+        uint256 aRealHash = pblock->GetHash();
+        LogPrintf("getwork() got hash %s with merkle %s\n", aRealHash.ToString(), pblock->hashMerkleRoot.ToString());
         //! Force both hash calculations to be updated
-        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+        assert( pblock->CalcSha256dHash() != uintFakeHash(0) );
 
         bool fBlockPresent = false;
         {
@@ -1053,6 +1257,9 @@ Value getwork(const Array& params, bool fHelp)
             // Remove key from key pool
             pMiningKey->KeepKey();
             sc.found = true;
+            state = sc.state;
+        } else {
+            return BIP22ValidationResult(state);
         }
 
         if (fBlockPresent)
@@ -1060,12 +1267,6 @@ Value getwork(const Array& params, bool fHelp)
             if (fAccepted && !sc.found)
                 return "duplicate-inconclusive";
             return "duplicate";
-        }
-        if (fAccepted)
-        {
-            if (!sc.found)
-                return "inconclusive";
-            state = sc.state;
         }
 
         // Track how many getdata requests this block gets
@@ -1255,7 +1456,7 @@ Value getretargetpid(const Array& params, bool fHelp)
 
         sFormat = strprintf( "%08x", RetargetState.uintTargetDiff.GetCompact() );
         result.push_back(Pair("nextdiffbits", sFormat));
-        result.push_back(Pair("nextdifflog2", (double)GetLog2Work(RetargetState.uintTargetDiff)));
+        result.push_back(Pair("nextdifflog2", (double)ancConsensus.GetLog2Work(RetargetState.uintTargetDiff)));
         result.push_back(Pair("nextdiffx256", RetargetState.uintTargetDiff.ToString()));
 
         result.push_back(Pair("tipspacing", (double)RetargetState.dAverageTipSpacing));

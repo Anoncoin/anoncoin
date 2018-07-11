@@ -6,10 +6,12 @@
 
 #include "block.h"
 
+#include "Gost3411.h"
 #include "hash.h"
 #include "scrypt.h"
 #include "tinyformat.h"
 #include "util.h"
+#include "consensus.h"
 
 //! Constants found in this source codes header(.h)
 //! The maximum allowed size for a serialized block, in bytes (network rule)
@@ -25,30 +27,40 @@ uint256 uintFakeHash::GetRealHash() const
 
 void uintFakeHash::SetRealHash( const uint256& realHash )
 {
-    BlockHashCorrectionMap::iterator mi = mapBlockHashCrossReference.insert(std::make_pair(*this, realHash)).first;
+    mapBlockHashCrossReference.insert(std::make_pair(*this, realHash));
 }
 
-uintFakeHash CBlockHeader::CalcSha256dHash(const bool fForceUpdate) const
+uintFakeHash CBlockHeader::CalcSha256dHash() const
 {
-    if( !fCalcSha256d || fForceUpdate ) {
-        uint256 tHash;
-        tHash = Hash(BEGIN(nVersion), END(nNonce));
-        //! We can do this in a constant class method because we declared them as mutable
-        sha256dHash = tHash;
-        fCalcSha256d = true;
-    }
+    uint256 tHash;
+    tHash = Hash(BEGIN(nVersion), END(nNonce));
+    sha256dHash = tHash;
     return sha256dHash;
 }
 
-uint256 CBlockHeader::GetHash(const bool fForceUpdate) const
+uint256 CBlockHeader::GetHash() const
 {
-    if( !fCalcScrypt || fForceUpdate ) {
-        uint256 tHash;
-        scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));
-        //! We can do this in a constant class method because we declared them as mutable
-        therealHash = tHash;
-        fCalcScrypt = true;
-    }
+    // Both v3 and right height should trigger GOST3411
+    if (signed(nHeight) >= CashIsKing::ANCConsensus::nDifficultySwitchHeight6)
+        return GetGost3411Hash();
+    if (nVersion >= 3)
+        return GetGost3411Hash();
+    return GetScryptHash();
+}
+
+uint256 CBlockHeader::GetGost3411Hash() const
+{
+    // GOST 34.11-256 (GOST 34.11-512 (...))
+    uint256 tHash;
+    tHash = HashGOST(BEGIN(nVersion), END(nNonce));//SerializeGost3411Hash(*this);
+    return tHash;
+}
+
+uint256 CBlockHeader::GetScryptHash() const
+{
+    uint256 tHash;
+    scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(tHash));
+    therealHash = tHash;
     return therealHash;
 }
 
@@ -149,13 +161,14 @@ uint256 CBlock::CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMer
 std::string CBlock::ToString() const
 {
     std::stringstream s;
-    s << strprintf("CBlock(hash=%s, ver=%d, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
+    s << strprintf("CBlock(hash=%s gost3411=%s, ver=%d, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u, nHeight=%u)\n",
         GetHash().ToString(),
+        GetGost3411Hash().ToString(),
         nVersion,
         hashPrevBlock.ToString(),
         hashMerkleRoot.ToString(),
         nTime, nBits, nNonce,
-        vtx.size());
+        vtx.size(), nHeight);
     for (unsigned int i = 0; i < vtx.size(); i++)
     {
         s << "  " << vtx[i].ToString() << "\n";

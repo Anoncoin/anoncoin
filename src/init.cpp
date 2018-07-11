@@ -13,7 +13,7 @@
 
 #include "addrman.h"
 #include "amount.h"
-//#include "chain.h"
+#include "consensus.h"
 #include "checkpoints.h"
 #include "compat/sanity.h"
 //#include "coins.h"
@@ -679,6 +679,15 @@ bool AppInit2(boost::thread_group& threadGroup)
         nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
 
     // ********************************************************* Step 3: parameter-to-internal-flags
+    bool fTestNet = GetBoolArg("-testnet", false);
+    if (fTestNet)
+    {
+        // TESTNET
+        CashIsKing::ANCConsensus::nDifficultySwitchHeight6 = 110;
+        LogPrintf("-- Consensus TESTNET - Switch at 110\n");
+    }
+
+    ancConsensus.bShouldDebugLogPoW = GetBoolArg("-extrapowdebug", false);
 
     fDebug = !mapMultiArgs["-debug"].empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
@@ -834,7 +843,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     std::ostringstream strErrors;
 #ifdef ENABLE_I2PSAM
     if( !GetBoolArg("-stfu", false) && !IsBehindDarknet() )
-        InitWarning( _("Anoncoin is running on clearnet!") );
+        //InitWarning( _("Anoncoin is running on clearnet!") );
 #endif
 #if defined(USE_SSE2)
     scrypt_detect_sse2();

@@ -1,22 +1,32 @@
-// Copyright (c) 2013-2017 The Anoncoin Core developers
 // Copyright (c) 2012-2013 giv
+// Copyright (c) 2017-2018 orignal
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //--------------------------------------------------------------------------------------------------
-// see full documentation about SAM at http://www.i2p2.i2p/samv3.html
+// EdDSA assumed
 #ifndef I2PSAM_H
 #define I2PSAM_H
-
-#if defined(HAVE_CONFIG_H)
-#include "config/anoncoin-config.h"
-#endif
-#include "compat.h"
 
 #include <string>
 #include <list>
 #include <stdint.h>
 #include <memory>
 #include <utility>
+#include <ostream>
+
+#ifdef WIN32
+//#define _WIN32_WINNT 0x0501
+#define WIN32_LEAN_AND_MEAN 1
+#include <winsock2.h>
+#else
+#include <sys/socket.h>
+#include <netinet/in.h>     // for sockaddr_in
+#include <arpa/inet.h>      // for ntohs and htons
+#endif
+
+// TODO: check a possible bug about cast -1 to SOCKET
+#define SAM_INVALID_SOCKET      (-1)
+#define SAM_SOCKET_ERROR        (-1)
 
 #define SAM_DEFAULT_ADDRESS         "127.0.0.1"
 #define SAM_DEFAULT_PORT            7656
@@ -27,28 +37,28 @@
 #define SAM_DEFAULT_I2P_OPTIONS     ""
 
 #define SAM_NAME_INBOUND_QUANTITY           "inbound.quantity"
-#define SAM_DEFAULT_INBOUND_QUANTITY        3 // Three tunnels is default now
+#define SAM_DEFAULT_INBOUND_QUANTITY        2
 #define SAM_NAME_INBOUND_LENGTH             "inbound.length"
-#define SAM_DEFAULT_INBOUND_LENGTH          3 // Three jumps is default now
+#define SAM_DEFAULT_INBOUND_LENGTH          2
 #define SAM_NAME_INBOUND_LENGTHVARIANCE     "inbound.lengthVariance"
 #define SAM_DEFAULT_INBOUND_LENGTHVARIANCE  0
-#define SAM_NAME_INBOUND_BACKUPQUANTITY     "inbound.backupQuantity"
-#define SAM_DEFAULT_INBOUND_BACKUPQUANTITY  1 // One backup tunnel
-#define SAM_NAME_INBOUND_ALLOWZEROHOP       "inbound.allowZeroHop"
+#define SAM_NAME_INBOUND_BACKUPQUANTITY     "inbound.backupquantity"
+#define SAM_DEFAULT_INBOUND_BACKUPQUANTITY  0
+#define SAM_NAME_INBOUND_ALLOWZEROHOP       "inbound.allowzerohop"
 #define SAM_DEFAULT_INBOUND_ALLOWZEROHOP    true
-#define SAM_NAME_INBOUND_IPRESTRICTION      "inbound.IPRestriction"
+#define SAM_NAME_INBOUND_IPRESTRICTION      "inbound.iprestriction"
 #define SAM_DEFAULT_INBOUND_IPRESTRICTION   2
 #define SAM_NAME_OUTBOUND_QUANTITY          "outbound.quantity"
-#define SAM_DEFAULT_OUTBOUND_QUANTITY       3
+#define SAM_DEFAULT_OUTBOUND_QUANTITY       2
 #define SAM_NAME_OUTBOUND_LENGTH            "outbound.length"
-#define SAM_DEFAULT_OUTBOUND_LENGTH         3
-#define SAM_NAME_OUTBOUND_LENGTHVARIANCE    "outbound.lengthVariance"
+#define SAM_DEFAULT_OUTBOUND_LENGTH         2
+#define SAM_NAME_OUTBOUND_LENGTHVARIANCE    "outbound.lengthvariance"
 #define SAM_DEFAULT_OUTBOUND_LENGTHVARIANCE 0
-#define SAM_NAME_OUTBOUND_BACKUPQUANTITY    "outbound.backupQuantity"
-#define SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY 1
-#define SAM_NAME_OUTBOUND_ALLOWZEROHOP      "outbound.allowZeroHop"
+#define SAM_NAME_OUTBOUND_BACKUPQUANTITY    "outbound.backupquantity"
+#define SAM_DEFAULT_OUTBOUND_BACKUPQUANTITY 0
+#define SAM_NAME_OUTBOUND_ALLOWZEROHOP      "outbound.allowzerohop"
 #define SAM_DEFAULT_OUTBOUND_ALLOWZEROHOP   true
-#define SAM_NAME_OUTBOUND_IPRESTRICTION     "outbound.IPRestriction"
+#define SAM_NAME_OUTBOUND_IPRESTRICTION     "outbound.iprestriction"
 #define SAM_DEFAULT_OUTBOUND_IPRESTRICTION  2
 #define SAM_NAME_OUTBOUND_PRIORITY          "outbound.priority"
 #define SAM_DEFAULT_OUTBOUND_PRIORITY       0
@@ -56,7 +66,7 @@
 namespace SAM
 {
 
-typedef u_int SOCKET;
+typedef int SOCKET;
 
 class Message
 {
@@ -200,16 +210,14 @@ private:
     static std::string createSAMRequest(const char* format, ...);
 };
 
-class I2pSocket
+class Socket
 {
 public:
-    I2pSocket(const std::string& SAMHost, uint16_t SAMPort, const std::string &minVer, const std::string& maxVer);
-    I2pSocket(const sockaddr_in& addr, const std::string& minVer, const std::string& maxVer);
+    Socket(const std::string& SAMHost, uint16_t SAMPort, const std::string &minVer, const std::string& maxVer);
+    Socket(const sockaddr_in& addr, const std::string& minVer, const std::string& maxVer);
     // explicit because we don't want to create any socket implicity
-    explicit I2pSocket(const I2pSocket& rhs); // creates a new socket with the same parameters
-    ~I2pSocket();
-
-    void bootstrapI2P();
+    explicit Socket(const Socket& rhs); // creates a new socket with the same parameters
+    ~Socket();
 
     void write(const std::string& msg);
     std::string read();
@@ -244,7 +252,7 @@ private:
     void handshake();
     void init();
 
-    I2pSocket& operator=(const I2pSocket&);
+    Socket& operator=(const Socket&);
 };
 
 struct FullDestination
@@ -272,7 +280,7 @@ struct RequestResult
 };
 
 template<class T>
-struct RequestResult<std::auto_ptr<T> >
+struct RequestResult<std::shared_ptr<T> >
 {
     // a class-helper for resolving a problem with conversion from temporary RequestResult to non-const RequestResult&
     struct RequestResultRef
@@ -285,12 +293,12 @@ struct RequestResult<std::auto_ptr<T> >
     };
 
     bool isOk;
-    std::auto_ptr<T> value;
+    std::shared_ptr<T> value;
 
     RequestResult()
         : isOk(false) {}
 
-    explicit RequestResult(std::auto_ptr<T>& value)
+    explicit RequestResult(std::shared_ptr<T>& value)
         : isOk(true), value(value) {}
 
 
@@ -342,8 +350,8 @@ public:
 
     static std::string generateSessionID();
 
-    RequestResult<std::auto_ptr<I2pSocket> > accept(bool silent);
-    RequestResult<std::auto_ptr<I2pSocket> > connect(const std::string& destination, bool silent);
+    RequestResult<std::shared_ptr<Socket> > accept(bool silent);
+    RequestResult<std::shared_ptr<Socket> > connect(const std::string& destination, bool silent);
     RequestResult<void> forward(const std::string& host, uint16_t port, bool silent);
     RequestResult<const std::string> namingLookup(const std::string& name) const;
     RequestResult<const FullDestination> destGenerate() const;
@@ -364,6 +372,11 @@ public:
     const std::string& getOptions() const;
 
     bool isSick() const;
+	bool isReady () const { return socket_.isOk() && !isSick (); };
+
+	static std::ostream& getLogStream ();
+	static void SetLogFile (const std::string& filename);
+	static void CloseLogFile ();
 
 private:
     StreamSession(const StreamSession& rhs);
@@ -371,39 +384,40 @@ private:
 
     struct ForwardedStream
     {
-        I2pSocket* socket;
+        Socket* socket;
         std::string host;
         uint16_t port;
         bool silent;
 
-        ForwardedStream(I2pSocket* socket, const std::string& host, uint16_t port, bool silent)
+        ForwardedStream(Socket* socket, const std::string& host, uint16_t port, bool silent)
             : socket(socket), host(host), port(port), silent(silent) {}
     };
 
     typedef std::list<ForwardedStream> ForwardedStreamsContainer;
 
-    I2pSocket socket_;
+    Socket socket_;
     const std::string nickname_;
     const std::string sessionID_;
     FullDestination myDestination_;
     const std::string i2pOptions_;
     ForwardedStreamsContainer forwardedStreams_;
     mutable bool isSick_;
+	static std::shared_ptr<std::ostream> logStream;
 
     void fallSick() const;
     FullDestination createStreamSession(const std::string &destination);
 
-    static Message::Answer<const std::string> rawRequest(I2pSocket& socket, const std::string& requestStr);
-    static Message::Answer<const std::string> request(I2pSocket& socket, const std::string& requestStr, const std::string& keyOnSuccess);
-    static Message::eStatus request(I2pSocket& socket, const std::string& requestStr);
+    static Message::Answer<const std::string> rawRequest(Socket& socket, const std::string& requestStr);
+    static Message::Answer<const std::string> request(Socket& socket, const std::string& requestStr, const std::string& keyOnSuccess);
+    static Message::eStatus request(Socket& socket, const std::string& requestStr);
     // commands
-    static Message::Answer<const std::string> createStreamSession(I2pSocket& socket, const std::string& sessionID, const std::string& nickname, const std::string& destination, const std::string& options);
-    static Message::Answer<const std::string> namingLookup(I2pSocket& socket, const std::string& name);
-    static Message::Answer<const FullDestination> destGenerate(I2pSocket& socket);
+    static Message::Answer<const std::string> createStreamSession(Socket& socket, const std::string& sessionID, const std::string& nickname, const std::string& destination, const std::string& options);
+    static Message::Answer<const std::string> namingLookup(Socket& socket, const std::string& name);
+    static Message::Answer<const FullDestination> destGenerate(Socket& socket);
 
-    static Message::eStatus accept(I2pSocket& socket, const std::string& sessionID, bool silent);
-    static Message::eStatus connect(I2pSocket& socket, const std::string& sessionID, const std::string& destination, bool silent);
-    static Message::eStatus forward(I2pSocket& socket, const std::string& sessionID, const std::string& host, uint16_t port, bool silent);
+    static Message::eStatus accept(Socket& socket, const std::string& sessionID, bool silent);
+    static Message::eStatus connect(Socket& socket, const std::string& sessionID, const std::string& destination, bool silent);
+    static Message::eStatus forward(Socket& socket, const std::string& sessionID, const std::string& host, uint16_t port, bool silent);
 };
 
 } // namespace SAM

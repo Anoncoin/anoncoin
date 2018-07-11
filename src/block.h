@@ -7,6 +7,10 @@
 #ifndef ANONCOIN_BLOCK_H
 #define ANONCOIN_BLOCK_H
 
+
+
+#include "Gost3411.h"
+#include "pow.h"
 #include "transaction.h"
 #include "serialize.h"
 #include "uint256.h"
@@ -52,18 +56,20 @@ class CBlockHeader
 private:
     mutable bool fCalcScrypt;
     mutable bool fCalcSha256d;
+//    mutable bool fCalcGost3411;
     mutable uint256 therealHash;
     mutable uintFakeHash sha256dHash;
 
 public:
     // header
-    static const int32_t CURRENT_VERSION=2;
+    static const int32_t CURRENT_VERSION=3;
     int32_t nVersion;
     uintFakeHash hashPrevBlock;
     uint256 hashMerkleRoot;
     uint32_t nTime;
     uint32_t nBits;
     uint32_t nNonce;
+    uint32_t nHeight;
 
     CBlockHeader()
     {
@@ -76,8 +82,9 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         //! If (when) we read this header make sure we re-calculate the hashes when they are asked for.
         if (ser_action.ForRead()) {
-            fCalcScrypt = false;
-            fCalcSha256d = false;
+            fCalcScrypt   = false;
+            fCalcSha256d  = false;
+//            fCalcGost3411 = false;
         }
         READWRITE(this->nVersion);
         nVersion = this->nVersion;
@@ -86,6 +93,10 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+        if (nVersion >= 3 && (nType & ~SER_MINING))
+        {
+            READWRITE(nHeight);
+        }
     }
 
     void SetNull()
@@ -96,8 +107,10 @@ public:
         nTime = 0;
         nBits = 0;
         nNonce = 0;
-        fCalcScrypt = false;
-        fCalcSha256d = false;
+        nHeight = 0;
+        fCalcScrypt   = false;
+        fCalcSha256d  = false;
+//        fCalcGost3411 = false;
     }
 
     bool IsNull() const
@@ -105,13 +118,21 @@ public:
         return (nBits == 0);
     }
 
-    uintFakeHash CalcSha256dHash( const bool fForceUpdate = false ) const;
-    uint256 GetHash( const bool fForceUpdate = false ) const;
+    uintFakeHash CalcSha256dHash() const; // Gives SHA256 Hash
+    uint256 GetHash() const; // Gives correct PoW hash
+    uint256 GetGost3411Hash() const; // Gives Gost hash
+    uint256 GetScryptHash() const; // Gives Scrypt hash
+
+    inline uintFakeHash GetFakeHash() const
+    {
+        return sha256dHash;
+    }
 
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
     }
+
 };
 
 
@@ -159,6 +180,10 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+        if (block.nVersion >= 3)
+        {
+            block.nHeight    = nHeight;
+        }
         return block;
     }
 

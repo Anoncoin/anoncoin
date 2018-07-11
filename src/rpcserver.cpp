@@ -335,6 +335,7 @@ static const CRPCCommand vRPCCommands[] =
     { "mining",             "getretargetpid",         &getretargetpid,         true  },
 #ifdef ENABLE_WALLET
     { "mining",             "getwork",                &getwork,                true  },
+    { "mining",             "getworkex",              &getworkex,              true  },
     { "mining",             "getgenerate",            &getgenerate,            true  },
     { "mining",             "gethashmeter",           &gethashmeter,           true  },
     { "mining",             "setgenerate",            &setgenerate,            true  },
@@ -912,8 +913,8 @@ static Object JSONRPCExecOne(const Value& req)
             } else
                 fCommandException = true;
         }
-        if( !fCommandException )
-            LogPrint( "rpc", "%s : executing method=%s with %d parameters.\n", __func__, SanitizeString(jreq.strMethod), jreq.params.size() );
+        //if( !fCommandException )
+        LogPrint( "rpc", "%s : executing method=%s with %d parameters.\n", __func__, SanitizeString(jreq.strMethod), jreq.params.size() );
 
         Value result = tableRPC.execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, Value::null, jreq.id);
@@ -1096,7 +1097,6 @@ void InitializeTestNetBlocks()
 {
     assert( pRetargetPid != NULL );
     const int32_t nMockBlocks = pRetargetPid->GetTipFilterBlocks();
-    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
     int64_t nTimeNow = GetTime();
     uint256 uintStartingDifficulty = pRetargetPid->GetTestNetStartingDifficulty();

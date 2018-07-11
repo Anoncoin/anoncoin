@@ -99,6 +99,9 @@ public:
     //! This is part of how we map sha256d hash values into real pow hashes that the rest of the software can use
     uintFakeHash fakeBIhash;
 
+    // The new GOST3411 Hash
+    uint256 gost3411Hash;
+
     //! pointer to the hash of the block, This is in the mapBlockIndex and based on the real POW. memory is owned by this CBlockIndex
     const uint256* phashBlock;
 
@@ -166,6 +169,7 @@ public:
         nBits          = 0;
         nNonce         = 0;
         fakeBIhash     = 0;
+        gost3411Hash   = 0;
     }
 
     CBlockIndex()
@@ -182,6 +186,7 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
+        nHeight        = block.nHeight;
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -207,15 +212,33 @@ public:
         CBlockHeader block;
         block.nVersion       = nVersion;
         if (pprev)
+        {
             block.hashPrevBlock = pprev->fakeBIhash;
+        }
         block.hashMerkleRoot = hashMerkleRoot;
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+        block.nHeight        = nHeight;
         return block;
     }
 
-    uint256 GetBlockSha256dHash() const
+    uint256 GetBlockPowHash() const
+    {
+        CBlockHeader block;
+        block.nVersion        = nVersion;
+        if (pprev) {
+            block.hashPrevBlock   = pprev->fakeBIhash;
+        }
+        block.hashMerkleRoot  = hashMerkleRoot;
+        block.nTime           = nTime;
+        block.nBits           = nBits;
+        block.nNonce          = nNonce;
+        block.nHeight         = nHeight;
+        return block.GetHash();
+    }
+
+    uintFakeHash GetBlockSha256dHash() const
     {
         return fakeBIhash;
     }
@@ -223,6 +246,11 @@ public:
     uint256 GetBlockHash() const
     {
         return *phashBlock;
+    }
+
+    uint256 GetBlockGost3411Hash() const
+    {
+        return GetBlockHeader().GetGost3411Hash();
     }
 
     int64_t GetBlockTime() const
@@ -259,7 +287,7 @@ public:
         return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s, sha256dHash=%s)",
             pprev, nHeight,
             hashMerkleRoot.ToString(),
-            GetBlockHash().ToString(),
+            GetBlockHash().GetHex(),
             fakeBIhash.ToString());
     }
 
@@ -298,6 +326,7 @@ public:
 class CDiskBlockIndex : public CBlockIndex
 {
 public:
+//TODO MEEH CHANGE
     uintFakeHash hashPrev;
 
     CDiskBlockIndex() {
@@ -392,6 +421,10 @@ public:
     /** Return the maximal height in the chain. Is equal to chain.Tip() ? chain.Tip()->nHeight : -1. */
     int Height() const {
         return vChain.size() - 1;
+    }
+
+    inline bool UseGost3411Hash() {
+        return ancConsensus.IsUsingGost3411Hash();
     }
 
     /** Set/initialize a chain with a given tip. */

@@ -15,6 +15,7 @@
 #include "block.h"
 #include "chain.h"
 #include "chainparams.h"
+#include "consensus.h"
 #include "coins.h"
 #include "net.h"
 #include "script.h"
@@ -33,6 +34,8 @@
 #include <vector>
 
 #include <boost/unordered_map.hpp>
+
+using namespace CashIsKing;
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -109,18 +112,6 @@ extern const uint8_t REJECT_DUST;
 extern const uint8_t REJECT_INSUFFICIENTFEE;
 extern const uint8_t REJECT_CHECKPOINT;
 
-// New BlockIndex map concept, using boost unordered_map technology offers us a
-// faster block locator than std::map which uses a binary tree search, this does
-// it by hash, and we define it to use a very fast 'Cheap' hash, the lower 64bits
-// of the longer block hash we have anyway as the key.  Now throughout the code
-// you can simply reference the same old mapBLockIndex we keep in memory, create
-// BlockMap iterators as you need them, this really fast find function is another
-// great idea that came from bitcoin v10 development.  Thank goes to them from
-// this developer.....GR
-struct BlockHasher
-{
-    size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
-};
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
@@ -211,7 +202,6 @@ std::string GetWarnings(std::string strFor);
 bool GetTransaction(const uint256 &hash, CTransaction &tx, uintFakeHash &hashBlock, bool fAllowSlow = false);
 /** Find the best known block, and make it the tip of the block chain */
 bool ActivateBestChain(CValidationState &state, CBlock *pblock = NULL);
-int64_t GetBlockValue(int nHeight, int64_t nFees);
 
 /** Create a new block index entry for a given block hash */
 CBlockIndex * InsertBlockIndex(uint256 hash);
@@ -396,11 +386,8 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck = false);
 
 /** Context-independent validity checks */
-bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW = true);
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW = true, bool fCheckMerkleRoot = true);
 
-/** Context-dependent validity checks */
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const CBlockIndex* pindexPrev);
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const CBlockIndex *pindexPrev);
 
 /** Check a block is completely valid from start to finish (only works on top of our current best block, with cs_main held) */
@@ -548,6 +535,9 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex *pindex);
 
 /** The currently-connected chain of blocks. */
 extern CChain chainActive;
+
+/** The Anoncoin hardfork manager */
+extern CashIsKing::ANCConsensus ancConsensus;
 
 /** Global variable that points to the active CCoinsView (protected by cs_main) */
 extern CCoinsViewCache *pcoinsTip;

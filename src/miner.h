@@ -55,6 +55,7 @@ extern void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigne
 
 /** Do mining precalculation, also used in rpcmining.cpp for the old getwork() */
 extern void FormatHashBuffers(const CBlockHeader* pblock, char* pmidstate, char* pdata, char* phash1);
+extern void FormatHashBuffers(CBlock* pblock, char* pdata, char* phash1);
 
 extern void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
 

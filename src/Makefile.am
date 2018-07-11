@@ -21,7 +21,7 @@ $(LIBLEVELDB) $(LIBMEMENV):
           OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
 
-BOOST_CPPFLAGS += -DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT
+BOOST_CPPFLAGS += -DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT -DBOOST_SPIRIT_THREADSAFE -DBOOST_NO_CXX11_SCOPED_ENUMS -DBOOST_ASIO_ENABLE_OLD_SERVICES
 
 ANONCOIN_CONFIG_INCLUDES=-I$(builddir)/config
 ANONCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
@@ -78,7 +78,7 @@ if BUILD_ANONCOIND
 endif
 
 if BUILD_ANONCOIN_UTILS
-  bin_PROGRAMS += anoncoin-cli anoncoin-tx
+  bin_PROGRAMS += anoncoin-cli
 endif
 
 .PHONY: FORCE
@@ -101,6 +101,7 @@ ANONCOIN_CORE_H = \
   coins.h \
   compat.h \
   compressor.h \
+  consensus.h \
   core_io.h \
   crypter.h \
   db.h \
@@ -171,6 +172,7 @@ libanoncoin_server_a_SOURCES = \
   alert.cpp \
   bloom.cpp \
   chain.cpp \
+  consensus.cpp \
   checkpoints.cpp \
   init.cpp \
   leveldbwrapper.cpp \
@@ -221,7 +223,9 @@ crypto_libanoncoin_crypto_a_SOURCES = \
   crypto/rfc6979_hmac_sha256.h \
   crypto/hmac_sha512.h \
   crypto/sha1.h \
-  crypto/ripemd160.h
+  crypto/ripemd160.h \
+  Gost3411.cpp \
+  Gost3411.h
 
 # univalue JSON library
 univalue_libanoncoin_univalue_a_SOURCES = \
@@ -240,7 +244,9 @@ libanoncoin_common_a_SOURCES = \
   base58.cpp \
   chainparams.cpp \
   coins.cpp \
+  chain.cpp \
   compressor.cpp \
+  consensus.cpp \
   core_read.cpp \
   core_write.cpp \
   block.cpp \
@@ -255,6 +261,7 @@ libanoncoin_common_a_SOURCES = \
   script_error.cpp \
   sigcache.cpp \
   sign.cpp \
+  pow.cpp \
   $(ANONCOIN_CORE_H)
 
 # util: shared between all executables.
@@ -271,6 +278,7 @@ libanoncoin_util_a_SOURCES = \
   sync.cpp \
   uint256.cpp \
   util.cpp \
+  pow.cpp \
   $(ANONCOIN_CORE_H)
 
 # i2pnet: shared between anoncoind and anoncoin-qt, but only linked
@@ -354,14 +362,14 @@ anoncoin_tx_LDADD = \
   $(BOOST_LIBS) \
   $(CRYPTO_LIBS)
 
-if ENABLE_I2PSAM
-anoncoin_tx_LDADD += libanoncoin_i2pnet.a
-endif
+#if ENABLE_I2PSAM
+#anoncoin_tx_LDADD += libanoncoin_i2pnet.a
+#endif
 
-anoncoin_tx_SOURCES = anoncoin-tx.cpp
+#anoncoin_tx_SOURCES = anoncoin-tx.cpp
 
-anoncoin_tx_CPPFLAGS = $(ANONCOIN_INCLUDES)
-anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+#anoncoin_tx_CPPFLAGS = $(ANONCOIN_INCLUDES)
+#anoncoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 #if BUILD_ANONCOIN_LIBS
 #include_HEADERS = script/anoncoinconsensus.h
