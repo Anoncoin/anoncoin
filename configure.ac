@@ -2,10 +2,12 @@ dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 0)
 define(_CLIENT_VERSION_MINOR, 9)
-define(_CLIENT_VERSION_REVISION, 6)
-define(_CLIENT_VERSION_BUILD, 13)
+define(_CLIENT_VERSION_REVISION, 7)
+define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, true)
-define(_COPYRIGHT_YEAR, 2017)
+define(_COPYRIGHT_YEAR, 2018)
+
+m4_include([build-aux/m4/ax_cxx_compile_stdcxx_11.m4])
 
 # In configure.ac, lines commented with '#' that occur after AC_INIT will appear in the resulting configure script. dnl comments will not.
 # One purpose of dnl is to discard unwanted newlines in an effort to make the configure script readable.
@@ -43,7 +45,6 @@ else
   CXXFLAGS_overridden=no
 fi
 AC_PROG_CXX
-m4_ifdef([AC_PROG_OBJCXX],[AC_PROG_OBJCXX])
 
 dnl By default, libtool for mingw refuses to link static libs into a dll for
 dnl fear of mixing pic/non-pic objects, and import/export complications. Since
@@ -55,6 +56,15 @@ case $host in
 esac
 dnl Libtool init checks.
 LT_INIT([pic-only])
+
+dnl Unless the user specified OBJCXX, force it to be the same as CXX. This ensures
+dnl that we get the same -std flags for both.
+m4_ifdef([AC_PROG_OBJCXX],[
+if test "x${OBJCXX+set}" = "x"; then
+  OBJCXX="${CXX}"
+fi
+AC_PROG_OBJCXX
+])
 
 dnl Check/return PATH for base programs.
 AC_PATH_TOOL(AR, ar)
@@ -189,6 +199,10 @@ if test "x$enable_debug" = xyes; then
     fi
 fi
 
+
+#AX_CXX_COMPILE_STDCXX_11([], [CXXFLAGS="$CXXFLAGS -std=c++11 -DNO_PREHISTORIC_COMPILER -DCPP11"])
+AX_CXX_COMPILE_STDCXX_11([ext],[optional])
+
 ## TODO: Remove these hard-coded paths and flags. They are here for the sake of
 ##       compatibility with the legacy buildsystem.
 ##
@@ -309,6 +323,8 @@ case $host in
          bdb_prefix=`$BREW --prefix berkeley-db4 2>/dev/null`
          qt5_prefix=`$BREW --prefix qt5 2>/dev/null`
          if test x$openssl_prefix != x; then
+           CPPFLAGS="$CPPFLAGS -I$openssl_prefix/include"
+           LIBS="$LIBS -L$openssl_prefix/lib"
            PKG_CONFIG_PATH="$openssl_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
            export PKG_CONFIG_PATH
          fi
@@ -345,6 +361,7 @@ case $host in
      ;;
    *linux*)
      TARGET_OS=linux
+     CPPFLAGS="$CPPFLAGS -DLINUX"
      ;;
    *)
      ;;
@@ -464,7 +481,7 @@ if test x$use_hardening != xno; then
   CXXFLAGS="$CXXFLAGS $HARDENED_CXXFLAGS"
   CPPFLAGS="$CPPFLAGS $HARDENED_CPPFLAGS"
   LDFLAGS="$LDFLAGS $HARDENED_LDFLAGS"
-  OBJCXXFLAGS="$CXXFLAGS"
+  OBJCXXFLAGS="-std=c++11 $CXXFLAGS"
 fi
 
 dnl this flag screws up non-darwin gcc even when the check fails. special-case it.
@@ -548,7 +565,7 @@ fi
 ANONCOIN_QT_INIT
 
 dnl sets $anoncoin_enable_qt, $anoncoin_enable_qt_test, $anoncoin_enable_qt_dbus
-ANONCOIN_QT_CONFIGURE([$use_pkgconfig], [qt4])
+ANONCOIN_QT_CONFIGURE([$use_pkgconfig], [qt5])
 
 if test x$build_anoncoin_utils$build_anoncoind$anoncoin_enable_qt$use_tests = xnononono; then
     use_boost=no
@@ -811,7 +828,7 @@ dnl enable hardfork
 AC_MSG_CHECKING([if a hardfork of the blockchain is required])
 if test x$hardfork_block != xno; then
   AC_MSG_RESULT(yes)
-  AC_DEFINE_UNQUOTED([HARDFORK_BLOCK],[$hardfork_block],[Define to the block number when the hardfork will occur])
+  AC_DEFINE_UNQUOTED([NEXT_HARDFORK_BLOCK],[$hardfork_block],[Define to the block number when the hardfork will occur])
 else
   AC_MSG_RESULT(no)
 fi

@@ -18,7 +18,6 @@
 #include <set>
 #include <stdint.h>
 #include <string>
-#include <string.h>
 #include <utility>
 #include <vector>
 

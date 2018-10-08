@@ -53,19 +53,19 @@ BOOST_AUTO_TEST_CASE(subsidy_limit_test)
     uint64_t nSubsidy_last;
     int nHeight;
     for (nHeight = 0; nHeight < 77779; nHeight++) {
-        nSubsidy = GetBlockValue(nHeight, 0);
+        nSubsidy = ancConsensus.GetBlockValue(nHeight, 0);
         nSum += nSubsidy;
     }
     // printf( "Block %llu Subsidy=%llu Sum=%llu\n", nHeight-1, nSubsidy, nSum);
-    nSubsidy_last = nSubsidy = GetBlockValue(nHeight, 0);
+    nSubsidy_last = nSubsidy = ancConsensus.GetBlockValue(nHeight, 0);
     while( nSubsidy_last == nSubsidy ) {
-        nSubsidy = GetBlockValue(nHeight++, 0);
+        nSubsidy = ancConsensus.GetBlockValue(nHeight++, 0);
         nSum += nSubsidy;
     }
     // printf( "Block %llu Subsidy=%llu Sum=%llu\n", nHeight++, nSubsidy, nSum);
     // before 60yrs worth of blocks the subsidy should go to zero
     for( ; nHeight < 3066000*3 + 1; nHeight += 1000) {
-        uint64_t nSubsidy = GetBlockValue(nHeight, 0);
+        uint64_t nSubsidy = ancConsensus.GetBlockValue(nHeight, 0);
         nSum += nSubsidy * 1000;
         BOOST_CHECK(MoneyRange(nSum));
         if( nSubsidy_last != nSubsidy ) {

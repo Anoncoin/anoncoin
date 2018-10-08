@@ -335,6 +335,7 @@ static const CRPCCommand vRPCCommands[] =
     { "mining",             "getretargetpid",         &getretargetpid,         true  },
 #ifdef ENABLE_WALLET
     { "mining",             "getwork",                &getwork,                true  },
+    { "mining",             "getworkex",              &getworkex,              true  },
     { "mining",             "getgenerate",            &getgenerate,            true  },
     { "mining",             "gethashmeter",           &gethashmeter,           true  },
     { "mining",             "setgenerate",            &setgenerate,            true  },
@@ -535,8 +536,8 @@ private:
 void ServiceConnection(AcceptedConnection *conn);
 
 //! Forward declaration required for RPCListen
-template <typename Protocol, typename SocketAcceptorService>
-static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
+template <typename Protocol>
+static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol> > acceptor,
                              ssl::context& context,
                              bool fUseSSL,
                              boost::shared_ptr< AcceptedConnection > conn,
@@ -545,8 +546,8 @@ static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, 
 /**
  * Sets up I/O resources to accept and handle a new connection.
  */
-template <typename Protocol, typename SocketAcceptorService>
-static void RPCListen(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
+template <typename Protocol>
+static void RPCListen(boost::shared_ptr< basic_socket_acceptor<Protocol> > acceptor,
                    ssl::context& context,
                    const bool fUseSSL)
 {
@@ -556,7 +557,7 @@ static void RPCListen(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketA
     acceptor->async_accept(
             conn->sslStream.lowest_layer(),
             conn->peer,
-            boost::bind(&RPCAcceptHandler<Protocol, SocketAcceptorService>,
+            boost::bind(&RPCAcceptHandler<Protocol>,
                 acceptor,
                 boost::ref(context),
                 fUseSSL,
@@ -568,8 +569,8 @@ static void RPCListen(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketA
 /**
  * Accept and handle incoming connection.
  */
-template <typename Protocol, typename SocketAcceptorService>
-static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
+template <typename Protocol>
+static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol> > acceptor,
                              ssl::context& context,
                              const bool fUseSSL,
                              boost::shared_ptr< AcceptedConnection > conn,
@@ -663,7 +664,7 @@ void StartRPCThreads()
 
     assert(rpc_io_service == NULL);
     rpc_io_service = new boost::asio::io_service();
-    rpc_ssl_context = new ssl::context(*rpc_io_service, ssl::context::sslv23);
+    rpc_ssl_context = new ssl::context(ssl::context::sslv23);
 
     const bool fUseSSL = GetBoolArg("-rpcssl", false);
 
@@ -682,7 +683,7 @@ void StartRPCThreads()
         else LogPrintf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string());
 
         string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH");
-        SSL_CTX_set_cipher_list(rpc_ssl_context->impl(), strCiphers.c_str());
+        SSL_CTX_set_cipher_list(rpc_ssl_context->native_handle(), strCiphers.c_str());
     }
 
     std::vector<ip::tcp::endpoint> vEndpoints;
@@ -922,8 +923,8 @@ static Object JSONRPCExecOne(const Value& req)
             } else
                 fCommandException = true;
         }
-        if( !fCommandException )
-            LogPrint( "rpc", "%s : executing method=%s with %d parameters.\n", __func__, SanitizeString(jreq.strMethod), jreq.params.size() );
+        //if( !fCommandException )
+        LogPrint( "rpc", "%s : executing method=%s with %d parameters.\n", __func__, SanitizeString(jreq.strMethod), jreq.params.size() );
 
         Value result = tableRPC.execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, Value::null, jreq.id);
@@ -1106,7 +1107,6 @@ void InitializeTestNetBlocks()
 {
     assert( pRetargetPid != NULL );
     const int32_t nMockBlocks = pRetargetPid->GetTipFilterBlocks();
-    const uint256 &uintPOWlimit = Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
     int64_t nTimeNow = GetTime();
     uint256 uintStartingDifficulty = pRetargetPid->GetTestNetStartingDifficulty();

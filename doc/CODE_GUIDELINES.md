@@ -1,5 +1,13 @@
-Coding
-======
+Code Documentation and Guidelines
+===============
+
+[Installation](./INSTALLATION.md) |
+**Developers** |
+[Roadmap](./ROADMAP.md) |
+[Wallet](./WALLET.md)
+
+*Code Guidelines*
+
 
 Please be consistent with the existing coding style.
 

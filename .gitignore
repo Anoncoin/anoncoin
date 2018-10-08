@@ -57,6 +57,7 @@ share/setup.nsi
 share/qt/Info.plist
 
 src/univalue/gen
+src/stdcerr
 
 src/qt/*.moc
 src/qt/moc_*.cpp
@@ -141,8 +142,14 @@ libanoncoinconsensus.pc
 src/qt/paymentrequest.pb.cc
 src/qt/paymentrequest.pb.h
 
+# When building db4 locally...
+db4
+
 # Add any other specific requirements, you may need, below this line...
 #
 
 src/qthemes
 src/qt/anoncoin-qtc
+
+# Bootstrap file that is downloaded externally
+bootstrap.dat

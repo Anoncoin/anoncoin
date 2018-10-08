@@ -11,6 +11,8 @@
 
 #include "miner.h"
 
+#include <string>
+
 #include "amount.h"
 #include "block.h"
 #include "chainparams.h"
@@ -338,21 +340,32 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         //LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
         // Compute final coinbase transaction.
-        txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+        txNew.vout[0].nValue = ancConsensus.GetBlockValue(nHeight, nFees);
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
 
         // Fill in header
-        pblock->hashPrevBlock  = pindexPrev->GetBlockSha256dHash();             // Make sure it places the sha256d hash of the previous block into this new one.
+        // Make sure it places the sha256d hash of the previous block into this new one.
+        pblock->hashPrevBlock  = pindexPrev->GetBlockSha256dHash();
         UpdateTime(pblock, pindexPrev);
-        pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
+        pblock->nBits          = ancConsensus.GetNextWorkRequired(pindexPrev, pblock);
         pblock->nNonce         = 0;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
+        if (nHeight >= ancConsensus.nDifficultySwitchHeight6)
+        {
+            pblock->nVersion = 3;
+        } else {
+            pblock->nVersion = 2;
+        }
+        // Always set height locally
+        pblock->nHeight = nHeight;
+
         //! Force both hash calculations to be updated before validity testing the block
-        assert( pblock->GetHash(true) != uint256(0) );
-        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+        assert( pblock->GetHash() != uint256(0) );
+        assert( pblock->CalcSha256dHash() != uintFakeHash(0) );
+        assert( pblock->GetGost3411Hash() != uint256(0) );
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false))
             throw std::runtime_error("CreateNewBlock() : TestBlockValidity failed");
@@ -380,7 +393,8 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
     pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 }
 
-#ifdef ENABLE_WALLET
+
+//#ifdef ENABLE_WALLET
 //////////////////////////////////////////////////////////////////////////////
 //
 // Internal miner
@@ -403,7 +417,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     // Found a solution
     {
         LOCK(cs_main);
-        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockSha256dHash())
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockSha256dHash() )
             return error("AnoncoinMiner : generated block is stale");
     }
 
@@ -702,7 +716,7 @@ double GetSlowMiningKHPS()
 
 void static AnoncoinMiner(CWallet *pwallet)
 {
-    LogPrintf("%s : v2.0 for Scrypt started with (DDA) Dynamic Difficulty Awareness and (MTHM) Multi-Threaded HashMeter technologies.\n", __func__ );
+    LogPrintf("%s : v3.0 for Scrypt/GOST3411 started with (DDA) Dynamic Difficulty Awareness and (MTHM) Multi-Threaded HashMeter technologies.\n", __func__ );
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("anoncoin-miner");
 
@@ -731,12 +745,12 @@ void static AnoncoinMiner(CWallet *pwallet)
 
     try {
         while (true) {
-            if (!RegTest()) {
+            /*if (!RegTest()) {
                 //! Busy-wait for the network to come online so we don't waste time mining
                 //! on an obsolete chain. In regtest mode we expect to fly solo.
                 while (vNodes.empty())
                     MilliSleep(10000);
-            }
+            }*/
 
             /**
              * Create new block
@@ -753,8 +767,8 @@ void static AnoncoinMiner(CWallet *pwallet)
             CBlock *pblock = &pblocktemplate->block;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-            LogPrintf("%s %2d: Running with %u transactions in block (%u bytes)\n", __func__, nMyID, pblock->vtx.size(),
-                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+            //LogPrintf("%s %2d: Running with %u transactions in block (%u bytes)\n", __func__, nMyID, pblock->vtx.size(),
+            //    ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
             /**
              * Search
@@ -762,6 +776,7 @@ void static AnoncoinMiner(CWallet *pwallet)
             int64_t nStart = GetTime();
             uint256 hashTarget;
             hashTarget.SetCompact(pblock->nBits);
+            std::string powHashType = "scrypt";
             while( true ) {
                 bool fFound = false;
                 bool fAccepted = false;
@@ -769,9 +784,16 @@ void static AnoncoinMiner(CWallet *pwallet)
                 uint256 thash;
                 //! Scan nonces looking for a solution
                 while(true) {
-                    // scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), pScratchPadBuffer);
-                    //char *pPad = spScratchPad.get();
-                    scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), spScratchPad.get());
+                    if (pindexPrev->nHeight+1 >= ancConsensus.nDifficultySwitchHeight6)
+                    {
+                        thash = HashGOST(BEGIN(pblock->nVersion), END(pblock->nNonce));
+                        pblock->nVersion = 3;
+                        pblock->nHeight  = pindexPrev->nHeight+1;
+                        powHashType = "gost3411";
+                    } else {
+                        scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), spScratchPad.get());
+                        pblock->nVersion = 2;
+                    }
                     nHashesDone++;
                     if( thash <= hashTarget ) {
                         fFound = true;
@@ -779,12 +801,12 @@ void static AnoncoinMiner(CWallet *pwallet)
                         //! Found a solution
                         //! Force new proof-of-work block scrypt hash and the sha256d hash values to be calculated.
                         //! Calling GetHash() & CalcSha256dHash() with true invalidates any previous (and obsolete) ones.
-                        assert( thash == pblock->GetHash(true) );
+                        assert( thash == pblock->GetHash() );
                         //! Basically this next line does the Scrypt calculation again once, then all the normal
                         //! validation code kicks in from the call to ProcessBlockFound(), insuring that is the case...
-                        assert( pblock->CalcSha256dHash(true) != uintFakeHash(0) );
+                        assert( pblock->CalcSha256dHash() != uintFakeHash(0) );
                         LogPrintf("%s %2d:\n", __func__, nMyID );
-                        LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", thash.GetHex(), hashTarget.GetHex());
+                        LogPrintf("proof-of-work found (%s)  \n  hash: %s  \ntarget: %s\n", powHashType.c_str(), thash.GetHex(), hashTarget.GetHex());
                         fAccepted = ProcessBlockFound(pblock, *pwallet, reservekey);
                         SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
@@ -823,26 +845,6 @@ void static AnoncoinMiner(CWallet *pwallet)
                             //! Store the whole hash meter as another data point in the long term sample buffer, and report that to the log.
                             mruSlowReadings.insert( *spMyMeter );
                             LogPrintf("%s %2d: reporting new 10 min sample update of %6.3f KHashes/Sec.\n", __func__, nMyID, dKiloHashesPerSec );
-#if defined( DONT_COMPILE )
-                            //! If our ID matches the number of threads running, we are the last one, and report some more...
-                            //! ToDo: Note this only works if the last thread always keep running, for an unknown reason it or other threads may have shut down.
-                            //! The HashMeter stats reporting function looks at the data in the 10sec mru, and knows if all threads are reporting results, can
-                            //! even tell which ones are not if we need that information.  Here though, it could fail if the last thread shutdown unexpectedly.
-                            if( nMyID == nMinerThreadsRunning ) {
-                                int nReadings = mruFastReadings.size();
-                                double dCumulativeKHPS = 0.0;
-                                for( mruset<CHashMeter>::const_iterator it = mruFastReadings.begin(); it != mruFastReadings.end(); ++it )
-                                    dCumulativeKHPS += (*it).GetFastKHPS();
-                                dCumulativeKHPS /= (double)nReadings;
-                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10sec) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
-                                nReadings = mruSlowReadings.size();
-                                dCumulativeKHPS = 0.0;
-                                for( mruset<CHashMeter>::const_iterator it = mruSlowReadings.begin(); it != mruSlowReadings.end(); ++it )
-                                    dCumulativeKHPS += (*it).GetSlowKHPS();
-                                dCumulativeKHPS /= (double)nReadings;
-                                LogPrintf("%s : Hash Power of %6.3f Khash/sec seen across the last %d (10min) meter readings from %d thread(s).\n", __func__, dCumulativeKHPS, nReadings, nMinerThreadsRunning );
-                            }
-#endif
                         }
                     }
                 }
@@ -865,7 +867,7 @@ void static AnoncoinMiner(CWallet *pwallet)
                 //! Changing pblock->nTime effects the work required for Anoncoin if the blockheader time is used for PID calculations,
                 //! otherwise it does not.  No older generation of the NextWorkRequired will be effected by time change.
                 UpdateTime(pblock, pindexPrev);
-                pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+                pblock->nBits = ancConsensus.GetNextWorkRequired(pindexPrev, pblock);
                 hashTarget.SetCompact(pblock->nBits);
             } // Looping forever while true and no nonce overflow, transactions updated or new blocks arrived
         } // Looping forever while true in this thread
@@ -926,13 +928,11 @@ void GenerateAnoncoins(bool fGenerate, CWallet* pwallet, int nThreads)
         minerThreads->create_thread(boost::bind(&AnoncoinMiner, pwallet));
 }
 
-#endif // ENABLE_WALLET
+//#endif // ENABLE_WALLET
 
 /**
  * Scrypt mining related code for block creation
  */
-static const uint32_t pSHA256InitState[8] =
-{0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
 {
@@ -947,25 +947,6 @@ int static FormatHashBlocks(void* pbuffer, unsigned int len)
     pend[-3] = (bits >> 16) & 0xff;
     pend[-4] = (bits >> 24) & 0xff;
     return blocks;
-}
-
-/** Base sha256 mining transform */
-void static SHA256Transform(void* pstate, void* pinput, const void* pinit)
-{
-    SHA256_CTX ctx;
-    unsigned char data[64];
-
-    SHA256_Init(&ctx);
-
-    for (int i = 0; i < 16; i++)
-        ((uint32_t*)data)[i] = ByteReverse(((uint32_t*)pinput)[i]);
-
-    for (int i = 0; i < 8; i++)
-        ctx.h[i] = ((uint32_t*)pinit)[i];
-
-    SHA256_Update(&ctx, data, sizeof(data));
-    for (int i = 0; i < 8; i++)
-        ((uint32_t*)pstate)[i] = ctx.h[i];
 }
 
 /** Do mining precalculation, also used in rpcmining.cpp for the old getwork() */
@@ -1005,8 +986,47 @@ void FormatHashBuffers(const CBlockHeader* pblock, char* pmidstate, char* pdata,
     for (unsigned int i = 0; i < sizeof(tmp)/4; i++)
         ((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
 
-    //! Precalc the first half of the first hash, which stays constant
-    SHA256Transform(pmidstate, &tmp.block, pSHA256InitState);
+    memcpy(pdata, &tmp.block, 128);
+    memcpy(phash1, &tmp.hash1, 64);
+}
+
+void FormatHashBuffers(CBlock* pblock, char* pdata, char* phash1)
+{
+    //
+    // Pre-build hash buffers
+    //
+    struct
+    {
+        struct unnamed2
+        {
+            int nVersion;
+            uint256 hashPrevBlock;
+            uint256 hashMerkleRoot;
+            unsigned int nTime;
+            unsigned int nBits;
+            unsigned int nNonce;
+        }
+        block;
+        unsigned char pchPadding0[64];
+        uint256 hash1;
+        unsigned char pchPadding1[64];
+    }
+    tmp;
+    memset(&tmp, 0, sizeof(tmp));
+
+    tmp.block.nVersion       = pblock->nVersion;
+    tmp.block.hashPrevBlock  = pblock->hashPrevBlock;
+    tmp.block.hashMerkleRoot = pblock->hashMerkleRoot;
+    tmp.block.nTime          = pblock->nTime;
+    tmp.block.nBits          = pblock->nBits;
+    tmp.block.nNonce         = pblock->nNonce;
+
+    FormatHashBlocks(&tmp.block, sizeof(tmp.block));
+    FormatHashBlocks(&tmp.hash1, sizeof(tmp.hash1));
+
+    // Byte swap all the input buffer
+    for (unsigned int i = 0; i < sizeof(tmp)/4; i++)
+        ((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
 
     memcpy(pdata, &tmp.block, 128);
     memcpy(phash1, &tmp.hash1, 64);

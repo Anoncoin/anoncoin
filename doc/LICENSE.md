@@ -1,3 +1,17 @@
+*Copyright (c) 2013-2018 The Anoncoin Developers*
+
+License
+-------
+Distributed under the [MIT/X11 software license](http://www.opensource.org/licenses/mit-license.php).
+
+This product includes software developed by the OpenSSL Project for use in the [OpenSSL Toolkit](http://www.openssl.org/).
+
+This product includes
+cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cryptsoft.com)), and UPnP software written by Thomas Bernard.
+
+Attribution
+-----------
+
 The following is a list of assets used in the Anoncoin source and their proper attribution.
 
 [Wladimir van der Laan](https://github.com/laanwj)
@@ -72,7 +86,7 @@ Everaldo (Everaldo Coelho)
 ### Info
 * Icon Pack: Kids
 * Designer: Everaldo (Everaldo Coelho)
-* License: GNU/GPL 
+* License: GNU/GPL
 * Site: [http://findicons.com/icon/17102/reload?id=17102](http://findicons.com/icon/17102/reload?id=17102)
 
 ### Assets Used

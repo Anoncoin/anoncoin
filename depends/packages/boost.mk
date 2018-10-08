@@ -1,6 +1,6 @@
 package=boost
 $(package)_version=1_57_0
-$(package)_download_path=http://sourceforge.net/projects/boost/files/boost/1.57.0
+$(package)_download_path=https://kent.dl.sourceforge.net/project/boost/boost/1.57.0/
 $(package)_file_name=$(package)_$($(package)_version).tar.bz2
 $(package)_sha256_hash=910c8c022a33ccec7f088bd65d4f14b466588dda94ba2124e78b8c57db264967
 $(package)_patches=

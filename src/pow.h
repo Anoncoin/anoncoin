@@ -7,12 +7,17 @@
 #ifndef ANONCOIN_POW_H
 #define ANONCOIN_POW_H
 
-#include "timedata.h"
-#include "uint256.h"
-
-#include <stdint.h>
 #define HARDFORK_BLOCK 555555 //! CSlave: if not hardcoded, the hardfork block can be defined with "configure --with-hardfork=block"
 #define HARDFORK_BLOCK2 585555 // block to change the parameters of the PID
+
+
+
+#include "timedata.h"
+#include "uint256.h"
+#include "consensus.h"
+#include "sync.h"
+
+#include <stdint.h>
 
 class CBlockHeader;
 class CBlockIndex;
@@ -225,22 +230,21 @@ public:
 extern const int64_t nTargetSpacing;            //! Defines modern Anoncoin target block time spacing
 extern CRetargetPidController *pRetargetPid;    //! One retarget object is used as primary, for all the next-work-required calculations
 
-//!
-//! Global in scope, these routines are implemented in pow.cpp:
-//!
+//extern ANCConsensus ancConsensus;
 
-//! Work proofs, checking proof of, Log/Log2 calculations
-extern uint256 GetWorkProof(const uint256& uintTarget);
-//! Given a BlockIndex entry, the blocks proof of work calculation is returned as a 256bit number
-extern uint256 GetBlockProof(const CBlockIndex& block);
+extern CCriticalSection cs_retargetpid;
+
 //! Given a 256bit difficulty number(hash), this function uses its WorkProof to then calculate log(x)/log(2) and return the floating point result
 extern double GetLog2Work( const uint256& uintDifficulty );
 //! Alternative method of providing difficulty to the user, it is linear and based on the minimum work required.
 extern double GetLinearWork( const uint256& uintDifficulty, const uint256& uintPowLimit );
-//! Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
-extern bool CheckProofOfWork(const uint256& hash, unsigned int nBits);
 //! Return average network hashes per second based on the last 'lookup' blocks, a minimum of 2 are required.
 extern int64_t CalcNetworkHashPS( const CBlockIndex* pBI, int32_t nLookup );
+
+extern uint256 NextWorkRequiredKgwV2(const CBlockIndex* pindexLast);
+
+/** The Anoncoin hardfork manager */
+extern CashIsKing::ANCConsensus ancConsensus;
 
 //! PID Retarget specific and global in scope...
 

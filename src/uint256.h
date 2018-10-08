@@ -24,8 +24,8 @@ class base_uint
 {
 protected:
     enum { WIDTH=BITS/32 };
-    uint32_t pn[WIDTH];
 public:
+    uint32_t pn[WIDTH];
 
     bool IsNull() const
     {

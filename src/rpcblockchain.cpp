@@ -12,6 +12,9 @@
 #include "sync.h"
 #include "util.h"
 
+#include "chainparams.h"
+#include "consensus.h"
+
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
@@ -43,7 +46,11 @@ double GetDifficulty(const CBlockIndex* blockindex)
     }
     uint256 uintBlockDiff;
     uintBlockDiff.SetCompact( blockindex->nBits );
-    return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
+    if (ancConsensus.IsUsingGost3411Hash()) {
+        return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_GOST3411 ) ) / 1000;
+    } else {
+        return GetLinearWork( uintBlockDiff, Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT ) );
+    }
 }
 
 
@@ -52,6 +59,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
     Object result;
     result.push_back(Pair("hash", blockindex->GetBlockHash().GetHex()));
     result.push_back(Pair("shad", blockindex->GetBlockSha256dHash().GetHex()));
+    result.push_back(Pair("gost", blockindex->GetBlockGost3411Hash().GetHex()));
     int confirmations = -1;
     // Only report confirmations if the block is on the main chain
     if (chainActive.Contains(blockindex))
@@ -258,6 +266,7 @@ Value getblockhash(const Array& params, bool fHelp)
     Object result;
     result.push_back(Pair("hash", pblockindex->GetBlockHash().GetHex()));
     result.push_back(Pair("shad", pblockindex->GetBlockSha256dHash().GetHex()));
+    result.push_back(Pair("gost", pblockindex->GetBlockGost3411Hash().GetHex()));
     return result;
 }
 
@@ -515,7 +524,11 @@ Value getblockchaininfo(const Array& params, bool fHelp)
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
     obj.push_back(Pair("headers",       pindexBestHeader ? pindexBestHeader->nHeight : -1));
     obj.push_back(Pair("bestblockhash", chainActive.Tip()->GetBlockHash().GetHex()));
+    obj.push_back(Pair("bestblockGOST3411hash", chainActive.Tip()->GetBlockGost3411Hash().GetHex()));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
+    uint256 hexVal;
+    hexVal.SetCompact(chainActive.Tip()->nBits);
+    obj.push_back(Pair("difficulty_hex",    strprintf( "0x%08x",hexVal.GetCompact()) ));
     obj.push_back(Pair("verificationprogress", Checkpoints::GuessVerificationProgress(chainActive.Tip())));
     obj.push_back(Pair("chainwork",     chainActive.Tip()->nChainWork.GetHex()));
     return obj;
@@ -596,6 +609,7 @@ Value getchaintips(const Array& params, bool fHelp)
         obj.push_back(Pair("height", block->nHeight));
         obj.push_back(Pair("hash", block->phashBlock->GetHex()));
         obj.push_back(Pair("shad", block->GetBlockSha256dHash().GetHex()));
+        obj.push_back(Pair("gost", block->GetBlockGost3411Hash().GetHex()));
 
         const int branchLen = block->nHeight - chainActive.FindFork(block)->nHeight;
         obj.push_back(Pair("branchlen", branchLen));

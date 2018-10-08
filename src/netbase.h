@@ -45,6 +45,7 @@ enum Network
     NET_MAX,
 };
 
+class uint256;
 class CAddrMan;
 
 extern int nConnectTimeout;
