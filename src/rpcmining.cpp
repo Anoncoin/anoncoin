@@ -373,7 +373,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("blocks",           (int)chainActive.Height()));
     obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
     obj.push_back(Pair("currentblocktx",   (uint64_t)nLastBlockTx));
-    obj.push_back(Pair("difficulty",       (double) ( GetDifficulty() / 1000 ));
+    obj.push_back(Pair("difficulty",       (double) ( GetDifficulty() / 1000 )));
     obj.push_back(Pair("errors",           GetWarnings("statusbar")));
     obj.push_back(Pair("genproclimit",     (int)GetArg("-genproclimit", -1)));
     obj.push_back(Pair("networkhashps",    CalcNetworkHashPS( chainActive.Tip(), pRetargetPid->GetTipFilterSize() )));
