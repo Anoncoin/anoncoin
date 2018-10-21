@@ -694,7 +694,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     LogPrintf("StealthSecret failed.\n");
                     continue;
                 }
-                LogPrintf("pkExtracted %"PRIszu": %s\n", pkExtracted.size(), HexStr(pkExtracted));
+                LogPrintf("pkExtracted %" PRIszu ": %s\n", pkExtracted.size(), HexStr(pkExtracted));
 
                 CPubKey cpkE(pkExtracted);
 
