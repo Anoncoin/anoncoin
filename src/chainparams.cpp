@@ -170,7 +170,7 @@ public:
         // Because the prefix bytes are attached to a base256 encoding (ie, binary) of known width,  they affect the leading cinquantoctal digit of the corresponding base58
         // representation of the same number.  The 23 below, is why mainnet pay-to-pubkey txouts always start with the letter A
         base58Prefixes[PUBKEY_ADDRESS] = {23};           // the pay-to-pubkey prefix byte
-        base58Prefixes[SCRIPT_ADDRESS] = {5};            // the pay-to-script-hash prefix byte
+        base58Prefixes[SCRIPT_ADDRESS] = {15};            // the pay-to-script-hash prefix byte
         base58Prefixes[SECRET_KEY] = {151};          // Anoncoin secret keys are the Public Key + 128
         // What we have here are the same as Bitcoin values, and explained below as follows:
         // The four-byte prefixes correspond to cinquantoctal prefixes 'xpub' and 'xprv' on mainnet and 'tpub' and 'tprv' on testnet.
@@ -182,7 +182,7 @@ public:
 #else
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,23);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,15);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,151);
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
@@ -294,13 +294,13 @@ public:
 
 #ifdef NO_PREHISTORIC_COMPILER
         base58Prefixes[PUBKEY_ADDRESS] = {111};      // Anoncoin v8 compatible testnet Public keys use this value
-        base58Prefixes[SCRIPT_ADDRESS] = {196};
+        base58Prefixes[SCRIPT_ADDRESS] = {50};
         base58Prefixes[SECRET_KEY]     = {211};      // Anoncoin testnet secret keys start with the same prefix as the Public Key + 128
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04,0x35,0x87,0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04,0x35,0x83,0x94};
 #else
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,50);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
