@@ -1341,8 +1341,11 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
 
     uint256 hash = block.GetHash();
 
+
+
     // Check the header POW
-    if( !ancConsensus.CheckProofOfWork( block, block.nBits) )
+
+    if( !Checkpoints::IsExceptionBlock(hash) && !ancConsensus.CheckProofOfWork( block, block.nBits) )
             return error("ReadBlockFromDisk : Errors in block header");
 
     if (hash != pindex->GetBlockPowHash())

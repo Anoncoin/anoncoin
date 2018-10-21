@@ -24,6 +24,7 @@ namespace Checkpoints
 
     // Anc fix
     bool IsBlockInCheckpoints(int nHeight);
+    bool IsExceptionBlock(uintFakeHash hash);
 
     // Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
     CBlockIndex* GetLastCheckpoint();

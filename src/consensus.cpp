@@ -44,6 +44,7 @@ bool ANCConsensus::CheckProofOfWork(const CBlockHeader& pBlockHeader, unsigned i
         : Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
   uint256 hash = pBlockHeader.GetHash();
+
   //! Check range of the Target Difficulty value stored in a block
   if( fNegative || bnTarget == 0 || fOverflow || bnTarget > proofOfWorkLimit )
     return error("CheckProofOfWork() : nBits below minimum work (0x%s / %s)", proofOfWorkLimit.ToString(), strprintf( "0x%08x",proofOfWorkLimit.GetCompact()));
@@ -78,14 +79,18 @@ bool ANCConsensus::SkipPoWCheck()
 
 bool ANCConsensus::CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
-  if (fCheckPOW && !TestNet())
-    fCheckPOW = SkipPoWCheck();
-  if (!fCheckPOW)
-  {
-    return true;
-  }
-  // Check proof of work matches claimed amount
   uint256 hash = block.GetHash();
+  if (Checkpoints::IsExceptionBlock(hash))
+    fCheckPOW = false;
+
+  if (fCheckPOW && !TestNet())
+    fCheckPOW = !SkipPoWCheck();
+  
+  if (!fCheckPOW)
+    return true;
+
+  // Check proof of work matches claimed amount
+  
   if (fCheckPOW && !CheckProofOfWork(block, block.nBits))
     return state.DoS(50, error("CheckBlockHeader() : proof of work failed (%s)", hash.ToString()), REJECT_INVALID, "high-hash");
 

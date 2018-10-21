@@ -126,8 +126,24 @@ namespace Checkpoints
         (813339, uint256("0xce2755d2b791f70d6b7131078157e139437a25f5ea9a720a6d505f45ad966c89"))
         (813340, uint256("0x8b78db8c8c7d01a6c11ced86ef6522ea6e710da6ec5b31c7896962e425451076"))
         (813341, uint256("0xe5281e033e5be50d3e19f5c8783747ca7c5bd80f32f48003c9dc84bc82434e2f"))
-        (842287, uint256("0x717b92a047d96ea0746c0f2057c06f2cf760f5a746bf623be58c6be5c17780ee"))
+        (842287, uint256("0x717b92a047d96ea0746c0f2057c06f2cf760f5a746bf623be58c6be5c17780ee")) 
+        (916281, uint256("0xadcec3ee4ef1dbb2f5664b563e4b50b2c9f957b33fa9c65ec4c7a988ed2af87d"))
+        (916270, uint256("0xdeb8b72decf97f301260da0afde8b29cfb5ab4c541a99eab6fe557486310639f"))
+        (916267, uint256("0x33944f530ec68b2a683a9a97abd8f78576407edb69e1bf3da6c8fde460049828"))
+        (916243, uint256("0xe4d6005bac1d1990812065aa1c67d2f6623f75120f4e1b8513a01716ef790851"))
+        (916235, uint256("0x16b166763308d97e9390351a2904ed7ba99fbaf0ce45f8c80f60966c8e859df3"))
+        (916199, uint256("0xb530d9d9e703f6bbddb56b2a877b6b9ef43122f6eec9a37a9fde8316fa3d55a1"))
         ;
+    
+    // Blocks with exceptions that don't pass PoW checks
+    uint256 gExceptionBlocks [6] = {
+            uint256("0xadcec3ee4ef1dbb2f5664b563e4b50b2c9f957b33fa9c65ec4c7a988ed2af87d"),
+            uint256("0xdeb8b72decf97f301260da0afde8b29cfb5ab4c541a99eab6fe557486310639f"),
+            uint256("0x33944f530ec68b2a683a9a97abd8f78576407edb69e1bf3da6c8fde460049828"),
+            uint256("0xe4d6005bac1d1990812065aa1c67d2f6623f75120f4e1b8513a01716ef790851"),
+            uint256("0x16b166763308d97e9390351a2904ed7ba99fbaf0ce45f8c80f60966c8e859df3"),
+            uint256("0xb530d9d9e703f6bbddb56b2a877b6b9ef43122f6eec9a37a9fde8316fa3d55a1"),
+            }; 
 
     static const CCheckpointData data = {
         &mapCheckpoints,
@@ -187,6 +203,11 @@ namespace Checkpoints
     {
         const MapCheckpoints& checkpoints = *Checkpoints().mapCheckpoints;
         return checkpoints.count(nHeight) == 1;
+    }
+
+    bool IsExceptionBlock(uintFakeHash hash){
+        return std::find(std::begin(gExceptionBlocks), std::end(gExceptionBlocks), 
+        uint256(hash)) != std::end(gExceptionBlocks);
     }
 
     // Guess how far we are in the verification process at the given block index
