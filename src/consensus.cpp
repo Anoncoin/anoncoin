@@ -123,13 +123,17 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
      * 
      * */
 
+    uint256 blockHash = block.CalcSha256dHash();
+    if (signed(nHeight) >= CashIsKing::ANCConsensus::nDifficultySwitchHeight6)
+      blockHash = hash;
+
     // Don't accept any forks from the main chain prior to last checkpoint
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
     if (pcheckpoint && nHeight < pcheckpoint->nHeight)
         return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
     // Check that the block chain matches the known block chain up to a checkpoint
-    if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
+    if (!Checkpoints::CheckBlock(nHeight, blockHash))
         return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight), REJECT_CHECKPOINT, "checkpoint mismatch");
 
     // Don't fast skip in testnet
