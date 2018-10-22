@@ -3659,11 +3659,11 @@ string GetWarnings(string strFor)
     if (CLIENT_VERSION_IS_RELEASE) {
         ostringstream ss;
         ss << ancConsensus.nDifficultySwitchHeight5;
-        strStatusBar = "This is a HARDFORK build for block " + ss.str();
+        //strStatusBar = "This is a HARDFORK build for block " + ss.str();
     } else {
         ostringstream ss;
         ss << ancConsensus.nDifficultySwitchHeight5;
-        strStatusBar = "This is a HARDFORK pre-release test build, and will fork at block " + ss.str();
+        //strStatusBar = "This is a HARDFORK pre-release test build, and will fork at block " + ss.str();
         // The priority of this message remains @ 0, yet if nothing else is found, it will be displayed by default for pre-release or hardfork builds.
     }
 
