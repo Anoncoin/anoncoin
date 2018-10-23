@@ -44,6 +44,7 @@ bool ANCConsensus::CheckProofOfWork(const CBlockHeader& pBlockHeader, unsigned i
         : Params().ProofOfWorkLimit( CChainParams::ALGO_SCRYPT );
 
   uint256 hash = pBlockHeader.GetHash();
+
   //! Check range of the Target Difficulty value stored in a block
   if( fNegative || bnTarget == 0 || fOverflow || bnTarget > proofOfWorkLimit )
     return error("CheckProofOfWork() : nBits below minimum work (0x%s / %s)", proofOfWorkLimit.ToString(), strprintf( "0x%08x",proofOfWorkLimit.GetCompact()));
@@ -78,14 +79,18 @@ bool ANCConsensus::SkipPoWCheck()
 
 bool ANCConsensus::CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
-  if (fCheckPOW && !TestNet())
-    fCheckPOW = SkipPoWCheck();
-  if (!fCheckPOW)
-  {
-    return true;
-  }
-  // Check proof of work matches claimed amount
   uint256 hash = block.GetHash();
+  if (Checkpoints::IsExceptionBlock(hash))
+    fCheckPOW = false;
+
+  if (fCheckPOW && !TestNet())
+    fCheckPOW = !SkipPoWCheck();
+  
+  if (!fCheckPOW)
+    return true;
+
+  // Check proof of work matches claimed amount
+  
   if (fCheckPOW && !CheckProofOfWork(block, block.nBits))
     return state.DoS(50, error("CheckBlockHeader() : proof of work failed (%s)", hash.ToString()), REJECT_INVALID, "high-hash");
 
@@ -118,13 +123,17 @@ bool ANCConsensus::ContextualCheckBlockHeader(const CBlockHeader& block, CValida
      * 
      * */
 
+    uint256 blockHash = block.CalcSha256dHash();
+    if (signed(nHeight) >= CashIsKing::ANCConsensus::nDifficultySwitchHeight6)
+      blockHash = hash;
+
     // Don't accept any forks from the main chain prior to last checkpoint
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
     if (pcheckpoint && nHeight < pcheckpoint->nHeight)
         return state.DoS(100, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
     // Check that the block chain matches the known block chain up to a checkpoint
-    if (!Checkpoints::CheckBlock(nHeight, block.CalcSha256dHash()))
+    if (!Checkpoints::CheckBlock(nHeight, blockHash))
         return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight), REJECT_CHECKPOINT, "checkpoint mismatch");
 
     // Don't fast skip in testnet
