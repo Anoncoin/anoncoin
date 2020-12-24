@@ -4,10 +4,15 @@
 [Installation](./doc/INSTALLATION.md) |
 [Developers](./doc/DEVELOPER.md) |
 [Project](https://github.com/Anoncoin/anoncoin/projects/1) |
-Roadmap |
 Wallet |
-Mining
+Mining |
+Updates
 
+**2020,Nov 27th** *from GroundRod*
+
+Just started a couple wording changes here & realized the tons of time needed to update our documentation.  First I want everyone to know, Groundrod is looking forward to a return to this project. Spit & polish documentation part timer, Coder of sorts & will try to bring us all current as to how the Anoncoin blockchain has been doing, many years in the rear view mirror now.  Can't stop wondering, how has the Difficulty Retarget PID controllers performance been?  Stay tuned...
+
+NOTE: Old, as yet unedited or updated material below
 Overview
 --------
 Cryptocurrencies like Bitcoin use public ledgers to keep balances correct between wallets.  As Bitcoin and others are increasingly used, wallet addresses (and their balances) will increasingly be tied to real world identities.
@@ -17,20 +22,6 @@ Just like people prefer not to show others their bank accounts, they will not wa
 **A move to cryptocurrency which keeps sender addresses and balances are private is inevitable.**
 
 Anoncoin (ANC) is a peer-to-peer digital cryptocurrency that focuses on privacy and anonymity for its users. Created in June 2013, it is the first and only currency to have built-in support for both the I2P darknet and Tor network that conceal the IP address of the user. Anoncoin will soon be implementing Zerocoin, which will allow users to make payments anonymously, without revealing their anoncoin public addresses.
-
-Comparison With Other Coins
----------------------------
-
-Anoncoin was made out of necessity.  Here is a chart of some of the features of Anoncoin and other comparable cryptocurrencies:
-
-| CURRENCY | SPEED | SCALABILITY | CONSENSUS | FEES | FUNGIBILE | BALANCE | SENDER | METHODOLOGY |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Anoncoin**<br />(ANC) | ? | ? | proof of work<br />(Scrypt) | none | yes | private | private | ? |
-| **Bitcoin**<br />(BTC) | low<br />(7 tx/s) | low | proof of work<br />sha256 | high | no | public | public | none |
-| **Dash**<br />(DASH) | high (public)<br />low (private) | ? | proof of work | high | ? | private | public | CoinJoin |
-| **Monero**<br />(XMR) | low | low | proof of work<br />(CryptoNight) | ? | yes | private | private | Ring CT |
-| **Zcash**<br />(ZEC) | ? | ? | equihash | ? | no (public)<br />yes (private) | optional | optional | ZK-Snarks |
-
 
 Facts About Anonoin
 -------------------
