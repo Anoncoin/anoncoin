@@ -11,6 +11,11 @@
 #include "key.h"
 #include "keystore.h"
 
+#ifdef ENABLE_STEALTH
+#include "base58.h"
+#include "stealth.h"
+#endif
+
 #include <list>
 #include <stdint.h>
 #include <string>
@@ -39,19 +44,16 @@ enum DBErrors
     DB_NEED_REWRITE
 };
 
-class CKeyMetadata
-{
+class CKeyMetadata {
 public:
     static const int CURRENT_VERSION=1;
     int nVersion;
     int64_t nCreateTime; // 0 means unknown
 
-    CKeyMetadata()
-    {
+    CKeyMetadata() {
         SetNull();
     }
-    CKeyMetadata(int64_t nCreateTime_)
-    {
+    CKeyMetadata(int64_t nCreateTime_) {
         nVersion = CKeyMetadata::CURRENT_VERSION;
         nCreateTime = nCreateTime_;
     }
@@ -65,12 +67,33 @@ public:
         READWRITE(nCreateTime);
     }
 
-    void SetNull()
-    {
+    void SetNull() {
         nVersion = CKeyMetadata::CURRENT_VERSION;
         nCreateTime = 0;
     }
 };
+
+#ifdef ENABLE_STEALTH
+class CStealthKeyMetadata {
+// -- used to get secret for keys created by stealth transaction with wallet locked
+public:
+    CStealthKeyMetadata() {}
+    
+    CStealthKeyMetadata(CPubKey pkEphem_, CPubKey pkScan_) : pkEphem(pkEphem_), pkScan(pkScan_) {}
+    
+    CPubKey pkEphem;
+    CPubKey pkScan;
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+        READWRITE(pkEphem);
+        READWRITE(pkScan);
+    }
+
+};
+#endif
 
 /** Access to the wallet database (wallet.dat) */
 class CWalletDB : public CDB
@@ -79,6 +102,50 @@ public:
     CWalletDB(const std::string& strFilename, const char* pszMode = "r+", bool fFlushOnClose = true) : CDB(strFilename, pszMode, fFlushOnClose)
     {
     }
+
+#ifdef ENABLE_STEALTH
+    Dbc* GetAtCursor() {
+        return GetCursor();
+    }
+    
+    DbTxn* GetAtActiveTxn() {
+        return activeTxn;
+    }
+
+    Dbc* GetTxnCursor() {
+        if (!pdb)
+            return NULL;
+        
+        DbTxn* ptxnid = activeTxn; // call TxnBegin first
+        
+        Dbc* pcursor = NULL;
+        int ret = pdb->cursor(ptxnid, &pcursor, 0);
+        if (ret != 0)
+            return NULL;
+        return pcursor;
+    }
+
+    bool WriteStealthKeyMeta(const CKeyID& keyId, const CStealthKeyMetadata& sxKeyMeta) {
+        nWalletDBUpdated++;
+        return Write(std::make_pair(std::string("sxKeyMeta"), keyId), sxKeyMeta, true);
+    }
+    
+    bool EraseStealthKeyMeta(const CKeyID& keyId) {
+        nWalletDBUpdated++;
+        return Erase(std::make_pair(std::string("sxKeyMeta"), keyId));
+    }
+    
+    bool WriteStealthAddress(const CStealthAddress& sxAddr) {
+        nWalletDBUpdated++;
+
+        return Write(std::make_pair(std::string("sxAddr"), sxAddr.scan_pubkey), sxAddr, true);
+    }
+    
+    bool ReadStealthAddress(CStealthAddress& sxAddr) {
+        // -- set scan_pubkey before reading
+        return Read(std::make_pair(std::string("sxAddr"), sxAddr.scan_pubkey), sxAddr);
+    }
+#endif
 
     bool WriteName(const std::string& strAddress, const std::string& strName);
     bool EraseName(const std::string& strAddress);

@@ -20,9 +20,14 @@ class CScript;
  *  * CNoDestination: no destination set
  *  * CKeyID: TX_PUBKEYHASH destination
  *  * CScriptID: TX_SCRIPTHASH destination
+ *  * CStealthAddress: A Stealth address
  *  A CTxDestination is the internal data type encoded in a CAnoncoinAddress
  */
+#ifdef ENABLE_STEALTH
+typedef boost::variant<CNoDestination, CKeyID, CScriptID, CStealthAddress> CTxDestination;
+#else
 typedef boost::variant<CNoDestination, CKeyID, CScriptID> CTxDestination;
+#endif
 
 /** A virtual base class for key stores */
 class CKeyStore

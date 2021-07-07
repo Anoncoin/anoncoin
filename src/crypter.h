@@ -117,9 +117,6 @@ bool DecryptSecret(const CKeyingMaterial& vMasterKey, const std::vector<unsigned
 class CCryptoKeyStore : public CBasicKeyStore
 {
 private:
-    CryptedKeyMap mapCryptedKeys;
-
-    CKeyingMaterial vMasterKey;
 
     // if fUseCrypto is true, mapKeys must be empty
     // if fUseCrypto is false, vMasterKey must be empty
@@ -127,6 +124,9 @@ private:
 
 protected:
     bool SetCrypted();
+
+    CryptedKeyMap mapCryptedKeys;
+    CKeyingMaterial vMasterKey;
 
     // will encrypt previously unencrypted keys
     bool EncryptKeys(CKeyingMaterial& vMasterKeyIn);
@@ -156,6 +156,10 @@ public:
     }
 
     bool Lock();
+
+    CryptedKeyMap getCryptedKeysMap() {
+        return mapCryptedKeys;
+    }
 
     virtual bool AddCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
     bool AddKeyPubKey(const CKey& key, const CPubKey &pubkey);

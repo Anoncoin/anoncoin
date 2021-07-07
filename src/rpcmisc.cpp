@@ -16,6 +16,7 @@
 #include "sync.h"
 #include "timedata.h"
 #ifdef ENABLE_WALLET
+#include "script.h"
 #include "wallet.h"
 #include "walletdb.h"
 #endif
@@ -112,7 +113,7 @@ Value getinfo(const Array& params, bool fHelp)
 }
 
 #ifdef ENABLE_WALLET
-class DescribeAddressVisitor : public boost::static_visitor<Object>
+class DescribeAddressVisitor : public boost::static_visitor<json_spirit::Object>
 {
 private:
     isminetype mine;
@@ -120,9 +121,9 @@ private:
 public:
     DescribeAddressVisitor(isminetype mineIn) : mine(mineIn) {}
 
-    Object operator()(const CNoDestination &dest) const { return Object(); }
+    json_spirit::Object operator()(const CNoDestination &dest) const { return Object(); }
 
-    Object operator()(const CKeyID &keyID) const {
+    json_spirit::Object operator()(const CKeyID &keyID) const {
         Object obj;
         CPubKey vchPubKey;
         obj.push_back(Pair("isscript", false));
@@ -134,7 +135,7 @@ public:
         return obj;
     }
 
-    Object operator()(const CScriptID &scriptID) const {
+    json_spirit::Object operator()(const CScriptID &scriptID) const {
         Object obj;
         obj.push_back(Pair("isscript", true));
         if (mine != ISMINE_NO) {
@@ -155,6 +156,14 @@ public:
         }
         return obj;
     }
+
+#ifdef ENABLE_STEALTH
+    Object operator()(const CStealthAddress &stxAddr) const {
+        Object obj;
+        obj.push_back(Pair("todo", true));
+        return obj;
+    }
+#endif
 };
 #endif
 

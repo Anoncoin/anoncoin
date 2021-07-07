@@ -15,6 +15,23 @@
 #include <stdexcept>
 #include <vector>
 
+#include <openssl/ec.h> // for EC_KEY definition
+
+// secp160k1
+// const unsigned int PRIVATE_KEY_SIZE = 192;
+// const unsigned int PUBLIC_KEY_SIZE  = 41;
+// const unsigned int SIGNATURE_SIZE   = 48;
+//
+// secp192k1
+// const unsigned int PRIVATE_KEY_SIZE = 222;
+// const unsigned int PUBLIC_KEY_SIZE  = 49;
+// const unsigned int SIGNATURE_SIZE   = 57;
+//
+// secp224k1
+// const unsigned int PRIVATE_KEY_SIZE = 250;
+// const unsigned int PUBLIC_KEY_SIZE  = 57;
+// const unsigned int SIGNATURE_SIZE   = 66;
+//
 // secp256k1:
 // const unsigned int PRIVATE_KEY_SIZE = 279;
 // const unsigned int PUBLIC_KEY_SIZE  = 65;
@@ -161,12 +178,22 @@ public:
 
     // Derive BIP32 child pubkey.
     bool Derive(CPubKey& pubkeyChild, unsigned char ccChild[32], unsigned int nChild, const unsigned char cc[32]) const;
+
+
+#ifdef ENABLE_STEALTH
+    // Return the key as a vector of uint8_t
+    std::vector<uint8_t> Raw() { return std::vector<uint8_t>(begin(), end()); }
+#endif
 };
 
 
 // secure_allocator is defined in allocators.h
 // CPrivKey is a serialized private key, with all parameters included (279 bytes)
 typedef std::vector<unsigned char, secure_allocator<unsigned char> > CPrivKey;
+#ifdef ENABLE_STEALTH
+// CSecret is a serialization of just the secret parameter (32 bytes)
+typedef std::vector<unsigned char, secure_allocator<unsigned char> > CSecret;
+#endif
 
 /** An encapsulated private key. */
 class CKey {
@@ -235,7 +262,12 @@ public:
 
     // Sets the secret for the key
     void SetSecret(const unsigned char vchIn[32], bool fCompressed = false);
-
+#ifdef ENABLE_STEALTH
+    // Construct a key from a byte vector.
+    void SetSecret(const std::vector<unsigned char> &vch, bool compressed) {
+        Set(vch.begin(), vch.end(), compressed);
+    }
+#endif
     // Initialize from a CPrivKey (serialized OpenSSL private key data).
     bool SetPrivKey(const CPrivKey &vchPrivKey, bool fCompressed);
 

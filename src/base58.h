@@ -19,6 +19,10 @@
 #include "key.h"
 #include "script.h"
 
+#ifdef ENABLE_STEALTH
+#include "stealth.h"
+#endif
+
 #include <string>
 #include <vector>
 
@@ -99,6 +103,20 @@ public:
  * Script-hash-addresses have version 5 (or 196 testnet).
  * The data vector contains RIPEMD160(SHA256(cscript)), where cscript is the serialized redemption script.
  */
+#ifdef ENABLE_STEALTH
+class CAnoncoinAddress;
+class CAnoncoinAddressVisitor : public boost::static_visitor<bool> {
+private:
+    CAnoncoinAddress *addr;
+public:
+    CAnoncoinAddressVisitor(CAnoncoinAddress *addrIn) : addr(addrIn) { }
+    bool operator()(const CKeyID &id) const;
+    bool operator()(const CScriptID &id) const;
+    bool operator()(const CStealthAddress &stxAddr) const;
+    bool operator()(const CNoDestination &no) const;
+};
+#endif
+
 class CAnoncoinAddress : public CBase58Data {
 public:
     bool Set(const CKeyID &id);
@@ -116,6 +134,15 @@ public:
     bool GetKeyID(CKeyID &keyID) const;
     bool IsScript() const;
 };
+
+#ifdef ENABLE_STEALTH
+
+bool inline CAnoncoinAddressVisitor::operator()(const CKeyID &id) const         { return addr->Set(id); }
+bool inline CAnoncoinAddressVisitor::operator()(const CScriptID &id) const      { return addr->Set(id); }
+bool inline CAnoncoinAddressVisitor::operator()(const CStealthAddress &stxAddr) const      { return false; }
+bool inline CAnoncoinAddressVisitor::operator()(const CNoDestination &id) const { return false; }
+
+#endif
 
 /**
  * A base58-encoded secret key

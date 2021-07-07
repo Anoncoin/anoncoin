@@ -55,10 +55,12 @@ EXTRA_LIBRARIES = \
   libanoncoin_server.a \
   libanoncoin_cli.a \
   libanoncoin_scrypt.a
+
 if ENABLE_WALLET
 ANONCOIN_INCLUDES += $(BDB_CPPFLAGS)
 EXTRA_LIBRARIES += libanoncoin_wallet.a
 endif
+
 if ENABLE_I2PSAM
 EXTRA_LIBRARIES += libanoncoin_i2pnet.a
 endif
@@ -126,12 +128,14 @@ ANONCOIN_CORE_H = \
   rpcclient.h \
   rpcprotocol.h \
   rpcserver.h \
+  rpcstealth.h \
   script.h \
   script_error.h \
   scrypt.h \
   serialize.h \
   sigcache.h \
   sign.h \
+  stealth.h \
   streams.h \
   sync.h \
   threadsafety.h \
@@ -201,7 +205,9 @@ libanoncoin_wallet_a_SOURCES = \
   db.cpp \
   crypter.cpp \
   rpcdump.cpp \
+  rpcstealth.cpp \
   rpcwallet.cpp \
+  stealth.cpp \
   wallet.cpp \
   walletdb.cpp \
   $(ANONCOIN_CORE_H)
@@ -316,18 +322,22 @@ anoncoind_LDADD = \
   $(LIBANONCOIN_UNIVALUE) \
   $(LIBANONCOIN_UTIL) \
   $(LIBANONCOIN_CRYPTO) \
-  $(LIBANONCOIN_SCRYPT) \
-  $(LIBLEVELDB) \
-  $(LIBMEMENV)
+  $(LIBANONCOIN_SCRYPT)
 
 if ENABLE_WALLET
 anoncoind_LDADD += libanoncoin_wallet.a
 endif
+
 if ENABLE_I2PSAM
 anoncoind_LDADD += libanoncoin_i2pnet.a
 endif
 
+anoncoind_LDADD += \
+  $(LIBLEVELDB) \
+  $(LIBMEMENV)
+
 anoncoind_SOURCES = anoncoind.cpp
+
 if TARGET_WINDOWS
 anoncoind_SOURCES += anoncoind-res.rc
 endif

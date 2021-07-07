@@ -138,6 +138,14 @@ public:
         return (nValue == -1);
     }
 
+#ifdef ENABLE_STEALTH
+    bool IsScriptOpReturn() const {
+        opcodetype opCode;
+        CScript::const_iterator itTxA = scriptPubKey.begin();
+        return (scriptPubKey.GetOp(itTxA, opCode) && opCode == OP_RETURN);
+    }
+#endif
+
     uint256 GetHash() const;
 
     bool IsDust(CFeeRate minRelayTxFee) const
